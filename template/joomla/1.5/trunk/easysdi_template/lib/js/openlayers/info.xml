@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info version="1.0">
+  <general>
+    <createDate>2008-02-29T18:05:41</createDate>
+    <changeDate>2008-02-29T18:05:41</changeDate>
+    <schema>iso19139</schema>
+    <isTemplate>false</isTemplate>
+    <localId>16</localId>
+    <format>full</format>
+    <uuid>292</uuid>
+    <siteId>f890f5ac-91fb-4cab-9951-b6af5f4002b0</siteId>
+    <siteName>dummy</siteName>
+  </general>
+  <categories />
+  <privileges>
+    <group name="sample">
+      <operation name="view" />
+      <operation name="download" />
+      <operation name="notify" />
+      <operation name="dynamic" />
+    </group>
+  </privileges>
+  <public>
+    <file name="phy.gif" changeDate="2007-07-25T12:07:34" />
+    <file name="phy_s.gif" changeDate="2007-07-25T12:07:26" />
+  </public>
+  <private>
+    <file name="phy.zip" changeDate="2007-07-25T12:11:26" />
+  </private>
+</info>
+
