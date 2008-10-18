@@ -1,0 +1,254 @@
+<?php
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
+
+defined('_JEXEC') or die('Restricted access');
+
+class ADMIN_basemap {
+	
+	
+	
+	
+	function listBasemapContent($basemap_id,$option) {
+		global  $mainframe;
+		$db =& JFactory::getDBO(); 
+		
+		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
+		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
+		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
+		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
+		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+
+		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_content where basemap_def_id = ".$basemap_id;
+		
+		//$query .= $filter;
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+	
+		
+		// Recherche des enregistrements selon les limites
+		
+		
+		$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = ".$basemap_id;		
+									
+		
+	
+		if ($use_pagination) {
+			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
+		}
+		$db->setQuery( $query );
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo $db->stderr();
+			return false;
+		}		
+	
+		HTML_Basemap::listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option);	
+
+	}
+	
+
+	function editBasemapContent( $id, $option ) {
+		$database =& JFactory::getDBO(); 
+		$rowBasemap = new basemap_content( $database );
+		$rowBasemap->load( $id );					
+	
+		$rowBasemap->basemap_def_id = JRequest::getVar('basemap_def_id',-1); 
+		
+		
+		HTML_Basemap::editBasemapContent( $rowBasemap,$id, $option );
+	}
+	
+	
+	
+	function saveBasemapContent($returnList ,$option){
+						global  $mainframe;
+		$database=& JFactory::getDBO(); 
+		
+		$rowBasemap =&	 new basemap_content($database);
+				
+		$basemap_def_id = JRequest::getVar('basemap_def_id');
+		if (!$rowBasemap->bind( $_POST )) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id );
+			exit();
+		}
+				
+		
+		if (!$rowBasemap->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id );
+			exit();
+		}
+		
+		if ($returnList == true) {			
+			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id);
+		}
+		
+		
+	}
+	
+	function deleteBasemapContent($cid ,$option){
+		
+		global $mainframe;
+		$database =& JFactory::getDBO();
+		
+		if (!is_array( $cid ) || count( $cid ) < 1) {
+			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
+			exit;
+		}
+		foreach( $cid as $id )
+		{
+			$Basemap = new basemap_content( $database );
+			$Basemap->load( $id );
+					
+			if (!$Basemap->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
+			}												
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );		
+	}
+		
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	function listBasemap($option) {
+		global  $mainframe;
+		$db =& JFactory::getDBO(); 
+		
+		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
+		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
+		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
+		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
+		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+
+		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_definition";
+		
+		//$query .= $filter;
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+	
+		
+		// Recherche des enregistrements selon les limites
+		
+		
+		$query = "SELECT * FROM #__easysdi_basemap_definition ";		
+									
+		
+	
+		if ($use_pagination) {
+			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
+		}
+		$db->setQuery( $query );
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo $db->stderr();
+			return false;
+		}		
+	
+		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option);	
+
+	}
+	
+
+	function editBasemap( $id, $option ) {
+		$database =& JFactory::getDBO(); 
+		$rowBasemap = new basemap( $database );
+		$rowBasemap->load( $id );					
+	
+		
+		
+		HTML_Basemap::editBasemap( $rowBasemap,$id, $option );
+	}
+	
+	function saveBasemap($returnList ,$option){
+						global  $mainframe;
+		$database=& JFactory::getDBO(); 
+		
+		$rowBasemap =&	 new basemap($database);
+				
+		
+		if (!$rowBasemap->bind( $_POST )) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+			exit();
+		}
+				
+		
+		if (!$rowBasemap->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+			exit();
+		}
+		
+		if ($returnList == true) {			
+			$mainframe->redirect("index.php?option=$option&task=listBasemap");
+		}
+		
+		
+	}
+	
+	function deleteBasemap($cid ,$option){
+		
+		global $mainframe;
+		$database =& JFactory::getDBO();
+		
+		if (!is_array( $cid ) || count( $cid ) < 1) {
+			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+			exit;
+		}
+		foreach( $cid as $id )
+		{
+			$Basemap = new Basemap( $database );
+			$Basemap->load( $id );
+					
+			if (!$Basemap->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+			}												
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listBasemap" );		
+	}
+		
+		
+	
+	
+}
+	
+?>
