@@ -1,0 +1,39 @@
+<?xml version="1.0"  ?>
+<install version="1.5" type="component">
+	<name>EasySDI_partner</name>
+	<version>1.0</version>
+	<creationDate>July 2008</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>
+		Administration tool for manage the easysdi's partners.
+	</description>
+	
+	<installfile>install.easysdi_partner.php</installfile>
+	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
+		
+	<administration>
+		
+		<files>
+			<filename>admin.easysdi_partner.php</filename>
+			<filename>license.txt</filename>
+			<filename>toolbar.easysdi.php</filename>
+			<folder>com_easysdi_partner</folder>			
+			<folder>core</folder>
+			<folder>font</folder>			
+			<folder>java</folder>
+			<folder>js</folder>
+			<folder>language</folder>			
+			<folder>xsl</folder>
+		</files>
+		<languages folder="language/admin">
+			<language tag="fr-FR">fr-FR.com_easysdi_partner.ini</language>
+		</languages>
+	</administration>
+	<languages folder="language/site">
+		<language tag="fr-FR">fr-FR.com_easysdi_partner.ini</language>
+	</languages>
+</install>
