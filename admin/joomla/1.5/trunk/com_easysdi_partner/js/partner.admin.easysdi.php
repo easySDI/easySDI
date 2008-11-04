@@ -12,7 +12,8 @@ defined('_JEXEC') or die('Restricted access');
 				return;
 			}
 			// do field validation
-			if (form.name.value == '' || form.username.value == '' || form.email.value == '' || (form.password.value == '' && form.id.value ==''))
+			
+			if (form.elements['title_id[]'].value == '0' || form.name.value == '' || form.username.value == '' || form.email.value == '' || (form.password.value == '' && form.id.value ==''))
 			{
 				alert( "<?php echo JText::_("EASYSDI_CHECK_SUBMIT_FORM");?> ");
 			} else {
@@ -39,7 +40,7 @@ defined('_JEXEC') or die('Restricted access');
 				case '5':	//Association professionnelle
 					updateCategory(true,true,false,true,false,true,true,true,true,true);
 					break;
-				case '6':	//Privé
+				case '6':	//Privï¿½
 					updateCategory(true,true,true,true,true,true,true,true,true,true);
 					break;
 				case '7':	//Bureau technique
@@ -66,7 +67,7 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			var form = document.adminForm;
 
-			form.partner_contract.disabled = contract;
+			/*form.partner_contract.disabled = contract;
 			form.partner_inhabitant.disabled = inhabitant;
 			form.activity_id.disabled = activity;
 			form.collaborator_id.disabled = collaborator;
@@ -76,6 +77,7 @@ defined('_JEXEC') or die('Restricted access');
 			form.partner_heating.disabled = heating;
 			form.partner_telcom.disabled= telcom;
 			form.partner_network.disabled = network;
+			*/
 		}
 		function changeAddress(value, target)
 		{

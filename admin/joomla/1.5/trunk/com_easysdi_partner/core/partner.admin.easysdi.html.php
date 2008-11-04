@@ -26,26 +26,25 @@ class HTML_partner {
 		 
 		$types = array();
 		$types[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_ACCOUNT_ROOT") );
-		$database->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NULL ORDER BY #__users.name" );
+		$type = JRequest::getVar("type","");
+		if ($type==''){
+			$database->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NULL ORDER BY #__users.name" );											
+		}else{
+			$database->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,#__users.name AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.partner_id ='$type'" );
+						
+			echo "<br>";  
+			$types = array_merge( $types, $database->loadObjectList() );													
+			echo "<br>";	
+			$database->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NOT NULL AND (#__easysdi_community_partner.parent_id = '$type' ) ORDER BY #__users.name" ); 									 			
+		}
+		
 		$types = array_merge( $types, $database->loadObjectList() );
+		
 
-	/*	$profiles = array();
-		$profiles[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_PROFILE") );
-		$database->setQuery( "SELECT profile_id AS value,profile_name AS text FROM #__easysdi_community_profile WHERE profile_id > 0 ORDER BY profile_name" );
-		$profiles = array_merge( $profiles, $database->loadObjectList() );
+				
+		
 
-		$categories = array();
-		$categories[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_CATEGORY") );		
-		$database->setQuery( "SELECT category_id AS value,category_name AS text FROM #__easysdi_community_category WHERE category_id > 0 ORDER BY category_name" );
-		$categories = array_merge( $categories, $database->loadObjectList() );
-
-		$payments = array();
-		$payments[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_PAYMENT") );		
-		$database->setQuery( "SELECT payment_id AS value,payment_name AS text FROM #__easysdi_community_payment WHERE payment_id > 0 ORDER BY payment_name" );
-		$payments = array_merge( $payments, $database->loadObjectList() );
-*/
-		//mosCommonHTML::loadOverlib();
-		//$lists['pagination_radio'] = mosHTML::yesnoRadioList('use_pagination','onchange="javascript:submitbutton(\'listPartner\');"',$use_pagination);
+	
 		$lists['use_pagination'] = $use_pagination;
 
 		switch ($type) {
@@ -100,7 +99,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			$row = $rows[$i];
 	  		
 			
-			//$checked = mosCommonHTML::CheckedOutProcessing( $row, $i );
+		
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -139,6 +138,15 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 <?php
 	}
 	
+	function alter_array_value_with_Jtext(&$rows)
+	{		
+		if (count($rows)>0){
+		  foreach($rows as $key => $row) {		  	
+       		$rows[$key]->text = JText::_($rows[$key]->text);
+  		}			    
+		}
+	}
+
 	function editRootPartner( &$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option )
 	{
 		global  $mainframe;
@@ -147,49 +155,22 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_ACCOUNT_ROOT"), 'generic.png' );
 		//mosMakeHtmlSafe( $rowPartner, ENT_QUOTES );
 
-		$profiles = array();
-		
-		/*$profiles[] = JHTML::_('select.option','0',JText::_("EASYSDI_LIST_PROFILE_SELECT"));		
-		$database->setQuery( "SELECT profile_id AS value, profile_name AS text FROM #__easysdi_community_profile WHERE profile_id > 0 ORDER BY profile_name" );
-		$profiles = array_merge( $profiles, $database->loadObjectList() );
-
-		$categories = array();
-		$categories[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_CATEGORY_SELECT") );
-		$database->setQuery( "SELECT category_id AS value, category_name AS text FROM #__easysdi_community_category WHERE category_id > 0 ORDER BY category_name" );
-		$categories = array_merge( $categories, $database->loadObjectList() );
-
-		$payments = array();
-		$payments[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_PAYMENT_SELECT") );
-		$database->setQuery( "SELECT payment_id AS value, payment_name AS text FROM #__easysdi_community_payment WHERE payment_id > 0 ORDER BY payment_name" );
-		$payments = array_merge( $payments, $database->loadObjectList() );
-*/
+		$profiles = array();		
 		$titles = array();
 		$titles[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_TITLE_SELECT" ));
 		$database->setQuery( "SELECT title_id AS value, title_name AS text FROM #__easysdi_community_title WHERE title_id > 0 ORDER BY title_name" );
-		$titles = array_merge( $titles, $database->loadObjectList() );
-
+		$titles = array_merge( $titles, $database->loadObjectList());
+		
+		HTML_partner::alter_array_value_with_Jtext($titles );
+		
 		$countries = array();
 		$countries[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_COUNTRY_SELECT") );
 		$database->setQuery( "SELECT country_code AS value, country_name AS text FROM #__easysdi_community_country ORDER BY country_name" );
 		$countries = array_merge( $countries, $database->loadObjectList() );
-
-		$activities = array();
-	/*	$activities[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACTIVITY_SELECT") );
-		$database->setQuery( "SELECT activity_id AS value, activity_name AS text FROM #__easysdi_community_activity WHERE activity_id > 0 ORDER BY activity_name" );
-		$activities = array_merge( $activities, $database->loadObjectList() );
-
-		$collaborators = array();
-		$collaborators[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_COLLABORATOR_SELECT") );
-		$database->setQuery( "SELECT collaborator_id AS value, collaborator_name AS text FROM #__easysdi_community_collaborator WHERE collaborator_id > 0 ORDER BY collaborator_name" );
-		$collaborators = array_merge( $collaborators, $database->loadObjectList() );
-
-		$members = array();
+		HTML_partner::alter_array_value_with_Jtext($countries );
 		
-		$members[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_MEMBER_SELECT") );
-		$database->setQuery( "SELECT member_id AS value, member_name AS text FROM #__easysdi_community_member WHERE member_id > 0 ORDER BY member_name" );
-		$members = array_merge( $members, $database->loadObjectList() );
-*/
-?>				
+		$activities = array();
+	?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
 		echo $tabs->startPane("partnerPane");
@@ -530,6 +511,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			$rights = array();
 			$database->setQuery( "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id." ORDER BY role_name" );
 			$rights = array_merge( $rights, $database->loadObjectList() );
+			HTML_partner::alter_array_value_with_Jtext($rights);
 			$selected = array();
 			$database->setQuery( "SELECT role_id AS value FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->partner_id );
 			$selected = $database->loadObjectList();
@@ -553,31 +535,21 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
 
-			$query = "SELECT * FROM #__menu WHERE menutype='mainmenu' ORDER BY ordering";
-			//$query = "SELECT partner_id as id, partner_code as name, parent_id as parent FROM #__easysdi_community_partner ORDER BY partner_id";
+			$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
+			
+			
 			$database->setQuery( $query );
 			$src_list = $database->loadObjectList();
-
-			print "<pre>";
-			print_r ($src_list);
-			print "</pre>";
-
-			$preload = array();
 			
-			$preload[] = JHTML::_('select.option','0', 'Select one or more options' );
-
-			$selected = array();
+			HTML_partner::print_child($src_list );
 			
-			$selected[] = JHTML::_('select.option','2');
-			$selected[] = JHTML::_('select.option','4');
-			
-			//echo mosHTML::treeSelectList( &$src_list, 1, $preload, 'test', 'class="inputbox" size="10" multiple="true"', 'value', 'text', $selected );
-
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
 ?>
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />
+		<input type="hidden" name="type" value="<?php echo JRequest::getVar("type",""); ?>" />
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
+		
 		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowSubscription->address_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowDelivery->address_id; ?>" />
@@ -591,7 +563,25 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 	</script>
 <?php
 	}
-
+				
+function print_child($childList){
+		$database =& JFactory::getDBO();		
+			echo "<ol>";
+			foreach ($childList as $childUser ){
+					echo "<li><b><i>$childUser->name ($childUser->username)</i></b>";
+					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
+					$database->setQuery( $query );
+					$src_list = $database->loadObjectList();
+					if (count ($src_list)>0){
+						HTML_partner::print_child($src_list);
+					}
+					echo "</li>";					
+				}
+			echo "</ol>";
+							
+			}
+			
+			
 	function editAffiliatePartner( &$rowUser, &$rowPartner, $rowContact, $option )
 	{
 		global  $mainframe;
@@ -603,16 +593,26 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		$database->setQuery( "SELECT #__users.name as text,#__easysdi_community_partner.partner_id as value FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.partner_id = ".$rowPartner->root_id );
 		$root_name = $database->loadResult();	
 
+		
+		$database->setQuery( "SELECT #__users.name as text,#__easysdi_community_partner.partner_id as value FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.partner_id = ".$rowPartner->parent_id );
+		$parent_name = $database->loadResult();	
+		
+		
 		$titles = array();
 		$titles[] = JHTML::_('select.option','0',JText::_("EASYSDI_LIST_TITLE_SELECT") );
 		
 		$database->setQuery( "SELECT title_id AS value, title_name AS text FROM #__easysdi_community_title WHERE title_id > 0 ORDER BY title_name" );
-		$titles = array_merge( $titles, $database->loadObjectList() );
+		
+		$titles = array_merge( $titles, $database->loadObjectList());
+		HTML_partner::alter_array_value_with_Jtext($titles);
+		
+
 
 		$countries = array();
 		$countries[] = JHTML::_('select.option','0',JText::_("EASYSDI_LIST_COUNTRY_SELECT") );
 		$database->setQuery( "SELECT country_code AS value, country_name AS text FROM #__easysdi_community_country ORDER BY country_name" );
 		$countries = array_merge( $countries, $database->loadObjectList() );
+		HTML_partner::alter_array_value_with_Jtext($countries );
 		JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT_AFFILIATE"));
 
 ?>
@@ -683,6 +683,12 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_ROOT"); ?> : </td>
 								<td><?php echo $root_name ?><input type="hidden" name="root_id" value="<?php echo $rowPartner->root_id; ?>" /></td>
 							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_PARENT"); ?> : </td>
+								<td><?php echo $parent_name ?><input type="hidden" name="parent_id" value="<?php echo $rowPartner->parent_id; ?>" /></td>							
+							</tr>
+									
+							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="<?php echo $rowPartner->partner_acronym; ?>" /></td>
@@ -783,13 +789,14 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			$rights = array();
 			if ($rowPartner->root_id) {
 				$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
-				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->root_id.")";
+				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
 				$query .= " ORDER BY role_name";
 				$database->setQuery( $query );
 				$rights = array_merge( $rights, $database->loadObjectList() );
+				HTML_partner::alter_array_value_with_Jtext($rights);
 				$selected = array();
 				$query = "SELECT role_id AS value FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->partner_id;
-				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->root_id.")";
+				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
 				$database->setQuery( $query );
 				$selected = $database->loadObjectList();
 			}
@@ -808,10 +815,19 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 <?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"affiliatePane");
+		$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
+			
+			
+			$database->setQuery( $query );
+			$src_list = $database->loadObjectList();
+			
+		HTML_partner::print_child($src_list );
+			
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
 ?>
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />
+		<input type="hidden" name="type" value="<?php echo JRequest::getVar("type",""); ?>" />
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />

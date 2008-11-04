@@ -29,11 +29,17 @@
 			<folder>language</folder>			
 			<folder>xsl</folder>
 		</files>
-		<languages folder="language/admin">
+		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_partner.ini</language>
 		</languages>
 	</administration>
-	<languages folder="language/site">
+	<files folder="com_easysdi_partner"> 
+			<filename>easysdi_partner.php</filename>
+			<filename>license.txt</filename>									
+			<folder>core</folder>
+			<folder>js</folder>
+	</files>
+	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_partner.ini</language>
 	</languages>
 </install>

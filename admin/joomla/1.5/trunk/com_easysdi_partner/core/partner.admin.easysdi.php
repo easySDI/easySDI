@@ -55,15 +55,7 @@ class ADMIN_partner {
 			$filter .= " OR #__easysdi_community_partner.partner_id LIKE '%$search%'";		
 			$filter .= " OR #__easysdi_community_partner.partner_code LIKE '%$search%')";		
 		}
-		/*if ( $profile && $type == '' ) {
-			$filter .= " AND #__easysdi_community_partner.profile_id IN (".$profile.")";
-		}	
-		if ( $category && $type == '' ) {
-			$filter .= " AND #__easysdi_community_partner.category_id IN (".$category.")";
-		}
-		if ( $payment && $type == '' ) {
-			$filter .= " AND #__easysdi_community_partner.payment_id IN (".$payment.")";
-		}*/
+	
 
 		// D�compte des enregistrements totaux
 		if ($type == '') {
@@ -85,7 +77,7 @@ class ADMIN_partner {
 		if ($type == '') {
 			$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NULL";
 		} else {
-			$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id = ".$type;
+			$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.root_id IS NOT NULL";
 		}			
 		$query .= $filter;
 		$query .= " ORDER BY #__users.name";
@@ -99,8 +91,7 @@ class ADMIN_partner {
 			return false;
 		}		
 	
-		HTML_partner::listPartner($use_pagination, $rows, $pageNav, $search, $option, $type, $profile, $category, $payment);	
-
+		HTML_partner::listPartner($use_pagination, $rows, $pageNav, $search, $option, $type, $profile, $category, $payment);
 	}
 
 	// Cr�ation d'enregistrement (id = 0)
@@ -109,6 +100,7 @@ class ADMIN_partner {
 		$database =& JFactory::getDBO(); 
 		$rowPartner = new partner( $database );
 		$rowPartner->load( $id );
+		$rowPartner->parent_id = $id; 
 		if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
 			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
 		} else {
@@ -165,22 +157,31 @@ class ADMIN_partner {
 		$rowPartner = new partner( $database );
 		$rowPartner->load( $id );
 	
-		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$id." AND type_id=1" );
+		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$id." AND type_id=1" );		
 		$contact_id = $database->loadResult();
 		echo $database->getErrorMsg();		
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
 
-		//$rowUser =& JFactory::getUser($rowPartner->user_id );
+		
 		$rowUser =&	 new JTableUser($database);
 		$rowUser->load( $rowPartner->user_id );
 		
-		/*$rowUser = new mosUser( $database );
-		$rowUser->load( $rowPartner->user_id );*/
+		
 		if ($id == 0)
 		{
-			$rowPartner->root_id=JRequest::getVar('type','');
-			$rowPartner->parent_id=JRequest::getVar('type','');
+			$type = JRequest::getVar('type','');
+			$database->setQuery( "SELECT root_id FROM #__easysdi_community_partner WHERE partner_id='".$type."'");		
+			$root_id = $database->loadResult();
+			
+		 		if ($root_id != null){
+					$rowPartner->root_id=$root_id;
+		 		}else{
+		 			$rowPartner->root_id=$type;
+		 		}
+		 		
+			$rowPartner->parent_id=$type;
+			
 			$rowUser->usertype='Registered';
 			$rowUser->gid=18;
 		}
@@ -313,10 +314,7 @@ class ADMIN_partner {
 		
 		$rowUser =&	 new JTableUser($database);
 		
-		//$rowUser->load( -1 );
 		
-		//$rowUser = &JFactory::getUser(-1);
-		//$rowUser = new mosUser( $database );
 		if (!$rowUser->bind( $_POST )) {			
 			//echo "<script> alert('".$rowUser->getError()."'); window.history.go(-1); </script>\n";
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -328,7 +326,6 @@ class ADMIN_partner {
 			$rowUser->password = md5( JRequest::getVar('password','') );
 		}
 		if (!$rowUser->store()) {
-			//echo "<script> alert('".$rowUser->getError()."'); window.history.go(-1); </script>\n";
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listPartner" );
 			exit();
@@ -337,8 +334,7 @@ class ADMIN_partner {
 		if (JRequest::getVar('id','') == '')
 		{
 			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
-			if (!$database->query()) {
-				//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
+			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPartner" );
 				exit();
@@ -346,9 +342,7 @@ class ADMIN_partner {
 		}
 
 		$rowPartner = new partner( $database );
-		if (!$rowPartner->bind( $_POST )) {
-			//echo "<script> alert('".$rowPartner->getError()."'); window.history.go(-1); </script>\n";
-			
+		if (!$rowPartner->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
 			$mainframe->redirect("index.php?option=$option&task=listPartner" );
 			exit();
@@ -424,6 +418,7 @@ class ADMIN_partner {
 			exit();
 		}
 		
+		if (count ($_POST['role_id'] )>0){
 		foreach( $_POST['role_id'] as $role_id )
 		{
 			$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
@@ -435,7 +430,7 @@ class ADMIN_partner {
 			}
 			
 		}
-
+		}
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
 		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
 		$database->setQuery( $query );

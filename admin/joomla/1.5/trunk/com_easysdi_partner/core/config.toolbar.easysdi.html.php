@@ -17,32 +17,18 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class TOOLBAR_partner {
+class TOOLBAR_config {
 
 	function _DEFAULT() {
-		global $mainframe;
-
-		
-		switch ($mainframe->getUserStateFromRequest( "type{$option}", 'type', '' )) {
-			case '':
-				JToolBarHelper::custom('exportPartner', 'xml.png', 'xml_f2.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
-				JToolBarHelper::addNew('newRootPartner');
-				JToolBarHelper::editList('editRootPartner');
-				break;
-			default:
-				JToolBarHelper::custom('exportPartner', 'xml.png', 'xml_f2.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
-				JToolBarHelper::addNew('newAffiliatePartner');
-				JToolBarHelper::editList('editAffiliatePartner');
-				break;
-		}
-		JToolBarHelper::deleteList('','removePartner');
-		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+			
+		JToolBarHelper::addNew('newConfig');
+		JToolBarHelper::editList('editConfig');
+		JToolBarHelper::deleteList('','deleteConfig');
 	}
 
 	function _EDIT() {
-		JToolBarHelper::save('savePartner');
-		JToolBarHelper::cancel('cancelPartner');
+		JToolBarHelper::save('saveConfig');
+		JToolBarHelper::cancel('cancelConfig');
 	}
 
 }

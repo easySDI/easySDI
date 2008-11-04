@@ -38,14 +38,12 @@ function com_install(){
 	if ($db->getErrorNum()) {
 		//The table does'nt exist
 		//That means nothing is installed.
-		$version = '0';		
-	}
-	$mainframe->enqueueMessage("Db version $version","ERROR");
-if (strlen($version)==0) $version='0';
-
-	//When there is no DB version, then we create the full db
-	if ($version == '0') {
-
+	$mainframe->enqueueMessage("EASYSDI IS NOT INSTALLED","ERROR");
+	
+	exit;		
+	}	
+else{
+	if ($version == "0"){
 		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
 		$db->setQuery( $query);
 
@@ -438,16 +436,14 @@ if (strlen($version)==0) $version='0';
 		}
 
 		$query="INSERT INTO `#__easysdi_community_role` (`role_id`, `publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`) VALUES
-(1, 0, 1, 'REQUEST_EXTERNAL', 'Commande de donnEes externes', 'Commande de donnEes externes', NULL),
-(2, 0, 1, 'METADATA', 'Gestion de mEtadonnEes', 'Gestion de mEtadonnEes', NULL),
-(3, 0, 1, 'FORMULARY', 'Gestion de formulaires', 'Gestion de formulaires', NULL),
-(4, 0, 1, 'REQUEST_INTERNAL', 'Commande de donnEes internes', 'Commande de donnEes internes', NULL),
-(5, 0, 1, 'ACCOUNT', 'Gestion de comptes affiliEs', 'Gestion d''acomptes affiliEs', NULL),
-(6, 0, 1, 'SEAT_OFFICE', 'Consultation des notes du bureau de l''ASIT-VD', NULL, NULL),
-(7, 0, 1, 'SEAT_COMITY', 'Consultation des notes du comitE de l''ASIT-VD', NULL, NULL),
-(8, 0, 1, 'MYACCOUNT', 'Gestion du compte', NULL, NULL),
-(9, 0, 1, 'INTERNAL', 'Consultation des mEtadonnEes internes', NULL, NULL),
-(11, 0, 1, 'TIERCE', 'Commande de donnEes E son nom', 'Commande pour un tiers', NULL)";
+(1, 0, 1, 'REQUEST_EXTERNAL', 'EASYSDI_REQUEST_EXTERNAL_RIGHT', 'Commande de données externes', NULL),
+(2, 0, 1, 'METADATA', 'EASYSDI_METADATA_RIGHT', 'Gestion de métadonnEes', NULL),
+(3, 0, 1, 'FORMULARY', 'EASYSDI_FORMULARY_RIGHT', 'Gestion de formulaires', NULL),
+(4, 0, 1, 'REQUEST_INTERNAL', 'EASYSDI_REQUEST_INTERNAL_RIGHT', 'Commande de données internes', NULL),
+(5, 0, 1, 'ACCOUNT', 'EASYSDI_ACCOUNT_RIGHT', 'Gestion d''acomptes affiliés', NULL),
+(6, 0, 1, 'MYACCOUNT', 'EASYSDI_MYACCOUNT_RIGHT', NULL, NULL),
+(7, 0, 1, 'INTERNAL', 'EASYSDI_INTERNAL_RIGHT', NULL, NULL),
+(8, 0, 1, 'TIERCE', 'EASYSDI_TIERCE_RIGHT', 'Commande pour un tiers', NULL)";
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
@@ -577,7 +573,7 @@ INSERT INTO `#__easysdi_community_address_type` (`type_id`, `publish_id`, `type_
 		}
 
 
-
+		$version="0.9";
 		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
 (null, 'com_easysdi_partner', '0.9')";
 
@@ -610,7 +606,174 @@ INSERT INTO `#__easysdi_community_address_type` (`type_id`, `publish_id`, `type_
 
 
 	}
+}
+if ($version == "0.9"){
 	
+	
+		$version="0.91";
+		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
+		(null, 'com_easysdi_partner', '0.91')";
+
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_REQUEST_EXTERNAL_RIGHT' where role_code ='REQUEST_EXTERNAL'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_METADATA_RIGHT' where role_code ='METADATA'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_FORMULARY_RIGHT' where role_code ='FORMULARY'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_REQUEST_INTERNAL_RIGHT' where role_code ='REQUEST_INTERNAL'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_ACCOUNT_RIGHT' where role_code ='ACCOUNT'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_MYACCOUNT_RIGHT' where role_code ='MYACCOUNT'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_INTERNAL_RIGHT' where role_code ='INTERNAL'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+			
+			$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_TIERCE_RIGHT' where role_code ='TIERCE'";
+					$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		
+		
+		
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MADAM' where title_name ='Madame'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISTER' where title_name ='Monsieur'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISS' where title_name ='Mademoiselle'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MAITRE' where title_name ='MaEtre'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISS_PRESIDENT' where title_name ='Madame la PrEsidente'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISTER_PRESIDENT' where title_name ='Monsieur le PrEsident'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISS_PROPERTY_AGENT' where title_name ='Madame la Syndic'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISTER_PROPERTY_AGENT' where title_name ='Monsieur le Syndic'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		$query="UPDATE `#__easysdi_community_title` SET title_name='EASYSDI_MISS_MISTER' where title_name ='Madame, Monsieur'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+		
+
+
+
+$query="UPDATE `#__easysdi_community_address_type` SET type_name='EASYSDI_TYPE_CONTACT' where type_name ='Contact'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+$query="UPDATE `#__easysdi_community_address_type` SET type_name='EASYSDI_TYPE_INVOICING' where type_name ='Facturation'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+$query="UPDATE `#__easysdi_community_address_type` SET type_name='EASYSDI_TYPE_DELIVERY' where type_name ='Livraison'";
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+
+		}
+}
 	
 	
 	
@@ -642,6 +805,15 @@ INSERT INTO `#__easysdi_community_address_type` (`type_id`, `publish_id`, `type_
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
+
+		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+		values($id,'Configuration','','option=com_easysdi_partner&task=listConfig','Configuration','com_easysdi_partner','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+	}
+	
 	
 	
 	

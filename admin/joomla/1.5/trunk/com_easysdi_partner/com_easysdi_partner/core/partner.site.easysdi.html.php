@@ -19,8 +19,16 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_partner {
 	
+function alter_array_value_with_Jtext(&$rows)
+	{		
+		if (count($rows)>0){
+		  foreach($rows as $key => $row) {		  	
+       		$rows[$key]->text = JText::_($rows[$key]->text);
+  		}			    
+		}
+	}
 	
-	function listPartner( &$rows, &$pageNav, $search, $option, $root_partner_id)
+	function listPartner( &$rows, &$pageNav, $search, $option, $root_partner_id,$types,$type)
 	{				
 		$database =& JFactory::getDBO();		 
 							
@@ -31,26 +39,29 @@ class HTML_partner {
 	
 	
 		
-	<h2 class="contentheading"><?php echo JText::_("AFFILIATE_LIST"); ?></h2>
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_AFFILIATE_LIST"); ?></h2>
 	
-	<h3> <?php echo JText::_("SEARCH_CRITERIA_TITLE"); ?></h3>
+	<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listPartner\');" />			
+				</td>
+				<td>
+					<?php echo JText::_("EASYSDI_TITLE_ACCOUNT"); ?>&nbsp;<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" "', 'value', 'text', $type ); ?>				
 				</td>
 			</tr>
 		</table>
-		<button type="submit" class="searchButton" > <?php echo JText::_("SEARCH_BUTTON"); ?></button>
+		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
 		<table width="100%">
 			<tr>																																						
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
-	<h3><?php echo JText::_("SEARCH_RESULTS_TITLE"); ?></h3>
+	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 		<table class="affiliatePartnerList">
 		<thead>
 			<tr>
@@ -94,11 +105,11 @@ class HTML_partner {
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" id="task" name="task" value="listAffiliatePartner" />	  	 	 
 	  </form>	  
-	  <button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("NEW_AFFILIATE"); ?></button>
+	  <button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
 	  </div>
 <?php
 	}
-	function showPartner( $hasTheRightToEdit,&$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option)
+	function showPartner( $hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates,&$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -111,19 +122,20 @@ class HTML_partner {
 		$profiles = array();
 								
 		$database->setQuery( "SELECT title_name AS text FROM #__easysdi_community_title WHERE title_id = ".$rowContact->title_id ." ORDER BY title_name" );
-		$title = $database->loadResult();
-
+		$title = JText::_($database->loadResult());
 		
-		$database->setQuery( "SELECT  country_name AS text FROM #__easysdi_community_country where country_code = '".$rowContact->country_code."'" );
-		 
-		$countryContact = $database->loadResult() ;
+		
+		$database->setQuery( "SELECT  country_name AS text FROM #__easysdi_community_country where country_code = '".$rowContact->country_code."'" );		 
+		$countryContact = JText::_($database->loadResult());
 		
 		
 		$database->setQuery( "SELECT country_name AS text FROM #__easysdi_community_country where country_code ='".$rowSubscription->country_code."'" );
-		$countrySubscription = $database->loadResult() ;
+		$countrySubscription = JText::_($database->loadResult());
+		
 		
 		$database->setQuery( "SELECT country_name AS text FROM #__easysdi_community_country where country_code ='".$rowDelivery->country_code."'" );
-		$countryDelivery = $database->loadResult() ;
+		$countryDelivery = JText::_($database->loadResult());
+		
 		
 		$activities = array();
 ?>					
@@ -200,7 +212,7 @@ class HTML_partner {
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo $title; ?></td>
+				<td><?php echo JText::_($title); ?></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -267,7 +279,7 @@ class HTML_partner {
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo $title; ?></td>
+				<td><?php echo JText::_($title); ?></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -335,7 +347,7 @@ class HTML_partner {
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo $title;?></td>
+				<td><?php echo JText::_($title);?></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -383,6 +395,37 @@ class HTML_partner {
 		</td></tr></table>		
 <?php
 		echo $tabs->endPanel();		
+		if ($hasTheRightToManageHisOwnAffiliates>0){
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
+		?>
+<br>
+<div class="easysdi_site_aff_list">
+<br>
+	<fieldset>
+		<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>		
+		
+	<?php	
+		$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
+			
+				
+		$database->setQuery( $query );
+		$src_list = $database->loadObjectList();
+		
+		HTML_partner::print_child($src_list );
+			
+		
+	
+		
+		?>
+	</fieldset>		
+	</div><br>
+		
+		<?php
+		echo $tabs->endPanel(); 
+		}
+		?>
+		
+<?php
 		echo $tabs->endPane();
 ?>
 
@@ -403,7 +446,24 @@ class HTML_partner {
 	
 	</div>	
 <?php
-	}	
+	}
+function print_child($childList){
+		$database =& JFactory::getDBO();		
+			echo "<ol>";
+			foreach ($childList as $childUser ){
+					echo "<li><b><i>$childUser->name ($childUser->username)</i></b>";
+					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
+					$database->setQuery( $query );
+					$src_list = $database->loadObjectList();
+					if (count ($src_list)>0){
+						HTML_partner::print_child($src_list);
+					}
+					echo "</li>";					
+				}
+			echo "</ol>";
+							
+			}
+				
 	function editPartner( &$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option)
 	{
 		global  $mainframe;
@@ -421,12 +481,13 @@ class HTML_partner {
 		$titles[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_TITLE_SELECT" ));
 		$database->setQuery( "SELECT title_id AS value, title_name AS text FROM #__easysdi_community_title WHERE title_id > 0 ORDER BY title_name" );
 		$titles = array_merge( $titles, $database->loadObjectList() );
+		HTML_partner::alter_array_value_with_Jtext($titles );
 
 		$countries = array();
 		$countries[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_COUNTRY_SELECT") );
 		$database->setQuery( "SELECT country_code AS value, country_name AS text FROM #__easysdi_community_country ORDER BY country_name" );
 		$countries = array_merge( $countries, $database->loadObjectList() );
-
+		HTML_partner::alter_array_value_with_Jtext($countries );
 		$activities = array();
 	
 ?>				
@@ -724,7 +785,7 @@ class HTML_partner {
 	}
 
 	
-	function showAffiliatePartner($hasTheRightToEdit, &$rowUser, &$rowPartner, $rowContact, $option )
+	function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, &$rowUser, &$rowPartner, $rowContact, $option )
 	{
 		global  $mainframe;
 
@@ -811,7 +872,7 @@ class HTML_partner {
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
+						<legend><?php echo JText::_("EASYSDI_TEXT_CONTACT"); ?></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
@@ -823,7 +884,7 @@ class HTML_partner {
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo $title;?></td>
+				<td><?php echo JText::_($title);?></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -904,12 +965,12 @@ class HTML_partner {
 		
 		$database->setQuery( "SELECT title_id AS value, title_name AS text FROM #__easysdi_community_title WHERE title_id > 0 ORDER BY title_name" );
 		$titles = array_merge( $titles, $database->loadObjectList() );
-
+		HTML_partner::alter_array_value_with_Jtext($titles );
 		$countries = array();
 		$countries[] = JHTML::_('select.option','0',JText::_("EASYSDI_LIST_COUNTRY_SELECT") );
 		$database->setQuery( "SELECT country_code AS value, country_name AS text FROM #__easysdi_community_country ORDER BY country_name" );
 		$countries = array_merge( $countries, $database->loadObjectList() );
-				
+		HTML_partner::alter_array_value_with_Jtext($countries);
 		
 ?>
 	
@@ -1042,12 +1103,8 @@ class HTML_partner {
 <?php
 		echo $tabs->endPanel();
 	
-	$user = JFactory::getUser();
-	
-	$rootPartner = new partnerByUserId($database);
-	$rootPartner->load($user->id);		
-				
-	if ($rootPartner->partner_id == $rowPartner->root_id){	
+
+			
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_RIGHTS"),"affiliatePane");
 ?>
 <br>
@@ -1067,18 +1124,21 @@ class HTML_partner {
 							<tr>
 <?php
 			$rights = array();
-			if ($rowPartner->root_id) {
-				$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
-				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->root_id.")";
-				$query .= " ORDER BY role_name";
-				$database->setQuery( $query );
-				$rights = array_merge( $rights, $database->loadObjectList() );
-				$selected = array();
-				$query = "SELECT role_id AS value FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->partner_id;
-				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->root_id.")";
-				$database->setQuery( $query );
-				$selected = $database->loadObjectList();
-			}
+			
+			
+			$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
+			$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
+			$query .= " ORDER BY role_name";
+			$database->setQuery( $query );
+ 
+			$rights = array_merge( $rights, $database->loadObjectList() );
+			HTML_partner::alter_array_value_with_Jtext($rights);
+			$selected = array();
+			$query = "SELECT role_id AS value FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->partner_id;
+			$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
+			$database->setQuery( $query );
+			$selected = $database->loadObjectList();
+			
 
 ?>
 								<td><?php echo JHTML::_("select.genericlist",$rights, 'role_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
@@ -1092,20 +1152,48 @@ class HTML_partner {
 ?>
 		</table>
 <?php
-		echo $tabs->endPanel();
-	}
+		echo $tabs->endPanel();		
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
+		?>
+<br>
+<div class="easysdi_site_aff_list">
+<br>
+	<fieldset>
+		<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>		
+		
+	<?php	
+		$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
+			
+				
+		$database->setQuery( $query );
+		$src_list = $database->loadObjectList();
+		
+		HTML_partner::print_child($src_list );
+			
+		
+	
+		
+		?>
+	</fieldset>		
+	</div><br>
+		
+		<?php
+		echo $tabs->endPanel(); 
+		
+		
 		echo $tabs->endPane();
 ?>
 		<input type="hidden" name="usertype" value="<?php echo $rowUser->usertype; ?>" />
 		<input type="hidden" name="gid" value="<?php echo $rowUser->gid; ?>"/>
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />		
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
+		<input type="hidden" name="parent_id" value="<?php echo $rowPartner->parent_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editAffiliatePartner" />
 		<input type="hidden" name="return" value="<?php echo JRequest::getVar('return','showPartner');?>"/>
 		<input type="hidden" name="root_id" value="<?php echo $rowPartner->root_id; ?>" />
-		<button type="button" onCLick="var form = document.partnerForm;form.task.value='savePartner';submitbutton();" ><?php echo JText::_("EASYSDI_SAVE_PARTNER"); ?></button>
+		<button type="button" onCLick="var form = document.partnerForm;form.task.value='saveAffiliatePartner';submitbutton();" ><?php echo JText::_("EASYSDI_SAVE_PARTNER"); ?></button>
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='<?php echo JRequest::getVar('return','showPartner'); ?>';form.submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PARTNER"); ?></button>
 		
 	</form>

@@ -51,49 +51,58 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'mailing.toolbar.easysdi
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'mailing.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'mailing.admin.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'mailing.easysdi.class.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.easysdi.class.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.toolbar.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.php');
+
 
 switch($task){
-	
-	case "listMailing":
-		TOOLBAR_mailing::_DEFAULT();
-		ADMIN_mailing::listMailing( $option );
-		break;
 
-	case "mailingXML":
-		TOOLBAR_mailing::_DEFAULT();
-		ADMIN_mailing::exportXML( $cid, $option );
+	case "cancelConfig":
+	case "listConfig":
+		TOOLBAR_config::_DEFAULT();
+		ADMIN_config::listConfig( $option );
 		break;
-
-	case "mailingFO":
-		TOOLBAR_mailing::_DEFAULT();
-		ADMIN_mailing::exportFO( $cid, $option );
+	case "editConfig":		
+		TOOLBAR_config::_EDIT();
+		ADMIN_config::editConfig($cid[0], $option );
 		break;
-
-	case "mailingPDF":
-		TOOLBAR_mailing::_DEFAULT();
-		ADMIN_mailing::exportPDF( $cid, $option );
+	case "newConfig":
+		TOOLBAR_config::_EDIT();
+		ADMIN_config::editConfig($cid[0], $option );
 		break;
-	
+	case "saveConfig":		
+		ADMIN_config::saveConfig($option );
+		TOOLBAR_config::_DEFAULT();
+		ADMIN_config::listConfig( $option );
+		break;
+	case "deleteConfig":		
+		ADMIN_config::removeConfig($cid,$option );
+		TOOLBAR_config::_DEFAULT();
+		ADMIN_config::listConfig( $option );
+		break;
 		
 		
-	
 	case "exportPartner":
 		ADMIN_partner::exportPartner( $cid, $option );
 		break;
 	
 	case "cancelPartner":
-		ADMIN_partner::cancelPartner( true, $option );
-		break;
-	
+		ADMIN_partner::cancelPartner( false, $option );
+		TOOLBAR_partner::_DEFAULT();
+		ADMIN_partner::listPartner( $option );
+		
+		break;	
 	
 	case "editAffiliatePartner":
 		TOOLBAR_partner::_EDIT();
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.asitvd.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
 		ADMIN_partner::editAffiliatePartner( $cid[0], $option );
 		break;
 	
 	case "newAffiliatePartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.asitvd.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editAffiliatePartner( 0, $option );
 		break;
@@ -103,17 +112,19 @@ switch($task){
 		break;
 	
 	case "editRootPartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.asitvd.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editRootPartner( $cid[0], $option );
 		break;
 	
 	case "savePartner":
-		ADMIN_partner::savePartner( true, $option );
+		ADMIN_partner::savePartner( false, $option );
+		TOOLBAR_partner::_DEFAULT();
+		ADMIN_partner::listPartner( $option );
 		break;
 	
 	case "newRootPartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.asitvd.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editRootPartner( 0, $option );
 		break;

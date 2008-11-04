@@ -52,7 +52,7 @@ switch($task){
 		SITE_partner::listPartner();
 		break;
 	case "saveAffiliatePartner":
-		SITE_partner::savePartner();
+		SITE_partner::saveAffiliatePartner();
 		break;
 	case "editAffiliatePartner":
 		SITE_partner::editAffiliatePartner();
