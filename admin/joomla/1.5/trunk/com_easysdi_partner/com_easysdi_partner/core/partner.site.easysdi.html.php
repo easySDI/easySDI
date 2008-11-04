@@ -1045,6 +1045,13 @@ function print_child($childList){
 
 		<input type="hidden" name="type_id[]" value="1">
 		<input type="hidden" name="sameAddress[]" value="">
+				<table width ="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+		
+		<fieldset>
+		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
+		
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
@@ -1100,6 +1107,9 @@ function print_child($childList){
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email[]" value="<?php echo $rowContact->address_email; ?>" /></td>								
 			</tr>
 		</table>
+		</td>
+		</tr></table>
+		</fieldset>
 <?php
 		echo $tabs->endPanel();
 	
