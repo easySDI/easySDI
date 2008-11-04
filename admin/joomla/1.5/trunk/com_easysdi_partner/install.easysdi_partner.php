@@ -24,17 +24,48 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
+	
+		$query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `thekey` varchar(100) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+	
+	
+	
 	/**
 	 * Creates the database structure
 	 */
+	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
+  `component` varchar(100) NOT NULL default '',
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 		
+			$db->setQuery( $query);
+
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+	
 	/**
 	 * Gets the component versions
-	 */
+	 */	
 	$version = '0';
 	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_partner'";
 	$db->setQuery( $query);
 
 	$version = $db->loadResult();
+	if (!$version){
+		$version="0";
+	}	
 	if ($db->getErrorNum()) {
 		//The table does'nt exist
 		//That means nothing is installed.
@@ -44,6 +75,24 @@ function com_install(){
 	}	
 else{
 	if ($version == "0"){
+		
+		$query="CREATE TABLE `#__easysdi_partner_extension` (
+  `ext_id` bigint(20) NOT NULL auto_increment,
+  `tab_id` bigint(20) NOT NULL,
+  `order_number` bigint(20) NOT NULL,
+  `code` varchar(4000) NOT NULL,
+  `action` varchar(4000) NOT NULL,
+  `tab_location` varchar(3000) NOT NULL,
+  PRIMARY KEY  (`ext_id`)
+)"; 
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+		
+	
 		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
 		$db->setQuery( $query);
 

@@ -19,8 +19,8 @@
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi.zip"
-			basedir="." excludes=".cache ; .settings ; .project" />
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_partner.zip"
+			basedir="." excludes=".cache ; .settings ; .project; .prefs" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
