@@ -226,10 +226,8 @@ function copyPolicy($xml){
 
 }
 
-function deletePolicy($xml){
-	$configId = JRequest::getVar("configId");
-	$policyId = JRequest::getVar("policyId");
-
+function deletePolicy($xml,$configId,$policyId){
+	
 	foreach ($xml->config as $config) {
 		if (strcmp($config[id],$configId)==0){
 
@@ -241,7 +239,35 @@ function deletePolicy($xml){
 
 				foreach ($xmlConfigFile->Policy as $policy){
 						
-					if (strcmp($policy['Id'],$policyId)==0){
+					if (strcmp($policy['Id'],$policyId)==0 && strcmp($policy['ConfigId'],$configId)==0){
+
+						$child = dom_import_simplexml($policy);
+						$parent = $child->parentNode;
+						$parent->removeChild($child);
+
+						$xmlConfigFile->asXML($policyFile);
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+function deleteAllPolicy($xml,$configId){
+	
+	foreach ($xml->config as $config) {
+		if (strcmp($config[id],$configId)==0){
+
+			$policyFile = $config->{'authorization'}->{'policy-file'};
+			$servletClass =  $config->{'servlet-class'};
+
+			if (file_exists($policyFile)) {
+				$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+
+				foreach ($xmlConfigFile->Policy as $policy){
+						
+					if (strcmp($policy['ConfigId'],$configId)==0){
 
 						$child = dom_import_simplexml($policy);
 						$parent = $child->parentNode;
@@ -252,23 +278,26 @@ function deletePolicy($xml){
 					}
 				}
 
-
-
 			}
 		}
 	}
 
 }
-function deleteConfig($xml,$configFilePath){
-	$configId = JRequest::getVar("configId");
+
+function deleteConfig($xml,$configFilePath,$configId){
+	
 	foreach ($xml->config as $config) {
 		if (strcmp($config['id'],$configId)==0){
 
+			ADMIN_proxy::deleteAllPolicy($xml,$configId);
+			 
 			$child = dom_import_simplexml($config);
 			$parent = $child->parentNode;
 			$parent->removeChild($child);
 
 			$xml->asXML($configFilePath);
+			
+			
 			break;
 		}
 	}

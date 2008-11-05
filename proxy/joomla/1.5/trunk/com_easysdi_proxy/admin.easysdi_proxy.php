@@ -113,7 +113,9 @@ switch($task){
 		break;
 
 	case 'deletePolicy':
-		ADMIN_PROXY::deletePolicy($xml);
+		$configId = JRequest::getVar("configId");
+		$policyId = JRequest::getVar("policyId");		
+		ADMIN_PROXY::deletePolicy($xml,$configId,$policyId);
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
@@ -125,8 +127,9 @@ switch($task){
 
 		break;
 	case 'deleteConfig':
-		ADMIN_PROXY::deleteConfig($xml,$configFilePath);
-		TOOLBAR_proxy::_DEFAULT();
+		$configId = JRequest::getVar("configId");
+		ADMIN_PROXY::deleteConfig($xml,$configFilePath,$configId);
+		TOOLBAR_proxy::configList();
 		HTML_proxy::showConfigList($xml);
 		break;
 	case 'savePolicy':

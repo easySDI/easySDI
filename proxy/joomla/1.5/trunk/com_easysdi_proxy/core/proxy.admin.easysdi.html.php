@@ -1191,8 +1191,8 @@ $remoteServerList = $config->{'remote-server-list'};
 			}
 	
 	foreach ($xmlCapa->{'FeatureTypeList'}->{'FeatureType'} as $featureType){
-		if (! (strrpos($featureType->{'Name'}, ":") ===False)){
-		$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1));
+		if (! (strrpos($featureType->{'Name'}, ":") ===False)){			
+			$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1));
 		}else{
 			$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
 		}
