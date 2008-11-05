@@ -286,7 +286,7 @@ function saveComponentConfig($xmlConfig,$componentConfigFilePath){
 	$xml = simplexml_load_file($xmlConfig->proxy->configFilePath);
 	if ($xml === false){
 		global $mainframe;
-		$mainframe->enqueueMessage(JText::_(  'PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
+		$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
 	}
 
 }

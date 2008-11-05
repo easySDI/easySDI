@@ -42,7 +42,7 @@ $componentConfigFilePath = JPATH_COMPONENT_ADMINISTRATOR.DS.'config'.DS.'com_eas
 
 $xmlConfig = simplexml_load_file($componentConfigFilePath);
 if ($xmlConfig === false){
-	$mainframe->enqueueMessage(JText::_(  'UNABLE TO LOAD THE EASY SDI CONFIGURATION FILE' ),'error');
+	$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE EASY SDI CONFIGURATION FILE' ),'error');
 }
 
 
@@ -50,7 +50,7 @@ $configFilePath = $xmlConfig->proxy->configFilePath;
 
 $xml = simplexml_load_file($configFilePath);
 if ($xml === false){
-	$mainframe->enqueueMessage(JText::_(  'PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
+	$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
 }
 
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.toolbar.easysdi.html.php');

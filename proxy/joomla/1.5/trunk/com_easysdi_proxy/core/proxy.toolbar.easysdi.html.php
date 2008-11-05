@@ -19,27 +19,27 @@ defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_proxy{
 	
 	function editComponentConfig(){
-		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'SAVE' ),false);		
+		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'EASYSDI_SAVE' ),false);		
 		JToolBarHelper::cancel('cancelComponentConfig');					
 	}
 	
 	function editConfig(){
-		JToolBarHelper::custom('addNewServer','new.png','new.png',JText::_( 'ADD NEW SERVER'),false);
-		JToolBarHelper::custom('saveConfig','save.png','save.png',JText::_( 'SAVE' ),false);		
+		JToolBarHelper::custom('addNewServer','new.png','new.png',JText::_( 'EASYSDI_ADD NEW SERVER'),false);
+		JToolBarHelper::custom('saveConfig','save.png','save.png',JText::_( 'EASYSDI_SAVE' ),false);		
 		JToolBarHelper::cancel();					
 	}
 	
 function editPolicy(){	
 		
-		JToolBarHelper::custom('savePolicy','save.png','save.png',JText::_( 'SAVE POLICY' ),false);
+		JToolBarHelper::custom('savePolicy','save.png','save.png',JText::_( 'EASYSDI_SAVE POLICY' ),false);
 		JToolBarHelper::cancel('cancelPolicy');
 	}
 	
 	function editPolicyList(){
-		JToolBarHelper::custom('editPolicy','edit.png','edit.png',JText::_( 'EDIT POLICY' ),false);
-		JToolBarHelper::custom('addPolicy','new.png','new.png',JText::_( 'CREATE A POLICY' ),false);
-		JToolBarHelper::custom('copyPolicy','copy.png','copy.png',JText::_( 'COPY A POLICY' ),false);
-		JToolBarHelper::custom('deletePolicy','delete.png','delete.png',JText::_( 'DELETE POLICY' ),false);		
+		JToolBarHelper::custom('editPolicy','edit.png','edit.png',JText::_( 'EASYSDI_EDIT POLICY' ),false);
+		JToolBarHelper::custom('addPolicy','new.png','new.png',JText::_( 'EASYSDI_CREATE A POLICY' ),false);
+		JToolBarHelper::custom('copyPolicy','copy.png','copy.png',JText::_( 'EASYSDI_COPY A POLICY' ),false);
+		JToolBarHelper::custom('deletePolicy','delete.png','delete.png',JText::_( 'EASYSDI_DELETE POLICY' ),false);		
 		JToolBarHelper::cancel();
 	}
 	
@@ -53,11 +53,11 @@ function editPolicy(){
 	
 	function configList(){
 		
-		JToolBarHelper::custom('editConfig','edit.png','edit.png',JText::_( 'EDIT CONFIG' ),false);
+		JToolBarHelper::custom('editConfig','edit.png','edit.png',JText::_( 'EASYSDI_EDIT CONFIG' ),false);
 
-		JToolBarHelper::custom('addConfig','new.png','new.png',JText::_( 'NEW CONFIG' ),false);
-		JToolBarHelper::custom('deleteConfig','delete.png','delete.png',JText::_( 'DELETE CONFIG' ),false);
-		JToolBarHelper::custom('editPolicyList','edit.png','edit.png',JText::_( 'POLICIES LIST' ),false);
+		JToolBarHelper::custom('addConfig','new.png','new.png',JText::_( 'EASYSDI_NEW CONFIG' ),false);
+		JToolBarHelper::custom('deleteConfig','delete.png','delete.png',JText::_( 'EASYSDI_DELETE CONFIG' ),false);
+		JToolBarHelper::custom('editPolicyList','edit.png','edit.png',JText::_( 'EASYSDI_POLICIES LIST' ),false);
 				
 		JToolBarHelper::cancel('cancelConfigList');		
 	}

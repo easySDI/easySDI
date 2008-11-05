@@ -22,7 +22,7 @@ class HTML_proxy {
 	
 function configComponent($xmlConfig){
 
-	JToolBarHelper::title( JText::_(  'CONFIGURE COMPONENT' ), 'generic.png' );
+	JToolBarHelper::title( JText::_(  'EASYSDI_EASYSDI_CONFIGURE COMPONENT' ), 'generic.png' );
 
 	$option = JRequest::getVar('option'); 
 
@@ -33,7 +33,7 @@ function configComponent($xmlConfig){
 	type='hidden' name='option' value='<?php echo $option;?>'> <input
 	type='hidden' name='task' value=''> 
 	
-<fieldset class="adminform"><legend><?php echo JText::_( 'CONFIG FILE PATH' );?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_EASYSDI_CONFIG FILE PATH' );?></legend>
 <table class="admintable">
 	<tr>
 		<td colspan="4"><input type='text' name='filePath' size="200"
@@ -48,14 +48,14 @@ function configComponent($xmlConfig){
 }
 	
 	function ctrlPanel(){
-		JToolBarHelper::title( JText::_(  'EASYSDI CONTROL PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'EASYSDI_EASYSDI CONTROL PANEL' ), 'generic.png' );
 		global $mainframe;
 		$lang		=& JFactory::getLanguage();
 		$template	= $mainframe->getTemplate();
 			
 $pane		=& JPane::getInstance('sliders');
 	echo $pane->startPane("content-pane");
-			echo $pane->startPanel( JText::_('EASYSDI MODULES'), 'cpanel-panel-1' );
+			echo $pane->startPanel( JText::_('EASYSDI_EASYSDI MODULES'), 'cpanel-panel-1' );
 		?>
 	<div id="cpanel">
 		<?php
@@ -66,7 +66,7 @@ $pane		=& JPane::getInstance('sliders');
 				<a href="<?php echo $link; ?>">
 				
 					<?php 
-					$text = JText::_( 'COMPONENT CONFIGURATION' );
+					$text = JText::_( 'EASYSDI_COMPONENT CONFIGURATION' );
 					echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 					<span><?php echo $text; ?></span></a>
 			</div>
@@ -81,7 +81,7 @@ $pane		=& JPane::getInstance('sliders');
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
 					<?php 
-						$text = JText::_( 'PROXY CONFIGURATION' );					
+						$text = JText::_( 'EASYSDI_PROXY CONFIGURATION' );					
 						echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 					<span><?php echo $text; ?></span></a>
 			</div>
@@ -95,7 +95,7 @@ echo $pane->endPanel();
 <?php 
 
 	
-		echo $pane->startPanel( JText::_('LICENSE'), 'cpanel-panel-licence' );
+		echo $pane->startPanel( JText::_('EASYSDI_LICENSE'), 'cpanel-panel-licence' );
 		?><PRE>
 		<?php 		 
 		$file = file_get_contents (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi'.DS.'license.txt');
@@ -303,7 +303,7 @@ echo $pane->endPanel();
 			$remoteServer->url="";
 			$remoteServer->password="";
 		}
-		JToolBarHelper::title( JText::_( 'EDIT CONFIG :' ).$configId, 'edit.png' );
+		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT CONFIG :' ).$configId, 'edit.png' );
 		?>
 <script>
 function submitbutton(pressbutton){
@@ -328,7 +328,7 @@ if (pressbutton=="addNewServer"){
 			$servletClass=$config->{'servlet-class'};
 			?>
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'CONFIG ID' );?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
 <table class="admintable">
 	<tr>
 		<td colspan="4"><input type='text' name='newConfigId'
@@ -336,7 +336,7 @@ if (pressbutton=="addNewServer"){
 	</tr>
 </table>
 </fieldset>
-<fieldset class="adminform"><legend><?php echo JText::_( 'SERVLET TYPE' );?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
 
 <table class="admintable">
 
@@ -367,7 +367,7 @@ if (pressbutton=="addNewServer"){
 </table>
 </fieldset>
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'HOST TRANSLATOR'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
 <table class="admintable">
 	<tr>
 		<td><input size="100" type="text" name="hostTranslator"
@@ -376,14 +376,14 @@ if (pressbutton=="addNewServer"){
 </table>
 </fieldset>
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'SERVER LIST'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
 <table class="admintable">
 
 <thead>
 	<tr>
-		<th><?php echo JText::_( 'URL'); ?></th>
-		<th><?php echo JText::_( 'USER'); ?></th>
-		<th><?php echo JText::_( 'PASSWORD'); ?></th>
+		<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+		<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+		<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
 	</tr>
 	</thead>
 	<tbody id="remoteServerTable" ><?php
@@ -393,7 +393,7 @@ if (pressbutton=="addNewServer"){
 		?><tr><td class="key"><input type="text" name="URL_<?php echo $iServer;?>"
 			value="<?php echo $remoteServer->url; ?>" size=70></td><td><input name="USER_<?php echo $iServer;?>" type="text"
 			value="<?php echo $remoteServer->user; ?>"><td><input name="PASSWORD_<?php echo $iServer;?>" type="password"
-			value="<?php echo $remoteServer->password; ?>"><input type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'REMOVE' ); ?>"></tr><?php
+			value="<?php echo $remoteServer->password; ?>"><input type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></tr><?php
 	$iServer=$iServer+1;
 	}
 	?></tbody>
@@ -452,7 +452,7 @@ function addNewServer(){
 	
 	var aButton = document.createElement('input');
 	aButton.type="button";
-	aButton.value="<?php echo JText::_( 'REMOVE' ); ?>";
+	aButton.value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>";
 	aButton.setAttribute("onClick","javascript:removeServer("+nbServer+");");
 		
 	tdPwd.appendChild(aButton);
@@ -466,7 +466,7 @@ function addNewServer(){
 	nbServer = nbServer + 1;
 }
 </script>
-<fieldset class="adminform"><legend><?php echo JText::_( 'POLICY FILE LOCATION'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
 <table class="admintable">
 	<tr>
 		<td><input name="policyFile" type="text" size=100
@@ -475,22 +475,22 @@ function addNewServer(){
 </table>
 </fieldset>
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'LOG CONFIG'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
 <table class="admintable">
 	<tr>
 		<td><select name="logPeriod">
 			<option
 			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
-				value="daily"><?php echo JText::_( 'DAILY'); ?></option>
+				value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
 			<option
 			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
-				value="monthly"><?php echo JText::_( 'MONTHLY'); ?></option>
+				value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
 			<option
 			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
-				value="weekly"><?php echo JText::_( 'WEEKLY'); ?></option>
+				value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
 			<option
 			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
-				value="annually"><?php echo JText::_( 'ANNUALLY'); ?></option>
+				value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
 		</select></td>
 	</tr>
 
@@ -498,10 +498,10 @@ function addNewServer(){
 		<td>
 		<table class="admintable">
 			<tr>
-				<th><?php echo JText::_( 'PATH'); ?></th>
-				<th><?php echo JText::_( 'SUFFIX'); ?></th>
-				<th><?php echo JText::_( 'PREFIX'); ?></th>
-				<th><?php echo JText::_( 'EXTENSION'); ?></th>
+				<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
+				<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
+				<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
+				<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
 			</tr>
 			<tr>
 				<td><input name="logPath" size=70 type="text"
@@ -541,7 +541,7 @@ function addNewServer(){
 		$search = JRequest::getVar('search','');
 
 
-		JToolBarHelper::title( JText::_( 'POLICIES :' ).$configId, 'edit.png' );
+		JToolBarHelper::title( JText::_( 'EASYSDI_POLICIES :' ).$configId, 'edit.png' );
 		?>
 
 
@@ -552,10 +552,10 @@ function addNewServer(){
 	type="hidden" name="boxchecked" value="0" />
 <table>
 	<tr>
-		<td width="100%"><?php echo JText::_( 'FILTER' ); ?>: <input
+		<td width="100%"><?php echo JText::_( 'EASYSDI_FILTER' ); ?>: <input
 			type="text" name="search" id="search" value="" class="text_area"
 			onchange="document.adminForm.submit();" />
-		<button onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
+		<button onclick="this.form.submit();"><?php echo JText::_( 'EASYSDI_GO' ); ?></button>
 		</td>
 		<td nowrap="nowrap"></td>
 	</tr>
@@ -564,10 +564,10 @@ function addNewServer(){
 <table class="adminlist">
 	<thead>
 		<tr class="title">
-			<th width="2%"><?php echo JText::_( 'NUM'); ?></th>
-			<th width="30%"><?php echo JText::_( 'POLICY ID'); ?></th>
-			<th><?php echo JText::_( 'USERS AND ROLES'); ?></th>
-			<th><?php echo JText::_( 'ORDER'); ?></th>
+			<th width="2%"><?php echo JText::_( 'EASYSDI_NUM'); ?></th>
+			<th width="30%"><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></th>
+			<th><?php echo JText::_( 'EASYSDI_USERS AND ROLES'); ?></th>
+			<th><?php echo JText::_( 'EASYSDI_ORDER'); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -582,7 +582,7 @@ function addNewServer(){
 			$count=0;
 			if (!file_exists($policyFile)){
 					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
+					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
 			}
 			
 			if (file_exists($policyFile)) {
@@ -608,7 +608,7 @@ function addNewServer(){
 			$count=0;
 		if (!file_exists($policyFile)){
 					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
+					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
 			}
 			
 			if (file_exists($policyFile)) {
@@ -630,7 +630,7 @@ function addNewServer(){
 				</td>
 			<td><?php  
 			if (strcasecmp($policy->{Subjects}['All'],"true")==0){
-				echo JText::_( 'ALL USERS AND ROLES');
+				echo JText::_( 'EASYSDI_ALL USERS AND ROLES');
 			}else{
 					
 				if (count($policy->Subjects->Role)>0){
@@ -682,7 +682,7 @@ function addNewServer(){
 
 	function editPolicy($xml,$new=false){
 
-		JToolBarHelper::title( JText::_( 'EDIT POLICY' ), 'edit.png' );
+		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT POLICY' ), 'edit.png' );
 
 		$policyId = JRequest::getVar("policyId");
 		$configId = JRequest::getVar("configId");
@@ -696,7 +696,7 @@ function addNewServer(){
 				
 			if (!file_exists($policyFile)){
 					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
+					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
 			}
 			
 				if (file_exists($policyFile)) {
@@ -738,12 +738,12 @@ function addNewServer(){
 
 
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'POLICY IDENTIFICATION'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY IDENTIFICATION'); ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'CONFIGURATION ID'); ?></b></th>
-		<th><b><?php echo JText::_( 'POLICY ID'); ?></b></th>
-		<th><b><?php echo JText::_( 'SERVLET'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_SERVLET'); ?></b></th>
 	</tr>
 	<tr>
 		<td><input type="text" value="<?php echo $configId ?>"
@@ -831,11 +831,11 @@ function activateLayer(layerName){
 <fieldset class="adminform"><legend>Users and Groups</legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'USERS'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
 		<th></th>
-		<th><b><?php echo JText::_( 'USER OR ROLE NAME'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_USER OR ROLE NAME'); ?></b></th>
 		<th></th>
-		<th><b><?php echo JText::_( 'ROLES'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
 	</tr>
 	<tr>
 		<td></td>
@@ -900,22 +900,22 @@ function activateLayer(layerName){
 </fieldset>
 
 <?php JHTML::_('behavior.calendar'); ?>
-<fieldset class="adminform"><legend><?php echo JText::_( 'AVAILIBILITY'); ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_AVAILIBILITY'); ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'DATE TIME FORMAT'); ?> </b>: <?php echo $thePolicy->{'AvailabilityPeriod'}->Mask; ?>
+		<th><b><?php echo JText::_( 'EASYSDI_DATE TIME FORMAT'); ?> </b>: <?php echo $thePolicy->{'AvailabilityPeriod'}->Mask; ?>
 		</th>
 		<input name="dateFormat" type="hidden" value"dd-mm-yyyy">
 		<td></td>
 	</tr>
 	<tr>
 			
-		<td><b><?php echo JText::_( 'FROM : '); ?></b> <input size="40"
+		<td><b><?php echo JText::_( 'EASYSDI_FROM : '); ?></b> <input size="40"
 			id="dateFrom" name="dateFrom" type="text"
 			value="<?php echo $thePolicy->{'AvailabilityPeriod'}->From->Date; ?>"  >
 			<input type="button" onClick="showCalendar('dateFrom','%d-%m-%Y');">			
 			</td>
-		<td><b><?php echo JText::_( 'TO : '); ?></b><input size="40"
+		<td><b><?php echo JText::_( 'EASYSDI_TO : '); ?></b><input size="40"
 			name="dateTo" id="dateTo" type="text"
 			value="<?php echo $thePolicy->{'AvailabilityPeriod'}->To->Date; ?>">
 			<input type="button" onClick="showCalendar('dateTo','%d-%m-%Y');">
@@ -983,11 +983,11 @@ $remoteServerList = $config->{'remote-server-list'};
 			<input type="hidden"
 	name="remoteServer<?php echo $iServer;?>"
 	value="<?php echo $remoteServer->url ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'CSW SERVER :'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW SERVER :'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
 <table  class="admintable">
 <thead>
 	<tr>
-		<th><b><?php echo JText::_( 'ATTRIBUTE TO EXCLUDE'); ?></b></th>		
+		<th><b><?php echo JText::_( 'EASYSDI_ATTRIBUTE TO EXCLUDE'); ?></b></th>		
 	</tr>
 	</thead>
 	<tbody id="metadataParamTable">
@@ -1038,14 +1038,19 @@ $remoteServerList = $config->{'remote-server-list'};
 					}
 				}
 			}
+						
+			$pos1 = stripos($urlWithPassword, "?");
+			$separator = "&";
+			if ($pos1 === false) {
+	    		//"?" Not found then use ? instead of &
+	    		$separator = "?";  
+			}
 
-		
-			
-			$xmlCapa = simplexml_load_file($urlWithPassword."?REQUEST=GetCapabilities&SERVICE=WMS");
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
 
 			if ($xmlCapa === false){
 					global $mainframe;		
-							$mainframe->enqueueMessage(JText::_(  'UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
+							$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
 			}
 			else{			
 			foreach ($thePolicy->Servers->Server as $policyServer){			
@@ -1059,13 +1064,13 @@ $remoteServerList = $config->{'remote-server-list'};
 <input type="hidden"
 	name="remoteServer<?php echo $iServer;?>"
 	value="<?php echo $remoteServer->url ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'WMS SERVER :'); ?> <?php echo $remoteServer->url ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WMS SERVER :'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'LAYER NAME'); ?></b></th>
-		<th><b><?php echo JText::_( 'SCALE MIN'); ?></b></th>
-		<th><b><?php echo JText::_( 'SCALE MAX'); ?></b></th>
-		<th><b><?php echo JText::_( 'LOCAL FILTER'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_SCALE MIN'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_SCALE MAX'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_LOCAL FILTER'); ?></b></th>
 	</tr>
 
 	<?php
@@ -1144,11 +1149,17 @@ $remoteServerList = $config->{'remote-server-list'};
 
 
 			
+			$pos1 = stripos($urlWithPassword, "?");
+			$separator = "&";
+			if ($pos1 === false) {
+	    		//"?" Not found then use ? instead of &
+	    		$separator = "?";  
+			}
 			
-			$xmlCapa = simplexml_load_file($urlWithPassword."?REQUEST=GetCapabilities&SERVICE=WFS");
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
 			if ($xmlCapa === false){
 					global $mainframe;		
-							$mainframe->enqueueMessage(JText::_(  'UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
+							$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
 			}
 			else{
 			//$policyServerList = $thePolicy->xpath('//Server');
@@ -1163,24 +1174,31 @@ $remoteServerList = $config->{'remote-server-list'};
 <input type="hidden"
 	name="remoteServer<?php echo $iServer; ?>"
 	value="<?php echo $remoteServer->url; ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'WFS SERVER'); ?> <?php echo $remoteServer->url ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'FEATURETYPE NAME'); ?></b></th>
-		<th><b><?php echo JText::_( 'LOCAL FILTER'); ?></b></th>
-		<th><b><?php echo JText::_( 'REMOTE FILTER'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_LOCAL FILTER'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_REMOTE FILTER'); ?></b></th>
 	</tr>
 
 	<?php
+	$pos1 = stripos($urlWithPassword, "?");
+			$separator = "&";
+			if ($pos1 === false) {
+	    		//"?" Not found then use ? instead of &
+	    		$separator = "?";  
+			}
+	
 	foreach ($xmlCapa->{'FeatureTypeList'}->{'FeatureType'} as $featureType){
 		if (! (strrpos($featureType->{'Name'}, ":") ===False)){
-		$xmlDescribeFeature = simplexml_load_file($urlWithPassword."?VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1));
+		$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1));
 		}else{
-			$xmlDescribeFeature = simplexml_load_file($urlWithPassword."?VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
+			$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
 		}
 		if ($xmlDescribeFeature === false){
 					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'UNABLE TO DESCRIBE THE FEATURE TYPE OF THE REMOTE SERVER.' ),'error');
+					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO DESCRIBE THE FEATURE TYPE OF THE REMOTE SERVER.' ),'error');
 			}
 	
 	 foreach ($xmlDescribeFeature->children('http://www.w3.org/2001/XMLSchema') as $entry) {
@@ -1298,7 +1316,7 @@ $remoteServerList = $config->{'remote-server-list'};
 	}
 	function showConfigList($xml){
 		global $mainframe;
-		JToolBarHelper::title( JText::_(  'SHOW CONFIGURATIONS LIST' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'EASYSDI_SHOW CONFIGURATIONS LIST' ), 'generic.png' );
 		jimport("joomla.html.pagination");
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',$mainframe->getCfg('list_limit'));
@@ -1314,10 +1332,10 @@ $remoteServerList = $config->{'remote-server-list'};
 
 <table>
 	<tr>
-		<td width="100%"><?php echo JText::_( 'FILTER' ); ?>: <input
+		<td width="100%"><?php echo JText::_( 'EASYSDI_FILTER' ); ?>: <input
 			type="text" name="search" id="search" value="" class="text_area"
 			onchange="document.adminForm.submit();" />
-		<button onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
+		<button onclick="this.form.submit();"><?php echo JText::_( 'EASYSDI_GO' ); ?></button>
 		</td>
 		<td nowrap="nowrap"></td>
 	</tr>
@@ -1327,9 +1345,9 @@ $remoteServerList = $config->{'remote-server-list'};
 <table class="adminlist">
 	<thead>
 		<tr>
-			<th width="2%" class='title'><?php echo JText::_( 'NUM' ); ?></th>
+			<th width="2%" class='title'><?php echo JText::_( 'EASYSDI_NUM' ); ?></th>
 			<th width="2%" class='title'></th>
-			<th class='title'><b><?php echo JText::_( 'CONFIGURATION ID'); ?></b></th>
+			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
 
 
 		</tr>
