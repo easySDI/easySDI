@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -549,7 +550,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	    // To build the request to dispatch
 	    while (parameterNames.hasMoreElements()) {
 		String key = (String) parameterNames.nextElement();
-		String value = req.getParameter(key);
+		String value = URLEncoder.encode(req.getParameter(key));
+		//String value = req.getParameter(key);
 		if (!key.equalsIgnoreCase("LAYERS"))
 		    if (!key.equalsIgnoreCase("STYLES"))
 			paramUrlBase = paramUrlBase + key + "=" + value + "&";

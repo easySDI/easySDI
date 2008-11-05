@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.zip.GZIPOutputStream;
 
 import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
@@ -417,6 +419,7 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 	    // Build the request to dispatch
 	    while (parameterNames.hasMoreElements()) {
 		String key = (String) parameterNames.nextElement();
+		//String value = URLEncoder.encode(req.getParameter(key));
 		String value = req.getParameter(key);	
 		if (! (key.equalsIgnoreCase("FILTER"))) {
 		    paramUrl = paramUrl + key + "=" + value + "&";
@@ -960,8 +963,8 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 
 	    //OutputStream os = resp.getOutputStream();	    
 
-	    BufferedOutputStream os = new BufferedOutputStream( resp.getOutputStream() );
-
+	    BufferedOutputStream os = new BufferedOutputStream(  resp.getOutputStream());
+	    //GZIPOutputStream os = new GZIPOutputStream(resp.getOutputStream());
 	    byte byteRead[] = new byte[ 32768 ];
 	    int index = is.read( byteRead, 0, 32768 );
 	    try {		

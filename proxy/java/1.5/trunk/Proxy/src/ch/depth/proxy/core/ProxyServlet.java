@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -391,8 +392,10 @@ public abstract class ProxyServlet extends HttpServlet {
 				
 	    }
 
-	    if (method.equalsIgnoreCase("GET")) {		
+	    if (method.equalsIgnoreCase("GET")) {	
+		
 		urlstr = urlstr + "?" + parameters;
+		
 	    }
 	    URL url = new URL(urlstr);
 	    HttpURLConnection hpcon = null;

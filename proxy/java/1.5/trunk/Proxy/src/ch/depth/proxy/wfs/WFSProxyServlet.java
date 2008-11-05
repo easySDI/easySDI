@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -415,6 +416,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	    // Build the request to dispatch
 	    while (parameterNames.hasMoreElements()) {
 		String key = (String) parameterNames.nextElement();
+		//String value = URLEncoder.encode(req.getParameter(key));
 		String value = req.getParameter(key);	
 		if (!key.equalsIgnoreCase("FILTER")) {
 		    paramUrl = paramUrl + key + "=" + value + "&";
