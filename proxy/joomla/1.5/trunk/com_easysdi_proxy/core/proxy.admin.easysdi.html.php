@@ -764,7 +764,8 @@ document.getElementById('userNameList').options[i].selected = true;
 for(i=0;i<=document.getElementById('roleNameList').length-1;i++) { 
 document.getElementById('roleNameList').options[i].selected = true; 
 }
-
+document.getElementById('userNameList').disabled=false;
+document.getElementById('roleNameList').disabled=false;
 submitform(pressbutton);
 }
 
@@ -943,10 +944,6 @@ function activateLayer(layerName){
 </form>
 		<?php
 	}
-
-
-
-
 
 function generateCSWHTML($config,$thePolicy){
 	

@@ -409,12 +409,14 @@ function savePolicy($xml){
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
 
 
-	if (strlen($allUsers)>0){
+	{
+		if (strlen($allUsers)>0){
+			$thePolicy->Subjects="";
 		$thePolicy->Subjects[All]="true";
 	}else{
 		$thePolicy->Subjects="";
 		$thePolicy->Subjects[All]="false";
-
+	}
 		$userNameList = JRequest::getVar("userNameList");
 
 		if (sizeof($userNameList )>0){
