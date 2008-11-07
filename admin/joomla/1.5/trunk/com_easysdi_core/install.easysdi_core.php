@@ -660,8 +660,7 @@ if ($version == "0.9"){
 	
 	
 		$version="0.91";
-		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
-		(null, 'com_easysdi_partner', '0.91')";
+		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_partner'";
 
 		$db->setQuery( $query);
 
