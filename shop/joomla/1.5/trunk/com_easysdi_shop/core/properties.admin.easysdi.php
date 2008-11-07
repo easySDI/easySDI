@@ -184,7 +184,7 @@ class ADMIN_properties {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );
 			echo $db->getErrorMsg();
 		}
@@ -293,7 +293,7 @@ function listPropertiesValues($properties_id , $option) {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );
 			echo $db->getErrorMsg();
 		}

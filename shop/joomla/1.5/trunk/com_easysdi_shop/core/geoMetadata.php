@@ -19,11 +19,35 @@ class geoMetadata{
 	var $metadata;
 	var $xpath;
 	
-	function __construct( &$md ){
+	
+	function __construct( $md ){
 		
-		if ($md){			
-		$this->metadata  = $md;		
-		$this->xpath = new DomXPath($md);
+		if ($md){
+			if ($md instanceof  DOMDocument){
+				 			
+				$this->metadata  = $md;
+			}
+			if ($md instanceof  DOMElement){
+				 				 
+				 $dom = new DOMDocument();
+				 $xmlContent = $dom ->importNode($md,true);
+				 $dom->appendChild($xmlContent);				 
+				
+				$this->metadata  = $dom;
+			}			
+			else{
+				
+				$dom = new DOMDocument();				 				
+				$xmlContent = $dom ->importNode(dom_import_simplexml($md),true);
+				$dom->appendChild($xmlContent);							 
+				$this->metadata = $dom;
+			
+			}
+			
+		 
+		
+					
+		$this->xpath = new DomXPath($this->metadata);
 		
 		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
@@ -31,6 +55,14 @@ class geoMetadata{
 		
 	}
 	
+	function getThema(){
+		if ($this->metadata){	 
+		$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode');
+		return $nodes ->item(0)->nodeValue;
+		}
+		return "";
+		
+	}
 	function getFileIdentifier(){					
 		if ($this->metadata){	 
 		$nodes = $this->xpath->query('//gmd:fileIdentifier/gco:CharacterString');
@@ -56,7 +88,15 @@ class geoMetadata{
 
 	
 
+	function getReferenceSystemInfo($lang="fr"){
+		
+		if ($this->metadata){
+		$nodes = $this->xpath->query('//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		return $nodes ->item(0)->nodeValue;
+	}return "";
 	
+		
+	}
 	
 function getManagerName($lang="fr"){			
 	if ($this->metadata){
@@ -262,20 +302,12 @@ function getPocEmail(){
 
 	
 
-	function getDataIdentificationTitle($lang="fr"){	
-			if ($this->metadata){				
-		foreach ($this->metadata->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_DataIdentification"  ) as $MD_DataIdentification){			
-			foreach ($MD_DataIdentification->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "pointOfContact"  ) as $pointOfContact){
-				foreach ($pointOfContact->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "CI_ResponsibleParty"  ) as $CI_ResponsibleParty){
-					foreach ($CI_ResponsibleParty->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "organisationName"  ) as $organisationName){
-						foreach ($organisationName->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "textGroup"  ) as $organisationName){
-								return $organisationName->nodeValue;
-					}							
-				}	
-			}			
-		  }		
-		}					
-		}return "";										
+	function getDataIdentificationTitle($lang="fr"){
+		if ($this->metadata){	 												
+				$nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+				return $nodes ->item(0)->nodeValue;
+			}
+				return "";					
 	}
 
 	function getDescription($lang="fr") {			
@@ -286,6 +318,23 @@ function getPocEmail(){
 								
 	}
 
+function getStatus($lang="fr") {			
+		
+		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue');
+		return $nodes ->item(0)->nodeValue;
+		}return "";		
+								
+	}
+	
+	function getPurpose($lang="fr") {			
+		
+		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		return $nodes ->item(0)->nodeValue;
+		}return "";		
+								
+	}
+	
+	
 	function getAcquisitionRmk(){
 		if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
 		return $nodes ->item(0)->nodeValue;
@@ -304,12 +353,36 @@ function getPocEmail(){
 					
 	}	
 	
-	function getGeographicBBox(){
+	function getGeographicBBoxWest(){
 
-		if ($this->metadata){		
-	
+		if ($this->metadata){				
+				$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal');
+ 			return $nodes ->item(0)->nodeValue;
 		}return "";
 	}
+	function getGeographicBBoxEast(){
+
+		if ($this->metadata){				
+				$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal');
+ 			return $nodes ->item(0)->nodeValue;
+		}return "";
+	}
+		function getGeographicBBoxSouth(){
+
+		if ($this->metadata){				
+				$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal');
+ 			return $nodes ->item(0)->nodeValue;
+		}return "";
+	}
+	function getGeographicBBoxNorth(){
+
+		if ($this->metadata){				
+				$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal');
+ 			return $nodes ->item(0)->nodeValue;
+		}return "";
+	}	
+	
+	
 	function getTextualExtent($lang="fr") {
 
 	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
@@ -327,39 +400,21 @@ function getPocEmail(){
 						
 	}
 	
-function getGraphicOverviewFileDescription($lang="fr") {				
-	if ($this->metadata){	
-		foreach ($this->metadata->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_DataIdentification"  ) as $MD_DataIdentification){			
-			foreach ($MD_DataIdentification->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "graphicOverview"  ) as $graphicOverview){
-				foreach ($graphicOverview->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_BrowseGraphic"  ) as $MD_BrowseGraphic){
-					foreach ($MD_BrowseGraphic->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "PT_FreeText"  ) as $PT_FreeText){
-						foreach ($PT_FreeText->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "textGroup"  ) as $textGroup){
-							foreach ($textGroup->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "LocalisedCharacterString"  ) as $LocalisedCharacterString){
-								return $LocalisedCharacterString->nodeValue;
-														}							
-					}							
-				}	
-			}			
-		  }		
-		}			
-		}return "";
+function getGraphicOverviewFileDescription($lang="fr") {
+	
+	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+	return $nodes ->item(0)->nodeValue;
+
+	}return "";	
+	
 	}
 
 function getGraphicOverviewFileType($lang="fr") {
-	if ($this->metadata){	
-		foreach ($this->metadata->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_DataIdentification"  ) as $MD_DataIdentification){			
-			foreach ($MD_DataIdentification->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "graphicOverview"  ) as $graphicOverview){
-				foreach ($graphicOverview->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_BrowseGraphic"  ) as $MD_BrowseGraphic){
-					foreach ($MD_BrowseGraphic->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "fileType"  ) as $fileType){
-						foreach ($PT_FreeText->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gco" , "CharacterString"  ) as $CharacterString){
-							
-								return $CharacterString->nodeValue;							
-					}							
-				}	
-			}			
-		  }		
-		}		
-		}return "";
+	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileType/gmd:CharacterString');
+	return $nodes ->item(0)->nodeValue;
+
+	}return "";	
+	
 	}
 	
 function getLegalConstraint($lang="fr") {	

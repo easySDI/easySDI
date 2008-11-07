@@ -90,7 +90,7 @@ class ADMIN_product {
 			 			
 		}
 		$rowProduct->update_date = date('d.m.Y H:i:s'); 
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'common'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
@@ -183,7 +183,7 @@ class ADMIN_product {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit;
 		}
@@ -246,7 +246,7 @@ function deleteMetadata($metadata_id){
   </csw:Delete>
 </csw:Transaction>";
 				
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 $session = curl_init($catalogUrlBase);
@@ -268,13 +268,7 @@ $session = curl_init($catalogUrlBase);
     echo $xml;
     curl_close($session);			
 		
-    
-    
-    
-    
-    
-		
-		
+ 	
 	}
 	function SaveMetadata(){
 
@@ -793,7 +787,7 @@ $xmlstr = "
 		//$xmlstr = utf8_encode($xmlstr);
 		$content_length = strlen($xmlstr); 
 
-	require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'easysdi.config.php');
+	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 $session = curl_init($catalogUrlBase);

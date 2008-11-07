@@ -32,7 +32,7 @@ class ADMIN_perimeter {
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
-		$query = "SELECT COUNT(*) FROM #__easysdi_Perimeter_definition";
+		$query = "SELECT COUNT(*) FROM #__easysdi_perimeter_definition";
 		
 		//$query .= $filter;
 		$db->setQuery( $query );
@@ -43,7 +43,7 @@ class ADMIN_perimeter {
 		// Recherche des enregistrements selon les limites
 		
 		
-		$query = "SELECT id,wfs_url,layer_name,perimeter_name,perimeter_desc FROM #__easysdi_Perimeter_definition ";		
+		$query = "SELECT id,wfs_url,layer_name,perimeter_name,perimeter_desc FROM #__easysdi_perimeter_definition ";		
 									
 		
 	
@@ -110,7 +110,7 @@ class ADMIN_perimeter {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit;
 		}

@@ -16,29 +16,6 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-class TOOLBAR_product{
-	
-	function editComponentConfig(){
-		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'EASYSDI_SAVE' ),false);		
-		JToolBarHelper::cancel('cancelComponentConfig');					
-	}
-	
-	function _EDITPRODUCT(){
-		
-		JToolBarHelper::save('saveProduct');
-		JToolBarHelper::cancel('cancelProduct');
-	}
-	
-	function _LISTPROUCT() {
-		global $mainframe;
 
-		
-		JToolBarHelper::addNew('newProduct');
-		JToolBarHelper::editList('editProduct');
-		JToolBarHelper::deleteList('','deleteProduct');
-		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
-	}
-	
-}
+
 ?>

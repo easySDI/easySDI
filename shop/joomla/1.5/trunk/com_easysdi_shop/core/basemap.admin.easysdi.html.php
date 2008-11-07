@@ -24,7 +24,7 @@ class HTML_basemap {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_Basemap_Content"), 'generic.png' );
+		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_BASEMAP_CONTENT"), 'generic.png' );
 			
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -40,12 +40,12 @@ class HTML_basemap {
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_BasemapContent_ID"); ?> : </td>
+								<td width="100p"><?php echo JText::_("EASYSDI_BASEMAP_CONTENT_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_Basemap_ID"); ?> : </td>
+								<td width="100p"><?php echo JText::_("EASYSDI_CONTENT_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->basemap_def_id; ?></td>
 								<input type="hidden" name="basemap_def_id" value="<?php echo $rowBasemap->basemap_def_id;?>">								
 							</tr>
@@ -59,8 +59,8 @@ class HTML_basemap {
 								<td><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="unit" >
 								
-								<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("METERS"); ?></option>
-								<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("DEGREES"); ?></option>
+								<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_METERS"); ?></option>
+								<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
 								</select>
 								</td>
 							</tr>
@@ -86,8 +86,8 @@ class HTML_basemap {
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_URL_TYPE"); ?> : </td>
 								<td><select class="inputbox" name="url_type" >
-										<option value="WMS" <?php if($rowBasemap->url_type == 'WMS') echo "selected" ; ?>><?php echo JText::_("WMS"); ?></option>
-										<option value="WMS" <?php if($rowBasemap->url_type == 'WFS') echo "selected" ; ?>><?php echo JText::_("WFS"); ?></option>
+										<option value="WMS" <?php if($rowBasemap->url_type == 'WMS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WMS"); ?></option>
+										<option value="WMS" <?php if($rowBasemap->url_type == 'WFS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WFS"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -95,8 +95,8 @@ class HTML_basemap {
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_SINGLE_TILE"); ?> : </td>
 								<td><select class="inputbox" name="singletile" >
-										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("_TRUE"); ?></option>
+										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI__FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI__TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -143,7 +143,7 @@ class HTML_basemap {
 		<table width="100%">
 			<tr>
 				<td align="right">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listBasemap\');" />			
 				</td>
 			</tr>
@@ -278,8 +278,8 @@ class HTML_basemap {
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_IS_DEFAULT"); ?> : </td>
 								<td><select class="inputbox" name="def" >
-										<option value="0" <?php if($rowBasemap->def == '0') echo "selected" ; ?>><?php echo JText::_("_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->def == '1') echo "selected" ; ?>><?php echo JText::_("_TRUE"); ?></option>
+										<option value="0" <?php if($rowBasemap->def == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->def == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>	
@@ -306,7 +306,7 @@ class HTML_basemap {
 	function listBasemap($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_Basemap"));
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
 		
 		
 		?>
@@ -315,7 +315,7 @@ class HTML_basemap {
 		<table width="100%">
 			<tr>
 				<td align="right">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listBasemap\');" />			
 				</td>
 			</tr>

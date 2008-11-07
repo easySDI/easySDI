@@ -132,7 +132,6 @@ switch($task){
 		ADMIN_basemap::editBasemap(0,$option);
 		
 		break;
-
 	
 	case "cancelBasemap":
 		$mainframe->redirect("index.php?option=$option&task=listBasemap" );

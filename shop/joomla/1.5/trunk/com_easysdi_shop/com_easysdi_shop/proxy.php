@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-
+try{
     // Get the REST call path from the AJAX application
     // Is it a POST or a GET?
     $url = ($_POST['url']) ? $_POST['url'] : $_GET['url'];
+    $url = str_replace ('\"','"',$url);
 
     // Open the Curl session
     $session = curl_init($url);
@@ -39,10 +40,13 @@
 
     // Make the call
     $xml = curl_exec($session);
-
     // The web service returns XML. Set the Content-Type appropriately
     header("Content-Type: text/xml");
 
     echo $xml;
+
     curl_close($session);
-?>
+}
+catch (Exception $e) {
+    echo "Capture de l'exception : ",  $e->getMessage(), "\n";
+}?>

@@ -27,7 +27,7 @@ class HTML_product {
 		
 		$database =& JFactory::getDBO(); 
 		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("PARTNERS_LIST") );
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
 		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
 		$partners = array_merge( $partners, $database->loadObjectList() );
 		
@@ -36,7 +36,7 @@ class HTML_product {
 		
 		
 		jimport("joomla.utilities.date");
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
@@ -107,15 +107,15 @@ class HTML_product {
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $rowProduct->published == 0 ) echo "selected"; ?> ><?php echo JText::_("_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->published == 1 ) echo "selected"; ?>><?php echo JText::_("_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProduct->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProduct->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_ORDERABLE"); ?> : </td>
 								<td><select class="inputbox" name="orderable" >								
-								<option value="0" <?php if( $rowProduct->orderable == 0 ) echo "selected"; ?> ><?php echo JText::_("_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProduct->orderable == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 							

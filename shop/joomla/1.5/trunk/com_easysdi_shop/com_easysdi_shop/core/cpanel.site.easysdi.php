@@ -25,7 +25,7 @@ class SITE_cpanel {
 		$order_id=JRequest::getVar("order_id",0);
 		if ($order_id == 0){
 			echo "<div class='alert'>";			
-			echo JText::_("ERROR_NO_ORDER_ID");
+			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
 			echo "</div>";
 		}else {
 		$database =& JFactory::getDBO();		 	

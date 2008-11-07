@@ -19,7 +19,7 @@
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi.zip"
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_shop.zip"
 			basedir="." excludes=".cache ; .settings ; .project" />
 	</target>
 
@@ -50,7 +50,21 @@
 				<include name="**/*.txt" />
 			</fileset>
 		</copy>
+		<copy
+			
+			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\language\fr-FR">
+					<fileset dir="./language/site">
+						<include name="**/*.ini" />
+					</fileset>
+				</copy>
+		<copy
+			
+			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\language\fr-FR">
+					<fileset dir="./language/admin">
+						<include name="**/*.ini" />
+					</fileset>
+				</copy>
 	</target>
-
+	
 
 </project>

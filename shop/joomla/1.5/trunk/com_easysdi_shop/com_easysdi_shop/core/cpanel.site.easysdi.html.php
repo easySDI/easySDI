@@ -25,37 +25,37 @@ class HTML_cpanel {
 	?>	
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
-		<h2 class="contentheading"><?php echo JText::_("LIST_ORDERS"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
 	
-		<h3> <?php echo JText::_("SEARCH_CRITERIA_TITLE"); ?></h3>
+		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
 				</td>
 			</tr>
 		</table>
 		
-		<button type="submit" class="searchButton" > <?php echo JText::_("SEARCH_BUTTON"); ?></button>
+		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
 		<table width="100%">
 			<tr>																																						
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
-	<h3><?php echo JText::_("SEARCH_RESULTS_TITLE"); ?></h3>
+	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 	
 	
 	<table>
 	<thead>
 	<tr>
-	<th><?php echo JText::_('ORDER_SHARP'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
 	<th></th>
-	<th><?php echo JText::_('ORDER_NAME'); ?></th>
-	<th><?php echo JText::_('ORDER_TYPE'); ?></th>
-	<th><?php echo JText::_('ORDER_STATUS'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -68,8 +68,8 @@ class HTML_cpanel {
 			<td><?php echo $i; ?></td>
 			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>"></td>
 			<td><?php echo $row->name ;?></td>
-			<td><?php echo JText::_("ORDER_TYPE_".$row->type) ;?></td>
-			<td><?php echo JText::_("ORDER_STATUS_".$row->status) ;?></td>
+			<td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td>
+			<td><?php echo JText::_("EASYSDI_ORDER_STATUS_".$row->status) ;?></td>
 			</tr>
 			
 				<?php		
@@ -81,7 +81,7 @@ class HTML_cpanel {
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("ARCHIVE_ORDER"); ?></button>
+			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
 		</form>
 		</div>
 	<?php	

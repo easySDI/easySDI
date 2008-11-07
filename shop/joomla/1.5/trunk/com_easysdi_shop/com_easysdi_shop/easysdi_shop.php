@@ -23,23 +23,48 @@ jimport("joomla.html.pane");
 
 require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'shop.easysdi.class.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'easysdi.config.php');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
-
+require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.html.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.class.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
 
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop');
 
 ?>
 <?php
+$option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 
 
 switch($task){
+	case "cancelEditProduct":
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
+	
+	case "saveProduct":
+		SITE_product::saveProduct($option);
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
+	
+	case "newProduct":
+		SITE_product::editProduct(true);
+		break;
+			
+	case "editProduct":
+		if (JRequest::getVar('id',-1) !=-1 ){
+		SITE_product::editProduct();
+		}else{
+			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		}
+		break;
 	case "listProduct":
 		SITE_product::listProduct();
 		break;
@@ -59,8 +84,7 @@ switch($task){
 		break;
 	case "saveOrder":
 		HTML_shop::saveOrder("SAVED");
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );		
 		break;
 	case "deleteProduct":
 		HTML_shop::deleteProduct();
@@ -72,9 +96,8 @@ switch($task){
 		HTML_shop::showMetadata();
 		break;
 	
-	case "listGeoProduit":			
-			HTML_shop::searchProducts();
-	
+	case "listCatalogContent":			
+		SITE_catalog::listCatalogContent();
 		break;		
 }
  ?>

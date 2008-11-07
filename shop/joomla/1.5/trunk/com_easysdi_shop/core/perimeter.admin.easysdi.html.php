@@ -121,7 +121,7 @@ class HTML_perimeter {
 		<table width="100%">
 			<tr>
 				<td align="right">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listPerimeter\');" />			
 				</td>
 			</tr>

@@ -27,6 +27,36 @@ function com_install(){
 	/**
 	 * Creates the database structure
 	 */
+$query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `thekey` varchar(100) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+	
+	
+	/**
+	 * Creates the database structure
+	 */
+	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
+  `component` varchar(100) NOT NULL default '',
+  `id` bigint(20) NOT NULL auto_increment,
+  `version` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 		
+			$db->setQuery( $query);
+
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+	
+			
 	/**
 	 * Gets the component versions
 	 */
@@ -41,6 +71,9 @@ function com_install(){
 		$version = '0';
 	//	$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
+	if (!$version){
+		$version="0";
+	}	
 	if (strlen($version)==0){$version ='0';}
 	$mainframe->enqueueMessage("Db version : $version","INFO");			
 	//When there is no DB version, then we create the full db
@@ -61,26 +94,7 @@ $db->setQuery( $query);
 
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$query="CREATE TABLE `#__easysdi_version` (
-  `component` varchar(100) NOT NULL default '',
-  `id` bigint(20) NOT NULL auto_increment,
-  `version` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-)"; 		
-			$db->setQuery( $query);
-
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-	$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
-(null, 'com_easyssdi_shop', '0.9')";
-
-		$db->setQuery( $query);
-
-		if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
 		
@@ -126,20 +140,7 @@ CREATE TABLE `#__easysdi_basemap_content` (
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		
 	}
-
-	$query="CREATE TABLE `#__easysdi_config` (
-  `id` bigint(20) NOT NULL auto_increment,
-  `thekey` varchar(100) NOT NULL default '',
-  `value` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-)"; 
-	$db->setQuery( $query);
-
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		
-	}
-
+	
 	$query="CREATE TABLE `#__easysdi_order` (
   `order_id` bigint(20) NOT NULL auto_increment,
   `remark` varchar(4000) NOT NULL default '',
@@ -204,21 +205,6 @@ CREATE TABLE `#__easysdi_basemap_content` (
 		
 	}
 
-	$query="CREATE TABLE `#__easysdi_partner_extension` (
-  `ext_id` bigint(20) NOT NULL auto_increment,
-  `tab_id` bigint(20) NOT NULL,
-  `order_number` bigint(20) NOT NULL,
-  `code` varchar(4000) NOT NULL,
-  `action` varchar(4000) NOT NULL,
-  `tab_location` varchar(3000) NOT NULL,
-  PRIMARY KEY  (`ext_id`)
-)"; 
-	$db->setQuery( $query);
-
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		
-	}
 
 	$query="CREATE TABLE `#__easysdi_perimeter_definition` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -228,8 +214,8 @@ CREATE TABLE `#__easysdi_basemap_content` (
   `area_field_name` varchar(100) NOT NULL default '',
   `name_field_name` varchar(100) NOT NULL default '',
   `id_field_name` varchar(100) NOT NULL default '',
-  `wms_url` varchar(4000) NOT NULL default '',
-  `feature_type_name` varchar(4000) NOT NULL default '',
+  `wms_url` varchar(400) NOT NULL default '',
+  `feature_type_name` varchar(400) NOT NULL default '',
   `perimeter_desc` varchar(4000) NOT NULL default '',
   PRIMARY KEY  (`id`)
 )"; 

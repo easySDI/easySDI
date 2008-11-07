@@ -63,9 +63,9 @@ $cid = 		$mainframe->getUserState('productList');
 	
 	selIndex = document.getElementById('perimeterList').selectedIndex;
 
-	 	if (document.getElementById('perimeterList')[selIndex].value == '-1'){
+	 	/*if (document.getElementById('perimeterList')[selIndex].value == '-1'){
 	 			selectWFSPerimeter(-1,"","","","","","","","");	 		
-	 		}
+	 		}*/
 
 	<?php	
 	foreach ($rows as $row)
@@ -82,7 +82,7 @@ $cid = 		$mainframe->getUserState('productList');
     
          
 	<select id="perimeterList"  onChange="selectPerimeter()">
-	<option value="-1"><?php echo JText::_("SELECT_THE_PERIMETER"); ?></option>
+	<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 	<?php
 	foreach ($rows as $row)
 		{			
@@ -93,7 +93,6 @@ $cid = 		$mainframe->getUserState('productList');
 		}
 		?>
 		</select><br>
-	
 	
 		
 		<?php
@@ -111,7 +110,10 @@ $cid = 		$mainframe->getUserState('productList');
 		$rowsSurfaceMin = $db->loadObjectList();
 		foreach( $rowsSurfaceMin as $surfaceMin )
 		{
-			echo JText::_("SURFACE_MIN")." ".$surfaceMin->surface_min." ".JText::_("SURFACE_MIN_UNIT")."<br>";	
+			echo JText::_("SURFACE_MIN")." ".$surfaceMin->surface_min." ".JText::_("SURFACE_MIN_UNIT")."<br>";
+			?><input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
+			<?php					
+		
 		}
 		
 		$db->setQuery( $querySurfaceMax);
@@ -119,6 +121,8 @@ $cid = 		$mainframe->getUserState('productList');
 		foreach( $rowsSurfaceMax as $surfaceMax )
 		{
 			echo JText::_("SURFACE_MAX")." ".$surfaceMax->surface_max." ".JText::_("SURFACE_MAX_UNIT")."<br>";
+			?><input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
+			<?php
 		}
 		
 		 
@@ -145,14 +149,43 @@ $cid = 		$mainframe->getUserState('productList');
 		  
 		<script>
 		function removeSelected()  {
+		     
+     
 		var elSel = document.getElementById('selectedSurface');		
 		var i;
 			  for (i = elSel.length - 1; i>=0; i--) {
 			    if (elSel.options[i].selected) {
 			     document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(elSel.options[i].value);
-			      elSel.remove(i);
+			      elSel.remove(i);			  	       
 			    }
 			  }
+			 
+			 if (isFreeSelectionPerimeter){
+			 var features = vectors.features; 
+     	     var feature= features[features.length-1];
+			var selectedComponents =      new Array();
+			  	
+			  	if (feature){				  
+			  		var newLinearRingComponents = new Array();
+	
+					for (i = elSel.length - 1; i>=0; i--) {
+							var curValue = elSel.options[i].value;
+						var x= curValue.substring(0,curValue .indexOf(" ", 0));
+						var y= curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
+					    newLinearRingComponents.push (new OpenLayers.Geometry.Point(x,y));		     
+					    }
+	
+						var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
+						feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
+						vectors.removeFeatures(features);				
+						vectors.addFeatures([feature]);
+			  			vectors.drawFeature (feature);		
+		}
+		}else {
+		
+		//TODO: Remove the features comming from the WFS.
+		}
+			  
 		}
 		function addManualPerimeter()
 		

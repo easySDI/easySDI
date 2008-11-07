@@ -53,8 +53,8 @@ class HTML_properties {
   							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_MANDATORY"); ?> : </td>
 								<td><select class="inputbox" name="mandatory" >								
-								<option value="0" <?php if( $rowProperties->mandatory == 0 ) echo "selected"; ?> ><?php echo JText::_("_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProperties->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProperties->mandatory == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProperties->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>															
 							</tr>
   							<tr>
@@ -64,8 +64,8 @@ class HTML_properties {
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $rowProperties->published == 0 ) echo "selected"; ?> ><?php echo JText::_("_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProperties->published == 1 ) echo "selected"; ?>><?php echo JText::_("_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProperties->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProperties->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>	
 								
 							</tr>
@@ -114,7 +114,7 @@ class HTML_properties {
 		<table width="100%">
 			<tr>
 				<td align="right">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listProperties\');" />			
 				</td>
 			</tr>
@@ -206,7 +206,7 @@ class HTML_properties {
 		$properties_id = JRequest::getVar(properties_id,-1);
 		
 		if ($properties_id == -1){
-			$mainframe->enqueueMessage(JText::_("ERROR_NO_PROPERTY_ID"),"ERROR");	
+			$mainframe->enqueueMessage(JText::_("EASYSDI_ERROR_NO_PROPERTY_ID"),"ERROR");	
 			
 		}else{
 		$query = "SELECT * FROM #__easysdi_product_properties_definition where id=".$properties_id;		
@@ -293,7 +293,7 @@ class HTML_properties {
 		<table width="100%">
 			<tr>
 				<td align="right">
-					<b><?php echo JText::_("FILTER");?></b>&nbsp;
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listProperties\');" />			
 				</td>
 			</tr>
