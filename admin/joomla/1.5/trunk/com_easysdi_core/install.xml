@@ -1,6 +1,6 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
-	<name>EasySDI_partner</name>
+	<name>EasySDI_core</name>
 	<version>1.0</version>
 	<creationDate>July 2008</creationDate>
 	<author>Depth.ch</author>
@@ -9,10 +9,10 @@
 	<copyright></copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>
-		Administration tool for manage the easysdi's partners.
+		Administration tool for the core component of easysdi.
 	</description>
 	
-	<installfile>install.easysdi_partner.php</installfile>
+	<installfile>install.easysdi_core.php</installfile>
 	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
 		
 	<administration>
