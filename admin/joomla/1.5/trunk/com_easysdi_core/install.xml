@@ -28,6 +28,7 @@
 			<folder>js</folder>
 			<folder>language</folder>			
 			<folder>xsl</folder>
+			<folder>common</folder>
 		</files>
 		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>

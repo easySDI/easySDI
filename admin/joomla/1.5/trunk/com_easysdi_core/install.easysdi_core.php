@@ -847,7 +847,7 @@ $db->setQuery( $query);
 
 			
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Partners','','option=com_easysdi_partner&task=listPartner','Partners','com_easysdi_partner','js/ThemeOffice/component.png','')";
+		values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_partner','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
@@ -855,7 +855,7 @@ $db->setQuery( $query);
 	}
 
 		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Configuration','','option=com_easysdi_partner&task=listConfig','Configuration','com_easysdi_partner','js/ThemeOffice/component.png','')";
+		values($id,'Configuration','','option=com_easysdi_core&task=listConfig','Configuration','com_easysdi_core','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
