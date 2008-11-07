@@ -129,8 +129,9 @@ function showMetadata(){
 function orderPerimeter ($cid){	
 	?>
 <!-- script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script -->
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/commmon/lib/js/openlayers2.7/OpenLayers.js"></script>
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/commmon/lib/js/proj4js/proj4js-compressed.js"></script>
+									 
+<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
 
 
 <script>
