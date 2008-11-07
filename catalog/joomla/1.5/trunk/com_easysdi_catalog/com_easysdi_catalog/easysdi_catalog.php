@@ -21,12 +21,12 @@ jimport("joomla.html.pagination");
 
 jimport("joomla.html.pane");
 
-
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.class.php');
-require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'geoMetadata.php');
 
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_catalog');
