@@ -448,9 +448,13 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	    FileOutputStream tempFos = new FileOutputStream(tempFile);
 
-	    while ((input = in.read()) != -1) {
-		tempFos.write(input);
-	    }
+	    byte[] buf = new byte[32768];
+	    int nread;	    	    
+		    
+	    while((nread = in.read(buf, 0, buf.length)) >= 0) {
+			  tempFos.write(buf, 0, nread);	       
+	    }		    
+	
 	    tempFos.flush();
 	    tempFos.close();
 	    in.close();	 
@@ -553,7 +557,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		   
 		 os.writeBytes(s1);		
 		    
-		  byte[] buf = new byte[5000];
+		  byte[] buf = new byte[32768];
 		  int nread;	    	    
 		    synchronized (in) {
 		      while((nread = in.read(buf, 0, buf.length)) >= 0) {

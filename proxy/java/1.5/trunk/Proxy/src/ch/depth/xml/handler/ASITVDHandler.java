@@ -991,7 +991,34 @@ public class ASITVDHandler extends DefaultHandler {
 		    mdDataIdentificationType
 			    .setCitation(ciCitationPropertyType);
 		} else {
-		    ch.depth._2008.ext.ObjectFactory ofExt = new ch.depth._2008.ext.ObjectFactory();
+				    
+		    MDMetadataExtensionInformationPropertyType o = ofMDMetadata.createMDMetadataExtensionInformationPropertyType();
+		    MDMetadataExtensionInformationType a = ofMDMetadata.createMDMetadataExtensionInformationType();
+		    
+		    MDExtendedElementInformationPropertyType b = ofMDMetadata.createMDExtendedElementInformationPropertyType();
+		    MDExtendedElementInformationType d = ofMDMetadata.createMDExtendedElementInformationType();
+		    d.setName(toCharacterStringPropertyType(attributeName));
+		    //className
+		    d.setDomainValue(toLocalisedCharacterStringPropertyType(data));
+		    
+		    b.setMDExtendedElementInformation(d);
+		    b.setTitle(className);
+		    //ofMDMetadata.
+		    a.getExtendedElementInformation().add(b);
+		    o.setMDMetadataExtensionInformation(a);
+		    
+		    /*
+		     * 
+		    MDExtendedElementInformationType a = ofMDMetadata.createMDExtendedElementInformationType();
+		    JAXBElement<MDExtendedElementInformationType> b = ofMDMetadata.createMDExtendedElementInformation(a);
+		    MDExtendedElementInformationPropertyType c = ofMDMetadata.createMDExtendedElementInformationPropertyType();
+		    
+		    
+		    iso19139.getExtendedMetadata().add(c);
+		    */
+		    iso19139.getMetadataExtensionInfo().add(o);
+		    
+		    /*ch.depth._2008.ext.ObjectFactory ofExt = new ch.depth._2008.ext.ObjectFactory();
 		    EXExtendedMetadataPropertyType exExtendedMetadataPropertyType = ofExt
 			    .createEXExtendedMetadataPropertyType();
 		    EXExtendedMetadataType exExtendedMetadataType = ofExt
@@ -1005,7 +1032,7 @@ public class ASITVDHandler extends DefaultHandler {
 			    .setValue(toLocalisedCharacterStringPropertyType(data));
 
 		    iso19139.getExtendedMetadata().add(
-			    exExtendedMetadataPropertyType);
+			    exExtendedMetadataPropertyType);*/
 		}
 
 	    }
@@ -1126,8 +1153,8 @@ public class ASITVDHandler extends DefaultHandler {
 	try {
 
 	    File dir = new File("C:\\download\\");
-	    String[] s = dir.list();
-	    //String [] s={"391.txt"};
+	    //String[] s = dir.list();
+	    String [] s={"391.txt"};
 	    //String [] s={"10by10\\0.txt"};
 	    for (int i = 0; i < s.length; i++) {
 		File f = new File("C:\\download\\" + s[i]);

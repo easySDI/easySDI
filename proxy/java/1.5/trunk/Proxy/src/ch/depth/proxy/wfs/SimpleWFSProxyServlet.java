@@ -374,7 +374,21 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 			}
 
 			nodeRequestFilter.appendChild(andNode);
+		    }else{			
+			nlRequestFilter = documentRequestFilter.getElementsByTagName("Query");
+			if (nlRequestFilter.getLength() == 0) nlRequestFilter = documentRequestFilter.getElementsByTagNameNS("http://www.opengis.net/wfs","Query");
+			Node nodeRequestFilter = nlRequestFilter.item(0);
+			 if (nlRequestFilter.getLength()>0 ){
+			Node andNode = documentRequestFilter.createElement("And");
+			Node nodeUserFilter = nlUserFilter.item(0);
+			for (int i=0;i<nodeUserFilter.getChildNodes().getLength();i++){					
+			    andNode.appendChild(documentRequestFilter.adoptNode(nodeUserFilter.getChildNodes().item(i).cloneNode(true)));
+			}
+			nodeRequestFilter.appendChild(andNode);
+			 }
+				
 		    }
+		    
 
 		    OutputStream fluxSortie = 	new ByteArrayOutputStream();
 
@@ -1267,7 +1281,9 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 		DocumentBuilder db = dbf.newDocumentBuilder();		       
 		Document dom = db.parse(is);
 		// first grab a filter node
-		NodeList nodes = dom.getElementsByTagName("Filter");
+		NodeList nodes = dom.getElementsByTagName("Filter");		    
+		if (nodes.getLength() == 0) nodes = dom.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+		
 		for (int j = 0; j < nodes.getLength(); j++) {
 		    Element filterNode = (Element) nodes.item(j);
 		    NodeList list = filterNode.getChildNodes();

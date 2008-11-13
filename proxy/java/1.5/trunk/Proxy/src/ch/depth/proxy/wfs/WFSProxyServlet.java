@@ -1410,6 +1410,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		Document dom = db.parse(is);
 		// first grab a filter node
 		NodeList nodes = dom.getElementsByTagName("Filter");
+		if (nodes.getLength() == 0) nodes = dom.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
 		for (int j = 0; j < nodes.getLength(); j++) {
 		    Element filterNode = (Element) nodes.item(j);
 		    NodeList list = filterNode.getChildNodes();
