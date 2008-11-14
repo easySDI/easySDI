@@ -56,8 +56,189 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.admin.easysd
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.admin.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
 
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.toolbar.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.admin.easysdi.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
+
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlpanel.admin.easysdi.html.php');
 
 switch($task){
+		
+	case "ctrlPanelShop":
+		HTML_ctrlpanel::ctrlPanelShop($option);
+		break;
+	case "ctrlPanelBaseMap":
+		$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+		break;				
+
+	case "ctrlPanelMetadata":
+		HTML_ctrlpanel::ctrlPanelMetadata($option);
+		break;
+		
+	case "ctrlPanelPerimeter":
+		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+		break;
+	case "ctrlPanelProduct":
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		
+		break;
+
+	case "ctrlPanelProperties":
+		$mainframe->redirect("index.php?option=$option&task=listProperties" );					
+		break;
+			
+	case "editMetadataStandardClasses":
+		TOOLBAR_metadata::_EDITSTANDARDCLASSES();	
+		ADMIN_metadata::editStandardClasses($cid[0],$option);
+	break;
+	case "newMetadataStandardClasses":
+		TOOLBAR_metadata::_EDITSTANDARDCLASSES();
+		ADMIN_metadata::editStandardClasses(0,$option);
+	break;
+	
+	case "saveMDStandardClasses":
+		ADMIN_metadata::saveMDStandardClasses($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
+		break;
+	case "cancelMDStandardClasses":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
+		break;
+	case "listMetadataStandardClasses":
+		TOOLBAR_metadata::_LISTSTANDARDCLASSES();;
+		ADMIN_metadata::listStandardClasses($option);
+	break;
+	
+	
+	
+	
+	
+	
+	
+	
+	case "editMetadataStandard":
+		TOOLBAR_metadata::_EDITSTANDARD();		
+		ADMIN_metadata::editStandard($cid[0],$option);
+	break;
+	case "newMetadataStandard":
+		TOOLBAR_metadata::_EDITSTANDARD();
+		ADMIN_metadata::editStandard(0,$option);
+	break;
+	
+	case "saveMDStandard":
+		ADMIN_metadata::saveMDStandard($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
+		break;
+	case "cancelMDStandard":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
+		break;
+	case "listMetadataStandard":
+		TOOLBAR_metadata::_LISTSTANDARD();;
+		ADMIN_metadata::listStandard($option);
+	break;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	case "editMetadataLocfreetext":
+		TOOLBAR_metadata::_EDITLOCFREETEXT();		
+		ADMIN_metadata::editLocfreetext($cid[0],$option);
+	break;
+	case "newMetadataLocfreetext":
+		TOOLBAR_metadata::_EDITLOCFREETEXT();
+		ADMIN_metadata::editLocfreetext(0,$option);
+	break;
+	
+	case "saveMDLocfreetext":
+		ADMIN_metadata::saveMDLocfreetext($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
+		break;
+	case "cancelMDLocfreetext":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
+		break;
+	case "listMetadataLocfreetext":
+		TOOLBAR_metadata::_LISTLOCFREETEXT();
+		ADMIN_metadata::listLocfreetext($option);
+	break;
+	
+	
+	case "editMetadataClass":
+		TOOLBAR_metadata::_EDITCLASS();
+		ADMIN_metadata::editClass($cid[0],$option);
+	break;
+	case "newMetadataClass":
+		TOOLBAR_metadata::_EDITClass();
+		ADMIN_metadata::editClass(0,$option);
+	break;
+	
+	case "saveMDClass":
+		ADMIN_metadata::saveMDClass($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
+		break;
+	case "cancelMDClass":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
+		break;
+	case "listMetadataClass":
+		TOOLBAR_metadata::_LISTClass();
+		ADMIN_metadata::listClass($option);
+	break;
+	
+	
+	
+	
+	case "editMetadataFreetext":
+		TOOLBAR_metadata::_EDITFREETEXT();
+		ADMIN_metadata::editFreetext($cid[0],$option);
+	break;
+	case "newMetadataFreetext":
+		TOOLBAR_metadata::_EDITFREETEXT();
+		ADMIN_metadata::editFreetext(0,$option);
+	break;
+	
+	case "saveMDFreetext":
+		ADMIN_metadata::saveMDFreetext($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataFreetext" );
+		break;
+	case "cancelMDFreetext":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataFreetext" );
+		break;
+	case "listMetadataFreetext":
+		TOOLBAR_metadata::_LISTFREETEXT();
+		ADMIN_metadata::listFreetext($option);
+	break;
+	
+	case "editMetadataList":
+		TOOLBAR_metadata::_LISTEDIT();
+		ADMIN_metadata::editList($cid[0],$option);
+	break;
+	
+	case "newMetadataList":
+		TOOLBAR_metadata::_LISTEDIT();
+		ADMIN_metadata::editList(0,$option);
+	break;
+	
+	case "saveMDList":
+		ADMIN_metadata::saveMDList($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataList" );
+		break;
+	case "cancelMDList":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataList" );
+		break;		
+	case "listMetadataList":
+		TOOLBAR_metadata::_LISTLIST();
+		ADMIN_metadata::listList($option);
+	break;
+	
+	case "listMetadataDate":
+		TOOLBAR_metadata::_LISTDATE();
+		ADMIN_metadata::listDate($option);
+	break;
+	
 	case "orderdownproperties":
 		ADMIN_properties::goDown($cid,$option);
 		
@@ -109,6 +290,9 @@ switch($task){
 		break;
 		
 	case "cancelBasemapContent":
+		
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );
+		break;
 	case "listBasemapContent":
 		TOOLBAR_basemap::_LISTBASEMAPCONTENT($cid[0]);
 		ADMIN_basemap::listBasemapContent($cid[0],$option);
@@ -243,7 +427,8 @@ switch($task){
 		
 		break;
 	default:
-		$mainframe->enqueueMessage($task,"INFO");		
+		$mainframe->enqueueMessage($task,"INFO");
+		HTML_ctrlpanel::ctrlPanelShop($option);		
 		break;
 }
 

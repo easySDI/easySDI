@@ -40,10 +40,9 @@ class HTML_product{
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
 
-			
+			echo "1;";
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
  
-		
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
 		
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));

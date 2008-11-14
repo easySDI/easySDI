@@ -33,7 +33,7 @@ class TOOLBAR_perimeter{
 		JToolBarHelper::editList('editPerimeter');
 		JToolBarHelper::deleteList('','deletePerimeter');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+			JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 }

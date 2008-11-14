@@ -134,7 +134,7 @@ class HTML_basemap {
 	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_BasemapContent"));
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAPCONTENT"));
 		
 		
 		?>
@@ -226,7 +226,7 @@ class HTML_basemap {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_Basemap"), 'generic.png' );
+		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_BASEMAP"), 'generic.png' );
 			
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -255,8 +255,8 @@ class HTML_basemap {
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="unit" >								
-									<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("METERS"); ?></option>
-									<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("DEGREES"); ?></option>
+									<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_METERS"); ?></option>
+									<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
 								</select>
 								</td>
 

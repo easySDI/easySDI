@@ -37,7 +37,7 @@ class TOOLBAR_product{
 		JToolBarHelper::editList('editProduct');
 		JToolBarHelper::deleteList('','deleteProduct');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 }

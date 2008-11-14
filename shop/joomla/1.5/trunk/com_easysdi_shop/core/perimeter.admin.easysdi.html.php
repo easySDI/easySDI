@@ -112,7 +112,7 @@ class HTML_perimeter {
 	function listPerimeter($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_Perimeter"));
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_PERIMETER"));
 		
 		
 		?>

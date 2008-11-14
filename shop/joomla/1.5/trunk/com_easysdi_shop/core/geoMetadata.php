@@ -24,7 +24,7 @@ class geoMetadata{
 		
 		if ($md){
 			if ($md instanceof  DOMDocument){
-				 			
+						 			
 				$this->metadata  = $md;
 			}
 			if ($md instanceof  DOMElement){

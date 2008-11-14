@@ -540,7 +540,7 @@ function editProduct( $isNew = false) {
 			 			
 		}
 		$rowProduct->update_date = date('d.m.Y H:i:s'); 
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
