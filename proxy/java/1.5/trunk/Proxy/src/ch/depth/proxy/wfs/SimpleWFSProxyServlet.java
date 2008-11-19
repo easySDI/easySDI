@@ -930,14 +930,43 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 
 				tempFos.close();
 				String filter= null;
+				String remoteFilter =null;
 				if (featureTypePathList.size() > iServer){
         				if (featureTypePathList.get(iServer).length()>0){
         				    filter =getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypePathList.get(iServer));
+        				    remoteFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer), featureTypePathList.get(iServer));
         				}
 				}else{
 				    dump ("WARNING", "featureTypePathList.size() == "+ featureTypePathList.size() + " AND iServer == "+iServer);
 				}
+				if (filter ==null){
+				    filter="";
+				}
+				if (remoteFilter == null){
+				    remoteFilter ="";
+				}
 				
+				//If remote filter equlas local filter or local filter is empty
+				//Do not apply the filter
+				if (remoteFilter.trim().equalsIgnoreCase(filter.trim()) || filter.trim().length()==0 ){
+				    
+				    resp.setContentType("text/xml");
+				    resp.setContentLength(Integer.MAX_VALUE);
+				    tempFos = resp.getOutputStream();
+
+				    InputStream is = new FileInputStream(tempFile);
+				    //GZIPOutputStream os = new GZIPOutputStream(resp.getOutputStream());
+				    byte byteRead[] = new byte[ 98304 ];
+				    int index = is.read( byteRead, 0, 98304 );
+				    		
+					while(index != -1) {			    
+					    tempFos.write( byteRead, 0, index );
+					    index = is.read( byteRead, 0, 98304 );		
+					}		
+					tempFos.flush();
+					is.close();
+				    return;
+				} else{
 				Map hints = new HashMap();		
 				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
@@ -951,12 +980,13 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 				resp.setContentLength(Integer.MAX_VALUE);
 				tempFos = resp.getOutputStream();
 
-				if (filter !=null){
-				    dump(filter);
+				
+				    filterFC( tempFos, filter,doc,getServletUrl(req),srsSource);
+				    return;
 				}
-
-				filterFC( tempFos, filter,doc,getServletUrl(req),srsSource);
-				return;				
+				
+				
+								
 			    }
 			}
 		}
@@ -1310,8 +1340,14 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 	    FeatureCollection fc = null;
 	    if (filter!=null){
 		System.setProperty("org.geotools.referencing.forceXY", "true");
-		//Transform the srs of the filter if needed. 
-		String srsSource= customFilter.substring(customFilter.indexOf("srsName"));
+		//Transform the srs of the filter if needed.
+		int iSrsName = customFilter.indexOf("srsName");
+		if (iSrsName == -1 ){
+		    //No srs then no need to transform
+		    fc = doc.subCollection(filter);
+		}else
+		{
+		String srsSource= customFilter.substring(iSrsName);
 		if (srsSource.indexOf("\"")>0){
 		    srsSource = srsSource.substring(srsSource.indexOf("\"")+1);			
 		    srsSource = srsSource.substring(0,srsSource.indexOf("\""));	
@@ -1356,7 +1392,7 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 		}else{
 		    fc = doc.subCollection(filter);
 		}
-
+		}
 	    }
 	    else fc = doc;
 

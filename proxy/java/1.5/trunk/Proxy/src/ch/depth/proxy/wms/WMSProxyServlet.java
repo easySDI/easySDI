@@ -550,7 +550,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	    // To build the request to dispatch
 	    while (parameterNames.hasMoreElements()) {
 		String key = (String) parameterNames.nextElement();
-		String value = URLEncoder.encode(req.getParameter(key));
+		String value="";
+		if (key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS") ){
+		    value  = req.getParameter(key); 
+		}else{
+		    value = URLEncoder.encode(req.getParameter(key));
+		}
+		 
 		//String value = req.getParameter(key);
 		if (!key.equalsIgnoreCase("LAYERS"))
 		    if (!key.equalsIgnoreCase("STYLES"))
@@ -601,9 +607,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		user= req.getUserPrincipal().getName();
 	    }	    	  
 	    List<RemoteServerInfo> grsiList = getRemoteServerInfoList();
-	    /* HashMap<String,List<String>> serverLayerHash = new HashMap<String,List<String>>();
-	    HashMap<String,List<String>> serverStylesHash = new HashMap<String,List<String>>();	   	    
-	     */
+	   
 	    for (int j=0;j<grsiList.size();j++){
 		String paramUrl = "";	
 		boolean loopOnLayer=false;
