@@ -54,6 +54,16 @@ class HTML_product {
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PRODUCT"), 'generic.png' );
+
+		$standardlist = array();
+		$standardlist[] = JHTML::_('select.option','0', JText::_("EASYSDI_TABS_LIST") );
+		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  " );
+		$standardlist= $database->loadObjectList() ;
+		
+		if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}		
+	
 			
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -132,7 +142,10 @@ class HTML_product {
 								<td><?php echo JText::_("EASYSDI_DATA_EXTERNAL"); ?> : </td>
 								<td><input name="external" value="1" type="checkbox" <?php if ($rowProduct->external) {echo "checked";};?> > </td>								
 							</tr>
-							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$standardlist, 'metadata_standard_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_standard_id ); ?></td>																
+							</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -262,318 +275,6 @@ class HTML_product {
 		
 	
 		echo $tabs->endPanel();		
-		echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_IDENTIFICATION_TITLE"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_IDENTIFICATION_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-						
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_DESCRIPTION"); ?></td>
-							<td><textarea rows="5" cols="50" name ="metadata_description" ><?php echo $geoMD->getDescription();?></textarea></td>							
-							</tr>						
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_LAST_UPDATE"); ?></td>
-							<td><input size="50" type="text" id="metadata_last_update" name ="metadata_last_update" value="<?php echo $geoMD->getUpdateDate();?>"> 
-							<input type="button" onClick="showCalendar('metadata_last_update','%d-%m-%Y');">							</td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_GEOGRAPHIC_TEXTUAL"); ?></td>
-							<td><input size="50" type="text" name ="metadata_geograhic_textual" value="<?php echo $geoMD->getTextualExtent();?>"> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_SPATIAL_COVERAGE"); ?></td>
-							<td><input size="50" type="text" name ="metadata_spatial_coverage" value=""> </td>							
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_SYNOPTIQUE"); ?></td>
-							<td><input size="50" type="text" name ="metadata_synoptique" value=""> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_EXTRAIT"); ?></td>
-							<td><input size="50" type="text" name ="metadata_extrait" value="<?php echo $geoMD->getGraphicOverviewFileName();?>"> </td>
-							</tr>							
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_METADATA_THEMA"); ?></td>
-							<td><input size="50" type="text" name ="metadata_thema" value=""> </td>							
-							</tr>
-							</table>
-					</fieldset>
-					</td>
-				</tr>
-												
-			</table>
-					
-	<?php 	
-		echo $tabs->endPanel();
-
-		echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_DIFFUSION_TITLE"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_DIFFUSION_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_CONDITION"); ?></td>
-							<td>
-							<textarea rows="5" cols="50" name="metadata_legal_constraint"> <?php echo $geoMD->getLegalConstraint();?> </textarea>
-							 </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_RESTRICTION"); ?></td>
-							<td><textarea rows="5" cols="50" name="metadata_use_limitation" > <?php echo $geoMD->getUseLimitation();?> </textarea></td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_TARIF"); ?></td>
-							<td><input size="50" type="text" name ="metadata_tarif" value="<?php echo $geoMD->getFees();?>"> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_STATUT"); ?></td>
-							<td><input size="50" type="text" name ="metadata_statut" value=""> </td>
-							</tr>
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();
-		
-		
-		
-		
-		
-				echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_STATUT_JURIDIQUE"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_STATUT_JURIDIQUE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_REFERENCE"); ?></td>
-							<td><input size="50" type="text" name ="metadata_reference" value=""> </td>
-							</tr>							
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();		
-		
-		echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_GESTION"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_GESTION_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION"); ?></td>
-								<td><input size="50" type="text" name ="metadata_acquisition" value="<?php echo $geoMD->getAcquisitionMode()?>"> </td>							
-							</tr>							
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION_DESC"); ?></td>
-								<td><input size="50" type="text" name ="metadata_acquisition_desc" value="<?php echo $geoMD->getAcquisitionDescription();?>"> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION_DATA_SOURCE"); ?></td>
-							<td><input size="50" type="text" name ="metadata_acquisition_data_source" value="<?php echo $geoMD->getAcquisitionDataSource(); ?>"> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION_UPDATE_TYPE"); ?></td>
-							<td><input size="50" type="text" name ="metadata_acquisition_update_type" value=""> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION_FREQ"); ?></td>
-							<td><input size="50" type="text" name ="metadata_acquisition_freq" value="<?php echo $geoMD->getUpdateFrequency();?>"> </td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_("EASYSDI_DEFINE_ACQUISITION_REM"); ?></td>
-							<td><input size="50" type="text" name ="metadata_acquisition_rem" value="<?php echo $geoMD->getAcquisitionRmk();?>"> </td>
-							</tr>
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();
-		
-		
-		
-		echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_MANAGER"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_MANAGER_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_ORGANISATION_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_organisation_name" value="<?php echo $geoMD->getManagerOrganisationName()?>"> </td>							
-							</tr>							
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_name" value="<?php echo $geoMD->getManagerName();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_ADDRESS"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_address" value="<?php echo $geoMD->getManagerAddress();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_CITY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_city" value="<?php echo $geoMD->getManagerCity();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_POSTAL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_postal_code" value="<?php echo $geoMD->getManagerPostalCode();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_COUNTRY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_country" value="<?php echo $geoMD->getManagerCountry();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_VOICE"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_voice" value="<?php echo $geoMD->getManagerVoice();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_FAX"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_fax" value="<?php echo $geoMD->getManagerFax();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_MANAGER_MAIL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_manager_mail" value="<?php echo $geoMD->getManagerEmail();?>"> </td>
-							</tr>							
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();
-				echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_POC"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_POC_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_ORGANISATION_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_organisation_name" value="<?php echo $geoMD->getPocOrganisationName()?>"> </td>							
-							</tr>							
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_name" value="<?php echo $geoMD->getPocName();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_ADDRESS"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_address" value="<?php echo $geoMD->getPocAddress();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_CITY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_city" value="<?php echo $geoMD->getPocCity();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_POSTAL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_postal_code" value="<?php echo $geoMD->getPocPostalCode();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_COUNTRY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_Country" value="<?php echo $geoMD->getPocCountry();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_VOICE"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_voice" value="<?php echo $geoMD->getPocVoice();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_FAX"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_fax" value="<?php echo $geoMD->getPocFax();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_POC_MAIL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_poc_email" value="<?php echo $geoMD->getPocEmail();?>"> </td>
-							</tr>							
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();
-		
-
-		
-						echo $tabs->startPanel(JText::_("EASYSDI_DEFINE_METADATA_DISTRIBUTOR_POC"),"productrPane");
-?>		
-		<table border="0" cellpadding="0" cellspacing="0">
-
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_DEFINE_METADATA_DISTRIBUTOR_SUBTITLE"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_ORGANISATION_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_organisation_name" value="<?php echo $geoMD->getDistributionOrganisationName()?>"> </td>							
-							</tr>							
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_NAME"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_name" value="<?php echo $geoMD->getDistributionName();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_ADDRESS"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_address" value="<?php echo $geoMD->getDistributionName();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_CITY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_city" value="<?php echo $geoMD->getDistributionCity();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_POSTAL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_code" value="<?php echo $geoMD->getDistributionPostalCode();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_COUNTRY"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_country" value="<?php echo $geoMD->getDistributionCountry();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_VOICE"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_voice" value="<?php echo $geoMD->getDistributionVoice();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_FAX"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_fax" value="<?php echo $geoMD->getDistributionFax();?>"> </td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DISTRIBUTOR_MAIL"); ?></td>
-								<td><input size="50" type="text" name ="metadata_distribution_mail" value="<?php echo $geoMD->getDistributionEmail();?>"> </td>
-							</tr>							
-							</table>
-							</fieldset>
-							</td>
-							</tr>
-		</table>
-		<?php
-		echo $tabs->endPanel();
-		
 		
 		
 		echo $tabs->endPane();	
@@ -586,19 +287,164 @@ class HTML_product {
 	<?php
 	}
 	
-	
-	
-	function listProduct($use_pagination, $rows, $pageNav,$option){
-	
-		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT"));
+	function editProductMetadata( $rowProduct,$id, $option ){
+		
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
 		$partners = array();
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+		$partners = array_merge( $partners, $database->loadObjectList() );
+		
+		JHTML::_('behavior.calendar');
+
 		
 		
+		jimport("joomla.utilities.date");
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		
-		?>
-	<form action="index.php" method="post" name="adminForm">
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
+
+			
+		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+ 
+		
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
+		
+		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
+		$geoMD = new geoMetadata($cswResults);				 
+		
+		$database =& JFactory::getDBO(); 
+		$tabs =& JPANE::getInstance('Tabs');
+		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PRODUCT"), 'generic.png' );
+
+					
+		?>				
+	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<?php
+		echo $tabs->startPane("productPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
+
+		?>		
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td width="100p"><?php echo JText::_("EASYSDI_PRODUCT_ID"); ?> : </td>
+								<td><?php echo $rowProduct->id; ?></td>
+								<input type="hidden" name="id" value="<?php echo $id;?>">								
+							</tr>
+			
+							<tr>
+								<td><?php echo JText::_("EASYSDI_METADATA_ID"); ?> : </td>
+								<td><?php echo $rowProduct->metadata_id; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_UPDATE_DATE"); ?> : </td>						
+								<?php $date = new JDate($rowProduct->update_date); ?>										
+								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL() ?>" />
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->update_date)); ?></td>								
+							</tr>
+							<tr>
+							
+								<td><?php echo JText::_("EASYSDI_CREATION_DATE"); ?> : </td>
+								<?php $date = new JDate($rowProduct->creation_date); ?>
+								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL() ?>" />								
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->creation_date)); ?></td>
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
+								<?php
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>								
+								
+																
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
+								<?php
+									$query = "SELECT name FROM #__easysdi_metadata_standard  where id =".$rowProduct->metadata_standard_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>																																								
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+			
+		</table>
+		
+		
+		<?php
+		echo $tabs->endPanel();
+		
+		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and a.standard_id = $rowProduct->metadata_standard_id group by a.tab_id" ;
+		$database->setQuery($query);				 
+		$rows = $database->loadObjectList();		
+		if ($database->getErrorNum()) {						
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+		}
+				
+		foreach ($rows as $row){
+			
+			echo $tabs->startPanel(JText::_($row->text),"productrPane");
+			?>
+			<table border="0" cellpadding="0" cellspacing="0">
+
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_($row->text); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+						<?php
+							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and a.standard_id = $rowProduct->metadata_standard_id order by position" ;
+							$database->setQuery($query);				 
+							$rowsClasses = $database->loadObjectList();		
+							if ($database->getErrorNum()) {						
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+							}
+							
+							foreach ($rowsClasses as $rowClasses){
+						?>					
+														
+							<?php helper_easysdi::generateMetadataHtml($rowClasses,$row->tab_id,$rowProduct->metadata_standard_id,$rowClasses->iso_key,$geoMD,$rowProduct->metadata_id);  ?>
+							
+							<?php } ?>
+						</table>
+				
+					</fieldset>
+					</td>
+					</tr>
+				</table>
+			<?php 
+			echo $tabs->endPanel();						
+		}		
+		echo $tabs->endPane();	
+
+		
+		?>		
+		<input type="hidden" name="standard_id" value="<?php echo$rowProduct->metadata_standard_id; ?>" />
+		<input type="hidden" name="option" value="<?php echo $option; ?>" />
+		<input type="hidden" name="task" value="" />
+		</form>
+	<?php
+	}
+	
+function listProduct($use_pagination, $rows, $pageNav,$option){
+
+$database =& JFactory::getDBO();
+JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); $partners =
+array(); ?>
+<form action="index.php" method="post" name="adminForm">
 		
 		<table width="100%">
 			<tr>

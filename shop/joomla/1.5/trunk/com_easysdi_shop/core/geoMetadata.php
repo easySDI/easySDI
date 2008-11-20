@@ -26,7 +26,7 @@ class geoMetadata{
 			if ($md instanceof  DOMDocument){
 						 			
 				$this->metadata  = $md;
-			}
+			}else
 			if ($md instanceof  DOMElement){
 				 				 
 				 $dom = new DOMDocument();
@@ -37,10 +37,13 @@ class geoMetadata{
 			}			
 			else{
 				
-				$dom = new DOMDocument();				 				
+				$dom = new DOMDocument();
+					
+							 				
 				$xmlContent = $dom ->importNode(dom_import_simplexml($md),true);
 				$dom->appendChild($xmlContent);							 
 				$this->metadata = $dom;
+				
 			
 			}
 			
@@ -52,6 +55,33 @@ class geoMetadata{
 		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
 		}		
+		
+	}
+	
+	function getXPathResult($xpath){
+		if ($this->metadata){	 
+		$nodes = $this->xpath->query($xpath);
+		if ($nodes === false) return "";
+		//echo "Renausd : ".count($nodes);
+		if ($nodes->length==0) return "";
+		$theNode = $nodes->item(0);
+		
+		
+		 
+		$myNode = $theNode->parentNode->removeChild($theNode);
+		
+		$this->metadata=$theNode->ownerDocument;
+		
+		$this->xpath = new DomXPath($theNode->ownerDocument);
+		
+		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+		
+		//$this->metadata->save("c:\\".$theNode ->nodeValue.".xml");
+		
+		return $theNode ->nodeValue;
+		}
+		return "";
 		
 	}
 	

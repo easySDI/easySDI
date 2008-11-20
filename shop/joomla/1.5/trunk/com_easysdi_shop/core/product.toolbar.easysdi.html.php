@@ -23,6 +23,11 @@ class TOOLBAR_product{
 		JToolBarHelper::cancel('cancelComponentConfig');					
 	}
 	
+	function _EDITPRODUCTMETADATA(){
+		JToolBarHelper::save('saveProductMetadata');
+		JToolBarHelper::cancel('cancelProductMetadata');
+	}
+	
 	function _EDITPRODUCT(){
 		
 		JToolBarHelper::save('saveProduct');
@@ -36,6 +41,7 @@ class TOOLBAR_product{
 		JToolBarHelper::addNew('newProduct');
 		JToolBarHelper::editList('editProduct');
 		JToolBarHelper::deleteList('','deleteProduct');
+		JToolBarHelper::editList('editProductMetadata');
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}

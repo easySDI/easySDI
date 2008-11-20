@@ -22,8 +22,9 @@ class MDClasses extends JTable
 	var $iso_key=null;
 	var $type=null;	
 	var $partner_id=null;	
-	var $is_default=null;
+	var $is_global=null;
 	var $description=null;
+	var $is_final=null;
 	
 	function __construct( &$db )
 	{
@@ -56,18 +57,33 @@ class MDFreetext extends JTable
 	var $partner_id=null;	
 	var $is_default=null;
 	var $is_global=0;
-	
+	var $is_constant=0;
+	var $is_date=0;
+	var $is_id=0;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_freetext', 'id', $db ) ;    		
 	}
 
 }
-
-
 class MDList extends JTable
 {	
 	var $id=null;	
+	var $name=null;
+	var $partner_id=null;
+	var $multiple=null;
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_metadata_list', 'id', $db ) ;    		
+	}
+
+}
+
+
+class MDListContent extends JTable
+{	
+	var $id=null;	
+	var $list_id=null;
 	var $code_key=null;
 	var $key=null;
 	var $value=null;
@@ -77,7 +93,7 @@ class MDList extends JTable
 	var $is_global=0;
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_metadata_list', 'id', $db ) ;    		
+		parent::__construct ( '#__easysdi_metadata_list_content', 'id', $db ) ;    		
 	}
 
 }
@@ -134,6 +150,7 @@ class MDStandard extends JTable{
 	var $name=null;
 	var $partner_id=null;
 	var $inherited=null;
+	var $is_global=null;
 	
 	function __construct( &$db )
 	{
@@ -148,10 +165,26 @@ class MDStandardClasses extends JTable{
 	var $id=null;	
 	var $standard_id=null;
 	var $class_id=null;
-	var $position=0;	
+	var $position=0;
+	var $partner_id=null;
+	var $tab_id=null;
+	var $text_prompt=null;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_standard_classes', 'id', $db ) ;    		
+	}
+	
+}
+
+
+class MDTabs extends JTable{
+	
+	var $id=null;	
+	var $text=null;
+	var $partner_id=null;
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_metadata_tabs', 'id', $db ) ;    		
 	}
 	
 }

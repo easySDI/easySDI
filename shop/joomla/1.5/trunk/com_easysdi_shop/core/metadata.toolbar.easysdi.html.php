@@ -17,10 +17,27 @@
 
 defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_metadata{
+
+	function _EDITMETADATATAB() {
+		global $mainframe;
+
+		
+		JToolBarHelper::save('saveMDTABS');
+		JToolBarHelper::cancel('cancelMDTabs');						
+	}
 	
 
-	
-	
+function _LISTMDTABS(){
+		global $mainframe;
+
+		
+		JToolBarHelper::addNew('newMetadataTab');
+		JToolBarHelper::editList('editMetadataTab');
+		JToolBarHelper::deleteList('','deleteMetadataTab');
+		JToolBarHelper::spacer();		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
+}
+		
 function _LISTSTANDARDCLASSES() {
 		global $mainframe;
 
@@ -107,6 +124,13 @@ function _LISTCLASS() {
 		JToolBarHelper::save('saveMDFreetext');
 		JToolBarHelper::cancel('cancelMDFreetext');						
 	}
+function _LISTEDITCONTENT() {
+		global $mainframe;
+
+		
+		JToolBarHelper::save('saveMDListContent');
+		JToolBarHelper::cancel('cancelMDListContent');							
+	}
 	
 function _LISTEDIT() {
 		global $mainframe;
@@ -127,6 +151,17 @@ function _LISTEDIT() {
 		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 	
+function _LISTLISTCONTENT() {
+		global $mainframe;
+
+		
+		JToolBarHelper::addNew('newMetadataListContent');
+		JToolBarHelper::editList('editMetadataListContent');
+		JToolBarHelper::deleteList('','deleteMetadataListContent');
+		JToolBarHelper::cancel('cancelMDList');
+		JToolBarHelper::spacer();		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+	}
 	
 function _LISTLIST() {
 		global $mainframe;
@@ -135,6 +170,7 @@ function _LISTLIST() {
 		JToolBarHelper::addNew('newMetadataList');
 		JToolBarHelper::editList('editMetadataList');
 		JToolBarHelper::deleteList('','deleteMetadataList');
+		JToolBarHelper::editList("listMetadataListContent");
 		JToolBarHelper::spacer();		
 		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}

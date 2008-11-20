@@ -291,7 +291,19 @@ echo $pane->endPanel();
 			</div>
 		</div>
 	
-	
+	<?php	
+		$link = "index.php?option=$option&amp;task=listMetadataTabs";
+
+?>
+	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+			<div class="icon">
+				<a href="<?php echo $link; ?>">
+					<?php 
+						$text = JText::_( 'EASYSDI_TABS_CTRL_PANEL' );					
+						echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+					<span><?php echo $text; ?></span></a>
+			</div>
+		</div>
 	</div> 
 	 
 		<?php

@@ -31,6 +31,7 @@ class product extends JTable
 	var $orderable=null;
 	var $internal=0;
 	var $external=0;
+	var $metadata_standard_id=null;
 	// Class constructor
 	function __construct( &$db )
 	{

@@ -62,8 +62,30 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.admin.easysdi.
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
 
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlpanel.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 
 switch($task){
+
+	case "saveMDTABS":
+		ADMIN_metadata::saveMDTabs($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
+		break;
+	case "cancelMDTABS":		
+		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
+		break;
+	case "newMetadataTab":
+		TOOLBAR_metadata::_EDITMETADATATAB();	
+		ADMIN_metadata::editMDTabs($cid[0],$option);
+		break;
+	case "listMetadataTabs":
+		TOOLBAR_metadata::_LISTMDTABS();
+		ADMIN_metadata::listMetadataTabs($option);
+		break;
+		
+	case "deleteMetadataStandardClasses":
+		ADMIN_metadata::deleteMDStandardClasses($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
+		break;
 		
 	case "ctrlPanelShop":
 		HTML_ctrlpanel::ctrlPanelShop($option);
@@ -233,6 +255,50 @@ switch($task){
 		TOOLBAR_metadata::_LISTLIST();
 		ADMIN_metadata::listList($option);
 	break;
+
+	
+	
+	
+	case "deleteMetadataList":
+		
+		ADMIN_metadata::deleteMetadataList($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataList" );	
+		break;
+	case "deleteMetadataListContent":
+		$list_id = JRequest::getVar ('list_id', 0 );
+		ADMIN_metadata::deleteMetadataListContent($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataListContent&cid[]=$list_id" );
+	break;	
+	case "editMetadataListContent":
+		$list_id = JRequest::getVar ('list_id', 0 );
+		TOOLBAR_metadata::_LISTEDITCONTENT();
+		ADMIN_metadata::editListContent($cid[0],$option,$list_id);
+	break;
+	
+	case "newMetadataListContent":
+		$list_id = JRequest::getVar ('list_id', 0 );
+		TOOLBAR_metadata::_LISTEDITCONTENT();
+		ADMIN_metadata::editListContent(0,$option,$list_id);
+	break;
+	
+	case "saveMDListContent":
+		$list_id = JRequest::getVar ('list_id', 0 );
+		ADMIN_metadata::saveMDListContent($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataListContent&cid[]=$list_id" );
+		break;
+	case "cancelMDListContent":
+		$list_id = JRequest::getVar ('list_id', 0 );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataListContent&cid[]=$list_id" );
+		break;		
+	case "listMetadataListContent":
+		TOOLBAR_metadata::_LISTLISTCONTENT();
+		ADMIN_metadata::listListContent($cid[0],$option);
+	break;
+	
+	
+	
+	
+	
 	
 	case "listMetadataDate":
 		TOOLBAR_metadata::_LISTDATE();
@@ -401,7 +467,10 @@ switch($task){
 		ADMIN_perimeter::listPerimeter($option);
 		
 		break;
-	
+	case "saveProductMetadata":		
+		ADMIN_product::saveProductMetadata(true,$option);				
+		break;
+		
 	case "saveProduct":		
 		ADMIN_product::saveProduct(true,$option);				
 		break;
@@ -409,7 +478,12 @@ switch($task){
 		ADMIN_product::deleteProduct($cid,$option);				
 		break;	
 		
-	case "editProduct":
+	case "editProductMetadata":	
+		TOOLBAR_product::_EDITPRODUCTMETADATA();
+		ADMIN_product::editProductMetadata($cid[0],$option);
+		break;
+		
+	case "editProduct":			
 		TOOLBAR_product::_EDITPRODUCT();
 		ADMIN_product::editProduct($cid[0],$option);
 		break;
@@ -420,11 +494,12 @@ switch($task){
 		
 		break;
 		
+		
+	case "cancelProductMetadata":
 	case "cancelProduct":
 	case "listProduct":
 		TOOLBAR_product::_LISTPROUCT();
-		ADMIN_product::listProduct($option);
-		
+		ADMIN_product::listProduct($option);		
 		break;
 	default:
 		$mainframe->enqueueMessage($task,"INFO");

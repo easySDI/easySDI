@@ -31,6 +31,10 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
 
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop');
@@ -39,18 +43,45 @@ $language->load('com_easysdi_shop');
 <?php
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
+$cid = JRequest::getVar ('cid', array(0) );
+if (!is_array( $cid )) {
+	$cid = array(0);
+}
 
 
 switch($task){
+	
+	case "cancelProperties":
+		$mainframe->redirect("index.php?option=$option&task=listProperties" );
+	break;
+	case "saveProperties":
+		SITE_properties::saveProperties($option);
+		$mainframe->redirect("index.php?option=$option&task=listProperties" );
+	break;
+	case "editProperties":
+		SITE_properties::editProperties($cid[0],$option);
+		break;
+	case "newProperties":
+		SITE_properties::editProperties(0,$option);
+		break;
+	case "listProperties":
+		SITE_properties::listProperties($option);
+		break;	
+		
 	case "cancelEditProduct":
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
-	
+	case "saveProductMetadata":
+		SITE_product::saveProductMetadata();
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
 	case "saveProduct":
 		SITE_product::saveProduct($option);
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
-	
+	case "editMetadata":
+		SITE_product::editMetadata();
+		break;
 	case "newProduct":
 		SITE_product::editProduct(true);
 		break;
@@ -86,6 +117,11 @@ switch($task){
 	case "deleteProduct":
 		HTML_shop::deleteProduct();
 	default :	
+		
+		echo "<div class='alert'>";			
+			echo JText::_("EASYSDI_ACTION_NOT_ALLOWED");
+		echo "</div>";
+		break;
 	case "order":
 		HTML_shop::order();
 		break;
