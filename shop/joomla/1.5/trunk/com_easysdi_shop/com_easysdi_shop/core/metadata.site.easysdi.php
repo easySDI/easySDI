@@ -17,7 +17,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_metadata {
+class SITE_metadata {
 
 		function deleteMetadataList($cid,$option){
 			
@@ -189,29 +189,6 @@ function deleteMetadataListContent($cid,$option){
 	
 	
 	
-	function deleteMDStandard($cid,$option){
-		
-		global $mainframe;
-		$database =& JFactory::getDBO();
-		
-		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
-			exit;
-		}
-		foreach( $cid as $id )
-		{
-			
-			$query = "UPDATE  #__easysdi_metadata_standard SET is_deleted= 1  WHERE id = $id ";
-			$database->setQuery( $query );
-				if (!$database->query()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
-					exit();			
-				} 														
-		
-		}		
-	}
 	
 	
 	
@@ -272,9 +249,10 @@ function deleteMetadataListContent($cid,$option){
 		
 		$row = new MDStandardClasses( $db );
 		
-		$row->load( $id );					
-	
-		
+		$row->load( $id );
+		if ($id == 0)	{				
+			$row->standard_id = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
+		}
 		HTML_metadata::editStandardClasses($row,$id, $option );
 		
 	}
@@ -285,15 +263,20 @@ function deleteMetadataListContent($cid,$option){
 		$db =& JFactory::getDBO();
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
+		$use_pagination = JRequest::getVar('use_pagination',1);		
 		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
-				
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($db);
+		$partner->load($user->id);		
+		
+		
 		if ($type == ''){
 			
-			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
-			$db->setQuery( $query ,1,1);
+			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard WHERE is_deleted =0 AND (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id))";
+			$db->setQuery( $query ,1,1); 
 			 $type = $db->loadResult();
 		}
+		if ($type){
 		$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
 		$db->setQuery( $query );
 		$total = $db->loadResult();
@@ -311,7 +294,7 @@ function deleteMetadataListContent($cid,$option){
 		if ($db->getErrorNum()) {						
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
 		}		
-
+		}
 		HTML_metadata::listStandardClasses($use_pagination,$rows,$pageNav,$option,$type);
 		
 	}
@@ -341,13 +324,9 @@ function deleteMetadataListContent($cid,$option){
 		
 		if (!$row->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
-			exit();
 		}				
 	if (!$row->store()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
-			exit();
 		}
 	}
 	
@@ -405,6 +384,59 @@ function deleteMetadataListContent($cid,$option){
 	
 	
 	
+	
+	
+	
+	function saveMDLocfreetext($option){
+		global  $mainframe;
+		$database=& JFactory::getDBO(); 
+		
+		$rowMDFreetext =&	 new MDLocFreetext($database);
+				
+		
+		if (!$rowMDFreetext->bind( $_POST )) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
+			exit();
+		}				
+	if (!$rowMDFreetext->store()) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
+			exit();
+		}
+	}
+	
+	
+	function editExt($id,$option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$rowMDExt = new MDExt( $db );
+		
+		$rowMDExt->load( $id );					
+	
+		
+		
+		HTML_metadata::editExt($rowMDExt,$id, $option );
+		
+	}
+	
+	function editLocfreetext($id,$option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$rowMDFreetext = new MDLocFreetext( $db );
+		
+		$rowMDFreetext->load( $id );					
+	
+		
+		
+		HTML_metadata::editLocfreetext($rowMDFreetext,$id, $option );
+		
+	}
+	
 	function listExt($option){
 		
 		global  $mainframe;
@@ -439,75 +471,6 @@ function deleteMetadataListContent($cid,$option){
 	
 	
 	
-	function editExt($id,$option){
-		
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		
-		$rowMDExt = new MDExt( $db );
-		
-		$rowMDExt->load( $id );					
-	
-		
-		
-		HTML_metadata::editExt($rowMDExt,$id, $option );
-		
-	}
-	function saveMDExt($option){
-		global  $mainframe;
-		$database=& JFactory::getDBO(); 
-		
-		$row =&	 new MDExt($database);
-				
-		
-		if (!$row->bind( $_POST )) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataExt" );
-			exit();
-		}				
-	if (!$row->store()) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataExt" );
-			exit();
-		}
-	}
-	
-	
-	function saveMDLocfreetext($option){
-		global  $mainframe;
-		$database=& JFactory::getDBO(); 
-		
-		$rowMDFreetext =&	 new MDLocFreetext($database);
-				
-		
-		if (!$rowMDFreetext->bind( $_POST )) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
-			exit();
-		}				
-	if (!$rowMDFreetext->store()) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataLocfreetext" );
-			exit();
-		}
-	}
-	
-	
-	function editLocfreetext($id,$option){
-		
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		
-		$rowMDFreetext = new MDLocFreetext( $db );
-		
-		$rowMDFreetext->load( $id );					
-	
-		
-		
-		HTML_metadata::editLocfreetext($rowMDFreetext,$id, $option );
-		
-	}
-	
 	function listLocfreetext($option){
 		
 		global  $mainframe;
@@ -539,8 +502,6 @@ function deleteMetadataListContent($cid,$option){
 		HTML_metadata::listLocfreetext($use_pagination,$rows,$pageNav,$option);
 		
 	}
-	
-	
 	
 function listClass($option){
 		
@@ -608,13 +569,6 @@ function listClass($option){
 				$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
 				exit();		
 				}	
-			$query = "DELETE FROM  #__easysdi_metadata_classes_ext WHERE classes_id = ".$rowMDClasses->id;
-			$database->setQuery( $query );
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
-				exit();		
-				}	
 	
 			$query = "DELETE FROM  #__easysdi_metadata_classes_locfreetext WHERE classes_id = ".$rowMDClasses->id;
 			$database->setQuery( $query );
@@ -663,18 +617,6 @@ function listClass($option){
 			}							
 		}
 		
-		if ($_POST[type]=='ext'){
-			foreach( $_POST['ext'] as $id ) {
-				$query = "INSERT INTO #__easysdi_metadata_classes_ext VALUES (0,".$rowMDClasses->id.",".$id.")";
-				
-				$database->setQuery( $query );
-				if (!$database->query()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
-					exit();			
-				}
-			}							
-		}			
 		
 		if ($_POST[type]=='freetext'){
 			foreach( $_POST['freetext'] as $id ) {

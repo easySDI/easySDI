@@ -128,14 +128,14 @@ class HTML_ctrlpanel {
 	
 	
 		<?php
-		$link = "index.php?option=$option&amp;task=listMetadataDate";
+		$link = "index.php?option=$option&amp;task=listMetadataExt";
 ?>
 		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
 				
 					<?php 
-					$text = JText::_( 'EASYSDI_METADATA_LIST_DATE' );
+					$text = JText::_( 'EASYSDI_METADATA_LIST_EXT' );
 					echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 					<span><?php echo $text; ?></span></a>
 			</div>
@@ -278,14 +278,14 @@ echo $pane->endPanel();
 	
 	
 		<?php
-		$link = "index.php?option=$option&amp;task=listMetadataDate";
+		$link = "index.php?option=$option&amp;task=listMetadataExt";
 ?>
 		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
 				
 					<?php 
-					$text = JText::_( 'EASYSDI_METADATA_LIST_DATE' );
+					$text = JText::_( 'EASYSDI_METADATA_LIST_EXT' );
 					echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 					<span><?php echo $text; ?></span></a>
 			</div>

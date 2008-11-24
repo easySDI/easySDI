@@ -65,7 +65,7 @@ $query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
 	$db->setQuery( $query);
 
 	$version = $db->loadResult();
-		if ($db->getErrorNum()) {								
+	if ($db->getErrorNum()) {								
 		//The table does'nt exist
 		//Then nothing is installed.
 		$version = '0';
@@ -99,8 +99,15 @@ $db->setQuery( $query);
 		
 		
 		
-		
+		$query="ALTER TABLE #__easysdi_product add column metadata_standard_id bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
 
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
 	$query="
 CREATE TABLE `#__easysdi_basemap_content` (
   `id` bigint(20) NOT NULL auto_increment,
@@ -313,6 +320,272 @@ CREATE TABLE `#__easysdi_basemap_content` (
 	
 }
 
+if ($version == "0.9"){
+		
+	$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_shop'";
+
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+
+		
+		
+$query="CREATE TABLE `#__easysdi_metadata_classes` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `iso_key` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) NOT NULL default '0',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `description` varchar(4000) NOT NULL default '',
+  `is_final` tinyint(1) NOT NULL default '0',
+  `is_editable` tinyint(1) NOT NULL default '1',
+  `type` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)" ;
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_classes_classes` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `classes_from_id` bigint(20) NOT NULL default '0',
+  `classes_to_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_classes_ext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `classes_id` bigint(20) NOT NULL default '0',
+  `ext_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_classes_freetext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `classes_id` bigint(20) NOT NULL default '0',
+  `freetext_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)" ;
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_classes_list` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `classes_id` bigint(20) NOT NULL default '0',
+  `list_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_classes_locfreetext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `classes_id` bigint(20) NOT NULL default '0',
+  `loc_freetext_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_date` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `partner_id` bigint(20) default '0',
+  `name` varchar(100) NOT NULL default '',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `iso_key` varchar(100) NOT NULL default 'gco:DateTime',
+  `default_value` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_ext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(400) NOT NULL default '',
+  `value` varchar(1000) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_freetext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) default '0',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `is_constant` tinyint(1) NOT NULL default '0',
+  `is_date` tinyint(1) NOT NULL default '0',
+  `is_id` tinyint(1) NOT NULL default '0',
+  `default_value` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_list` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `partner_id` bigint(20) NOT NULL default '0',
+  `multiple` tinyint(1) NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)" ;
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_list_content` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `list_id` bigint(20) NOT NULL default '0',
+  `code_key` varchar(100) NOT NULL default '',
+  `key` varchar(100) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) default '0',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `default` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)" ;
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_loc_freetext` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `lang` varchar(100) NOT NULL default '',
+  `name` varchar(100) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) default '0',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `default_value` varchar(4000) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)" ;
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_numeric` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `default_value` bigint(20) NOT NULL default '0',
+  `min_value` bigint(20) default '0',
+  `name` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) default '0',
+  `max_value` bigint(20) default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_standard` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `inherited` varchar(100) default '',
+  `partner_id` bigint(20) default '0',
+  `is_global` tinyint(1) NOT NULL default '0',
+  `is_deleted` tinyint(1) NOT NULL default '0',
+  `key` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_standard_classes` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `standard_id` bigint(20) NOT NULL default '0',
+  `position` bigint(20) NOT NULL default '0',
+  `partner_id` bigint(20) NOT NULL default '0',
+  `tab_id` bigint(20) NOT NULL default '0',
+  `class_id` bigint(20) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metadata_tabs` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `partner_id` bigint(20) NOT NULL default '0',
+  `text` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+$query="CREATE TABLE `#__easysdi_metatada_constant` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  `partner_id` bigint(20) default '0',
+  `value` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+)"; 
+
+
+
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+
+	
+	
+		
+		
+	
+}
 
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);
@@ -336,36 +609,13 @@ CREATE TABLE `#__easysdi_basemap_content` (
 	
 			
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Liste les produits','','option=com_easysdi_shop&task=listProduct','Liste les produits','com_easysdi_shop','js/ThemeOffice/component.png','')";
+		values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Périmètres','','option=com_easysdi_shop&task=listPerimeter','Périmètres','com_easysdi_shop','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-	}
-
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Propriétés de la commande','','option=com_easysdi_shop&task=listProperties','Propriétés de la commande','com_easysdi_shop','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-	}
-
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'basemap configurator','','option=com_easysdi_shop&task=listBasemap','basemap configurator','com_easysdi_shop','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-	}
 	
 	
 	

@@ -148,7 +148,9 @@ class ADMIN_properties {
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties( $database );
 		$rowProperties->load( $id );					
-			
+			if ($id==0){
+				$rowProperties->order="0";
+			}
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
 		
 		HTML_properties::editProperties( $rowProperties,$id, $option );
@@ -165,7 +167,16 @@ class ADMIN_properties {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );			
 		}
-				
+		
+		if ($rowProperties->order == "0")
+		{
+			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_definition ";
+			$database->setQuery( $query );
+			$maxOrder = $database->loadResult();
+			$rowProperties->order = $maxOrder; 
+			 
+		}
+		
 		
 		if (!$rowProperties->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -257,7 +268,9 @@ function listPropertiesValues($properties_id , $option) {
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties_values( $database );
 		$rowProperties->load( $id );					
-			
+		if ($id==0){
+			$rowProperties->order="0";
+		}	
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
 		
 		HTML_properties::editPropertiesValues( $rowProperties,$id, $option );
@@ -274,7 +287,15 @@ function listPropertiesValues($properties_id , $option) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );			
 		}
-				
+		if ($rowProperties->order == "0")
+		{
+			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_values_definition WHERE properties_id=$rowProperties->properties_id";
+			$database->setQuery( $query );
+			$maxOrder = $database->loadResult();
+			$rowProperties->order = $maxOrder; 
+			 
+		}
+		
 		
 		if (!$rowProperties->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

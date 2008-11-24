@@ -168,7 +168,11 @@ class SITE_properties {
 		$rowProperties->load( $id );					
 			
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
+			if ($id==0){
+				$rowProperties->order="0";
+			}
 		
+			
 		$user = JFactory::getUser();	
 		$partner = new partnerByUserId($database);
 		$partner->load($user->id);
@@ -191,7 +195,14 @@ class SITE_properties {
 			echo "</div>";			
 		}
 				
-		
+		if ($rowProperties->order == "0")
+		{
+			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_definition";
+			$database->setQuery( $query );
+			$maxOrder = $database->loadResult();
+			$rowProperties->order = $maxOrder; 
+			 
+		}
 		if (!$rowProperties->store()) {
 			echo "<div class='alert'>";			
 			echo 			$database->getErrorMsg();
@@ -280,14 +291,18 @@ function listPropertiesValues($properties_id , $option) {
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties_values( $database );
 		$rowProperties->load( $id );					
-			
+						if ($id==0){
+				$rowProperties->order="0";
+			}
+		
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
 		
 		HTML_properties::editPropertiesValues( $rowProperties,$id, $option );
 	}
 	
-	function savePropertiesValues($returnList ,$option){
-						global  $mainframe;
+	function savePropertiesValues($option){
+		
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
 		$rowProperties =&	 new properties_values($database);
@@ -295,16 +310,22 @@ function listPropertiesValues($properties_id , $option) {
 		
 		if (!$rowProperties->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );			
+			$mainframe->redirect("index.php?option=$option&task=listPropertiesValue" );			
 		}
 				
-		
+	if ($rowProperties->order == "0")
+		{
+			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_values_definition WHERE properties_id=$rowProperties->properties_id";
+			$database->setQuery( $query );
+			$maxOrder = $database->loadResult();
+			$rowProperties->order = $maxOrder; 
+			 
+		}
+	
 		if (!$rowProperties->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );			
+			$mainframe->redirect("index.php?option=$option&task=listPropertiesValue" );			
 		}
-		$properties_id = JRequest::getVar('properties_id');
-		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
 		
 				
 		

@@ -78,7 +78,17 @@ function _LISTSTANDARD() {
 		JToolBarHelper::save('saveMDStandard');
 		JToolBarHelper::cancel('cancelMDStandard');						
 	}
-	
+
+	function _LISTEXT() {
+		global $mainframe;
+
+		
+		JToolBarHelper::addNew('newMetadataExt');
+		JToolBarHelper::editList('editMetadataExt');
+		JToolBarHelper::deleteList('','deleteMetadataExt');
+		JToolBarHelper::spacer();		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+	}
 	function _LISTLOCFREETEXT() {
 		global $mainframe;
 
@@ -96,7 +106,13 @@ function _LISTSTANDARD() {
 		JToolBarHelper::save('saveMDLocfreetext');
 		JToolBarHelper::cancel('cancelMDLocfreetext');						
 	}
-	
+	function _EDITEXT() {
+		global $mainframe;
+
+		
+		JToolBarHelper::save('saveMDExt');
+		JToolBarHelper::cancel('cancelMDExt');						
+	}
 	
 function _EDITCLASS() {
 		global $mainframe;

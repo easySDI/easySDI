@@ -701,7 +701,7 @@ if ($db->getErrorNum()) {
 
 foreach ($products as $product  ){
 
-$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." order by a.order"
+$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text ,a.type_code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." order by a.order"
 ?>
 
 
@@ -717,13 +717,17 @@ $rows = $db->loadObjectList();
 
 if (count($rows)>0){
 	foreach ($rows as $row){
-		echo "<li>";									
-		echo 	JText::_($row->property_text);
+		echo "<li>";
+		switch($row->type_code){
+			case "list":									
+				echo 	JText::_($row->property_text);
 		
 				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
+				
+				
 				echo "<select name='property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState('property_'.$product->id);
@@ -733,7 +737,86 @@ if (count($rows)>0){
 					} 
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";					
 				}
+				
+		break;
+			case "mlist":
+			echo 	JText::_($row->property_text);
+		
+				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+
+				$db->setQuery( $query );
+				$rowsValue = $db->loadObjectList();
+				
+				
+				echo "<select multiple size='10' name='property_".$product->id."[]'>";
+				foreach ($rowsValue as $rowValue){
+					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selected = "";
+					if ( is_array($selProduct)){
+						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
+					} 
+					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";					
+				}
+				
+				break;
+		case "cbox":
+			echo 	JText::_($row->property_text);
+		
+				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+
+				$db->setQuery( $query );
+				$rowsValue = $db->loadObjectList();
+				
+				
+				
+				foreach ($rowsValue as $rowValue){
+					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selected = "";
+					if ( is_array($selProduct)){
+						if (in_array($rowValue->value,$selProduct)) $selected ="checked";
+					} 
+					
+					
+					echo "<input type='checkbox' name='property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."<br>";					
+				}
+				
+				break;
+			case "text":
+				echo 	JText::_($row->property_text);
+		
+				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+
+				$db->setQuery( $query );
+				$rowsValue = $db->loadObjectList();
+											
+				foreach ($rowsValue as $rowValue){
+					$selProduct = $mainframe->getUserState('property_'.$product->id);	
+					
+					 									
+					echo "<input type='text' name='property_".$product->id."[]'  value='".$rowValue->value."'>";
+					break;					
+				}
+				
+				break;	
+			case "textarea":
+				echo 	JText::_($row->property_text);
+		
+				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+
+				$db->setQuery( $query );
+				$rowsValue = $db->loadObjectList();
+											
+				foreach ($rowsValue as $rowValue){
+					$selProduct = $mainframe->getUserState('property_'.$product->id);	
+					 									
+					echo "<TEXTAREA  rows=10 COLS=40 name='property_".$product->id."[]'>$rowValue->value</textarea>";
+					break;					
+				}
+				
+				break;
+		}
 		echo "</li>";
+		
 			 
 		}
 		

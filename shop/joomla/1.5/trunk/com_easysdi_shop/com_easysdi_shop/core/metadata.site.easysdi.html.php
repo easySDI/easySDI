@@ -23,7 +23,6 @@ class HTML_metadata {
 function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_TABS"));
 		
 		$partners = array();
 		
@@ -132,9 +131,11 @@ function editMetadataTabs($row,$id, $option ){
 function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_STANDARD_CLASSES"));
-		
-		$database->setQuery( "SELECT id AS value, name AS text FROM #__easysdi_metadata_standard WHERE is_deleted =0 " );
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);		
+
+		$database->setQuery( "SELECT id AS value, name AS text FROM #__easysdi_metadata_standard WHERE is_deleted =0 AND (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id))" );
 						
  
 			$types =  $database->loadObjectList() ;													
@@ -142,13 +143,25 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 		$partners = array();
 		
 		?>
-	<form action="index.php" method="post" name="adminForm">
+		<script>
+		function submitform(pressbutton){
+				if (pressbutton) {
+						document.standardClassForm.task.value=pressbutton;
+					}
+				if (typeof document.standardClassForm.onsubmit == "function") {
+						document.standardClassForm.onsubmit();	
+						}
+				document.standardClassForm.submit();
+		}
+		
+		</script>
+		
+	<form action="index.php" method="post" id="standardClassForm" name="standardClassForm">
 		
 		<table width="100%">
 			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataStandardClasses\');"',$use_pagination); ?></td>
 											
-				<td class="user"><b><?php echo JText::_("EASYSDI_TITLE_STANDARD"); ?></b><?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'listMetadataStandardClasses\');"', 'value', 'text', $type ); ?></td>
+				<td class="user"><b><?php echo JText::_("EASYSDI_TITLE_STANDARD"); ?></b><?php if ($types) {echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" onChange="javascript:submitform(\'listMetadataClasses\');"', 'value', 'text', $type );} ?></td>
 			</tr>
 		
 	
@@ -161,13 +174,16 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_ID"); ?></th>				
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANTARD_NAME"); ?></th>				
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_CLASS_NAME"); ?></th>																							
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_POSITION"); ?></th>
+			
 			</tr>
 		</thead>
+		
 		<tbody>		
 <?php
+if ($rows){ 
 		$k = 0;
 		$i=0;
+		
 		foreach ($rows as $row)
 		{				  				
 ?>
@@ -177,13 +193,13 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 				<td><?php echo $row->id; ?></td>				
 				<td><?php echo $row->standard_name; ?></td>
 				<td><?php echo $row->class_name; ?></td>
-				<td><?php echo $row->position; ?></td>							
+										
 			</tr>
 <?php
 			$k = 1 - $k;
 			$i ++;
 		}
-		
+}
 			?></tbody>
 			
 		<?php			
@@ -200,10 +216,15 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 ?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listMetadataStandardClasses" />
+	  	<input type="hidden" name="task" id="task" value="listMetadataStandardClasses" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">	  	
 	  </form>
+	  <button type="button" onClick="document.getElementById('task').value='newStandard';document.getElementById('standardClassForm').submit();" ><?php echo JText::_("EASYSDI_NEW_STANDARD"); ?></button>			
+	 <button type="button" onClick="document.getElementById('task').value='newStandardClass';document.getElementById('standardClassForm').submit();" ><?php echo JText::_("EASYSDI_NEW_STANDARD_CLASS"); ?></button>
+	  <button type="button" onClick="document.getElementById('task').value='editStandardClass';document.getElementById('standardClassForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_STANDARD_CLASS"); ?></button>
+	  
+	  
 <?php
 		
 }	
@@ -212,12 +233,11 @@ function editStandardClasses($row,$id, $option ){
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 
-				
-		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
-		$partners = array_merge( $partners, $database->loadObjectList() );
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);		
 		
+	
 		
 		$tabslist = array();
 		$tabslist[] = JHTML::_('select.option','0', JText::_("EASYSDI_TABS_LIST") );
@@ -247,7 +267,7 @@ function editStandardClasses($row,$id, $option ){
 		
 		$standardlist = array();
 		$standardlist[] = JHTML::_('select.option','0', JText::_("EASYSDI_STANDARD_LIST") );
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  WHERE is_deleted =0  ORDER BY name" );
+		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  WHERE is_deleted =0 AND ORDER BY name" );
 		$standardlist = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -263,36 +283,31 @@ function editStandardClasses($row,$id, $option ){
 		
 ?>
 <table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">	
-	<tr>
-	 	<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANDARD"); ?></td>
-	 	<td><?php echo JHTML::_("select.genericlist",$standardlist, 'standard_id', 'size="1" class="inputbox"', 'value', 'text', $selStandardList ); ?></td>
-	 </tr>
+	<form ation="index.php" method="post" name="standardForm" id="standardForm" class="adminForm">	
 	 								
 	 <tr>
 	 	<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_CHOICE"); ?></td>
 	 	<td><?php echo JHTML::_("select.genericlist",$classeslist, 'class_id', 'size="1" class="inputbox"', 'value', 'text', $selClassesList ); ?></td>
 	 </tr>
 	 <tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_PARTNER_ID"); ?></td>
-		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
-	</tr>
-	 <tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_TAB_ID"); ?></td>
 		<td><?php echo JHTML::_("select.genericlist",$tabslist, 'tab_id', 'size="1" class="inputbox"', 'value', 'text', $row->tab_id ); ?></td>							
 	</tr> 
 	 
+	 		
 	 
-	 
-	 
-	 
+	 <input type="hidden" name="standard_id" value="<?php echo $row->standard_id ;?>">
+	<input type="hidden" name="partner_id" value="<?php echo $partner->partner_id; ?>">	 
 	<input type="hidden" name="order" value="0" />
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
+	<input type="hidden" id="task" name="task" value="" />		
 			
 	</form>
 	</table>
+			  <button type="button" onClick="document.getElementById('task').value='saveStandardClass';document.getElementById('standardForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_STANDARD_CLASS"); ?></button>			
+		<button type="button" onClick="document.getElementById('task').value='cancelStandardClass';document.getElementById('standardForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_STANDARD_CLASS"); ?></button>
+	
 	<?php 	
 		
 	}
@@ -315,7 +330,7 @@ function editStandardClasses($row,$id, $option ){
 function listStandard($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_STANDARD"));
+		
 		
 		$partners = array();
 		
@@ -388,50 +403,41 @@ function listStandard($use_pagination, $rows, $pageNav,$option){
 	
 function editStandard($row,$id, $option ){
 		global  $mainframe;
-		
-		JToolBarHelper::title(JText::_("EASYSDI_EDIT_METADATA_STANDARD"));
-		
+				
 		$database =& JFactory::getDBO(); 
 
 		$standards = array();
-		$standards[] = JHTML::_('select.option','0', JText::_("EASYSDI_STANDARDS_LIST") );
-		$database->setQuery( "SELECT id AS value, name AS text FROM #__easysdi_metadata_standard  where is_deleted =0 AND is_global = 1 ORDER BY name" );
-		$standards = array_merge( $standards, $database->loadObjectList() );
+		$database->setQuery( "SELECT id AS value, name AS text FROM #__easysdi_metadata_standard  where is_global = 1 ORDER BY name" );
+		$standards =  $database->loadObjectList() ;
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);		
 		
-		
-		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
-		$partners = array_merge( $partners, $database->loadObjectList() );
 ?>
 <table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<form ation="index.php" method="post" name="standardForm" id="standardForm" class="standardForm">
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
 	</tr>							
-	<tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_PARTNER_ID"); ?></td>
-		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id); ?></td>							
-	</tr>				
+
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_INHERITED"); ?></td>
 		<td><?php echo JHTML::_("select.genericlist",$standards, 'inherited', 'size="1" class="inputbox"', 'value', 'text',  $row->inherited ); ?></td>		 
 	</tr>
-	<tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_IS_GLOBAL"); ?></td>
-		<td><select name="is_global" > <option value="1" <?php if($row->is_global == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-		<option value="0" <?php if($row->is_global == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>		 
-	</tr>
 	 
 	 
-	 
+	<input type="hidden" name="partner_id" value="<?php echo $partner->partner_id	;?>"/> 
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
+	<input type="hidden" id="task" name="task" value="" />		
 			
 	</form>
+	 
 	</table>
+	 <button type="button" onClick="document.getElementById('task').value='saveStandard';document.getElementById('standardForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>			
+		<button type="button" onClick="document.getElementById('task').value='cancelStandard';document.getElementById('standardForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_STANDARD"); ?></button>
+	
 	<?php 	
 		
 	}
@@ -442,7 +448,6 @@ function editStandard($row,$id, $option ){
 	
 	
 	
-		
 function listExt($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
@@ -516,39 +521,6 @@ function listExt($use_pagination, $rows, $pageNav,$option){
 }	
 	
 	
-function editExt($row,$id, $option ){
-		global  $mainframe;
-		
-		$database =& JFactory::getDBO(); 
-				
-		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
-		$partners = array_merge( $partners, $database->loadObjectList() );
-		
-		
-?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-	<tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_EXT_NAME"); ?></td>
-		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
-	</tr>							
-	<tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_PARTNER_ID"); ?></td>
-		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
-	</tr>				
-	 
-	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	</form>
-	</table>
-	<?php 	
-		
-	}
-
 function listLocfreetext($use_pagination, $rows, $pageNav,$option){
 	
 		$database =& JFactory::getDBO();
@@ -625,6 +597,39 @@ function listLocfreetext($use_pagination, $rows, $pageNav,$option){
 		
 }	
 	
+function editExt($row,$id, $option ){
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
+				
+		$partners = array();
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+		$partners = array_merge( $partners, $database->loadObjectList() );
+		
+		
+?>
+<table border="0" cellpadding="3" cellspacing="0">	
+	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_EXT_NAME"); ?></td>
+		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
+	</tr>							
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_PARTNER_ID"); ?></td>
+		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
+	</tr>				
+	 
+	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+	<input type="hidden" name="id" value="<?php echo $row->id?>" />
+	<input type="hidden" name="task" value="" />		
+			
+	</form>
+	</table>
+	<?php 	
+		
+	}
+
 function editLocfreetext($row,$id, $option ){
 		global  $mainframe;
 		
@@ -826,21 +831,6 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}		
 		}
-		
-		$listext = array();
-		$listext[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_EXT") );
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_ext ORDER BY name" );
-		$listext = array_merge( $listext, $database->loadObjectList() );
-
-		
-		$selExtList = array();
-		if($row->type == 'ext'){
-			$database->setQuery( "SELECT ext_id AS value FROM #__easysdi_metadata_classes_ext  WHERE classes_id = $row->id ");
-			$selExtList   = $database->loadObjectList() ;		
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-		}
 ?>
 <script>
 function selectTypeParameters(){
@@ -850,7 +840,6 @@ document.getElementById('freetext').disabled=true;
 document.getElementById('locfreetext').disabled=true;
 document.getElementById('class').disabled=true;
 document.getElementById('list').disabled=true;
-document.getElementById('ext').disabled=true;
 document.getElementById(typevalue).disabled=false;
 }
 var oldLoad = window.onload;
@@ -893,7 +882,7 @@ window.onload=function(){
 		<td><select name="type" id="type" onChange="selectTypeParameters()"> 
 				<option value="freetext" <?php if($row->type == "freetext") echo "selected"; ?>><?php echo JText::_("EASYSDI_FREETEXT"); ?></option> 
  				<option value="locfreetext" <?php if($row->type == "locfreetext") echo "selected"; ?>><?php echo JText::_("EASYSDI_LOCFREETEXT"); ?></option>
- 				<option value="ext" <?php if($row->type == "ext") echo "selected"; ?>><?php echo JText::_("EASYSDI_EXT"); ?></option>
+ 				<option value="date" <?php if($row->type == "date") echo "selected"; ?>><?php echo JText::_("EASYSDI_DATE"); ?></option>
  				<option value="class" <?php if($row->type == "class") echo "selected"; ?>><?php echo JText::_("EASYSDI_CLASS"); ?></option>
  				<option value="list" <?php if($row->type == "list") echo "selected"; ?>><?php echo JText::_("EASYSDI_LIST"); ?></option>
 		</select></td> 				
@@ -901,10 +890,6 @@ window.onload=function(){
 	 <tr>
 	 	<td><?php echo JText::_("EASYSDI_METADATA_CLASS_LIST_CHOICE"); ?></td>
 	 	<td><?php echo JHTML::_("select.genericlist",$listlist, 'list[]', 'size="1" class="inputbox"', 'value', 'text', $selListList ); ?></td>
-	 </tr>
-	  <tr>
-	 	<td><?php echo JText::_("EASYSDI_METADATA_CLASS_EXT_CHOICE"); ?></td>
-	 	<td><?php echo JHTML::_("select.genericlist",$listext, 'ext[]', 'size="1" class="inputbox"', 'value', 'text', $selExtList ); ?></td>
 	 </tr>
 	 <tr>
 	 	<td><?php echo JText::_("EASYSDI_METADATA_CLASS_FREETEXT_CHOICE"); ?></td>

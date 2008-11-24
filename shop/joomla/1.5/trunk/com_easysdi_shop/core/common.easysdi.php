@@ -40,6 +40,22 @@ class helper_easysdi{
 		
 		switch($row->type){
 			
+			case "ext":
+				$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
+				$database->setQuery($query);
+				$rowsExt = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsExt as $rowExt){
+					?>
+					<tr><td><?php echo JText::_($row->description);?></td><td>					
+
+												
+					<input type="text" name="<?php echo $iso_key."[]"?>" value="<?php echo $geoMD->getExtValue($rowExt->name)?>"></td></tr>
+					<?php					
+				}
+				break;
 			case "locfreetext":
 				$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
 				$database->setQuery($query);
@@ -91,6 +107,7 @@ class helper_easysdi{
 			case  "freetext" :
  
 				$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->class_id and a.freetext_id = b.id";
+				
 				$database->setQuery($query);
 				$rowsFreetext = $database->loadObjectList();
 				if ($database->getErrorNum()) {
@@ -122,7 +139,7 @@ class helper_easysdi{
 				}
 				break;
 			case "class":				
-				$query = "select classes_to_id from jos_easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
 				$database->setQuery($query);				 
 				$rowsClasses = $database->loadObjectList();		
 				if ($database->getErrorNum()) {
@@ -153,7 +170,7 @@ class helper_easysdi{
 				
 		
 		default:		
-	
+			
 		
 		}
 
@@ -169,7 +186,21 @@ class helper_easysdi{
 		$database =& JFactory::getDBO();
 			
 		switch($row->type){
+
+			case  "ext" :					
 				
+				$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
+				$database->setQuery($query);
+				$rowsExt = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsExt as $rowExt){
+					$value = array_pop  ( $_POST[$iso_key] );
+					$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>$rowExt->name</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";																									
+				}
+				break;
+			
 			case "locfreetext":
 			
 				$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
@@ -201,7 +232,7 @@ class helper_easysdi{
 				break;
 			case "class":
 
-				$query = "select classes_to_id from jos_easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
 				$database->setQuery($query);
 				$rowsClasses = $database->loadObjectList();
 				if ($database->getErrorNum()) {

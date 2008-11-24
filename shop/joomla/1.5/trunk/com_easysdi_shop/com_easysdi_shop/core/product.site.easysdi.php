@@ -27,7 +27,7 @@ class SITE_product {
 		 
 		$metadata_standard_id = JRequest::getVar("standard_id");
 		
-		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and a.standard_id = $metadata_standard_id group by a.tab_id" ;
+		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) group by a.tab_id" ;
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
 		if ($database->getErrorNum()) {
@@ -40,7 +40,7 @@ class SITE_product {
 		foreach ($rows as $row){
 
 
-			$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and a.standard_id = $metadata_standard_id order by position" ;
+			$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) order by position" ;
 			$database->setQuery($query);
 			$rowsClasses = $database->loadObjectList();
 			if ($database->getErrorNum()) {

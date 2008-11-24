@@ -35,7 +35,9 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
-
+require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop');
 
@@ -67,6 +69,40 @@ switch($task){
 	case "listProperties":
 		SITE_properties::listProperties($option);
 		break;	
+	case "listPropertiesValues":
+	case "listPropertiesValue":		
+		SITE_properties::listPropertiesValues($cid[0],$option);		
+		break;
+	case "cancelPropertiesValues":		
+		
+		$properties_id = JRequest::getVar('properties_id');
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
+	
+	case "savePropertiesValues":		
+		SITE_properties::savePropertiesValues($option);
+		
+		$properties_id = JRequest::getVar('properties_id');
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
+		
+						
+		break;
+	case "deletePropertiesValues":		
+		SITE_properties::deletePropertiesValues($cid,$option);				
+		break;	
+		
+	case "editPropertiesValues":		
+		SITE_properties::editPropertiesValues($cid[0],$option);
+		break;
+		
+	case "newPropertiesValues":		
+		SITE_properties::editPropertiesValues(0,$option);
+		
+		break;
+		
+		
+		
+		
+		
 		
 	case "cancelEditProduct":
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -116,17 +152,45 @@ switch($task){
 		break;
 	case "deleteProduct":
 		HTML_shop::deleteProduct();
+	case "order":
+		HTML_shop::order();
+		break;
+	case "showMetadata":
+		HTML_shop::showMetadata();
+		break;
+	case "listMetadataClasses":
+		SITE_metadata::listStandardClasses($option);
+		break;
+	case "newStandardClass":
+		SITE_metadata::editStandardClasses(0,$option);
+		break;
+	case	"editStandardClass":
+		SITE_metadata::editStandardClasses($cid[0],$option);
+		break;
+	case "newStandard":
+		SITE_metadata::editStandard(0,$option);
+		break;	
+	case "saveStandard":
+		SITE_metadata::saveMDStandard($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		break;	
+	case "cancelStandardClass":
+	case "cancelStandard":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		break;	
+	case "saveStandardClass":
+		SITE_metadata::saveMDStandardClasses($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		
+	break;
+		
+		
 	default :	
 		
 		echo "<div class='alert'>";			
 			echo JText::_("EASYSDI_ACTION_NOT_ALLOWED");
 		echo "</div>";
 		break;
-	case "order":
-		HTML_shop::order();
-		break;
-	case "showMetadata":
-		HTML_shop::showMetadata();
-		break;	
+		
 }
  ?>

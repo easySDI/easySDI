@@ -44,10 +44,6 @@ class HTML_properties {
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>
 			
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_ORDER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" /></td>
-							</tr>
   							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
@@ -69,13 +65,25 @@ class HTML_properties {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="text" value="<?php echo $rowProperties->text; ?>" /></td>
 							</tr>
 							
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_TYPE_CODE"); ?> : </td>
+								<td><select class="inputbox" name="type_code" >								
+								<option value="list" <?php if( $rowProperties->type_code == 'list' ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_PROPERTY_LIST"); ?></option>
+								<option value="mlist" <?php if( $rowProperties->type_code == 'mlist' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_MULTIPLE_LIST"); ?></option>
+								<option value="cbox" <?php if( $rowProperties->type_code == 'cbox' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_CBOX"); ?></option>
+								<option value="text" <?php if( $rowProperties->type_code == 'text' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT"); ?></option>
+								<option value="textarea" <?php if( $rowProperties->type_code == 'textarea' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT_AREA"); ?></option>
+								</select>
+								</td>
+							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 			
 		</table>
-				
+
+		<input type="hidden" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" />				
 		<input type="hidden" name="mandatory" value="1" />
 		<input type="hidden" size="50" maxlength="100" name="partner_id" value="<?php echo $partner->partner_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
@@ -161,7 +169,7 @@ class HTML_properties {
 	  </form>
 	  	<button type="button" onClick="document.getElementById('task').value='newProperties';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PROPERTIES"); ?></button>			
 		<button type="button" onClick="document.getElementById('task').value='editProperties';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_PROPERTIES"); ?></button>
-	  	<button type="button" onClick="document.getElementById('task').value='addPropertiesValue';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_ADD_PROPERTIES_VALUE"); ?></button>
+	  	<button type="button" onClick="document.getElementById('task').value='listPropertiesValue';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_ADD_PROPERTIES_VALUE"); ?></button>
 	  
 <?php
 		
@@ -192,7 +200,7 @@ class HTML_properties {
 			
 		}else{
 		$query = "SELECT * FROM #__easysdi_product_properties_definition where id=".$properties_id;		
-		 													
+				 													
 		$database->setQuery( $query );
 		$rows = $database->loadObject();
 		if ($database->getErrorNum()) {						
@@ -200,20 +208,15 @@ class HTML_properties {
 			echo 	$database->getErrorMsg();
 			echo "</div>";											 		
 		}						
-		?>				
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-	<input type="hidden" name="properties_id" value="<?php echo $properties_id; ?>" />
-<?php
-		echo $tabs->startPane("propertiesPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"propertiesrPane");
-
-		?>		
 		
+		?>				
+	<form action="index.php" method="post" name="propertiesForm" id="propertiesForm" class="propertiesForm">
+	<input type="hidden" name="properties_id" value="<?php echo $properties_id; ?>" />
+	
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
+					<fieldset>						
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td width="100p"><?php echo JText::_("EASYSDI_ID"); ?> : </td>
@@ -223,10 +226,6 @@ class HTML_properties {
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_PROPERTIES_NAME"); ?> : </td>																						
 								<td><?php echo JText::_($rows->text); ?></td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_ORDER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" /></td>
 							</tr>
   							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_VALUE"); ?> : </td>
@@ -246,13 +245,13 @@ class HTML_properties {
 		</table>
 		
 		
-		<?php
-		echo $tabs->endPanel();
-			echo $tabs->endPane();
-			?>
+		<input type="hidden" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" id="task" value="" />
 		</form>
+		<button type="button" onClick="document.getElementById('task').value='savePropertiesValues';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PROPERTIES_VALUES"); ?></button>
+	  	<button type="button" onClick="document.getElementById('task').value='cancelPropertiesValues';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
+		
 	<?php
 		}
 	}
@@ -270,7 +269,7 @@ class HTML_properties {
 		
 		?>
 	
-	<form action="index.php" method="post" name="adminForm">
+	<form action="index.php" method="post" name="propertiesForm" id="propertiesForm">
 	<input type ="hidden" name ="properties_id" value ="<?php echo $properties_id ?>">	  
 		<table width="100%">
 			<tr>
@@ -280,18 +279,12 @@ class HTML_properties {
 				</td>
 			</tr>
 		</table>
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProperties\');"',$use_pagination); ?></td>
-			</tr>
-		</table>
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_DEF"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_VALUES_ID"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_ORDER"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_VALUE"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?></th>				
 			</tr>
@@ -309,9 +302,6 @@ class HTML_properties {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>								
 				<td><?php echo $row->id; ?></td>						
-				<td>				
-            <span><?php echo $pageNav->orderUpIcon($i, true, 'orderupproperties', 'Move Up', isset($rows[$i-1]) ); ?></span>
-            <span><?php echo $pageNav->orderDownIcon($i, $n, true, 'orderdownproperties', 'Move Down', isset($rows[$i+1]) ); ?></span>
 				<td><?php echo $row->value; ?></td>
 				<td><?php echo $row->text; ?></td>
 				
@@ -337,10 +327,14 @@ class HTML_properties {
 ?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listProperties" />
+	  	<input type="hidden" name="task" id="task"  value="listPropertiesValue" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  </form>
+	  	<button type="button" onClick="document.getElementById('task').value='newPropertiesValues';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PROPERTIES_VALUES"); ?></button>			
+		<button type="button" onClick="document.getElementById('task').value='editPropertiesValues';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_PROPERTIES_VALUES"); ?></button>
+	  	<button type="button" onClick="document.getElementById('task').value='listProperties';document.getElementById('propertiesForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
+	  
 <?php
 		
 }

@@ -70,18 +70,28 @@ switch($task){
 		ADMIN_metadata::saveMDTabs($option);
 		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
 		break;
-	case "cancelMDTABS":		
+	case "cancelMDTabs":		
 		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
 		break;
 	case "newMetadataTab":
 		TOOLBAR_metadata::_EDITMETADATATAB();	
+		ADMIN_metadata::editMDTabs(0,$option);
+		break;
+	case "editMetadataTab":
+		TOOLBAR_metadata::_EDITMETADATATAB();	
 		ADMIN_metadata::editMDTabs($cid[0],$option);
 		break;
+		
 	case "listMetadataTabs":
 		TOOLBAR_metadata::_LISTMDTABS();
 		ADMIN_metadata::listMetadataTabs($option);
 		break;
-		
+
+	case "deleteMetadataStandard":
+		ADMIN_metadata::deleteMDStandard($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
+		break;
+	
 	case "deleteMetadataStandardClasses":
 		ADMIN_metadata::deleteMDStandardClasses($cid,$option);
 		$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
@@ -160,6 +170,30 @@ switch($task){
 	break;
 	
 	
+	
+	
+	
+	
+	case "editMetadataExt":
+		TOOLBAR_metadata::_EDITEXT();;		
+		ADMIN_metadata::editExt($cid[0],$option);
+	break;
+	case "newMetadataExt":
+		TOOLBAR_metadata::_EDITEXT();
+		ADMIN_metadata::editExt(0,$option);
+	break;
+	
+	case "saveMDExt":
+		ADMIN_metadata::saveMDExt($option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataExt" );
+		break;
+	case "cancelMDExt":
+		$mainframe->redirect("index.php?option=$option&task=listMetadataExt" );
+		break;
+	case "listMetadataExt":
+		TOOLBAR_metadata::_LISTEXT();
+		ADMIN_metadata::listExt($option);
+	break;
 	
 	
 	
@@ -468,7 +502,8 @@ switch($task){
 		
 		break;
 	case "saveProductMetadata":		
-		ADMIN_product::saveProductMetadata(true,$option);				
+		ADMIN_product::saveProductMetadata($option);
+		$mainframe->redirect("index.php?option=$option&task=listProduct");				
 		break;
 		
 	case "saveProduct":		

@@ -32,6 +32,19 @@ class MDClasses extends JTable
 	}
 
 }
+class MDExt extends JTable
+{	
+	var $id=null;	
+	var $name=null;
+	var $value=null;
+	var $partner_id=null;	
+	
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_metadata_ext', 'id', $db ) ;    		
+}
+
+}
 
 class MDDate extends JTable
 {	

@@ -22,7 +22,16 @@ class HTML_properties {
 	function editProperties( $rowProperties,$id, $option ){
 		
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
+		$database =& JFactory::getDBO();
+		
+		$partners = array();
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+
+		$partners = array_merge( $partners, $database->loadObjectList() );
+		
+		
+		
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PROPERTIES"), 'generic.png' );
 			
@@ -46,10 +55,6 @@ class HTML_properties {
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>
 			
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_ORDER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" /></td>
-							</tr>
   							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_MANDATORY"); ?> : </td>
 								<td><select class="inputbox" name="mandatory" >								
@@ -59,7 +64,7 @@ class HTML_properties {
 							</tr>
   							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PARTNER_ID"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_id" value="<?php echo $rowProperties->partner_id; ?>" /></td>
+								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProperties->partner_id ); ?></td>															
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
@@ -81,7 +86,17 @@ class HTML_properties {
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="text" value="<?php echo $rowProperties->text; ?>" /></td>
 							</tr>
-							
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_TYPE_CODE"); ?> : </td>
+								<td><select class="inputbox" name="type_code" >								
+								<option value="list" <?php if( $rowProperties->type_code == 'list' ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_PROPERTY_LIST"); ?></option>
+								<option value="mlist" <?php if( $rowProperties->type_code == 'mlist' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_MULTIPLE_LIST"); ?></option>
+								<option value="cbox" <?php if( $rowProperties->type_code == 'cbox' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_CBOX"); ?></option>
+								<option value="text" <?php if( $rowProperties->type_code == 'text' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT"); ?></option>
+								<option value="textarea" <?php if( $rowProperties->type_code == 'textarea' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT_AREA"); ?></option>
+								</select>
+								</td>
+							</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -94,6 +109,7 @@ class HTML_properties {
 		echo $tabs->endPanel();
 			echo $tabs->endPane();
 			?>
+		<input class="inputbox" type="hidden" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
@@ -242,10 +258,6 @@ class HTML_properties {
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_PROPERTIES_NAME"); ?> : </td>																						
 								<td><?php echo JText::_($rows->text); ?></td>
 							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_ORDER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" /></td>
-							</tr>
   							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_VALUE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="value" value="<?php echo $rowProperties->value; ?>" /></td>
@@ -268,6 +280,7 @@ class HTML_properties {
 		echo $tabs->endPanel();
 			echo $tabs->endPane();
 			?>
+		<input type="hidden" size="50" maxlength="100" name="order" value="<?php echo $rowProperties->order; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>

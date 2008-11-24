@@ -84,7 +84,44 @@ class geoMetadata{
 		return "";
 		
 	}
-	
+	function getExtValue($name){
+		if ($this->metadata){	 
+			$xpath="//gmd:metadataExtensionInfo/gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:name/gco:CharacterString";
+		$nodes = $this->xpath->query($xpath);
+		
+		$xpath2="//gmd:metadataExtensionInfo/gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:domainValue/gco:CharacterString";
+		$nodes2 = $this->xpath->query($xpath2);
+		
+		if ($nodes === false) return "";
+
+		if ($nodes->length==0) return "";
+		$i=0;
+		foreach ($nodes as $node){
+			if ($node->nodeValue == $name){
+
+				$theNode = $nodes->item($i);
+				$theNode2 = $nodes2->item($i);
+				break;
+			}
+			$i++;
+		}
+		
+		$myNode = $theNode->parentNode->removeChild($theNode);
+		$myNode2 = $theNode2->parentNode->removeChild($theNode2);
+				
+		$this->metadata=$theNode->ownerDocument;		
+		$this->xpath = new DomXPath($theNode->ownerDocument);
+		
+		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+		
+		//$this->metadata->save("c:\\".$theNode ->nodeValue.".xml");
+		
+		return $theNode2 ->nodeValue;
+		}
+		return "";
+		
+	}
 	function getThema(){
 		if ($this->metadata){	 
 		$nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode');

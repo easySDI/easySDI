@@ -39,7 +39,7 @@ class HTML_product{
 		
 				$standardlist = array();
 		$standardlist[] = JHTML::_('select.option','0', JText::_("EASYSDI_TABS_LIST") );
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  " );
+		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  WHERE is_deleted =0 " );
 		$standardlist= $database->loadObjectList() ;
 		
 		if ($database->getErrorNum()) {
@@ -65,7 +65,7 @@ class HTML_product{
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
+						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC_PRODUCT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td width="100p"><?php echo JText::_("EASYSDI_PRODUCT_ID"); ?> : </td>
@@ -228,7 +228,7 @@ class HTML_product{
 				}		
 
 				
-				$queryProperties = "SELECT b.id as property_id, b.text as text FROM #__easysdi_product_properties_definition b order by b.order";
+				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code FROM #__easysdi_product_properties_definition b order by b.order";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) {						
@@ -252,9 +252,48 @@ class HTML_product{
 				if ($database->getErrorNum()) {						
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 					}												
-?>
-								<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
-						<?php } ?>								
+					switch($curProperty->type_code){
+
+					case "list":
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>							
+						<?php
+						break;
+						
+					case "mlist":
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+						<?php
+						break;
+					case "cbox":
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+						<?php
+						break;
+						
+					case "text":
+					if ($curProperty->mandatory == 0 ){
+						$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
+							
+						}
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></td>
+						<?php
+						break;
+						
+					case "textarea":
+					if ($curProperty->mandatory == 0 ){
+						$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
+							
+						}
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></td>
+						<?php
+						break;
+					}	
+					 } ?>								
 							</tr>
 						</table>
 					</fieldset>
@@ -325,7 +364,7 @@ class HTML_product{
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
+						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC_METADATA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td width="100p"><?php echo JText::_("EASYSDI_PRODUCT_ID"); ?> : </td>
@@ -363,7 +402,7 @@ class HTML_product{
 							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
 								<?php
-									$query = "SELECT name FROM #__easysdi_metadata_standard  where id =".$rowProduct->metadata_standard_id ;
+									$query = "SELECT name FROM #__easysdi_metadata_standard  where is_deleted =0 AND id =".$rowProduct->metadata_standard_id ;
 									$database->setQuery($query);				 
 		 						?>
 								<td><?php echo $database->loadResult(); ?></td>																																								
@@ -380,7 +419,7 @@ class HTML_product{
 		echo $tabs->endPanel();
 	
 		
-				$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and a.standard_id = $rowProduct->metadata_standard_id group by a.tab_id" ;
+		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id AND (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and  id = $rowProduct->metadata_standard_id)) group by a.tab_id " ;
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
 		if ($database->getErrorNum()) {						
@@ -400,7 +439,8 @@ class HTML_product{
 						<legend><?php echo JText::_($row->text); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 						<?php
-							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and a.standard_id = $rowProduct->metadata_standard_id order by position" ;
+							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where  is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) order by position" ;
+							
 							$database->setQuery($query);				 
 							$rowsClasses = $database->loadObjectList();		
 							if ($database->getErrorNum()) {						
