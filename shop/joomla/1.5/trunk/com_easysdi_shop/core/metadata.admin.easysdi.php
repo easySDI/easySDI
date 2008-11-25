@@ -19,6 +19,70 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_metadata {
 
+	function deleteMetadataClass($cid,$option){
+		global $mainframe;
+		$database =& JFactory::getDBO();
+		
+		if (!is_array( $cid ) || count( $cid ) < 1) {
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");			
+			exit;
+		}
+		foreach( $cid as $id )
+		{
+			$rowMDClasses =&	 new MDClasses($database);
+			$rowMDClasses->load( $id );
+					
+			if (!$rowMDClasses->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				exit;
+			}
+			
+			
+			//delete the links  
+		
+		$query = "DELETE FROM  #__easysdi_metadata_classes_classes WHERE classes_from_id = ".$rowMDClasses->id;
+			$database->setQuery( $query );
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					
+				exit();		
+				}
+			$query = "DELETE FROM  #__easysdi_metadata_classes_freetext WHERE classes_id = ".$rowMDClasses->id;
+			$database->setQuery( $query );
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					
+				exit();		
+				}	
+			$query = "DELETE FROM  #__easysdi_metadata_classes_ext WHERE classes_id = ".$rowMDClasses->id;
+			$database->setQuery( $query );
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					
+				exit();		
+				}	
+	
+			$query = "DELETE FROM  #__easysdi_metadata_classes_locfreetext WHERE classes_id = ".$rowMDClasses->id;
+			$database->setQuery( $query );
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					
+				exit();		
+				}	
+		$query = "DELETE FROM  #__easysdi_metadata_classes_list WHERE classes_id = ".$rowMDClasses->id;
+			$database->setQuery( $query );
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					
+				exit();		
+				}	
+		
+				
+				
+			
+		}
+		
+	}
 		function deleteMetadataList($cid,$option){
 			
 		global $mainframe;
@@ -583,30 +647,31 @@ function listClass($option){
 		
 		if (!$rowMDClasses->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
-			exit();
+			
+			return;
 		}				
 		if (!$rowMDClasses->store()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
-			exit();
+			
+			return;
 		}
 
 		
 		//delete the links  
+		
 		$query = "DELETE FROM  #__easysdi_metadata_classes_classes WHERE classes_from_id = ".$rowMDClasses->id;
 			$database->setQuery( $query );
 			if (!$database->query()) {		
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
-				exit();		
+					
+				return ;		
 				}
 			$query = "DELETE FROM  #__easysdi_metadata_classes_freetext WHERE classes_id = ".$rowMDClasses->id;
 			$database->setQuery( $query );
 			if (!$database->query()) {		
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );	
-				exit();		
+					
+				return;		
 				}	
 			$query = "DELETE FROM  #__easysdi_metadata_classes_ext WHERE classes_id = ".$rowMDClasses->id;
 			$database->setQuery( $query );
@@ -786,6 +851,21 @@ function saveMDFreetext($option){
 			exit();
 		}
 	}
+
+		function editNumerics($id,$option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$row= new MDNumeric( $db );
+		$row->load( $id );					
+	
+		
+		
+		HTML_metadata::editNumerics($row,$id, $option );
+		
+	}
+	
 	
 	function editFreetext($id,$option){
 		
@@ -831,7 +911,37 @@ function saveMDFreetext($option){
 		HTML_metadata::editListContent($rowMDList,$id, $option,$list_id );
 		
 	}
+function listNumerics($option){
+			global  $mainframe;
+		$db =& JFactory::getDBO();
+		$limit = JRequest::getVar('limit', 10 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		
+		
+		$query = "select count(*) from  #__easysdi_metadata_numeric ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+		
+		$query = "select * from  #__easysdi_metadata_numeric ";
+		if ($use_pagination) {
+		$db->setQuery( $query ,$limitstart,$limit);	
+		}else{
+			$db->setQuery( $query);
+		}	
+		
 	
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}		
+
+		HTML_metadata::listNumerics($use_pagination,$rows,$pageNav,$option);
+		
+	
+} 	
 function listFreetext($option){
 		
 		global  $mainframe;

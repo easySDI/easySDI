@@ -442,7 +442,7 @@ class HTML_product {
 				<td>
 					<fieldset>
 						<legend><?php echo JText::_($row->text); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
+						
 						<?php
 							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id  and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) order by position" ;
 							$database->setQuery($query);	
@@ -455,11 +455,15 @@ class HTML_product {
 							foreach ($rowsClasses as $rowClasses){
 								
 						?>					
-														
+								<fieldset>
+								<legend><?php echo JText::_($rowClasses->description); ?></legend>	
+								<table border="0" cellpadding="3" cellspacing="0">
+												
 							<?php helper_easysdi::generateMetadataHtml($rowClasses,$row->tab_id,$rowProduct->metadata_standard_id,$rowClasses->iso_key,$geoMD,$rowProduct->metadata_id);  ?>
-							
+								</table>
+								</fieldset>							
 							<?php } ?>
-						</table>
+						
 				
 					</fieldset>
 					</td>
@@ -522,9 +526,13 @@ array(); ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>								
-				<td><?php echo $row->metadata_id; ?></td>
-				<td><?php echo $row->data_title; ?></td>
+				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editProductMetadata&cid[]=$row->id";?>								
+				
+				<td><a href="<?php echo $link;?>"><?php echo $row->metadata_id; ?></a></td>
+				<td><a href="<?php echo $link;?>"><?php echo $row->data_title; ?></a></td>																												
+				
+				
 				<?php 
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 

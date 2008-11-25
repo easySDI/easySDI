@@ -89,6 +89,18 @@ function _LISTSTANDARD() {
 		JToolBarHelper::spacer();		
 		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
+	
+function _LISTNUMERICS() {
+		global $mainframe;
+
+		
+		JToolBarHelper::addNew('newMetadataNumerics');
+		JToolBarHelper::editList('editMetadataNumerics');
+		JToolBarHelper::deleteList('','deleteMetadataNumerics');
+		JToolBarHelper::spacer();		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+	}
+	
 	function _LISTLOCFREETEXT() {
 		global $mainframe;
 
@@ -132,6 +144,16 @@ function _LISTCLASS() {
 		JToolBarHelper::spacer();		
 		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );			
 	}
+	
+	
+	function _EDITNUMERICS() {
+		global $mainframe;
+
+		
+		JToolBarHelper::save('saveMDNumerics');
+		JToolBarHelper::cancel('cancelMDNumerics');						
+	}
+	
 	
 	function _EDITFREETEXT() {
 		global $mainframe;

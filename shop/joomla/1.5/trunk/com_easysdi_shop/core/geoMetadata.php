@@ -58,8 +58,20 @@ class geoMetadata{
 		
 	}
 	
+function isXPathResultCount($xpath){
+		if ($this->metadata){	
+		$nodes = $this->xpath->query($xpath);
+		if ($nodes === false) return "";
+		if ($nodes->length==0) return "";
+		
+		return count($nodes);
+		}
+		return 0;
+		
+	}
+	
 	function getXPathResult($xpath){
-		if ($this->metadata){	 
+		if ($this->metadata){	
 		$nodes = $this->xpath->query($xpath);
 		if ($nodes === false) return "";
 		//echo "Renausd : ".count($nodes);

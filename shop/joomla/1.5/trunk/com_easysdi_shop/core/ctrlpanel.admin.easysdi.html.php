@@ -126,7 +126,6 @@ class HTML_ctrlpanel {
 			</div>
 		</div>
 	
-	
 		<?php
 		$link = "index.php?option=$option&amp;task=listMetadataExt";
 ?>

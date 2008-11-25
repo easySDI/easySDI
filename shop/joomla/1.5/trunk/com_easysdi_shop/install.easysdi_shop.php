@@ -317,7 +317,7 @@ CREATE TABLE `#__easysdi_basemap_content` (
 		
 	}
 
-	
+	$version = "0.9";
 }
 
 if ($version == "0.9"){
@@ -330,7 +330,7 @@ if ($version == "0.9"){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-
+	$version = "0.91";
 
 		
 		
@@ -586,6 +586,32 @@ $query="CREATE TABLE `#__easysdi_metatada_constant` (
 		
 	
 }
+
+if ($version == "0.91"){
+		
+	$query="UPDATE #__easysdi_version set version = '0.92' where component = 'com_easysdi_shop'";
+
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	$version = "0.92";
+	
+	
+	$query="ALTER TABLE __easysdi_metadata_freetext add column is_number tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		
+
+}
+
 
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);

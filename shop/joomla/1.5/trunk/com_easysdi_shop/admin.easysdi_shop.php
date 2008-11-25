@@ -86,7 +86,8 @@ switch($task){
 		TOOLBAR_metadata::_LISTMDTABS();
 		ADMIN_metadata::listMetadataTabs($option);
 		break;
-
+	
+		
 	case "deleteMetadataStandard":
 		ADMIN_metadata::deleteMDStandard($cid,$option);
 		$mainframe->redirect("index.php?option=$option&task=listMetadataStandard" );
@@ -222,7 +223,11 @@ switch($task){
 		ADMIN_metadata::listLocfreetext($option);
 	break;
 	
-	
+	case "deleteMetadataClass":
+		ADMIN_metadata::deleteMetadataClass($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
+		break;
+		
 	case "editMetadataClass":
 		TOOLBAR_metadata::_EDITCLASS();
 		ADMIN_metadata::editClass($cid[0],$option);
@@ -267,6 +272,20 @@ switch($task){
 		TOOLBAR_metadata::_LISTFREETEXT();
 		ADMIN_metadata::listFreetext($option);
 	break;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	case "editMetadataList":
 		TOOLBAR_metadata::_LISTEDIT();

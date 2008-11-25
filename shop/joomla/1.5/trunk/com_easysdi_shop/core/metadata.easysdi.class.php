@@ -72,6 +72,7 @@ class MDFreetext extends JTable
 	var $is_global=0;
 	var $is_constant=0;
 	var $is_date=0;
+	var $is_number=0;
 	var $is_id=0;
 	function __construct( &$db )
 	{
@@ -124,22 +125,6 @@ class MDLocFreetext extends JTable
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_loc_freetext', 'id', $db ) ;    		
-	}
-}
-
-class MDNumeric extends JTable
-{	
-	var $id=null;	
-	var $name=null;
-	var $default_value=null;
-	var $partner_id=null;
-	var $min_value=null;
-	var $max_value=null;
-	
-
-	function __construct( &$db )
-	{
-		parent::__construct ( '#__easysdi_metadata_numeric', 'id', $db ) ;    		
 	}
 }
 

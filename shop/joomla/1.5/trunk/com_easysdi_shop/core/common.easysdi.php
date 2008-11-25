@@ -66,7 +66,7 @@ class helper_easysdi{
 				foreach($rowsFreetext as $rowFreetext){
 					?>
 					<tr><td><?php echo JText::_($row->description)."[$rowFreetext->lang]"?></td><td>												
-						<input type="text" name="<?php echo $iso_key."{lang=$rowFreetext->lang}[]"?>" value="<?php echo $geoMD->getXPathResult("//gmd:MD_Metadata/".$iso_key."/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']")?>">
+						<textarea name="<?php echo $iso_key."{lang=$rowFreetext->lang}[]"?>" rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//gmd:MD_Metadata/".$iso_key."/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?></textarea>
 					</td></tr>
 					<?php					
 				}
@@ -83,7 +83,7 @@ class helper_easysdi{
 				foreach($rowsList as $rowList){
 					?>
 					<tr><td><?php echo JText::_($row->description) ?> </td><td>
-					<select name="<?php echo $iso_key."[]"?>" size="<?php if ($rowList->multiple == 1) {echo "1";}else {echo "10";} ?>" class="inputbox">
+					<select name="<?php echo $iso_key."[]"?>" <?php if ($rowList->multiple == 1) {echo "multiple";} ?>  size="<?php if ($rowList->multiple == 1) {echo "5";}else {echo "1";} ?>" class="inputbox">
 					<?php 
 				$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
 				$database->setQuery($query);
@@ -95,7 +95,9 @@ class helper_easysdi{
 				foreach ($rowsListContent as $rowListContent){
 					
 					?>
-						<option value="<?php echo $rowListContent->key ;?>" ><?php echo $rowListContent->value ;?></option>
+					
+					 
+						<option value="<?php echo $rowListContent->key ;?>"   <?php if ($geoMD->isXPathResultCount("//gmd:MD_Metadata/".$iso_key."[gco:CharacterString='$rowListContent->key']")>0){echo "selected";}?>  ><?php echo $rowListContent->value ;?></option>
 						<?php } ?>
 					</select>							
 					
@@ -115,27 +117,30 @@ class helper_easysdi{
 				}
 				foreach($rowsFreetext as $rowFreetext){
 					?>
+					<?php if ($rowFreetext->is_constant != 1) { ?>
 					<tr><td><?php echo JText::_($row->description) ?> </td><td>
+					<?php } ?>
 					<?php if( $rowFreetext->is_id == 1) { ?>							
-					<input type="text" <?php if ($rowFreetext->is_constant == 1) echo "READONLY";   ?> name="<?php echo $iso_key."[]"?>" value="<?php echo $metadata_id;?>">
+					<input type="<?php if ($rowFreetext->is_constant == 1) echo "hidden"; else echo "text";?>"  name="<?php echo $iso_key."[]"?>" value="<?php echo $metadata_id;?>">
 					<?php 
 					}else{
 						if( $rowFreetext->is_constant == 1) {
 					?>
-					<input type="text" <?php if ($rowFreetext->is_constant == 1) echo "READONLY";   ?> name="<?php echo $iso_key."[]"?>" value="<?php echo $rowFreetext->default_value;?>">
+					<input type="<?php if ($rowFreetext->is_constant == 1) echo "hidden"; else echo "text";   ?>"  name="<?php echo $iso_key."[]"?>" value="<?php echo $rowFreetext->default_value;?>">
 					<?php 
 						}else{
 					?>
-					<input type="text" <?php if ($rowFreetext->is_constant == 1) echo "READONLY";   ?> name="<?php echo $iso_key."[]"?>" value="<?php echo $geoMD->getXPathResult("//gmd:MD_Metadata/".$iso_key."/gco:CharacterString")?>">
+					<input type="<?php if ($rowFreetext->is_constant == 1) echo "hidden"; else echo "text";   ?>"  name="<?php echo $iso_key."[]"?>" value="<?php echo $geoMD->getXPathResult("//gmd:MD_Metadata/".$iso_key."/gco:CharacterString")?>">
 					<?php 
 							
 							
 						}
 					}
 					?>
-					
+					<?php if ($rowFreetext->is_constant != 1) { ?>
 					</td></tr>
 					<?php					
+					}
 				}
 				break;
 			case "class":				
@@ -155,17 +160,14 @@ class helper_easysdi{
 						}
 						foreach ($rowsClassesClasses  as $rowClassesClasses ){
 							
-								helper_easysdi::generateMetadataHtml($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,$geoMD,$metadata_id);													
+								helper_easysdi::generateMetadataHtml($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,$geoMD,$metadata_id);
+					?>
+					<?php
+								
 						}
 					
-					
 				}
-	
-					
-						
-				/*foreach ($rowsClasses as $rowClasses){
-				//				
-				}*/
+																
 			break;
 				
 		
@@ -186,7 +188,36 @@ class helper_easysdi{
 		$database =& JFactory::getDBO();
 			
 		switch($row->type){
-
+			case  "list" :
+ 	
+				$query = "SELECT * FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->class_id and a.list_id = b.id";
+				$database->setQuery($query);
+				$rowsList = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsList as $rowList){
+				$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
+				$database->setQuery($query);
+				$rowsListContent = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				
+				foreach ($rowsListContent as $rowListContent){
+										
+					$value = array_pop  ( $_POST[$iso_key] );
+					
+					
+					if (strlen  ($value)>0){
+					$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
+					}																
+					?>
+						<?php } ?>
+					<?php					
+				}
+				break;
+			
 			case  "ext" :					
 				
 				$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
@@ -197,7 +228,7 @@ class helper_easysdi{
 				}
 				foreach($rowsExt as $rowExt){
 					$value = array_pop  ( $_POST[$iso_key] );
-					$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>$rowExt->name</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";																									
+					$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>".htmlspecialchars    (stripslashes($rowExt->name) )."</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";																									
 				}
 				break;
 			
@@ -211,8 +242,9 @@ class helper_easysdi{
 				}
 				$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
 				foreach($rowsFreetext as $rowFreetext){
+					//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
 					$value = array_pop  ( $_POST[$iso_key."{lang=$rowFreetext->lang}"] );					
-					$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".$value."</gmd:LocalisedCharacterString>";
+					$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
 				}
 				$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
 				break;
@@ -224,10 +256,14 @@ class helper_easysdi{
 				if ($database->getErrorNum()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
-				foreach($rowsFreetext as $rowFreetext){
-					$value = array_pop  ( $_POST[$iso_key] );									
-					$doc=$doc."<gco:CharacterString>$value</gco:CharacterString>";					
-						
+				foreach($rowsFreetext as $rowFreetext){					
+					$value = array_pop  ( $_POST[$iso_key] );
+					if ($rowFreetext->is_number == 1){
+						$doc=$doc."<gco:Decimal>$value</gco:Decimal>";
+					}else									
+					if ($rowFreetext->is_date == 1){
+						$doc=$doc."<gco:Date>$value</gco:Date>";
+					}else	$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value) )."</gco:CharacterString>";																
 				}
 				break;
 			case "class":

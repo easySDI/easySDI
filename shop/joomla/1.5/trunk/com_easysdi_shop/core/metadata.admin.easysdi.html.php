@@ -55,8 +55,9 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>				
-				<td><?php echo $row->text; ?></td>
+				<td><?php echo $row->id; ?></td>	
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataTab&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->text; ?></a></td>																							
 				<?php 
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
@@ -174,9 +175,10 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>				
-				<td><?php echo $row->standard_name; ?></td>
-				<td><?php echo $row->class_name; ?></td>
+				<td><?php echo $row->id; ?></td>			
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataStandardClasses&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->standard_name; ?></a></td>																												
+				<td><a href="<?php echo $link;?>"><?php echo $row->class_name; ?></a></td>																												
 				<td><?php echo $row->position; ?></td>							
 			</tr>
 <?php
@@ -353,8 +355,11 @@ function listStandard($use_pagination, $rows, $pageNav,$option){
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<td><?php echo $database->loadResult(); ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataStandard&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+												
+				
 				<td><?php echo $row->inherited; ?></td>							
 			</tr>
 <?php
@@ -483,8 +488,11 @@ function listExt($use_pagination, $rows, $pageNav,$option){
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<td><?php echo $database->loadResult(); ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataExt&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+												
+				
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -591,8 +599,10 @@ function listLocfreetext($use_pagination, $rows, $pageNav,$option){
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<td><?php echo $database->loadResult(); ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataLocfreetext&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+												
 				<td><?php echo $row->lang; ?></td>
 				<td><?php echo $row->default_value; ?></td>				
 			</tr>
@@ -720,7 +730,8 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 				$database->setQuery($query);				 
 		 		?>
 				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataClass&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>												
 				<td><?php echo $row->iso_key; ?></td>
 				<td><?php echo $row->type; ?></td>						
 			</tr>
@@ -992,6 +1003,11 @@ window.onload=function(){
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_DATE"); ?></td>
 		<td><select name="is_date" > <option value="1" <?php if($row->is_date == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_date == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
+	</tr>
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_NUMBER"); ?></td>
+		<td><select name="is_number" > <option value="1" <?php if($row->is_number == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+		<option value="0" <?php if($row->is_number == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
 	</tr>				
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_CONSTANT"); ?></td>
@@ -1100,81 +1116,6 @@ window.onload=function(){
 	<?php 	
 		
 	}
-	function listDate($use_pagination, $rows, $pageNav,$option){
-	
-		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_DATE"));
-		
-		$partners = array();
-		
-		?>
-	<form action="index.php" method="post" name="adminForm">
-		
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataDate\');"',$use_pagination); ?></td>
-			</tr>
-		</table>
-		<table class="adminlist">
-		<thead>
-			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_DATE_SHARP"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_DATE_ID"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_DATE_PARTNER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_DATE_NAME"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_DATE_DEFAULT_VALUE"); ?></th>															
-			</tr>
-		</thead>
-		<tbody>		
-<?php
-		$k = 0;
-		$i=0;
-		foreach ($rows as $row)
-		{				  				
-?>
-			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>
-				<td><?php echo $row->partner_id; ?></td>
-				<?php 
-				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
-				$database->setQuery($query);				 
-		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
-				<td><?php echo $row->default_value; ?></td>
-				
-			</tr>
-<?php
-			$k = 1 - $k;
-			$i ++;
-		}
-		
-			?></tbody>
-			
-		<?php			
-		
-		if (JRequest::getVar('use_pagination',0))
-		{?>
-		<tfoot>
-		<tr>	
-		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
-		</tr>
-		</tfoot>
-		<?php
-		}
-?>
-	  	</table>
-	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listMetadataDate" />
-	  	<input type="hidden" name="boxchecked" value="0" />
-	  	<input type="hidden" name="hidemainmenu" value="0">	  	
-	  </form>
-<?php
-		
-}	
 
 	function listFreetext($use_pagination, $rows, $pageNav,$option){
 	
@@ -1218,7 +1159,9 @@ window.onload=function(){
 				$database->setQuery($query);				 
 		 		?>
 				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataFreetext&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+
 				<td><?php echo $row->default_value; ?></td>				
 			</tr>
 <?php
@@ -1292,8 +1235,11 @@ window.onload=function(){
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->code_key; ?></td>
+				<td><?php echo $database->loadResult(); ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataListContent&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->code_key; ?></a></td>																												
+												
+				
 				<td><?php echo $row->value; ?></td>
 				
 			</tr>
@@ -1368,7 +1314,8 @@ window.onload=function(){
 				$database->setQuery($query);				 
 		 		?>
 				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataList&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
 				
 			</tr>
 <?php

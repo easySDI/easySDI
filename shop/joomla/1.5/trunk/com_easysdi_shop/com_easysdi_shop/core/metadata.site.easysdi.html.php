@@ -723,9 +723,11 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 				<?php 
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
-		 		?>
-				<td><?php echo $database->loadResult(); ?></td>								
-				<td><?php echo $row->name; ?></td>
+		 		?>		 				 		
+				<td><?php echo $database->loadResult(); ?></td>
+				
+				<?php $link =  "index.php?option=$option&amp;task=editMetadataClass&cid[]=$row->id";?>
+				<td><a href="<?php echo link;?>"><?php echo $row->name; ?></a></td>												
 				<td><?php echo $row->iso_key; ?></td>
 				<td><?php echo $row->type; ?></td>						
 			</tr>
@@ -928,10 +930,7 @@ window.onload=function(){
 	
 	
 	
-	
-	
-	
-	
+
 	function editFreetext($row,$id, $option ){
 		global  $mainframe;
 		
@@ -988,6 +987,48 @@ window.onload=function(){
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_DEFAULT_VALUE"); ?></td>
 		<td><input size="50" type="text" name ="default_value" value="<?php echo $row->default_value?>"> </td>		 
 	</tr>
+	
+	 
+	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+	<input type="hidden" name="id" value="<?php echo $row->id?>" />
+	<input type="hidden" name="task" value="" />		
+			
+	</form>
+	</table>
+	<?php 	
+		
+	}
+		
+	
+	
+	
+	function editNumerics($row,$id, $option ){
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
+				
+		$partners = array();
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+		$partners = array_merge( $partners, $database->loadObjectList() );
+		
+		
+?>
+<table border="0" cellpadding="3" cellspacing="0">	
+	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_NUMERICS_NAME"); ?></td>
+		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
+	</tr>							
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_NUMERICS_DESCRIPTION"); ?></td>
+		<td><input size="50" type="text" name ="description" value="<?php echo $row->description?>"> </td>							
+	</tr>							
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_NUMERICS_PARTNER_ID"); ?></td>
+		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
+	</tr>				
+					
 	
 	 
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
@@ -1205,6 +1246,79 @@ window.onload=function(){
 				<td><?php echo $database->loadResult(); ?></td>								
 				<td><?php echo $row->name; ?></td>
 				<td><?php echo $row->default_value; ?></td>				
+			</tr>
+<?php
+			$k = 1 - $k;
+			$i ++;
+		}
+		
+			?></tbody>
+			
+		<?php			
+		
+		if (JRequest::getVar('use_pagination',0))
+		{?>
+		<tfoot>
+		<tr>	
+		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
+		</tr>
+		</tfoot>
+		<?php
+		}
+?>
+	  	</table>
+	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+	  	<input type="hidden" name="task" value="listMetadataFreetext" />
+	  	<input type="hidden" name="boxchecked" value="0" />
+	  	<input type="hidden" name="hidemainmenu" value="0">	  	
+	  </form>
+<?php
+		
+}	
+
+	function listNumerics($use_pagination, $rows, $pageNav,$option){
+	
+		$database =& JFactory::getDBO();
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_NUMERICS"));
+		
+		$partners = array();
+		
+		?>
+	<form action="index.php" method="post" name="adminForm">
+		
+		<table width="100%">
+			<tr>																																			
+				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataFreetext\');"',$use_pagination); ?></td>
+			</tr>
+		</table>
+		<table class="adminlist">
+		<thead>
+			<tr>					 			
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_NUMERICS_SHARP"); ?></th>
+				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_NUMERICS_ID"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_NUMERICS_PARTNER_NAME"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_NUMERICS_NAME"); ?></th>																											
+			</tr>
+		</thead>
+		<tbody>		
+<?php
+		$k = 0;
+		$i=0;
+		foreach ($rows as $row)
+		{				  				
+?>
+			<tr class="<?php echo "row$k"; ?>">
+				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
+				<td><?php echo $row->id; ?></td>				
+				<?php 
+				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
+				$database->setQuery($query);				 
+		 		?>
+				<td><?php echo $database->loadResult(); ?></td>								
+				<td><?php echo $row->name; ?></td>
+							
 			</tr>
 <?php
 			$k = 1 - $k;
