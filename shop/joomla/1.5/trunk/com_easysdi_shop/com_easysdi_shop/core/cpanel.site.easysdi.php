@@ -96,5 +96,58 @@ class SITE_cpanel {
 		
 	}
 	
+
+function orderReport($id){
+	global $mainframe;
+	
+	$db =& JFactory::getDBO();
+	
+	$query = "SELECT * FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id";
+		
+	$db->setQuery($query );
+	
+	
+	$rows = $db->loadObjectList();
+	if ($db->getErrorNum()) {
+			echo "<div class='alert'>";			
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}	
+		
+		
+	$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;	
+	$db->setQuery($query );
+	$rowsPerimeter = $db->loadObjectList();
+	if ($db->getErrorNum()) {
+			echo "<div class='alert'>";			
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}	
+	if ($rows[0]->perimeter_id > 0){		
+	?>
+	<h1><?php echo $rowsPerimeter[0]->perimeter_name; ?> (<?php echo $rowsPerimeter[0]->perimeter_desc; ?>)</h1>
+		<?php }else{
+			echo "<h1>".JText::_("EASYSDI_GEOMETRY_TEXT")."</h1>";
+			
+		} ?>
+	<table>
+		
+	<?php
+	$i=0;
+	foreach ($rows as $row){?>
+		<tr>
+		<td><?php echo ++$i; ?></td>
+		<td><?php echo $row->text?><?php if ($rows[0]->perimeter_id > 0) {echo "($row->value)";}?></td>				
+		
+		</tr>
+	<?php }?>
+	 </table>
+	 <?php
+		
+}
+
+	
+	
+	
 }
 ?>

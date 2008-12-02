@@ -1240,8 +1240,11 @@ function saveOrder($orderStatus){
 	
 	//Before the dot, it is the perimeter id, after the dot id of the data	
 	$pos1 = stripos($sel, ".");			
-	
-	$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,".substr($sel,0,$pos1).",'".substr($sel,$pos1+1)."',".$db->Quote($selSurfaceListName[$i]).")";
+	if ($pos1 === false){
+		
+	}else
+	{
+	$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,0,'$sel','$sel')";
 	$db->setQuery($query );	
 	if (!$db->query()) {		
 			echo "<div class='alert'>";
@@ -1250,7 +1253,7 @@ function saveOrder($orderStatus){
 		}	
 	$i++;
 	}
-		
+	}	
 	
 	foreach ($cid as $product_id){
 	
@@ -1473,8 +1476,6 @@ function importProduct(){
 	
 	
 }
-
-
 function searchProducts($orderable = 1){
 	global $mainframe;
 	$db =& JFactory::getDBO();

@@ -52,7 +52,10 @@ if (!is_array( $cid )) {
 
 
 switch($task){
-	
+
+	case "orderReport":
+		SITE_cpanel::orderReport($cid[0]);
+		break;
 	case "cancelProperties":
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
 	break;
