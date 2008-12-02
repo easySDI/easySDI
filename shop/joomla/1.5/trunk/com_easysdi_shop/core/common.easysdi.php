@@ -302,6 +302,75 @@ class helper_easysdi{
 function getUniqueId(){
 	return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) ); 
 }
+
+function exportPDF( $myHtml) {
+		$database =& JFactory::getDBO();
+
+		
+		$document  = new DomDocument();
+		$document ->load(JPATH_COMPONENT_SITE.'/xsl/xhtml-to-xslfo.xsl');
+		$processor = new xsltProcessor();
+		$processor->importStylesheet($document);
+			
+		$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
+	  
+		
+		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		
+		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
+		 
+		if ($bridge_url ){ 
+			
+		require_once($bridge_url);
+			
+		$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+		$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+			
+		$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
+		$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.uniqid().'pdf';
+		
+		
+	
+			
+				try {
+					@java_reset();		
+				java_require($java_library_path);
+			
+				$j_fw = new Java("FOPWrapper");
+				
+				$version = $j_fw->FOPVersion();
+				//G�n�ration du document PDF sous forme de fichier
+				$j_fw->convert($fopcfg,$result,$foptmp);
+				
+				@java_reset();
+
+				$fp = fopen ($foptmp, 'r');
+				$result = fread($fp, filesize($foptmp));
+				fclose ($fp);
+
+				 
+				
+				 error_reporting(0);
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Tran§sfer-Encoding: none');
+		header('Content-Type: application/octetstream; name="metadata.pdf"');
+		header('Content-Disposition: attachement; filename="metadata.pdf"');
+
+		echo $result;
+
+		
+			} catch (JavaException $ex) {
+				$trace = new Java("java.io.ByteArrayOutputStream");
+				$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
+				print "java stack trace: $trace\n";
+			}
+		}else {
+			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
+		}
+	}
 	
 }
 ?>

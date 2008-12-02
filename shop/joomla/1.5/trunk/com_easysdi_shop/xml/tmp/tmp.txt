@@ -1,0 +1,1 @@
+This directory should exist due to the use of FOP, that crashes the server when he does not find the output directory.

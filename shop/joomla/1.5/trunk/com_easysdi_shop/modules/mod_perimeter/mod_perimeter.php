@@ -80,7 +80,9 @@ $cid = 		$mainframe->getUserState('productList');
     
     
     
-         
+        <table>
+        <tr>
+        <td> 
 	<select id="perimeterList"  onChange="selectPerimeter()">
 	<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 	<?php
@@ -92,9 +94,15 @@ $cid = 		$mainframe->getUserState('productList');
 				  		
 		}
 		?>
-		</select><br>
-	
-		
+		</select>
+		</td></tr>
+		<tr><td>
+	<div id="panelEdition" class="olControlEditingToolbar"></div>
+	</td></tr>  
+<tr><td>
+<div id="status">  </div>
+</td></tr></table>
+	<br>	
 		<?php
 		$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
 		foreach( $cid as $id )
@@ -110,7 +118,7 @@ $cid = 		$mainframe->getUserState('productList');
 		$rowsSurfaceMin = $db->loadObjectList();
 		foreach( $rowsSurfaceMin as $surfaceMin )
 		{
-			echo JText::_("SURFACE_MIN")." ".$surfaceMin->surface_min." ".JText::_("SURFACE_MIN_UNIT")."<br>";
+			echo JText::_("EASYSDI_SURFACE_MIN")." ".$surfaceMin->surface_min." ".JText::_("EASYSDI_SURFACE_MIN_UNIT")."<br>";
 			?><input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
 			<?php					
 		
@@ -120,7 +128,7 @@ $cid = 		$mainframe->getUserState('productList');
 		$rowsSurfaceMax = $db->loadObjectList();
 		foreach( $rowsSurfaceMax as $surfaceMax )
 		{
-			echo JText::_("SURFACE_MAX")." ".$surfaceMax->surface_max." ".JText::_("SURFACE_MAX_UNIT")."<br>";
+			echo JText::_("EASYSDI_SURFACE_MAX")." ".$surfaceMax->surface_max." ".JText::_("EASYSDI_SURFACE_MAX_UNIT")."<br>";
 			?><input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
 			<?php
 		}
@@ -129,9 +137,9 @@ $cid = 		$mainframe->getUserState('productList');
 		$totalArea = $mainframe->getUserState('totalArea');
 		if (!$totalArea) $totalArea=0;
 		
-		echo JText::_("SURFACE_SELECTED");?>
-		<input type="text" size="10" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>"><br>
-		<select multiple="multiple" size="10" id="selectedSurface">
+		echo JText::_("EASYSDI_SURFACE_SELECTED");?>
+		<input type="text" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>"><br>
+		<select multiple="multiple" size="10" id="selectedSurface" onChange="changeSelectedSurface()">
 		<?php																								
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
@@ -150,7 +158,7 @@ $cid = 		$mainframe->getUserState('productList');
 		<script>
 		function removeSelected()  {
 		     
-     
+     if (isFreeSelectionPerimeter){
 		var elSel = document.getElementById('selectedSurface');		
 		var i;
 			  for (i = elSel.length - 1; i>=0; i--) {
@@ -159,8 +167,42 @@ $cid = 		$mainframe->getUserState('productList');
 			      elSel.remove(i);			  	       
 			    }
 			  }
-			 
-			 if (isFreeSelectionPerimeter){
+			 	
+			 	drawSelectedSurface();
+			 				 
+		}else {
+
+		var elSel = document.getElementById('selectedSurface');		
+		 for (i = elSel.length - 1; i>=0; i--) {
+			    if (elSel.options[i].selected) {
+				var idToLookFor =  elSel.options[i].value;
+				var wfsFeatures = wfs.features;
+				// look for a feature with the same id
+				var found = false;
+				
+				for(var j=wfsFeatures.length-1; j>=0; j--) {
+                    feat2 = wfsFeatures[j];                       
+                      
+                       if (idToLookFor ==  document.getElementById('perimeter_id').value +"."+feat2.attributes[idField]){
+                       	found=true;
+                       
+                       	wfs.removeFeatures([wfsFeatures[j]]);
+                       	break;
+                       }
+                       }
+
+			    }
+			  }
+			  
+			  
+		}
+			  
+		}
+
+
+
+		 function drawSelectedSurface(){
+			 var elSel = document.getElementById('selectedSurface');
 			 var features = vectors.features; 
      	     var feature= features[features.length-1];
 			var selectedComponents =      new Array();
@@ -179,34 +221,224 @@ $cid = 		$mainframe->getUserState('productList');
 						feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
 						vectors.removeFeatures(features);				
 						vectors.addFeatures([feature]);
-			  			vectors.drawFeature (feature);		
+			  			vectors.drawFeature (feature);
+			  			
+     				if (feature.geometry.components[0].components.length > 2){
+   			 				featureArea = feature.geometry.getArea();
+    					}else{
+    						featureArea = 0;
+    					}
+					document.getElementById('totalSurface').value =  parseFloat(featureArea );    		
 		}
-		}else {
 		
-		//TODO: Remove the features comming from the WFS.
 		}
+		
+		
+function recenterOnPerimeter(){
+	
+		
+		var elSel = document.getElementById("perimetersList");
+			  for (i = elSel.length - 1; i>=0; i--) {
+			    if (elSel.options[i].selected) {			     	
+                    var wfsFeatures = wfs3.features;
+					var idToLookFor = elSel.options[i].value;
+					var found = false;
+					for(var j=wfsFeatures.length-1; j>=0; j--) {
+                    	feat2 = wfsFeatures[j];                       
+                      
+                       if (idToLookFor == feat2.attributes[idField]){
+                       		found=true;
+							map.zoomToExtent (feat2.geometry.getBounds(),true);
+
+                       		break;
+                       }
+                       }                       
+                       break;
+                       }                       
+			     	}		  	       
+		
+		}
+		
+		
+	function addManualPerimeter(){
+		
+		var elSel = document.getElementById("perimetersList");
+			  for (i = elSel.length - 1; i>=0; i--) {
+			    if (elSel.options[i].selected) {			     	
+                    var wfsFeatures = wfs3.features;
+					var idToLookFor = elSel.options[i].value;
+					var found = false;
+					for(var j=wfsFeatures.length-1; j>=0; j--) {
+                    	feat2 = wfsFeatures[j];                       
+                      
+                       if (idToLookFor == feat2.attributes[idField]){
+                       		found=true;
+                       		if (!wfs){                       		
+                       		  wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    					strategies: [new OpenLayers.Strategy.Fixed()],
+                    					  protocol: new OpenLayers.Protocol.HTTP({
+                      					 	
+                        					format: new OpenLayers.Format.GML()                        
+                    						})                    				
+                				}
+                				                				 		                			
+                				);
+                				wfsRegisterEvents();
+                				map.addLayer(wfs);		                                                       
+                       		}
+                       		     		wfs.addFeatures([wfsFeatures[j]]);
+                       		break;
+                       }
+                       }                       
+                       break;
+                       }                       
+			     	}		  	       
+			    }
 			  
-		}
-		function addManualPerimeter()
+			 
 		
-		{ 
-			alert(vectors.id);
-			map.removeLayer(vectors.id);
-				 vectors = new OpenLayers.Layer.Vector(
-                "Vector Layer",
-                {isBaseLayer: false,transparent: "true"}
-            );
-            
-              map.addLayer(vectors);
+		
+		function addGeometryPerimeter(){
+			if (isFreeSelectionPerimeter){
+			
+			var elSel = document.getElementById('selectedSurface');
+			if (elSel.options.selectedIndex>=0){
+			
+			
+			var selectedIndex = elSel.options.selectedIndex;
+			
+			for (i = elSel.length - 1; i>=selectedIndex; i--) {
+					elSel.options[i+1] = new Option (elSel.options[i].text,elSel.options[i].value);
+			    }
+			
+			elSel.options[selectedIndex] = new Option(document.getElementById("xText").value+" "+document.getElementById("yText").value,document.getElementById("xText").value+" "+document.getElementById("yText").value);
+			
+			}
+			else{
+					elSel.options[elSel.options.length] =  new Option(document.getElementById("xText").value+" "+document.getElementById("yText").value,document.getElementById("xText").value+" "+document.getElementById("yText").value);
+			}
+
+			drawSelectedSurface();	
+				}
+		}
+		
+		
+		function modifyGeometryPerimeter(){
+			if (isFreeSelectionPerimeter){
+			
+			var elSel = document.getElementById('selectedSurface');
+				for (i = elSel.length - 1; i>=0; i--) {
+				if (elSel.options[i].selected) {
+					var curValue = elSel.options[i].value;
+					elSel.options[i].value = document.getElementById("xText").value+" "+document.getElementById("yText").value;
+					elSel.options[i].text = document.getElementById("xText").value+" "+document.getElementById("yText").value;				
+					drawSelectedSurface();																		
+					break;
+				}		     
+			    }
+			
+				
+				}
+		}
+		function changeSelectedSurface(){
+			if (isFreeSelectionPerimeter){
+						
+				var elSel = document.getElementById('selectedSurface');
+				for (i = elSel.length - 1; i>=0; i--) {
+				if (elSel.options[i].selected) {
+					var curValue = elSel.options[i].value;
+						
+					document.getElementById("xText").value=curValue.substring(0,curValue .indexOf(" ", 0));
+					document.getElementById("yText").value=curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
+					break;
+				}		     
+			    }
+					    
+					    
+			}
+		}
+		
+		function selectManualPerimeter(){
+			
+			if (isFreeSelectionPerimeter){
+				document.getElementById('manualPerimDivId').style.display='none';
+				document.getElementById('manualAddGeometry').style.display='block';
+				
+			}else{
+				document.getElementById('manualPerimDivId').style.display='block';
+				document.getElementById('manualAddGeometry').style.display='none';						
+				fillSelectPerimeter();
+			}
+		}
+		
+			
+			
+		function freeSelectPerimeter(){
+			var elSel = document.getElementById("perimetersList");
+			while (elSel.length > 0)
+				{
+					elSel.remove(elSel.length - 1);
+			}
+		}
+		
+		function fillSelectPerimeter(){
+		var elSel = document.getElementById("perimetersList");
+		freeSelectPerimeter();
+		
+		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
+		
+		var wfsUrlWithBBox = wfsUrl +"&BBOX="+map.maxExtent.toBBOX()
+		
+		wfs3 = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: wfsUrlWithBBox,
+                        format: new OpenLayers.Format.GML()                        
+                    })
+                });		    	            
+		wfs3.events.register("featureadded", null, function(event) {
+		var elSel = document.getElementById("perimetersList");
+		if (elSel.options[0].value==""){
+				elSel.remove(0);
+		}
+		
+		
+		var feat2 = event.feature;
+		
+		var perim = document.getElementById("perimetersList");
+		var id = feat2.attributes[idField];
+		var name = feat2.attributes[nameField];
+		
+		perim.options[perim.options.length] =  new Option(name,id);
+              });
+              
+             map.addLayer(wfs3);
+              map.removeLayer(wfs3);    
+              
               
             }
 		</script>
-		<button class="deletePerimeterButton" type="button" onClick="removeSelected();"><?php echo JText::_("REMOVE_VALUE");?></button>
+		
+		<button class="deletePerimeterButton" type="button" onClick="removeSelected();"><?php echo JText::_("EASYSDI_REMOVE_SELECTED_VALUE");?></button>
 						
+		<button class="addPerimeterButton" type="button" onClick="selectManualPerimeter();"><?php echo JText::_("EASYSDI_SELECT_MANUAL_PERIMETER");?></button>
+		
+		
+		<div  id="manualPerimDivId" style="display:none">
 				
-						
-						
-		<button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("ADD_MANUAL_PERIMETER");?></button>		
+		<select id="perimetersList"></select>
+			<button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("EASYSDI_ADD_MANUAL_PERIMETER");?></button>
+			<button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
+		</div>
+		<div  id="manualAddGeometry" style="display:none">
+				
+			<?php echo JText::_("EASYSDI_ADD_X_TEXT");?> <input type="text" id ="xText" value="0"><br>
+			<?php echo JText::_("EASYSDI_ADD_Y_TEXT");?> <input type="text" id ="yText" value="0"><br>
+			<button class="addPerimeterButton" type="button" onClick="addGeometryPerimeter();"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>			
+			<button class="addPerimeterButton" type="button" onClick="modifyGeometryPerimeter();"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button>			
+		</div>
+		
+		
 		
 		<?php
 	}
@@ -220,7 +452,7 @@ $cid = 		$mainframe->getUserState('productList');
 	?>
 	<div>	
 	<fieldset>
-	<legend><?php echo $totalArea." ".JText::_("SURFACE_MAX_UNIT") ;?></legend>	
+	<legend><?php echo $totalArea." ".JText::_("EASYSDI_SURFACE_MAX_UNIT") ;?></legend>	
 	
 		<?php																								
 			

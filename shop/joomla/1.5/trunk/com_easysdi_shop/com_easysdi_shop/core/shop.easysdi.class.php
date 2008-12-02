@@ -77,9 +77,10 @@ function deleteProduct(){
 	}
 		
 	}
-function showMetadata(){
-	?>
-	<?php
+	
+	
+function exportPdf(){
+	
 	$option = JRequest::getVar('option');
 	$task = JRequest::getVar('task');
 	$id = JRequest::getVar('id');
@@ -104,10 +105,88 @@ function showMetadata(){
 		$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 	}
 	$processor->importStylesheet($style);
-	echo $processor->transformToXml($cswResults);
-		 ?>
+	$myHtml = $processor->transformToXml($cswResults);
+	
+	helper_easysdi::exportPDF($myHtml);
+}
+	
+function exportXml(){
+	
+	$option = JRequest::getVar('option');
+	$task = JRequest::getVar('task');
+	$id = JRequest::getVar('id');
+	
+	$catalogUrlBase = config_easysdi::getValue("catalog_url");	
+	
+	$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
+	$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+
+	$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+			
+	
+	$xpath = new DomXPath($cswResults);	
+	$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+	$xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+	$nodes = $xpath->query("//gmd:MD_Metadata");
+	
+	$dom = new DOMDocument();
+	$xmlContent = $dom ->importNode($nodes->item(0),true);
+	$dom->appendChild($xmlContent);	
+	
+	
+ error_reporting(0);
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Tran§sfer-Encoding: none');
+		header('Content-Type: text/xml');
+		header('Content-Disposition: attachement; filename="metadata.xml"');
+	
+	echo $dom->saveXML();
+	
+	
+	
+}
+
+
+function showMetadata(){
+	
+	$option = JRequest::getVar('option');
+	$task = JRequest::getVar('task');
+	$id = JRequest::getVar('id');
+	$toolbar =JRequest::getVar('toolbar',1);
+	$print =JRequest::getVar('print',0);
+	
+	$catalogUrlBase = config_easysdi::getValue("catalog_url");	
+	
+	$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
+	$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+
+	$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+			
+	
+	$processor = new xsltProcessor();
+	$style = new DomDocument();
+	
+	$user =& JFactory::getUser();
+	$language = $user->getParam('language', '');
+	
+	if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+		$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
+	}else{
+		$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+	}
+	$processor->importStylesheet($style);
+	$myHtml = $processor->transformToXml($cswResults);
+	if ($toolbar==1){	
+	echo "<table width='100%'><tr align='right'> <td><a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=exportPdf&id=$id\"> <img src=\"components/com_easysdi_shop/img/pdfButton.png\" alt=\"PDF\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\" href=\"./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id\"> <img src=\"components/com_easysdi_shop/img/xmlButton.png\" alt=\"XML\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=showMetadata&id=$id&toolbar=0&print=1\" onclick=\"window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;\"><img src=\"components/com_easysdi_shop/img/printButton.png\" alt=\"PRINT\"  /></td></tr></table>";
+	}
+	if ($print ==1 ){
+		echo "<script>window.print();</script>";
 		
-		 <?php	
+	}
+	echo $myHtml ;
+	
 		 
 		 /***Add consultation informations*/
 		 $db =& JFactory::getDBO(); 
@@ -137,6 +216,7 @@ function orderPerimeter ($cid){
 <script>
 var map;
 var wfs=null;
+var wfs3=null;
 var vectors;
 var nameField;
 var idField;
@@ -174,54 +254,66 @@ function initSelectedSurface(){
 		elSel.remove(elSel.length - 1);
 	}
 	document.getElementById('totalSurface').value = 0;
-	if (vectors){	
-		var features = vectors.features;
-		var feature= features[features.length-1];
-		if (features.length>0){
-		if (feature){				
-		vectors.removeFeatures(features)
-		features = vectors.features;	
-		vectors.addFeatures([feature]);
-		vectors.drawFeature (feature);		
-		features = vectors.features;			
-		}
-		}
-	}
-	
+	removeSelection();
 }
+function removeSelection(){
+	if (vectors){
 
+		var features = vectors.features;
+		vectors.removeFeatures(features);
+		//vectors.drawFeature (feature);
+		/*for (var i = features.length-1;i>=0;i--){ 		
+		var feature= features[i];
+		if (features.length>=0){
+			if (feature){				
+		
+			features = vectors.features;	
+			vectors.addFeatures([feature]);
+			vectors.drawFeature (feature);		
+			features = vectors.features;			
+		}
+		}
+	}*/
+}
+}
 function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName){
 
 	
 	document.getElementById('perimeter_id').value = perimId;
+	freeSelectPerimeter();
+	document.getElementById('manualPerimDivId').style.display='none';
+	document.getElementById('manualAddGeometry').style.display='none';
+	
+		
 	//Delete the current selection
 	initSelectedSurface();
 	
-	        								 
+	        						 
 	nameField = name;
 	idField = id;
 	areaField =area;
-	
-	
-	if (layerPerimeter){
-				map.removeLayer(layerPerimeter);
-		}
-	if (vectors){
-			
-		var features = vectors.features;
-		vectors.removeFeatures(features)
-		
-	
-		//map.removeLayer(vectors);
-		 
-            
-	}
+
 	if (wfs) {
 		map.removeLayer(wfs);
+		wfs.destroy();				
+		wfs=null;		
 	}
-	
-	if (perimUrl.length ==0 && wmsUrl.length ==0){
+	if (wfs3) {	
+		wfs3.destroy();				
+		wfs3=null;		
+	}
 
+
+	if (layerPerimeter){
+				map.removeLayer(layerPerimeter);
+				layerPerimeter=null;
+		}
+	if (vectors){
+		var features = vectors.features;
+		vectors.removeFeatures(features)
+	}
+
+	if (perimUrl.length ==0 && wmsUrl.length ==0){
 		//Free selection permiter.
 		isFreeSelectionPerimeter = true;
 	}else{
@@ -244,28 +336,32 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
                  map.addLayer(layerPerimeter);      
     
     wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
-    
-    
-             /*    wfs = new OpenLayers.Layer.WFS( perimName,
-	                perimUrl,
-	                {typename: featureTypeName}, {
-	                    typename: featureTypeName,                                    
-	                    extractAttributes: true
-	                       
-	                }  );
-	
-	*/
-	
+  
 	}else{
+	
+	var myStyles = new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({                 
+                    fillColor: "#ffcc66",
+                    strokeColor: "#ff9933",
+                    strokeWidth: 2
+                }),
+                "select": new OpenLayers.Style({
+                    fillColor: "#66ccff",
+                    strokeColor: "#3399ff"
+                })
+            });
 	
 	
 	wfs = new OpenLayers.Layer.WFS( perimName,
 	                perimUrl,
 	                {typename: featureTypeName}, {
 	                    typename: featureTypeName,                                    
-	                    extractAttributes: true
+	                    extractAttributes: false
 	                       
-	                }  );
+	                },
+                { featureClass: OpenLayers.Feature.WFS}
+	                 );
+	
 	
 	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
 	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
@@ -276,6 +372,7 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
 	
 }
 
+            
 function initMap(){
  OpenLayers.ProxyHost="/proxy.php?url=";
 
@@ -305,7 +402,7 @@ if ($db->getErrorNum()) {
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
                 maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
-                , controls: [] 
+                // , controls: []
             });
 				  
 				 baseLayerVector = new OpenLayers.Layer.Vector(
@@ -313,6 +410,7 @@ if ($db->getErrorNum()) {
                 {isBaseLayer: true,transparent: "true"}
             ); 
 				  map.addLayer(baseLayerVector);
+
 
 <?php
 
@@ -361,14 +459,20 @@ $i++;
                        
                         
             map.addLayer(vectors);
-			zb = new OpenLayers.Control.ZoomBox();
-            var panel = new OpenLayers.Control.Panel({defaultControl: zb});
+			/*zb = new OpenLayers.Control.ZoomBox();
+			md = new OpenLayers.Control.MouseDefaults();
+			zo =  new OpenLayers. Control. ZoomOut();*/
+			var containerPanel = document.getElementById("panelDiv");
             
+            
+            var panel = new OpenLayers.Control.Panel({div: containerPanel});
+
             
 	
 			rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
 			rectControl.featureAdded = function() { intersect();};												
 			rectControl.handler.setOptions({irregular: true});                                  
+            
             
             polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
             polyControl.featureAdded = function() { intersect();};
@@ -385,19 +489,30 @@ $i++;
 
             
             navHistory = new OpenLayers.Control.NavigationHistory();
-            map.addControl (navHistory);                                 
+            map.addControl (navHistory);
+			
             panel.addControls([            	
-              new OpenLayers.Control.MouseDefaults(), 
-              zb,         
-              new OpenLayers. Control. ZoomOut(),                                                
- 	          rectControl, 	          
- 	          polyControl,
- 	          pointControl,
- 	          modifyFeatureControl,
  	          navHistory.previous, 	          
  	          navHistory.next
             ]);
-            map.addControl(panel);        	
+          map.addControl(panel);
+             
+            var containerEdition = document.getElementById("panelEdition");
+            var panelEdition = new OpenLayers.Control.Panel({div: containerEdition});
+            
+            panelEdition.addControls([
+            modifyFeatureControl,            	 	              
+ 	          polyControl,
+ 	           rectControl, 	 
+ 	          pointControl
+ 	          
+ 	          
+            ]);
+           
+            
+            
+            
+            map.addControl(panelEdition);        	
 }
          
 var format = new OpenLayers.Format.XML();
@@ -410,6 +525,8 @@ function getElementsByTagNameNS(node, uri, name) {
             }
             return (pieces.join(' '));
 }
+
+
 function loadstartfunc(){
 alert("START");
 }
@@ -419,16 +536,20 @@ alert("END");
 
 function intersect() {
  
- initSelectedSurface();
+ //initSelectedSurface();
  
   if (isFreeSelectionPerimeter){
  
  	 var features = vectors.features; 
      var feature= features[features.length-1];
      
+     document.getElementById("selectedSurface").options.length=0;
      
-     
-    featureArea = feature.geometry.getArea();
+     if (feature.geometry.components[0].components.length > 2){
+   			 featureArea = feature.geometry.getArea();
+    	}else{
+    		featureArea = 0;
+    	}
 	document.getElementById('totalSurface').value =  parseFloat(featureArea );
      
      if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
@@ -436,6 +557,7 @@ function intersect() {
      	var polygonSize = feature.geometry.components[0].components.length;
      	
      	var components = feature.geometry.components[0].components;
+     	
      	var i = 0;
      	while (i< polygonSize){
      	
@@ -463,8 +585,8 @@ function intersect() {
 
 	gml = new OpenLayers. Format. GML.v2(gmlOptions);
 
-	for(var i=0; i<features.length; ++i) {
-        feature = features[i];
+	//for(var i=features.length-1; i>=0; i--) {
+        feature = features[features.length-1];
         var doc = format.read(gml.write(feature, true));               
 		
 		if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
@@ -475,51 +597,132 @@ function intersect() {
 			wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
 		}
 		
-		if (wfs) {
-		wfs.destroy();		
-
-		}
-		
-	  	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+		if (!wfs) {				
+		//	wfs.destroy();
+	     wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: wfsUrlWithFilter,
                         format: new OpenLayers.Format.GML()
-                        
                     })
-                });
-                
-		wfs.events.register("featuresadded", null, function() { 
-			$("status").innerHTML = "";
-			var wfsFeatures = wfs.features;
-			document.getElementById('totalSurface').value = 0;
-    			for(var j=0; j<wfsFeatures.length; ++j) {
-                    feat2 = wfsFeatures[j];
-                       var name = feat2.attributes[nameField];
-                       var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+                });		    	            
+	
+
+			 wfsRegisterEvents();
+			 map.addLayer(wfs);			
+			}else{
+			    
+			  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: wfsUrlWithFilter,
+                        format: new OpenLayers.Format.GML()                                                
+                    })});	
+                wfs2.events.register("featureadded", null, function(myEvent) { 
+                $("status").innerHTML = "";
+				removeSelection();
+				
+				
+				var wfsFeatures = wfs.features;
+
+				// look for a feature with the same id
+				var idToLookFor = myEvent.feature.attributes[idField];
+				var found = false;
+				for(var j=wfsFeatures.length-1; j>=0; j--) {
+                    feat2 = wfsFeatures[j];                       
+                      
+                       if (idToLookFor == feat2.attributes[idField]){
+                       	found=true;
                        
-            		   var area = feat2.attributes[areaField];
-            		   var featArea = 0;	
-            			if (areaField.length > 0 && area){
+                       	wfs.removeFeatures([wfsFeatures[j]]);
+                       	break;
+                       }
+                       }
+                       
+                       if (!found){
+                       	wfs.addFeatures([myEvent.feature]);
+                       }
+			});
+            map.addLayer(wfs2);		
+            map.removeLayer(wfs2);    
+                }
+              
+                 
+              
+                
+			 	
+		                        
+   // }
+ }
+ 
+return;                     
+}
+function wfsRegisterEvents()			
+ {
+ 
+ //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+//	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
+	
+ 			wfs.events.register("featureremoved",null,function(event){
+			
+			        feat2 = event.feature;
+                    var name = feat2.attributes[nameField];
+                    var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+                       
+            		var area = feat2.attributes[areaField];
+            		var featArea = 0;	
+            		if (areaField.length > 0 && area){
+            					featArea = area; 
+            			}else {
+            					featArea = feat2.geometry.getArea();
+            			}
+			
+						var found = -1;
+												
+						for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--){
+														
+							if (document.getElementById("selectedSurface").options[k].value ==  id){
+								//Remove the value							
+								document.getElementById("selectedSurface").remove(k);								
+								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
+																								
+								found=k;																			
+							}            				
+						}						                
+            }
+            
+			
+			);
+			 
+		wfs.events.register("featureadded", null, function(event) { 
+			removeSelection();
+			$("status").innerHTML = "";
+			    		
+              feat2 = event.feature;
+              var name = feat2.attributes[nameField];
+              var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+                       
+              var area = feat2.attributes[areaField];
+              var featArea = 0;	
+            	if (areaField.length > 0 && area){
             					featArea = area; 
             				}else {
             					featArea = feat2.geometry.getArea();
             				}
-            				
-                       	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                         
-   		    			document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-            							new Option(name,id);
+
+						
+                       	
+                       	//Add the new value
+	            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+	   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+            	new Option(name,id);
+            			
             }
-			 });
-			
-		map.addLayer(wfs);                        
-
-    }
-
+            
+			 //}
+			 );
  }
-return;                     
-}
-
+ 
 var oldLoad = window.onload;
 window.onload=function(){
 initMap();
@@ -533,13 +736,10 @@ if (oldLoad) oldLoad();
 <div id="docs">
 </div>
 <br>
-<div id="panel" class="olControlEditingToolbar"></div>
-<br>
- <div id="paneldiv" class="olControlNavToolbar"></div>
-<br>
- <div id="status">  </div>
+<div id="panelDiv" class="historyContent" >
+</div>
 
-
+<br>
 
 <?php 	$step = JRequest::getVar('step',"2");
 	$option = JRequest::getVar('option');
@@ -557,11 +757,10 @@ if (oldLoad) oldLoad();
  
 	 var i=0; 
 	 for (i=0;i<selectedSurface.options.length;i++){  
-	 replicSelectedSurface.options[i] = new Option(selectedSurface.options[i].value,selectedSurface.options[i].value);
-	 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
-	 replicSelectedSurface.options[i].selected=true;
-	 replicSelectedSurfaceName.options[i].selected=true;
-	 
+		 replicSelectedSurface.options[i] = new Option(selectedSurface.options[i].value,selectedSurface.options[i].value);
+		 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
+		 replicSelectedSurface.options[i].selected=true;
+		 replicSelectedSurfaceName.options[i].selected=true;	 
 	 }
 	document.getElementById('totalArea').value=document.getElementById('totalSurface').value;
  	
@@ -1205,9 +1404,9 @@ function order(){
 	<div class="headerShop">
 	<?php $curStep = 1; if(count($productList)>0&& ($curStep<$step || $curStep==$step+1)) { ?> <div  onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();" class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div><?php }else {?><div class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
 	<?php $curStep = 2; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
-	<?php $curStep = 3; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
-	<?php $curStep = 4; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
-	<?php $curStep = 5; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
+	<?php $curStep = 3; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
+	<?php $curStep = 4; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
+	<?php $curStep = 5; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?> <div onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();" class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div><?php }else {?><div class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> </div>  <?php } ?>
 	</div>
 	</td></tr>
 	<tr>
@@ -1402,10 +1601,8 @@ function searchProducts($orderable = 1){
 		
 		<tr>		
 		<td><img src="./img.gif" width="40" height="40"> </td>
-		<td><span class="mdtitle" ><?php echo $row->data_title; ?></span><br>
-			<span class="mdsupplier" ><?php echo $row->supplier_name;?></span><br>
-			<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo JText::_("VIEW_MD"); ?></a>
-			<a target="_PDF" title="<?php echo JText::_("EASYSDI_VIEW_MD_PDF"); ?>" href="./index.php?tmpl=component&format=pdf&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" > <?php echo JText::_("EASYSDI_VIEW_MD_PDF"); ?></a>													
+		<td><span class="mdtitle" ><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
+			<span class="mdsupplier" ><?php echo $row->supplier_name;?></span><br>																
 		</td>
 		<td> 				
 		<input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" <?php if (in_array($row->id,$cid)) { echo "checked";};?>/></td>				

@@ -481,8 +481,6 @@ class HTML_product{
 	
 	
 	
-	
-	
 	function listProduct($pageNav,$rows,$option,$rootPartner){
 		?>	
 		<div class="contentin">
@@ -547,12 +545,86 @@ class HTML_product{
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
-			<?php echo helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL"); ?>
+			
 			<?php if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){?> 
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='deleteProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='editProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
-			<?php }  
+			<?php }  ?>
+		</form>
+		</div>
+	<?php
+		
+		
+	}
+	
+	
+	
+	function listProductMetadata($pageNav,$rows,$option,$rootPartner){
+		?>	
+		<div class="contentin">
+		<form action="index.php" method="GET" id="productListForm" name="productListForm">
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_PRODUCT"); ?></h2>
+	
+		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+	
+		<table width="100%">
+			<tr>
+				<td align="left">
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
+				</td>
+			</tr>
+		</table>
+		
+		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+		<br>		
+		<table width="100%">
+			<tr>																																						
+				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
+			</tr>
+		</table>
+	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+	
+	
+	<table>
+	<thead>
+	<tr>
+	<th><?php echo JText::_('EASYSDI_PRODUCT_SHARP'); ?></th>
+	<th></th>
+	<th><?php echo JText::_('EASYSDI_PRODUCT_NAME'); ?></th>
+	<th><?php echo JText::_('EASYSDI_PRODUCT_INTERNAL'); ?></th>
+	<th><?php echo JText::_('EASYSDI_PRODUCT_EXTERNAL'); ?></th>
+	</tr>
+	</thead>
+	<tbody>
+	<?php
+		$i=0;
+		$param = array('size'=>array('x'=>800,'y'=>800) );
+		JHTML::_("behavior.modal","a.modal",$param);
+		foreach ($rows as $row)
+		{	$i++;
+			
+			?>		
+			<tr>
+			<td><?php echo $i; ?></td>
+			<td><input type="radio"  name="id" value="<?php echo $row->id ;?>"></td>						
+			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title ;?></a></td>
+			
+			<td><input type="checkbox" <?php if ($row->internal) {echo "checked";};?> disabled> </td>
+			<td><input type="checkbox" <?php if ($row->external) {echo "checked";};?> disabled> </td>
+			</tr>
+			
+				<?php		
+		}
+		
+	?>
+	</tbody>
+	</table>
+	
+			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
+			<?php
 			if (helper_easysdi::hasRight($rootPartner->partner_id,"METADATA")){?>
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_METADATA"); ?></button>
 			<?php }?>

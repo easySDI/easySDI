@@ -237,6 +237,7 @@ function editMetadata() {
 		}
 	}
 	
+	
 	function listProduct(){
 
 		
@@ -294,8 +295,81 @@ function editMetadata() {
 			echo "</div>";
 		}	
 		
+		if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){
 		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner);
+		}else{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_PRODUCT"),"INFO");
+		}
+		
 		
 }
+	
+	function listProductMetadata(){
+
+		
+		global  $mainframe;
+		$option=JRequest::getVar("option");
+		$limit = JRequest::getVar('limit', 5 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		
+		$database =& JFactory::getDBO();		 	
+		$user = JFactory::getUser();
+		$rootPartner = new partnerByUserId($database);
+		$rootPartner->load($user->id);		
+		
+		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $database->getEscaped( trim( strtolower( $search ) ) );
+
+		$filter = "";
+		if ( $search ) {
+			$filter .= " AND (data_title LIKE '%$search%')";			
+		}
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);
+		
+
+			
+		
+		
+		$queryCount = "select count(*) from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		
+		  
+		
+		$queryCount .= $filter;
+		
+		
+		
+		$database->setQuery($queryCount);
+		$total = $database->loadResult();
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";			
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}	
+		
+		$pageNav = new JPagination($total,$limitstart,$limit);
+		$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		$query .= $filter;
+	
+
+
+		$database->setQuery($query,$limitstart,$limit);		
+		$rows = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";			
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}	
+		
+	if (helper_easysdi::hasRight($rootPartner->partner_id,"METADATA")){
+		HTML_product::listProductMetadata($pageNav,$rows,$option,$rootPartner);		
+	}else{
+		$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_METADATA"),"INFO");
+	}
+		
+		
+}
+
+
 }
 ?>

@@ -23,6 +23,7 @@
 			<folder>com_easysdi_shop</folder>			
 			<folder>core</folder>
 			<folder>language</folder>			
+			<folder>xml</folder>
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_shop.ini</language>

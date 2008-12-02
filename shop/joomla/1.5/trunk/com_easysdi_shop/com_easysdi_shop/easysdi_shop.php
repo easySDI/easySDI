@@ -129,6 +129,10 @@ switch($task){
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		}
 		break;
+	
+	case "listProductMetadata":
+		SITE_product::listProductMetadata();
+		break;
 	case "listProduct":
 		SITE_product::listProduct();
 		break;
@@ -155,6 +159,13 @@ switch($task){
 	case "order":
 		HTML_shop::order();
 		break;
+	case "exportPdf":
+		HTML_shop::exportPdf();
+	break;
+	case "exportXml":
+		HTML_shop::exportXml();
+	break;
+	
 	case "showMetadata":
 		HTML_shop::showMetadata();
 		break;
