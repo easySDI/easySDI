@@ -84,6 +84,7 @@ class HTML_cpanel {
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
+			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>
 		</form>
 		</div>
 	<?php	

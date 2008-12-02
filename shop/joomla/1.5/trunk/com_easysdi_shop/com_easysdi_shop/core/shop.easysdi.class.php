@@ -374,7 +374,7 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
 
             
 function initMap(){
- OpenLayers.ProxyHost="/proxy.php?url=";
+ OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
 
 
 
@@ -667,8 +667,8 @@ function wfsRegisterEvents()
 			
 			        feat2 = event.feature;
                     var name = feat2.attributes[nameField];
-                    var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-                       
+                    //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+                    var id = feat2.attributes[idField];   
             		var area = feat2.attributes[areaField];
             		var featArea = 0;	
             		if (areaField.length > 0 && area){
@@ -700,7 +700,8 @@ function wfsRegisterEvents()
 			    		
               feat2 = event.feature;
               var name = feat2.attributes[nameField];
-              var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+              var id = feat2.attributes[idField];
                        
               var area = feat2.attributes[areaField];
               var featArea = 0;	
@@ -797,7 +798,7 @@ if (oldLoad) oldLoad();
 	<input type='hidden' id ="step" name='step' value='<?php echo $step; ?>'>
 	<input type='hidden' id ="option" name='option' value='<?php echo $option; ?>'>
 	<input type='hidden' id ="task" name='task' value='<?php echo $task; ?>'>
-	<input type='hidden' id ="perimeter_id" name='perimeter_id' value='<?php echo $task; ?>'>	
+	<input type='hidden' id ="perimeter_id" name='perimeter_id' value='0'>	
 	<input type='hidden'  name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 </form>
 </div>
@@ -878,7 +879,7 @@ $db =& JFactory::getDBO();
  	document.getElementById('orderForm').submit();
  }
  </script>
-<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='GET'>
+<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
 
 <?php 
 
@@ -1229,6 +1230,9 @@ function saveOrder($orderStatus){
 	$order_id	= $db->insertId();
 	$totalArea = $mainframe->getUserState('totalArea');
 	$mainframe->setUserState('totalArea',null);
+	$perimeter_id = $mainframe->getUserState('perimeter_id');
+	$mainframe->setUserState('perimeter_id',null);
+	
 
 	$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 	$mainframe->setUserState('selectedSurfaces',null);
@@ -1239,12 +1243,12 @@ function saveOrder($orderStatus){
 	foreach ($selSurfaceList as $sel){
 	
 	//Before the dot, it is the perimeter id, after the dot id of the data	
-	$pos1 = stripos($sel, ".");			
+	/*$pos1 = stripos($sel, ".");			
 	if ($pos1 === false){
 		
 	}else
-	{
-	$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,0,'$sel','$sel')";
+	{*/
+	$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,$perimeter_id,'$sel','$selSurfaceListName[$i]')";
 	$db->setQuery($query );	
 	if (!$db->query()) {		
 			echo "<div class='alert'>";
@@ -1252,7 +1256,7 @@ function saveOrder($orderStatus){
 			echo "</div>";						
 		}	
 	$i++;
-	}
+	//}
 	}	
 	
 	foreach ($cid as $product_id){
@@ -1327,6 +1331,9 @@ function manageSession(){
 		$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
 		$totalArea = JRequest::getVar ('totalArea', 0 );																				
 		$mainframe->setUserState('totalArea',$totalArea);
+		
+		$perimeter_id = JRequest::getVar ('perimeter_id', 0 );																				
+		$mainframe->setUserState('perimeter_id',$perimeter_id);
 	}
 	
 	if ($fromStep == 3) {

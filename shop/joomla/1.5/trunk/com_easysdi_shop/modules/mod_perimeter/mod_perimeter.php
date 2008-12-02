@@ -183,7 +183,8 @@ $cid = 		$mainframe->getUserState('productList');
 				for(var j=wfsFeatures.length-1; j>=0; j--) {
                     feat2 = wfsFeatures[j];                       
                       
-                       if (idToLookFor ==  document.getElementById('perimeter_id').value +"."+feat2.attributes[idField]){
+ //                      if (idToLookFor ==  document.getElementById('perimeter_id').value +"."+feat2.attributes[idField]){
+                       if (idToLookFor ==  feat2.attributes[idField]){
                        	found=true;
                        
                        	wfs.removeFeatures([wfsFeatures[j]]);

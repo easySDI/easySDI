@@ -139,6 +139,12 @@ switch($task){
 	case "listProduct":
 		SITE_product::listProduct();
 		break;
+	
+	case "changeOrderToSend":
+		SITE_cpanel::sendOrder();
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+		
 	case "archiveOrder":
 		SITE_cpanel::archiveOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );

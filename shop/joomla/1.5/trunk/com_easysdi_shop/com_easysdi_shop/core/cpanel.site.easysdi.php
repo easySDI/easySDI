@@ -113,14 +113,42 @@ function orderReport($id){
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
+
 		
+
+	$query = "SELECT * FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";	
+	$db->setQuery($query );
+	$rowsProduct = $db->loadObjectList();
+	if ($db->getErrorNum()) {
+			echo "<div class='alert'>";			
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}	
+	
+	
+		?>
+		<h1><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h1>
+		<table>
+		<?php
+	$i=0;
+	foreach ($rowsProduct as $row){?>
+		<tr>
+		<td><?php echo ++$i; ?></td>
+		<td><?php echo $row->data_title?></td>				
+		
+		</tr>
+	<?php }?>
+	
+	
+		</table>
+		<?php 
 		
 	$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;	
 	$db->setQuery($query );
 	$rowsPerimeter = $db->loadObjectList();
 	if ($db->getErrorNum()) {
 			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
+			echo 			$db->getErrorMsg();
 			echo "</div>";
 		}	
 	if ($rows[0]->perimeter_id > 0){		
@@ -142,10 +170,34 @@ function orderReport($id){
 		</tr>
 	<?php }?>
 	 </table>
+	 
+	
 	 <?php
 		
 }
 
+function sendOrder(){
+	global $mainframe;
+	
+	$db =& JFactory::getDBO();
+	
+	 jimport("joomla.utilities.date");
+	$date = new JDate();
+	
+	$order_id=JRequest::getVar("order_id",0);
+	$query = "UPDATE  #__easysdi_order set status = 'SENT', order_update ='". $date->toMySQL()."' WHERE order_id = $order_id";
+	
+	$db->setQuery($query );
+	
+	if (!$db->query()) {		
+		echo "<div class='alert'>";
+			echo $db->getErrorMsg();
+			echo "</div>";						
+		}
+	
+		
+		
+}
 	
 	
 	
