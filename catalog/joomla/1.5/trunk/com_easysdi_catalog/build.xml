@@ -10,11 +10,12 @@
 	</target>
 
 	<target name="create-structure">
+		<mkdir dir="${projet.out.dir}" />
 		<echo>Creating the working directory structure</echo>
 		<delete>
 			<fileset dir="${projet.out.dir}" includes="*" />
 		</delete>
-		<mkdir dir="${projet.out.dir}" />
+		
 	</target>
 
 	<target name="compression" description="Compression">
