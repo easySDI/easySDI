@@ -32,6 +32,7 @@ class config_easysdi{
 			
 		return $result;		
 	}	
+
 	
 }
 ?>

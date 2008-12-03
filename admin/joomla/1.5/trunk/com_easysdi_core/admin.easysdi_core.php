@@ -97,12 +97,12 @@ switch($task){
 	
 	case "editAffiliatePartner":
 		TOOLBAR_partner::_EDIT();
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'core.admin.easysdi.php');
 		ADMIN_partner::editAffiliatePartner( $cid[0], $option );
 		break;
 	
 	case "newAffiliatePartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'core.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editAffiliatePartner( 0, $option );
 		break;
@@ -112,7 +112,7 @@ switch($task){
 		break;
 	
 	case "editRootPartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'core.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editRootPartner( $cid[0], $option );
 		break;
@@ -124,7 +124,7 @@ switch($task){
 		break;
 	
 	case "newRootPartner":
-		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'partner.admin.easysdi.php');
+		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'core.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
 		ADMIN_partner::editRootPartner( 0, $option );
 		break;
