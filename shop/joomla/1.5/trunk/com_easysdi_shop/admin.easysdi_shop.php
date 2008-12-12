@@ -64,8 +64,21 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlpanel.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
+
+require_once(JPATH_COMPONENT_SITE.DS.'core'.DS.'partner.site.easysdi.class.php');
 switch($task){
 
+	case "orderReport":
+		ADMIN_cpanel::orderReport($cid[0]);
+		break;
+	
+		
+	case "listOrders":
+		ADMIN_cpanel::listOrders();
+		break;
+		
 	case "saveMDTABS":
 		ADMIN_metadata::saveMDTabs($option);
 		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );

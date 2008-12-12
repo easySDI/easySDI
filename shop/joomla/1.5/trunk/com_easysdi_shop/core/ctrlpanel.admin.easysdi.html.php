@@ -139,6 +139,9 @@ class HTML_ctrlpanel {
 					<span><?php echo $text; ?></span></a>
 			</div>
 		</div>
+
+
+		
 	
 	
 	</div> 
@@ -419,6 +422,20 @@ echo $pane->endPanel();
 			</div>
 		</div>
 
+
+<?php
+		$link = "index.php?option=$option&amp;task=listOrders";
+?>
+		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+			<div class="icon">
+				<a href="<?php echo $link; ?>">
+				
+					<?php 
+					$text = JText::_( 'EASYSDI_LIST_ORDERS' );
+					echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
+					<span><?php echo $text; ?></span></a>
+			</div>
+		</div>
 	
 	</div> 
 	 

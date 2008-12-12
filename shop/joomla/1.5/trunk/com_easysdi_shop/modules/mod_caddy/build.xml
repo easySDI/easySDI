@@ -11,21 +11,22 @@
 
 	<target name="create-structure">
 		<echo>Creating the working directory structure</echo>
+		<mkdir dir="${projet.out.dir}" />
 		<delete>
 			<fileset dir="${projet.out.dir}" includes="*" />
 		</delete>
-		<mkdir dir="${projet.out.dir}" />
+		
 	</target>
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/mod_perimeter.zip"
+		<jar compress="true" jarfile="${projet.out.dir}/mod_caddy.zip"
 			basedir="." excludes=".cache ; .settings ; .project" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\modules\mod_perimeter">
+			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\modules\mod_caddy">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />

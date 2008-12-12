@@ -20,16 +20,14 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_cpanel {
 	
-	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search=""){
-	
+	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="",$orderarchived=""){
+	JToolBarHelper::title( JText::_("EASYSDI_LIST_ORDERS"), 'generic.png' );
+		$database =& JFactory::getDBO();
 	?>	
-		<div class="contentin">
-		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
+		
+		<form action="index.php" method="GET" id="adminForm" name="adminForm">		
 	
-		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
-	
-		<table width="100%">
+		<table width="100%" class="adminlist">
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
@@ -47,22 +45,24 @@ class HTML_cpanel {
 					<option value=""><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_ALL"); ?></option>
 					<option value="SAVED" <?php if($orderstatus=="SAVED") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_SAVED"); ?></option>
 					<option value="SENT" <?php if($orderstatus=="SENT") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_SENT"); ?></option>
-				</select>
+				</select>				
+				</td>
+				<td>
+				<select name="orderarchived" >
+					<option value=""><?php echo JText::_("EASYSDI_CMD_ARCHIVED_FILTER_ALL"); ?></option>
+					<option value="1" <?php if($orderarchived=="1") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_ARCHIVED_FILTER_YES"); ?></option>
+					<option value="0" <?php if($orderarchived=="0") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_ARCHIVED_FILTER_NO"); ?></option>
+				</select>				
 				</td>
 				</tr>
 		</table>
 		
 		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 	
 	<?php JHTML::_("behavior.modal","a.modal",$param); ?>
-	<table>
+	<table class="adminlist">
 	<thead>
 	<tr>
 	<th><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
@@ -70,6 +70,8 @@ class HTML_cpanel {
 	<th><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_USER'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_ARCHIVED'); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -86,21 +88,33 @@ class HTML_cpanel {
 			
 			<td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td>
 			<td><?php echo JText::_("EASYSDI_ORDER_STATUS_".$row->status) ;?></td>
-			</tr>
+			<?php 
+		
+		
+				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND a.user_id=".$row->user_id ;
+				$database->setQuery($query);				 
+		 		?>
+				<td><?php echo $database->loadResult(); ?></td>		
 			
+			<td><?php echo JText::_("EASYSDI_ORDER_ARCHIVED_".$row->archived) ;?></td>
+			</tr>
 				<?php		
 		}
 		
 	?>
 	</tbody>
+	
+	<tfoot>
+		<tr>	
+		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
+		</tr>
+		</tfoot>
 	</table>
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>
 		</form>
-		</div>
+		
 	<?php	
 	}
 	

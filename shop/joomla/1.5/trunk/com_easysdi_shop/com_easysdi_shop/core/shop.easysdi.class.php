@@ -195,12 +195,14 @@ function showMetadata(){
 		$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
 		$db->setQuery( $query);
 		$maxHit = $db->loadResult();
+		if ($maxHit){
 		$query = "update #__easysdi_product set weight = $maxHit where metadata_id='$id' "; 
 		$db->setQuery( $query); 
 		if (!$db->query()) {
 			echo "<div class='alert'>";
 			echo $db->getErrorMsg();
 			echo "</div>";			
+		}
 		}
 		 
 }	

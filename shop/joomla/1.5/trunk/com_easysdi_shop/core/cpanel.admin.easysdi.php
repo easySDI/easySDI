@@ -16,7 +16,7 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-class SITE_cpanel {
+class ADMIN_cpanel {
 	
 	
 	function archiveOrder(){
@@ -51,19 +51,22 @@ class SITE_cpanel {
 		
 		global  $mainframe;
 		$option=JRequest::getVar("option");
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
+		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 	
 		
 		$database =& JFactory::getDBO();		 	
-		$user = JFactory::getUser();
-		$rootPartner = new partnerByUserId($database);
-		$rootPartner->load($user->id);		
 		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
+		
+		
+		$orderarchived=JRequest::getVar("orderarchived","");
+		if ($orderarchived !=""){
+				$filter .= " AND (archived ='orderarchived')";
+		}
 		
 		$orderstatus=JRequest::getVar("orderstatus","");
 		if ($orderstatus !=""){
@@ -80,10 +83,10 @@ class SITE_cpanel {
 			$filter .= " AND (name LIKE '%$search%')";			
 		}
 		
-		$query = "select * from #__easysdi_order where archived = 0 AND user_id = ".$user->id;
+		$query = "select * from #__easysdi_order where archived >= 0 ";
 		$query .= $filter;
 			
-		$queryCount = "select count(*) from #__easysdi_order where archived = 0 AND  user_id = ".$user->id;
+		$queryCount = "select count(*) from #__easysdi_order where archived >= 0 ";
 		$queryCount .= $filter;
 		
 		$database->setQuery($queryCount);
@@ -96,7 +99,7 @@ class SITE_cpanel {
 		
 		$pageNav = new JPagination($total,$limitstart,$limit);
 				
-		$database->setQuery($query);		
+		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";			
@@ -104,7 +107,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}	
 		
-		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search);
+		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search,$orderarchived);
 		
 	}
 	
