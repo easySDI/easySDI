@@ -41,6 +41,14 @@ $task = JRequest::getVar('task');
 
 
 switch($task){	
+	
+	case "createBlockUser":
+
+		SITE_partner::createBlockUser();
+		break;
+	case "createUser":
+		SITE_partner::createUser(0);
+		break;
 	case "createAffiliate":
 		SITE_partner::editAffiliatePartner(0);
 		break;
