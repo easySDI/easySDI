@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project default="proxy" basedir=".">
+<project default="createwar" basedir=".">
 	
   <property name="projet.src.dir" value="src"/>
   <property name="projet.conf.dir" value="conf"/>
@@ -22,7 +22,11 @@
    	
    </path>
 	
-  <target name="proxy" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
+<target name="syncJar" depends="create-structure,copy-resources,compilation,compression,Sync-jar" description="Main target">
+	    
+  </target>
+
+  <target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
     
   </target>
 
@@ -40,6 +44,15 @@
 	    <jar jarfile="${projet.work.dir}/WEB-INF/lib/easysdi.jar" basedir="${projet.work.dir}/WEB-INF/classes"  />			
 	</target>
 
+	 <target name="Sync-jar">    
+			<echo>Copy the resources into the working directory</echo>
+	  		<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/proxy/WEB-INF/lib" >
+	  	      <fileset dir="${projet.work.dir}/WEB-INF/lib}" >
+	  	        <include name="easysdi.jar"/>
+	  	        
+	  	      </fileset>
+	  	    </copy>
+	  </target>
 	
   <target name="copy-resources">    
 		<echo>Copy the resources into the working directory</echo>
@@ -65,7 +78,7 @@
   </target>
 	
   <target name="compilation" description="Compilation" >  	
-    <javac srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes" >
+    <javac debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes" >
     	<classpath refid="projet.classpath"/>
     </javac>
   	

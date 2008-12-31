@@ -484,7 +484,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			transformer = tFactory.newTransformer(new StreamSource(baisXsl));
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(param.toString().getBytes());
-			System.out.println(param);
+			
 			//Write the result in a temporary file
 			StringBuffer metadata = new StringBuffer();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();	
@@ -534,7 +534,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			InputStream mefFileInputStream = new ByteArrayInputStream(mefFileOutputStream.toByteArray());
 
 			response = sendFile(rsi.getInsertServiceUrl(), mefFileInputStream, rsi.getLoginService(), "mefFile", uuid+".mef");
-			System.out.println(response);			    			    
+						    			    
 			sourceContent=null;
 			count++;
 		    }
@@ -599,7 +599,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 		    cswResponse.append("<csw:TransactionResponse xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" xmlns:dct=\"http://www.purl.org/dc/terms/\">");
 		    cswResponse.append("<csw:TransactionSummary>");
-		    cswResponse.append("<csw:totalDeleted>1</csw:totalDeleted>");
+		    cswResponse.append("<csw:totalDeleted>"+count+"</csw:totalDeleted>");
 		    cswResponse.append("</csw:TransactionSummary>");
 		    cswResponse.append("</csw:TransactionResponse>");
 		    OutputStream os = resp.getOutputStream();

@@ -33,6 +33,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,11 +56,16 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.geotools.data.DataSourceException;
 import org.geotools.data.ows.FeatureSetDescription;
+import org.geotools.feature.AttributeType;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureType;
+import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.visitor.FeatureVisitor;
 import org.geotools.filter.Filter;
 import org.geotools.filter.FilterDOMParser;
 import org.geotools.gml.producer.FeatureTransformer;
@@ -83,6 +89,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import com.sun.msv.driver.textui.Debug;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 import ch.depth.proxy.core.ProxyServlet;
 import ch.depth.proxy.policy.Operation;
@@ -945,15 +956,29 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 				if (remoteFilter == null){
 				    remoteFilter ="";
 				}
-				
-				//If remote filter equlas local filter or local filter is empty
+
+				Map hints = new HashMap();		
+				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+
+				    
+				GMLFeatureCollection  doc =null;
+				if (user!=null && user.length()>0){
+					    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
+					}else
+					    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+
+				//If remote filter equals local filter or local filter is empty
 				//Do not apply the filter
 				if (remoteFilter.trim().equalsIgnoreCase(filter.trim()) || filter.trim().length()==0 ){
-				    
+
 				    resp.setContentType("text/xml");
 				    resp.setContentLength(Integer.MAX_VALUE);
 				    tempFos = resp.getOutputStream();
 
+				    sendFeatureCollection(doc,tempFos);
+				    
+				    				    
+				    /*
 				    InputStream is = new FileInputStream(tempFile);
 				    //GZIPOutputStream os = new GZIPOutputStream(resp.getOutputStream());
 				    byte byteRead[] = new byte[ 98304 ];
@@ -964,18 +989,11 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 					    index = is.read( byteRead, 0, 98304 );		
 					}		
 					tempFos.flush();
-					is.close();
+					is.close();*/
 				    return;
 				} else{
-				Map hints = new HashMap();		
-				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-				GMLFeatureCollection  doc =null;
-				if (user!=null && user.length()>0){
-				    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
-				}else
-				    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
-
+				
 				resp.setContentType("text/xml");
 				resp.setContentLength(Integer.MAX_VALUE);
 				tempFos = resp.getOutputStream();
@@ -1031,7 +1049,7 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 		    dump("SYSTEM","ClientResponseLength",tempFile.length());
 		    tempFile.delete();	
 		}
-	    }		 
+	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1331,12 +1349,7 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 	    }
 
 
-	    FeatureTransformer ft = new FeatureTransformer();
-	    ft.setNamespaceDeclarationEnabled(true);		
-
-	    ft.setCollectionPrefix(null);
-	    ft.setGmlPrefixing(true);	    
-	    ft.setIndentation(2);
+	  
 	    FeatureCollection fc = null;
 	    if (filter!=null){
 		System.setProperty("org.geotools.referencing.forceXY", "true");
@@ -1370,8 +1383,6 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 			Object obj = null;
 			if (((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry() instanceof org.geotools.filter.LiteralExpressionImpl){
 			    obj = (((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry()).getValue());
-
-
 			}
 			if (((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry() instanceof org.geotools.filter.LiteralExpressionImpl){
 			    obj =(((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry()).getValue().getClass());	    
@@ -1396,12 +1407,29 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 	    }
 	    else fc = doc;
 
+	    sendFeatureCollection(fc,os);
+	}catch(Exception e){
+	    e.printStackTrace();
+	    dump("ERROR",e.getMessage());
+	}
+
+    }
+    
+    void sendFeatureCollection(FeatureCollection fc, OutputStream os ){
+	
+	  FeatureTransformer ft = new FeatureTransformer();
+	    ft.setNamespaceDeclarationEnabled(true);		
+
+	    ft.setCollectionPrefix(null);
+	    ft.setGmlPrefixing(true);	    
+	    ft.setIndentation(2);
+	    
 	    FeatureIterator it = fc.features();
 	    int i=0;
 	    String lastTypeName="";
 	    while(it.hasNext()){
 		Feature feature = it.next();
-
+		
 		if (!feature.getFeatureType().getTypeName().equals(lastTypeName)){
 		    String prefix = "au"+i;
 		    ft.getFeatureTypeNamespaces().declareNamespace(feature.getFeatureType(), prefix, feature.getFeatureType().getNamespace().toString());		
@@ -1409,15 +1437,56 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 		    lastTypeName=feature.getFeatureType().getTypeName();
 		}
 		i++;
-
+	    }
+	    
+	    FeatureCollection simplifiedFC = simplifyGeometetry(fc);
+	    try{
+	    ft.transform(simplifiedFC, os);
+	    }catch(Exception e){
+		e.printStackTrace();
 	    }
 
-	    ft.transform(fc, os);
-
+    }
+    
+    
+    
+    FeatureCollection simplifyGeometetry(FeatureCollection fc){
+	
+	String tol = configuration.getToleranceDistance();
+	double toleranceDistance = 0;
+	try{
+	    toleranceDistance = Double.parseDouble(tol);
 	}catch(Exception e){
-	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    dump("ERROR",e.toString()); 
+	    e.printStackTrace();	    
 	}
+	  if (toleranceDistance>0){
+	      dump("INFO","Simplify Geometry. toleranceDistance = "+toleranceDistance); 
+	List list = new ArrayList(  fc.size());
+	
+	for( FeatureIterator iterator = fc.features(); iterator.hasNext(); ){
+	            Feature feature = iterator.next();
+	            	TopologyPreservingSimplifier tps= new TopologyPreservingSimplifier (feature.getDefaultGeometry());
+	            	tps.setDistanceTolerance(toleranceDistance);
+	            
+	    		/*DouglasPeuckerSimplifier dps = new DouglasPeuckerSimplifier(feature.getDefaultGeometry());
+	    		dps.setDistanceTolerance(toleranceDistance);*/
+	    		try{
+	    		//feature.setDefaultGeometry(dps.getResultGeometry());	    		     
+	    		feature.setDefaultGeometry(tps.getResultGeometry());	
+	    		//feature.setDefaultGeometry(feature.getDefaultGeometry().getCentroid());
+	    		}catch (Exception e){
+	    		    dump("ERROR",e.toString());
+	    		    e.printStackTrace();
+	    		}         
+	            list.add( feature);
+	        }
+	        fc.clear();
+	        fc.addAll( list );  
+	  }      
+	 return fc;
+	  
 
+	
     }
 }

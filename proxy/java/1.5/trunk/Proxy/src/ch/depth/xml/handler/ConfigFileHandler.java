@@ -45,6 +45,7 @@ public class ConfigFileHandler extends DefaultHandler {
     private String logPrefix = "";
     private String logExtension = "";
     private String logPeriod = "";
+    private String toleranceDistance="0";
     private boolean isAuthorization = false;
     private boolean isPolicyFile = false;
     private boolean isLoginService = false;
@@ -90,6 +91,8 @@ public class ConfigFileHandler extends DefaultHandler {
     private String deleteServiceUrl=null;
     private String insertServiceUrl=null;
     private String searchServiceUrl=null;
+    private boolean isDouglasPeuckerSimplifier=false;
+    private boolean isToleranceDistance=false;
     
     public ConfigFileHandler(String id) {
 	super();
@@ -107,6 +110,15 @@ public class ConfigFileHandler extends DefaultHandler {
 	    }
 	    
 	}
+	
+	if (isTheGoodId && isConfig && qName.equals("douglasPeuckerSimplifier")) {	    
+	    isDouglasPeuckerSimplifier=true;
+	}
+	if (isTheGoodId && isConfig && isDouglasPeuckerSimplifier && qName.equals("toleranceDistance")) {	    
+	    isToleranceDistance=true;
+	}
+	
+	
 	if (isTheGoodId && isConfig && qName.equals("servlet-class")) {	    
 	    isServletClass=true;
 	}
@@ -207,8 +219,18 @@ public class ConfigFileHandler extends DefaultHandler {
 		config.setServletClass(servletClass);
 		config.setMaxRequestNumber(maxRequestNumber);
 		config.setHostTranslator(hostTranslator);
+		config.setToleranceDistance(toleranceDistance);
 	    }
 	    isTheGoodId = false;
+	}
+	
+	if (isTheGoodId && isConfig && qName.equals("douglasPeuckerSimplifier")) {	    
+	    isDouglasPeuckerSimplifier=false;
+	}
+	if (isTheGoodId && isConfig && isDouglasPeuckerSimplifier && qName.equals("toleranceDistance")) {	    
+	    
+	    toleranceDistance = data;
+	    isToleranceDistance=false;
 	}
 	
 	if (isTheGoodId && isConfig && qName.equals("host-translator")) {

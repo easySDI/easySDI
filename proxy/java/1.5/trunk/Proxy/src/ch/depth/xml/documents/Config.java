@@ -36,9 +36,15 @@ public class Config {
     private String servletClass = "";
     private double maxRequestNumber = -1;
     private String hostTranslator ="";
+    private String toleranceDistance="0";
     
     
-    
+    public String getToleranceDistance() {
+        return toleranceDistance;
+    }
+    public void setToleranceDistance(String toleranceDistance) {
+        this.toleranceDistance = toleranceDistance;
+    }
     public String getHostTranslator() {
         return hostTranslator;
     }
