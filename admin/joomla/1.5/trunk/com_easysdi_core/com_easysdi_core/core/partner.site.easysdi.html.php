@@ -541,6 +541,23 @@ function print_child($childList){
 								<td><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="<?php echo $rowPartner->partner_url; ?>" /></td>
 							</tr>
+														<?php 
+							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" ){
+								?>
+								<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_METADATA"); ?> : </td>
+									<td><input value="1" class="inputbox" type="checkbox" name="notify_new_metadata" <?php if ($rowPartner->notify_new_metadata == 1) echo " checked"; ?> /></td>
+								</tr>
+								<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_DISTRIBUTION"); ?> : </td>
+									<td><input value="1" class="inputbox" type="checkbox" name="notify_distribution" <?php if ($rowPartner->notify_distribution == 1) echo " checked"; ?> /></td>
+								</tr>
+							<?php
+							}?>
+							<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_ORDER_READY"); ?> : </td>
+									<td><input class="inputbox" value="1" type="checkbox" name="notify_order_ready" <?php if ($rowPartner->notify_order_ready == 1) echo " checked"; ?> /></td>
+							</tr>
 							
 						</table>
 					</fieldset>
@@ -1032,6 +1049,24 @@ function print_child($childList){
 								<td><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="<?php echo $rowPartner->partner_url; ?>" /></td>
 							</tr>
+							<?php 
+							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" ){
+								?>
+								<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_METADATA"); ?> : </td>
+									<td><input value="1" class="inputbox" type="checkbox" name="notify_new_metadata" <?php if ($rowPartner->notify_new_metadata == 1) echo " checked"; ?> /></td>
+								</tr>
+								<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_DISTRIBUTION"); ?> : </td>
+									<td><input value="1" class="inputbox" type="checkbox" name="notify_distribution" <?php if ($rowPartner->notify_distribution == 1) echo " checked"; ?> /></td>
+								</tr>
+							<?php
+							}?>
+							<tr>
+									<td><?php echo JText::_("EASYSDI_NOTIFY_ORDER_READY"); ?> : </td>
+									<td><input class="inputbox" value="1" type="checkbox" name="notify_order_ready" <?php if ($rowPartner->notify_order_ready == 1) echo " checked"; ?> /></td>
+							</tr>
+							
 						</table>
 					</fieldset>
 				</td>
@@ -1107,9 +1142,10 @@ function print_child($childList){
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email[]" value="<?php echo $rowContact->address_email; ?>" /></td>								
 			</tr>
 		</table>
+		</fieldset>
 		</td>
 		</tr></table>
-		</fieldset>
+		
 <?php
 		echo $tabs->endPanel();
 	
@@ -1213,5 +1249,5 @@ function print_child($childList){
 	
 	
 }
-	
+		
 ?>

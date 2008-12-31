@@ -822,6 +822,47 @@ $db->setQuery( $query);
 
 		}
 }
+
+if ($version == "0.91"){
+	
+	
+		$version="0.92";
+		$query="UPDATE #__easysdi_version SET version ='0.92' where component = 'com_easysdi_partner'";
+
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		
+		
+		$query="ALTER TABLE #__easysdi_community_partner add column notify_new_metadata tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		$query="ALTER TABLE #__easysdi_community_partner add column notify_distribution tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_community_partner add column notify_order_ready tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+}
 	
 	
 	

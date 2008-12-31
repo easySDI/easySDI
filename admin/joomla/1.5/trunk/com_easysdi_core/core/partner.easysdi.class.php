@@ -29,6 +29,9 @@ class partner extends JTable
 	var $partner_url=null;
 	var $partner_description=null;
 	var $partner_contract=0;
+	var $notify_new_metadata=0;
+	var $notify_distribution=0;
+	var $notify_order_ready=0;
 	
 	// Class constructor
 	function __construct( &$db )

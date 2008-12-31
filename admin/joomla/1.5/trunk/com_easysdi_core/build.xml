@@ -35,6 +35,7 @@
 				<include name="**/*.png" />
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
+				<include name="**/*.js" />
 			</fileset>
 		</copy>
 		<copy
@@ -48,8 +49,24 @@
 				<include name="**/*.png" />
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
+				<include name="**/*.js" />
 			</fileset>
 		</copy>
+		
+		<copy
+					
+					todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\language\fr-FR">
+							<fileset dir="./language/site">
+								<include name="**/*.ini" />
+							</fileset>
+						</copy>
+				<copy
+					
+					todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\language\fr-FR">
+							<fileset dir="./language/admin">
+								<include name="**/*.ini" />
+							</fileset>
+						</copy>
 	</target>
 
 
