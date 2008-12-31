@@ -1132,7 +1132,7 @@ $query="UPDATE #__easysdi_version set version = '0.99' where component = 'com_ea
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column filter_field_name varchar(100) NOT NULL default ''";
 		
 		$db->setQuery( $query);
-
+	
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1159,6 +1159,13 @@ $query="UPDATE #__easysdi_version set version = '0.99' where component = 'com_ea
 		}	
   
 		
+		$query="CREATE TABLE `#__easysdi_user_product_favorite` (`id` bigint(20) NOT NULL auto_increment, `partner_id` bigint(20) NOT NULL default '0', `product_id` bigint(20) NOT NULL default '0', `notify_metadata_modification` tinyint(1) NOT NULL default '0', PRIMARY KEY  (`id`))"; 
+$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}	
 		
 		
 	
