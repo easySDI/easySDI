@@ -17,6 +17,30 @@
 
 class helper_easysdi{
 	
+function generateHtmlPerimeterSelect($row,$parent){
+		$db =& JFactory::getDBO();
+		
+		if ($row->id_perimeter_filter > 0 ){
+		$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
+		$db->setQuery( $query );
+		$rows2 = $db->loadObject();
+		helper_easysdi::generateHtmlPerimeterSelect($rows2,$row->id);
+				
+		}
+		if ($parent == 0){
+		echo "<tr>";
+		//echo "<td><input onkeypress=\"alert('1')\" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td>"	;
+		echo "<td><select id=\"perimetersListLocation$row->id\"	onChange=\"recenterOnPerimeterLocation('perimetersListLocation$row->id')\"><option > </option></select></td>";
+		
+		echo "</tr>";
+		}else{
+			echo "<tr>";
+			echo "<td><input onkeyup=\"fillParent ('filter$row->id','perimetersListLocation$row->id','perimetersListLocation$parent') \" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td>"	;
+			echo "<td><select id=\"perimetersListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','perimetersListLocation$row->id','perimetersListLocation$parent') \"><option > </option></select></td>";			
+			echo "</tr>";		
+		}	
+
+}
 	
 	function hasRight($partner_id,$right){
 				

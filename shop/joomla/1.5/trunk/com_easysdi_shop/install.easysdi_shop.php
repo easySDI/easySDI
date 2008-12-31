@@ -1090,6 +1090,81 @@ if ($version == "0.97"){
 }
 
 
+if ($version == "0.98"){
+	
+$query="UPDATE #__easysdi_version set version = '0.99' where component = 'com_easysdi_shop'";
+
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	$version = "0.99";
+	
+		$query="ALTER TABLE #__easysdi_product add column is_free tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column wms_scale_min double NOT NULL default '0'";
+		
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column wms_scale_max double NOT NULL default '0'";
+		
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column filter_field_name varchar(100) NOT NULL default ''";
+		
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}		
+
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column id_perimeter_filter bigint(20) NOT NULL default '0'";
+		
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}		
+		
+ 
+  	$query="ALTER TABLE #__easysdi_perimeter_definition add column is_localisation tinyint(1) NOT NULL default '0'";
+		
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}	
+  
+		
+		
+		
+	
+}
+
+
 
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);

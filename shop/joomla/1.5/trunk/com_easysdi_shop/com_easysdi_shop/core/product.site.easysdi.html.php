@@ -133,6 +133,11 @@ class HTML_product{
 							</tr>
 							
 							<tr>
+								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>
+								<td><input name="is_free" value="1" type="checkbox" <?php if ($rowProduct->is_free) {echo "checked";};?> > </td>								
+							</tr>
+							
+							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$standardlist, 'metadata_standard_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_standard_id ); ?></td>																
 							</tr>
@@ -375,6 +380,7 @@ class HTML_product{
 							<tr>
 								<td><?php echo JText::_("EASYSDI_METADATA_ID"); ?> : </td>
 								<td><?php echo $rowProduct->metadata_id; ?></td>
+								<input type="hidden"  name="metadata_id" value="<?php echo $rowProduct->metadata_id; ?>" />
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_UPDATE_DATE"); ?> : </td>						
@@ -395,10 +401,16 @@ class HTML_product{
 									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
 									$database->setQuery($query);				 
 		 						?>
-								<td><?php echo $database->loadResult(); ?></td>								
-								
-																
+								<td><?php echo $database->loadResult(); ?></td>																																
 							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>								
+								<td><input type="checkbox" <?php if ($rowProduct->is_free == 1) echo "checked"; ?> disabled/> </td>
+																																								
+							</tr>
+							
+							
+							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
 								<?php
@@ -469,12 +481,12 @@ class HTML_product{
 		?>
 <input type="hidden" name="standard_id" value="<?php echo$rowProduct->metadata_standard_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" id="task" name="task" value="cancelEditProduct">
+		<input type="hidden" id="task" name="task" value="cancelEditProductMetadata">
 
 		</form>
 		
 		<button type="button" onClick="document.getElementById('task').value='saveProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>			
-		<button type="button" onClick="document.getElementById('task').value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
+		<button type="button" onClick="document.getElementById('task').value='cancelEditProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
 		
 	<?php
 	}

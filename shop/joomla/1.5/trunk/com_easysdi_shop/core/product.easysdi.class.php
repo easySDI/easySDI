@@ -31,6 +31,7 @@ class product extends JTable
 	var $internal=0;
 	var $external=0;
 	var $metadata_standard_id=null;
+	var $is_free=0;
 	// Class constructor
 	function __construct( &$db )
 	{
@@ -51,6 +52,13 @@ class perimeter extends JTable
 	var $area_field_name=null;
 	var $name_field_name=null;
 	var $id_field_name=null;
+	var $wms_scale_min=0;
+  	var $wms_scale_max=-1;
+  	var $filter_field_name=null;
+  	var $id_perimeter_filter=0;
+	var $is_localisation=0;
+	
+	
 	// Class constructor
 	function __construct( &$db )
 	{

@@ -144,6 +144,10 @@ class HTML_product {
 								<td><input name="external" value="1" type="checkbox" <?php if ($rowProduct->external) {echo "checked";};?> > </td>								
 							</tr>
 							<tr>
+								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>
+								<td><input name="is_free" value="1" type="checkbox" <?php if ($rowProduct->is_free) {echo "checked";};?> > </td>								
+							</tr>
+							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$standardlist, 'metadata_standard_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_standard_id ); ?></td>																
 							</tr>
@@ -513,7 +517,7 @@ array(); ?>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_DATA_TITLE"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_SUPPLIER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_CREATION_DATE"); ?></th>							
-				
+				 
 			</tr>
 		</thead>
 		<tbody>		

@@ -63,9 +63,6 @@ $cid = 		$mainframe->getUserState('productList');
 	
 	selIndex = document.getElementById('perimeterList').selectedIndex;
 
-	 	/*if (document.getElementById('perimeterList')[selIndex].value == '-1'){
-	 			selectWFSPerimeter(-1,"","","","","","","","");	 		
-	 		}*/
 
 	<?php	
 	foreach ($rows as $row)
@@ -388,7 +385,7 @@ function recenterOnPerimeter(){
 		
 		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
 		
-		var wfsUrlWithBBox = wfsUrl +"&BBOX="+map.maxExtent.toBBOX()
+		var wfsUrlWithBBox = wfsUrl +"&BBOX="+map.maxExtent.toBBOX()+"&MAXFEATURES=50";
 		
 		wfs3 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],

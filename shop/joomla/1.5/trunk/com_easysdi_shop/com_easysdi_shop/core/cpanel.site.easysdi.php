@@ -146,8 +146,8 @@ function orderReport($id){
 	foreach ($rowsProduct as $row){?>
 		<tr>
 		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->data_title?></td>				
-		
+		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>				
+				
 		</tr>
 	<?php }?>
 	

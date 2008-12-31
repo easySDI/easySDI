@@ -83,10 +83,34 @@ class HTML_perimeter {
 								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME_FIELD_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_name" value="<?php echo $rowPerimeter->name_field_name; ?>" /></td>							
 							</tr>
-							<tr>
-							
+							<tr>							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_ID_FIELD_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="id_field_name" value="<?php echo $rowPerimeter->id_field_name; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="filter_field_name" value="<?php echo $rowPerimeter->filter_field_name; ?>" /></td>
+								<?php
+									$perimList = array();
+									$perimList [] = JHTML::_('select.option','-1', JText::_("EASYSDI_PERIM_LIST") );
+									$database->setQuery( "SELECT id AS value, perimeter_name AS text FROM #__easysdi_perimeter_definition order by perimeter_name" );
+									$perimList = array_merge($perimList, $database->loadObjectList());
+		
+		
+															?>
+								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME_DEPENDS_OF"); ?></td>
+								
+								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_perimeter_filter', 'size="1" class="inputbox"', 'value', 'text', $rowPerimeter->id_perimeter_filter ); ?></td>
+								<td>
+								
+								
+								</td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_LOCALISATION"); ?> : </td>
+							<td><select name="is_localisation" > <option value="1" <?php if($rowPerimeter->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowPerimeter->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+							</td>
 							</tr>
 							
 						</table>

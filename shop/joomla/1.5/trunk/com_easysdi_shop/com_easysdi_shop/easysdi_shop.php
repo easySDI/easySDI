@@ -106,13 +106,15 @@ switch($task){
 		
 		
 		
-		
+	case	"cancelEditProductMetadata" :
+		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
+		break;
 	case "cancelEditProduct":
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
 	case "saveProductMetadata":
 		SITE_product::saveProductMetadata();
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
 	case "saveProduct":
 		SITE_product::saveProduct($option);

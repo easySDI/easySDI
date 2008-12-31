@@ -26,6 +26,8 @@ class SITE_product {
 
 		 
 		$metadata_standard_id = JRequest::getVar("standard_id");
+		$metadata_id = JRequest::getVar("metadata_id");
+		
 		
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) group by a.tab_id" ;
 		$database->setQuery($query);
@@ -68,12 +70,76 @@ class SITE_product {
 
 
 		
-			
+		
 
+		$xmlstrToDelete = "<csw:Transaction service=\"CSW\" version=\"2.0.0\" 
+   xmlns:csw=\"http://www.opengis.net/cat/csw\" 
+   xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\"
+   xmlns:ogc=\"http://www.opengis.net/ogc\">
+  <csw:Delete typeName=\"csw:Record\">
+    <csw:Constraint version=\"2.0.0\">
+      <ogc:Filter>
+        <ogc:PropertyIsEqualTo>        
+            <ogc:PropertyName>//gmd:fileIdentifier/gco:CharacterString</ogc:PropertyName>
+            <ogc:Literal>$metadata_id</ogc:Literal>
+        </ogc:PropertyIsEqualTo>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Delete>
+</csw:Transaction>";
+
+
+
+
+		//Try to discover if a metadata already exists. 
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$metadata_id;				
+		$cswResults = DOMDocument::load($catalogUrlGetRecordById); 
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');		
+		$geoMD = new geoMetadata($cswResults);				 
+
+		
+		SITE_product::SaveMetadata($xmlstrToDelete);
 		SITE_product::SaveMetadata($xmlstr);
-			
+		
+		if ( strlen($geoMD->getFileIdentifier()) == 0){
+			//find all the users interrested to know if a new metadata is created.
+
+			$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_new_metadata=1";
+			$database->setQuery( $query );
+			$total = $database->loadResult();
+			if($total >0){
+			$query = "SELECT * FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_new_metadata=1";
+			$database->setQuery( $query );
+
+			$rows = $database->loadObjectList();
+			$mailer =& JFactory::getMailer();
+			$user = JFactory::getUser();
+			SITE_product::sendMail($rows,JText::_("EASYSDI_NEW_METADATA_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_METADATA_MAIL_BODY",$metadata_id,$user->username));																
+			}
+		}
+		
 		
 	}
+		
+	function sendMail ($rows,$subject,$body){
+					 
+			$mailer =& JFactory::getMailer();
+						
+			foreach ($rows as $row){
+					$mailer->addRecipient($row->email);																
+				}
+				
+				$mailer->setSubject($subject);
+				$user = JFactory::getUser();
+				$mailer->setBody($body);
+				
+				if ($mailer->send() !==true){
+					
+				}
+			}
+		
 	
 	function SaveMetadata($xmlstr){
 		$content_length = strlen($xmlstr);
@@ -95,9 +161,10 @@ class SITE_product {
 
 		// Make the call
 		$xml = curl_exec($session);
-		echo $xml;
+		
 
 		curl_close($session);
+		return $xml;
 
 	}
 
@@ -107,8 +174,18 @@ class SITE_product {
 		$database=& JFactory::getDBO(); 
 		
 		$rowProduct =&	 new Product($database);
-				
+		$rowProductOld =&	 new Product($database);
+		$sendMail = false;
 		
+		
+		$id = JRequest::getVar("id",0);
+		if($id >0){
+			$rowProductOld->load($id);
+			if ($rowProductOld->external == 0 && JRequest::getVar("external",0) ==1){
+				$sendMail = true;
+			}
+			
+		}
 		if (!$rowProduct->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -172,6 +249,22 @@ class SITE_product {
 			}
 		}
 		
+		
+		if ($sendMail){
+			$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_distribution=1";
+			$database->setQuery( $query );
+			$total = $database->loadResult();
+			if($total >0){
+			$query = "SELECT * FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_distribution=1";
+			$database->setQuery( $query );
+
+			$rows = $database->loadObjectList();
+			$mailer =& JFactory::getMailer();
+			$user = JFactory::getUser();
+			SITE_product::sendMail($rows,JText::_("EASYSDI_NEW_DISTRIBUTION_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_DISTIBUTION_MAIL_BODY",$rowProduct->data_title,$user->username));																
+			}
+		}	
+			
 		 //SITE_product::SaveMetadata();
 		 
 	

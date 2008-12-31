@@ -1,6 +1,6 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="module">
-	<name>MOD_CADDY</name>
+	<name>mod_location</name>
 	<version>1.0</version>
 	<creationDate>July 2008</creationDate>
 	<author>Depth.ch</author>
@@ -8,9 +8,9 @@
 	<authorUrl>www.depth.ch</authorUrl>
 	<copyright></copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>module to manage the caddy.</description>
+	<description>module to locate on the map.</description>
 	<files>
-		<filename module="mod_caddy">mod_caddy.php</filename>
+		<filename module="mod_location">mod_location.php</filename>
 	</files>
 
 </install>
