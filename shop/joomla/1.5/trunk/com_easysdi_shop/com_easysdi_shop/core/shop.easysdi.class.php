@@ -1489,8 +1489,8 @@ function searchProducts($orderable = 1){
 	global $mainframe;
 	$db =& JFactory::getDBO();
 	
-	$language=&JFactory::getLanguage();
-	$language->load('com_easysdi');
+/*	$language=&JFactory::getLanguage();
+	$language->load('com_easysdi');*/
 	$limitstart = JRequest::getVar('limitstart',0);
 	$limit = JRequest::getVar('limit',5);
 	

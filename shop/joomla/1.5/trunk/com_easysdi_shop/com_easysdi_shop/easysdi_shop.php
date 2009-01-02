@@ -38,6 +38,11 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
+
+require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
+
+
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop');
 
@@ -53,6 +58,43 @@ if (!is_array( $cid )) {
 
 switch($task){
 
+	case "addMetadataNotification":
+		
+		SITE_favorite::metadataNotification(1);
+		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		break;
+	case "removeMetadataNotification":
+		
+		SITE_favorite::metadataNotification(0);
+		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		break;
+		
+		
+	case "listFavoriteProduct":
+		
+		SITE_favorite::listFavoriteProduct();
+					
+		break;
+	
+		
+	case "deleteFavoriteProduct":		
+		SITE_favorite::deleteFavoriteProduct($cid);
+		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		
+		break;
+		
+	case "addFavoriteProduct":
+		SITE_favorite::addFavoriteProduct($cid);
+		$mainframe->redirect("index.php?option=$option&task=listAllProductExceptFavorite" );
+		
+		break;
+	
+	case "listAllProductExceptFavorite":
+		
+		SITE_favorite::searchProducts();
+					
+		break;
+	
 	case "orderReport":
 		SITE_cpanel::orderReport($cid[0]);
 		break;

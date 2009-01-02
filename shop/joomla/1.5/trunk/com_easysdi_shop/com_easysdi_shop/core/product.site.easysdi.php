@@ -181,7 +181,7 @@ class SITE_product {
 		$id = JRequest::getVar("id",0);
 		if($id >0){
 			$rowProductOld->load($id);
-			if ($rowProductOld->external == 0 && JRequest::getVar("external",0) ==1){
+			if ($rowProductOld->published == 0 && JRequest::getVar("published",0) ==1){
 				$sendMail = true;
 			}
 			
@@ -396,6 +396,7 @@ function editMetadata() {
 		
 		
 }
+	
 	
 	function listProductMetadata(){
 
