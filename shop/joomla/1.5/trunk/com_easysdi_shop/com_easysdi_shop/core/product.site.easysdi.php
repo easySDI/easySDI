@@ -103,6 +103,7 @@ class SITE_product {
 		SITE_product::SaveMetadata($xmlstrToDelete);
 		SITE_product::SaveMetadata($xmlstr);
 		
+		//Send a Mail to notify the administrator that a new product is created 
 		if ( strlen($geoMD->getFileIdentifier()) == 0){
 			//find all the users interrested to know if a new metadata is created.
 
@@ -121,6 +122,18 @@ class SITE_product {
 		}
 		
 		
+		//Send a Mail to the users that have requested to be notify that the metadata has just been changed
+				$product_id = JRequest::getVar("product_id",0);
+		$query = "SELECT email,data_title FROM #__easysdi_user_product_favorite f, #__easysdi_community_partner p,#__users u,#__easysdi_product pr  where f.partner_id = p.partner_id  AND p.user_id = u.id and pr.id = f.product_id AND f.product_id = $product_id AND notify_metadata_modification = 1";
+		$database->setQuery( $query );
+		$rows = $database->loadObjectList();
+		$mailer =& JFactory::getMailer();
+		$user = JFactory::getUser();
+		if (count($rows) >0){
+			SITE_product::sendMail($rows,JText::_("EASYSDI_METADATA_HAS_CHANGED_MAIL_SUBJECT"),JText::sprintf("EASYSDI_METADATA_HAS_CHANGED_MAIL_BODY",$rows[0]->data_title));
+		}
+			
+		
 	}
 		
 	function sendMail ($rows,$subject,$body){
@@ -128,7 +141,8 @@ class SITE_product {
 			$mailer =& JFactory::getMailer();
 						
 			foreach ($rows as $row){
-					$mailer->addRecipient($row->email);																
+					//$mailer->addRecipient($row->email);
+					$mailer->addBCC($row->email);																
 				}
 				
 				$mailer->setSubject($subject);

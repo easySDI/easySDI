@@ -148,7 +148,7 @@ switch($task){
 		
 		
 		
-	case	"cancelEditProductMetadata" :
+	case "cancelEditProductMetadata" :
 		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
 	case "cancelEditProduct":

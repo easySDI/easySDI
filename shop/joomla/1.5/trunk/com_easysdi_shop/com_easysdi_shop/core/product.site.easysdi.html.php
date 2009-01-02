@@ -479,7 +479,8 @@ class HTML_product{
 
 		
 		?>
-<input type="hidden" name="standard_id" value="<?php echo$rowProduct->metadata_standard_id; ?>" />
+		<input type="hidden" name="standard_id" value="<?php echo $rowProduct->metadata_standard_id; ?>" />
+		<input type="hidden" name="product_id" value="<?php echo $rowProduct->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" id="task" name="task" value="cancelEditProductMetadata">
 

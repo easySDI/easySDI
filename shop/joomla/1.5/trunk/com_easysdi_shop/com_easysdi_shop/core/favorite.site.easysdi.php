@@ -437,11 +437,8 @@ function listFavoriteProduct($orderable = 1){
 		</td>
 		<td> 				
 		<input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->product_id; ?>" <?php if (in_array($row->id,$cid)) { echo "checked";};?>/>
-		<?php
-			
-		?>
 		
-		<input alt = "<?php echo JText::_("EASYSDI_NOTIFY_WHEN_METADATA_CHANGE")?>" type="checkbox" <?php if ( $row->notify_metadata_modification) { echo "checked";};?>  onClick="document.getElementById('productId').value='<?php echo $row->product_id; ?>';if (this.checked){document.getElementById('task').value='addMetadataNotification';} else{document.getElementById('task').value='removeMetadataNotification';}; submitOrderForm();" />
+		<span title = "<?php echo JText::_("EASYSDI_NOTIFY_WHEN_METADATA_CHANGE")?>" ><input type="checkbox" <?php if ( $row->notify_metadata_modification) { echo "checked";};?>  onClick="document.getElementById('productId').value='<?php echo $row->product_id; ?>';if (this.checked){document.getElementById('task').value='addMetadataNotification';} else{document.getElementById('task').value='removeMetadataNotification';}; submitOrderForm();" /></span>
 		
 		</td>				
 		</tr>				
