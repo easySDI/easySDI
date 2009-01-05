@@ -19,7 +19,7 @@
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/mod_perimeter.zip"
+		<jar compress="true" jarfile="${projet.out.dir}/mod_location.zip"
 			basedir="." excludes=".cache ; .settings ; .project" />
 	</target>
 

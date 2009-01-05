@@ -399,7 +399,7 @@ function listFavoriteProduct($orderable = 1){
 		 	<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD" <?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?> > <?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?><br>
 	 	</span>
 	 	<br>
-	 	<button type="submit" class="searchButton" onClick="document.getElementById('task').value='manageFavoriteProduct';submitOrderForm();"> <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+	 	<button type="submit" class="searchButton" onClick="document.getElementById('task').value='listFavoriteProduct';submitOrderForm();"> <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 	 	<button type="submit" class="searchButton" onClick="document.getElementById('task').value='deleteFavoriteProduct';submitOrderForm();"> <?php echo JText::_("EASYSDI_REMOVE_FROM_FAVORITE"); ?></button>		
 	 	
 	 	<br>
@@ -432,12 +432,12 @@ function listFavoriteProduct($orderable = 1){
 		
 		<tr>		
 		<td><img src="./img.gif" width="40" height="40"> </td>
-		<td><span class="mdtitle" ><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
+		<td>
+		<input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->product_id; ?>" <?php if (in_array($row->id,$cid)) { echo "checked";};?>/>
+		<span class="mdtitle" ><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
 			<span class="mdsupplier" ><?php echo $row->supplier_name;?></span><br>																
 		</td>
-		<td> 				
-		<input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->product_id; ?>" <?php if (in_array($row->id,$cid)) { echo "checked";};?>/>
-		
+		<td> 								
 		<span title = "<?php echo JText::_("EASYSDI_NOTIFY_WHEN_METADATA_CHANGE")?>" ><input type="checkbox" <?php if ( $row->notify_metadata_modification) { echo "checked";};?>  onClick="document.getElementById('productId').value='<?php echo $row->product_id; ?>';if (this.checked){document.getElementById('task').value='addMetadataNotification';} else{document.getElementById('task').value='removeMetadataNotification';}; submitOrderForm();" /></span>
 		
 		</td>				

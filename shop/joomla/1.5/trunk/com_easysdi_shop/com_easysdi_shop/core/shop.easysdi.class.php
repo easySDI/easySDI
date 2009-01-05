@@ -1532,6 +1532,25 @@ function searchProducts($orderable = 1){
 		}
 	
 	$filter .= " AND (EXTERNAL=1 OR (INTERNAL =1 AND PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
+	
+		if ($simpleSearchCriteria == "favoriteProduct"){
+	
+			$queryFav = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
+			$db->setQuery( $queryFav);
+			$productList = $db->loadResultArray();
+						
+			if (count($productList)>0){
+					$filterFav = " AND p.ID IN (";
+					foreach( $productList as $id){
+						$filterFav  = $filterFav.$id.",";
+					}
+					$filterFav  = substr($filterFav  , 0, -1);
+					$filterFav  = $filterFav.")";
+					$filter .= $filterFav ;
+			}else $filter = " AND 1=0";
+		}
+	
+		
 	$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
 	$query  = $query .$filter ;
 	$db->setQuery( $query);
@@ -1540,6 +1559,8 @@ function searchProducts($orderable = 1){
 	$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;			
 	$query  = $query .$filter ;
 		
+	
+	
 	if ($simpleSearchCriteria == "moreConsultedMD"){
 				$query  = $query." order by weight";
 	}
@@ -1549,7 +1570,6 @@ function searchProducts($orderable = 1){
 	if ($simpleSearchCriteria == "lastUpdatedMD"){
 				$query  = $query." order by update_date";
 	}
-		
 	
 	$db->setQuery( $query,$limitstart,$limit);
 	$rows = $db->loadObjectList();
@@ -1577,6 +1597,9 @@ function searchProducts($orderable = 1){
 		 	<input type="radio" name="simpleSearchCriteria" value="lastAddedMD" <?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?>> <?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?><br>
 		 	<input type="radio" name="simpleSearchCriteria" value="moreConsultedMD" <?php if ($simpleSearchCriteria == "moreConsultedMD") echo "checked";?>> <?php echo JText::_("EASYSDI_MORECONSULTED_MD"); ?><br>
 		 	<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD" <?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?> > <?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?><br>
+		 	<?php if (!$user->guest){ ?>
+		 	<input type="radio" name="simpleSearchCriteria" value="favoriteProduct" <?php if ($simpleSearchCriteria == "favoriteProduct") echo "checked";?> > <?php echo JText::_("EASYSDI_FAVORITE_PRODUCT"); ?><br>
+		 	 <?php  }?>
 	 	</span>
 	 	<br>
 	 	<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
