@@ -289,7 +289,7 @@ class SITE_partner {
 		$rowPartner = new partnerByUserId( $database );
 
 		$rowPartner->load( $user->id );
-		if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
+		/*if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
 			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
 		} else {
 			$rowPartner->partner_entry = null;
@@ -298,7 +298,7 @@ class SITE_partner {
 			$rowPartner->partner_exit = date('d.m.Y H:i:s',strtotime($rowPartner->partner_exit));
 		} else {
 			$rowPartner->partner_exit = null;
-		}
+		}*/
 
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
 		$contact_id = $database->loadResult();
