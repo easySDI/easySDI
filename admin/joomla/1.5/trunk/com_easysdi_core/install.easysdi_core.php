@@ -864,6 +864,9 @@ if ($version == "0.91"){
 		
 }
 	
+
+
+
 	
 	
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;

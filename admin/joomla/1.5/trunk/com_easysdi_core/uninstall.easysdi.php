@@ -22,7 +22,26 @@ function com_uninstall(){
 	
 global  $mainframe;
 
-$mainframe->enqueueMessage("Congratulation EasySdi partner manager is uninstalled.
+$db =& JFactory::getDBO();
+$query = "DELETE FROM #__components where `option`= 'com_easysdi_partner' ";
+
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
+
+$db->setQuery( $query);
+
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		
+	}
+	
+$mainframe->enqueueMessage("Congratulation EasySdi core component is uninstalled.
 Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 ","INFO");
 
