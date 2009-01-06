@@ -1,4 +1,5 @@
 <?php
+
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
@@ -96,21 +97,29 @@ class ADMIN_partner {
 
 	// Cr�ation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
-	function editRootPartner( $id, $option ) {
+	function editRootPartner($id, $option) {
+		if($id=='')
+		{
+			$id = JRequest::getVar('partner_id');
+			if ($id=='')
+			{
+				$id=0;
+			}
+		}
 		$database =& JFactory::getDBO(); 
 		$rowPartner = new partner( $database );
 		$rowPartner->load( $id );
 		$rowPartner->parent_id = $id; 
-		if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
+		/*if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
 			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
 		} else {
 			$rowPartner->partner_entry = null;
-		}
-		if ($rowPartner->partner_exit != null && $rowPartner->partner_exit != '0000-00-00')	{
+		}*/
+		/*if ($rowPartner->partner_exit != null && $rowPartner->partner_exit != '0000-00-00')	{
 			$rowPartner->partner_exit = date('d.m.Y H:i:s',strtotime($rowPartner->partner_exit));
 		} else {
 			$rowPartner->partner_exit = null;
-		}
+		}*/
 	
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$id." AND type_id=1" );
 		$contact_id = $database->loadResult();
@@ -130,17 +139,14 @@ class ADMIN_partner {
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
 		
-		
-		
-		
-		//new mosUser( $database );
-		
-		//$rowUser =& JFactory::getUser($rowPartner->user_id);		
-			
 		$rowUser =&	 new JTableUser($database);
-		$rowUser->load( $rowPartner->user_id );
-		//$rowUser->load( $rowPartner->user_id );
-		if ($id == 0)
+		$JId = JRequest::getVar('JId');
+		if($JId=='')
+		{
+			$JId = $rowPartner->user_id;
+		}
+		$rowUser->load($JId);		
+		if ($JId == '')
 		{
 			$rowUser->usertype='Registered';
 			$rowUser->gid=18;
@@ -151,7 +157,18 @@ class ADMIN_partner {
 
 	// Cr�ation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
-	function editAffiliatePartner( $id, $option ) {
+	function editAffiliatePartner( $id, $option ) {		
+		// if $id is empty, situation is : refresh page after change the joomla account
+		// then get the _POST variable 'partner_id' to retrieve the partner object from the database
+		if($id=='')
+		{
+			$id = JRequest::getVar('partner_id');
+			if ($id=='')
+			{
+				//if 'partner_id' does not return a user object, set 'id' to 0 as in create situation
+				$id=0;
+			}
+		}
 		$database =& JFactory::getDBO();
 
 		$rowPartner = new partner( $database );
@@ -165,9 +182,16 @@ class ADMIN_partner {
 
 		
 		$rowUser =&	 new JTableUser($database);
-		$rowUser->load( $rowPartner->user_id );
-		
-		
+		//JId represents the selected joomla account
+		$JId = JRequest::getVar('JId');
+		if($JId=='')
+		{
+			//no joomla account select, so get the joomla account of the current partner 
+			$JId = $rowPartner->user_id;
+		}
+		$rowUser->load($JId);
+		//$rowUser->load( $rowPartner->user_id );
+				
 		if ($id == 0)
 		{
 			$type = JRequest::getVar('type','');
@@ -182,13 +206,16 @@ class ADMIN_partner {
 		 		
 			$rowPartner->parent_id=$type;
 			
-			$rowUser->usertype='Registered';
-			$rowUser->gid=18;
+			if ($JId == '')
+			{
+				$rowUser->usertype='Registered';
+				$rowUser->gid=18;
+			}
 		}
 
 		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option );
 	}
-
+	
 	function removePartner( $cid, $option ) {
 		global $mainframe;
 		$database =& JFactory::getDBO();
@@ -306,6 +333,7 @@ class ADMIN_partner {
 
 	}
 
+	
 	function savePartner( $returnList, $option ) {
 		global $mainframe;
 						
@@ -369,14 +397,34 @@ class ADMIN_partner {
 			$rowAddress->address_id=$address_id;
 			$rowAddress->partner_id=$rowPartner->partner_id;
 			$rowAddress->type_id=$_POST['type_id'][$counter];
-			if ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 2) {
+			
+			if( $counter == 1 && isset($_POST['sameAddress1'] )  && $_POST['sameAddress1'] == 'on')
+			{
 				$index = 0;
-			} elseif ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 3) {
+			}
+			elseif ($counter == 2 && isset($_POST['sameAddress2'] ) && $_POST['sameAddress2'] == 'on')
+			{
 				$index = 0;
-			} else {
+			}
+			else
+			{
 				$index = $counter;
 			}
-		
+				/*if ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 2) 
+				{
+					$index = 0;
+				} 
+				elseif
+				(
+					$_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 3) {
+					$index = 0;
+				} 
+				else 
+				{
+					$index = $counter;
+				}*/
+			
+			
 			$rowAddress->title_id=$_POST['title_id'][$index];
 			$rowAddress->country_code=$_POST['country_code'][$index];
 			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
@@ -418,18 +466,21 @@ class ADMIN_partner {
 			exit();
 		}
 		
-		if (count ($_POST['role_id'] )>0){
-		foreach( $_POST['role_id'] as $role_id )
+		if(isset($_POST['role_id']))
 		{
-			$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
-			if (!$database->query()) {
-				//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPartner" );
-				exit();
+			if (count ($_POST['role_id'] )>0){
+			foreach( $_POST['role_id'] as $role_id )
+			{
+				$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
+				if (!$database->query()) {
+					//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listPartner" );
+					exit();
+				}
+				
 			}
-			
-		}
+			}
 		}
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
 		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
@@ -469,6 +520,8 @@ class ADMIN_partner {
 		
 		
 	}
+	
+	
 
 }
 

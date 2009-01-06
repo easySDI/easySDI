@@ -26,8 +26,7 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
-
-
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
@@ -68,16 +67,14 @@ switch($task){
 	case "savePartner":
 		SITE_partner::savePartner();				
 		break;	
-	case "editPartner":	
-			
+	case "editPartner":				
 		SITE_partner::editPartner();
 		break;
 	
 	case "showPartner":
 	default:	
 		SITE_partner::showPartner();
-		break;
-		
+		break;	
 				
 }
  ?>

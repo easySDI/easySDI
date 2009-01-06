@@ -29,10 +29,12 @@ class partner extends JTable
 	var $partner_url=null;
 	var $partner_description=null;
 	var $partner_contract=0;
+	/*var $partner_entry=null;*/
+	/*var $partner_exit=null;*/
 	var $notify_new_metadata=0;
-	var $notify_distribution=0;
-	var $notify_order_ready=0;
-	
+ 	var $notify_distribution=0;
+ 	var $notify_order_ready=0;
+ 
 	// Class constructor
 	function __construct( &$db )
 	{
@@ -47,7 +49,7 @@ class address extends JTable
 	var $partner_id=null;
 	var $type_id=null;
 	var $title_id=null;
-	var $country_code=CH;
+	var $country_code='CH';
 	var $address_corporate_name1=null;
 	var $address_corporate_name2=null;
 	var $address_agent_firstname=null;
@@ -68,5 +70,6 @@ class address extends JTable
     		parent::__construct( '#__easysdi_community_address', 'address_id', $db );
 	}
 }
+
 
 ?>

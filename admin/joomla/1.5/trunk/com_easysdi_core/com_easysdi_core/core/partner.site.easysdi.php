@@ -1,18 +1,18 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or 
+ * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
 defined('_JEXEC') or die('Restricted access');
@@ -22,132 +22,140 @@ class SITE_partner {
 	function includePartnerExtension($tab_id,$tab_location,$action,$partner_id)
 	{
 		$database =& JFactory::getDBO();
-				
+
 		$database->setQuery( "SELECT code FROM #__easysdi_partner_extension WHERE tab_id = ".$tab_id." AND tab_location = '".$tab_location."' AND action = '".$action."' ORDER BY order_number" );
 		$rows = $database->loadObjectList() ;
-		
+
 		for ($i=0, $n=count($rows); $i < $n; $i++)
-		{			
+		{
 			$row = $rows[$i];
-			eval ($row->code);			
+			eval ($row->code);
 		}
 	}
-	
+
 	function listPartner() {
-		
-		
-		$user = JFactory::getUser();	
+
+
+		$user = JFactory::getUser();
 		if ($user->guest){
-			
-			?>			
-				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
+				
+			?>
+<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
 		}else{
-		global  $mainframe;
-		$option=JRequest::getVar("option");
-		
-		$db =& JFactory::getDBO(); 
-		
-		$limit = JRequest::getVar('limit', 5 );
-		$limitstart = JRequest::getVar('limitstart', 0 );
-		
-				
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+			global  $mainframe;
+			$option=JRequest::getVar("option");
 
-		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (#__users.name LIKE '%$search%'";
-			$filter .= " OR #__users.username LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_acronym LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_id LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_code LIKE '%$search%')";		
-		}
-		
-		$rowPartner = new partnerByUserId( $db );		
-		$rowPartner->load( $user->id );
-		
-		
+			$db =& JFactory::getDBO();
+
+			$limit = JRequest::getVar('limit', 5 );
+			$limitstart = JRequest::getVar('limitstart', 0 );
+
+
+			$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+			$search = $db->getEscaped( trim( strtolower( $search ) ) );
+
+			$filter = "";
+			if ( $search ) {
+				$filter .= " AND (#__users.name LIKE '%$search%'";
+				$filter .= " OR #__users.username LIKE '%$search%'";
+				$filter .= " OR #__easysdi_community_partner.partner_acronym LIKE '%$search%'";
+				$filter .= " OR #__easysdi_community_partner.partner_id LIKE '%$search%'";
+				$filter .= " OR #__easysdi_community_partner.partner_code LIKE '%$search%')";
+			}
+
+			$rowPartner = new partnerByUserId( $db );
+			$rowPartner->load( $user->id );
+
+
 			//Has the user the right to manage the affiliate
-		$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
-		
-		$db->setQuery($query );
-		$hasTheRightToManageAffiliates = $db->loadResult();		
-		if ($db->getErrorNum()) {						
-			echo "<div class='alert'>";			
-			echo 			$db->getErrorMsg();
-			echo "</div>";
-			$hasTheRightToManageAffiliates=0;
-		}
-		
-		$type = JRequest::getVar("type",$rowPartner->partner_id);
-		if (!$type){
-			$type=$rowPartner->partner_id;
-		}
-		
-		if ($hasTheRightToManageAffiliates){
-		$query = "SELECT COUNT(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type";
-			
-		
-		$query .= $filter;
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+			$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
 
-		$pageNav = new JPagination($total,$limitstart,$limit);
+			$db->setQuery($query );
+			$hasTheRightToManageAffiliates = $db->loadResult();
+			if ($db->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$db->getErrorMsg();
+				echo "</div>";
+				$hasTheRightToManageAffiliates=0;
+			}
+
+			$type = JRequest::getVar("type",$rowPartner->partner_id);
+			if (!$type){
+				$type=$rowPartner->partner_id;
+			}
+
+			if ($hasTheRightToManageAffiliates){
+				$query = "SELECT COUNT(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type";
 					
-		$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type ";					
-		$query .= $filter;
-		$query .= " ORDER BY #__users.name";
-						
-		
-		$db->setQuery( $query ,$limitstart,$limit);
-		$rows = $db->loadObjectList();
-		
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$db->getErrorMsg();
-			echo "</div>";
-		}		
-	
-		$types = array();
-		$types[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_ACCOUNT_ROOT") );
-		
-		if ($type==''){
-			$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NULL ORDER BY #__users.name" );											
-		}else{
-			$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,#__users.name AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.partner_id ='$type'" );					  
-			$types = array_merge( $types, $db->loadObjectList() );														
-			$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NOT NULL AND (#__easysdi_community_partner.parent_id = '$type' ) ORDER BY #__users.name" ); 									 			
-		}
-		
-		$types = array_merge( $types, $db->loadObjectList() );
 
-		HTML_partner::listPartner( $rows, $pageNav, $search, $option, $rowPartner->partner_id,$types,$type);
-		}else{
-			echo "<div class='alert'>";			
-			echo JText::_("EASYSDI_NOT ALLOWED TO EDIT AFFILIATES");
-			echo "</div>";
-		}	
+				$query .= $filter;
+				$db->setQuery( $query );
+				$total = $db->loadResult();
+
+				$pageNav = new JPagination($total,$limitstart,$limit);
+					
+				$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type ";
+				$query .= $filter;
+				$query .= " ORDER BY #__users.name";
+
+
+				$db->setQuery( $query ,$limitstart,$limit);
+				$rows = $db->loadObjectList();
+
+				if ($db->getErrorNum()) {
+					echo "<div class='alert'>";
+					echo 			$db->getErrorMsg();
+					echo "</div>";
+				}
+
+				$types = array();
+				$types[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_ACCOUNT_ROOT") );
+
+				if ($type==''){
+					$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NULL ORDER BY #__users.name" );
+				}else{
+					$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,#__users.name AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.partner_id ='$type'" );
+					$types = array_merge( $types, $db->loadObjectList() );
+					$db->setQuery( "SELECT #__easysdi_community_partner.partner_id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.root_id IS NOT NULL AND (#__easysdi_community_partner.parent_id = '$type' ) ORDER BY #__users.name" );
+				}
+
+				$types = array_merge( $types, $db->loadObjectList() );
+
+				HTML_partner::listPartner( $rows, $pageNav, $search, $option, $rowPartner->partner_id,$types,$type);
+			}else{
+				echo "<div class='alert'>";
+				echo JText::_("EASYSDI_NOT ALLOWED TO EDIT AFFILIATES");
+				echo "</div>";
+			}
 		}
 	}
 
-	
+
 	function editPartner( ) {
-	
+
 		$option = JRequest::getVar("option");
-		$user = JFactory::getUser();	
+		$user = JFactory::getUser();
+
 		if ($user->guest){
-			?>			
+			?>
 				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
-	
-	
-		$database =& JFactory::getDBO(); 
-		$rowPartner = new partnerByUserId( $database );
+			return;
+		}
+		if(!usermanager::isEasySDIUser($user))
+		{
+			?>
+				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+			<?php
+			return;
+		}
 		
+		$database =& JFactory::getDBO();
+		$rowPartner = new partnerByUserId( $database );
 		$rowPartner->load( $user->id );
-		if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
+
+		/*if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
 			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
 		} else {
 			$rowPartner->partner_entry = null;
@@ -156,121 +164,130 @@ class SITE_partner {
 			$rowPartner->partner_exit = date('d.m.Y H:i:s',strtotime($rowPartner->partner_exit));
 		} else {
 			$rowPartner->partner_exit = null;
-		}
-	
+		}*/
+
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
-		$contact_id = $database->loadResult();		
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		$contact_id = $database->loadResult();
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
 			
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
-		
+
+
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
+
 		$rowSubscription = new address( $database );
 		$rowSubscription->load( $subscription_id );
 
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
+
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-							
+			
 		$rowUser =&	 new JTableUser($database);
 		$rowUser->load( $rowPartner->user_id );
 
 		HTML_partner::editPartner( $rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option );
-		}
-	}
-	
-	function showPartner( ) {
 		
+	}
+
+	function showPartner( ) {
+
 		$user = JFactory::getUser();
 		if ($user->guest){
-			?>			
-				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
+			?>
+			<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
-		
-			$database =& JFactory::getDBO(); 
-			$rowPartner = new partnerByUserId( $database );
-			$rowPartner->load( $user->id );
-			
-			
-			
-			//Has the user the right to edit the account
-			$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'MYACCOUNT'  and partner_id = $rowPartner->partner_id";
-			$database->setQuery($query );
-				$hasTheRightToEdit = $database->loadResult();		
-			if ($database->getErrorNum()) {						
-					echo "<div class='alert'>";			
-					echo 			$database->getErrorMsg();
-					echo "</div>";
-					$hasTheRightToEdit=0;
-				}
-			  
-			$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
-			$database->setQuery($query );
-				$hasTheRightToManageHisOwnAffiliates = $database->loadResult();		
-			if ($database->getErrorNum()) {						
-					echo "<div class='alert'>";			
-					echo 			$database->getErrorMsg();
-					echo "</div>";
-					$hasTheRightToManageHisOwnAffiliates=0;
-				}
-			
-
-			if (is_null($rowPartner->root_id)){		
-				SITE_partner::showRootPartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates);
-			}else{
-				SITE_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates);
-			}
-			
+			return;
 		}
-
+		if(!usermanager::isEasySDIUser($user))
+		{
+			?>
+				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+			<?php
+			return;
+		}
 		
+		$database =& JFactory::getDBO();
+		$rowPartner = new partnerByUserId( $database );
+		$rowPartner->load( $user->id );
+						
+			
+		//Has the user the right to edit the account
+		$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'MYACCOUNT'  and partner_id = $rowPartner->partner_id";
+		$database->setQuery($query );
+		$hasTheRightToEdit = $database->loadResult();
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+			$hasTheRightToEdit=0;
+		}
+			
+		$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
+		$database->setQuery($query );
+		$hasTheRightToManageHisOwnAffiliates = $database->loadResult();
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+			$hasTheRightToManageHisOwnAffiliates=0;
+		}
+			
+
+		if (is_null($rowPartner->root_id)){
+			SITE_partner::showRootPartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates);
+		}else{
+			SITE_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates);
+		}
 	}
-	
+
 	function showRootPartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) {
-	
+
 		$option = JRequest::getVar("option");
-		$user = JFactory::getUser();	
+		$user = JFactory::getUser();
 		if ($user->guest){
-			?>			
+			?>
 				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
-	
-	
-		$database =& JFactory::getDBO(); 
+			return;
+		}
+		if(!usermanager::isEasySDIUser($user))
+		{
+			?>
+				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+			<?php
+			return;
+		}
+		$database =& JFactory::getDBO();
 		$rowPartner = new partnerByUserId( $database );
-		
+
 		$rowPartner->load( $user->id );
 		if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
 			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
@@ -282,89 +299,96 @@ class SITE_partner {
 		} else {
 			$rowPartner->partner_exit = null;
 		}
-	
+
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
-		$contact_id = $database->loadResult();		
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		$contact_id = $database->loadResult();
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
 			
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
-		
+
+
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
+
 		$rowSubscription = new address( $database );
 		$rowSubscription->load( $subscription_id );
 
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		
+
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-							
+			
 		$rowUser =&	 new JTableUser($database);
 		$rowUser->load( $rowPartner->user_id );
 
 		HTML_partner::showPartner( $hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates,$rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option );
-		}
+		
 	}
-	
-	
-function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) {
-		
-		
-		$user = JFactory::getUser();	
+
+
+	function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) 
+	{		
+		$user = JFactory::getUser();
 		if ($user->guest){
-			?>			
+			?>
 				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
-		$option = JRequest::getVar("option");	
+			return;
+		}
+		if(!usermanager::isEasySDIUser($user))
+		{
+			?>
+				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+			<?php
+			return;
+		}
+		$option = JRequest::getVar("option");
 		$database =& JFactory::getDBO();
 
 		$rowPartner = new partnerByUserId( $database );
 		$rowPartner->load( $user->id );
-	
+
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
-		  
+
 		$contact_id = $database->loadResult();
-		if ($database->getErrorNum()) {						
-			echo "<div class='alert'>";			
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
 		}
-		
+
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
-	
+
 		$rowUser =&	 new JTableUser($database);
 		$rowUser->load( $rowPartner->user_id );
-				
+
 		if ($id == 0)
 		{
 			$rowPartner->root_id=JRequest::getVar('type','');
@@ -374,8 +398,11 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 		}
 
 		HTML_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowPartner, $rowContact, $option );
-		}
+		
 	}
+
+
+
 	
 	
 	
@@ -393,100 +420,95 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 	// Cr�ation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editAffiliatePartner($affiliate_id = null ) {
-		
-		
-		$user = JFactory::getUser();	
+
+
+		$user = JFactory::getUser();
 		if ($user->guest){
-			?>			
+			?>
 				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
+			return;
+		}
+		if(!usermanager::isEasySDIUser($user))
+		{
+			?>
+				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+			<?php
+			return;
+		}	
+		$option = JRequest::getVar("option");
+		$database =& JFactory::getDBO();
 			
-			$option = JRequest::getVar("option");	
-			$database =& JFactory::getDBO();
-			
-								
 		if (!is_null($affiliate_id)){
-			
+				
 			$rowPartner = new partnerByUserId( $database );
-			
+				
 			if ($affiliate_id!=0){
-			$rowPartner->load( $affiliate_id);			
-			}
-			
+				$rowPartner->load( $affiliate_id);
+			}				
 			if ($rowPartner->user_id != $user->id ){
 				$rowRootPartner = new partnerByUserId( $database );
-				$rowRootPartner ->load( $user->id);			
-							
-			/*	if ($rowPartner->root_id != $rowRootPartner->partner_id){
+				$rowRootPartner ->load( $user->id);
 					
-					$rowPartner=null;
-				
-				}*/  				
-			}else{
-			
-				
-			}
-			}
-			else{
-			
-				$rowPartner = new partnerByUserId( $database );
-				$rowPartner->load( $user->id );
-			}
-			
-			
-		
+				/*	if ($rowPartner->root_id != $rowRootPartner->partner_id){
+				 	
+				$rowPartner=null;
 
-			if ($affiliate_id!=0){
-				$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
-				$contact_id = $database->loadResult();
+				}*/
+			}
+			else
+			{	
+			}
+		}
+		else
+		{				
+			$rowPartner = new partnerByUserId( $database );
+			$rowPartner->load( $user->id );
+		}
+		
+		if ($affiliate_id!=0){
+			$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
+			$contact_id = $database->loadResult();
 			if ($database->getErrorNum()) {
-					echo "<div class='alert'>";			
-					echo $database->getErrorMsg();
-					echo "</div>";		
-				}	
-			
-			
-		
-		$rowContact = new address( $database );
-		$rowContact->load( $contact_id );
-			
-		
-		$rowUser =&	 new JTableUser($database);
-		$rowUser->load( $rowPartner->user_id );
-		
-			}		
-			else {
-				// new Affiliate
-				$rootPartner = new partnerByUserId( $database );
-				$rootPartner ->load($user->id);
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+			}
+			$rowContact = new address( $database );
+			$rowContact->load( $contact_id );
+			$rowUser =&	 new JTableUser($database);
+			$rowUser->load( $rowPartner->user_id );
 
-				 
-				$parent_id = JRequest::getVar("type",$rootPartner ->partner_id);
+		}
+		else {
+			// new Affiliate
+			$rootPartner = new partnerByUserId( $database );
+			$rootPartner ->load($user->id);
+
 				
-				$parentPartner = new partnerByPartnerId( $database );
-				$parentPartner ->load($parent_id );
-				if ($parentPartner->root_id){
+			$parent_id = JRequest::getVar("type",$rootPartner ->partner_id);
+
+			$parentPartner = new partnerByPartnerId( $database );
+			$parentPartner ->load($parent_id );
+			if ($parentPartner->root_id){
 				$rowPartner->root_id=$parentPartner->root_id;
-				}else{
-					$rowPartner->root_id=$parentPartner->partner_id;
-				}
-				$rowPartner->parent_id=$parentPartner->partner_id;
-							
-				
-				$rowUser->usertype='Registered';
-				$rowUser->gid=18;			
+			}else{
+				$rowPartner->root_id=$parentPartner->partner_id;
+			}
+			$rowPartner->parent_id=$parentPartner->partner_id;
+			
+
+			$rowUser->usertype='Registered';
+			$rowUser->gid=18;
 		}
 			
-		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option );
-		
-	}
+		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option );	
 	}
 
 	function removePartner( $cid, $option ) {
 		global $mainframe;
 		$database =& JFactory::getDBO();
-		
+
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
 			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
@@ -497,7 +519,7 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 		{
 			$partner = new partnerByUserId( $database );
 			$partner->load( $partner_id );
-		
+
 			$user =&	 new JTableUser($database);
 			$user->load( $partner->user_id );
 			//$user = new mosUser( $database );
@@ -512,18 +534,165 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPartner" );
 			}
-			
+				
 			ADMIN_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner_id);
-			
-			
+				
+				
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listPartner" );		
+		$mainframe->redirect("index.php?option=$option&task=listPartner" );
 	}
 
-	
+
 
 	function savePartner(  ) {
+		global $mainframe;
+
+		$option = JRequest::getVar("option");
+
+		$database=& JFactory::getDBO();
+
+		$rowUser =&	 new JTableUser($database);
+
+
+		if (!$rowUser->bind( $_POST )) {
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+		if (JRequest::getVar('old_password','') != $rowUser->password)
+		{
+			$rowUser->password = md5( JRequest::getVar('password','') );
+		}
+		if (!$rowUser->store()) {
+				
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+
+		if (JRequest::getVar('id','') == '')
+		{
+			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
+			if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}
+		}
+
+		$rowPartner = new partnerByPartnerId ( $database );
+		if (!$rowPartner->bind( $_POST )) {
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+
+		$rowPartner->user_id=$rowUser->id;
+		if ($rowPartner->partner_code == null)
+		{
+			$rowPartner->partner_code = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+		}
+
+		if (!$rowPartner->store(false)) {
+				
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+
+		$counter=0;
+		foreach( $_POST['address_id'] as $address_id )
+		{
+			$rowAddress = new address( $database );
+			$rowAddress->address_id=$address_id;
+			$rowAddress->partner_id=$rowPartner->partner_id;
+			$rowAddress->type_id=$_POST['type_id'][$counter];
+			if ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 2) {
+				$index = 0;
+			} elseif ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 3) {
+				$index = 0;
+			} else {
+				$index = $counter;
+			}
+
+			$rowAddress->title_id=$_POST['title_id'][$index];
+			$rowAddress->country_code=$_POST['country_code'][$index];
+			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
+			$rowAddress->address_corporate_name2=$_POST['address_corporate_name2'][$index];
+			$rowAddress->address_agent_firstname=$_POST['address_agent_firstname'][$index];
+			$rowAddress->address_agent_lastname=$_POST['address_agent_lastname'][$index];
+			$rowAddress->address_agent_function=$_POST['address_agent_function'][$index];
+			$rowAddress->address_street1=$_POST['address_street1'][$index];
+			$rowAddress->address_street2=$_POST['address_street2'][$index];
+			$rowAddress->address_postalcode=$_POST['address_postalcode'][$index];
+			$rowAddress->address_locality=$_POST['address_locality'][$index];
+			$rowAddress->address_phone=$_POST['address_phone'][$index];
+			$rowAddress->address_fax=$_POST['address_fax'][$index];
+			$rowAddress->address_email=$_POST['address_email'][$index];
+
+			if (!$rowAddress->store()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}
+				
+			$database->setQuery( "UPDATE #__easysdi_community_address SET address_update=now() WHERE address_id IN (".$rowAddress->address_id.")");
+			if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}
+
+			$counter++;
+		}
+
+
+
+		/*
+		 $database->setQuery( "DELETE FROM #__easysdi_community_actor WHERE partner_id IN (".$rowPartner->partner_id.")");
+		 if (!$database->query()) {
+		 echo "<div class='alert'>";
+		 echo $database->getErrorMsg();
+		 echo "</div>";
+		 exit;
+		 }
+
+		 foreach( $_POST['role_id'] as $role_id )
+		 {
+			$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
+			if (!$database->query()) {
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+			}
+				
+			}*/
+
+
+
+
+		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
+		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
+		$database->setQuery( $query );
+		if (!$database->query()) {
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+			
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
+	}
+function createBlockUser(){
 		global $mainframe;
 		
 		$option = JRequest::getVar("option");
@@ -539,10 +708,14 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 			echo "</div>";
 			exit;											
 		}
-		if (JRequest::getVar('old_password','') != $rowUser->password)
-		{
-			$rowUser->password = md5( JRequest::getVar('password','') );
-		}
+		$rowUser->block=1;
+		
+		
+		$rowUser->password = md5( JRequest::getVar('password','') );
+		
+		$rowUser->usertype='Registered';
+		$rowUser->gid=18;
+		
 		if (!$rowUser->store()) {
 			
 			echo "<div class='alert'>";			
@@ -551,6 +724,8 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 			exit;
 		}
 		
+				
+				
 		if (JRequest::getVar('id','') == '')
 		{
 			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
@@ -667,9 +842,23 @@ function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffil
 			echo "</div>";
 			exit;
 		}												
-			
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );	
+
+		
+		$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
+		$database->setQuery( $query );
+		$total = $database->loadResult();
+		if($total >0){
+		$query = "SELECT * FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
+		$database->setQuery( $query );
+
+		$rows = $database->loadObjectList();
+		$mailer =& JFactory::getMailer();
+		
+		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_BODY",$rowUser->username));
+		$mainframe->redirect("index.php" );	
 	}
+}
+	
 function createBlockUser(){
 		global $mainframe;
 		
@@ -852,39 +1041,39 @@ function createBlockUser(){
 			}
 	
 
-function saveAffiliatePartner(  ) {
+	function saveAffiliatePartner(  ) {
 		global $mainframe;
-		
+
 		$option = JRequest::getVar("option");
-		
-		$database=& JFactory::getDBO(); 
-		
+
+		$database=& JFactory::getDBO();
+
 		$rowUser =&	 new JTableUser($database);
-		
-	
-		if (!$rowUser->bind( $_POST )) {											
-			echo "<div class='alert'>";			
+
+
+		if (!$rowUser->bind( $_POST )) {
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
-			exit;											
+			exit;
 		}
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
 			$rowUser->password = md5( JRequest::getVar('password','') );
 		}
 		if (!$rowUser->store()) {
-			
-			echo "<div class='alert'>";			
+				
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
 			exit;
 		}
-		
+
 		if (JRequest::getVar('id','') == '')
 		{
 			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
 			if (!$database->query()) {
-				echo "<div class='alert'>";			
+				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
 				echo "</div>";
 				exit;
@@ -893,26 +1082,26 @@ function saveAffiliatePartner(  ) {
 
 		$rowPartner = new partnerByPartnerId ( $database );
 		if (!$rowPartner->bind( $_POST )) {
-			echo "<div class='alert'>";			
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
 			exit;
 		}
-		
+
 		$rowPartner->user_id=$rowUser->id;
 		if ($rowPartner->partner_code == null)
 		{
 			$rowPartner->partner_code = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		}
-		
+
 		if (!$rowPartner->store(false)) {
-			
-			echo "<div class='alert'>";			
+				
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
 			exit;
 		}
-	
+
 		$counter=0;
 		foreach( $_POST['address_id'] as $address_id )
 		{
@@ -927,7 +1116,7 @@ function saveAffiliatePartner(  ) {
 			} else {
 				$index = $counter;
 			}
-		
+
 			$rowAddress->title_id=$_POST['title_id'][$index];
 			$rowAddress->country_code=$_POST['country_code'][$index];
 			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
@@ -942,60 +1131,60 @@ function saveAffiliatePartner(  ) {
 			$rowAddress->address_phone=$_POST['address_phone'][$index];
 			$rowAddress->address_fax=$_POST['address_fax'][$index];
 			$rowAddress->address_email=$_POST['address_email'][$index];
-	
+
 			if (!$rowAddress->store()) {
-				echo "<div class='alert'>";			
+				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
 				echo "</div>";
 				exit;
 			}
-			
+				
 			$database->setQuery( "UPDATE #__easysdi_community_address SET address_update=now() WHERE address_id IN (".$rowAddress->address_id.")");
 			if (!$database->query()) {
-				echo "<div class='alert'>";			
+				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
 				echo "</div>";
 				exit;
 			}
 
 			$counter++;
-		}		
-
-		
-		
-		
-		$database->setQuery( "DELETE FROM #__easysdi_community_actor WHERE partner_id IN (".$rowPartner->partner_id.")");
-		if (!$database->query()) {		
-				echo "<div class='alert'>";			
-				echo $database->getErrorMsg();
-				echo "</div>";
-				exit;		
 		}
-		
+
+
+
+
+		$database->setQuery( "DELETE FROM #__easysdi_community_actor WHERE partner_id IN (".$rowPartner->partner_id.")");
+		if (!$database->query()) {
+			echo "<div class='alert'>";
+			echo $database->getErrorMsg();
+			echo "</div>";
+			exit;
+		}
+
 		foreach( $_POST['role_id'] as $role_id )
 		{
 			$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
 			if (!$database->query()) {
-				echo "<div class='alert'>";			
+				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
 				echo "</div>";
-				exit;	
+				exit;
 			}
-			
+				
 		}
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
 		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
 		$database->setQuery( $query );
 		if (!$database->query()) {
-			echo "<div class='alert'>";			
+			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
 			exit;
-		}												
+		}
 			
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );	
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
 	}
-	
+
 	function cancelPartner( $returnList, $option ) {
 		global $mainframe;
 		ADMIN_partner::includePartnerExtension(0,'TOP','cancelPartner',0);
@@ -1008,8 +1197,8 @@ function saveAffiliatePartner(  ) {
 			//mosRedirect( "index2.php?option=$option&task=listPartner" );
 			$mainframe->redirect("index.php?option=$option&task=listPartner" );
 		}
-		
-		
+
+
 	}
 
 }

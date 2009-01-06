@@ -11,15 +11,37 @@ defined('_JEXEC') or die('Restricted access');
 				submitform( pressbutton );
 				return;
 			}
-			// do field validation
 			
-			if (form.elements['title_id[]'].value == '0' || form.name.value == '' || form.username.value == '' || form.email.value == '' || (form.password.value == '' && form.id.value ==''))
+			if(pressbutton == "editRootPartner" || pressbutton == "editAffiliatePartner" )
+			{
+				submitform( pressbutton );
+				return;
+			}
+			
+			// do field validation
+			if (   form.elements['title_id[0]'].value == '0' 
+				|| form.name.value == '' 
+				|| form.username.value == '' 
+				|| form.email.value == '' 
+				|| (form.password.value == '' && form.id.value =='')
+				|| form.elements['address_corporate_name1[0]'].value == ''
+				|| form.elements['address_agent_firstname[0]'].value == ''
+				|| form.elements['address_agent_lastname[0]'].value == ''
+				|| form.elements['address_agent_function[0]'].value == ''
+				|| form.elements['address_street1[0]'].value == ''
+				|| form.elements['address_locality[0]'].value == ''
+				|| form.elements['address_postalcode[0]'].value == ''
+				 )
+				
 			{
 				alert( "<?php echo JText::_("EASYSDI_CHECK_SUBMIT_FORM");?> ");
-			} else {
+			} 
+			else
+			{
 				submitform( pressbutton );
 			}
 		}
+		
 		function changeCategory(value)
 		{
 			var form = document.adminForm;
@@ -82,42 +104,70 @@ defined('_JEXEC') or die('Restricted access');
 		function changeAddress(value, target)
 		{
 			var form = document.adminForm;
+
+			form.elements['address_corporate_name1['+ target+']'].disabled = value;
+			form.elements['address_corporate_name2['+ target+']'].disabled = value;
+			form.elements['title_id['+ target+']'].disabled = value;
+			form.elements['address_agent_firstname['+ target+']'].disabled = value;
+			form.elements['address_agent_lastname['+ target+']'].disabled = value;
+			form.elements['address_agent_function['+ target+']'].disabled = value;
+			form.elements['address_street1['+ target+']'].disabled = value;
+			form.elements['address_street2['+ target+']'].disabled = value;
+			form.elements['address_postalcode['+ target+']'].disabled = value;
+			form.elements['address_locality['+ target+']'].disabled = value;
+			form.elements['country_code['+ target+']'].disabled = value;
+			form.elements['address_phone['+ target+']'].disabled = value;
+			form.elements['address_fax['+ target+']'].disabled = value;
+			form.elements['address_email['+ target+']'].disabled = value;	
 			
-			form.elements['address_corporate_name1[]'][target].disabled = value;
-			form.elements['address_corporate_name2[]'][target].disabled = value;
-			form.elements['title_id[]'][target].disabled = value;
-			form.elements['address_agent_firstname[]'][target].disabled = value;
-			form.elements['address_agent_lastname[]'][target].disabled = value;
-			form.elements['address_agent_function[]'][target].disabled = value;
-			form.elements['address_street1[]'][target].disabled = value;
-			form.elements['address_street2[]'][target].disabled = value;
-			form.elements['address_postalcode[]'][target].disabled = value;
-			form.elements['address_locality[]'][target].disabled = value;
-			form.elements['country_code[]'][target].disabled = value;
-			form.elements['address_phone[]'][target].disabled = value;
-			form.elements['address_fax[]'][target].disabled = value;
-			form.elements['address_email[]'][target].disabled = value;
+			if (value == true)
+			{
+				form.elements['address_corporate_name1['+ target+']'].value = form.elements['address_corporate_name1[0]'].value;
+				form.elements['address_corporate_name2['+ target+']'].value  = form.elements['address_corporate_name2[0]'].value ;
+				form.elements['title_id['+ target+']'].value  = form.elements['title_id[0]'].value ;
+				form.elements['address_agent_firstname['+ target+']'].value = form.elements['address_agent_firstname[0]'].value ;
+				form.elements['address_agent_lastname['+ target+']'].value = form.elements['address_agent_lastname[0]'].value ;
+				form.elements['address_agent_function['+ target+']'].value = form.elements['address_agent_function[0]'].value ;
+				form.elements['address_street1['+ target+']'].value = form.elements['address_street1[0]'].value ;
+				form.elements['address_street2['+ target+']'].value = form.elements['address_street2[0]'].value ;
+				form.elements['address_postalcode['+ target+']'].value = form.elements['address_postalcode[0]'].value ;
+				form.elements['address_locality['+ target+']'].value = form.elements['address_locality[0]'].value ;
+				form.elements['country_code['+ target+']'].value = form.elements['country_code[0]'].value ;
+				form.elements['address_phone['+ target+']'].value = form.elements['address_phone[0]'].value ;
+				form.elements['address_fax['+ target+']'].value = form.elements['address_fax[0]'].value ;
+				form.elements['address_email['+ target+']'].value = form.elements['address_email[0]'].value ;
+			}
 		}
+		
 		function compareAddress(source, target)
 		{
 			var form = document.adminForm;
 			var same = true;
 
-			if (same == true) same = (form.elements['address_corporate_name1[]'][source].value == form.elements['address_corporate_name1[]'][target].value);
-			if (same == true) same = (form.elements['address_corporate_name2[]'][source].value == form.elements['address_corporate_name2[]'][target].value);
-			if (same == true) same = (form.elements['title_id[]'][source].value == form.elements['title_id[]'][target].value);
-			if (same == true) same = (form.elements['address_agent_firstname[]'][source].value == form.elements['address_agent_firstname[]'][target].value);
-			if (same == true) same = (form.elements['address_agent_lastname[]'][source].value == form.elements['address_agent_lastname[]'][target].value);
-			if (same == true) same = (form.elements['address_agent_function[]'][source].value == form.elements['address_agent_function[]'][target].value);
-			if (same == true) same = (form.elements['address_street1[]'][source].value == form.elements['address_street1[]'][target].value);
-			if (same == true) same = (form.elements['address_street2[]'][source].value == form.elements['address_street2[]'][target].value);
-			if (same == true) same = (form.elements['address_postalcode[]'][source].value == form.elements['address_postalcode[]'][target].value);
-			if (same == true) same = (form.elements['address_locality[]'][source].value == form.elements['address_locality[]'][target].value);
-			if (same == true) same = (form.elements['country_code[]'][source].value == form.elements['country_code[]'][target].value);
-			if (same == true) same = (form.elements['address_phone[]'][source].value == form.elements['address_phone[]'][target].value);
-			if (same == true) same = (form.elements['address_fax[]'][source].value == form.elements['address_fax[]'][target].value);
-			if (same == true) same = (form.elements['address_email[]'][source].value == form.elements['address_email[]'][target].value);
-			form.elements['sameAddress[]'][target].checked = same;
+			if (same == true) same = (form.elements['address_corporate_name1['+ source + ']'].value == form.elements['address_corporate_name1['+ target +']'].value);
+			if (same == true) same = (form.elements['address_corporate_name2['+ source + ']'].value == form.elements['address_corporate_name2['+ target +']'].value);
+			if (same == true) same = (form.elements['title_id['+ source + ']'].value == form.elements['title_id['+ target +']'].value);
+			if (same == true) same = (form.elements['address_agent_firstname['+ source + ']'].value == form.elements['address_agent_firstname['+ target +']'].value);
+			if (same == true) same = (form.elements['address_agent_lastname['+ source + ']'].value == form.elements['address_agent_lastname['+ target +']'].value);
+			if (same == true) same = (form.elements['address_agent_function['+ source + ']'].value == form.elements['address_agent_function['+ target +']'].value);
+			if (same == true) same = (form.elements['address_street1['+ source + ']'].value == form.elements['address_street1['+ target +']'].value);
+			if (same == true) same = (form.elements['address_street2['+ source + ']'].value == form.elements['address_street2['+ target +']'].value);
+			if (same == true) same = (form.elements['address_postalcode['+ source + ']'].value == form.elements['address_postalcode['+ target +']'].value);
+			if (same == true) same = (form.elements['address_locality['+ source + ']'].value == form.elements['address_locality['+ target +']'].value);
+			if (same == true) same = (form.elements['country_code['+ source + ']'].value == form.elements['country_code['+ target +']'].value);
+			if (same == true) same = (form.elements['address_phone['+ source + ']'].value == form.elements['address_phone['+ target +']'].value);
+			if (same == true) same = (form.elements['address_fax['+ source + ']'].value == form.elements['address_fax['+ target +']'].value);
+			if (same == true) same = (form.elements['address_email['+ source + ']'].value == form.elements['address_email['+ target +']'].value);
+			if(target == 1)
+			{
+				form.sameAddress1.checked = same;
+			}
+			if(target == 2)
+			{
+				form.sameAddress2.checked = same;
+			}
+			/*form.elements['sameAddress[]'][target].checked = same;*/
 			changeAddress(same, target);
 		}
+		
 </script>

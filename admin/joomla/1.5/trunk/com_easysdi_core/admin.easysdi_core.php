@@ -30,6 +30,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.ph
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
 
+JHTML::_('stylesheet', 'com_easysdi_core.css', 'administrator/components/com_easysdi_core/templates/khepri/css/');
 
 
 
@@ -37,6 +38,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 
 $task = JRequest::getVar('task');
 $cid = JRequest::getVar ('cid', array(0) );
+$JId = JRequest::getVar('JId', '');
 if (!is_array( $cid )) {
 	$cid = array(0);
 }
@@ -56,6 +58,8 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.toolbar.easysdi.
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.php');
 
+
+$option = JRequest::getVar('option');
 
 switch($task){
 
@@ -114,7 +118,7 @@ switch($task){
 	case "editRootPartner":
 		include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'core.admin.easysdi.php');
 		TOOLBAR_partner::_EDIT();
-		ADMIN_partner::editRootPartner( $cid[0], $option );
+		ADMIN_partner::editRootPartner( $cid[0], $option);
 		break;
 	
 	case "savePartner":

@@ -22,6 +22,7 @@ class TOOLBAR_partner {
 	function _DEFAULT() {
 		global $mainframe;
 
+		$option = JRequest::getVar('option');
 		
 		switch ($mainframe->getUserStateFromRequest( "type{$option}", 'type', '' )) {
 			case '':

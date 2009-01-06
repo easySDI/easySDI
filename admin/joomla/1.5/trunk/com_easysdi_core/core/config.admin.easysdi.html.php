@@ -117,7 +117,6 @@ class HTML_config {
 				</td>
 			</tr>
 		</table>
-?>
 		<input type="hidden" name="id" value="<?php echo $rowConfig->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />

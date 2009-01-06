@@ -25,7 +25,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi_core">
+			todir="C:\www\Site\Joomla\administrator\components\com_easysdi_core">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -36,10 +36,11 @@
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
 				<include name="**/*.js" />
+				<include name="**/*.css" />
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\components\com_easysdi_core">
+			todir="C:\www\Site\Joomla\components\com_easysdi_core">
 			<fileset dir="./com_easysdi_core">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -52,21 +53,30 @@
 				<include name="**/*.js" />
 			</fileset>
 		</copy>
-		
-		<copy
-					
-					todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\language\fr-FR">
-							<fileset dir="./language/site">
-								<include name="**/*.ini" />
-							</fileset>
-						</copy>
-				<copy
-					
-					todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\language\fr-FR">
-							<fileset dir="./language/admin">
-								<include name="**/*.ini" />
-							</fileset>
-						</copy>
+		<copy		   
+		   todir="C:\www\Site\Joomla\language\fr-FR">
+		     <fileset dir="./language/site">
+		      <include name="**/fr-FR.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\www\Site\Joomla\language\en-GB">
+		     <fileset dir="./language/site">
+		      <include name="**/en-GB.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\www\Site\Joomla\administrator\language\fr-FR">
+		     <fileset dir="./language/admin">
+		      <include name="**/fr-FR.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\www\Site\Joomla\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
 	</target>
 
 
