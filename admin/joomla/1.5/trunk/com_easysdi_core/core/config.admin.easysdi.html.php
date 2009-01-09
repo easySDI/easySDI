@@ -59,7 +59,7 @@ class HTML_config {
 			
 		<?php			
 		
-		if ($lists['use_pagination'])
+		if ($use_pagination)
 		{?>
 		<tfoot>
 		<tr>	

@@ -59,7 +59,7 @@ function com_install(){
 	 * Gets the component versions
 	 */	
 	$version = '0';
-	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_partner'";
+	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_core'";
 	$db->setQuery( $query);
 
 	$version = $db->loadResult();
@@ -624,7 +624,7 @@ INSERT INTO `#__easysdi_community_address_type` (`type_id`, `publish_id`, `type_
 
 		$version="0.9";
 		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
-(null, 'com_easysdi_partner', '0.9')";
+(null, 'com_easysdi_core', '0.9')";
 
 		$db->setQuery( $query);
 
@@ -660,7 +660,7 @@ if ($version == "0.9"){
 	
 	
 		$version="0.91";
-		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_partner'";
+		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_core'";
 
 		$db->setQuery( $query);
 
@@ -827,7 +827,7 @@ if ($version == "0.91"){
 	
 	
 		$version="0.92";
-		$query="UPDATE #__easysdi_version SET version ='0.92' where component = 'com_easysdi_partner'";
+		$query="UPDATE #__easysdi_version SET version ='0.92' where component = 'com_easysdi_core'";
 
 		$db->setQuery( $query);
 
@@ -864,21 +864,17 @@ if ($version == "0.91"){
 		
 }
 	
-
-
-
-	
-	
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);
 	$id = $db->loadResult();
 	
+	
 	if ($id){
-		
+ 	$mainframe->enqueueMessage("EASYSDI menu is already existing. Usually this menu is created during the installation of this component. Maybe something goes wrong during the previous uninstall !","INFO"); 	 	
 	}else{
 	//Insert the EasySdi Main Menu		
 	$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('Easy SDI','option=com_easysdi_proxy','option=com_easysdi_proxy','Easysdi main menu','com_easysdi_proxy','js/ThemeOffice/component.png','')";
+		values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
@@ -891,7 +887,7 @@ if ($version == "0.91"){
 
 			
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_partner','js/ThemeOffice/component.png','')";
+		values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_core','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
@@ -909,7 +905,7 @@ if ($version == "0.91"){
 	
 	
 	
-	$mainframe->enqueueMessage("Congratulation partner manager for EasySdi is installed and ready to be used. 
+	$mainframe->enqueueMessage("Congratulation core components for EasySdi are installed and ready to be used. 
 Enjoy EasySdi!","INFO");
 	
 
