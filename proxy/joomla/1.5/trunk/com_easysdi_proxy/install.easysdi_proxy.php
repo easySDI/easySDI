@@ -24,6 +24,15 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
+	
+		if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
+
+		$mainframe->enqueueMessage("Core component does not exists. Easysdi_proxy could not be installed. Please install core component first.","ERROR");
+		return false;
+		
+	}
+	
+	
 	/**
 	 * Creates the database structure
 	 */
@@ -38,9 +47,12 @@ function com_install(){
 	if ($id){
 		
 	}else{
+		
+	$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
+	return false;	
 	//Insert the EasySdi Main Menu		
-	$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('Easy SDI','option=com_easysdi_proxy','option=com_easysdi_proxy','Easysdi main menu','com_easysdi_proxy','js/ThemeOffice/component.png','')";
+	/*$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+		values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
 	if (!$db->query()) {
@@ -48,7 +60,7 @@ function com_install(){
 	}
 		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
 		$db->setQuery( $query);
-		$id = $db->loadResult();	
+		$id = $db->loadResult();	*/
 	}
 
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
@@ -58,7 +70,7 @@ function com_install(){
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
-$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 		values($id,'Proxy Config','','option=com_easysdi_proxy&task=componentConfig','Proxy Config','com_easysdi_proxy','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
@@ -68,7 +80,7 @@ $query =  "insert into #__components (parent,name,link,admin_menu_link,admin_men
 	
 	
 	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
-
+	return true;
 }
 
 
