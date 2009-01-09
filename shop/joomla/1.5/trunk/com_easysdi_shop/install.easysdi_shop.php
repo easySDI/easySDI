@@ -24,6 +24,22 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
+	if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
+
+		$mainframe->enqueueMessage("Core component does not exists. Easysdi_shop could not be installed. Please install core component first.","ERROR");
+		return false;
+		
+	}
+
+	
+	if (!file_exists(JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'license.txt')){
+
+		$mainframe->enqueueMessage("Catalog component is not installed. Easysdi_shop could not be installed. Please install catalog component first.","ERROR");
+		return false;
+		
+	}
+	
+	
 	/**
 	 * Creates the database structure
 	 */
@@ -75,7 +91,7 @@ $query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
 		$version="0";
 	}	
 	if (strlen($version)==0){$version ='0';}
-	$mainframe->enqueueMessage("Db version : $version","INFO");			
+				
 	//When there is no DB version, then we create the full db
 if ($version == '0') {	
 	
@@ -1178,10 +1194,13 @@ $db->setQuery( $query);
 	$id = $db->loadResult();
 	
 	if ($id){
-		
+	
 	}else{
+			$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
+		    return false;	
+	
 	//Insert the EasySdi Main Menu		
-	$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+	/*$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('Easy SDI','option=com_easysdi_proxy','option=com_easysdi_proxy','Easysdi main menu','com_easysdi_proxy','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 
@@ -1190,7 +1209,8 @@ $db->setQuery( $query);
 	}
 		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
 		$db->setQuery( $query);
-		$id = $db->loadResult();	
+		$id = $db->loadResult();
+	*/	
 	}
 	
 			
