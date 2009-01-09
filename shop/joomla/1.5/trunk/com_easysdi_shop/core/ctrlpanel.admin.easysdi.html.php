@@ -154,10 +154,13 @@ echo $pane->endPanel();
 
 	
 		echo $pane->startPanel( JText::_('EASYSDI_LICENSE'), 'cpanel-panel-licence' );
-		?><PRE>
+		?>
+		<PRE>
+		
+		
 		<?php 		 
 		$file = file_get_contents (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'license.txt');
-		Echo $file;
+		echo htmlspecialchars  ($file,ENT_QUOTES);
 		?></PRE>
 		<?php
 		echo $pane->endPanel();
@@ -319,7 +322,7 @@ echo $pane->endPanel();
 		?><PRE>
 		<?php 		 
 		$file = file_get_contents (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'license.txt');
-		Echo $file;
+		echo htmlspecialchars  ($file,ENT_QUOTES);
 		?></PRE>
 		<?php
 		echo $pane->endPanel();
@@ -450,7 +453,7 @@ echo $pane->endPanel();
 		?><PRE>
 		<?php 		 
 		$file = file_get_contents (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'license.txt');
-		Echo $file;
+		echo htmlspecialchars  ($file,ENT_QUOTES);
 		?></PRE>
 		<?php
 		echo $pane->endPanel();
