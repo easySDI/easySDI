@@ -11,6 +11,7 @@
 	<description>
 		Easysdi's catalog component.
 	</description>
+	<installfile>install.easysdi_catalog.php</installfile>
 	<administration>			
 		</administration>
 	<files folder="com_easysdi_catalog"> 
