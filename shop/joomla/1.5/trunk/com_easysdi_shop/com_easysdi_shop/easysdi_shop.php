@@ -98,6 +98,12 @@ switch($task){
 	case "orderReport":
 		SITE_cpanel::orderReport($cid[0]);
 		break;
+
+	case "downloadProduct":
+		SITE_cpanel::downloadProduct();
+		break;
+	
+		
 	case "cancelProperties":
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
 	break;

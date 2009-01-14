@@ -18,7 +18,37 @@
 defined('_JEXEC') or die('Restricted access');
 class SITE_cpanel {
 	
+	function downloadProduct(){
+		
+		$database =& JFactory::getDBO();		 	
+		$user = JFactory::getUser();
+		$order_id = JRequest::getVar('order_id');
+		$product_id = JRequest::getVar('product_id');
+		
+		$query = "select count(*) from #__easysdi_order where order_id = $order_id AND user_id = $user->id";		
+		$database->setQuery($query);
+		$total = $database->loadResult();
+		if ($total == 0) die;
+
+		$query = "SELECT data,filename FROM #__easysdi_order_product_list where product_id = $product_id AND order_id = $order_id";
+		$database->setQuery($query);
+		$row = $database->loadObject();
+		
+		
+		error_reporting(0);
+		
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Transfer-Encoding: none');
+		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
+		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+
+		echo $row->data;
+		die();
 	
+	
+	}
 	function archiveOrder(){
 		global  $mainframe;
 		$option=JRequest::getVar("option");
@@ -111,14 +141,15 @@ class SITE_cpanel {
 
 function orderReport($id){
 	global $mainframe;
+	$option = JRequest::getVar('option');	
 	
 	$db =& JFactory::getDBO();
 	
 	$query = "SELECT * FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id";
+
 		
 	$db->setQuery($query );
-	
-	
+		
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {
 			echo "<div class='alert'>";			
@@ -145,9 +176,17 @@ function orderReport($id){
 	$i=0;
 	foreach ($rowsProduct as $row){?>
 		<tr>
-		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>				
+			<td><?php echo ++$i; ?></td>
+			<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
+			<?php 
+			if ($row->status == "AVAILABLE"){
+				if($rows[0]->type=='O'){?>
 				
+				<td><a target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>"> <?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>				
+				<?php
+				}
+			}						
+			 ?>
 		</tr>
 	<?php }?>
 	

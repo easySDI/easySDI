@@ -1186,7 +1186,52 @@ $db->setQuery( $query);
 		
 	
 }
+if ($version == "0.99"){
+	
+$query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_easysdi_shop'";
 
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	$version = "0.99";
+	
+		$query="ALTER TABLE #__easysdi__order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+
+		$query="ALTER TABLE #__easysdi__order_product_list add column `data` longblob ";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		  
+
+		$query="ALTER TABLE #__easysdi__order_product_list add `filename` varchar(100) default '' ";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		
+		  
+  
+		
+
+  
+}
 
 
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;

@@ -87,7 +87,10 @@ class HTML_cpanel {
 			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></span><br>
 			
 			<td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td>
+			 
 			<td><?php echo JText::_("EASYSDI_ORDER_STATUS_".$row->status) ;?></td>
+			
+			
 			<?php 
 		
 		
