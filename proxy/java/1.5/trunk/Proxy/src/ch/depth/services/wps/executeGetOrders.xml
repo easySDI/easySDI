@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Execute service="WPS" version="0.4.0" store="false" status="true" xmlns="http://www.opengeospatial.net/wps" xmlns:ows="http://www.opengeospatial.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengeospatial.net/wps
+..\wpsExecute.xsd">
+	<ows:Identifier>getOrders</ows:Identifier>
+	<DataInputs>
+		<Input>
+			<ows:Identifier>userName</ows:Identifier>
+			<ows:Title>provider userName</ows:Title>
+			<LiteralValue>rm</LiteralValue>
+		</Input>
+	</DataInputs>
+	
+</Execute>
