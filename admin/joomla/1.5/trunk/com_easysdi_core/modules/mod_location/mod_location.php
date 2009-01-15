@@ -85,7 +85,8 @@ $db =& JFactory::getDBO();
 	 			if (document.getElementById(filterId).value.length==0){
 	 		 		filter =  "<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>&MAXFEATURES=50";
 	 		 	}else{
-	 		 		filter =  "<Filter><And><PropertyIsLike wildCard=\"%25\" singleChar=\"\" escapeChar=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"*</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";
+	 		 		filter =  "<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>&MAXFEATURES=50";
+	 		 		
 	 		 		//filter =  "<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>&MAXFEATURES=50";
 	 		 	}
 	 		 	
@@ -182,9 +183,10 @@ function sortList(mylist) {
 		location_id_field = location_id_field_name; 
 		
 		var wfsUrlWithBBox = location_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+location_feature_type_name+'&VERSION=1.0.0' ;
-		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&FILTER="+filter;
+		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&FILTER="+filter;		
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		wfsUrlWithBBox = wfsUrlWithBBox;
+		
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
