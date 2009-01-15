@@ -19,16 +19,21 @@ header("Content-Type: text/xml");
 
 $url = ($_POST['url']) ? $_POST['url'] : $_GET['url'];
 $url = str_replace ('\"','"',$url);
+$url = str_replace (' ','%20',$url);
 
-    
-if ( substr($url, 0, 7) == 'http://' ) { 
-  $handle = fopen($url, "rb"); 
+
+if ( substr($url, 0, 7) == 'http://' ) {
+	   
+  if (!$handle = fopen($url, "rb")){
+  	
+  	exit ;
+  }; 
   while ( !feof($handle) ) { 
   echo fread($handle, 8192); 
  } 
   fclose($handle); 
 }
-  
+
 /*try{
     // Get the REST call path from the AJAX application
     // Is it a POST or a GET?
