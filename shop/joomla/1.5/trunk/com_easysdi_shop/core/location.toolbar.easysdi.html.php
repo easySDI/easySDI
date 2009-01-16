@@ -16,23 +16,23 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-class TOOLBAR_perimeter{
+class TOOLBAR_location{
 	
 		
-	function _EDITPERIMETER(){
+	function _EDITLOCATION(){
 		
-		JToolBarHelper::save('savePerimeter');
-		JToolBarHelper::cancel('cancelPerimeter');
+		JToolBarHelper::save('saveLocation');
+		JToolBarHelper::cancel('cancelLocation');
 	}
 	
-	function _LISTPERIMETER() {
+	function _LISTLOCATION() {
 		global $mainframe;
 
 		
-		JToolBarHelper::addNew('newPerimeter');
-		JToolBarHelper::editList('editPerimeter');
-		JToolBarHelper::deleteList('','deletePerimeter');
-		JToolBarHelper::custom( 'copyPerimeter', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_COPY_PERIMETER"), false );
+		JToolBarHelper::addNew('newLocation');
+		JToolBarHelper::editList('editLocation');
+		JToolBarHelper::deleteList('','deleteLocation');
+		JToolBarHelper::custom( 'copyLocation', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_COPY_LOCATION"), false );
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );

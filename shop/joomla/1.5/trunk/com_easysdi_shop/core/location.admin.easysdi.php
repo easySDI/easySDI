@@ -17,9 +17,9 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_perimeter {
+class ADMIN_location {
 	
-	function listPerimeter($option) {
+	function listLocation($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
@@ -32,7 +32,7 @@ class ADMIN_perimeter {
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
-		$query = "SELECT COUNT(*) FROM #__easysdi_perimeter_definition";
+		$query = "SELECT COUNT(*) FROM #__easysdi_location_definition";
 		
 		//$query .= $filter;
 		$db->setQuery( $query );
@@ -43,7 +43,7 @@ class ADMIN_perimeter {
 		// Recherche des enregistrements selon les limites
 		
 		
-		$query = "SELECT id,wfs_url,layer_name,perimeter_name,perimeter_desc FROM #__easysdi_perimeter_definition ";		
+		$query = "SELECT id,wfs_url,location_name,location_desc FROM #__easysdi_location_definition ";		
 									
 		
 	
@@ -57,47 +57,47 @@ class ADMIN_perimeter {
 			return false;
 		}		
 	
-		HTML_Perimeter::listPerimeter($use_pagination, $rows, $pageNav,$option);	
+		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option);	
 
 	}
 	
 
-	function editPerimeter( $id, $option ) {
+	function editLocation( $id, $option ) {
 		$database =& JFactory::getDBO(); 
-		$rowPerimeter = new Perimeter( $database );
-		$rowPerimeter->load( $id );					
+		$rowLocation = new Location( $database );
+		$rowLocation->load( $id );					
 	
 		if ($id == '0'){
-			$rowPerimeter->creation_date =date('d.m.Y H:i:s');
+			$rowLocation->creation_date =date('d.m.Y H:i:s');
 			 			
 		}
-		$rowPerimeter->update_date = date('d.m.Y H:i:s'); 
+		$rowLocation->update_date = date('d.m.Y H:i:s'); 
 		
 		
-		HTML_Perimeter::editPerimeter( $rowPerimeter,$id, $option );
+		HTML_Location::editLocation( $rowLocation,$id, $option );
 	}
-		function savePerimeter($returnList ,$option){
+		function saveLocation($returnList ,$option){
 						global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowPerimeter =&	 new Perimeter($database);
+		$rowLocation =&	 new Location($database);
 				
 		
-		if (!$rowPerimeter->bind( $_POST )) {			
+		if (!$rowLocation->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit();
 		}
 				
 		
-		if (!$rowPerimeter->store()) {
+		if (!$rowLocation->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit();
 		}
 		
 		if ($returnList == true) {			
-			$mainframe->redirect("index.php?option=$option&task=listPerimeter");
+			$mainframe->redirect("index.php?option=$option&task=listLocation");
 		}
 		
 		
@@ -105,54 +105,54 @@ class ADMIN_perimeter {
 	
 	
 	
-	function deletePerimeter($cid ,$option){
+	function deleteLocation($cid ,$option){
 		
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit;
 		}
 		foreach( $cid as $id )
 		{
-			$Perimeter = new Perimeter( $database );
-			$Perimeter->load( $id );
+			$Location = new Location( $database );
+			$Location->load( $id );
 					
-			if (!$Perimeter->delete()) {
+			if (!$Location->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+				$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			}												
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );		
+		$mainframe->redirect("index.php?option=$option&task=listLocation" );		
 	}
 	
-	function copyPerimeter($cid ,$option){
+	function copyLocation($cid ,$option){
 		
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_COPY"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit;
 		}
 		
 		foreach( $cid as $id )
 		{
-			$Perimeter = new Perimeter( $database );
-			$Perimeter->load( $id );
-			$Perimeter->id=0;
+			$Location = new Location( $database );
+			$Location->load( $id );
+			$Location->id=0;
 					
-			if (!$Perimeter->store()) {
+			if (!$Location->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+				$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			}												
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );		
+		$mainframe->redirect("index.php?option=$option&task=listLocation" );		
 	}
 		
 		

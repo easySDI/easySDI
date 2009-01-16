@@ -32,6 +32,7 @@ class product extends JTable
 	var $external=0;
 	var $metadata_standard_id=null;
 	var $is_free=0;
+	
 	// Class constructor
 	function __construct( &$db )
 	{
@@ -63,6 +64,30 @@ class perimeter extends JTable
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_perimeter_definition', 'id', $db ) ;    		
+	}
+
+}
+
+class location extends JTable
+{	
+	var $id=null;
+	var $wfs_url=null;
+	var $feature_type_name=null;
+	var $location_name=null;
+	var $location_desc=null;	
+	var $name_field_name=null;
+	var $id_field_name=null;
+  	var $filter_field_name=null;
+  	var $id_location_filter=0;
+	var $is_localisation=0;
+	var $maxfeatures=-1;
+	var $searchbox=0;
+	var $sort=0;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_location_definition', 'id', $db ) ;    		
 	}
 
 }

@@ -46,6 +46,10 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.toolbar.easys
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.admin.easysdi.php');
 
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'location.toolbar.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'location.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'location.admin.easysdi.php');
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'basemap.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'basemap.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'basemap.admin.easysdi.php');
@@ -120,6 +124,10 @@ switch($task){
 
 	case "ctrlPanelMetadata":
 		HTML_ctrlpanel::ctrlPanelMetadata($option);
+		break;
+
+	case "ctrlPanelLocation":
+		$mainframe->redirect("index.php?option=$option&task=listLocation" );
 		break;
 		
 	case "ctrlPanelPerimeter":
@@ -508,10 +516,56 @@ switch($task){
 		ADMIN_properties::listProperties($option);
 		
 		break;
+
+		
+		
+		
+case "saveLocation":		
+		ADMIN_location::saveLocation(true,$option);				
+		break;
 	
+	case "copyLocation":	
+		ADMIN_location::copyLocation($cid,$option);
+		break;
+		
+	case "deleteLocation":		
+		ADMIN_location::deleteLocation($cid,$option);				
+		break;	
+		
+	case "editLocation":
+		TOOLBAR_location::_EDITLOCATION();
+		ADMIN_location::editLocation($cid[0],$option);
+		break;
+		
+	case "newLocation":
+		TOOLBAR_location::_EDITLOCATION();
+		ADMIN_location::editLocation(0,$option);
+		
+		break;
+		
+	case "cancelLocation":
+	case "listLocation":
+		TOOLBAR_location::_LISTLOCATION();
+		ADMIN_location::listLocation($option);
+		
+		break;
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	case "savePerimeter":		
 		ADMIN_perimeter::savePerimeter(true,$option);				
 		break;
+	
+	case "copyPerimeter":	
+		ADMIN_perimeter::copyPerimeter($cid,$option);
+		break;
+		
 	case "deletePerimeter":		
 		ADMIN_perimeter::deletePerimeter($cid,$option);				
 		break;	
