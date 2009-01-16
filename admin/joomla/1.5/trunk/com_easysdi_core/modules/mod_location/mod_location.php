@@ -25,11 +25,7 @@ $curstep = JRequest::getVar('step',0);
 if ($curstep == "2"){
 $db =& JFactory::getDBO(); 		
 
-	$query = "select count(*)  from #__easysdi_product where is_localisation = 1 ";		
-	$db->setQuery( $query );
-	$nbProduct = $db->loadResult();
-		
-	$query = "SELECT * FROM #__easysdi_perimeter_definition where is_localisation = 1 ";
+	$query = "SELECT * FROM #__easysdi_location_definition where is_localisation = 1 ";
 
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
@@ -40,24 +36,38 @@ $db =& JFactory::getDBO();
 	?>
 	
 	<script>			
-	function selectPerimeterLocation(selected){
+	function selectLocationLocation(selected){
 	
-	//selIndex = document.getElementById('perimeterListLocation').selectedIndex;
-	//document.getElementById('perimeterListLocation')[selIndex].value
+	//selIndex = document.getElementById('locationListLocation').selectedIndex;
+	//document.getElementById('locationListLocation')[selIndex].value
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition ";
+	$query2 = "SELECT * FROM #__easysdi_location_definition ";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		
 	foreach ($rows2 as $row)
 		{?>
 	 	if ( selected == '<?php echo $row->id; ?>'){
-	 		 	<?php if ($row->id_perimeter_filter>0 ){
+	 		 	<?php if ($row->id_location_filter>0 ){
 	 		 		?>
-	 		 		selectPerimeterLocation ('<?php echo $row->id_perimeter_filter?>');
+	 		 		selectLocationLocation ('<?php echo $row->id_location_filter?>');
 	 		 		<?php 
 	 		 	}else{?>
-	 				fillSelectPerimeterLocation("perimetersListLocation<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","");
+				
+					<?php if ($row->maxfeatures =="-1"){
+						?>
+						var maxfeatures="";
+						<?php
+					} else{
+					?>	
+					var maxfeatures="&MAXFEATURES=<?php echo $row->maxfeatures?>";
+					
+						<?php
+					}?>
+					
+						 		 	
+	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
+	 				
 	 			<?php } ?>
 	 			if (document.getElementById('locationblock<?php echo $row->id;?>')!=null)
 	 			document.getElementById('locationblock<?php echo $row->id;?>').style.display='block';
@@ -73,24 +83,37 @@ $db =& JFactory::getDBO();
 
 
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition ";
+	$query2 = "SELECT * FROM #__easysdi_location_definition ";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		
 	foreach ($rows2 as $row)
 		{?>
-	 	if ( parId == 'perimetersListLocation<?php echo $row->id; ?>'){
+	 	if ( parId == 'locationsListLocation<?php echo $row->id; ?>'){
 	 			var filter ="";
 	 			  
-	 			if (document.getElementById(filterId).value.length==0){
-	 		 		filter =  "<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>&MAXFEATURES=50";
+	 			  	<?php if ($row->searchbox == 0) {
+	 			  	?>	 			  	
+	 			  	filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
+	 			  	<?php
+	 			  	}else{?>
+	 			  	
+	 			  	
+	 			if (document.getElementById(filterId)==null || document.getElementById(filterId).value.length==0){
+	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 		 	}else{
-	 		 		filter =  "<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>&MAXFEATURES=50";
-	 		 		
-	 		 		//filter =  "<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>&MAXFEATURES=50";
+	 		 		filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 	 		 	}
+	 		 	<?php }
 	 		 	
-	 		fillSelectPerimeterLocation("perimetersListLocation<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter);	 				 				 			
+	 		 	if ($row->maxfeatures!="-1") {?>
+	 		 	 var maxfeatures = "&MAXFEATURES=<?php echo$row->maxfeatures ?>";
+	 		 	<?php }else{?>
+	 		 		var maxfeatures="";
+	 		 		<?php
+	 		 	} ?>
+	 		 	
+	 		fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 	 
 	 <?php } ?>
@@ -101,13 +124,13 @@ $db =& JFactory::getDBO();
         
         <tr>
         <td>         
-	<select id="perimeterListLocation"  onChange="selectPerimeterLocation(document.getElementById('perimeterListLocation')[document.getElementById('perimeterListLocation').selectedIndex].value)">
+	<select id="locationListLocation"  onChange="selectLocationLocation(document.getElementById('locationListLocation')[document.getElementById('locationListLocation').selectedIndex].value)">
 	<option value =""> </option>
 	<?php
 	foreach ($rows as $row)
 		{			
 			?>
-			<option value ="<?php echo $row->id ?>"> <?php echo JText::_($row->perimeter_name); ?> </option>
+			<option value ="<?php echo $row->id ?>"> <?php echo JText::_($row->location_name); ?> </option>
 			<?php 
 				  		
 		}
@@ -122,7 +145,7 @@ $db =& JFactory::getDBO();
 	foreach ($rows as $row)
 	{ 			
 			echo "<div id=\"locationblock$row->id\" style=\"display:none\" ><table>";			
-				helper_easysdi::generateHtmlPerimeterSelect($row,0);
+				helper_easysdi::generateHtmlLocationSelect($row,0);
 			echo "</table></div>";	
 			
 		}			
@@ -161,31 +184,31 @@ function sortList(mylist) {
 
 	var wfs4;
 	var location_id_field;
-	
-	function freeSelectPerimeterLocation(perimetersListLocationId){
-			var elSel = document.getElementById(perimetersListLocationId);
+	var loadingLocation = false;
+	function freeSelectLocationLocation(locationsListLocationId){
+			var elSel = document.getElementById(locationsListLocationId);
 			while (elSel.length > 0)
 				{
 					elSel.remove(elSel.length - 1);
 			}
 		}
       	
-		function fillSelectPerimeterLocation(perimetersListLocationId,location_perimeter_name,location_wfs_url,location_feature_type_name,location_name_field_name,location_id_field_name ,filter){		
+		function fillSelectLocationLocation(locationsListLocationId,location_location_name,location_wfs_url,location_feature_type_name,location_name_field_name,location_id_field_name ,filter,isSort,maxfeatures){		
 		
-		var elSel = document.getElementById(perimetersListLocationId);
-		freeSelectPerimeterLocation(perimetersListLocationId);
+		var elSel = document.getElementById(locationsListLocationId);
+		freeSelectLocationLocation(locationsListLocationId);
 		
 		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
-		
+		loadingLocation=true;
 		
 		
 		
 		location_id_field = location_id_field_name; 
 		
 		var wfsUrlWithBBox = location_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+location_feature_type_name+'&VERSION=1.0.0' ;
-		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&FILTER="+filter;		
+		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;		
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
-		wfsUrlWithBBox = wfsUrlWithBBox;
+		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
 		
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
@@ -195,28 +218,33 @@ function sortList(mylist) {
                     })
                 });		    	            
 		wfs4.events.register("featureadded", null, function(event) {
-		var elSel = document.getElementById(perimetersListLocationId);
-		if (elSel.options[0].value==""){
+		var elSel = document.getElementById(locationsListLocationId);
+		//if (elSel.options[0].value==""){
+		if (loadingLocation==true){
 				
 				elSel.remove(0);
+				elSel.options[0] =  new Option("","");
+				loadingLocation=false;
 		}
 				
 		var feat2 = event.feature;
 		
-		var perim = document.getElementById(perimetersListLocationId);
+		var perim = document.getElementById(locationsListLocationId);
 		var id = feat2.attributes[location_id_field_name];
 		var name = feat2.attributes[location_name_field_name];		
 		perim.options[perim.options.length] =  new Option(name,id);
-		sortList(perimetersListLocationId)
+		if (isSort == 1) {
+			sortList(locationsListLocationId);
+		}
               });              
              map.addLayer(wfs4);
               map.removeLayer(wfs4);                  
             }
             
             
-function recenterOnPerimeterLocation(perimetersListLocationId){
+function recenterOnLocationLocation(locationsListLocationId){
 		
-		var elSel = document.getElementById(perimetersListLocationId);
+		var elSel = document.getElementById(locationsListLocationId);
 			  for (i = elSel.length - 1; i>=0; i--) {
 			    if (elSel.options[i].selected) {			     	
                     var wfsFeatures = wfs4.features;
