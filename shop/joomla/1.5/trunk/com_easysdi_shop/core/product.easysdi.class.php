@@ -58,6 +58,9 @@ class perimeter extends JTable
   	var $filter_field_name=null;
   	var $id_perimeter_filter=0;
 	var $is_localisation=0;
+	var $maxfeatures=-1;
+	var $searchbox=0;
+	var $sort=0;
 	
 	
 	// Class constructor

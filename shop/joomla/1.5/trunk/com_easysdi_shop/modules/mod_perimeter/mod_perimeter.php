@@ -360,8 +360,7 @@ function recenterOnPerimeter(){
 			
 			if (isFreeSelectionPerimeter){
 				document.getElementById('manualPerimDivId').style.display='none';
-				document.getElementById('manualAddGeometry').style.display='block';
-				
+				document.getElementById('manualAddGeometry').style.display='block';								
 			}else{
 				document.getElementById('manualPerimDivId').style.display='block';
 				document.getElementById('manualAddGeometry').style.display='none';						
@@ -423,10 +422,15 @@ function recenterOnPerimeter(){
 		
 		
 		<div  id="manualPerimDivId" style="display:none">
-				
-		<select id="perimetersList"></select>
-			<button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("EASYSDI_ADD_MANUAL_PERIMETER");?></button>
-			<button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
+			<?php
+			/*	
+				<select id="perimetersList"></select>
+				<button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("EASYSDI_ADD_MANUAL_PERIMETER");?></button>
+				<button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
+			*/
+			 ?>
+			
+			<?php include 'manual_perimeter.php' ;?>
 		</div>
 		<div  id="manualAddGeometry" style="display:none">
 				
@@ -435,9 +439,6 @@ function recenterOnPerimeter(){
 			<button class="addPerimeterButton" type="button" onClick="addGeometryPerimeter();"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>			
 			<button class="addPerimeterButton" type="button" onClick="modifyGeometryPerimeter();"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button>			
 		</div>
-		
-		
-		
 		<?php
 	}
 }else{

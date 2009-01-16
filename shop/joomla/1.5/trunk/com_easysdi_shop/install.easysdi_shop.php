@@ -1198,7 +1198,7 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		}
 	$version = "0.99";
 	
-		$query="ALTER TABLE #__easysdi__order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
+		$query="ALTER TABLE #__easysdi_order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
@@ -1207,7 +1207,7 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		}
 
 
-		$query="ALTER TABLE #__easysdi__order_product_list add column `data` longblob ";
+		$query="ALTER TABLE #__easysdi_order_product_list add column `data` longblob ";
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
@@ -1216,7 +1216,7 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		}
 		  
 
-		$query="ALTER TABLE #__easysdi__order_product_list add `filename` varchar(100) default '' ";
+		$query="ALTER TABLE #__easysdi_order_product_list add `filename` varchar(100) default '' ";
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
@@ -1225,8 +1225,33 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		}
 		
 		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add `maxfeatures` int(11) NOT NULL default '-1'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add `searchbox` tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add `sort` tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
 		
 		  
+  
+   
   
 		
 

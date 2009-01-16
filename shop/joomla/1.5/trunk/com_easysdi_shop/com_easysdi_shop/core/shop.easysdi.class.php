@@ -282,7 +282,7 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
 
 	
 	document.getElementById('perimeter_id').value = perimId;
-	freeSelectPerimeter();
+	//freeSelectPerimeter();
 	document.getElementById('manualPerimDivId').style.display='none';
 	document.getElementById('manualAddGeometry').style.display='none';
 	

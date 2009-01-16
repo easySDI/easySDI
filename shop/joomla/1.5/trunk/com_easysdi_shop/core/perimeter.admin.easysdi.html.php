@@ -113,6 +113,26 @@ class HTML_perimeter {
 							</td>
 							</tr>
 							
+						<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX"); ?> : </td>
+							<td><select name="searchbox" > <option value="1" <?php if($rowPerimeter->searchbox == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowPerimeter->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+							</td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_MAXFEATURES"); ?> : </td>
+							<td><input type name="maxfeatures"  value="<?php echo $rowPerimeter->maxfeatures ?>"> </td>
+							</td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_SORT"); ?> : </td>
+							<td><select name="sort" > <option value="1" <?php if($rowPerimeter->sort == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+							</td>
+							</tr>
+							
+							
+							
 						</table>
 					</fieldset>
 				</td>

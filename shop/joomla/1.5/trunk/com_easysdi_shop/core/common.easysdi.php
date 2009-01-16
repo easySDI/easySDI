@@ -36,7 +36,6 @@ function generateHtmlLocationSelect($row,$parent){
 			echo "<tr>";
 			echo "<td><select id=\"locationsListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent') \"><option > </option></select></td>";			
 			echo "</tr>";
-			//echo"<tr><td>$row->id</td><td>$parent</td></tr>";
 		if ($row->searchbox == 1) {			
 			echo "<tr >";
 			echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
@@ -51,6 +50,8 @@ function generateHtmlLocationSelect($row,$parent){
 function generateHtmlPerimeterSelect($row,$parent){
 		$db =& JFactory::getDBO();
 		
+		?>		
+		<?php
 		if ($row->id_perimeter_filter > 0 ){
 		$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
 		$db->setQuery( $query );
@@ -60,18 +61,19 @@ function generateHtmlPerimeterSelect($row,$parent){
 		}
 		if ($parent == 0){
 		echo "<tr>";
-		//echo "<td><input onkeypress=\"alert('1')\" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td>"	;
-		echo "<td><select id=\"perimetersListLocation$row->id\"	onChange=\"recenterOnPerimeterLocation('perimetersListLocation$row->id')\"><option > </option></select></td>";
+		echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
 		
 		echo "</tr>";
 		}else{
 			echo "<tr>";
-			echo "<td><select id=\"perimetersListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','perimetersListLocation$row->id','perimetersListLocation$parent') \"><option > </option></select></td>";			
+			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";			
 			echo "</tr>";
+if ($row->searchbox == 1) {			
 			echo "<tr >";
 			echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-			echo "<input onClick=\"fillParent ('filter$row->id','perimetersListLocation$row->id','perimetersListLocation$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+			echo "<input onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
 			echo "</tr>";
+}
 		}	
 
 }
