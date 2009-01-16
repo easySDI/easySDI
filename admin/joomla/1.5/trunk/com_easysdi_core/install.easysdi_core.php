@@ -863,7 +863,48 @@ if ($version == "0.91"){
 		
 		
 }
+
+
+if ($version == "0.92"){
 	
+	
+		$version="0.93";
+		$query="UPDATE #__easysdi_version SET version ='0.93' where component = 'com_easysdi_core'";
+
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+
+
+$query="CREATE TABLE `#__easysdi_location_definition` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `wfs_url` varchar(4000) NOT NULL default '',
+  `location_name` varchar(4000) NOT NULL default '',
+  `area_field_name` varchar(100) NOT NULL default '',
+  `name_field_name` varchar(100) NOT NULL default '',
+  `id_field_name` varchar(100) NOT NULL default '',
+  `feature_type_name` varchar(400) NOT NULL default '',
+  `filter_field_name` varchar(100) NOT NULL default '',
+  `id_location_filter` bigint(20) NOT NULL default '0',
+  `is_localisation` tinyint(1) NOT NULL default '0',
+  `location_desc` varchar(4000) NOT NULL default '',
+  `maxfeatures` int(11) NOT NULL default '-1',
+  `searchbox` tinyint(1) NOT NULL default '0',
+   `sort` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+)";
+	$db->setQuery( $query);
+
+		if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		
+		
+}	
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);
 	$id = $db->loadResult();
