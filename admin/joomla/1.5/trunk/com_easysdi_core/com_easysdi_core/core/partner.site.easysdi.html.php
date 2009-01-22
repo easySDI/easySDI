@@ -15,16 +15,21 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
+
+
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_partner {
+class HTML_partner 
+{
 	
-function alter_array_value_with_Jtext(&$rows)
+	function alter_array_value_with_Jtext(&$rows)
 	{		
-		if (count($rows)>0){
-		  foreach($rows as $key => $row) {		  	
-       		$rows[$key]->text = JText::_($rows[$key]->text);
-  		}			    
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
 		}
 	}
 	
@@ -36,9 +41,6 @@ function alter_array_value_with_Jtext(&$rows)
 	<div class="contentin">
 	<form action="index.php" method="GET" id="adminAffiliatePartnerForm" name="adminAffiliatePartnerForm">
 	
-	
-	
-		
 	<h2 class="contentheading"><?php echo JText::_("EASYSDI_AFFILIATE_LIST"); ?></h2>
 	
 	<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
@@ -109,6 +111,7 @@ function alter_array_value_with_Jtext(&$rows)
 	  </div>
 <?php
 	}
+	
 	function showPartner( $hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates,&$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option)
 	{
 		global  $mainframe;
@@ -263,68 +266,70 @@ function alter_array_value_with_Jtext(&$rows)
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_BILLING"),"partnerPane");
 ?>
 <br>	
-<table width="100%">
+		<table width="100%">
 			<tr>
 				<td>							
-		<fieldset>
-		<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
-		<table  border="0" cellpadding="3" cellspacing="0">			
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
-				<td><?php echo $rowSubscription->address_corporate_name1; ?> </td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><?php echo $rowSubscription->address_corporate_name2; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo JText::_($title); ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
-				<td><?php echo $rowSubscription->address_agent_firstname; ?> </td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
-				<td><?php echo $rowSubscription->address_agent_lastname; ?> </td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
-				<td><?php echo $rowSubscription->address_agent_function; ?> </td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
-				<td><?php echo $rowSubscription->address_street1; ?></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><?php echo $rowSubscription->address_street2; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
-				<td><?php echo $rowSubscription->address_postalcode; ?>
-				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <?php echo $rowSubscription->address_locality; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo $countrySubscription; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
-				<td><?php echo $rowSubscription->address_phone; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
-				<td><?php echo $rowSubscription->address_fax; ?> </td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-				<td><?php echo $rowSubscription->address_email; ?> </td>
+					<fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
+						<table  border="0" cellpadding="3" cellspacing="0">			
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
+								<td><?php echo $rowSubscription->address_corporate_name1; ?> </td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><?php echo $rowSubscription->address_corporate_name2; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
+								<td><?php echo JText::_($title); ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
+								<td><?php echo $rowSubscription->address_agent_firstname; ?> </td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
+								<td><?php echo $rowSubscription->address_agent_lastname; ?> </td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
+								<td><?php echo $rowSubscription->address_agent_function; ?> </td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
+								<td><?php echo $rowSubscription->address_street1; ?></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><?php echo $rowSubscription->address_street2; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
+								<td><?php echo $rowSubscription->address_postalcode; ?>
+								&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <?php echo $rowSubscription->address_locality; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
+								<td><?php echo $countrySubscription; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
+								<td><?php echo $rowSubscription->address_phone; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
+								<td><?php echo $rowSubscription->address_fax; ?> </td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
+								<td><?php echo $rowSubscription->address_email; ?> </td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
 			</tr>
 		</table>
-		</fieldset>
-		</td></tr></table>
 <?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_DELIVERY"),"partnerPane");
@@ -334,135 +339,129 @@ function alter_array_value_with_Jtext(&$rows)
 <table width="100%">
 			<tr>
 				<td>
-		<fieldset>
-		<legend><b><?php echo JText::_("EASYSDI_TEXT_DELIVERY_ADDRESS"); ?></b></legend>		
-		<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
-				<td><?php echo $rowDelivery->address_corporate_name1; ?> </td>
+					<fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_TEXT_DELIVERY_ADDRESS"); ?></b></legend>		
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
+								<td><?php echo $rowDelivery->address_corporate_name1; ?> </td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><?php echo $rowDelivery->address_corporate_name2; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
+								<td><?php echo JText::_($title);?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
+								<td><?php echo $rowDelivery->address_agent_firstname; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
+								<td><?php echo $rowDelivery->address_agent_lastname; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
+								<td><?php echo $rowDelivery->address_agent_function; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
+								<td><?php echo $rowDelivery->address_street1; ?></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><?php echo $rowDelivery->address_street2; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
+								<td><?php echo $rowDelivery->address_postalcode; ?>
+								&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <?php echo $rowDelivery->address_locality; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
+								<td><?php echo $countryDelivery; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
+								<td><?php echo $rowDelivery->address_phone; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
+								<td><?php echo $rowDelivery->address_fax; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
+								<td><?php echo $rowDelivery->address_email; ?></td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
 			</tr>
-			<tr>
-				<td></td>
-				<td><?php echo $rowDelivery->address_corporate_name2; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo JText::_($title);?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
-				<td><?php echo $rowDelivery->address_agent_firstname; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
-				<td><?php echo $rowDelivery->address_agent_lastname; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
-				<td><?php echo $rowDelivery->address_agent_function; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
-				<td><?php echo $rowDelivery->address_street1; ?></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><?php echo $rowDelivery->address_street2; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
-				<td><?php echo $rowDelivery->address_postalcode; ?>
-				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <?php echo $rowDelivery->address_locality; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo $countryDelivery; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
-				<td><?php echo $rowDelivery->address_phone; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
-				<td><?php echo $rowDelivery->address_fax; ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-				<td><?php echo $rowDelivery->address_email; ?></td>
-			</tr>
-		</table>
-		</fieldset>
-		</td></tr></table>		
+		</table>		
 <?php
 		echo $tabs->endPanel();		
-		if ($hasTheRightToManageHisOwnAffiliates>0){
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
-		?>
-<br>
-<div class="easysdi_site_aff_list">
-<br>
-	<fieldset>
-		<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>		
-		
-	<?php	
-		$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
-			
-				
-		$database->setQuery( $query );
-		$src_list = $database->loadObjectList();
-		
-		HTML_partner::print_child($src_list );
-			
-		
-	
-		
-		?>
-	</fieldset>		
-	</div><br>
-		
-		<?php
-		echo $tabs->endPanel(); 
+		if ($hasTheRightToManageHisOwnAffiliates>0)
+		{
+			echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
+?>
+			<br>
+			<div class="easysdi_site_aff_list">
+			<br>
+				<fieldset>
+					<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>	
+<?php	
+					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
+					$database->setQuery( $query );
+					$src_list = $database->loadObjectList();
+					
+					HTML_partner::print_child($src_list );				
+?>
+				</fieldset>		
+			</div>
+			<br>
+<?php
+			echo $tabs->endPanel(); 
 		}
-		?>
-		
+?>		
 <?php
 		echo $tabs->endPane();
 ?>
-
-		
 		<form action="./index.php?option=<?php echo $option ?>" method="POST" name="partnerForm" id="partnerForm" class="partnerForm">
 		<!-- input type="hidden" id="option" name="option" value="" /-->
 		<input type="hidden" id="task" name="task" value="" />
-		
-		
-		
-		<?php if ($hasTheRightToEdit){ ?>
-						
+<?php 
+		if ($hasTheRightToEdit)
+		{ 
+?>			
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editPartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
-		<?php } ?>
-		
-						
-	</form>
+<?php 
+		} 
+?>					
+		</form>
 	
 	</div>	
 <?php
 	}
-function print_child($childList){
+	
+	function print_child($childList){
 		$database =& JFactory::getDBO();		
-			echo "<ol>";
-			foreach ($childList as $childUser ){
-					echo "<li><b><i>$childUser->name ($childUser->username)</i></b>";
-					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
-					$database->setQuery( $query );
-					$src_list = $database->loadObjectList();
-					if (count ($src_list)>0){
-						HTML_partner::print_child($src_list);
-					}
-					echo "</li>";					
-				}
-			echo "</ol>";
-							
+		echo "<ol>";
+		foreach ($childList as $childUser )
+		{
+			echo "<li><b><i>$childUser->name ($childUser->username)</i></b>";
+			$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
+			$database->setQuery( $query );
+			$src_list = $database->loadObjectList();
+			if (count ($src_list)>0)
+			{
+				HTML_partner::print_child($src_list);
 			}
+			echo "</li>";					
+		}
+		echo "</ol>";
+	}
 				
 	function editPartner( &$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery ,$option)
 	{
@@ -475,7 +474,6 @@ function print_child($childList){
 	
 	<?php
 		$profiles = array();
-		
 		
 		$titles = array();
 		$titles[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_TITLE_SELECT" ));
@@ -541,9 +539,10 @@ function print_child($childList){
 								<td><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="<?php echo $rowPartner->partner_url; ?>" /></td>
 							</tr>
-														<?php 
-							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" ){
-								?>
+<?php 
+							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" )
+							{
+?>
 								<tr>
 									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_METADATA"); ?> : </td>
 									<td><input value="1" class="inputbox" type="checkbox" name="notify_new_metadata" <?php if ($rowPartner->notify_new_metadata == 1) echo " checked"; ?> /></td>
@@ -552,8 +551,9 @@ function print_child($childList){
 									<td><?php echo JText::_("EASYSDI_NOTIFY_NEW_DISTRIBUTION"); ?> : </td>
 									<td><input value="1" class="inputbox" type="checkbox" name="notify_distribution" <?php if ($rowPartner->notify_distribution == 1) echo " checked"; ?> /></td>
 								</tr>
-							<?php
-							}?>
+<?php
+							}
+?>
 							<tr>
 									<td><?php echo JText::_("EASYSDI_NOTIFY_ORDER_READY"); ?> : </td>
 									<td><input class="inputbox" value="1" type="checkbox" name="notify_order_ready" <?php if ($rowPartner->notify_order_ready == 1) echo " checked"; ?> /></td>
@@ -819,17 +819,16 @@ function print_child($childList){
 		$database->setQuery( "SELECT  country_name AS text FROM #__easysdi_community_country where country_code = '".$rowContact->country_code."'" );
 		 
 		$countryContact = $database->loadResult() ;
-						
-		
 ?>
-	
-	
 	
 <?php
 		echo $tabs->startPane("affiliatePane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"affiliatePane");
+		
+		
 ?>
 <br>
+
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
@@ -951,23 +950,23 @@ function print_child($childList){
 		</table>
 		
 <?php
-		echo $tabs->endPanel();
-	
+		echo $tabs->endPanel();	
 		echo $tabs->endPane();
 ?>
 	
 		<form action="./index.php?option=<?php echo $option ?>" method="POST" name="partnerForm" id="partnerForm" class="partnerForm">
 		<!-- input type="hidden" id="option" name="option" value="" /-->
 		<input type="hidden" id="task" name="task" value="" />
-		<?php if ($hasTheRightToEdit){ ?>					
+		<?php if ($hasTheRightToEdit)
+		{ ?>					
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editAffiliatePartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
-		<?} ?>				
+		<?php
+		} ?>				
 	</form>	
 <?php
 	}
 
 
-		
 	function editAffiliatePartner( &$rowUser, &$rowPartner, $rowContact, $option )
 	{
 		global  $mainframe;
@@ -992,7 +991,7 @@ function print_child($childList){
 ?>
 	
 	
-	<form action="index.php?option=<? echo $option; ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
+	<form action="index.php?option=<?php echo $option; ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
 <?php
 		echo $tabs->startPane("affiliatePane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"affiliatePane");
@@ -1246,8 +1245,6 @@ function print_child($childList){
 <?php
 	}
 	
-	
-	
 				
 	function createUser( $option)
 	{
@@ -1277,10 +1274,7 @@ function print_child($childList){
 	
 ?>				
 	<form action="index.php?option=<?php echo $option ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
-<?php
-		echo $tabs->startPane("partnerPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"partnerPane");
-?>
+
 <br>		
 		<table width="100%">
 			<tr>
@@ -1288,269 +1282,113 @@ function print_child($childList){
 					<fieldset>
 						<legend><?php echo JText::_("EASYSDI_ACCOUNT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
-					
+							<tr>
+							<?php		
+								SITE_partner::includePartnerExtension(3,'TOP','editPartner',0);
+							?>
+							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="" /> *</td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="" /> *</td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?> : </td>
-								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password" value="" /></td>
+								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password" value="" /> *</td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_PASSWORD_CHECK"); ?> : </td>
+								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password_chk" value="" /> *</td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="" /> *</td>
 							</tr>																			
-							<tr>
-								<td><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="" /></td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_TEXT_DESCRIPTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_description" value="" /></td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="" /></td>
-							</tr>
+							
 							
 						</table>
 					</fieldset>
-				</td>
-			</tr>
-		</table>		
-<?php
-		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_CONTACT"),"partnerPane");
-?>
-<br>
-		<input type="hidden" name="type_id[]" value="1">
-		<input type="hidden" name="sameAddress[]" value="">
-	
-		<fieldset>
+					<fieldset>
+					
+					
+
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
 		
 		<table border="0" cellpadding="3" cellspacing="0">			
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name1[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name1" value="" /> *</td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name2[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name2" value="" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
+				<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_firstname[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_firstname" value="" /> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_lastname[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_lastname" value="" /> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_function[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_function" value="" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street1[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street1" value="" /> *</td>
 			</tr>
 			<tr>
 				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street2[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street2" value="" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="5" maxlength="5" name="address_postalcode[]" value="" />
-				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <input class="inputbox" type="text" size="50" maxlength="100" name="address_locality[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="5" maxlength="5" name="address_postalcode" value="" />
+				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <input class="inputbox" type="text" size="50" maxlength="100" name="address_locality" value="" /> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
+				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_phone[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_phone" value="" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_fax[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_fax" value="" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email[]" value="" /></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email" value="" /> *</td>
 			</tr>
 		</table>
 		</fieldset>
 		
-<?php
-		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_BILLING"),"partnerPane");
-?>
-<br>
-		<input type="hidden" name="type_id[]" value="2">						
-		<fieldset>
-		<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
-		<table border="0" cellpadding="3" cellspacing="0">
+				</td>
+			</tr>
+		</table>		
+ 
+		<input type="hidden" name="usertype" value="" />
+		<input type="hidden" name="gid" value=""/>
+		<input type="hidden" name="id" value="" />	
+		<input type="hidden" name="partner_id" value="" />
+		<input type="hidden" name="address_id" value="" />
 			
-			<tr>
-				<td></td>
-				<td><input type="checkbox" name="sameAddress[]" onClick="javascript:changeAddress(this.checked, 1)"><?php echo JText::_("EASYSDI_TEXT_ADDRESS_SAME"); ?></td>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name1[]" value="" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name2[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_firstname[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_lastname[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_function[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street1[]" value="" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street2[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="5" maxlength="5" name="address_postalcode[]" value="" />
-				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <input class="inputbox" type="text" size="50" maxlength="100" name="address_locality[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_phone[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_fax[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email[]" value="" /></td>
-			</tr>
-		</table>
-		</fieldset>
-		
-<?php
-		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_DELIVERY"),"partnerPane");
-?>
-<br>
-		<input type="hidden" name="type_id[]" value="3">
-		<?php 
-		//Include TOP extension		
-		SITE_partner::includePartnerExtension(3,'TOP','editPartner',$rowPartner->partner_id);						
-		?>
-		<fieldset>
-		<legend><b><?php echo JText::_("EASYSDI_TEXT_DELIVERY_ADDRESS"); ?></b></legend>		
-		<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td></td>
-				<td><input type="checkbox" name="sameAddress[]" onClick="javascript:changeAddress(this.checked, 2)"><?php echo JText::_("EASYSDI_TEXT_ADDRESS_SAME"); ?></td>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name1[]" value="" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name2[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_firstname[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_LASTNAME"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_lastname[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FUNCTION"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_agent_function[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_ADDRESS"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street1[]" value="" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_street2[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_POSTALCODE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="5" maxlength="5" name="address_postalcode[]" value="" />
-				&nbsp;<?php echo JText::_("EASYSDI_TEXT_LOCALITY"); ?> : <input class="inputbox" type="text" size="50" maxlength="100" name="address_locality[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code[]', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_phone[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_fax[]" value="" /></td>
-			</tr>
-			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email[]" value="" /></td>
-			</tr>
-		</table>
-		</fieldset>		
-<?php
-		echo $tabs->endPanel();		
-		echo $tabs->endPane();
-?>
-		<input type="hidden" name="usertype" value="<?php echo $rowUser->usertype; ?>" />
-		<input type="hidden" name="gid" value="<?php echo $rowUser->gid; ?>"/>
-		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />	
-		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowSubscription->address_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowDelivery->address_id; ?>" />				
-		
 		
 		<!-- input type="hidden" name="option" value="<?php echo $option; ?>" / -->
-		<input type="hidden" name="task" value="" />
-						
+		<input type="hidden" name="task" value="" />						
 		<button type="button" onCLick="var form = document.partnerForm;form.task.value='createBlockUser';submitbutton();" ><?php echo JText::_("EASYSDI_SAVE_PARTNER"); ?></button>
-				
 		
-
 	</form>
 	<script language="javascript" type="text/javascript">		
 		compareAddress(0, 1);
@@ -1559,9 +1397,6 @@ function print_child($childList){
 	</div>	
 <?php
 	}
-
-	
-	
 }
-		
+
 ?>

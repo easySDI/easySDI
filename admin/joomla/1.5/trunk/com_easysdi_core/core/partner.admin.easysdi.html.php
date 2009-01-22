@@ -392,6 +392,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		<?php 
 		//Include TOP extension		
 		ADMIN_partner::includePartnerExtension(2,'TOP','editPartner',$rowPartner->partner_id);						
+		
 		?>
 		<fieldset>
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_EASYSDI"); ?></b></legend>

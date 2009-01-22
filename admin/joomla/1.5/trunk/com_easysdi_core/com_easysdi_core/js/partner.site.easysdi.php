@@ -22,6 +22,15 @@ defined('_JEXEC') or die('Restricted access');
 		{
 		
 			var form = document.partnerForm;
+			if (form.task.value == "createBlockUser")
+			{
+				if(form.password.value != form.password_chk.value)
+				{
+					alert( "<?php echo JText::_("EASYSDI_CHECK_PW_SUBMIT_FORM");?> ");
+					return;
+				}
+				
+			}
 			
 			// do field validation
 			if (form.name.value == '' || form.username.value == '' || form.email.value == '' || (form.password.value == '' && form.id.value ==''))

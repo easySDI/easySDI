@@ -355,7 +355,8 @@ class SITE_partner {
 	function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) 
 	{		
 		$user = JFactory::getUser();
-		if ($user->guest){
+		if ($user->guest)
+		{
 			?>
 				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
@@ -377,7 +378,8 @@ class SITE_partner {
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
 
 		$contact_id = $database->loadResult();
-		if ($database->getErrorNum()) {
+		if ($database->getErrorNum()) 
+		{
 			echo "<div class='alert'>";
 			echo $database->getErrorMsg();
 			echo "</div>";
@@ -400,21 +402,11 @@ class SITE_partner {
 		HTML_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowPartner, $rowContact, $option );
 		
 	}
-
-
-
 	
-	
-	
-	
-	function createUser(){
-		
-		
-		
-		$option = JRequest::getVar("option");	
-		
-		HTML_partner::createUser( $option );	
-		
+	function createUser()
+	{		
+		$option = JRequest::getVar("option");
+		HTML_partner::createUser( $option );
 		
 	}
 	// Cr�ation d'enregistrement (id = 0)
@@ -692,12 +684,14 @@ class SITE_partner {
 			
 		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
 	}
-function createBlockUser(){
+
+	function createBlockUser(){
 		global $mainframe;
 		
 		$option = JRequest::getVar("option");
 		
 		$database=& JFactory::getDBO(); 
+		
 		
 		$rowUser =&	 new JTableUser($database);
 		
@@ -708,9 +702,11 @@ function createBlockUser(){
 			echo "</div>";
 			exit;											
 		}
+		
+		//User registered in the front-end need administrator validation
+		//New status --> jos_users.block=1
 		$rowUser->block=1;
-		
-		
+				
 		$rowUser->password = md5( JRequest::getVar('password','') );
 		
 		$rowUser->usertype='Registered';
@@ -723,8 +719,6 @@ function createBlockUser(){
 			echo "</div>";
 			exit;
 		}
-		
-				
 				
 		if (JRequest::getVar('id','') == '')
 		{
@@ -758,38 +752,30 @@ function createBlockUser(){
 			echo "</div>";
 			exit;
 		}
-	
-		$counter=0;
-		foreach( $_POST['address_id'] as $address_id )
+				
+		for($i=1 ; $i<4 ; $i++)
 		{
 			$rowAddress = new address( $database );
-			$rowAddress->address_id=$address_id;
+			//$rowAddress->address_id=$address_id;
 			$rowAddress->partner_id=$rowPartner->partner_id;
-			$rowAddress->type_id=$_POST['type_id'][$counter];
-			if ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 2) {
-				$index = 0;
-			} elseif ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 3) {
-				$index = 0;
-			} else {
-				$index = $counter;
-			}
-		
-			$rowAddress->title_id=$_POST['title_id'][$index];
-			$rowAddress->country_code=$_POST['country_code'][$index];
-			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
-			$rowAddress->address_corporate_name2=$_POST['address_corporate_name2'][$index];
-			$rowAddress->address_agent_firstname=$_POST['address_agent_firstname'][$index];
-			$rowAddress->address_agent_lastname=$_POST['address_agent_lastname'][$index];
-			$rowAddress->address_agent_function=$_POST['address_agent_function'][$index];
-			$rowAddress->address_street1=$_POST['address_street1'][$index];
-			$rowAddress->address_street2=$_POST['address_street2'][$index];
-			$rowAddress->address_postalcode=$_POST['address_postalcode'][$index];
-			$rowAddress->address_locality=$_POST['address_locality'][$index];
-			$rowAddress->address_phone=$_POST['address_phone'][$index];
-			$rowAddress->address_fax=$_POST['address_fax'][$index];
-			$rowAddress->address_email=$_POST['address_email'][$index];
-	
-			if (!$rowAddress->store()) {
+			$rowAddress->title_id=$_POST['title_id'];
+			$rowAddress->country_code=$_POST['country_code'];
+			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'];
+			$rowAddress->address_corporate_name2=$_POST['address_corporate_name2'];
+			$rowAddress->address_agent_firstname=$_POST['address_agent_firstname'];
+			$rowAddress->address_agent_lastname=$_POST['address_agent_lastname'];
+			$rowAddress->address_agent_function=$_POST['address_agent_function'];
+			$rowAddress->address_street1=$_POST['address_street1'];
+			$rowAddress->address_street2=$_POST['address_street2'];
+			$rowAddress->address_postalcode=$_POST['address_postalcode'];
+			$rowAddress->address_locality=$_POST['address_locality'];
+			$rowAddress->address_phone=$_POST['address_phone'];
+			$rowAddress->address_fax=$_POST['address_fax'];
+			$rowAddress->address_email=$_POST['address_email'];
+			$rowAddress->type_id=$i;			
+
+			if (!$rowAddress->store()) 
+			{
 				echo "<div class='alert'>";			
 				echo $database->getErrorMsg();
 				echo "</div>";
@@ -803,35 +789,7 @@ function createBlockUser(){
 				echo "</div>";
 				exit;
 			}
-
-			$counter++;
-		}		
-
-		
-		
-		/*
-		$database->setQuery( "DELETE FROM #__easysdi_community_actor WHERE partner_id IN (".$rowPartner->partner_id.")");
-		if (!$database->query()) {		
-				echo "<div class='alert'>";			
-				echo $database->getErrorMsg();
-				echo "</div>";
-				exit;		
-		}
-		
-		foreach( $_POST['role_id'] as $role_id )
-		{
-			$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
-			if (!$database->query()) {
-				echo "<div class='alert'>";			
-				echo $database->getErrorMsg();
-				echo "</div>";
-				exit;	
-			}
-			
-		}*/
-		
-		
-		
+		}			
 		
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
 		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
@@ -841,9 +799,11 @@ function createBlockUser(){
 			echo $database->getErrorMsg();
 			echo "</div>";
 			exit;
-		}												
-
+		}			
 		
+		SITE_partner::includePartnerExtension(5,'BOTTOM','savePartner',$rowPartner->partner_id);									
+
+		//Send email notification to administrator
 		$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
 		$database->setQuery( $query );
 		$total = $database->loadResult();
@@ -855,6 +815,16 @@ function createBlockUser(){
 		$mailer =& JFactory::getMailer();
 		
 		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_BODY",$rowUser->username));
+		
+		//Send email notification to user
+		$query = "SELECT * FROM #__users ";
+		$query .= " WHERE id= ".$rowUser->id;
+		$database->setQuery( $query );
+		$row = $database->loadObjectList();
+		//$mailer =& JFactory::getMailer();		
+		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",$rowUser->password).JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
+		
+		//redirect		
 		$mainframe->redirect("index.php" );	
 	}
 }
@@ -863,7 +833,7 @@ function createBlockUser(){
 	function sendMail ($rows,$subject,$body){
 					 
 			$mailer =& JFactory::getMailer();
-						
+						$mailer ->IsHTML(true);
 			foreach ($rows as $row){
 					$mailer->addRecipient($row->email);																
 				}
