@@ -801,7 +801,7 @@ class SITE_partner {
 			exit;
 		}			
 		
-		SITE_partner::includePartnerExtension(5,'BOTTOM','savePartner',$rowPartner->partner_id);									
+		SITE_partner::includePartnerExtension(0,'BOTTOM','registerPartner',$rowPartner->partner_id);									
 
 		//Send email notification to administrator
 		$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
