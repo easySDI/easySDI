@@ -1284,7 +1284,7 @@ class HTML_partner
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 							<?php		
-								SITE_partner::includePartnerExtension(3,'TOP','editPartner',0);
+								SITE_partner::includePartnerExtension(0,'TOP','requestPartner',0);
 							?>
 							</tr>
 							<tr>
