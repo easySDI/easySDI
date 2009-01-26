@@ -1357,7 +1357,7 @@ class HTML_partner
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_COUNTRY"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code', 'size="1" class="inputbox"', 'value', 'text', 0 ); ?> *</td>
+				<td><?php echo JHTML::_("select.genericlist",$countries, 'country_code', 'size="1" class="inputbox"', 'value', 'text', 'CH' ); ?> *</td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_PHONE"); ?> : </td>
