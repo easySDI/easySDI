@@ -27,7 +27,7 @@
 	<target name="sync" description="Copy from here to apache">
 		
 		<copy
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\components\com_easysdi_catalog">
+			todir="C:\www\Site\Joomla\components\com_easysdi_catalog">
 			<fileset dir="./com_easysdi_catalog">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -39,20 +39,20 @@
 				<include name="**/*.txt" />
 			</fileset>
 		</copy>
-		<copy
-			
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\language\fr-FR">
-					<fileset dir="./language/site">
-						<include name="**/*.ini" />
-					</fileset>
-				</copy>
-		<copy
-			
-			todir="C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\language\fr-FR">
-					<fileset dir="./language/admin">
-						<include name="**/*.ini" />
-					</fileset>
-				</copy>
+
+		<copy		   
+				   todir="C:\www\Site\Joomla\language\fr-FR">
+				     <fileset dir="./language/site">
+				      <include name="**/fr-FR.com_easysdi_catalog.ini" />
+				     </fileset>
+				    </copy>
+				<copy		   
+				   todir="C:\www\Site\Joomla\language\en-GB">
+				     <fileset dir="./language/site">
+				      <include name="**/en-GB.com_easysdi_catalog.ini" />
+				     </fileset>
+				    </copy>
+
 	</target>
 	
 
