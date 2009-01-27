@@ -15,8 +15,7 @@
 	<installfile>install.easysdi_core.php</installfile>
 	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
 		
-	<administration>
-		
+	<administration>		
 		<files>
 			<filename>admin.easysdi_core.php</filename>
 			<filename>license.txt</filename>
@@ -29,9 +28,11 @@
 			<folder>language</folder>			
 			<folder>xsl</folder>
 			<folder>common</folder>
+			<folder>templates</folder>
 		</files>
 		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
+			<language tag="en-GB">en-GB.com_easysdi_core.ini</language>
 		</languages>
 	</administration>
 	<files folder="com_easysdi_core"> 
@@ -42,5 +43,6 @@
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
+		<language tag="en-GB">en-GB.com_easysdi_core.ini</language>
 	</languages>
 </install>
