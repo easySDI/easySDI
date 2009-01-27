@@ -26,19 +26,20 @@ class TOOLBAR_partner {
 		
 		switch ($mainframe->getUserStateFromRequest( "type{$option}", 'type', '' )) {
 			case '':
-				JToolBarHelper::custom('exportPartner', 'xml.png', 'xml_f2.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
+				JToolBarHelper::custom('exportPartner', 'export.png', 'export.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
 				JToolBarHelper::addNew('newRootPartner');
 				JToolBarHelper::editList('editRootPartner');
 				break;
 			default:
-				JToolBarHelper::custom('exportPartner', 'xml.png', 'xml_f2.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
+				JToolBarHelper::custom('exportPartner', 'export.png', 'export.png', JTEXT::_("EASYSDI_MENU_EXPORT"), true);
 				JToolBarHelper::addNew('newAffiliatePartner');
 				JToolBarHelper::editList('editAffiliatePartner');
 				break;
 		}
 		JToolBarHelper::deleteList('','removePartner');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		
 	}
 
 	function _EDIT() {
