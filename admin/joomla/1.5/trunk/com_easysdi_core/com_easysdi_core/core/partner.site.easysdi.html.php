@@ -1285,10 +1285,10 @@ class HTML_partner
 							<tr>
 							<?php		
 								SITE_partner::includePartnerExtension(0,'TOP','requestPartner',0);
-							?>
+							?> 
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="" /> *</td>
 							</tr>
 							<tr>
@@ -1319,7 +1319,7 @@ class HTML_partner
 		
 		<table border="0" cellpadding="3" cellspacing="0">			
 			<tr>
-				<td><?php echo JText::_("EASYSDI_TEXT_NAME"); ?> : </td>
+				<td><?php echo JText::_("EASYSDI_TEXT_ORGANISATION"); ?> : </td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_corporate_name1" value="" /> *</td>
 			</tr>
 			<tr>
@@ -1367,11 +1367,11 @@ class HTML_partner
 				<td><?php echo JText::_("EASYSDI_TEXT_FAX"); ?> : </td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_fax" value="" /></td>
 			</tr>
-			<tr>
+			<!--<tr>
 				<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="address_email" value="" /> *</td>
 			</tr>
-		</table>
+		--></table>
 		</fieldset>
 		
 				</td>

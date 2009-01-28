@@ -33,7 +33,19 @@ defined('_JEXEC') or die('Restricted access');
 			}
 			
 			// do field validation
-			if (form.name.value == '' || form.username.value == '' || form.email.value == '' || (form.password.value == '' && form.id.value ==''))
+			if (form.name.value == '' 
+				|| form.username.value == '' 
+				|| form.email.value == '' 
+				|| (form.password.value == '' && form.id.value =='')
+				|| form.address_corporate_name1.value == ''
+				|| form.title_id.value == ''
+				|| form.address_agent_firstname.value == ''
+				|| form.address_agent_lastname.value == ''
+				|| form.address_street1.value == ''
+				|| form.address_postalcode.value == ''
+				|| form.address_locality.value == ''
+				
+				)
 			{
 				alert( "<?php echo JText::_("EASYSDI_CHECK_SUBMIT_FORM");?> ");
 			} else {

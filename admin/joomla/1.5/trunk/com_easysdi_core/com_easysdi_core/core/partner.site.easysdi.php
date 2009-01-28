@@ -771,7 +771,7 @@ class SITE_partner {
 			$rowAddress->address_locality=$_POST['address_locality'];
 			$rowAddress->address_phone=$_POST['address_phone'];
 			$rowAddress->address_fax=$_POST['address_fax'];
-			$rowAddress->address_email=$_POST['address_email'];
+			/*$rowAddress->address_email=$_POST['address_email'];*/
 			$rowAddress->type_id=$i;			
 
 			if (!$rowAddress->store()) 
