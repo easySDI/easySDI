@@ -50,6 +50,15 @@ $language->load('com_easysdi_shop');
 <?php
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
+$myFavoritesFirst = JRequest::getVar('myFavoritesFirst');
+$simpleSearchCriteria = JRequest::getVar('simpleSearchCriteria');
+$limitstart= JRequest::getVar('limitstart');
+if($simpleSearchCriteria=="")
+{
+	$simpleSearchCriteria = "lastAddedMD";
+}
+$freetextcriteria = JRequest::getVar('freetextcriteria');
+
 $cid = JRequest::getVar ('cid', array(0) );
 if (!is_array( $cid )) {
 	$cid = array(0);
@@ -58,41 +67,53 @@ if (!is_array( $cid )) {
 
 switch($task){
 
-	case "addMetadataNotification":
-		
+	case "addMetadataNotification":		
 		SITE_favorite::metadataNotification(1);
-		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/		
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
 		break;
-	case "removeMetadataNotification":
 		
+	case "removeMetadataNotification":		
 		SITE_favorite::metadataNotification(0);
-		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		break;	
+			
+	case "addFavorite":
+		SITE_favorite::favoriteProduct(1);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );		
 		break;
 		
+	case "removeFavorite":
+		SITE_favorite::favoriteProduct(0);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );		
+		break;	
 		
-	case "listFavoriteProduct":
-		
-		SITE_favorite::listFavoriteProduct();
-					
+	case "manageFavoriteProduct":
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
 		break;
-	
+		
+	case "manageFavorite":
+		SITE_favorite::manageFavoriteProduct();
+		break;
+		
+	/*case "listFavoriteProduct":		
+		SITE_favorite::listFavoriteProduct();					
+		break;	
 		
 	case "deleteFavoriteProduct":		
 		SITE_favorite::deleteFavoriteProduct($cid);
-		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );
+		$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );		
+		break;*/
 		
-		break;
-		
-	case "addFavoriteProduct":
+	/*case "addFavoriteProduct":
 		SITE_favorite::addFavoriteProduct($cid);
-		$mainframe->redirect("index.php?option=$option&task=listAllProductExceptFavorite" );
-		
+		$mainframe->redirect("index.php?option=$option&task=listAllProductExceptFavorite" );		
 		break;
-	
-	case "listAllProductExceptFavorite":
+	*/
 		
-		SITE_favorite::searchProducts();
-					
+	case "listAllProductExceptFavorite":		
+		SITE_favorite::searchProducts();					
 		break;
 	
 	case "orderReport":
