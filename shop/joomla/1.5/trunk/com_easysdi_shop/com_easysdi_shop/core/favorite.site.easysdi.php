@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-/*foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';*/
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 
 class SITE_favorite {
 	
-function manageFavoriteProduct ($orderable = 1)
+function manageFavoriteProduct ( $orderable = 1)
 {
 	$user = JFactory::getUser();		
 	
@@ -135,8 +135,8 @@ function manageFavoriteProduct ($orderable = 1)
 				<input type='hidden'  name='limitstart' value="<?php echo  $limitstart; ?>">
 				
 				<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
-				<span class="searchCriteria">
-					<table width="100%">
+				<!--<span class="searchCriteria">
+					--><table width="100%">
 						<tr>
 							<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
 							<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
@@ -190,10 +190,10 @@ function manageFavoriteProduct ($orderable = 1)
 					}	
 					?>	
 					<input type="hidden" name="countMD" value="<?php echo $countMD;?>">		
-					<input type="hidden" id="productId" name="productId" value="">
+					<input type="hidden" id="productId" name="productId" value=""><!--
 										
 				</span>
-			</form>
+			--></form>
 		</div>	
 		<?php
 	
@@ -483,8 +483,8 @@ function searchProducts($orderable = 1){
 	
 	
 	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
-	<span class="searchCriteria">
-	<table width="100%">
+	<!--<span class="searchCriteria">
+	--><table width="100%">
 		<tr>
 			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
 			<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
@@ -518,8 +518,8 @@ function searchProducts($orderable = 1){
 	}	
 	?>	
 		<input type="hidden" name="countMD" value="<?php echo $countMD;?>">				
-	</span>	
-	</form>
+	<!--</span>	
+	--></form>
 </div>	
 	<?php
 
