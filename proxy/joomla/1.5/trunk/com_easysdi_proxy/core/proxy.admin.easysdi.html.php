@@ -306,6 +306,17 @@ echo $pane->endPanel();
 		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT CONFIG :' ).$configId, 'edit.png' );
 		?>
 <script>
+function changeValues(){
+if(document.getElementById('servletClass').value == 'ch.depth.proxy.csw.CSWProxyServlet'){
+document.getElementById('specificGeonetowrk').style.display="block";
+}else{
+document.getElementById('specificGeonetowrk').style.display="none";
+}
+
+
+}
+
+
 function submitbutton(pressbutton){
 
 if (pressbutton=="addNewServer"){	
@@ -341,7 +352,7 @@ if (pressbutton=="addNewServer"){
 <table class="admintable">
 
 	<tr>
-		<td colspan="4"><select name="servletClass">
+		<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
 			<option
 			<?php if (strcmp($servletClass,"ch.depth.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>
 				value="ch.depth.proxy.wfs.SimpleWFSProxyServlet">
@@ -390,10 +401,37 @@ if (pressbutton=="addNewServer"){
 	$remoteServerList = $config->{'remote-server-list'};
 	$iServer=0;
 	foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-		?><tr><td class="key"><input type="text" name="URL_<?php echo $iServer;?>"
-			value="<?php echo $remoteServer->url; ?>" size=70></td><td><input name="USER_<?php echo $iServer;?>" type="text"
-			value="<?php echo $remoteServer->user; ?>"><td><input name="PASSWORD_<?php echo $iServer;?>" type="password"
-			value="<?php echo $remoteServer->password; ?>"><input type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></tr><?php
+		?><tr>
+				<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+				<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+				<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">				
+				<input type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
+								
+			</tr>
+			<tr>						
+			<td colspan="3">
+			<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
+			<table>	
+			<tr>									
+			<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+			</tr>
+			<tr>
+			<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
+			</tr>								
+			<tr>
+			<td><?php echo JText::_( 'EASYSDI_SEARCH_SERVICE_URL');?></td><td><input type="text" name="search-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'search-service-url'}; ?>" size=70></td>
+			</tr>
+			<tr>
+			<td><?php echo JText::_( 'EASYSDI_DELETE_SERVICE_URL');?></td><td><input type="text" name="delete-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'delete-service-url'}; ?>" size=70></td>
+			</tr>
+			<tr>
+			<td><?php echo JText::_( 'EASYSDI_INSERT_SERVICE_URL');?></td><td><input type="text" name="insert-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'insert-service-url'}; ?>" size=70></td>					
+			</tr>	
+			</table>
+			</div>
+			</td>
+			</tr>
+		<?php
 	$iServer=$iServer+1;
 	}
 	?></tbody>

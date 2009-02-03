@@ -586,6 +586,18 @@ function saveConfig($xml,$configFilePath){
 				$remoteServer->user=$user;
 				$remoteServer->url=$url;
 				$remoteServer->password=$pwd;
+				if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){
+				
+				$remoteServer->{'max-records'}=JRequest::getVar("max-records_".$i,"-1");
+				$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
+				$geonetworktransaction  = $remoteServer->addChild("transaction");
+				$geonetworktransaction->{'type'}='geonetwork';
+				$geonetworktransaction->{'search-service-url'}=JRequest::getVar("search-service-url_".$i,"");
+				$geonetworktransaction->{'delete-service-url'}=JRequest::getVar("delete-service-url_".$i,"");;
+				$geonetworktransaction->{'insert-service-url'}=JRequest::getVar("insert-service-url_".$i,"");;
+
+				}
+				
 
 				$i++;
 			}
