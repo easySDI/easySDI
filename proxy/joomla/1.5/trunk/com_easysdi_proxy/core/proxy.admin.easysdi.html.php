@@ -1285,7 +1285,7 @@ $remoteServerList = $config->{'remote-server-list'};
 			id="LocalFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> <?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); if (strcmp($localFilter,"")==0){?><Filter
 			xmlns:gml='http://www.opengis.net/gml'><Within><PropertyName><?php echo $geometryName ?></PropertyName><gml:Polygon
-			xmlns:gml='http://www.opengis.net/gml' srsName='4326'>
+			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
 			<gml:outerBoundaryIs>
 				<gml:LinearRing>
 					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>    </gml:LinearRing>
