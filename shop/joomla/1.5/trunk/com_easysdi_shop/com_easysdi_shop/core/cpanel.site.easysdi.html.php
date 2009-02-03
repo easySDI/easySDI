@@ -61,7 +61,9 @@ class HTML_cpanel {
 		</table>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 	
-	<?php JHTML::_("behavior.modal","a.modal",$param); ?>
+	<?php
+	$param=JRequest::getVar("param");
+	JHTML::_("behavior.modal","a.modal",$param); ?>
 	<table>
 	<thead>
 	<tr>
