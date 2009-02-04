@@ -43,7 +43,11 @@
 
 
 
-
+.tinymap {
+	width: 256px;
+	height: 256px;
+	border: 1px solid #ccc;
+}
 
 .smallmap {
     width: 512px;
