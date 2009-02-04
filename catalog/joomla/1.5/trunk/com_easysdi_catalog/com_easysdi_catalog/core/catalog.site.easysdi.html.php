@@ -28,6 +28,19 @@ function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria
 		<div class="contentin">	
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
 	
+		<h3>Type de métadonnées:</h3>
+		<table>
+		  <tr>
+		    <td><a href="">Métadonnées publiques (count)</a></td>
+		  </tr>
+		  <tr>
+		    <td><a href="">Métadonnées privées (count)</a></td>
+		  </tr>
+		  <tr>
+		    <td>&nbsp;</td>
+		  </tr>
+		</table>
+		
 		<h3> <?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 		
 		<?php
@@ -139,10 +152,53 @@ function generateMap(){
 <script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 <script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js-compressed.js"></script>
 <script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
-<div id="map" class="smallmap"></div>
+<table width="100%">
+ <tr>
+  <td width="50%" valign="top">
+   <table>
+    <tr>
+		<td>&nbsp;</td>
+	</tr>
+   	<tr>
+	<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></td>
+	  <td><input type="text" name="filterfreetextcriteria" value="<?php echo $searchCriteria;?>" class="inputbox"  /></td>
+	</tr>
+	<tr>
+	<td>Fournisseur:</td>
+	  <td>
+	  	<select>
+			<option>---</option>
+		</select>
+	  </td>
+	</tr>
+	<tr>
+	<td>Thématique:</td>
+	  <td><input type="text" name="" value="" class="inputbox" /></td>
+	</tr>
+	<tr>
+	<td>Visualisable?</td>
+	  <td><input type="checkbox" name="" value="" class="inputbox" /></td>
+	</tr>
+	<tr>
+	<td>Commandable?</td>
+	  <td><input type="checkbox" name="" value="" class="inputbox" /></td>
+	</tr>
+   </table>
+  </td>
+  <td width="50%">
+   <table>
+    <tr>
+     <td><div id="map" class="tinymap"></div></td>
+    </tr>
+    <tr>
+      <td><div id="panelDiv" class="olControlEditingToolbar" ></div></td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+</table>
 <br>
-<div id="panelDiv" class="olControlEditingToolbar" >
-</div>
+
 
 <div id="docs">
 </div>
