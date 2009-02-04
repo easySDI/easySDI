@@ -978,7 +978,7 @@ function activateLayer(layerName){
 			}		
 				
 		} ?>
-</table>
+
 </form>
 		<?php
 	}
@@ -1026,7 +1026,7 @@ $remoteServerList = $config->{'remote-server-list'};
 	</tr>
 	</thead>
 	<tbody id="metadataParamTable">
-	<tr>
+	
 
 <?php 
 			foreach ($thePolicy->Servers->Server as $policyServer){			
@@ -1038,13 +1038,15 @@ $remoteServerList = $config->{'remote-server-list'};
 			$iparam  =0;
 		foreach ($theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} as $attributeToExclude){			
 ?>
-	<tr><td><input name="param_<?php echo $iServer;?>_<?php echo $iparam;?>" type="text" class="text_area" size="200" value='<?php echo $attributeToExclude; ?>'></td></tr>
+	<tr>
+		<td><input name="param_<?php echo $iServer;?>_<?php echo $iparam;?>" type="text" class="text_area" size="200" value='<?php echo $attributeToExclude; ?>'></td>
+	</tr>
 	<?php 
 			$iparam  ++;
 		} ?>
 		
 		<input type ="hidden" id="nbParam<?php echo $iServer; ?>"  value="<?php echo $iparam;?>">
-	</tr>
+	
 	</tbody>
 </table>
 </fieldset>	
@@ -1334,9 +1336,10 @@ $remoteServerList = $config->{'remote-server-list'};
 			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> <?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType); if (strcmp($remoteFilter,"")==0){?><Filter
 			xmlns:gml='http://www.opengis.net/gml'><BBOX><PropertyName><?php echo $geometryName ?></PropertyName><Box
-			srsName="EPSG:4326" gml="http://www.opengis.net/gml"> <coordinates>-180,-90 180,90</coordinates> </Box></BBOX></Filter><?php } else {echo $remoteFilter;} ?></textarea></td>
-
+			srsName="EPSG:4326" gml="http://www.opengis.net/gml"> <coordinates>-180,-90 180,90</coordinates> </Box></BBOX></Filter><?php } else {echo $remoteFilter;} ?></textarea>
 		</td>
+
+		
 	</tr>
 	<?php }
 	?>
@@ -1404,7 +1407,7 @@ $remoteServerList = $config->{'remote-server-list'};
 				type="radio" name="configId" value="<?php echo $config['id'] ?>"></td>
 			<td><b><?php echo $config['id']?></b> <?php echo "{", $config->{'servlet-class'},"}";  ?></td>
 		</tr>
-		</td>
+		
 
 		<?php
 			}
