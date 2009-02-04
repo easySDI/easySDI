@@ -446,6 +446,7 @@ function savePolicy($xml){
 			$theServer = $thePolicy->Servers->addChild(Server);
 			$theServer->url=$remoteServer;
 			$theServer->Metadata ="";
+			$foundParamToExclude=false;
 			while (list($key, $val) = each($params )) {
 
 				if (!(strpos($key,"param_$i")===false)){
@@ -457,7 +458,7 @@ function savePolicy($xml){
 					if (strlen($val)>0){
 						$theServer->Metadata->Attributes->Exclude->addChild(Attribute,$val);
 					}
-						
+				 	$foundParamToExclude=true;
 				}
 
 				if (!(strpos($key,"featuretype@$i")===false)){
@@ -505,6 +506,11 @@ function savePolicy($xml){
 				}
 
 			}
+			if ($foundParamToExclude==false){			  
+				$theServer->Metadata[All]='true';
+				$theServer->Metadata->Attributes[All]='true';								
+			}
+			
 			reset($params);
 		}
 		else{

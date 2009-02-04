@@ -1036,6 +1036,7 @@ $remoteServerList = $config->{'remote-server-list'};
 				}
 			}
 			$iparam  =0;
+			if ($theServer !=null && $theServer->{'Metadata'} !=null && $theServer->{'Metadata'}->{'Attributes'}!=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'} !=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} !=null){
 		foreach ($theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} as $attributeToExclude){			
 ?>
 	<tr>
@@ -1043,7 +1044,8 @@ $remoteServerList = $config->{'remote-server-list'};
 	</tr>
 	<?php 
 			$iparam  ++;
-		} ?>
+		} 
+		}?>
 		
 		<input type ="hidden" id="nbParam<?php echo $iServer; ?>"  value="<?php echo $iparam;?>">
 	
