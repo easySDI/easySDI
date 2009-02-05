@@ -1196,7 +1196,7 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-	$version = "0.99";
+	$version = "0.991";
 	
 		$query="ALTER TABLE #__easysdi_order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
 		$db->setQuery( $query);
@@ -1247,16 +1247,43 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}	  
+}
+
+
+if ($version == "0.991"){
+	
+	$query="UPDATE #__easysdi_version set version = '0.992' where component = 'com_easysdi_shop'";
+
+	$db->setQuery( $query);
+
+	if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	$version = "0.992";
+	
+		$query="ALTER TABLE #__easysdi_order_product_list add column `remark` varchar(4000) NOT NULL default ''";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+
+  	$query="ALTER TABLE #__easysdi_order_product_list add column `price` decimal(10,0) NOT NULL default '0'";
+		$db->setQuery( $query);
+
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		  
   
-   
-  
-		
 
-  
 }
+
 
 
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
@@ -1292,6 +1319,8 @@ $query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_e
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 
+	
+	
 	
 	
 	

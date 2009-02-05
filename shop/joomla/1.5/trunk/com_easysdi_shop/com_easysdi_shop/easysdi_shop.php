@@ -68,6 +68,7 @@ if (!is_array( $cid )) {
 switch($task){
 
 	case "addMetadataNotification":		
+
 		SITE_favorite::metadataNotification(1);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/		
 		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
@@ -220,16 +221,34 @@ switch($task){
 		SITE_cpanel::archiveOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
+	
+	
+	case "saveOrdersForProvider":
+		SITE_cpanel::saveOrdersForProvider();
+		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+		break;	
+	case "processOrder":
+		SITE_cpanel::processOrder();
+		break;
+		
+	case "listOrdersForProvider":
+		SITE_cpanel::listOrdersForProvider();
+		break;
+
+		
 	case "listOrders":
 		SITE_cpanel::listOrders();
 		break;
+		
 	case "importProduct":
 		HTML_shop::importProduct();
 		break;
+		
 	case "sendOrder":
 		HTML_shop::saveOrder("SENT");
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
+		
 	case "saveOrder":
 		HTML_shop::saveOrder("SAVED");
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );		

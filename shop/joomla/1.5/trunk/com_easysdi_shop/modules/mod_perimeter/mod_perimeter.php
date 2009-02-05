@@ -59,16 +59,16 @@ $cid = 		$mainframe->getUserState('productList');
 	
 	<script>
 			
-	function selectPerimeter(){
+	function selectPerimeter(perimListName){
 	
-	selIndex = document.getElementById('perimeterList').selectedIndex;
+	selIndex = document.getElementById(perimListName).selectedIndex;
 
 
 	<?php	
 	foreach ($rows as $row)
 		{?>
-	 	if (document.getElementById('perimeterList')[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById('perimeterList')[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>");	 		
+	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>");	 		
 	 		}
 	 
 	 <?php } ?>
@@ -80,7 +80,7 @@ $cid = 		$mainframe->getUserState('productList');
         <table>
         <tr>
         <td> 
-	<select id="perimeterList"  onChange="selectPerimeter()">
+	<select id="perimeterList"  onChange="selectPerimeter('perimeterList')">
 	<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 	<?php
 	foreach ($rows as $row)
