@@ -742,7 +742,8 @@ if (oldLoad) oldLoad();
 <br>
 <div id="docs"></div>
 <br>
-<div id="panelDiv" class="historyContent"></div>
+<div id="panelDiv"
+	class="historyContent"></div>
 
 <br>
 
@@ -1196,28 +1197,19 @@ if (count($rows)>0){
 		$user = JFactory::getUser();
 		if (!$user->guest){
 			$cid = $mainframe->getUserState('productList');
-			
+				
 			$option = JRequest::getVar('option');
 			$task = JRequest::getVar('task');
-			$order_type = $mainframe->getUserState('order_type');
-			
-			$order_name = $mainframe->getUserState('order_name');
-			
+			$order_type = $mainframe->getUserState('order_type');				
+			$order_name = $mainframe->getUserState('order_name');				
 			$third_party = $mainframe->getUserState('third_party');
-			
-			
-			
-			
-			
+				
 			$db =& JFactory::getDBO();
 
 			jimport("joomla.utilities.date");
 			$date = new JDate();
 
-
-
 			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_update,user_id) VALUES (".$db->Quote($third_party)." ,'".$order_type."',0,'".$order_name."','".$orderStatus."','".$date->toMySQL()."',".$user->id.")";
-
 			$db->setQuery($query );
 
 			if (!$db->query()) {
@@ -1229,13 +1221,10 @@ if (count($rows)>0){
 			$order_id	= $db->insertId();
 			$totalArea = $mainframe->getUserState('totalArea');
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
-
-			
-
+				
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
-			
-
+				
 			$i=0;
 			foreach ($selSurfaceList as $sel){
 
@@ -1261,7 +1250,7 @@ if (count($rows)>0){
 						echo $db->getErrorMsg();
 						echo "</div>";
 					}
-						
+
 					$productProperties  = $mainframe->getUserState('property_'.$product_id);
 					$mainframe->setUserState('property_'.$product_id,null);
 
@@ -1273,25 +1262,15 @@ if (count($rows)>0){
 							echo "<div class='alert'>";
 							echo $db->getErrorMsg();
 							echo "</div>";
-						}
-							
+						}							
 					}
-
 				}
-
 			}
 
-
-			/*
-			 * Met à jour le status pour un devis dont le prix est connu comme étant gratuit
-			 * et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé
-			 */
-
-			 
-			
+			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
+				
 			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='AWAIT' and o.type='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
 				
-			
 			$db->setQuery( $query );
 			$rows = $db->loadObjectList();
 			if ($db->getErrorNum()) {
@@ -1308,45 +1287,45 @@ if (count($rows)>0){
 					echo "<div class='alert'>";
 					echo $db->getErrorMsg();
 					echo "</div>";
-				}										
-				$user = JFactory::getUser();
-					
-				SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->$cmd_name,$user->username));
-			}
-			
-
-			/*
-			 * Mise à jour du statut de la commande.
-			 * Si il n'y a plus rien à traiter, on la marque comme terminée
-			 * dans les autres cas on la marque comme en cours de traitement
-			 */
-			 $query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
-			 $db->setQuery($query);
-			 $total = $db->loadResult();
-			 jimport("joomla.utilities.date");
-			 $date = new JDate();
-			if ( $total == 0){
-					$query = "UPDATE   #__easysdi_order  SET status ='FINISH' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";							
-				}else{
-					$query = "UPDATE   #__easysdi_order  SET status ='PROGRESS' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
 				}
-			$db->setQuery($query);
-				if (!$db->query()) {
-					echo "<div class='alert'>";
-					echo $db->getErrorMsg();
-					echo "</div>";
-				}		
-
+				$user = JFactory::getUser();
 				
+				SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
+					
+			}						
+					
+			
+			
+			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
+			$db->setQuery($query);
+			$total = $db->loadResult();
+			jimport("joomla.utilities.date");
+			$date = new JDate();
+			if ( $total == 0){
+				$query = "UPDATE   #__easysdi_order  SET status ='FINISH' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+			}else{
+				$query = "UPDATE   #__easysdi_order  SET status ='PROGRESS' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+			}
+			$db->setQuery($query);
+			if (!$db->query()) {
+				echo "<div class='alert'>";
+				echo $db->getErrorMsg();
+				echo "</div>";
+			}
+			if ($total == 0){
+				SITE_cpanel::notifyUserByEmail($order_id);
+			}
+
+
 			$mainframe->setUserState('productList',null);
 			$mainframe->setUserState('order_type',null);
 			$mainframe->setUserState('order_name',null);
-			$mainframe->setUserState('third_party',null);			
+			$mainframe->setUserState('third_party',null);
 			$mainframe->setUserState('selectedSurfacesName',null);
 			$mainframe->setUserState('selectedSurfaces',null);
 			$mainframe->setUserState('totalArea',null);
 			$mainframe->setUserState('perimeter_id',null);
-				
+
 
 
 		}else{

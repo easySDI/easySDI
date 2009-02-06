@@ -138,6 +138,7 @@ class SITE_product {
 		
 	function sendMailByEmail($email,$subject,$body){
 
+		
 				$mailer =& JFactory::getMailer();		
 				$mailer->addBCC($email);																				
 				$mailer->setSubject($subject);
@@ -145,8 +146,10 @@ class SITE_product {
 				$mailer->setBody($body);				
 				if ($mailer->send() !==true){
 					
-				}				
+				}		
+						
 	}
+	
 	function sendMail ($rows,$subject,$body){
 					 
 			$mailer =& JFactory::getMailer();

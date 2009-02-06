@@ -21,7 +21,7 @@ jimport("joomla.html.pagination");
 
 jimport("joomla.html.pane");
 
-require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'shop.easysdi.class.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
