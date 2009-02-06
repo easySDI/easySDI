@@ -105,8 +105,8 @@ function editMetadataTabs($row,$id, $option ){
 														
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">	
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
 	 								
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_TEXT_KEY"); ?></td>
@@ -124,8 +124,9 @@ function editMetadataTabs($row,$id, $option ){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -264,8 +265,9 @@ function editStandardClasses($row,$id, $option ){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">	
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+		
 	<tr>
 	 	<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANDARD"); ?></td>
 	 	<td><?php echo JHTML::_("select.genericlist",$standardlist, 'standard_id', 'size="1" class="inputbox"', 'value', 'text', $selStandardList ); ?></td>
@@ -293,8 +295,9 @@ function editStandardClasses($row,$id, $option ){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -409,8 +412,9 @@ function editStandard($row,$id, $option ){
 		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
 		$partners = array_merge( $partners, $database->loadObjectList() );
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
@@ -435,8 +439,9 @@ function editStandard($row,$id, $option ){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -536,8 +541,9 @@ function editExt($row,$id, $option ){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_EXT_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
@@ -551,8 +557,9 @@ function editExt($row,$id, $option ){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -647,8 +654,9 @@ function editLocfreetext($row,$id, $option ){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
@@ -679,8 +687,9 @@ function editLocfreetext($row,$id, $option ){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -870,8 +879,9 @@ window.onload=function(){
 		if (oldLoad) oldLoad();
 }
 </script>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_CLASS_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
@@ -936,24 +946,12 @@ window.onload=function(){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -970,8 +968,9 @@ window.onload=function(){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
@@ -1025,8 +1024,9 @@ window.onload=function(){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -1043,8 +1043,9 @@ window.onload=function(){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">		
+	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LIST_CODE_KEY"); ?></td>
 		<td><input size="50" type="text" name ="code_key" value="<?php echo $rowMDList->code_key?>"> </td>							
@@ -1067,8 +1068,9 @@ window.onload=function(){
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
@@ -1086,8 +1088,9 @@ window.onload=function(){
 		
 		
 ?>
-<table border="0" cellpadding="3" cellspacing="0">	
-	<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<table border="0" cellpadding="3" cellspacing="0">	
+	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_ID"); ?></td>
 		<td><?php echo $rowMDList->id?> </td>							
@@ -1111,8 +1114,9 @@ window.onload=function(){
 	<input type="hidden" name="id" value="<?php echo $rowMDList->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	</form>
+	
 	</table>
+</form>
 	<?php 	
 		
 	}
