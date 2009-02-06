@@ -109,25 +109,25 @@ class HTML_perimeter {
 							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_LOCALISATION"); ?> : </td>
 							<td><select name="is_localisation" > <option value="1" <?php if($rowPerimeter->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowPerimeter->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowPerimeter->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							
 						<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX"); ?> : </td>
 							<td><select name="searchbox" > <option value="1" <?php if($rowPerimeter->searchbox == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowPerimeter->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowPerimeter->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_MAXFEATURES"); ?> : </td>
-							<td><input type name="maxfeatures"  value="<?php echo $rowPerimeter->maxfeatures ?>"> </td>
+							<td><input type name="maxfeatures"  value="<?php echo $rowPerimeter->maxfeatures ?>"> 
 							</td>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_SORT"); ?> : </td>
 							<td><select name="sort" > <option value="1" <?php if($rowPerimeter->sort == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							
