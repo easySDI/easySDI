@@ -96,24 +96,24 @@ class HTML_location {
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_LOCALISATION"); ?> : </td>
 							<td><select name="is_localisation" > <option value="1" <?php if($rowLocation->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowLocation->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowLocation->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_SEARCHBOX"); ?> : </td>
 							<td><select name="searchbox" > <option value="1" <?php if($rowLocation->searchbox == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowLocation->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowLocation->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_MAXFEATURES"); ?> : </td>
-							<td><input type name="maxfeatures"  value="<?php echo $rowLocation->maxfeatures ?>"> </td>
+							<td><input type name="maxfeatures"  value="<?php echo $rowLocation->maxfeatures ?>"> 
 							</td>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_SORT"); ?> : </td>
 							<td><select name="sort" > <option value="1" <?php if($rowLocation->sort == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>
+								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							
