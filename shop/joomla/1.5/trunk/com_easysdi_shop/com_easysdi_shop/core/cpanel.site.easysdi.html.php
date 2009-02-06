@@ -24,6 +24,29 @@ class HTML_cpanel {
 	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search=""){
 	
 	?>	
+	<script>
+	
+	
+	function showAllowedButton(status){
+	
+	if (status == 'SAVED'){
+	 document.getElementById('buttonArchive').disabled=false;
+	 document.getElementById('buttonSent').disabled=false;
+	}else
+	if (status == 'FINISH'){
+	 document.getElementById('buttonArchive').disabled=false;
+	 document.getElementById('buttonSent').disabled=true;
+	}else{
+	 document.getElementById('buttonArchive').disabled=true;
+	 document.getElementById('buttonSent').disabled=true;
+	}
+
+
+	
+	
+	}
+	
+	</script>
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
@@ -83,7 +106,7 @@ class HTML_cpanel {
 			?>		
 			<tr>
 			<td><?php echo $i; ?></td>
-			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>"></td>
+			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>')" ></td>
 			
 			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></span><br></td>
 			
@@ -100,8 +123,8 @@ class HTML_cpanel {
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>
+			<button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
+			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>
 		</form>
 		</div>
 	<?php	
@@ -152,7 +175,7 @@ class HTML_cpanel {
 	
 	
 	
-	function listOrdersForProvider($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search=""){
+	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="",$productorderstatus=""){
 	
 	?>	
 		<div class="contentin">
@@ -172,6 +195,14 @@ class HTML_cpanel {
 					<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
 					<option value="D" <?php if($ordertype=="D") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_D"); ?></option>
 					<option value="O" <?php if($ordertype=="O") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_O"); ?></option>
+				</select>
+				</td>
+				
+				<td>
+				<select name="productorderstatus" >
+					<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
+					<option value="AWAIT" <?php if($productorderstatus=="AWAIT") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_WAITING"); ?></option>
+					<option value="AVAILABLE" <?php if($productorderstatus=="AVAILABLE") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_PROCESSED"); ?></option>
 				</select>
 				</td>
 				</tr>
@@ -234,7 +265,9 @@ class HTML_cpanel {
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='processOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_PROCESS_ORDER"); ?></button>			
+			<?php if($productorderstatus=="AWAIT") {?>
+			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='processOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_PROCESS_ORDER"); ?></button>
+			<?php }?>			
 		</form>
 		</div>
 	<?php	

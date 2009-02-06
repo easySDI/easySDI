@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 

@@ -136,6 +136,17 @@ class SITE_product {
 		
 	}
 		
+	function sendMailByEmail($email,$subject,$body){
+
+				$mailer =& JFactory::getMailer();		
+				$mailer->addBCC($email);																				
+				$mailer->setSubject($subject);
+				$user = JFactory::getUser();
+				$mailer->setBody($body);				
+				if ($mailer->send() !==true){
+					
+				}				
+	}
 	function sendMail ($rows,$subject,$body){
 					 
 			$mailer =& JFactory::getMailer();
@@ -476,6 +487,7 @@ function editMetadata() {
 	}
 		
 		
+	
 }
 
 
