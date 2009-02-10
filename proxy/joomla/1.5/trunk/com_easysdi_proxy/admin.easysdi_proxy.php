@@ -28,6 +28,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'menu.php')
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'module.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
+include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 
 $task = JRequest::getVar('task');
@@ -38,7 +39,9 @@ if (!is_array( $cid )) {
 
 global $mainframe;
 
-$componentConfigFilePath = JPATH_COMPONENT_ADMINISTRATOR.DS.'config'.DS.'com_easysdi.xml';
+/*Replaced by storage of the configFilePath into table easysdi_config
+ */
+/*$componentConfigFilePath = JPATH_COMPONENT_ADMINISTRATOR.DS.'config'.DS.'com_easysdi.xml';
 
 $xmlConfig = simplexml_load_file($componentConfigFilePath);
 if ($xmlConfig === false){
@@ -47,8 +50,11 @@ if ($xmlConfig === false){
 
 
 $configFilePath = $xmlConfig->proxy->configFilePath;
-
 $xml = simplexml_load_file($configFilePath);
+*/
+
+$xml = simplexml_load_file(config_easysdi::getValue("PROXY_CONFIG"));
+
 if ($xml === false){
 	$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
 }
