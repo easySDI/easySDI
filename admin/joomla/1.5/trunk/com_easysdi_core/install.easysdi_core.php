@@ -24,29 +24,6 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
-	/**
-	 * Create the configuration table
-	 * Insert value for JAVA_BRIDGE_URL
-	 */
-	$query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
-		 	 `id` bigint(20) NOT NULL auto_increment,
-		  	`thekey` varchar(100) NOT NULL default '',
-		  	`value` varchar(100) NOT NULL default '',
-		 	 PRIMARY KEY  (`id`)
-			)"; 
-	$db->setQuery( $query);
-	if (!$db->query()) 
-	{
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
-	
-	$query = "insert into `#__easysdi_config` values(0,'JAVA_BRIDGE_URL','http://localhost:8081/JavaBridge/java/Java.inc')";
-	$db->setQuery( $query);
-	if (!$db->query()) 
-	{
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
-	
 	
 	/**
 	 * Creates the database structure
@@ -84,6 +61,29 @@ function com_install(){
 	{
 		if ($version == "0")
 		{	
+			/**
+			 * Create the configuration table
+			 * Insert value for JAVA_BRIDGE_URL
+			 */
+			$query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
+				 	 `id` bigint(20) NOT NULL auto_increment,
+				  	`thekey` varchar(100) NOT NULL default '',
+				  	`value` varchar(100) NOT NULL default '',
+				 	 PRIMARY KEY  (`id`)
+					)"; 
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "insert into `#__easysdi_config` values(0,'JAVA_BRIDGE_URL','http://localhost:8081/JavaBridge/java/Java.inc')";
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+	
 			$query="CREATE TABLE `#__easysdi_partner_extension` (
 					  `ext_id` bigint(20) NOT NULL auto_increment,
 					  `tab_id` bigint(20) NOT NULL,
@@ -617,6 +617,7 @@ function com_install(){
 				}
 			}
 		}
+		
 	}
 	if ($version == "0.9")
 	{
@@ -763,7 +764,7 @@ function com_install(){
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="CREATE TABLE `#__easysdi_location_definition` (
@@ -786,49 +787,51 @@ function com_install(){
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}	
 	
-	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
-	$db->setQuery( $query);
-	$id = $db->loadResult();
-	
-	if ($id)
-	{
- 		$mainframe->enqueueMessage("EASYSDI menu is already existing. Usually this menu is created during the installation of this component. Maybe something goes wrong during the previous uninstall !","INFO"); 	 	
-	}
-	else
-	{
-		//Insert the EasySdi Main Menu		
-		$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-			values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
-		$db->setQuery( $query);
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
-		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
+		/**
+		 * Menu creation
+		 */
+		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 		$db->setQuery( $query);
 		$id = $db->loadResult();	
-	}
-
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_core','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-	}
-
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'Configuration','','option=com_easysdi_core&task=listConfig','Configuration','com_easysdi_core','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-	}
+		if ($id)
+		{
+	 		$mainframe->enqueueMessage("EASYSDI menu is already existing. Usually this menu is created during the installation of this component. Maybe something goes wrong during the previous uninstall !","INFO"); 	 	
+		}
+		else
+		{
+			//Insert the EasySdi Main Menu		
+			$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+				values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+			}
+			$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
+			$db->setQuery( $query);
+			$id = $db->loadResult();	
+		}
+	
+		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+			values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_core','js/ThemeOffice/component.png','')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+		}
+	
+		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+			values($id,'Configuration','','option=com_easysdi_core&task=listConfig','Configuration','com_easysdi_core','js/ThemeOffice/component.png','')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+		}
 	
 	$mainframe->enqueueMessage("Congratulation core components for EasySdi are installed and ready to be used. 
-Enjoy EasySdi!","INFO");
+								Enjoy EasySdi!","INFO");
 	
 
 }
