@@ -33,7 +33,8 @@ class TOOLBAR_basemap{
 		JToolBarHelper::editList('editBasemap');
 		JToolBarHelper::deleteList('','deleteBasemap');
 		JToolBarHelper::spacer();
-		JToolBarHelper::editList('listBasemapContent');
+		//JToolBarHelper::editList('listBasemapContent');
+		JToolBarHelper::custom( 'listBasemapContent', 'preview.png', 'preview.png', JTEXT::_("EASYSDI_MENU_LISTBASEMAP_CONTENT"), false );
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 
