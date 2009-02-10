@@ -20,44 +20,49 @@ defined('_JEXEC') or die('Restricted access');
 
 function com_uninstall(){
 	
-global  $mainframe;
-$db =& JFactory::getDBO();
-
-
-$query = "select count(*) FROM #__components where `option` in ('com_easysdi_proxy','com_easysdi_catalog','com_easysdi_shop' ";
-$db->setQuery( $query);
-$total = $db->loadResult();
-if($total >0){
+	global  $mainframe;
+	$db =& JFactory::getDBO();
 	
-	$mainframe->enqueueMessage("core component could not be uninstalled, because some depending components are still installed. Please uninstall all others easysdi component before uninstalling this component.","ERROR");	
-	return false;
-}
-
-
-
-
-$query = "DELETE FROM #__components where `option`= 'com_easysdi_partner' ";
-
-$db->setQuery( $query);
-
+	/**
+	 * Check dependencies
+	 */
+	$name = '';
+	$query = "SELECT name FROM #__components where option = 'com_easysdi_catalog' AND parent=0";
+	$db->setQuery( $query);
+	$name = $db->loadResult();
+	if ($name) {
+		$mainframe->enqueueMessage("DEPENDENT COMPONENT CATALOG IS INSTALLED. CAN NOT UNINSTALL CORE","ERROR");
+		exit;		
+	}
+	$name = '';
+	$query = "SELECT name FROM #__components where option = 'com_easysdi_proxy' AND parent=0";
+	$db->setQuery( $query);
+	$name = $db->loadResult();
+	if ($name) {
+		$mainframe->enqueueMessage("DEPENDENT COMPONENT PROXY IS INSTALLED. CAN NOT UNINSTALL CORE","ERROR");
+		exit;		
+	}
+	
+	/**
+	 * Delete components
+	 */
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_partner' ";	
+	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		return false;
 	}
-
+	
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
-
-$db->setQuery( $query);
-
+	$db->setQuery( $query);
 	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		return false;
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 	
-$mainframe->enqueueMessage("Congratulation EasySdi core component is uninstalled.
-Pay attention the database is not deleted and could still be used if you install Easysdi again. 
-","INFO");
-
+		
+	
+	$mainframe->enqueueMessage("Congratulation EasySdi core component is uninstalled.
+	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
+	","INFO");
 
 }
 
