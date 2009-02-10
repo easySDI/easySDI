@@ -822,7 +822,7 @@ class SITE_partner {
 		$database->setQuery( $query );
 		$row = $database->loadObjectList();
 		//$mailer =& JFactory::getMailer();		
-		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",$rowUser->password).JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
+		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
 		
 		//redirect		
 		$mainframe->redirect("index.php" );	
