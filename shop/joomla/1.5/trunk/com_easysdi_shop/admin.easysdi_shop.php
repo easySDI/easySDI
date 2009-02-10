@@ -38,6 +38,8 @@ if (!is_array( $cid )) {
 
 global $mainframe;
 
+JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi_shop/templates/css/');
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.php');
