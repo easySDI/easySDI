@@ -65,17 +65,6 @@ function com_install(){
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	if ($version == "0.9")
-	{
-		$version= '0.91';
-		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_catalog'";
-		$db->setQuery( $query);
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
 		/**
 		 * Insert value for CATALOG_URL in configuration table
 		 */
@@ -86,8 +75,8 @@ function com_install(){
 		{	
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	}	
+	}
+	
 	
 	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
 	return true;
