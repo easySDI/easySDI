@@ -23,16 +23,71 @@ function com_install(){
 
 	global  $mainframe;
 	$db =& JFactory::getDBO();
-
 	
-	if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
+	/*if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
 		$mainframe->enqueueMessage("Core component does not exists. Easysdi_catalog could not be installed. Please install core component first.","ERROR");
 		return false;
-		
+	}*/
+	
+	/**
+	 * Check the CORE installation
+	 */
+	$name = '';
+	$query = "SELECT name FROM #__components where option = 'com_easysdi_core' AND parent=0";
+	$db->setQuery( $query);
+	$name = $db->loadResult();
+	if (!$name) {
+		$mainframe->enqueueMessage("EASYSDI CORE IS NOT INSTALLED","ERROR");
+		exit;		
 	}
 	
+	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
+			  `component` varchar(100) NOT NULL default '',
+			  `id` bigint(20) NOT NULL auto_increment,
+			  `version` varchar(100) NOT NULL default '',
+			  PRIMARY KEY  (`id`)
+			)"; 		
+	$db->setQuery( $query);
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
 	
-	
+	$version = '0';
+	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_catalog'";
+	$db->setQuery( $query);
+	$version = $db->loadResult();
+	if (!$version)
+	{
+		$version= '0.9';
+		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES (null, 'com_easysdi_catalog', '0.9')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	if ($version == "0.9")
+	{
+		$version= '0.91';
+		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_catalog'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		/**
+		 * Insert value for CATALOG_URL in configuration table
+		 */
+		$key='';
+		$query = "insert  into #__easysdi_config (thekey, value) values('CATALOG_URL','http://localhost:8081/proxy/ogc/geonetwork')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	}	
 	
 	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
 	return true;
