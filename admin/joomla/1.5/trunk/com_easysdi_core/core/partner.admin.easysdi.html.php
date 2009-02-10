@@ -807,10 +807,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_ROOT"); ?> : </td>
 								<td><?php echo $root_name ?><input type="hidden" name="root_id" value="<?php echo $rowPartner->root_id; ?>" /></td>
 							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_PARENT"); ?> : </td>
-								<td><?php echo $parent_name ?><input type="hidden" name="parent_id" value="<?php echo $rowPartner->parent_id; ?>" /></td>							
-							</tr>
+							
 									
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_ACCOUNT_PARENT"); ?> : </td>
