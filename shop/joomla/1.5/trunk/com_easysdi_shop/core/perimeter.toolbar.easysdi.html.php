@@ -32,10 +32,10 @@ class TOOLBAR_perimeter{
 		JToolBarHelper::addNew('newPerimeter');
 		JToolBarHelper::editList('editPerimeter');
 		JToolBarHelper::deleteList('','deletePerimeter');
-		JToolBarHelper::custom( 'copyPerimeter', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_COPY_PERIMETER"), false );
+		JToolBarHelper::custom( 'copyPerimeter', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_COPY_PERIMETER"), false );
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 }

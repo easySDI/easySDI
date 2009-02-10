@@ -22,7 +22,7 @@ class HTML_ctrlpanel {
 
 	function ctrlPanelMetadata2($option){
 		JToolBarHelper::title( JText::_(  'EASYSDI_EASYSDI_CONTROL_PANEL_METADATA' ), 'generic.png' );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 		
 		
 		global $mainframe;
@@ -177,7 +177,7 @@ echo $pane->endPanel();
 	
 	function ctrlPanelMetadata($option){
 		JToolBarHelper::title( JText::_(  'EASYSDI_EASYSDI_CONTROL_PANEL_METADATA' ), 'generic.png' );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 		
 		
 		global $mainframe;

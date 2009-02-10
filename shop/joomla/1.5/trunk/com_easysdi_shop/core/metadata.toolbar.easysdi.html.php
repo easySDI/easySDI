@@ -35,7 +35,7 @@ function _LISTMDTABS(){
 		JToolBarHelper::editList('editMetadataTab');
 		JToolBarHelper::deleteList('','deleteMetadataTab');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
 }
 		
 function _LISTSTANDARDCLASSES() {
@@ -46,7 +46,7 @@ function _LISTSTANDARDCLASSES() {
 		JToolBarHelper::editList('editMetadataStandardClasses');
 		JToolBarHelper::deleteList('','deleteMetadataStandardClasses');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 		function _EDITSTANDARDCLASSES() {
 		global $mainframe;
@@ -69,7 +69,7 @@ function _LISTSTANDARD() {
 		JToolBarHelper::editList('editMetadataStandard');
 		JToolBarHelper::deleteList('','deleteMetadataStandard');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 		function _EDITSTANDARD() {
 		global $mainframe;
@@ -87,7 +87,7 @@ function _LISTSTANDARD() {
 		JToolBarHelper::editList('editMetadataExt');
 		JToolBarHelper::deleteList('','deleteMetadataExt');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 	
 function _LISTNUMERICS() {
@@ -98,7 +98,7 @@ function _LISTNUMERICS() {
 		JToolBarHelper::editList('editMetadataNumerics');
 		JToolBarHelper::deleteList('','deleteMetadataNumerics');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 	
 	function _LISTLOCFREETEXT() {
@@ -109,7 +109,7 @@ function _LISTNUMERICS() {
 		JToolBarHelper::editList('editMetadataLocfreetext');
 		JToolBarHelper::deleteList('','deleteMetadataLocfreetext');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 		function _EDITLOCFREETEXT() {
 		global $mainframe;
@@ -142,7 +142,7 @@ function _LISTCLASS() {
 		JToolBarHelper::editList('editMetadataClass');
 		JToolBarHelper::deleteList('','deleteMetadataClass');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );			
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );			
 	}
 	
 	
@@ -186,7 +186,7 @@ function _LISTEDIT() {
 		JToolBarHelper::addNew('newMetadataFreetext');
 		JToolBarHelper::editList('editMetadataFreetext');
 		JToolBarHelper::deleteList('','deleteMetadataFreetext');
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );		
 	}
 	
 function _LISTLISTCONTENT() {
@@ -198,7 +198,7 @@ function _LISTLISTCONTENT() {
 		JToolBarHelper::deleteList('','deleteMetadataListContent');
 		JToolBarHelper::cancel('cancelMDList');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 function _LISTLIST() {
@@ -210,7 +210,7 @@ function _LISTLIST() {
 		JToolBarHelper::deleteList('','deleteMetadataList');
 		JToolBarHelper::editList("listMetadataListContent");
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	function _LISTDATE() {
 		global $mainframe;
@@ -220,7 +220,7 @@ function _LISTLIST() {
 		JToolBarHelper::editList('editMetadataDate');
 		JToolBarHelper::deleteList('','deleteMetadataDate');
 		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 }

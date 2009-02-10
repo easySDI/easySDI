@@ -34,6 +34,7 @@ class ADMIN_product {
 		}
 
 	}
+	
 	function listProduct($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -77,7 +78,6 @@ class ADMIN_product {
 
 	}
 
-
 	function editProductMetadata( $id, $option ) {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -113,8 +113,6 @@ class ADMIN_product {
 			HTML_product::editProduct( $rowProduct,$id, $option );
 		}
 	}
-
-
 
 	function saveProductMetadata($option){
 
@@ -170,6 +168,7 @@ class ADMIN_product {
 		
 
 	}
+	
 	function saveProduct($returnList ,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();
@@ -341,6 +340,7 @@ class ADMIN_product {
 
 
 	}
+	
 	function SaveMetadata($xmlstr){
 		$content_length = strlen($xmlstr);
 

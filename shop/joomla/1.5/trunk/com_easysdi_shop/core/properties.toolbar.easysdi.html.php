@@ -16,6 +16,9 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
+
+
+
 class TOOLBAR_properties{
 	
 	
@@ -34,7 +37,7 @@ class TOOLBAR_properties{
 		JToolBarHelper::deleteList('','deleteProperties');
 		JToolBarHelper::editList( 'listPropertiesValues',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"));		
 		JToolBarHelper::spacer();
-			JToolBarHelper::custom( 'ctrlPanelShop', 'tool.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+			JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 function _EDITPROPERTIESVALUES(){
 		
