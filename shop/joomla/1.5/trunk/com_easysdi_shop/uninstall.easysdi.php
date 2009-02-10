@@ -20,21 +20,36 @@ defined('_JEXEC') or die('Restricted access');
 
 function com_uninstall(){
 	
-global  $mainframe;
-
-$db =& JFactory::getDBO();
-$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop'";
-
-$db->setQuery( $query);
-
+	global  $mainframe;
+	
+	/**
+	 * Check dependencies
+	 */
+	$name = '';
+	$query = "SELECT name FROM #__components where option = 'com_asitvd' AND parent=0";
+	$db->setQuery( $query);
+	$name = $db->loadResult();
+	if ($name) {
+		$mainframe->enqueueMessage("DEPENDENT COMPONENT ASITVD IS INSTALLED. CAN NOT UNINSTALL CATALOG","ERROR");
+		exit;		
+	}
+	
+	/**
+	 * Delete components
+	 */
+	$db =& JFactory::getDBO();
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop'";
+	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		
 	}
-$mainframe->enqueueMessage("Congratulation EasySdi shop is uninstalled.
-Pay attention the database is not deleted and could still be used if you install Easysdi again. 
-","INFO");
-
+	
+		
+	$mainframe->enqueueMessage("Congratulation EasySdi shop is uninstalled.
+	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
+	","INFO");
+	
 
 }
 
