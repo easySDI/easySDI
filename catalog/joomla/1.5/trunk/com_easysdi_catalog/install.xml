@@ -12,8 +12,9 @@
 		Easysdi's catalog component.
 	</description>
 	<installfile>install.easysdi_catalog.php</installfile>
+	<uninstallfile>uninstall.easysdi_catalog.php</uninstallfile>
 	<administration>			
-		</administration>
+	</administration>
 	<files folder="com_easysdi_catalog"> 
 			<filename>easysdi_catalog.php</filename>
 			<filename>license.txt</filename>									
@@ -21,5 +22,6 @@
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_catalog.ini</language>
+		<language tag="en-GB">en-GB.com_easysdi_catalog.ini</language>
 	</languages>
 </install>
