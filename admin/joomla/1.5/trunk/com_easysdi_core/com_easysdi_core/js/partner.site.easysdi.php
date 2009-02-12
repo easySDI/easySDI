@@ -22,9 +22,9 @@ defined('_JEXEC') or die('Restricted access');
 		{
 		
 			var form = document.partnerForm;
-			if (form.task.value == "createBlockUser")
+			if (form.elements['task'].value == "createBlockUser")
 			{
-				if(form.password.value != form.password_chk.value)
+				if(form.elements['password'].value != form.password_chk.value)
 				{
 					alert( "<?php echo JText::_("EASYSDI_CHECK_PW_SUBMIT_FORM");?> ");
 					return;
@@ -33,10 +33,10 @@ defined('_JEXEC') or die('Restricted access');
 			}
 			
 			// do field validation
-			if (form.name.value == '' 
-				|| form.username.value == '' 
-				|| form.email.value == '' 
-				|| (form.password.value == '' && form.id.value =='')
+			if (form.elements['name'].value == '' 
+				|| form.elements['username.value'] == '' 
+				|| form.elements['email'].value == '' 
+				|| (form.elements['password'].value == '' && form.elements['id'].value =='')
 				|| form.elements['address_corporate_name1[0]'].value == ''
 				|| form.elements['address_agent_firstname[0]'].value == ''
 				|| form.elements['address_agent_lastname[0]'].value == ''
