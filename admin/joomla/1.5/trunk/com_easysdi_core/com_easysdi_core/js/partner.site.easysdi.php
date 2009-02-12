@@ -24,17 +24,37 @@ defined('_JEXEC') or die('Restricted access');
 			var form = document.partnerForm;
 			if (form.elements['task'].value == "createBlockUser")
 			{
-				if(form.elements['password'].value != form.password_chk.value)
+				if(form.elements['password'].value != form.elements['password_chk'].value)
 				{
 					alert( "<?php echo JText::_("EASYSDI_CHECK_PW_SUBMIT_FORM");?> ");
 					return;
+				}
+				// do field validation
+				if (form.elements['name'].value == '' 
+					|| form.elements['username'].value == '' 
+					|| form.elements['email'].value == '' 
+					|| (form.elements['password'].value == '' && form.elements['id'].value =='')
+					|| form.elements['address_corporate_name1'].value == ''
+					|| form.elements['address_agent_firstname'].value == ''
+					|| form.elements['address_agent_lastname'].value == ''
+					|| form.elements['title_id'].value == '0'
+				
+					|| form.elements['address_street1'].value == ''
+					|| form.elements['address_locality'].value == ''
+					|| form.elements['address_postalcode'].value == ''
+					
+					)
+				{
+					alert( "<?php echo JText::_("EASYSDI_CHECK_SUBMIT_FORM");?> ");
+				} else {
+					form.submit( );
 				}
 				
 			}
 			
 			// do field validation
 			if (form.elements['name'].value == '' 
-				|| form.elements['username.value'] == '' 
+				|| form.elements['username'].value == '' 
 				|| form.elements['email'].value == '' 
 				|| (form.elements['password'].value == '' && form.elements['id'].value =='')
 				|| form.elements['address_corporate_name1[0]'].value == ''
