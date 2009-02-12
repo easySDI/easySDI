@@ -794,7 +794,7 @@ function com_install(){
 		/**
 		 * Menu creation
 		 */
-		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
+		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;		
 		$db->setQuery( $query);
 		$id = $db->loadResult();	
 		if ($id)
@@ -803,7 +803,14 @@ function com_install(){
 		}
 		else
 		{
-			//Insert the EasySdi Main Menu		
+			//Insert the EasySdi Main Menu
+			$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+			}
+			
 			$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 				values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
 			$db->setQuery( $query);
@@ -830,8 +837,8 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}
 	
-	$mainframe->enqueueMessage("Congratulation core components for EasySdi are installed and ready to be used. 
-								Enjoy EasySdi!","INFO");
+	$mainframe->enqueueMessage("Congratulation core components for EasySdi Core are installed and ready to be used. 
+								Enjoy EasySdi Core!","INFO");
 	
 
 }
