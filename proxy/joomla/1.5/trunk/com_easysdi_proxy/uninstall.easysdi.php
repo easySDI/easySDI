@@ -39,7 +39,7 @@ function com_uninstall(){
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 	","INFO");
 
-
+	return true;
 }
 
 
