@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
+/*foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -335,7 +337,7 @@ if (pressbutton=="addNewServer"){
 	type='hidden' name='task' value=''> <input type='hidden'
 	name='configId' value='<?php echo $configId;?>'> <?php
 	foreach ($xml->config as $config) {
-		if (strcmp($config[id],$configId)==0){
+		if (strcmp($config['id'],$configId)==0){
 			$servletClass=$config->{'servlet-class'};
 			?>
 
@@ -614,7 +616,7 @@ function addNewServer(){
 	$i=0;
 	foreach ($xml->config as $config) {
 
-		if (strcmp($config[id],$configId)==0){
+		if (strcmp($config['id'],$configId)==0){
 			$policyFile = $config->{'authorization'}->{'policy-file'};
 			$i=0;
 			$count=0;
@@ -638,7 +640,7 @@ function addNewServer(){
 	$pageNav = new JPagination($i,$limitstart,$limit);
 	foreach ($xml->config as $config) {
 
-		if (strcmp($config[id],$configId)==0){
+		if (strcmp($config['id'],$configId)==0){
 
 			$servletClass=$config->{'servlet-class'};
 			$policyFile = $config->{'authorization'}->{'policy-file'};
@@ -727,7 +729,7 @@ function addNewServer(){
 		$option = JRequest::getVar("option");
 		
 		foreach ($xml->config as $config) {
-			if (strcmp($config[id],$configId)==0){
+			if (strcmp($config['id'],$configId)==0){
 
 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				$servletClass =  $config->{'servlet-class'};
@@ -1057,7 +1059,8 @@ $remoteServerList = $config->{'remote-server-list'};
 		}
 		
 }
-	function generateWMSHTML($config,$thePolicy){
+
+function generateWMSHTML($config,$thePolicy){
 
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
@@ -1405,7 +1408,7 @@ $remoteServerList = $config->{'remote-server-list'};
 		<tr class="row<?php echo $i%2; ?>">
 			<td><?php echo $i+1;?></td>
 			<td><input
-			<?php if (strlen($id)>0){if (strcmp($id,$config[id])==0){echo 'checked';}} ?>
+			<?php if (strlen($id)>0){if (strcmp($id,$config['id'])==0){echo 'checked';}} ?>
 				type="radio" name="configId" value="<?php echo $config['id'] ?>"></td>
 			<td><b><?php echo $config['id']?></b> <?php echo "{", $config->{'servlet-class'},"}";  ?></td>
 		</tr>
