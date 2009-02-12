@@ -112,11 +112,11 @@ defined('_JEXEC') or die('Restricted access');
 			if (same == true) same = (form.elements['address_email['+ source + ']'].value == form.elements['address_email['+ target +']'].value);
 			if(target == 1)
 			{
-				form.sameAddress1.checked = same;
+				form.elements['sameAddress1'].checked = same;
 			}
 			if(target == 2)
 			{
-				form.sameAddress2.checked = same;
+				form.elements['sameAddress2'].checked = same;
 			}
 			/*form.elements['sameAddress[]'][target].checked = same;*/
 			changeAddress(same, target);
