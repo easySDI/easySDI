@@ -32,13 +32,21 @@ function com_install(){
 	/**
 	 * Check the CORE installation
 	 */
-	$name = '';
-	$query = "SELECT name FROM #__components where option = 'com_easysdi_core' AND parent=0";
+	$count = 0;
+	$query = "SELECT COUNT(*) FROM `#__components` WHERE `option` ='com_easysdi_core'";
 	$db->setQuery( $query);
-	$name = $db->loadResult();
-	if (!$name) {
+	$count = $db->loadResult();
+	if ($count == 0) {
 		$mainframe->enqueueMessage("EASYSDI CORE IS NOT INSTALLED","ERROR");
-		exit;		
+		/**
+		 * Delete components
+		 */
+		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		return false;		
 	}
 	
 	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
@@ -50,10 +58,11 @@ function com_install(){
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
 	}
 	
 	$version = '0';
-	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_catalog'";
+	$query = "SELECT version FROM `#__easysdi_version` where `component` = 'com_easysdi_catalog'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
 	if (!$version)
@@ -64,6 +73,7 @@ function com_install(){
 		if (!$db->query()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
 		}
 		/**
 		 * Insert value for CATALOG_URL in configuration table
@@ -74,11 +84,12 @@ function com_install(){
 		if (!$db->query())
 		{	
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
 		}
 	}
 	
 	
-	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
+	$mainframe->enqueueMessage("Congratulation catalog for EasySdi Catalog is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");
 	return true;
 }
 
