@@ -14,7 +14,6 @@
 	<installfile>install.easysdi_proxy.php</installfile>
 	<uninstallfile>uninstall.easysdi.php</uninstallfile>
 	<administration>
-		
 		<files>
 			<filename>admin.easysdi_proxy.php</filename>
 			<filename>license.txt</filename>
