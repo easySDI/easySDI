@@ -20,10 +20,10 @@ defined('_JEXEC') or die('Restricted access');
 			
 			// do field validation
 			if (   form.elements['title_id[0]'].value == '0' 
-				|| form.name.value == '' 
-				|| form.username.value == '' 
-				|| form.email.value == '' 
-				|| (form.password.value == '' && form.id.value =='')
+				|| form.elements['name'].value == '' 
+				|| form.elements['username'].value == '' 
+				|| form.elements['email'].value == '' 
+				|| (form.elements['password'].value == '' && form.elements['id'].value =='')
 				|| form.elements['address_corporate_name1[0]'].value == ''
 				|| form.elements['address_agent_firstname[0]'].value == ''
 				|| form.elements['address_agent_lastname[0]'].value == ''
