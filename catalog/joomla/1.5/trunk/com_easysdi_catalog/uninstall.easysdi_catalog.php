@@ -26,14 +26,15 @@ function com_uninstall(){
 	/**
 	 * Check dependencies
 	 */
-	$name = '';
-	$query = "SELECT name FROM #__components where option = 'com_easysdi_shop' AND parent=0";
+	$count = 0;
+	$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_shop' ";
 	$db->setQuery( $query);
-	$name = $db->loadResult();
-	if ($name) {
+	$count = $db->loadResult();
+	if ($count > 0) {
 		$mainframe->enqueueMessage("DEPENDENT COMPONENT SHOP IS INSTALLED. CAN NOT UNINSTALL CATALOG","ERROR");
-		exit;		
+		return false;		
 	}
+
 	
 	/**
 	 * Delete components
@@ -50,7 +51,7 @@ function com_uninstall(){
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 	","INFO");
 	
-
+	return true;
 }
 
 
