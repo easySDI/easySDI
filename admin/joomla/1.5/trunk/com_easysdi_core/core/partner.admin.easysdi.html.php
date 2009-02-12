@@ -599,9 +599,9 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		<input type="hidden" name="type" value="<?php echo JRequest::getVar("type",""); ?>" />
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
 		
-		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowSubscription->address_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowDelivery->address_id; ?>" />
+		<input type="hidden" name="address_id[0]" value="<?php echo $rowContact->address_id; ?>" />
+		<input type="hidden" name="address_id[1]" value="<?php echo $rowSubscription->address_id; ?>" />
+		<input type="hidden" name="address_id[2]" value="<?php echo $rowDelivery->address_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 	</form>
@@ -972,7 +972,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />
 		<input type="hidden" name="type" value="<?php echo JRequest::getVar("type",""); ?>" />
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
-		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
+		<input type="hidden" name="address_id[0]" value="<?php echo $rowContact->address_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editAffiliatePartner" />
 	</form>
