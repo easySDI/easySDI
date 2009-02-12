@@ -26,6 +26,14 @@ function com_install(){
 	
 	if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
 		$mainframe->enqueueMessage("Core component does not exists. Easysdi_proxy could not be installed. Please install core component first.","ERROR");
+		/**
+		 * Delete components
+		 */
+		$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		return false;
 	}
 	
@@ -119,7 +127,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}*/
 		
-	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
+	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi Proxy is installed and ready to be used. Enjoy EasySdi Proxy!","INFO");
 	return true;
 }
 
