@@ -20,20 +20,24 @@ defined('_JEXEC') or die('Restricted access');
 
 function com_uninstall(){
 	
-global  $mainframe;
-
-$db =& JFactory::getDBO();
-$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy'";
-
-$db->setQuery( $query);
-
+	global  $mainframe;
+	
+	$db =& JFactory::getDBO();
+	
+	/**
+	 * Delete components
+	 */
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy'";
+	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		
 	}
-$mainframe->enqueueMessage("Congratulation EasySdi partner manager is uninstalled.
-Pay attention the database is not deleted and could still be used if you install Easysdi again. 
-","INFO");
+	
+	
+	
+	$mainframe->enqueueMessage("Congratulation EasySdi partner manager is uninstalled.
+	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
+	","INFO");
 
 
 }
