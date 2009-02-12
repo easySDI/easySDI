@@ -127,6 +127,12 @@ class HTML_partner
 		$database->setQuery( "SELECT title_name AS text FROM #__easysdi_community_title WHERE title_id = ".$rowContact->title_id ." ORDER BY title_name" );
 		$title = JText::_($database->loadResult());
 		
+								
+		$database->setQuery( "SELECT title_name AS text FROM #__easysdi_community_title WHERE title_id = ".$rowSubscription->title_id ." ORDER BY title_name" );
+		$title_s = JText::_($database->loadResult());
+		
+		$database->setQuery( "SELECT title_name AS text FROM #__easysdi_community_title WHERE title_id = ".$rowDelivery->title_id ." ORDER BY title_name" );
+		$title_d = JText::_($database->loadResult());
 		
 		$database->setQuery( "SELECT  country_name AS text FROM #__easysdi_community_country where country_code = '".$rowContact->country_code."'" );		 
 		$countryContact = JText::_($database->loadResult());
@@ -282,7 +288,7 @@ class HTML_partner
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-								<td><?php echo JText::_($title); ?></td>
+								<td><?php echo JText::_($title_s); ?></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -352,7 +358,7 @@ class HTML_partner
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_TITLE"); ?> : </td>
-								<td><?php echo JText::_($title);?></td>
+								<td><?php echo JText::_($title_d);?></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_CONTACT_FIRSTNAME"); ?> : </td>
@@ -409,6 +415,9 @@ class HTML_partner
 			<br>
 			<div class="easysdi_site_aff_list">
 			<br>
+			<table width="100%">
+			<tr>
+				<td>
 				<fieldset>
 					<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>	
 <?php	
@@ -419,6 +428,9 @@ class HTML_partner
 					HTML_partner::print_child($src_list );				
 ?>
 				</fieldset>		
+				</td>
+			</tr>
+		</table>	
 			</div>
 			<br>
 <?php
@@ -573,6 +585,9 @@ class HTML_partner
 		<input type="hidden" name="type_id[]" value="1">
 		<input type="hidden" name="sameAddress" value="">
 	
+	<table width="100%">
+			<tr>
+				<td>
 		<fieldset>
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
 		
@@ -632,13 +647,19 @@ class HTML_partner
 			</tr>
 		</table>
 		</fieldset>
+		</td>
+			</tr>
+		</table>
 		
 <?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_BILLING"),"partnerPane");
 ?>
 <br>
-		<input type="hidden" name="type_id[]" value="2">						
+		<input type="hidden" name="type_id[]" value="2">			
+	<table width="100%">
+	<tr>
+		<td>		
 		<fieldset>
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
@@ -701,6 +722,9 @@ class HTML_partner
 			</tr>
 		</table>
 		</fieldset>
+		</td>
+	</tr>
+</table>
 		
 <?php
 		echo $tabs->endPanel();
@@ -708,6 +732,9 @@ class HTML_partner
 ?>
 <br>
 		<input type="hidden" name="type_id[]" value="3">
+		<table width="100%">
+			<tr>
+				<td>
 		<?php 
 		//Include TOP extension		
 		SITE_partner::includePartnerExtension(3,'TOP','editPartner',$rowPartner->partner_id);						
@@ -773,6 +800,9 @@ class HTML_partner
 			</tr>
 		</table>
 		</fieldset>		
+		</td>
+	</tr>
+</table>
 <?php
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();
