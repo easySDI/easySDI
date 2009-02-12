@@ -80,7 +80,7 @@ function com_install(){
 		/**
 		 * Insert value for PROXY_CONFIG in configuration table
 		 */
-		$query = "insert  into #__easysdi_config (thekey, value) values('PROXY_CONFIG','C:\www\tomcat-5-5\webapps\proxy\conf\config.xml')";
+		$query = "insert  into #__easysdi_config (thekey, value) values('PROXY_CONFIG','C:\\www\\tomcat-5-5\\webapps\\proxy\\conf\\config.xml')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -111,13 +111,13 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}
-		
+		/*
 		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values($id,'Proxy Config','','option=com_easysdi_proxy&task=componentConfig','Proxy Config','com_easysdi_proxy','js/ThemeOffice/component.png','')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
+		}*/
 		
 	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi is installed and ready to be used. Enjoy EasySdi!","INFO");
 	return true;
