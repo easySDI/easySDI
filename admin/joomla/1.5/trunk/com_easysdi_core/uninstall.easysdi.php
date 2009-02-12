@@ -26,21 +26,22 @@ function com_uninstall(){
 	/**
 	 * Check dependencies
 	 */
-	$name = '';
-	$query = "SELECT name FROM #__components where option = 'com_easysdi_catalog' AND parent=0";
+	$count = 0;
+	$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_catalog' ";
 	$db->setQuery( $query);
-	$name = $db->loadResult();
-	if ($name) {
+	$count = $db->loadResult();
+	if ($count > 0) {
 		$mainframe->enqueueMessage("DEPENDENT COMPONENT CATALOG IS INSTALLED. CAN NOT UNINSTALL CORE","ERROR");
-		exit;		
+		return false;		
 	}
-	$name = '';
-	$query = "SELECT name FROM #__components where option = 'com_easysdi_proxy' AND parent=0";
+	
+	$count = 0;
+	$query = "SELECT COUNT(*) FROM `#__components` where `option` =  'com_easysdi_proxy' ";
 	$db->setQuery( $query);
-	$name = $db->loadResult();
-	if ($name) {
+	$count = $db->loadResult();
+	if ($count > 0) {
 		$mainframe->enqueueMessage("DEPENDENT COMPONENT PROXY IS INSTALLED. CAN NOT UNINSTALL CORE","ERROR");
-		exit;		
+		return false;		
 	}
 	
 	/**
@@ -63,6 +64,8 @@ function com_uninstall(){
 	$mainframe->enqueueMessage("Congratulation EasySdi core component is uninstalled.
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 	","INFO");
+	
+	return true;
 
 }
 
