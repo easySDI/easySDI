@@ -15,6 +15,9 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
+/*foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';*/
+
 defined('_JEXEC') or die('Restricted access');
 
 class SITE_partner {
@@ -601,7 +604,7 @@ class SITE_partner {
 		$counter=0;
 		foreach( $_POST['address_id'] as $address_id )
 		{
-			$rowAddress = new address( $database );
+			/*$rowAddress = new address( $database );
 			$rowAddress->address_id=$address_id;
 			$rowAddress->partner_id=$rowPartner->partner_id;
 			$rowAddress->type_id=$_POST['type_id'][$counter];
@@ -627,7 +630,40 @@ class SITE_partner {
 			$rowAddress->address_phone=$_POST['address_phone'][$index];
 			$rowAddress->address_fax=$_POST['address_fax'][$index];
 			$rowAddress->address_email=$_POST['address_email'][$index];
-
+*/
+			$rowAddress = new address( $database );
+			$rowAddress->address_id=$address_id;
+			$rowAddress->partner_id=$rowPartner->partner_id;
+			$rowAddress->type_id=$_POST['type_id'][$counter];
+			
+			if( $counter == 1 && isset($_POST['sameAddress1'] )  && $_POST['sameAddress1'] == 'on')
+			{
+				$index = 0;
+			}
+			elseif ($counter == 2 && isset($_POST['sameAddress2'] ) && $_POST['sameAddress2'] == 'on')
+			{
+				$index = 0;
+			}
+			else
+			{
+				$index = $counter;
+			}			
+			
+			$rowAddress->title_id=$_POST['title_id'][$index];
+			$rowAddress->country_code=$_POST['country_code'][$index];
+			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
+			$rowAddress->address_corporate_name2=$_POST['address_corporate_name2'][$index];
+			$rowAddress->address_agent_firstname=$_POST['address_agent_firstname'][$index];
+			$rowAddress->address_agent_lastname=$_POST['address_agent_lastname'][$index];
+			$rowAddress->address_agent_function=$_POST['address_agent_function'][$index];
+			$rowAddress->address_street1=$_POST['address_street1'][$index];
+			$rowAddress->address_street2=$_POST['address_street2'][$index];
+			$rowAddress->address_postalcode=$_POST['address_postalcode'][$index];
+			$rowAddress->address_locality=$_POST['address_locality'][$index];
+			$rowAddress->address_phone=$_POST['address_phone'][$index];
+			$rowAddress->address_fax=$_POST['address_fax'][$index];
+			$rowAddress->address_email=$_POST['address_email'][$index];
+	
 			if (!$rowAddress->store()) {
 				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
