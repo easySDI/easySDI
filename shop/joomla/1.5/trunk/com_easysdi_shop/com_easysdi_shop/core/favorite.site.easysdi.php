@@ -23,7 +23,20 @@ function manageFavoriteProduct ( $orderable = 1)
 {
 	$user = JFactory::getUser();		
 	
-	if (!$user->guest){
+	if ($user->guest){
+		?>
+			<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
+		<?php
+		return;
+	}
+	if(!usermanager::isEasySDIUser($user))
+	{
+		?>
+			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+		<?php
+		return;
+	}
+	
 	
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -195,13 +208,7 @@ function manageFavoriteProduct ( $orderable = 1)
 		</div>	
 		<?php
 	
-	}
-	else
-	{
-		echo "<div class='alert'>";			
-		echo JText::_("EASYSDI_ACTION_NOT_ALLOWED");
-		echo "</div>";
-	}
+	
 }
 	
 function metadataNotification($is_notify = 0){
@@ -362,7 +369,19 @@ function addFavoriteProduct($cid){
 function searchProducts($orderable = 1){
 	$user = JFactory::getUser();		
 	
-	if (!$user->guest){
+if ($user->guest){
+		?>
+			<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
+		<?php
+		return;
+	}
+	if(!usermanager::isEasySDIUser($user))
+	{
+		?>
+			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
+		<?php
+		return;
+	}
 
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -521,12 +540,7 @@ function searchProducts($orderable = 1){
 </div>	
 	<?php
 
-}else{
-	
-	echo "<div class='alert'>";			
-				echo JText::_("EASYSDI_ACTION_NOT_ALLOWED");
-			echo "</div>";
-}
+
 }
 
 /*
