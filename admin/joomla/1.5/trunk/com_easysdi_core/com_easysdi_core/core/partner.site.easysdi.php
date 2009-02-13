@@ -40,12 +40,16 @@ class SITE_partner {
 
 
 		$user = JFactory::getUser();
-		if ($user->guest){
+		if(!usermanager::isUserAllowed($user,"ACCOUNT"))
+		{
+			return;
+		}
+		/*if ($user->guest){
 				
 			?>
 <div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
 			<?php
-		}else{
+		}else{*/
 			global  $mainframe;
 			$option=JRequest::getVar("option");
 
@@ -71,8 +75,14 @@ class SITE_partner {
 			$rowPartner->load( $user->id );
 
 
+			//
+			/*if (!usermanager::hasRight($rootPartner->partner_id,"ACCOUNT")){		
+				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_ACCOUNT"),"INFO");
+				return;
+			}*/
+			
 			//Has the user the right to manage the affiliate
-			$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
+			/*$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and partner_id = $rowPartner->partner_id";
 
 			$db->setQuery($query );
 			$hasTheRightToManageAffiliates = $db->loadResult();
@@ -81,14 +91,14 @@ class SITE_partner {
 				echo 			$db->getErrorMsg();
 				echo "</div>";
 				$hasTheRightToManageAffiliates=0;
-			}
+			}*/
 
 			$type = JRequest::getVar("type",$rowPartner->partner_id);
 			if (!$type){
 				$type=$rowPartner->partner_id;
 			}
 
-			if ($hasTheRightToManageAffiliates){
+			//if ($hasTheRightToManageAffiliates){
 				$query = "SELECT COUNT(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type";
 					
 
@@ -126,33 +136,34 @@ class SITE_partner {
 				$types = array_merge( $types, $db->loadObjectList() );
 
 				HTML_partner::listPartner( $rows, $pageNav, $search, $option, $rowPartner->partner_id,$types,$type);
-			}else{
+			/*}else{
 				echo "<div class='alert'>";
 				echo JText::_("EASYSDI_NOT ALLOWED TO EDIT AFFILIATES");
 				echo "</div>";
-			}
-		}
+			}*/
+		//}
 	}
 
 
 	function editPartner( ) {
 
+		global  $mainframe;
 		$option = JRequest::getVar("option");
 		$user = JFactory::getUser();
 
-		if ($user->guest){
-			?>
-				<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
-			<?php
+		if(!usermanager::isUserAllowed($user,"ACCOUNT"))
+		{
+			return;
+		}
+		/*if ($user->guest){
+			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");			
 			return;
 		}
 		if(!usermanager::isEasySDIUser($user))
 		{
-			?>
-				<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
-			<?php
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
 			return;
-		}
+		}*/
 		
 		$database =& JFactory::getDBO();
 		$rowPartner = new partnerByUserId( $database );
