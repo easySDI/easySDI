@@ -364,17 +364,24 @@ function getUniqueId(){
 }
 
 function exportPDF( $myHtml) {
+	
+	
 		$database =& JFactory::getDBO();
 
 		
 		$document  = new DomDocument();
+				
 		$document ->load(JPATH_COMPONENT_SITE.'/xsl/xhtml-to-xslfo.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
-			
-		$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
-	  
 		
+		//Problem with loadHTML() and encoding : work around method
+		$pageDom = new DomDocument();   
+   		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
+    	$pageDom->loadHTML($searchPage);
+    	$result = $processor->transformToXml($pageDom);    	
+		//$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
+	  	
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
