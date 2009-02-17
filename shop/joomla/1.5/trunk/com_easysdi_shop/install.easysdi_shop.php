@@ -1083,7 +1083,7 @@ function com_install(){
 				//The table does not exists then create it
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 			}
-		$version = "0.99";
+		$version = "0.991";
 	
 		$query="ALTER TABLE #__easysdi_order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
 		$db->setQuery( $query);
@@ -1126,6 +1126,31 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
+	}
+	if ($version == "0.991")
+	{
+		$version = "0.992";
+		$query="UPDATE #__easysdi_version set version = '0.992' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		$query="ALTER TABLE #__easysdi_order_product add column `metadata_partner_id` bigint(20) default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query =  "INSERT INTO `#__easysdi_community_role` 
+				  (`publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`)
+				   VALUES 
+				  ( 0, 1, 'FAVORITE', 'EASYSDI_FAVORITE_RIGHT', 'Gestion des favoris', NULL),
+				  (0, 1, 'PRODUCT', 'EASYSDI_PRODUCT_RIGHT', 'Gestion des produits', NULL);";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+		}
+		
 	}
 
 	/**
