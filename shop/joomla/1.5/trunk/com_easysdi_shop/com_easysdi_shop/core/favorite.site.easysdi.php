@@ -23,17 +23,8 @@ function manageFavoriteProduct ( $orderable = 1)
 {
 	$user = JFactory::getUser();		
 	
-	if ($user->guest){
-		?>
-			<div class="alert"><?php echo JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED");  ?></div>
-		<?php
-		return;
-	}
-	if(!usermanager::isEasySDIUser($user))
+	if(!userManager::isUserAllowed($user,"FAVORITE"))
 	{
-		?>
-			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER");  ?></div>
-		<?php
 		return;
 	}
 	
@@ -70,8 +61,44 @@ function manageFavoriteProduct ( $orderable = 1)
 		if ($freetextcriteria){
 			$filter = $filter." AND (p.DATA_TITLE like '%".$freetextcriteria."%' ";
 			$filter = $filter." OR p.METADATA_ID = '$freetextcriteria')";
-		}			                                           
-		$filter .= " AND (p.EXTERNAL=1 OR (p.INTERNAL =1 AND p.PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
+		}			      
+
+		//Display products according to users's rights
+		if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+		{
+			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+			{
+				$filter .= " AND (p.EXTERNAL=1 
+							 OR 
+							 	(p.INTERNAL =1 AND 
+							 	(p.partner_id =  $partner->partner_id 
+							 		OR
+							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+							 	 	))) ";
+			}
+			else
+			{
+				$filter .= " AND (EXTERNAL=1) ";
+			}
+		}
+		else
+		{
+			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+			{
+				$filter .= " AND (p.INTERNAL =1 AND 
+							 	(p.partner_id =  $partner->partner_id 
+							 		OR
+							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+							 	 	))) ";
+			}
+			else
+			{
+				//no command right
+				$filter .= " AND (EXTERNAL = 10) ";
+			}
+		}
+		
+		//$filter .= " AND (p.EXTERNAL=1 OR (p.INTERNAL =1 AND p.PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
 				
 		//Load products count
 		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
@@ -104,6 +131,7 @@ function manageFavoriteProduct ( $orderable = 1)
 		$query  = "SELECT * FROM #__easysdi_product p LEFT OUTER JOIN (SELECT partner_id, product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) f  ON p.id = f.product_id  where  p.published=1 and  p.orderable = ".$orderable;
 		$query  = $query .$filter ;
 		$query = $query .$simpleSearchFilter;		
+		
 		$db->setQuery( $query,$limitstart,$limit);
 		$rows = $db->loadObjectList();
 		
@@ -216,40 +244,40 @@ function metadataNotification($is_notify = 0){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 	
-		$user = JFactory::getUser();		
+		$user = JFactory::getUser();	
+		if(!userManager::isUserAllowed($user,"FAVORITE"))
+		{
+			return;
+		}	
+		
 		$partner = new partnerByUserId($database);
-		if (!$user->guest){
-			$partner->load($user->id);
-		
-			$productId = JRequest::getVar("productId",0);
-			if ($productId == 0){
-				
-				echo "<div class='alert'>";			
-				echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
-				echo "</div>";	
-				return;
-			}
-			$query = "SELECT COUNT(*) FROM  #__easysdi_user_product_favorite WHERE product_id = $productId AND partner_id  = $partner->partner_id";
-			$database->setQuery( $query);
-			$total = $database->loadResult();
-			if($total == 0)
-			{
-				SITE_favorite::favoriteProduct(1);
-			}
-	
-			$query = "UPDATE  #__easysdi_user_product_favorite set  notify_metadata_modification = $is_notify WHERE product_id = $productId AND partner_id  = $partner->partner_id";
-			 
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				echo "<div class='alert'>";			
-				echo JText::_($database->getErrorMsg());
-				echo "</div>";	
-				
-				break;									
-			}
-		
+		$partner->load($user->id);
+		$productId = JRequest::getVar("productId",0);
+		if ($productId == 0)
+		{
+			echo "<div class='alert'>";			
+			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
+			echo "</div>";	
+			return;
 		}
-	
+		$query = "SELECT COUNT(*) FROM  #__easysdi_user_product_favorite WHERE product_id = $productId AND partner_id  = $partner->partner_id";
+		$database->setQuery( $query);
+		$total = $database->loadResult();
+		if($total == 0)
+		{
+			SITE_favorite::favoriteProduct(1);
+		}
+
+		$query = "UPDATE  #__easysdi_user_product_favorite set  notify_metadata_modification = $is_notify WHERE product_id = $productId AND partner_id  = $partner->partner_id";
+		 
+		$database->setQuery( $query );
+		if (!$database->query()) {
+			echo "<div class='alert'>";			
+			echo JText::_($database->getErrorMsg());
+			echo "</div>";	
+			
+			break;									
+		}
 }
 
 function favoriteProduct($is_favorite = 0){
@@ -257,39 +285,39 @@ function favoriteProduct($is_favorite = 0){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 	
-		$user = JFactory::getUser();		
+		$user = JFactory::getUser();	
+	
+		if(!userManager::isUserAllowed($user,"FAVORITE"))
+		{
+			return;
+		}
 		$partner = new partnerByUserId($database);
-		if (!$user->guest){
-			$partner->load($user->id);
-		
-			$productId = JRequest::getVar("productId",0);
-			if ($productId == 0){
-				
-				echo "<div class='alert'>";			
-				echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
-				echo "</div>";	
-				return;
-			}
-			if ($is_favorite == 0)
-			{
-				$query = "DELETE FROM  #__easysdi_user_product_favorite WHERE product_id = $productId AND partner_id  = $partner->partner_id";
-			}
-			else
-			{
-				$query = "INSERT INTO  #__easysdi_user_product_favorite (product_id,partner_id) VALUES ($productId,$partner->partner_id)";
-			}
-				
+		$partner->load($user->id);
+	
+		$productId = JRequest::getVar("productId",0);
+		if ($productId == 0){
 			
+			echo "<div class='alert'>";			
+			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
+			echo "</div>";	
+			return;
+		}
+		if ($is_favorite == 0)
+		{
+			$query = "DELETE FROM  #__easysdi_user_product_favorite WHERE product_id = $productId AND partner_id  = $partner->partner_id";
+		}
+		else
+		{
+			$query = "INSERT INTO  #__easysdi_user_product_favorite (product_id,partner_id) VALUES ($productId,$partner->partner_id)";
+		}
 			 
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				echo "<div class='alert'>";			
-				echo JText::_($database->getErrorMsg());
-				echo "</div>";	
-				
-				break;									
-			}
-		
+		$database->setQuery( $query );
+		if (!$database->query()) {
+			echo "<div class='alert'>";			
+			echo JText::_($database->getErrorMsg());
+			echo "</div>";	
+			
+			break;									
 		}
 	
 }

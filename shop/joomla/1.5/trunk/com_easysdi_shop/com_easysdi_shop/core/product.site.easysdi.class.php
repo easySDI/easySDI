@@ -33,6 +33,7 @@ class product extends JTable
 	var $external=0;
 	var $metadata_standard_id=null;
 	var $is_free=0;
+	var $metadata_partner_id=0;
 	// Class constructor
 	function __construct( &$db )
 	{

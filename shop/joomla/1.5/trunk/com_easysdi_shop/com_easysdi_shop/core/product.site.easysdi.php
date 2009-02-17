@@ -24,6 +24,12 @@ class SITE_product {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"METADATA"))
+		{
+			return;
+		}
 		 
 		$metadata_standard_id = JRequest::getVar("standard_id");
 		$metadata_id = JRequest::getVar("metadata_id");
@@ -123,7 +129,7 @@ class SITE_product {
 		
 		
 		//Send a Mail to the users that have requested to be notify that the metadata has just been changed
-				$product_id = JRequest::getVar("product_id",0);
+		$product_id = JRequest::getVar("product_id",0);
 		$query = "SELECT email,data_title FROM #__easysdi_user_product_favorite f, #__easysdi_community_partner p,#__users u,#__easysdi_product pr  where f.partner_id = p.partner_id  AND p.user_id = u.id and pr.id = f.product_id AND f.product_id = $product_id AND notify_metadata_modification = 1";
 		$database->setQuery( $query );
 		$rows = $database->loadObjectList();
@@ -170,6 +176,7 @@ class SITE_product {
 		
 	
 	function SaveMetadata($xmlstr){
+				
 		$content_length = strlen($xmlstr);
 
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -198,7 +205,13 @@ class SITE_product {
 
 	
 	function saveProduct($option){
-						global  $mainframe;
+		global  $mainframe;
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
 		$database=& JFactory::getDBO(); 
 		
 		$rowProduct =&	 new Product($database);
@@ -299,8 +312,15 @@ class SITE_product {
 		
 	}
 	
-function editProduct( $isNew = false) {
+	function editProduct( $isNew = false) {
 		global  $mainframe;
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
+		
 		if (!$isNew){
 		$id = JRequest::getVar('id');
 		}else {
@@ -308,33 +328,49 @@ function editProduct( $isNew = false) {
 		}
 		
 		$option = JRequest::getVar('option');
-		  
+
 		$database =& JFactory::getDBO(); 
 		$rowProduct = new product( $database );
 		$rowProduct->load( $id );					
-	
+		
 		if ($id ==0){
 			$rowProduct->creation_date =date('d.m.Y H:i:s');
 			$rowProduct->metadata_id = helper_easysdi::getUniqueId();
-			 			
+			
+			$partner = new partnerByUserId($database);
+			$partner->load($user->id);
+			$rowProduct->partner_id = $partner->partner_id;			
+			if(userManager::hasRight($partner->partner_id,"METADATA"))
+			{
+				$rowProduct->metadata_partner_id = $partner->partner_id;
+			}
 		}
+		
 		$rowProduct->update_date = date('d.m.Y H:i:s'); 
+		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-		HTML_product::editProduct( $rowProduct,$id, $option );
+			HTML_product::editProduct( $rowProduct,$id, $option );
 		}
 	}
 	
 	
-function editMetadata() {
+	function editMetadata() {
 		global  $mainframe;
 		if (!$isNew){
 		$id = JRequest::getVar('id');
 		}else {
 			$id=0;
+		}
+		
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!usermanager::isUserAllowed($user,"METADATA"))
+		{
+			return;
 		}
 		
 		$option = JRequest::getVar('option');
@@ -360,8 +396,6 @@ function editMetadata() {
 	
 	
 	function listProduct(){
-
-		
 		global  $mainframe;
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
@@ -369,6 +403,12 @@ function editMetadata() {
 		
 		$database =& JFactory::getDBO();		 	
 		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
+		
 		$rootPartner = new partnerByUserId($database);
 		$rootPartner->load($user->id);		
 		
@@ -381,19 +421,20 @@ function editMetadata() {
 		}
 		$partner = new partnerByUserId($database);
 		$partner->load($user->id);
-		
 
-			
+		/*$queryCount = "select count(*) from #__easysdi_product where 
+											(partner_id in 
+												(SELECT partner_id FROM #__easysdi_community_partner 
+												where root_id = 
+												( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) 
+												OR  partner_id = 
+												( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  
+												OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)
+											) ";*/
 		
-		
-		$queryCount = "select count(*) from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
-		
-		  
-		
+		//List only the products belonging to the current user
+		$queryCount = " SELECT COUNT(*) FROM #__easysdi_product where partner_id = $partner->partner_id " ;
 		$queryCount .= $filter;
-		
-		
-		
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
 		if ($database->getErrorNum()) {
@@ -403,11 +444,23 @@ function editMetadata() {
 		}	
 		
 		$pageNav = new JPagination($total,$limitstart,$limit);
-		$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		/*$query = "select * from #__easysdi_product
+						   where (partner_id in 
+						   		(SELECT partner_id FROM #__easysdi_community_partner 
+						   							where  
+						   							root_id = ( SELECT root_id FROM #__easysdi_community_partner 
+						   														where partner_id=$partner->partner_id) 
+						   							OR  
+						   							partner_id = ( SELECT root_id FROM #__easysdi_community_partner 
+						   															where partner_id=$partner->partner_id)  
+						   							OR 
+						   							root_id = $partner->partner_id 
+						   							OR  
+						   							partner_id = $partner->partner_id
+						   							)) ";*/
+		//List only the products belonging to the current user
+		$query = " SELECT * FROM #__easysdi_product where partner_id = $partner->partner_id " ;
 		$query .= $filter;
-	
-
-
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
@@ -415,20 +468,19 @@ function editMetadata() {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
+		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner);
 		
-		if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){
+/*		if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){
 		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner);
 		}else{
 			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_PRODUCT"),"INFO");
 		}
-		
+*/		
 		
 }
 	
 	
 	function listProductMetadata(){
-
-		
 		global  $mainframe;
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
@@ -436,6 +488,13 @@ function editMetadata() {
 		
 		$database =& JFactory::getDBO();		 	
 		$user = JFactory::getUser();
+		
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"METADATA"))
+		{
+			return;
+		}
+		
 		$rootPartner = new partnerByUserId($database);
 		$rootPartner->load($user->id);		
 		
@@ -448,18 +507,9 @@ function editMetadata() {
 		}
 		$partner = new partnerByUserId($database);
 		$partner->load($user->id);
-		
 
-			
-		
-		
 		$queryCount = "select count(*) from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
-		
-		  
-		
 		$queryCount .= $filter;
-		
-		
 		
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
@@ -472,8 +522,6 @@ function editMetadata() {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
 		$query .= $filter;
-	
-
 
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
@@ -482,12 +530,13 @@ function editMetadata() {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
+		HTML_product::listProductMetadata($pageNav,$rows,$option,$rootPartner);	
 		
-	if (helper_easysdi::hasRight($rootPartner->partner_id,"METADATA")){
+	/*if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){
 		HTML_product::listProductMetadata($pageNav,$rows,$option,$rootPartner);		
 	}else{
 		$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_METADATA"),"INFO");
-	}
+	}*/
 		
 		
 	

@@ -82,7 +82,8 @@ function deleteMetadataListContent($cid,$option){
 			
 			
 		}
-	function deleteMDTabs($cid,$option){
+	
+function deleteMDTabs($cid,$option){
 		
 		global $mainframe;
 		$database =& JFactory::getDBO();
@@ -170,30 +171,6 @@ function deleteMetadataListContent($cid,$option){
 
 		HTML_metadata::listMetadataTabs($use_pagination,$rows,$pageNav,$option);		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	function deleteMDStandardClasses($cid,$option){
@@ -300,21 +277,6 @@ function deleteMetadataListContent($cid,$option){
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	function saveMDStandard($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
@@ -376,14 +338,6 @@ function deleteMetadataListContent($cid,$option){
 		HTML_metadata::listStandard($use_pagination,$rows,$pageNav,$option);
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

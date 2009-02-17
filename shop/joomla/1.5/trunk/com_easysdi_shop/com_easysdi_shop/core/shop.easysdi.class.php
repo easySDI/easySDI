@@ -63,6 +63,13 @@ class HTML_shop {
 	function deleteProduct(){
 		global  $mainframe;
 		$id = JRequest::getVar('prodId');
+		
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
 
 		$productList = $mainframe->getUserState('productList');
 		if (is_array($productList)){
@@ -75,7 +82,6 @@ class HTML_shop {
 			}
 		 $mainframe->setUserState('productList',$productList);
 		}
-
 	}
 
 
@@ -1606,7 +1612,50 @@ if (count($rows)>0){
 			$partner->partner_id = 0;
 		}
 
-		$filter .= " AND (EXTERNAL=1 OR (INTERNAL =1 AND PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
+		if($partner->partner_id == 0)
+		{
+			//No user logged, display only external products   
+			$filter .= " AND (EXTERNAL=1) ";
+		}
+		else
+		{
+			//User logged, display products according to users's rights
+			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.EXTERNAL=1 
+								 OR 
+							 	(p.INTERNAL =1 AND 
+							 	(p.partner_id =  $partner->partner_id 
+							 		OR
+							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+							 	 	))) ";
+				}
+				else
+				{
+					$filter .= " AND (EXTERNAL=1) ";
+				}
+			}
+			else
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.INTERNAL =1 AND 
+							 	(p.partner_id =  $partner->partner_id 
+							 		OR
+							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+							 	 	))) ";
+				}
+				else
+				{
+					//no command right
+					$filter .= " AND (EXTERNAL = 10) ";
+				}
+			}
+		}
+		
+		//$filter .= " AND (EXTERNAL=1 OR (INTERNAL =1 AND PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
 
 		if ($simpleSearchCriteria == "favoriteProduct"){
 

@@ -23,21 +23,55 @@ class HTML_product{
 		
 		global  $mainframe;
 		
+		 
 		$database =& JFactory::getDBO(); 
+		
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);
+		if($partner->root_id == "")
+		{
+			$partner->root_id = 0;
+		}
+		
+		//List of partner with the same root as current logged user
 		$partners = array();
 		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+		$database->setQuery( "SELECT a.partner_id AS value, 
+									 b.name AS text 
+									 FROM 
+									 #__easysdi_community_partner a,
+									 #__users b 
+									 where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)  
+									 AND 
+									 a.user_id = b.id 
+									 AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
+								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT'))
+									 ORDER BY b.name" );
 		$partners = array_merge( $partners, $database->loadObjectList() );
 		
 		JHTML::_('behavior.calendar');
 
-		
+		//List of partner with METADATA right 
+		$metadata_partner = array();
+		$metadata_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$database->setQuery("SELECT a.partner_id AS value, 
+								   b.name AS text 
+								   FROM 
+								    #__easysdi_community_partner a,
+								    #__users b  
+								    where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)
+								    AND 
+								    a.user_id = b.id 
+								    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
+								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='METADATA'))
+								    ORDER BY b.name");
+		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
 		jimport("joomla.utilities.date");
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		
-				$standardlist = array();
+		$standardlist = array();
 		$standardlist[] = JHTML::_('select.option','0', JText::_("EASYSDI_TABS_LIST") );
 		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  WHERE is_deleted =0 " );
 		$standardlist= $database->loadObjectList() ;
@@ -93,6 +127,10 @@ class HTML_product{
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->partner_id ); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
 							</tr>
 							<tr>
 							
