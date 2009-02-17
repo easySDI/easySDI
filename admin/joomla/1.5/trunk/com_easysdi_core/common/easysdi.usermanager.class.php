@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-class usermanager
+class userManager
 {
 	static function isEasySDIUser ($user)
 	{
@@ -18,11 +18,16 @@ class usermanager
 		}
 	}
 	
-	function hasRight($partner_id,$right){
+	static function hasRight($partner_id,$right){
 				
 		$database =& JFactory::getDBO();		
 		
-		$query = "SELECT count(*) FROM #__easysdi_community_actor a , #__easysdi_community_role b  WHERE a.role_id = b.role_id and partner_id = $partner_id and role_code = '$right'";
+		$query = "SELECT count(*) 
+				  FROM #__easysdi_community_actor a ,
+				  	   #__easysdi_community_role b  
+				  WHERE a.role_id = b.role_id 
+				  and partner_id = $partner_id 
+				  and role_code = '$right'";
 		
 				
 		$database->setQuery($query );
@@ -31,7 +36,7 @@ class usermanager
 		return ($total > 0 );
 	}
 	
-	function isUserAllowed ($user, $right)
+	static function isUserAllowed ($user, $right)
 	{
 		global  $mainframe;
 		
@@ -50,7 +55,15 @@ class usermanager
 		$rowPartner->load( $user->id );
 		if(!usermanager::hasRight($rowPartner->partner_id,$right))
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_METADATA"),"INFO");
+			$database =& JFactory::getDBO();	
+			$query = "SELECT role_name
+					  FROM 
+					  	   #__easysdi_community_role b  
+					  WHERE 
+					   role_code = '$right'";
+			$database->setQuery($query );
+			$role_name = $database->loadResult();
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." : ".JText::_($role_name),"INFO");
 			return false;
 		}
 		return true;
