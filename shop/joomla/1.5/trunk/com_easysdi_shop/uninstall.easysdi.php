@@ -31,8 +31,8 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT ASITVD IS INSTALLED. CAN NOT UNINSTALL CATALOG","ERROR");
-		return false;		
+		$mainframe->enqueueMessage("DEPENDENT COMPONENT ASITVD IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		//return false;		
 	}
 	
 	/**
@@ -43,7 +43,7 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		
+		return false;
 	}
 	
 		
