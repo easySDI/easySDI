@@ -988,7 +988,7 @@ class HTML_partner
 		<form action="./index.php?option=<?php echo $option ?>" method="POST" name="partnerForm" id="partnerForm" class="partnerForm">
 		<!-- input type="hidden" id="option" name="option" value="" /-->
 		<input type="hidden" id="task" name="task" value="" />
-		<?php if ($hasTheRightToEdit)
+		<?php if ($hasTheRightToManageHisOwnAffiliates)
 		{ ?>					
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editAffiliatePartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
 		<?php
