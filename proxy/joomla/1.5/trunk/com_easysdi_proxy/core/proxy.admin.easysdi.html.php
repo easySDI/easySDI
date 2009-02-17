@@ -758,7 +758,7 @@ function addNewServer(){
 				}else{
 					foreach ($xmlConfigFile->Policy as $policy){
 
-						if (strcmp($policy['Id'],$policyId)==0){								
+						if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0){								
 							$thePolicy = $policy;
 							break;
 
