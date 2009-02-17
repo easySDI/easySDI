@@ -31,8 +31,8 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT SHOP IS INSTALLED. CAN NOT UNINSTALL CATALOG","ERROR");
-		return false;		
+		$mainframe->enqueueMessage("DEPENDENT COMPONENT SHOP IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		//return false;		
 	}
 
 	
