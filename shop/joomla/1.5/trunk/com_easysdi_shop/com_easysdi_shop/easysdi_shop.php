@@ -41,6 +41,7 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
+
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
 
@@ -69,8 +70,10 @@ if (!is_array( $cid )) {
 
 switch($task){
 
-	case "addMetadataNotification":		
-
+	/*
+	 * Favorites
+	 */
+	case "addMetadataNotification":	
 		SITE_favorite::metadataNotification(1);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/		
 		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
@@ -119,6 +122,12 @@ switch($task){
 		SITE_favorite::searchProducts();					
 		break;
 	
+	/*
+	 * Order
+	 */
+	case "order":
+		HTML_shop::order();
+		break;
 	case "orderReport":
 		SITE_cpanel::orderReport($cid[0]);
 		break;
@@ -126,8 +135,43 @@ switch($task){
 	case "downloadProduct":
 		SITE_cpanel::downloadProduct();
 		break;
-	
+	case "changeOrderToSend":
+		SITE_cpanel::sendOrder();
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
 		
+	case "archiveOrder":
+		SITE_cpanel::archiveOrder();
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+	case "saveOrdersForProvider":
+		SITE_cpanel::saveOrdersForProvider();
+		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+		break;	
+	case "processOrder":
+		SITE_cpanel::processOrder();
+		break;
+		
+	case "listOrdersForProvider":
+		SITE_cpanel::listOrdersForProvider();
+		break;
+
+		
+	case "listOrders":
+		SITE_cpanel::listOrders();
+		break;
+	case "sendOrder":
+		HTML_shop::saveOrder("SENT");
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+		
+	case "saveOrder":
+		HTML_shop::saveOrder("SAVED");
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );		
+		break;
+	/*
+	 * Properties
+	 */
 	case "cancelProperties":
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
 	break;
@@ -158,47 +202,49 @@ switch($task){
 		
 		$properties_id = JRequest::getVar('properties_id');
 		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
-		
-						
 		break;
 	case "deletePropertiesValues":		
 		SITE_properties::deletePropertiesValues($cid,$option);				
 		break;	
-		
 	case "editPropertiesValues":		
 		SITE_properties::editPropertiesValues($cid[0],$option);
 		break;
-		
 	case "newPropertiesValues":		
 		SITE_properties::editPropertiesValues(0,$option);
-		
 		break;
-		
-		
-		
-		
-		
-	case "cancelEditProductMetadata" :
-		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
-		break;
-	case "cancelEditProduct":
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+	
+	/*
+	 * Metadata
+	 */	
+	case "listProductMetadata":
+		SITE_product::listProductMetadata();
 		break;
 	case "saveProductMetadata":
 		SITE_product::saveProductMetadata();
 		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
-	case "saveProduct":
-		SITE_product::saveProduct($option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+	case "cancelEditProductMetadata" :
+		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
 	case "editMetadata":
 		SITE_product::editMetadata();
 		break;
+	case "showMetadata":
+		HTML_shop::showMetadata();
+		break;
+	/*
+	 * Product
+	 */
+	case "cancelEditProduct":
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
+	case "saveProduct":
+		SITE_product::saveProduct($option);
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
 	case "newProduct":
 		SITE_product::editProduct(true);
 		break;
-			
 	case "editProduct":
 		if (JRequest::getVar('id',-1) !=-1 ){
 		SITE_product::editProduct();
@@ -206,60 +252,17 @@ switch($task){
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		}
 		break;
-	
-	case "listProductMetadata":
-		SITE_product::listProductMetadata();
-		break;
 	case "listProduct":
 		SITE_product::listProduct();
 		break;
-	
-	case "changeOrderToSend":
-		SITE_cpanel::sendOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		break;
-		
-	case "archiveOrder":
-		SITE_cpanel::archiveOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		break;
-	
-	
-	case "saveOrdersForProvider":
-		SITE_cpanel::saveOrdersForProvider();
-		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
-		break;	
-	case "processOrder":
-		SITE_cpanel::processOrder();
-		break;
-		
-	case "listOrdersForProvider":
-		SITE_cpanel::listOrdersForProvider();
-		break;
-
-		
-	case "listOrders":
-		SITE_cpanel::listOrders();
-		break;
-		
 	case "importProduct":
 		HTML_shop::importProduct();
 		break;
-		
-	case "sendOrder":
-		HTML_shop::saveOrder("SENT");
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		break;
-		
-	case "saveOrder":
-		HTML_shop::saveOrder("SAVED");
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );		
-		break;
 	case "deleteProduct":
 		HTML_shop::deleteProduct();
-	case "order":
-		HTML_shop::order();
-		break;
+		
+	
+		
 	case "exportPdf":
 		HTML_shop::exportPdf();
 	break;
@@ -267,9 +270,7 @@ switch($task){
 		HTML_shop::exportXml();
 	break;
 	
-	case "showMetadata":
-		HTML_shop::showMetadata();
-		break;
+	
 	case "listMetadataClasses":
 		SITE_metadata::listStandardClasses($option);
 		break;
