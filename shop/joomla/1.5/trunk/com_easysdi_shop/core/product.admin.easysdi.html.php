@@ -17,6 +17,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+//foreach($_POST as $key => $val) 
+//echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 
 class HTML_product {
@@ -24,17 +26,57 @@ class HTML_product {
 	function editProduct( $rowProduct,$id, $option ){
 		
 		global  $mainframe;
-		
+				
 		$database =& JFactory::getDBO(); 
 		$partners = array();
 		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
+		
+		$database->setQuery( "SELECT a.partner_id AS value, 
+										b.name AS text 
+							FROM #__easysdi_community_partner a,
+								#__users b 
+								where  
+									a.user_id = b.id 
+								AND 
+									a.partner_id IN 
+										(SELECT partner_id FROM #__easysdi_community_actor
+								    					 WHERE 
+								    					 role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT'))
+									
+								ORDER BY b.name" );
 
 		$partners = array_merge( $partners, $database->loadObjectList() );
 		
 		JHTML::_('behavior.calendar');
 
+		//List of partner with METADATA right
+		$metadata_partner = array();
+		$metadata_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$product_partner = JRequest::getVar('partner_id', 0 );	
+		if ($product_partner == '0')
+		{
+			$product_partner = $rowProduct->partner_id;
+		}		
+		$rowPartner = new partnerByPartnerId( $database );
+		$rowPartner->load( $product_partner );
+		if($rowPartner->root_id == "")
+		{
+			$rowPartner->root_id = '0';
+		}
+		$database->setQuery("SELECT a.partner_id AS value, 
+							   b.name AS text 
+							   FROM 
+							    #__easysdi_community_partner a,
+							    #__users b  
+							    where 
+							    a.user_id = b.id 
+							    AND  (a.root_id = $rowPartner->root_id OR a.root_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->root_id)
+							    
+							    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
+							    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='METADATA'))
+							    ORDER BY b.name");
 		
+		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
 		jimport("joomla.utilities.date");
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -104,7 +146,11 @@ class HTML_product {
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->partner_id ); ?></td>								
+								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $product_partner ); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
 							</tr>
 							<tr>
 							
@@ -326,6 +372,7 @@ class HTML_product {
 
 		
 		?>
+		<input type="hidden" name="id" value="<?php echo $rowProduct->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
@@ -402,11 +449,18 @@ class HTML_product {
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
 								<?php
-									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where  a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
 									$database->setQuery($query);				 
 		 						?>
-								<td><?php echo $database->loadResult(); ?></td>								
-								
+								<td><?php echo $database->loadResult(); ?></td>	
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
+								<?php
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id AND partner_id=".$rowProduct->metadata_partner_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>	
 																
 							</tr>
 							<tr>

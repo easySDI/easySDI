@@ -35,9 +35,10 @@ class TOOLBAR_properties{
 		JToolBarHelper::addNew('newProperties');
 		JToolBarHelper::editList('editProperties');
 		JToolBarHelper::deleteList('','deleteProperties');
-		JToolBarHelper::editList( 'listPropertiesValues',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"));		
+		//JToolBarHelper::editList( 'listPropertiesValues',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"));		
+		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"), false);
 		JToolBarHelper::spacer();
-			JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 function _EDITPROPERTIESVALUES(){
 		

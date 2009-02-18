@@ -96,17 +96,57 @@ class ADMIN_product {
 
 	function editProduct( $id, $option ) {
 		global  $mainframe;
+		$user = JFactory::getUser();
 		$database =& JFactory::getDBO();
+		
 		$rowProduct = new product( $database );
-		$rowProduct->load( $id );
-
-		if ($id == '0'){
-			$rowProduct->creation_date =date('d.m.Y H:i:s');
-			$rowProduct->metadata_id = helper_easysdi::getUniqueId();			 
+		
+		if($id == '0')
+		{
+			$id = JRequest::getVar('id', 0 );
 		}
+		if ($id == '0' ){
+			$rowProduct->creation_date =date('d.m.Y H:i:s');
+			$rowProduct->metadata_id = helper_easysdi::getUniqueId();	
+			$partner = new partnerByUserId($database);
+			$partner->load($user->id);
+			$rowProduct->partner_id = $partner->partner_id;			
+			if(userManager::hasRight($partner->partner_id,"METADATA"))
+			{
+				$rowProduct->metadata_partner_id = $partner->partner_id;
+			}
+		}
+		else
+		{
+			$rowProduct->load( $id );
+		}
+		/*$product = JRequest::getVar('product_id', 0 );
+		
+		if($id == '0' && $product != '0')
+		{	
+			$rowProduct->load( $product );
+		}
+		else if ($id == '0' && $product == '0'){
+			$rowProduct->creation_date =date('d.m.Y H:i:s');
+			$rowProduct->metadata_id = helper_easysdi::getUniqueId();	
+			$partner = new partnerByUserId($database);
+			$partner->load($user->id);
+			$rowProduct->partner_id = $partner->partner_id;			
+			if(userManager::hasRight($partner->partner_id,"METADATA"))
+			{
+				$rowProduct->metadata_partner_id = $partner->partner_id;
+			}
+		}
+		else
+		{
+			$rowProduct->load( $id );
+		}*/
+		
 		$rowProduct->update_date = date('d.m.Y H:i:s');
+
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		
 		if (strlen($catalogUrlBase )==0){
 			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
@@ -316,7 +356,7 @@ class ADMIN_product {
   </csw:Delete>
 </csw:Transaction>";
 
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'easysdi.config.php');
+		include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$session = curl_init($catalogUrlBase);

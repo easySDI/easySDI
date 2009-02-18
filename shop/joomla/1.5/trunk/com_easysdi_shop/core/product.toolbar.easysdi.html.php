@@ -41,7 +41,8 @@ class TOOLBAR_product{
 		JToolBarHelper::addNew('newProduct');
 		JToolBarHelper::editList('editProduct');
 		JToolBarHelper::deleteList('','deleteProduct');
-		JToolBarHelper::editList('editProductMetadata');
+		//JToolBarHelper::editList('editProductMetadata');
+		JToolBarHelper::custom( 'editProductMetadata', 'preview.png' ,'preview.png',JTEXT::_("EASYSDI_MENU_PRODUCT_METADATA"), false  );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}

@@ -208,7 +208,8 @@ function _LISTLIST() {
 		JToolBarHelper::addNew('newMetadataList');
 		JToolBarHelper::editList('editMetadataList');
 		JToolBarHelper::deleteList('','deleteMetadataList');
-		JToolBarHelper::editList("listMetadataListContent");
+		//JToolBarHelper::editList("listMetadataListContent");
+		JToolBarHelper::custom("listMetadataListContent",'preview.png','preview.png',JTEXT::_("EASYSDI_MENU_LIST_CONTENT"), false);
 		JToolBarHelper::spacer();		
 		JToolBarHelper::custom( 'ctrlPanelMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
