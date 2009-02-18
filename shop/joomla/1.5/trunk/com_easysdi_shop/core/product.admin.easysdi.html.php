@@ -89,7 +89,7 @@ class HTML_product {
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
  
 		
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
 		
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
 		$geoMD = new geoMetadata($cswResults);				 
@@ -400,7 +400,7 @@ class HTML_product {
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
  
 		
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
 		
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
 		$geoMD = new geoMetadata($cswResults);				 

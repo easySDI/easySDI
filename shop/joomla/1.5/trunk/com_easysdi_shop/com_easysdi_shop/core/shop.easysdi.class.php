@@ -1546,11 +1546,11 @@ if (count($rows)>0){
 				echo $catalogUrlGetRecordsMD."<br>";
 				foreach ($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->children("http://www.isotc211.org/2005/gmd")->MD_Metadata as $metadata){
 
-					$md = new geoMeatdata($metadata);
+					$md = new geoMetadata($metadata);
 
 					echo "<b>".$i."</b><br>";
 
-					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).")";
+					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).")";
 					echo $query."<br>";
 					$db->setQuery( $query);
 					if (!$db->query()) {

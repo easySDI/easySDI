@@ -102,7 +102,7 @@ class SITE_product {
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$metadata_id;				
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById); 
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'geoMetadata.php');		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');		
 		$geoMD = new geoMetadata($cswResults);				 
 
 		
