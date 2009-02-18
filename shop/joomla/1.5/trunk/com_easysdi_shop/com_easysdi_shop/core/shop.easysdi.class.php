@@ -1750,6 +1750,15 @@ if (count($rows)>0){
 	</tr>
 </table>
 
+<table width="100%">
+	<thead>
+		<tr>
+			<th align="left" width="80%"><?php echo JText::_("EASYSDI_SHOP_PRODUCT_TITLE"); ?></th>
+			<th align="left" width="20%"><?php echo JText::_("EASYSDI_SHOP_PRODUCT_SELECT"); ?></th>
+		</tr>
+	</thead>
+</table>
+
 	<?php
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
@@ -1761,14 +1770,15 @@ if (count($rows)>0){
 <table width="100%">
 
 	<tr>
-		<td><img src="./img.gif" width="40" height="40"></td>
-		<td><span class="mdtitle"><a class="modal"
+		<!--<td><img src="./img.gif" width="40" height="40"></td>
+		-->
+		<td width="80%" ><span class="mdtitle"><a class="modal"
 			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 			href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
 			rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
 		<span class="mdsupplier"><?php echo $row->supplier_name;?></span><br>
 		</td>
-		<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]"
+		<td width="20%" ><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]"
 			value="<?php echo $row->id; ?>"
 			<?php if (in_array($row->id,$cid)) { echo "checked";};?> /></td>
 	</tr>

@@ -508,7 +508,10 @@ class SITE_product {
 		$partner = new partnerByUserId($database);
 		$partner->load($user->id);
 
-		$queryCount = "select count(*) from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		//$queryCount = "select count(*) from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		
+		//List only the products for which metadata manager is the current user
+		$queryCount = " SELECT COUNT(*) FROM #__easysdi_product where metadata_partner_id = $partner->partner_id " ;
 		$queryCount .= $filter;
 		
 		$database->setQuery($queryCount);
@@ -520,7 +523,9 @@ class SITE_product {
 		}	
 		
 		$pageNav = new JPagination($total,$limitstart,$limit);
-		$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		//$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
+		//List only the products for which metadata manager is the current user
+		$query = " SELECT * FROM #__easysdi_product where metadata_partner_id = $partner->partner_id " ;
 		$query .= $filter;
 
 		$database->setQuery($query,$limitstart,$limit);		

@@ -129,7 +129,7 @@ class HTML_product{
 								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->partner_id ); ?></td>								
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
 							</tr>
 							<tr>
@@ -436,10 +436,18 @@ class HTML_product{
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
 								<?php
-									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
 									$database->setQuery($query);				 
 		 						?>
 								<td><?php echo $database->loadResult(); ?></td>																																
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
+								<?php
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id AND partner_id=".$rowProduct->metadata_partner_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>									
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>								

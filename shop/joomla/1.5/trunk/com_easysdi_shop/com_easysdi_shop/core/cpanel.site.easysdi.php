@@ -331,9 +331,15 @@ class SITE_cpanel {
 
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
+		
+		if(!userManager::isUserAllowed($user, "REQUEST_INTERNAL") && !userManager::isUserAllowed($user, "REQUEST_EXTERNAL") )
+		{
+			return;
+		}
+		
 		$rootPartner = new partnerByUserId($database);
 		$rootPartner->load($user->id);
-
+		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 

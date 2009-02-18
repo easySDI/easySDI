@@ -182,11 +182,13 @@ function manageFavoriteProduct ( $orderable = 1)
 						</tr>
 					</table>
 					<table width="100%">
+					<thead>
 						<tr>
-							<td align="left" width="80%"><?php echo JText::_("EASYSDI_PRODUCT_TITLE"); ?></td>
-							<td align="left" width="10%"><?php echo JText::_("EASYSDI_PRODUCT_MY_FAVORITE"); ?></td>
-							<td align="left" width="10%"><?php echo JText::_("EASYSDI_PRODUCT_FAVORITE_NOTIFICATION"); ?></td>
+							<th align="left" width="80%"><?php echo JText::_("EASYSDI_PRODUCT_TITLE"); ?></th>
+							<th align="left" width="10%"><?php echo JText::_("EASYSDI_PRODUCT_MY_FAVORITE"); ?></th>
+							<th align="left" width="10%"><?php echo JText::_("EASYSDI_PRODUCT_FAVORITE_NOTIFICATION"); ?></th>
 						</tr>
+						</thead>
 					</table>
 					<?php
 					$param = array('size'=>array('x'=>800,'y'=>800) );
@@ -201,10 +203,10 @@ function manageFavoriteProduct ( $orderable = 1)
 						<hr>		
 						<table width="100%"  >		
 							<tr>		
-								<td width="45" > 
+								<!--<td width="45" > 
 									<img src="./img.gif" width="40" height="40"> 
 								</td>
-								<td width="60%">
+								--><td width="80%">
 									<span class="mdtitle" >
 									<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" 
 										href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a>
