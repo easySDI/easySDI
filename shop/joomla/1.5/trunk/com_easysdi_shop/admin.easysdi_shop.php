@@ -74,6 +74,9 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.ht
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
 
 require_once(JPATH_COMPONENT_SITE.DS.'core'.DS.'partner.site.easysdi.class.php');
+
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+
 switch($task){
 
 	case "orderReport":
