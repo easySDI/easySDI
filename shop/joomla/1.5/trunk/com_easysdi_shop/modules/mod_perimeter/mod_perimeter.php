@@ -45,7 +45,7 @@ $cid = 		$mainframe->getUserState('productList');
 		{
 			$query = $query.$id."," ;
 		}			
-		$query  = substr($query , 0, -1);
+	$query  = substr($query , 0, -1);
 	$query = $query . ") group by perimeter_id  having  count(*)  = ".$nbProduct.")";
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
@@ -68,7 +68,7 @@ $cid = 		$mainframe->getUserState('productList');
 	foreach ($rows as $row)
 		{?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>");	 		
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","image/<?php echo $row->img_format; ?>");	 		
 	 		}
 	 
 	 <?php } ?>
