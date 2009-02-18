@@ -5,6 +5,16 @@
 .bodyShop{
 
 }
+.previousStep { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0d0;
+	color: #666;
+}
 .selectableStep { 
 	float: left;
 	padding: 4px 10px;
@@ -14,8 +24,6 @@
 	margin-left: 3px;
 	background: #f0f0d0;
 	color: #666;
-
-
 }
 .currentStep {
 	float: left;
