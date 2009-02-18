@@ -62,7 +62,7 @@ class perimeter extends JTable
 	var $maxfeatures=-1;
 	var $searchbox=0;
 	var $sort=0;
-	
+	var $img_format=null;
 	
 	// Class constructor
 	function __construct( &$db )

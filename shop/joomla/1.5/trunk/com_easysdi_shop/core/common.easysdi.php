@@ -364,7 +364,7 @@ function getUniqueId(){
 }
 
 function exportPDF( $myHtml) {
-	
+		global  $mainframe;
 	
 		$database =& JFactory::getDBO();
 
@@ -375,13 +375,14 @@ function exportPDF( $myHtml) {
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		
+		
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();   
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
     	$pageDom->loadHTML($searchPage);
     	$result = $processor->transformToXml($pageDom);    	
 		//$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
-	  	
+		
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		

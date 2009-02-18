@@ -58,7 +58,10 @@ class HTML_perimeter {
 								<td><?php echo JText::_("EASYSDI_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="wms_url" value="<?php echo $rowPerimeter->wms_url; ?>" /></td>
 							</tr>
-							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_IMG_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="20" maxlength="20" name="img_format" value="<?php echo $rowPerimeter->img_format; ?>" /></td>
+							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_LAYER_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layer_name" value="<?php echo $rowPerimeter->layer_name; ?>" /></td>

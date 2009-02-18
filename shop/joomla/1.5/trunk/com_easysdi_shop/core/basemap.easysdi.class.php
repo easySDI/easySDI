@@ -46,6 +46,7 @@ class basemap_content extends JTable
 	var $maxExtent=null;
 	var $layers=null;
 	var $name=null;
+	var $img_format=null;
 	
 	// Class constructor
 	function __construct( &$db )
