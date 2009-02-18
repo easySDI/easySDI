@@ -59,6 +59,7 @@ class perimeter extends JTable
   	var $filter_field_name=null;
   	var $id_perimeter_filter=0;
 	var $is_localisation=0;
+	var $img_format=null;
 	
 	// Class constructor
 	function __construct( &$db )
