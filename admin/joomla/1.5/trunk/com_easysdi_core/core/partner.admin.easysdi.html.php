@@ -299,6 +299,16 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 									<td><?php echo JText::_("EASYSDI_NOTIFY_ORDER_READY"); ?> : </td>
 									<td><input class="inputbox" value="1" type="checkbox" name="notify_order_ready" <?php if ($rowPartner->notify_order_ready == 1) echo " checked"; ?> /></td>
 							</tr>
+							<tr>							
+									<td><?php echo JText::_("EASYSDI_IS_REBATE"); ?> : </td>
+									<td><input class="inputbox" value="1" type="checkbox" name="isrebate" <?php if ($rowPartner->isrebate == 1) echo " checked"; ?> /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_REBATE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="rebate" value="<?php echo $rowPartner->rebate; ?>" /></td>
+							</tr>
+							
+							
 						</table>
 					</fieldset>
 				</td>

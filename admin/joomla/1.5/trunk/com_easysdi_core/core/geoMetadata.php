@@ -152,14 +152,15 @@ function isXPathResultCount($xpath){
 	}
 	function getFees(){
 		if ($this->metadata){
-		$nodes = $this->xpath->query("//gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributionOrderProcess/gmd:MD_StandardOrderProcess/gmd:fees/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+		$nodes = $this->xpath->query("//gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributionOrderProcess/gmd:MD_StandardOrderProcess/gmd:fees/gmd:LocalisedCharacterString");
 		return $nodes ->item(0)->nodeValue;
 		}
 		return "";
 	}
 	function getManagerOrganisationName($lang="fr"){			
+				
 		if ($this->metadata){
-		$nodes = $this->xpath->query('//gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		$nodes = $this->xpath->query('//gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString');
 		return $nodes ->item(0)->nodeValue;
 		}
 		return "";
@@ -170,7 +171,7 @@ function isXPathResultCount($xpath){
 	function getReferenceSystemInfo($lang="fr"){
 		
 		if ($this->metadata){
-		$nodes = $this->xpath->query('//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		$nodes = $this->xpath->query('//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gmd:LocalisedCharacterString');
 		return $nodes ->item(0)->nodeValue;
 	}return "";
 	
@@ -240,7 +241,7 @@ function getManagerEmail(){
 
 
 function getDistributionOrganisationName ($lang="fr") {				
-	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString");
 	return $nodes ->item(0)->nodeValue;
 	}return "";				
 	}
@@ -309,7 +310,7 @@ function getDistributionEmail(){
 
 
 function getPocOrganisationName ($lang="fr") {				
-	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString");
 	return $nodes ->item(0)->nodeValue;
 	}return "";				
 	}
@@ -383,7 +384,7 @@ function getPocEmail(){
 
 	function getDataIdentificationTitle($lang="fr"){
 		if ($this->metadata){	 												
-				$nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+				$nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString');
 				return $nodes ->item(0)->nodeValue;
 			}
 				return "";					
@@ -391,7 +392,7 @@ function getPocEmail(){
 
 	function getDescription($lang="fr") {			
 		
-		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString');
 		return $nodes ->item(0)->nodeValue;
 		}return "";		
 								
@@ -407,7 +408,7 @@ function getStatus($lang="fr") {
 	
 	function getPurpose($lang="fr") {			
 		
-		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose/gmd:LocalisedCharacterString');
 		return $nodes ->item(0)->nodeValue;
 		}return "";		
 								
@@ -415,7 +416,7 @@ function getStatus($lang="fr") {
 	
 	
 	function getAcquisitionRmk(){
-		if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+		if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gmd:LocalisedCharacterString");
 		return $nodes ->item(0)->nodeValue;
 		}return "";
 	}
@@ -464,7 +465,7 @@ function getStatus($lang="fr") {
 	
 	function getTextualExtent($lang="fr") {
 
-	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString');
 
 	return $nodes ->item(0)->nodeValue;
 	}return "";
@@ -481,7 +482,7 @@ function getStatus($lang="fr") {
 	
 function getGraphicOverviewFileDescription($lang="fr") {
 	
-	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString');
 	return $nodes ->item(0)->nodeValue;
 
 	}return "";	
@@ -499,20 +500,20 @@ function getGraphicOverviewFileType($lang="fr") {
 function getLegalConstraint($lang="fr") {	
 
 	
-	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+	if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:LocalisedCharacterString');
 	return $nodes ->item(0)->nodeValue;
 	}return "";	
 	}		
 	
 	
 function getUseLimitation($lang="fr") {		
-if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/gmd:LocalisedCharacterString');
 	return $nodes ->item(0)->nodeValue;	
 			}return "";
 	}	
 	
 function getAcquisitionMode($lang="fr") {		
-if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString');
+if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gmd:LocalisedCharacterString');
 return $nodes ->item(0)->nodeValue;	
 		}return "";
 	}
@@ -520,7 +521,7 @@ return $nodes ->item(0)->nodeValue;
 	
 function getAcquisitionDescription ($lang="fr") {			
 
-	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:processStep/gmd:LI_ProcessStep/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:processStep/gmd:LI_ProcessStep/gmd:description/gmd:LocalisedCharacterString");
 	return $nodes ->item(0)->nodeValue;
 	}return "";
 }			
@@ -531,7 +532,7 @@ function getAcquisitionDescription ($lang="fr") {
 	
 function getAcquisitionDataSource ($lang="fr") {		
 
-	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:processStep/gmd:LI_ProcessStep/gmd:source/gmd:LI_Source/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString");
+	if ($this->metadata){	 $nodes = $this->xpath->query("//gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:processStep/gmd:LI_ProcessStep/gmd:source/gmd:LI_Source/gmd:description/gmd:LocalisedCharacterString");
 	return $nodes ->item(0)->nodeValue;
 	
 }return "";
