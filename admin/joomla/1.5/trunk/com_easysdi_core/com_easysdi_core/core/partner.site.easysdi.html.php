@@ -193,6 +193,14 @@ class HTML_partner
 								<td><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><?php echo $rowPartner->partner_url; ?></td>
 							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_IS_REBATE"); ?> : </td>
+								<td><input class="inputbox" value="1" type="checkbox" disabled="disabled" <?php if ($rowPartner->isrebate == 1) echo " checked"; ?> /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_REBATE"); ?> : </td>
+								<td><?php echo $rowPartner->rebate; ?></td>
+							</tr>
 							
 						</table>
 					</fieldset>

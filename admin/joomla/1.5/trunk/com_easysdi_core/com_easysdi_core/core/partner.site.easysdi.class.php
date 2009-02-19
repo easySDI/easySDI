@@ -34,7 +34,9 @@ class partnerByUserId extends JTable
 	var $notify_new_metadata=0;
 	var $notify_distribution=0;
 	var $notify_order_ready=0;
-	
+	var $rebate=0;
+ 	var $isrebate=0;
+ 	
 	
 	// Class constructor
 	function __construct( &$db )
