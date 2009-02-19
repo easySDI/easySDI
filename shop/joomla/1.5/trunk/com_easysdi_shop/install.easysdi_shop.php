@@ -1151,13 +1151,13 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}
 		
-		$query="ALTER TABLE `#__easysdi_basemap_content` add column `img_format` varchar(20)";
+		$query="ALTER TABLE `#__easysdi_basemap_content` add column `img_format` varchar(20) NOT NULL default 'png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		$query="ALTER TABLE `#__easysdi_perimeter_definition` add column `img_format` varchar(20)";
+		$query="ALTER TABLE `#__easysdi_perimeter_definition` add column `img_format` varchar(20) NOT NULL default 'png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
