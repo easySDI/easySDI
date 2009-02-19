@@ -1135,7 +1135,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-		$query="ALTER TABLE #__easysdi_order_product add column `metadata_partner_id` bigint(20) default '0'";
+		$query="ALTER TABLE #__easysdi_product add column `metadata_partner_id` bigint(20) default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
