@@ -68,7 +68,7 @@ $cid = 		$mainframe->getUserState('productList');
 	foreach ($rows as $row)
 		{?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","image/<?php echo $row->img_format; ?>");	 		
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");	 		
 	 		}
 	 
 	 <?php } ?>
