@@ -40,12 +40,12 @@ class HTML_basemap {
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_BASEMAP_CONTENT_ID"); ?> : </td>
+								<td width="100p"><?php echo JText::_("EASYSDI_CONTENT_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_CONTENT_ID"); ?> : </td>
+								<td width="100p"><?php echo JText::_("EASYSDI_BASEMAP_CONTENT_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->basemap_def_id; ?></td>
 								<input type="hidden" name="basemap_def_id" value="<?php echo $rowBasemap->basemap_def_id;?>">								
 							</tr>
