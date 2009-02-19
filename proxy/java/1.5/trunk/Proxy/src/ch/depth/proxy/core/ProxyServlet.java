@@ -822,6 +822,10 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected boolean isOperationAllowed (String operation){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+	
 	if (policy.getOperations().isAll()) return true;
 	List<Operation> operationList = policy.getOperations().getOperation();
 	for (int i=0;i<operationList.size();i++){
@@ -838,6 +842,11 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected boolean isFeatureTypeAllowed (String ft,String url){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+
+	
 	boolean isServerFound = false;	
 	List<Server> serverList = policy.getServers().getServer();
 
@@ -872,6 +881,10 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected boolean isLayerAllowed (String layer,String url){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+
 	if (layer == null )return false;
 
 	boolean isServerFound = false;	
@@ -908,6 +921,11 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected boolean isLayerInScale (String layer,String url,double scale){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+
+	
 	boolean isServerFound = false;	
 	List<Server> serverList = policy.getServers().getServer();
 
@@ -953,6 +971,10 @@ public abstract class ProxyServlet extends HttpServlet {
     protected boolean isAttributeAllowed (String url,String ft,String attribute){
 
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+
 	boolean isServerFound = false;
 	boolean isFeatureTypeFound = false;
 	boolean FeatureTypeAllowed = false;
@@ -997,6 +1019,7 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String getLayerFilter(String layer){
 
 	if (policy == null) return null;
+	
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){
@@ -1089,6 +1112,10 @@ public abstract class ProxyServlet extends HttpServlet {
     protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight){
 
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
+
 	int minWidth = 0;
 	int minHeight = 0;
 	int maxWidth = Integer.MAX_VALUE;
@@ -1141,8 +1168,8 @@ public abstract class ProxyServlet extends HttpServlet {
 	Date fromDate = null;
 	Date toDate = 	null;
 	try{
-	    fromDate = sdf.parse(p.getFrom().getDate());
-	    toDate = 	sdf.parse(p.getTo().getDate());
+	    if (p.getFrom()!=null) fromDate = sdf.parse(p.getFrom().getDate());
+	    if (p.getTo()!=null) toDate = 	sdf.parse(p.getTo().getDate());
 	}catch(Exception e){
 	    e.printStackTrace();
 	    return false;
@@ -1181,7 +1208,11 @@ public abstract class ProxyServlet extends HttpServlet {
 
     protected boolean isAttributeAllowedForMetadata(String url,String attribute){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
 
+	
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){
@@ -1202,7 +1233,11 @@ public abstract class ProxyServlet extends HttpServlet {
     }
     protected boolean areAllAttributesAllowedForMetadata(String url){
 	if (policy == null) return false;
+	if (policy.getAvailabilityPeriod() !=null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	}
 
+	
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){
