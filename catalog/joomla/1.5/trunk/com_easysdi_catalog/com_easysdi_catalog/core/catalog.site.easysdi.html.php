@@ -258,7 +258,7 @@ foreach ($rows as $row){
 				  
 				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
                     "<?php echo $row->url; ?>",
-                    {layers: '<?php echo $row->layers; ?>', format : "image/png",transparent: "true"},                                          
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
