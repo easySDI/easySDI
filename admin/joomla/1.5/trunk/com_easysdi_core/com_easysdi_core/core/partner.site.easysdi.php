@@ -230,9 +230,9 @@ class SITE_partner {
 	}
 
 	function showPartner( ) {
-
+		global  $mainframe;
 		$user = JFactory::getUser();
-				
+			
 		if ($user->guest){
 			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");		
 			return;
@@ -287,7 +287,7 @@ class SITE_partner {
 	}
 
 	function showRootPartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) {
-
+		global  $mainframe;
 		$option = JRequest::getVar("option");
 		$user = JFactory::getUser();
 		if ($user->guest){
@@ -367,7 +367,7 @@ class SITE_partner {
 
 
 	function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates) 
-	{		
+	{	global  $mainframe;
 		$user = JFactory::getUser();
 		if ($user->guest)
 		{
