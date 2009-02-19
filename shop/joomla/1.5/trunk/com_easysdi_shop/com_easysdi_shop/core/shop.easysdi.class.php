@@ -77,12 +77,12 @@ class HTML_shop {
 			}
 		 	$mainframe->setUserState('productList',$productList);
 		}
-		return;
+		
 	}
 
 
 	function exportPdf(){
-
+		
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$id = JRequest::getVar('id');
