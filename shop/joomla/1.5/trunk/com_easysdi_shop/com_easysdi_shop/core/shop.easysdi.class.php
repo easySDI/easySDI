@@ -439,7 +439,7 @@ foreach ($rows as $row){
 				  
 				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
                     "<?php echo $row->url; ?>",
-                    {layers: '<?php echo $row->layers; ?>', format : "image/<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
@@ -1455,52 +1455,87 @@ if (count($rows)>0){
 <table>
 	<tr>
 		<td>
-		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step || $curStep==$step+1)) { ?>
+		<div class="headerShop">
+		<?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
+		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+			<div
+				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
+			</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-		<?php } ?> <?php $curStep = 2; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?>
+			<?php } ?> 
+		
+		<?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();"
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
+		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+			<div
+				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
+			</div>
 		<?php }else {?>
 		<div
-			class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-		<?php } ?> <?php $curStep = 3; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?>
+			<?php } ?>
+		
+			<?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();"
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
+		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+			<div
+				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
+			</div>
 		<?php }else {?>
 		<div
-			class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-		<?php } ?> <?php $curStep = 4; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?>
+			<?php } ?>
+			
+			<?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();"
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
+		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+			<div
+				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
+			</div>
 		<?php }else {?>
 		<div
-			class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-		<?php } ?> <?php $curStep = 5; if(count($productList)>0 && ($curStep<$step || $curStep==$step+1)) { ?>
+			<?php } ?>
+			
+			<?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>';submitOrderForm();"
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
+		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+			<div
+				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
+			</div>
 		<?php }else {?>
 		<div
-			class="<?php if ($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-		<?php } ?></div>
+			<?php } ?>
+		</div>
 		</td>
 	</tr>
 	<tr>
