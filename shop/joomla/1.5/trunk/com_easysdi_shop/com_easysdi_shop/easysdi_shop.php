@@ -125,6 +125,8 @@ switch($task){
 	/*
 	 * Order
 	 */
+	case "deleteProduct":
+		HTML_shop::deleteProduct();
 	case "order":
 		HTML_shop::order();
 		break;
@@ -174,11 +176,11 @@ switch($task){
 	 */
 	case "cancelProperties":
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
-	break;
+		break;
 	case "saveProperties":
 		SITE_properties::saveProperties($option);
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
-	break;
+		break;
 	case "editProperties":
 		SITE_properties::editProperties($cid[0],$option);
 		break;
@@ -192,11 +194,10 @@ switch($task){
 	case "listPropertiesValue":		
 		SITE_properties::listPropertiesValues($cid[0],$option);		
 		break;
-	case "cancelPropertiesValues":		
-		
+	case "cancelPropertiesValues":
 		$properties_id = JRequest::getVar('properties_id');
 		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
-	
+		
 	case "savePropertiesValues":		
 		SITE_properties::savePropertiesValues($option);
 		
@@ -258,17 +259,16 @@ switch($task){
 	case "importProduct":
 		HTML_shop::importProduct();
 		break;
-	case "deleteProduct":
-		HTML_shop::deleteProduct();
+	
 		
 	
 		
 	case "exportPdf":
 		HTML_shop::exportPdf();
-	break;
+		break;
 	case "exportXml":
 		HTML_shop::exportXml();
-	break;
+		break;
 	
 	
 	case "listMetadataClasses":
