@@ -1541,6 +1541,7 @@ if (count($rows)>0){
 			$inc = 1;
 			//$countMD
 			for ($i=1; $i<=$countMD;$i=$i+$inc){
+			//for ($i=1; $i<=1;$i=$i+$inc){
 				$catalogUrlGetRecordsMD =  $catalogUrlGetRecords . "&startPosition=".$i."&maxRecords=".$inc;
 				$cswResults= simplexml_load_file($catalogUrlGetRecordsMD);
 				echo $catalogUrlGetRecordsMD."<br>";
@@ -1549,7 +1550,7 @@ if (count($rows)>0){
 					$md = new geoMetadata($metadata);
 
 					echo "<b>".$i."</b><br>";
-
+					
 					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).")";
 					echo $query."<br>";
 					$db->setQuery( $query);
