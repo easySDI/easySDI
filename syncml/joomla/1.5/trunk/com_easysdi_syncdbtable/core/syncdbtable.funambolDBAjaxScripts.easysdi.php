@@ -52,7 +52,7 @@ try
 			throw new Exception("CAN'T OPEN EASYSDI CONFIG FILE");
 		}
 		$funambolHome = $xmlConfig->funambol_home;
-		$configfFile = $funambolHome."config\\com\\funambol\\server\\db\\db.xml";
+		$configfFile = $funambolHome."config/com/funambol/server/db/db.xml";
 		$xmlDBConf = simplexml_load_file($configfFile);
 		if ($xmlDBConf === false){
 			throw new Exception("CAN'T OPEN FUNAMBOL DB CONFIG FILE");
