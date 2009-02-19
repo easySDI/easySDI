@@ -789,7 +789,33 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}	
+	}
+
+	
+	if ($version == "0.93")
+	{
+		$version="0.94";
+		$query="UPDATE #__easysdi_version SET version ='0.94' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_community_partner add column rebate bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		$query="ALTER TABLE #__easysdi_community_partner add column isrebate tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+	}
 	
 		/**
 		 * Menu creation
