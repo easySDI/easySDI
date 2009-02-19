@@ -73,7 +73,7 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
 
-require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
@@ -606,7 +606,7 @@ case "saveLocation":
 
 	case "editProductMetadata2":	
 		TOOLBAR_product::_EDITPRODUCTMETADATA();
-		ADMIN_product::editProductMetadata2($cid[0],$option);
+		ADMIN_product::editProductMetadata($cid[0],$option);
 		break;
 	
 		
