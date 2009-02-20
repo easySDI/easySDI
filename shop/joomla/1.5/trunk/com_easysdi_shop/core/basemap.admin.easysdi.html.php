@@ -94,8 +94,9 @@ class HTML_basemap {
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_IMG_FORMAT"); ?> : </td>
 								<td>
-									<input class="inputbox" name="img_format" type="text" size="20" maxlength="20" value="<?php echo $rowBasemap->img_format; ?>" />
-								</td>															
+									<input class="inputbox" name="img_format" type="text" size="50" maxlength="100" value="<?php echo $rowBasemap->img_format; ?>" />									
+								</td>
+								<td>ex : image/png</td>															
 							</tr>
 							<tr>
 							

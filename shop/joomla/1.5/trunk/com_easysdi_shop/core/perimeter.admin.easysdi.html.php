@@ -60,7 +60,8 @@ class HTML_perimeter {
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="20" maxlength="20" name="img_format" value="<?php echo $rowPerimeter->img_format; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="img_format" value="<?php echo $rowPerimeter->img_format; ?>" /></td>
+								<td>ex : image/png</td>
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_LAYER_NAME"); ?> : </td>
