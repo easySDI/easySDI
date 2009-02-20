@@ -299,10 +299,8 @@ switch($task){
 		
 		
 	default :	
-		
-		echo "<div class='alert'>";			
-			echo JText::_("EASYSDI_ACTION_NOT_ALLOWED");
-		echo "</div>";
+		$mainframe->enqueueMessage(JText::_("EASYSDI_ACTION_NOT_ALLOWED"), "INFO");
+
 		break;
 		
 }
