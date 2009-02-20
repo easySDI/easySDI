@@ -31,7 +31,7 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT CATALOG IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		$mainframe->enqueueMessage("WARNING : Dependent component catalog is installed. You must uninstall it.","ERROR");
 		//return false;		
 	}
 	
@@ -40,7 +40,7 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT PROXY IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		$mainframe->enqueueMessage("WARNING : Dependent component proxy is installed. You must uninstall it.","ERROR");
 		//return false;		
 	}
 	
@@ -51,12 +51,14 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
 	}
 	
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+		return false;
 	}
 	
 		
