@@ -39,7 +39,7 @@ function com_install(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count == 0) {
-		$mainframe->enqueueMessage("EASYSDI CORE IS NOT INSTALLED","ERROR");
+		$mainframe->enqueueMessage("Core component does not exist. Easysdi Shop could not be installed. Please install core component first.","ERROR");
 		/**
 		 * Delete components
 		 */
@@ -68,7 +68,7 @@ function com_install(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count == 0) {
-		$mainframe->enqueueMessage("CATALOG IS NOT INSTALLED","ERROR");
+		$mainframe->enqueueMessage("Catalog component does not exist. Easysdi Shop could not be installed. Please install Catalog component first.","ERROR");
 		/**
 		 * Delete components
 		 */
@@ -1151,13 +1151,13 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}
 		
-		$query="ALTER TABLE `#__easysdi_basemap_content` add column `img_format` varchar(20) NOT NULL default 'png'";
+		$query="ALTER TABLE `#__easysdi_basemap_content` add column `img_format` varchar(100) NOT NULL default 'image/png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		$query="ALTER TABLE `#__easysdi_perimeter_definition` add column `img_format` varchar(20) NOT NULL default 'png'";
+		$query="ALTER TABLE `#__easysdi_perimeter_definition` add column `img_format` varchar(100) NOT NULL default 'image/png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1188,7 +1188,7 @@ function com_install(){
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 	
-	$mainframe->enqueueMessage("Congratulation shop for EasySdi Shop is installed and ready to be used. 
+	$mainframe->enqueueMessage("Congratulation shop for EasySdi is installed and ready to be used. 
 	Enjoy EasySdi Shop!","INFO");
 
 }

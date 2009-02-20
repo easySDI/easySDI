@@ -26,14 +26,14 @@ function com_uninstall(){
 	/**
 	 * Check dependencies
 	 */
-	$count = 0;
+	/*$count = 0;
 	$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_asitvd' ";
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT ASITVD IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		$mainframe->enqueueMessage("WARNING : Dependent component AsitVD is installed. You must uninstall it.","INFO");
 		//return false;		
-	}
+	}*/
 	
 	/**
 	 * Delete components
