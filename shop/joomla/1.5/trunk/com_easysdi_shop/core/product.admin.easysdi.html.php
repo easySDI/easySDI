@@ -149,7 +149,7 @@ class HTML_product {
 								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $product_partner ); ?></td>								
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
 							</tr>
 							<tr>
