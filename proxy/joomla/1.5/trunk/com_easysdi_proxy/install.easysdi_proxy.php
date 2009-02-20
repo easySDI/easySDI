@@ -25,7 +25,7 @@ function com_install(){
 	$db =& JFactory::getDBO();	
 	
 	if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
-		$mainframe->enqueueMessage("Core component does not exists. Easysdi_proxy could not be installed. Please install core component first.","ERROR");
+		$mainframe->enqueueMessage("Core component does not exist. Easysdi_proxy could not be installed. Please install core component first.","ERROR");
 		/**
 		 * Delete components
 		 */
@@ -88,7 +88,7 @@ function com_install(){
 		/**
 		 * Insert value for PROXY_CONFIG in configuration table
 		 */
-		$query = "insert  into #__easysdi_config (thekey, value) values('PROXY_CONFIG','C:\\www\\tomcat-5-5\\webapps\\proxy\\conf\\config.xml')";
+		$query = "insert  into #__easysdi_config (thekey, value) values('PROXY_CONFIG','C:/www/tomcat-5-5/webapps/proxy/conf/config.xml')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -127,7 +127,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}*/
 		
-	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi Proxy is installed and ready to be used. Enjoy EasySdi Proxy!","INFO");
+	$mainframe->enqueueMessage("Congratulation proxy manager for EasySdi is installed and ready to be used. Enjoy EasySdi Proxy!","INFO");
 	return true;
 }
 

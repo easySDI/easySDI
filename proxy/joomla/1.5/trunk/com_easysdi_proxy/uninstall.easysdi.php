@@ -31,11 +31,12 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
 	}
 	
 	
 	
-	$mainframe->enqueueMessage("Congratulation EasySdi partner manager is uninstalled.
+	$mainframe->enqueueMessage("Congratulation EasySdi proxy manager is uninstalled.
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 	","INFO");
 
