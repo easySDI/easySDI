@@ -37,7 +37,7 @@ function com_install(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count == 0) {
-		$mainframe->enqueueMessage("EASYSDI CORE IS NOT INSTALLED","ERROR");
+		$mainframe->enqueueMessage("Core component does not exist. Easysdi Catalog could not be installed. Please install core component first.","ERROR");
 		/**
 		 * Delete components
 		 */
@@ -89,7 +89,7 @@ function com_install(){
 	}
 	
 	
-	$mainframe->enqueueMessage("Congratulation catalog for EasySdi Catalog is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");
+	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");
 	return true;
 }
 

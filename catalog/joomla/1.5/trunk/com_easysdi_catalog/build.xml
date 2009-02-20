@@ -25,7 +25,20 @@
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
-		
+		<copy
+					todir="C:\www\Site\Joomla\administrator\components\com_easysdi_catalog">
+					<fileset dir=".">
+						<include name="**/*.php" />
+						<include name="**/*.xsl" />
+						<include name="**/*.inc" />
+						<include name="**/*.jar" />
+						<include name="**/*.xml" />
+						<include name="**/*.png" />
+						<include name="**/*.ttf" />
+						<include name="**/*.txt" />
+						<include name="**/*.css" />
+					</fileset>
+				</copy>
 		<copy
 			todir="C:\www\Site\Joomla\components\com_easysdi_catalog">
 			<fileset dir="./com_easysdi_catalog">

@@ -31,7 +31,7 @@ function com_uninstall(){
 	$db->setQuery( $query);
 	$count = $db->loadResult();
 	if ($count > 0) {
-		$mainframe->enqueueMessage("DEPENDENT COMPONENT SHOP IS INSTALLED. YOU MUST UNINSTALL IT","INFO");
+		$mainframe->enqueueMessage("WARNING : Dependent component Shop is installed. You must uninstall it.","ERROR");
 		//return false;		
 	}
 
