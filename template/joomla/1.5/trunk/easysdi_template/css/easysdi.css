@@ -507,40 +507,8 @@ div.olControlMousePosition {
 
 .contentheading, .componentheading 
 {
-
-margin-top: 0pt;
-
-margin-right: 0pt;
-
-margin-left: 0pt;
-
-margin-bottom: 15px;
-
-padding-top: 5px;
-
-padding-right: 5px;
-
-padding-left: 10px;
-
-padding-bottom: 12px;
-
-font-size: 22px;
-
-line-height: 100%;
-
 font-weight: bold;
-
-color: #333333;
-
-background-color: #a8cf92;
-
-background-image: url(../images/bg_footer_titre.png);
-
-background-repeat: no-repeat;
-
-background-attachment: scroll;
-
-background-position: center bottom;
+font-size: 22px;
 
 }
 
