@@ -305,7 +305,7 @@ echo $pane->endPanel();
 			$remoteServer->url="";
 			$remoteServer->password="";
 		}
-		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT CONFIG :' ).$configId, 'edit.png' );
+		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT CONFIG' ).' : '.$configId, 'edit.png' );
 		?>
 <script>
 function changeValues(){
