@@ -738,7 +738,7 @@ function wfsRegisterEvents()
 var oldLoad = window.onload;
 window.onload=function(){
 initMap();
-selectPerimeter();
+selectPerimeter('perimeterList');
 if (oldLoad) oldLoad();
 }
 </script>
@@ -1806,8 +1806,6 @@ if (count($rows)>0){
 <table width="100%">
 
 	<tr>
-		<!--<td><img src="./img.gif" width="40" height="40"></td>
-		-->
 		<td width="80%" ><span class="mdtitle"><a class="modal"
 			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 			href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"

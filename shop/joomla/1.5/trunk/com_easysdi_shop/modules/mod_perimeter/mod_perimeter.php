@@ -61,6 +61,7 @@ $cid = 		$mainframe->getUserState('productList');
 			
 	function selectPerimeter(perimListName){
 	
+	
 	selIndex = document.getElementById(perimListName).selectedIndex;
 
 
@@ -379,7 +380,14 @@ function recenterOnPerimeter(){
 		}
 		
 		function fillSelectPerimeter(){
-		var elSel = document.getElementById("perimetersList");
+		
+		
+		selectPerimeterPerimeter(document.getElementById('perimeterList')[document.getElementById('perimeterList').selectedIndex].value)
+		
+		
+		/*var elSel = document.getElementById("perimeterListPerimeter");
+		
+		
 		freeSelectPerimeter();
 		
 		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
@@ -412,7 +420,7 @@ function recenterOnPerimeter(){
              map.addLayer(wfs3);
               map.removeLayer(wfs3);    
               
-              
+              */
             }
 		</script>
 		
