@@ -105,6 +105,7 @@ $db =& JFactory::getDBO();
 	 		 	}
 	 		 	<?php }
 	 		 	
+	 		 	
 	 		 	if ($row->maxfeatures!="-1") {?>
 	 		 	 var maxfeatures = "&MAXFEATURES=<?php echo$row->maxfeatures ?>";
 	 		 	<?php }else{?>
