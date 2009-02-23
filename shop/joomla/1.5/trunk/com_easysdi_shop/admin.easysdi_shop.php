@@ -606,7 +606,7 @@ case "saveLocation":
 
 	case "editProductMetadata2":	
 		TOOLBAR_product::_EDITPRODUCTMETADATA();
-		ADMIN_product::editProductMetadata($cid[0],$option);
+		ADMIN_product::editProductMetadata2($cid[0],$option);
 		break;
 	
 		

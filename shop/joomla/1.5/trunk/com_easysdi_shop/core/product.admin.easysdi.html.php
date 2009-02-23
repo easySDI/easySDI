@@ -513,16 +513,18 @@ class HTML_product {
 							foreach ($rowsClasses as $rowClasses){
 								
 						?>					
+						<div id="fieldset<?php echo $rowClasses->iso_key."__0"; ?>">
 								<fieldset>
-								<legend><?php echo JText::_($rowClasses->description); ?></legend>	
+								<legend><?php echo JText::_($rowClasses->description); ?><a href="#" onClick="var node1 = document.getElementById('fieldset<?php echo $rowClasses->iso_key."__0"; ?>');var node2 = node1.cloneNode(true);var container = document.getElementById('container<?php echo $rowClasses->iso_key."__0"; ?>');container.appendChild(node2);">+</a></legend>	
 								<table border="0" cellpadding="3" cellspacing="0">
 												
 							<?php helper_easysdi::generateMetadataHtml($rowClasses,$row->tab_id,$rowProduct->metadata_standard_id,$rowClasses->iso_key,$geoMD,$rowProduct->metadata_id);  ?>
 								</table>
-								</fieldset>							
+								</fieldset>	
+								</div>
+								<div id="container<?php echo $rowClasses->iso_key."__0"; ?>"></div> 							
 							<?php } ?>
-						
-				
+										
 					</fieldset>
 					</td>
 					</tr>
@@ -534,6 +536,193 @@ class HTML_product {
 
 		
 		?>		
+		<input type="hidden" name="standard_id" value="<?php echo$rowProduct->metadata_standard_id; ?>" />
+		<input type="hidden" name="option" value="<?php echo $option; ?>" />
+		<input type="hidden" name="task" value="" />
+		</form>
+	<?php
+	}
+	
+	function editProductMetadata2( $rowProduct,$id, $option ){
+		
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
+		
+		JHTML::_('behavior.calendar');
+
+		
+		
+		jimport("joomla.utilities.date");
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+				
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
+			
+		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+ 		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
+		
+		$geoMD = new geoMetadata($cswResults);				 
+		
+		$database =& JFactory::getDBO(); 
+		$tabs =& JPANE::getInstance('Tabs');
+		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PRODUCT"), 'generic.png' );
+
+					
+		?>				
+	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+<?php
+		echo $tabs->startPane("productPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
+
+		?>		
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC_METADATA"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td width="100p"><?php echo JText::_("EASYSDI_PRODUCT_ID"); ?> : </td>
+								<td><?php echo $rowProduct->id; ?></td>
+								<input type="hidden" name="id" value="<?php echo $id;?>">								
+							</tr>			
+							<tr>
+								<td><?php echo JText::_("EASYSDI_METADATA_ID"); ?> : </td>
+								<td><?php echo $rowProduct->metadata_id; ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_UPDATE_DATE"); ?> : </td>						
+								<?php $date = new JDate($rowProduct->update_date); ?>										
+								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL() ?>" />
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->update_date)); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_CREATION_DATE"); ?> : </td>
+								<?php $date = new JDate($rowProduct->creation_date); ?>
+								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL() ?>" />								
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->creation_date)); ?></td>
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
+								<?php
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where  a.user_id = b.id AND partner_id=".$rowProduct->partner_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>	
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
+								<?php
+									$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id AND partner_id=".$rowProduct->metadata_partner_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>																	
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
+								<?php
+									$query = "SELECT name FROM #__easysdi_metadata_standard  where is_deleted =0 AND id =".$rowProduct->metadata_standard_id ;
+									$database->setQuery($query);				 
+		 						?>
+								<td><?php echo $database->loadResult(); ?></td>																																								
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>			
+		</table>		
+		<script>
+		function traverse(tree) {
+		
+		if (tree.attributes!=null){
+		if (tree.attributes.length>0){
+                for (var j=0;j<tree.attributes.length;j++){
+                if (tree.attributes[j].nodeName == 'name'){
+                tree.attributes[j].nodeValue = tree.attributes[j].nodeValue +"";
+                alert(tree.attributes[j].nodeName+" ==> "+tree.attributes[j].nodeValue);
+                }
+                }
+                
+                }}
+                
+                
+        if(tree.hasChildNodes()) {
+                
+                
+      
+                for(var i=0; i<tree.childNodes.length; i++)
+                        traverse(tree.childNodes[i]);
+                
+        }
+        
+        }
+		</script>
+		
+		<?php
+		echo $tabs->endPanel();
+		
+		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) group by a.tab_id" ;
+		
+		$database->setQuery($query);				 
+		$rows = $database->loadObjectList();		
+		if ($database->getErrorNum()) {						
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+		}
+				
+		foreach ($rows as $row){
+			
+			echo $tabs->startPanel(JText::_($row->text),"productrPane");
+			?>
+			<table border="0" cellpadding="0" cellspacing="0">
+
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_($row->text); ?></legend>
+						
+					<?php 
+					
+					
+					$query = "SELECT c.id,c.name as name,c.description as description,c.iso_key as iso_key FROM #__easysdi_metadata_classes c,#__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) and c.id = a.class_id and a.tab_id = $row->tab_id" ;		
+					$database->setQuery($query);				 
+					$rowstab = $database->loadObjectList();		
+					if ($database->getErrorNum()) {						
+							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+					}				
+					foreach ($rowstab as $rowtab){
+						
+						$count  = $geoMD->isXPathResultCount("//".$rowtab->iso_key);
+						?>
+						
+						<?php 
+						for ($i=0 ;$i<$count;$i++){
+							?>
+							
+  						<div id="fieldset<?php echo $rowtab->iso_key."__".$i; ?>">
+							<fieldset>
+						<legend><?php echo JText::_($rowtab->description); ?><a href="#" onClick="var node1 = document.getElementById('fieldset<?php echo $rowtab->iso_key."__".$i; ?>');var node2 = node1.cloneNode(true);var container = document.getElementById('container<?php echo $rowtab->iso_key."__".$i; ?>');container.appendChild(node2);">+</a></legend>
+							<table><?php helper_easysdi::generateMetadataHtml2($rowtab->id,$geoMD,$rowtab->iso_key."[".($i+1)."]", $rowProduct->metadata_id,1);?></table>
+						</fieldset>
+						</div>
+						<div id="container<?php echo $rowtab->iso_key."__".$i; ?>"></div> 							 
+							 <?php						
+						}
+						?>
+						<?php
+					}	
+					 ?>
+										
+					</fieldset>
+					</td>
+					</tr>
+				</table>
+			<?php 
+			echo $tabs->endPanel();						
+		}
+		echo $tabs->endPane();
+		?>
 		<input type="hidden" name="standard_id" value="<?php echo$rowProduct->metadata_standard_id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
@@ -585,7 +774,20 @@ array(); ?>
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>
-				<?php $link =  "index.php?option=$option&amp;task=editProductMetadata&cid[]=$row->id";?>								
+				
+				
+				<?php
+
+				if ($row->hasMetadata == 1){
+					$link =  "index.php?option=$option&amp;task=editProductMetadata2&cid[]=$row->id";					
+				}else{					
+					$link =  "index.php?option=$option&amp;task=editProductMetadata&cid[]=$row->id";
+				}
+				
+				
+				
+				
+				?>								
 				
 				<td><a href="<?php echo $link;?>"><?php echo $row->metadata_id; ?></a></td>
 				<td><a href="<?php echo $link;?>"><?php echo $row->data_title; ?></a></td>																												

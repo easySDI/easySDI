@@ -351,12 +351,17 @@ function deleteMetadataListContent($cid,$option){
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
 		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
-				
-		if ($type == ''){
+		
+		if (strlen($type)==0){
 			
+			$type = JRequest::getVar('type','');
+		}
+		
+		if (strlen($type)==0){			
 			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
-			$db->setQuery( $query ,1,1);
+			$db->setQuery( $query ,0,1);
 			 $type = $db->loadResult();
+		
 		}
 		$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
 		$db->setQuery( $query );

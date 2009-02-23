@@ -24,7 +24,7 @@ class ADMIN_product {
 		$db =& JFactory::getDBO();
 		if ($published){
 			$query = "update #__easysdi_product  set published = 1  where id=$cid[0]";
-				
+
 		}else{
 			$query = "update #__easysdi_product  set published = 0  where id=$cid[0]";
 		}
@@ -34,7 +34,7 @@ class ADMIN_product {
 		}
 
 	}
-	
+
 	function listProduct($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -78,6 +78,23 @@ class ADMIN_product {
 
 	}
 
+
+	function editProductMetadata2( $id, $option ) {
+		global  $mainframe;
+		$database =& JFactory::getDBO();
+		$rowProduct = new product( $database );
+		$rowProduct->load( $id );
+
+		$rowProduct->update_date = date('d.m.Y H:i:s');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		if (strlen($catalogUrlBase )==0){
+			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
+		}else{
+			HTML_product::editProductMetadata2( $rowProduct,$id, $option );
+		}
+	}
+
 	function editProductMetadata( $id, $option ) {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -98,19 +115,19 @@ class ADMIN_product {
 		global  $mainframe;
 		$user = JFactory::getUser();
 		$database =& JFactory::getDBO();
-		
+
 		$rowProduct = new product( $database );
-		
+
 		if($id == '0')
 		{
 			$id = JRequest::getVar('id', 0 );
 		}
 		if ($id == '0' ){
 			$rowProduct->creation_date =date('d.m.Y H:i:s');
-			$rowProduct->metadata_id = helper_easysdi::getUniqueId();	
+			$rowProduct->metadata_id = helper_easysdi::getUniqueId();
 			$partner = new partnerByUserId($database);
 			$partner->load($user->id);
-			$rowProduct->partner_id = $partner->partner_id;			
+			$rowProduct->partner_id = $partner->partner_id;
 			if(userManager::hasRight($partner->partner_id,"METADATA"))
 			{
 				$rowProduct->metadata_partner_id = $partner->partner_id;
@@ -121,32 +138,32 @@ class ADMIN_product {
 			$rowProduct->load( $id );
 		}
 		/*$product = JRequest::getVar('product_id', 0 );
-		
+
 		if($id == '0' && $product != '0')
-		{	
-			$rowProduct->load( $product );
+		{
+		$rowProduct->load( $product );
 		}
 		else if ($id == '0' && $product == '0'){
-			$rowProduct->creation_date =date('d.m.Y H:i:s');
-			$rowProduct->metadata_id = helper_easysdi::getUniqueId();	
-			$partner = new partnerByUserId($database);
-			$partner->load($user->id);
-			$rowProduct->partner_id = $partner->partner_id;			
-			if(userManager::hasRight($partner->partner_id,"METADATA"))
-			{
-				$rowProduct->metadata_partner_id = $partner->partner_id;
-			}
+		$rowProduct->creation_date =date('d.m.Y H:i:s');
+		$rowProduct->metadata_id = helper_easysdi::getUniqueId();
+		$partner = new partnerByUserId($database);
+		$partner->load($user->id);
+		$rowProduct->partner_id = $partner->partner_id;
+		if(userManager::hasRight($partner->partner_id,"METADATA"))
+		{
+		$rowProduct->metadata_partner_id = $partner->partner_id;
+		}
 		}
 		else
 		{
-			$rowProduct->load( $id );
+		$rowProduct->load( $id );
 		}*/
-		
+
 		$rowProduct->update_date = date('d.m.Y H:i:s');
 
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		
+
 		if (strlen($catalogUrlBase )==0){
 			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
@@ -159,8 +176,9 @@ class ADMIN_product {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
-		 
+			
 		$metadata_standard_id = JRequest::getVar("standard_id");
+		$metadata_id = JRequest::getVar("metadata_id");
 		
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id  and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $metadata_standard_id)) group by a.tab_id" ;
 		$database->setQuery($query);
@@ -168,28 +186,39 @@ class ADMIN_product {
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$doc="<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\" xmlns:ext=\"http://www.depth.ch/2008/ext\">";
+			
+
+		$doc = "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\" xmlns:ext=\"http://www.depth.ch/2008/ext\">";
+
+		
+
 		foreach ($rows as $row){
 
 
-			$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $metadata_standard_id)) order by position" ;
+		$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $metadata_standard_id)) order by position" ;
 			
-			$database->setQuery($query);
-			$rowsClasses = $database->loadObjectList();
-			if ($database->getErrorNum()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-				
-			foreach ($rowsClasses as $rowClasses){
-				$doc=$doc."<$rowClasses->iso_key>";
-				helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
-				$doc=$doc."</$rowClasses->iso_key>";
-			}
-
-
+		$database->setQuery($query);
+		$rowsClasses = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
+
+		foreach ($rowsClasses as $rowClasses){
+		$doc=$doc."<$rowClasses->iso_key>";
+					
+		$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
+				
+		for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
+			helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
+		}
+
+		$doc=$doc."</$rowClasses->iso_key>";
+		}
+		}				
+		
 		$doc=$doc."</gmd:MD_Metadata>";
 
+	
 		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 		<csw:Transaction service=\"CSW\"
 		version=\"2.0.0\"
@@ -199,16 +228,24 @@ class ADMIN_product {
 		</csw:Insert>
 		</csw:Transaction>";
 
+		//$mainframe->enqueueMessage(htmlentities($xmlstr),"ERROR");	
 
-		
 			
-
+		ADMIN_product::deleteMetadata($metadata_id);
 		ADMIN_product::SaveMetadata($xmlstr);
 			
+		$query = "UPDATE #__easysdi_product SET hasMetadata = 1 WHERE id = ".$metadata_standard_id = JRequest::getVar("id");
 		
+		$database->setQuery( $query );
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			exit();
+		}
+
 
 	}
-	
+
 	function saveProduct($returnList ,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();
@@ -244,7 +281,7 @@ class ADMIN_product {
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
 		{
 			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,".$rowProduct->id.",".$perimeter_id.")";
-				
+
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
@@ -270,7 +307,7 @@ class ADMIN_product {
 		foreach( $_POST['properties_id'] as $properties_id )
 		{
 			$query = "INSERT INTO #__easysdi_product_property VALUES (0,".$rowProduct->id.",".$properties_id.")";
-				
+
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -301,7 +338,7 @@ class ADMIN_product {
 		{
 			$product = new product( $database );
 			$product->load( $id );
-				
+
 			if (!$product->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -380,7 +417,7 @@ class ADMIN_product {
 
 
 	}
-	
+
 	function SaveMetadata($xmlstr){
 		$content_length = strlen($xmlstr);
 

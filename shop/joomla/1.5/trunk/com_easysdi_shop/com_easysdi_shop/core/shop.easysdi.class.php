@@ -1586,7 +1586,7 @@ if (count($rows)>0){
 
 					echo "<b>".$i."</b><br>";
 					
-					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).")";
+					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title,metadata_standard_id,hasMetadata) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).",(select id from #__easysdi_metadata_standard WHERE name = 'ASITVD - ISO 19115:2003/19139' ),1)";
 					echo $query."<br>";
 					$db->setQuery( $query);
 					if (!$db->query()) {

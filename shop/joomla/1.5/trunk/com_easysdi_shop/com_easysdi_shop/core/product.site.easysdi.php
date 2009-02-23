@@ -57,7 +57,16 @@ class SITE_product {
 				
 			foreach ($rowsClasses as $rowClasses){
 				$doc=$doc."<$rowClasses->iso_key>";
-				helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
+				
+				
+					$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
+				
+		for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
+			helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
+		}
+				
+		
+		//		helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
 				$doc=$doc."</$rowClasses->iso_key>";
 			}
 
@@ -104,10 +113,23 @@ class SITE_product {
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById); 
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');		
 		$geoMD = new geoMetadata($cswResults);				 
-
+		
+		
 		
 		SITE_product::SaveMetadata($xmlstrToDelete);
 		SITE_product::SaveMetadata($xmlstr);
+		
+		
+			
+		$query = "UPDATE #__easysdi_product SET hasMetadata = 1 WHERE id = ".$metadata_standard_id = JRequest::getVar("id");
+		
+		$database->setQuery( $query );
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			exit();
+		}
+		
 		
 		//Send a Mail to notify the administrator that a new product is created 
 		if ( strlen($geoMD->getFileIdentifier()) == 0){
@@ -128,7 +150,7 @@ class SITE_product {
 		}
 		
 		
-		//Send a Mail to the users that have requested to be notify that the metadata has just been changed
+		//Send a Mail to the users that have requested to be notified when the metadata has just been changed
 		$product_id = JRequest::getVar("product_id",0);
 		$query = "SELECT email,data_title FROM #__easysdi_user_product_favorite f, #__easysdi_community_partner p,#__users u,#__easysdi_product pr  where f.partner_id = p.partner_id  AND p.user_id = u.id and pr.id = f.product_id AND f.product_id = $product_id AND notify_metadata_modification = 1";
 		$database->setQuery( $query );
@@ -391,6 +413,43 @@ class SITE_product {
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
 		HTML_product::editMetadata( $rowProduct,$id, $option );
+		}
+	}
+	
+	
+	function editMetadata2() {
+		global  $mainframe;
+		if (!$isNew){
+		$id = JRequest::getVar('id');
+		}else {
+			$id=0;
+		}
+		
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!usermanager::isUserAllowed($user,"METADATA"))
+		{
+			return;
+		}
+		
+		$option = JRequest::getVar('option');
+		  
+		$database =& JFactory::getDBO(); 
+		$rowProduct = new product( $database );
+		$rowProduct->load( $id );					
+	
+		if ($id ==0){
+			$rowProduct->creation_date =date('d.m.Y H:i:s');
+			$rowProduct->metadata_id = uniqid();
+			 			
+		}
+		$rowProduct->update_date = date('d.m.Y H:i:s'); 
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		if (strlen($catalogUrlBase )==0){
+				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
+		}else{
+		HTML_product::editMetadata2( $rowProduct,$id, $option );
 		}
 	}
 	

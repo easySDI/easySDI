@@ -230,6 +230,9 @@ switch($task){
 	case "editMetadata":
 		SITE_product::editMetadata();
 		break;
+	case "editMetadata2":
+		SITE_product::editMetadata2();
+		break;
 	case "showMetadata":
 		HTML_shop::showMetadata();
 		break;
