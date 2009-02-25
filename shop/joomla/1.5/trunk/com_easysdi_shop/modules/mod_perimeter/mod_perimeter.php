@@ -94,9 +94,7 @@ $cid = 		$mainframe->getUserState('productList');
 		?>
 		</select>
 		</td></tr>
-		<tr><td>
-	<div id="panelEdition" class="olControlEditingToolbar"></div>
-	</td></tr>  
+		<tr><td><div id="panelEdition" class="olControlEditingToolbar"></div></td></tr>  
 <tr><td>
 <div id="status">  </div>
 </td></tr></table>
@@ -202,7 +200,10 @@ $cid = 		$mainframe->getUserState('productList');
 
 		 function drawSelectedSurface(){
 			 var elSel = document.getElementById('selectedSurface');
-			 var features = vectors.features; 
+			 var features = vectors.features;
+			 if (features.length == 0) {
+			 vectors.addFeatures([new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon())]);
+			 } 
      	     var feature= features[features.length-1];
 			var selectedComponents =      new Array();
 			  	
@@ -442,10 +443,10 @@ function recenterOnPerimeter(){
 		</div>
 		<div  id="manualAddGeometry" style="display:none">
 				
-			<?php echo JText::_("EASYSDI_ADD_X_TEXT");?> <input type="text" id ="xText" value="0"><br>
-			<?php echo JText::_("EASYSDI_ADD_Y_TEXT");?> <input type="text" id ="yText" value="0"><br>
-			<button class="addPerimeterButton" type="button" onClick="addGeometryPerimeter();"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>			
-			<button class="addPerimeterButton" type="button" onClick="modifyGeometryPerimeter();"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button>			
+			<?php echo JText::_("EASYSDI_ADD_X_TEXT");?> <input type="text" id ="xText" value=""><br>
+			<?php echo JText::_("EASYSDI_ADD_Y_TEXT");?> <input type="text" id ="yText" value=""><br>
+			<button class="addPerimeterButton" type="button" onClick="addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>			
+			<button class="addPerimeterButton" type="button" onClick="modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button>			
 		</div>
 		<?php
 	}
