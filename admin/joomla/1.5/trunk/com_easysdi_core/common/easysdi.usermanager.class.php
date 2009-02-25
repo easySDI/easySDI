@@ -32,7 +32,7 @@ class userManager
 				
 		$database->setQuery($query );
 		$total = $database->loadResult();
-		//echo "renaud : ".$query;
+		
 		return ($total > 0 );
 	}
 	

@@ -54,17 +54,28 @@ class geoMetadata{
 		
 		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+		$this->xpath->registerNamespace('ext','http://www.depth.ch/2008/ext');
+		
 		}		
 		
 	}
+	function getMetadataDom(){
+		
+		return $this->metadata;
+		
+	}
+	
 	
 function isXPathResultCount($xpath){
 		if ($this->metadata){	
 		$nodes = $this->xpath->query($xpath);
 		if ($nodes === false) return "";
 		if ($nodes->length==0) return "";
-		
-		return count($nodes);
+		$i=0;
+		foreach ($nodes as $node){
+			$i++;
+		}
+		return $i;
 		}
 		return 0;
 		
@@ -74,7 +85,7 @@ function isXPathResultCount($xpath){
 		if ($this->metadata){	
 		$nodes = $this->xpath->query($xpath);
 		if ($nodes === false) return "";
-		//echo "Renausd : ".count($nodes);
+		
 		if ($nodes->length==0) return "";
 		$theNode = $nodes->item(0);
 		
@@ -88,6 +99,7 @@ function isXPathResultCount($xpath){
 		
 		$this->xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$this->xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+		$this->xpath->registerNamespace('ext','http://www.depth.ch/2008/ext');
 		
 		//$this->metadata->save("c:\\".$theNode ->nodeValue.".xml");
 		
