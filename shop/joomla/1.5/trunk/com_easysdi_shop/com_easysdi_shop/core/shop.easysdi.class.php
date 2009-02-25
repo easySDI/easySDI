@@ -1619,7 +1619,7 @@ if (count($rows)>0){
 
 
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		if ($catalogUrlBase) $catalogUrlBase ="http://localhost:8081/proxy/ogc/geonetwork";
+		if (!$catalogUrlBase) $catalogUrlBase ="http://localhost:8081/proxy/ogc/geonetwork";
 		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw%3Ahttp%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw&outputSchema=csw%3AIsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 
@@ -1654,6 +1654,7 @@ if (count($rows)>0){
 						echo "<div class='alert'>";
 						echo "<b>".$db->getErrorMsg()."</b><br>";
 						echo "</div>";
+						exit;
 					}
 				}
 			}
