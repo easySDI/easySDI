@@ -629,7 +629,7 @@ function intersect() {
                         url: wfsUrlWithFilter,
                         format: new OpenLayers.Format.GML()                                                
                     })});	
-                wfs2.events.register("beforefeaturesadded",null,function (myEvent){alert("CICI");} );
+                
                 
                 wfs2.events.register("featureadded", null, function(myEvent) { 
                 $("status").innerHTML = "";
@@ -675,7 +675,7 @@ function wfsRegisterEvents()
  
  //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
 //	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
-	  wfs.events.register("beforefeaturesadded",null,function (myEvent){alert("CICI2");} );
+	  
  			wfs.events.register("featureremoved",null,function(event){
 			
 			        feat2 = event.feature;
