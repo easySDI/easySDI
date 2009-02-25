@@ -340,6 +340,25 @@ class SITE_cpanel {
 		$rootPartner = new partnerByUserId($database);
 		$rootPartner->load($user->id);
 		
+		
+		//Automatic Archive of the orders 
+		//Get the delay in days unit
+		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY");
+		if ($archive_delay == null) $archive_delay=30; 
+		$query = "update #__easysdi_order set archived = 1, ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $archive_delay  AND STATUS = 'FINISH' AND ARCHIVED = 0";
+
+		$database->setQuery($query);
+		if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}
+		
+			
+		
+		
+		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
