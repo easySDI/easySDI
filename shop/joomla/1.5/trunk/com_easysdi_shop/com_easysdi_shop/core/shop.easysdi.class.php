@@ -757,9 +757,66 @@ $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 ?>
 <script>
+
+function isSelfIntersect(){
+ var features = vectors.features;
+ if (features.length == 0) {
+			 return;
+	} 
+  var feature= features[features.length-1];
+  var lines = new Array();
+			  	
+   
+  if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+     	
+     	var polygonSize = feature.geometry.components[0].components.length;     	
+     	var components = feature.geometry.components[0].components;
+     	     
+     	var i = 0;
+     	while (i< polygonSize-1){		     	
+		     		lines.push (new OpenLayers.Geometry.LineString ([
+		     				new OpenLayers. Geometry. Point(components [i].x,components [i].y),
+		     				new OpenLayers. Geometry. Point(components [i+1].x,components [i+1].y)
+		     				]));		     				
+		     			     			     	
+			i++;
+     	}     	
+     	
+     	for (i=0;i< lines.length;i++){
+     		count=0;
+     		for (j=0;j< lines.length;j++){
+     		
+     		//On ne doit pas comparer la ligne avec elle même
+     			if (i != j){
+	     			if (lines[i].intersects (lines[j])) {
+	     			count++;	     			
+	     			}     	
+	     			//alert (i+" "+j+" "+lines[i].intersects (lines[j]));		
+     			}
+     			if (count > 2) {
+     				//More than 2 intersectios for a line, mean that a line intersects another one.
+     				alert("<?php echo JText::_("EASYSDI_SELF_INTERSECTING_POLYGON"); ?>");	     			
+	     			return true;
+     			}     			     				     		
+     		}
+     
+     		
+     	}     	
+     }
+     
+     return false;
+}
+
  function submitOrderForm(){ 	
  	var selectedSurface = document.getElementById('selectedSurface');
  	
+ 	if (document.getElementById('step').value == 3 && 
+ 			isSelfIntersect()==true){
+ 				
+ 				return ;
+ 		}
+ 		
+ 		
  		
  if (selectedSurface.options.length>0){	  	
  	var replicSelectedSurface = document.getElementById('replicSelectedSurface');
@@ -792,6 +849,8 @@ $task = JRequest::getVar('task');
  	}else {
  		if (document.getElementById('step').value == 1){
  			document.getElementById('orderForm').submit();
+ 			
+ 			isSelfIntersect
  		}else{
  			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
  			}

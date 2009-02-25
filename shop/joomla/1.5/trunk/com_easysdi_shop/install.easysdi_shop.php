@@ -1168,7 +1168,23 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-	  	
+
+		
+		$query = "insert  into #__easysdi_config (thekey, value) values('ARCHIVE_DELAY','1')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$query = "insert  into #__easysdi_config (thekey, value) values('HISTORY_DELAY','1')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
 	}
 
 	/**
