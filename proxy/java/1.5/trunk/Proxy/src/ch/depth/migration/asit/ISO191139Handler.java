@@ -14,100 +14,16 @@
  */
 package ch.depth.migration.asit;
 
-import java.util.Hashtable;
-import java.util.List;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Vector;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-
-import org.isotc211._2005.gco.CharacterStringPropertyType;
-import org.isotc211._2005.gco.CodeListValueType;
-import org.isotc211._2005.gco.DatePropertyType;
-import org.isotc211._2005.gco.DecimalPropertyType;
-import org.isotc211._2005.gco.IntegerPropertyType;
-import org.isotc211._2005.gmd.CIAddressPropertyType;
-import org.isotc211._2005.gmd.CIAddressType;
-import org.isotc211._2005.gmd.CICitationPropertyType;
-import org.isotc211._2005.gmd.CICitationType;
-import org.isotc211._2005.gmd.CIContactPropertyType;
-import org.isotc211._2005.gmd.CIContactType;
-import org.isotc211._2005.gmd.CIDatePropertyType;
-import org.isotc211._2005.gmd.CIDateType;
-import org.isotc211._2005.gmd.CIDateTypeCodePropertyType;
-import org.isotc211._2005.gmd.CIResponsiblePartyPropertyType;
-import org.isotc211._2005.gmd.CIResponsiblePartyType;
-import org.isotc211._2005.gmd.CIRoleCodePropertyType;
-import org.isotc211._2005.gmd.CITelephonePropertyType;
-import org.isotc211._2005.gmd.CITelephoneType;
-import org.isotc211._2005.gmd.CountryPropertyType;
-import org.isotc211._2005.gmd.DQDataQualityPropertyType;
-import org.isotc211._2005.gmd.DQDataQualityType;
-import org.isotc211._2005.gmd.EXExtentPropertyType;
-import org.isotc211._2005.gmd.EXExtentType;
-import org.isotc211._2005.gmd.EXGeographicBoundingBoxType;
-import org.isotc211._2005.gmd.EXGeographicExtentPropertyType;
-import org.isotc211._2005.gmd.LILineagePropertyType;
-import org.isotc211._2005.gmd.LILineageType;
-import org.isotc211._2005.gmd.LIProcessStepPropertyType;
-import org.isotc211._2005.gmd.LIProcessStepType;
-import org.isotc211._2005.gmd.LISourcePropertyType;
-import org.isotc211._2005.gmd.LISourceType;
-import org.isotc211._2005.gmd.LanguageCodePropertyType;
-import org.isotc211._2005.gmd.LocalisedCharacterStringPropertyType;
-import org.isotc211._2005.gmd.LocalisedCharacterStringType;
-import org.isotc211._2005.gmd.MDBrowseGraphicPropertyType;
-import org.isotc211._2005.gmd.MDBrowseGraphicType;
-import org.isotc211._2005.gmd.MDConstraintsPropertyType;
-import org.isotc211._2005.gmd.MDDataIdentificationType;
-import org.isotc211._2005.gmd.MDDatatypeCodePropertyType;
-import org.isotc211._2005.gmd.MDDistributionPropertyType;
-import org.isotc211._2005.gmd.MDDistributionType;
-import org.isotc211._2005.gmd.MDDistributorPropertyType;
-import org.isotc211._2005.gmd.MDDistributorType;
-import org.isotc211._2005.gmd.MDExtendedElementInformationPropertyType;
-import org.isotc211._2005.gmd.MDExtendedElementInformationType;
-import org.isotc211._2005.gmd.MDGeometricObjectTypeCodePropertyType;
-import org.isotc211._2005.gmd.MDGeometricObjectsPropertyType;
-import org.isotc211._2005.gmd.MDGeometricObjectsType;
-import org.isotc211._2005.gmd.MDIdentificationPropertyType;
-import org.isotc211._2005.gmd.MDLegalConstraintsType;
-import org.isotc211._2005.gmd.MDMaintenanceFrequencyCodePropertyType;
-import org.isotc211._2005.gmd.MDMaintenanceInformationPropertyType;
-import org.isotc211._2005.gmd.MDMaintenanceInformationType;
-import org.isotc211._2005.gmd.MDMetadataExtensionInformationPropertyType;
-import org.isotc211._2005.gmd.MDMetadataExtensionInformationType;
-import org.isotc211._2005.gmd.MDReferenceSystemPropertyType;
-import org.isotc211._2005.gmd.MDReferenceSystemType;
-import org.isotc211._2005.gmd.MDSpatialRepresentationPropertyType;
-import org.isotc211._2005.gmd.MDStandardOrderProcessPropertyType;
-import org.isotc211._2005.gmd.MDStandardOrderProcessType;
-import org.isotc211._2005.gmd.MDTopicCategoryCodePropertyType;
-import org.isotc211._2005.gmd.MDTopicCategoryCodeType;
-import org.isotc211._2005.gmd.MDVectorSpatialRepresentationType;
-import org.isotc211._2005.gmd.ObjectFactory;
-import org.isotc211._2005.gmd.PTFreeTextPropertyType;
-import org.isotc211._2005.gmd.PTFreeTextType;
-import org.isotc211._2005.gmd.PTLocalePropertyType;
-import org.isotc211._2005.gmd.PTLocaleType;
-import org.isotc211._2005.gmd.RSIdentifierPropertyType;
-import org.isotc211._2005.gmd.RSIdentifierType;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import ch.depth._2008.ext.EXExtendedMetadataPropertyType;
-import ch.depth._2008.ext.EXExtendedMetadataType;
-import ch.depth.xml.handler.mapper.NamespacePrefixMapperImpl;
 
 public class ISO191139Handler extends DefaultHandler {
 
@@ -147,19 +63,34 @@ public class ISO191139Handler extends DefaultHandler {
 		is_final = 0;
 		
 	    }
-	    
-	       
+	    String type2 = type;
+	    if (type2.equals("Date")){type2 = "freetext";}
+	    if (type2.equals("Decimal")){type2 = "freetext";}
+	    if (type2.equals("list")){type2 = "freetext";}
 	    
 	    System.out.print("INSERT INTO `jos_easysdi_metadata_classes` (`id`, `name`, `iso_key`, `partner_id`, `is_global`, `description`, `is_final`, `is_editable`, `type`) VALUES ");	    
-	    System.out.println("("+id +",'"+ name +"','"+ iso_key+"',"+partner_id+","+is_global+",'"+description+"',"+is_final+","+is_editable+",'"+type+"');");
+	    System.out.println("("+id +",'"+ name +"','"+ iso_key+"',"+partner_id+","+is_global+",'"+description+"',"+is_final+","+is_editable+",'"+type2+"');");
 	    
 	    if (type.equals("freetext")){
-		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_freetext` (`id`, `classes_id`, `freetext_id`) VALUES (0, "+id+", 2000);");		
+		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_freetext` (`id`, `classes_id`, `freetext_id`) VALUES (0, "+id+", (SELECT ID FROM jos_easysdi_metadata_freetext WHERE NAME = 'ASIT - Simple freetext without a default value'));");				
 	    }
 	    if (type.equals("locfreetext")){
-		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_locfreetext` (`id`, `classes_id`, `freetext_id`) VALUES (0, "+id+", 2000);");
+		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_locfreetext` (`id`, `classes_id`, `loc_freetext_id`) VALUES (0, "+id+", (SELECT ID FROM jos_easysdi_metadata_loc_freetext WHERE NAME ='ASIT - Texte en  Francais suisse sans valeur par défaut'));");
+	    }
+	    if (type.equals("Date")){
+		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_freetext` (`id`, `classes_id`, `freetext_id`) VALUES (0, "+id+", (SELECT ID FROM jos_easysdi_metadata_freetext WHERE NAME = 'ASIT - Date'));");		
+	    }
+	    if (type.equals("Decimal")){
+		System.out.println("INSERT INTO `jos_easysdi_metadata_classes_freetext` (`id`, `classes_id`, `freetext_id`) VALUES (0, "+id+", (SELECT ID FROM jos_easysdi_metadata_freetext WHERE NAME = 'ASIT - Decimal'));");		
 	    }
 	    
+	     
+	    if (is_final == 1){
+		
+		System.out.print("INSERT INTO `jos_easysdi_metadata_standard_classes` (`id`, `standard_id`, `position`, `partner_id`, `tab_id`, `class_id`) VALUES ");
+		System.out.println("(0,(SELECT ID FROM jos_easysdi_metadata_standard WHERE NAME ='ASITVD - ISO 19115:2003/19139'),0,0,2001,"+id+" );");
+		
+	    }
 	}
 	
 	public void getCreateClassClass (){	    
@@ -175,7 +106,7 @@ public class ISO191139Handler extends DefaultHandler {
 	    Attributes attr) throws SAXException {
 
 	
-
+//System.err.println("==>"+qName+"<===");
 	curId ++;
 	
 	//if (!h.containsKey(qName)){
@@ -183,7 +114,7 @@ public class ISO191139Handler extends DefaultHandler {
 	    
 	    clazz c= new clazz();
 	    if (parentId.size()>0){
-	    c.parentId= ((Integer)parentId.get(parentId.size()-1)).intValue();
+		c.parentId= ((Integer)parentId.get(parentId.size()-1)).intValue();
 	    }else {
 		c.parentId= 0;
 	    }
@@ -215,7 +146,36 @@ public class ISO191139Handler extends DefaultHandler {
 			break;
 		    }		    
 		}			
-	    }else {
+	    }else if (qName.equals("gco:Date")){
+		c.type = "freetext";
+		
+		//Recherche son parent et met le à freetext
+		for (int j= v.size()-1;j>=0;j--){
+		    clazz c2 = ((clazz)v.get(j));
+		    if (c2.id == c.parentId){
+			c2.type="Date";			
+			break;
+		    }		    
+		}			
+	    }else if (qName.equals("gco:Decimal")){
+		c.type = "freetext";
+		
+		//Recherche son parent et met le à freetext
+		for (int j= v.size()-1;j>=0;j--){
+		    clazz c2 = ((clazz)v.get(j));
+		    if (c2.id == c.parentId){
+			c2.type="Decimal";			
+			break;
+		    }		    
+		}			
+	    }else if (qName.equals("gmd:MD_TopicCategoryCode")){
+		c.type = "list";
+		
+	    }
+	    
+	    
+	    
+	    else {
 		c.type = "class";				
 	    }
 	    
@@ -275,6 +235,8 @@ public class ISO191139Handler extends DefaultHandler {
 	    String[] s = dir.list();
 	    //s.length
 	    for (int i = 0; i < 1; i++) {
+		s[i] = "32_5.xml";
+		//File f = new File(DIR + s[i]);
 		File f = new File(DIR + s[i]);
 		if (f.isFile()) {
 		    XMLReader xr = XMLReaderFactory.createXMLReader();

@@ -47,7 +47,7 @@
 	 <target name="Sync-jar">    
 			<echo>Copy the resources into the working directory</echo>
 	  		<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/proxy/WEB-INF/lib" >
-	  	      <fileset dir="${projet.work.dir}/WEB-INF/lib}" >
+	  	      <fileset dir="${projet.work.dir}/WEB-INF/lib" >
 	  	        <include name="easysdi.jar"/>
 	  	        
 	  	      </fileset>
@@ -96,5 +96,9 @@
 			
 	    <war warfile="${projet.out.dir}/proxy.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
 	</target>
+	
+	
+		
+	
 	
 </project>
