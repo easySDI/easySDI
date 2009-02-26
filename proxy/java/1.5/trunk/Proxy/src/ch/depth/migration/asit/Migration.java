@@ -25,11 +25,12 @@ import java.io.OutputStreamWriter;
 public class Migration {
     
 public static void main(String [] args){
-    try{
+  
     String s = "http://www.asit.vd.ch/geoportal/service/administration/service/xml.asp?lng=FR&form=metadata";
     
     int inc = 5;
     for (int i = 0; i < 800;i = i +inc){
+	  try{
     	java.net.URL url = new java.net.URL(s+"&first="+i+"&last="+(i+inc));
     	System.out.println(s+"&first="+i+"&last="+(i+inc));
 
@@ -42,7 +43,7 @@ public static void main(String [] args){
     	hpcon.setDoOutput(false);
     	java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(hpcon.getInputStream()));
     	String input;
-    	java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File("C:\\download2\\"+i+".xml"));
+    	java.io.FileOutputStream fos = new java.io.FileOutputStream(new java.io.File("C:\\download\\"+i+".xml"));
     	BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(fos));
     		    	
     	while((input = in.readLine()) != null) {
@@ -50,8 +51,8 @@ public static void main(String [] args){
     	}
     	in.close();
     	wr.close();
-    	
-    }}catch (Exception e){e.printStackTrace();} 
+	  }catch (Exception e){e.printStackTrace();}	
+    } 
 }
     
 }
