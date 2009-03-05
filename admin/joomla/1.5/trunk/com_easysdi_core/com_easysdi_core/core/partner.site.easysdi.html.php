@@ -19,6 +19,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+
 class HTML_partner 
 {
 	

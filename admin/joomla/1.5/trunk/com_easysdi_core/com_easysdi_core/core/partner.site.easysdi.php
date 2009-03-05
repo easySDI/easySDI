@@ -20,6 +20,7 @@ echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 
 defined('_JEXEC') or die('Restricted access');
 
+
 class SITE_partner {
 
 	function includePartnerExtension($tab_id,$tab_location,$action,$partner_id)
