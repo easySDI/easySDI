@@ -282,7 +282,7 @@ class displayManager{
 		
 		$document  = new DomDocument();
 				
-		$document ->load(JPATH_COMPONENT_SITE.'/../xsl/xhtml-to-xslfo.xsl');
+		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		
