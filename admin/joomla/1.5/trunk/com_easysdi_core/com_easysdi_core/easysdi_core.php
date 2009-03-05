@@ -22,11 +22,13 @@ jimport("joomla.html.pagination");
 jimport("joomla.html.pane");
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.html.php');
+		
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.html.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
-require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
+
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
@@ -42,37 +44,63 @@ $task = JRequest::getVar('task');
 switch($task){	
 	
 	case "createBlockUser":
-
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::createBlockUser();
 		break;
 	case "createUser":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::createUser(0);
 		break;
 	case "createAffiliate":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::editAffiliatePartner(0);
 		break;
 	case "editAffiliateById":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		$affiliate_id = JRequest::getVar('affiliate_id');
 		SITE_partner::editAffiliatePartner($affiliate_id);
 		break;
 	case "listAffiliatePartner":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::listPartner();
 		break;
 	case "saveAffiliatePartner":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::saveAffiliatePartner();
 		break;
 	case "editAffiliatePartner":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::editAffiliatePartner();
 		break;	
 	case "savePartner":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::savePartner();				
 		break;	
 	case "editPartner":				
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::editPartner();
 		break;
 	
+	case "showMetadata"	:
+		
+		displayManager::showMetadata();
+		break;
+	case "showCompleteMetadata"	:
+		displayManager::showCompleteMetadata();
+		break;
+	case "showDiffusionMetadata"	:
+		displayManager::showDiffusionMetadata();
+		break;	
+	case "exportXml":
+		displayManager::exportXml();
+		break;
+	case "exportPdf":
+		displayManager::exportPdf();
+		break;
+		
 	case "showPartner":
-	default:	
+	default:
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');	
 		SITE_partner::showPartner();
 		break;	
 				
