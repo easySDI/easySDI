@@ -83,7 +83,7 @@ class HTML_shop {
 
 	function exportPdf(){
 		
-		$option = JRequest::getVar('option');
+	/*	$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$id = JRequest::getVar('id');
 
@@ -109,12 +109,12 @@ class HTML_shop {
 		$processor->importStylesheet($style);
 		$myHtml = $processor->transformToXml($cswResults);
 
-		helper_easysdi::exportPDF($myHtml);
+		helper_easysdi::exportPDF($myHtml);*/
 	}
 
 	function exportXml(){
 
-		$option = JRequest::getVar('option');
+	/*	$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$id = JRequest::getVar('id');
 
@@ -132,8 +132,11 @@ class HTML_shop {
 		$nodes = $xpath->query("//gmd:MD_Metadata");
 
 		$dom = new DOMDocument();
-		$xmlContent = $dom ->importNode($nodes->item(0),true);
-		$dom->appendChild($xmlContent);
+	if($nodes->item(0) != "")
+		{
+			$xmlContent = $dom ->importNode($nodes->item(0),true);
+			$dom->appendChild($xmlContent);
+		}
 
 
 		error_reporting(0);
@@ -144,7 +147,7 @@ class HTML_shop {
 		header('Content-Type: text/xml');
 		header('Content-Disposition: attachement; filename="metadata.xml"');
 
-		echo $dom->saveXML();
+		echo $dom->saveXML();*/
 
 
 
@@ -152,8 +155,8 @@ class HTML_shop {
 
 
 	function showMetadata(){
-
-		$option = JRequest::getVar('option');
+		
+	/*	$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$id = JRequest::getVar('id');
 		$toolbar =JRequest::getVar('toolbar',1);
@@ -190,7 +193,7 @@ class HTML_shop {
 		echo $myHtml ;
 
 			
-		/***Add consultation informations*/
+		*Add consultation informations*
 		$db =& JFactory::getDBO();
 
 
@@ -206,7 +209,7 @@ class HTML_shop {
 				echo "</div>";
 			}
 		}
-			
+			*/
 	}
 
 	function orderPerimeter ($cid){
@@ -920,10 +923,10 @@ function isSelfIntersect(){
 			<td><input type="hidden" id="cb<?php echo $i;?>" name="cid[]"
 				value="<?php echo $product->id; ?>" /></td>
 			<td><a
-				href='index.php?option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->data_title; ?></a>
+				href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->data_title; ?></a>
 			</td>
 			<td><a
-				href='index.php?option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->supplier_name; ?></a>
+				href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->supplier_name; ?></a>
 			</td>
 		</tr>
 		<?php
@@ -1870,7 +1873,7 @@ if (count($rows)>0){
 	<tr>
 		<td width="80%" ><span class="mdtitle"><a class="modal"
 			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
-			href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
+			href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
 			rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
 		<span class="mdsupplier"><?php echo $row->supplier_name;?></span><br>
 		</td>
