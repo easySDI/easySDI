@@ -14,6 +14,18 @@ xmlns:ext="http://www.depth.ch/2008/ext"
     <xsl:output encoding="utf-8"/>
     <xsl:output method="html"/>
 
+ 
+<xsl:template match='gmd:graphicOverview[1]'>
+	<tr><td>Synoptique:</td><td>
+   <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
+   </td></tr>
+</xsl:template>
+
+<xsl:template match='gmd:graphicOverview[2]'>
+   <tr><td>Extrait:</td><td>
+     <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
+   </td></tr>
+</xsl:template>
 
 <xsl:template match="gmd:MD_Metadata">
 
@@ -26,31 +38,48 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <tr><td>Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
 <tr><td>Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></td></tr>
 <tr><td>Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/></td></tr>
-<tr><td>Dernière Mise à jour :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"/></td></tr>
+<tr><td>Dernière Mise à jour :</td><td>
+     <xsl:if test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
+		<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"/>        
+     </xsl:if>
+</td></tr>
 <tr><td>Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/></td></tr>
 <tr><td>Couverture spatiale:</td><td>
-	 
-					<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
-
+	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 </td></tr>
 
-<tr><td>Synoptique:</td><td>
-	<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview">
-		<xsl:value-of disable-output-escaping="yes" select="gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString"/>
-		<br/>
-	</xsl:for-each>
-</td></tr>
-<tr><td>Extrait:</td></tr>
+<xsl:choose>
+	<xsl:when test = "./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview">
+		<xsl:for-each select = "./gmd:identificationInfo/gmd:MD_DataIdentification">
+			<xsl:apply-templates select='gmd:graphicOverview'/>
+		</xsl:for-each>
+	</xsl:when>
+	<xsl:otherwise>
+		<tr><td>Synoptique:</td></tr>
+		 <tr><td>Extrait:</td></tr>
+	</xsl:otherwise>
+</xsl:choose>
 
 <tr><td>Sous-produits:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
       <xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Sous-produits' ">
-				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
+			<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
       </xsl:if>
 </xsl:for-each>
 </td></tr>
-<tr><td>Thématique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode"/></td></tr>
+<tr><td>Thématique*:</td><td>
+	<table>
+	<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
+		<tr><td>
+		<xsl:call-template name="categoryCodeTemplate">
+			<xsl:with-param name="categoryCode" select="gmd:MD_TopicCategoryCode"/>
+		</xsl:call-template>
+		</td></tr>
+	</xsl:for-each>
+	</table>
+</td></tr>
 </table>
+<hr></hr>
 
 <hr></hr>
 <h3>Point de contact</h3>
@@ -70,4 +99,71 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 </div>
 
 </xsl:template>
+
+<!-- Template CategoryCode -->
+	<xsl:template name="categoryCodeTemplate">
+		<xsl:param name="categoryCode"/>
+			<xsl:choose>
+				<xsl:when test="$categoryCode = 'farming'">
+					<xsl:text>Agriculture</xsl:text>
+				</xsl:when>
+				<xsl:when test="$categoryCode = 'biota'">
+					<xsl:text>Biologie</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'bounderies'">
+					<xsl:text>Limites</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'climatologyMeteorologyAtmosphere'">
+					<xsl:text>Climatologie/météorologie</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'economy'">
+					<xsl:text>Economie</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'elevation'">
+					<xsl:text>Altimétrie</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'environment'">
+					<xsl:text>Environnement</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'geoscientificinformation'">
+					<xsl:text>Sciences de la Terre</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'health'">
+					<xsl:text>Santé</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'imageryBaseMapEarthCover'">
+					<xsl:text> 	Cartes de base, imagerie</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'intelligenceMilitary'">
+					<xsl:text>Activités militaires</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'inlandWaters'">
+					<xsl:text>Eaux intérieures</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'location'">
+					<xsl:text>Localisation</xsl:text>	
+				</xsl:when>			
+				<xsl:when test="$categoryCode = 'oceans'">
+					<xsl:text>Océans</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'planningCadastre'">
+					<xsl:text>Cadastre, aménagement</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'society'">
+					<xsl:text>Société</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'structure'">
+					<xsl:text>Constructions et ouvrages</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'transportation'">
+					<xsl:text>Transport</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$categoryCode = 'utilitiesCommunication'">
+					<xsl:text>Réseau de dsitribution et d'évacuation</xsl:text>	
+				</xsl:when>	
+				<xsl:otherwise>
+					<xsl:text>Inconnu</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+	</xsl:template>
 </xsl:stylesheet>
