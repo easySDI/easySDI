@@ -320,7 +320,7 @@ class displayManager{
 				$j_fw = new Java("FOPWrapper");
 				
 				$version = $j_fw->FOPVersion();
-				//Gï¿½nï¿½ration du document PDF sous forme de fichier
+				//Génération du document PDF sous forme de fichier
 				$j_fw->convert($fopcfg,$result,$foptmp);
 				
 				@java_reset();
