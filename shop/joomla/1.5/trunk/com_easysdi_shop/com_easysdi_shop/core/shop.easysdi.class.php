@@ -1874,7 +1874,7 @@ if (count($rows)>0){
 		<td width="80%" ><span class="mdtitle"><a class="modal"
 			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 			href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
-			rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a></span><br>
+			rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $row->data_title; ?></a></span><br>
 		<span class="mdsupplier"><?php echo $row->supplier_name;?></span><br>
 		</td>
 		<td width="20%" ><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]"

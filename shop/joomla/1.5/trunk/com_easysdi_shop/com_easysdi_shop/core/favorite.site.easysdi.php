@@ -209,7 +209,7 @@ function manageFavoriteProduct ( $orderable = 1)
 								--><td width="80%">
 									<span class="mdtitle" >
 									<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" 
-										href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a>
+										href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $row->data_title; ?></a>
 									</span>
 									<br>
 									<span class="mdsupplier" ><?php echo $row->supplier_name;?>
