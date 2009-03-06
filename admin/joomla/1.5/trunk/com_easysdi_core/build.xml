@@ -37,6 +37,7 @@
 				<include name="**/*.txt" />
 				<include name="**/*.js" />
 				<include name="**/*.css" />
+				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy
