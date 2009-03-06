@@ -135,7 +135,7 @@ function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria
 			}			
 			?>
 			<td><div class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?> </div></td>								
-			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $md->getDataIdentificationTitle();?> ...</a></td>			
+			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?> ...</a></td>			
 			</tr>			
 				<?php		
 		}		
