@@ -44,6 +44,7 @@
 			<folder>js</folder>
 			<folder>common</folder>
 			<folder>xsl</folder>
+			<folder>img</folder>
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
