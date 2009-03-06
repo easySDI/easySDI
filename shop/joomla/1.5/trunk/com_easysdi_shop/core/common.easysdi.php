@@ -680,7 +680,7 @@ default:
 		}
 
 		function exportPDF( $myHtml) {
-			global  $mainframe;
+		/*	global  $mainframe;
 
 			$database =& JFactory::getDBO();
 
@@ -753,7 +753,7 @@ default:
 				}
 			}else {
 				$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error');
-	}
+	}*/
 }
 
 }
