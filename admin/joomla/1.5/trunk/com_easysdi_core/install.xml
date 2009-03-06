@@ -42,6 +42,8 @@
 			<filename>license.txt</filename>									
 			<folder>core</folder>
 			<folder>js</folder>
+			<folder>common</folder>
+			<folder>xsl</folder>
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
