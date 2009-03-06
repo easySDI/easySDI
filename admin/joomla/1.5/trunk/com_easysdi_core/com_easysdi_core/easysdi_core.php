@@ -82,7 +82,6 @@ switch($task){
 		break;
 	
 	case "showMetadata"	:
-		
 		displayManager::showMetadata();
 		break;
 	case "showCompleteMetadata"	:
