@@ -36,7 +36,6 @@
 			<filename>proxy.php</filename>
 			<folder>core</folder>
 			<folder>img</folder>			
-			<folder>xsl</folder>
 		</files>
 	
 	<languages folder="language/site">
