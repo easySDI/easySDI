@@ -245,7 +245,7 @@ class displayManager{
 	
 	function exportPdf(){
 		
-		$option = JRequest::getVar('option');
+	/*	$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$id = JRequest::getVar('id');
 
@@ -254,9 +254,10 @@ class displayManager{
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		$cswResults = DOMDocument::load($catalogUrlGetRecordById);*/
 			
-
+		$cswResults = displayManager::getCSWresult();
+		
 		$processor = new xsltProcessor();
 		$style = new DomDocument();
 
