@@ -2,7 +2,7 @@
 <metadata>
 	<layout title="Commande">
 		<message>
-			Commande
+			<![CDATA[STANDARD ORDER LAYOUT DESC]]>
 		</message>
 	</layout>
 
