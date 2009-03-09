@@ -45,6 +45,7 @@
 			<folder>common</folder>
 			<folder>xsl</folder>
 			<folder>img</folder>
+			<folder>views</folder>
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
