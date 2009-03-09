@@ -87,6 +87,37 @@ function com_install(){
 			return false;
 		}
 	}
+	if($version= '0.9')
+	{
+			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
+			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl', 0700);
+			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
+			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
+			if (!copy($file, $newfile)) {
+			    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+				return false;
+			}
+			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
+			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
+			if (!copy($file, $newfile)) {
+			    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+				return false;
+			}
+			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
+			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
+			if (!copy($file, $newfile)) {
+			   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+				return false;
+			}
+		$version = '0.91';
+		$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_catalog'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+	}
 	
 	
 	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");

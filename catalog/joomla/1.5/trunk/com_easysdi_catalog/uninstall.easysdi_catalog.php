@@ -45,7 +45,16 @@ function com_uninstall(){
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
 	
-	
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'metadata.xml');
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml');
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php');
+	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl')) {
+    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl');
+	}
+	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog')) {
+    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog');
+	}
+
 	
 	$mainframe->enqueueMessage("Congratulation EasySdi catalog is uninstalled.
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
