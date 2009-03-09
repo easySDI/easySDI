@@ -23,8 +23,8 @@ jimport("joomla.html.pane");
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.html.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.html.php');
 require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
@@ -39,6 +39,31 @@ $language->load('com_easysdi_partner');
 ?>
 <?php
 $task = JRequest::getVar('task');
+$view = JRequest::getVar('view');
+$db =& JFactory::getDBO();
+
+/* Handle Menu Item Manager entries */
+switch($view){
+	case "shop":
+		$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_shop' ";
+		$db->setQuery( $query);
+		$count = $db->loadResult();
+		if ($count > 0) {
+			$mainframe->redirect("index.php?option=com_easysdi_shop&task=order" );
+		}
+		break;
+	case "core":
+		$mainframe->redirect("index.php?option=$option&task=createUser" );
+		break;
+	case "catalog":
+		$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_catalog' ";
+		$db->setQuery( $query);
+		$count = $db->loadResult();
+		if ($count > 0) {
+			$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listCatalogContent" );
+		}
+		break;
+}
 
 
 switch($task){	
