@@ -51,6 +51,13 @@
 				<include name="**/*.txt" />
 			</fileset>
 		</copy>
+		<copy
+			todir="C:\www\Site\Joomla\components\com_easysdi_core\views">
+			<fileset dir="./com_easysdi_shop/views">
+				<include name="**/*.php" />
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
 		<copy		   
 		   todir="C:\www\Site\Joomla\language\fr-FR">
 		     <fileset dir="./language/site">

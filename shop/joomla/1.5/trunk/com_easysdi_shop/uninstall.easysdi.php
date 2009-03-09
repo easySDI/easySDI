@@ -46,6 +46,15 @@ function com_uninstall(){
 		return false;
 	}
 	
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml');
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml');
+	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php');
+	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl')) {
+    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl');
+	}
+	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop')) {
+    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop');
+	}
 		
 	$mainframe->enqueueMessage("Congratulation EasySdi shop is uninstalled.
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 

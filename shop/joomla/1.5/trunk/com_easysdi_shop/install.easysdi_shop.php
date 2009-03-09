@@ -1186,6 +1186,35 @@ function com_install(){
 		
 		
 	}
+	if ($version == "0.992")
+	{
+		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
+		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+		if (!copy($file, $newfile)) {
+		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+		if (!copy($file, $newfile)) {
+		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+		if (!copy($file, $newfile)) {
+		   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
+		$version = "0.993";
+		$query="UPDATE #__easysdi_version set version = '0.993' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	}
 
 	/**
 	 * Menu creation
@@ -1201,7 +1230,8 @@ function com_install(){
 		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
 	    return false;	
 	}
-			
+	
+					
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 		values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
