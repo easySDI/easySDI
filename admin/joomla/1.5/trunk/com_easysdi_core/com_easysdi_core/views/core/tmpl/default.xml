@@ -2,14 +2,8 @@
 <metadata>
 	<layout title="Enregistrement">
 		<message>
-			Enregistrement
+			<![CDATA[STANDARD REGISTER LAYOUT DESC]]>
 		</message>
 	</layout>
-	<state>
-		<name>Enregistrement</name>
-		<description>Enregistrement</description>
-		<params>
-			
-		</params>
-	</state>
+
 </metadata>
