@@ -359,7 +359,7 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 				<xsl:when test="$maintenanceFrequencyCode = 'quarterly'">
 					<xsl:text>Trimestrielle</xsl:text>	
 				</xsl:when>	
-				<xsl:when test="$maintenanceFrequencyCode = 'biannully'">
+				<xsl:when test="$maintenanceFrequencyCode = 'biannually'">
 					<xsl:text>Semestrielle</xsl:text>
 				</xsl:when>
 				<xsl:when test="$maintenanceFrequencyCode = 'annually'">
