@@ -4,36 +4,22 @@
 	<ows:Identifier>setOrder</ows:Identifier>
 	<wps:DataInputs>
 		<wps:Input>
-			<ows:Identifier>PLATFORM</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>
-			<wps:Data>
-				<wps:LiteralData>ASIT-VD</wps:LiteralData>
-			</wps:Data>
-		</wps:Input>
-		<wps:Input>
-			<ows:Identifier>SERVER</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
-			<wps:Data>
-				<wps:LiteralData>36</wps:LiteralData>
-			</wps:Data>
-		</wps:Input>
-		<wps:Input>
 			<ows:Identifier>VERSION</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>version</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>2</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>REQUEST_ID</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>order_id</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>3</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>CLIENT_ID</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>client_id</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>1</wps:LiteralData>
 			</wps:Data>
@@ -41,7 +27,7 @@
 		
 		<wps:Input>
 			<ows:Identifier>TIERCE_ID</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>tierce_id</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>0</wps:LiteralData>
 			</wps:Data>
@@ -49,21 +35,15 @@
 		
 		<wps:Input>
 			<ows:Identifier>BILL</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>bill</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>7992.64599609375</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
-		<wps:Input>
-			<ows:Identifier>DISCOUNT</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
-			<wps:Data>
-				<wps:LiteralData>0</wps:LiteralData>
-			</wps:Data>
-		</wps:Input>
+		
 		<wps:Input>
 			<ows:Identifier>REMARK</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>			
+			<ows:Title>remark</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData></wps:LiteralData>
 			</wps:Data>
@@ -78,7 +58,7 @@
 		
 		<wps:Input>
 			<ows:Identifier>PRODUCT_ID</ows:Identifier>
-			<ows:Title>response date</ows:Title>			
+			<ows:Title>product id</ows:Title>			
 			<wps:Data>
 				<wps:LiteralData>2</wps:LiteralData>
 			</wps:Data>
@@ -86,7 +66,7 @@
 		
 		<wps:Input>
 			<ows:Identifier>FILENAME</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>						
+			<ows:Title>filename</ows:Title>						
 			<wps:Data>
 				<wps:LiteralData>fichier.txt</wps:LiteralData>
 			</wps:Data>
@@ -94,7 +74,7 @@
 		
 		<wps:Input>
 			<ows:Identifier>DATA</ows:Identifier>
-			<ows:Title>provider userName</ows:Title>
+			<ows:Title>data</ows:Title>
 						
 			<wps:Data>
 			<wps:ComplexData>fdfffffffffffffffffffffffffffffffffdddddddddddddddddd</wps:ComplexData>

@@ -67,6 +67,12 @@
   	  	      </fileset>
   	  	</copy>
   		
+  		<copy todir="${projet.work.dir}/WEB-INF/classes" >
+  	  	  	      <fileset dir="${projet.src.dir}" >
+  	  	  	        <include name="**/*.xml"/>  	  	        
+  	  	  	      </fileset>
+  	  	</copy>
+  	
   		<copy todir="${projet.work.dir}/conf/" >
   	  	  	      <fileset dir="${projet.conf.dir}" >
   	  	  	        <include name="config.xml"/>  	  	        

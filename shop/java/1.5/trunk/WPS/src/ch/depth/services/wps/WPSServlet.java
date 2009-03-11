@@ -337,7 +337,7 @@ public class WPSServlet extends HttpServlet {
 		String user_id = rs.getString("user_id");
 		String partner_id = rs.getString("partner_id");
 		int isRebate = rs.getInt("isrebate");
-
+		String rebate = rs.getString("rebate");
 
 		res.append("<easysdi:order>\n");
 		res.append("<easysdi:header>\n");
@@ -426,12 +426,11 @@ public class WPSServlet extends HttpServlet {
 		    }
 		}
 		
-		res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
+		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
 		if(isRebate==1){
-		    res.append("<easysdi:REBATE>TRUE</easysdi:REBATE>\n");
-		}else{
-		    res.append("<easysdi:REBATE>FALSE</easysdi:REBATE>\n");
+		    res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
 		}
+		
 		res.append("</easysdi:BILLINGINFO>\n");
 
 
@@ -627,7 +626,9 @@ public class WPSServlet extends HttpServlet {
 	    String product_id=null;
 	    String data = "";
 	    String filename= "";
-
+	    String rebate ="0";
+	    String price="0";
+	    String remark="";
 	    while(it.hasNext()){
 		net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)it.next();
 		if (inputType.getIdentifier().getValue().equalsIgnoreCase("DATE")){
@@ -645,7 +646,20 @@ public class WPSServlet extends HttpServlet {
 			    if (inputType.getIdentifier().getValue().equalsIgnoreCase("FILENAME")){
 				filename  = inputType.getData().getLiteralData().getValue();
 
-			    }
+			    }else
+				    if (inputType.getIdentifier().getValue().equalsIgnoreCase("REBATE")){
+					rebate  = inputType.getData().getLiteralData().getValue();
+
+				    }else
+					    if (inputType.getIdentifier().getValue().equalsIgnoreCase("BILL")){
+						price  = inputType.getData().getLiteralData().getValue();
+
+					    }else
+						    if (inputType.getIdentifier().getValue().equalsIgnoreCase("REMARK")){
+							remark  = inputType.getData().getLiteralData().getValue();
+
+						    }
+
 
 
 
@@ -656,7 +670,9 @@ public class WPSServlet extends HttpServlet {
 	    }
 
 
-
+	    if (data == null) data ="";
+	    if (filename == null) filename ="";
+	    
 	    if (responseDate!=null && order_id!=null && product_id!=null && filename !=null && data !=null){
 		Connection conn = null;
 		Class.forName(jdbcDriver).newInstance();
@@ -668,7 +684,7 @@ public class WPSServlet extends HttpServlet {
 		stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
 
 
-		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set filename =  '"+ filename+ "', status = 'AVAILABLE',data=? where order_id = "+order_id +" AND product_id = "+product_id);
+		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = 'AVAILABLE',data=? where order_id = "+order_id +" AND product_id = "+product_id);
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
 
