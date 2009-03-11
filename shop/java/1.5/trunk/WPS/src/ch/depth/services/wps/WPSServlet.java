@@ -23,15 +23,12 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.List;
@@ -45,23 +42,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import net.opengis.ows._1.CodeType;
 import net.opengis.wps._1_0.ComplexDataType;
 import net.opengis.wps._1_0.DataType;
 import net.opengis.wps._1_0.ExecuteResponse;
-import net.opengis.wps._1_0.ObjectFactory;
 import net.opengis.wps._1_0.OutputDataType;
 import net.opengis.wps._1_0.StatusType;
 import net.opengis.wps._1_0.ExecuteResponse.ProcessOutputs;
 
-import sun.text.CompactShortArray.Iterator;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 
 public class WPSServlet extends HttpServlet {
@@ -324,7 +315,7 @@ public class WPSServlet extends HttpServlet {
 	    conn =  DriverManager.getConnection(getConnexionString());
 
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p , " +getJoomlaPrefix()+"users u where o.status = '"+statusToRead+"' AND o.user_id = p.user_id AND u.id = p.user_id AND u.username = '"+userName+"'");
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p  where o.status = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"EASYSDI_ORDER_PRODUCT_LIST opl ,  "+getJoomlaPrefix()+"EASYSDI_PRODUCT p, "+getJoomlaPrefix()+"EASYSDI_COMMUNITY_PARTNER part, "+getJoomlaPrefix()+"USERS u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
 	    
 	    StringBuffer res = new StringBuffer();
 	    res.append("<easysdi:orders  	xmlns:easysdi=\"http://www.easysdi.org\">");
@@ -345,7 +336,7 @@ public class WPSServlet extends HttpServlet {
 		String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
 		String user_id = rs.getString("user_id");
 		String partner_id = rs.getString("partner_id");
-
+		int isRebate = rs.getInt("isrebate");
 
 
 		res.append("<easysdi:order>\n");
@@ -424,10 +415,23 @@ public class WPSServlet extends HttpServlet {
 		}		
 		res.append("</easysdi:CLIENT>\n");
 		res.append("<easysdi:BILLINGINFO>\n");
-		res.append("<easysdi:TIERCE_ID>"+third_party+"</easysdi:TIERCE_ID>\n");
-		res.append("<easysdi:TIERCE_NAME></easysdi:TIERCE_NAME>\n");
+		
+		if (!third_party.equalsIgnoreCase("0")){
+		    res.append("<easysdi:TIERCE_ID>"+third_party+"</easysdi:TIERCE_ID>\n");    
+		    Statement stmtTierce = conn.createStatement();
+		    ResultSet rsTierce = stmtTierce.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_partner p WHERE p.partner_id = "+third_party);
+
+		    while(rsTierce.next()){				
+			res.append("<easysdi:TIERCE_NAME>"+rsTierce.getString("partner_acronym")+"</easysdi:TIERCE_NAME>\n");		    
+		    }
+		}
+		
 		res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
-		res.append("<easysdi:REBATE>0</easysdi:REBATE>\n");
+		if(isRebate==1){
+		    res.append("<easysdi:REBATE>TRUE</easysdi:REBATE>\n");
+		}else{
+		    res.append("<easysdi:REBATE>FALSE</easysdi:REBATE>\n");
+		}
 		res.append("</easysdi:BILLINGINFO>\n");
 
 
