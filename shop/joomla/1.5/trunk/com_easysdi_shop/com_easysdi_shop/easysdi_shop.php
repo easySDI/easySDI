@@ -300,6 +300,10 @@ switch($task){
 		
 	break;
 		
+	case "validateMetadata":
+		SITE_metadata::validateMetadata();
+		break;
+		
 		
 	default :	
 		$mainframe->enqueueMessage(JText::_("EASYSDI_ACTION_NOT_ALLOWED"), "INFO");

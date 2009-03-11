@@ -850,12 +850,12 @@ function isSelfIntersect(){
  		return ;
  	}
  	
+ 	document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value; 
  	document.getElementById('orderForm').submit();
  	}else {
  		if (document.getElementById('step').value == 1){
  			document.getElementById('orderForm').submit();
- 			
- 			isSelfIntersect
+ 			 			
  		}else{
  			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
  			}
@@ -864,7 +864,9 @@ function isSelfIntersect(){
  </script>
 <div style="display: none;">
 <form name="orderForm" id="orderForm"
-	action='<?php echo JRoute::_("index.php") ?>' method='POST'><select
+	action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+	<input type="hidden" id="bufferValue2" name="bufferValue" value="0">
+	<select
 	multiple="multiple" size="10" id="replicSelectedSurface"
 	name="replicSelectedSurface[]"></select> <select multiple="multiple"
 	size="10" id="replicSelectedSurfaceName"
@@ -1273,13 +1275,14 @@ if (count($rows)>0){
 			$order_type = $mainframe->getUserState('order_type');				
 			$order_name = $mainframe->getUserState('order_name');				
 			$third_party = $mainframe->getUserState('third_party');
-				
+			$bufferValue = $mainframe->getUserState('bufferValue');
+			
 			$db =& JFactory::getDBO();
 
 			jimport("joomla.utilities.date");
 			$date = new JDate();
 
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_update,user_id) VALUES (".$db->Quote($third_party)." ,'".$order_type."',0,'".$order_name."','".$orderStatus."','".$date->toMySQL()."',".$user->id.")";
+			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_update,user_id,buffer) VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','$date->toMySQL()',$user->id,$bufferValue)";
 			$db->setQuery($query );
 
 			if (!$db->query()) {
@@ -1295,6 +1298,8 @@ if (count($rows)>0){
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
 				
+			
+			
 			$i=0;
 			foreach ($selSurfaceList as $sel){
 
@@ -1395,7 +1400,7 @@ if (count($rows)>0){
 			$mainframe->setUserState('selectedSurfaces',null);
 			$mainframe->setUserState('totalArea',null);
 			$mainframe->setUserState('perimeter_id',null);
-
+			$mainframe->setUserState('bufferValue',null);
 
 
 		}else{
@@ -1437,6 +1442,10 @@ if (count($rows)>0){
 			$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
 			$selSurfaceListName = JRequest::getVar ('replicSelectedSurfaceName', array(0) );
 			$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
+			
+			$bufferValue = JRequest::getVar ('bufferValue', 0 );
+			$mainframe->setUserState('bufferValue',$bufferValue);
+			
 			$totalArea = JRequest::getVar ('totalArea', 0 );
 			$mainframe->setUserState('totalArea',$totalArea);
 

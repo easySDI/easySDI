@@ -280,7 +280,7 @@ class ADMIN_product {
 
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
 		{
-			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,".$rowProduct->id.",".$perimeter_id.")";
+			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,$rowProduct->id,$perimeter_id,0)";
 
 			$database->setQuery( $query );
 			if (!$database->query()) {
@@ -291,7 +291,17 @@ class ADMIN_product {
 			}
 		}
 
-
+	foreach( $_POST['buffer'] as $bufferPerimeterId )
+		{
+			$query = "UPDATE #__easysdi_product_perimeter SET isBufferAllowed=1 WHERE product_id = $rowProduct->id AND perimeter_id = $bufferPerimeterId";
+			
+			$database->setQuery( $query );
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+					exit();			
+			}
+		}
 
 
 		$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$rowProduct->id;

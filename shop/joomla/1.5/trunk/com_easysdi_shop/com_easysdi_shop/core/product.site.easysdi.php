@@ -276,17 +276,28 @@ class SITE_product {
 		
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
 		{
-			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,".$rowProduct->id.",".$perimeter_id.")";
+			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,$rowProduct->id,$perimeter_id,0)";
 			
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
 					exit();			
 			}
 		}
 		
+		foreach( $_POST['buffer'] as $bufferPerimeterId )
+		{
+			$query = "UPDATE #__easysdi_product_perimeter SET isBufferAllowed=1 WHERE product_id = $rowProduct->id AND perimeter_id = $bufferPerimeterId";
+			
+			$database->setQuery( $query );
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+					exit();			
+			}
+		}
 		
 
 		

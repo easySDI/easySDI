@@ -203,7 +203,7 @@ class HTML_product{
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
+						<legend><?php echo JText::_("EASYSDI_TEXT_PERIMETER") ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php
@@ -213,7 +213,8 @@ class HTML_product{
 				$database->setQuery( $query );
 				$perimeterList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						exit;					 			
 				}		
 	
 		
@@ -222,13 +223,9 @@ class HTML_product{
 				$database->setQuery( $query );
 				$selected = $database->loadObjectList();
 				if ($database->getErrorNum()) {						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					exit;					 			
 					}		
-	
-			
-			
-			
-
 ?>
 								<td><?php echo JHTML::_("select.genericlist",$perimeterList, 'perimeter_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
 							</tr>
@@ -242,7 +239,39 @@ class HTML_product{
 		<?php
 		
 		
-		echo $tabs->endPanel();			
+		echo $tabs->endPanel();		
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER_BUFFER"),"productrPane");
+		?>	
+		<br>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_TEXT_PERIMETER_BUFFER_TITLE") ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+						<tr><th><?php echo JText::_("EASYSDI_PERIMETER_NAME") ?></th><th><?php echo JText::_("EASYSDI_PERIMETER_HAS_BUFFER") ?></th></tr>
+						<?php 
+							foreach ($perimeterList as $curPerim){
+								
+								$query = "SELECT * FROM #__easysdi_product_perimeter WHERE product_id=$rowProduct->id AND perimeter_id = $curPerim->value";				
+								$database->setQuery( $query );
+								$bufferRow = $database->loadObject() ;
+								if ($database->getErrorNum()) {						
+											$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+									}										
+						?>
+							<tr>
+								<td><?php  echo $curPerim->text; ?></td>
+								<td><input type="checkbox" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"?>></td>
+							</tr>
+							<?php } ?>
+						</table>
+						</fieldset>
+				</td>
+			</tr>
+		</table>
+		<?php
+		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PROPERTIES"),"productrPane");
 		
 		
@@ -255,7 +284,7 @@ class HTML_product{
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
+						<legend><?php echo JText::_("EASYSDI_TEXT_PROPERTIES") ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php

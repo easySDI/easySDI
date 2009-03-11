@@ -1215,6 +1215,36 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 	}
+	
+	if ($version == "0.993")
+	{
+	
+	
+		$version = "0.994";
+		$query="UPDATE #__easysdi_version set version = '0.994' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+	
+		$query="ALTER TABLE #__easysdi_order add column buffer bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_product_perimeter add column isBufferAllowed tinyint(1) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+	}
+	
 
 	/**
 	 * Menu creation

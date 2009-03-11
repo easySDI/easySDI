@@ -55,9 +55,48 @@ $cid = 		$mainframe->getUserState('productList');
 	}		
 
 
+	
+	
+	$query = "SELECT count(*) as total ,perimeter_id  FROM `#__easysdi_product_perimeter` where product_id in (";
+	foreach( $cid as $id )
+		{
+			$query = $query.$id."," ;
+		}			
+	$query  = substr($query , 0, -1);
+	$query = $query .") AND isBufferAllowed= 1 group by perimeter_id having count(*) = $nbProduct";
+	
+	
+	$db->setQuery( $query );
+	
+	$bufferRows = $db->loadObjectList();
+	if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			echo 			$db->getErrorMsg();
+	}		
+	
+	
 	?>
 	
 	<script>
+	
+	
+	function enableBufferByPerimeter(perimId){
+	document.getElementById('bufferValue').value=0;
+		<?php	
+	foreach ($bufferRows as $bufferRow)
+		{		
+			?>
+		if (perimId == '<?php echo $bufferRow->perimeter_id ?>'){
+			document.getElementById('bufferValue').disabled=false;
+			return ;
+		}
+		
+		<?php 
+		}
+		?>
+		document.getElementById('bufferValue').disabled=true;
+	}
+	
 			
 	function selectPerimeter(perimListName){
 	
@@ -69,7 +108,8 @@ $cid = 		$mainframe->getUserState('productList');
 	foreach ($rows as $row)
 		{?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");	 		
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");
+	 			enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
 	 		}
 	 
 	 <?php } ?>
@@ -97,7 +137,9 @@ $cid = 		$mainframe->getUserState('productList');
 		<tr><td><div id="panelEdition" class="olControlEditingToolbar"></div></td></tr>  
 <tr><td>
 <div id="status">  </div>
-</td></tr></table>
+</td></tr>
+<tr><td><?php echo JText::_("EASYSDI_BUFFER"); ?><input type="text" id="bufferValue" value="0"></td></tr>
+</table>
 	<br>	
 		<?php
 		$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
@@ -456,7 +498,9 @@ function recenterOnPerimeter(){
 	
 	if ($curstep > 2){
 	
+	$bufferValue = $mainframe->getUserState('bufferValue');
 	
+		
 	$totalArea = $mainframe->getUserState('totalArea');
 	if (!$totalArea) $totalArea=0;
 	?>
@@ -476,6 +520,11 @@ function recenterOnPerimeter(){
 			}
 		 ?>		  		
 		</fieldset>
+	<?php
+		if ($bufferValue>0){
+		echo JText::_("EASYSDI_BUFFER_VALUE")." ".$bufferValue." ".JText::_("EASYSDI_BUFFER_UNIT") ;
+		}
+		?>				
 	</div>
 <?php	
 	}

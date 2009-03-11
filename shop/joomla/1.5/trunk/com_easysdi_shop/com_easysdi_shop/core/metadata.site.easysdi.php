@@ -198,7 +198,21 @@ function deleteMDTabs($cid,$option){
 		
 	}
 	
-	
+	function validateMetadata(){
+		
+		$xdoc = new DomDocument;
+		$xmlfile = 'http://www.ecadastre.public.lu/Portail/getIso19115.do?format=XML&id=171';
+		$xmlschema = 'D:/DEPTH/Projets/projets/eclipse/workspace/jaxb/bin/schemas-all/iso/19139/20070417/gmd/gmd.xsd';
+
+		$xdoc->Load($xmlfile);
+		echo "OK";
+		if ($xdoc->schemaValidate($xmlschema)) {
+			echo "$xmlfile is valid.\n";
+			} else {
+				echo "$xmlfile is invalid.\n";
+		}
+
+	}
 	function saveMDStandardClasses($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
