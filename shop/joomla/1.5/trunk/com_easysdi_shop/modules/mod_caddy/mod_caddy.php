@@ -34,7 +34,7 @@ if (count($cid)>0){
 		{
 			?>
 	
-			<a title="<?php echo $row->data_title; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20)."..."; ?></a>												
+			<a title="<?php echo $row->data_title; ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20)."..."; ?></a>												
 			<button type="button" onClick="document.getElementById('task').value='deleteProduct';locOrderForm = document.getElementById('orderForm');newInput = document.createElement('input');newInput.type='hidden';newInput.name='prodId';newInput.value='<?php echo $row->id;?>';locOrderForm.appendChild(newInput);document.getElementById('orderForm').submit();"> <?php JText::_('EASYSDI_REMOVE_PRODUCT'); ?></button>
 			<hr>
 			
