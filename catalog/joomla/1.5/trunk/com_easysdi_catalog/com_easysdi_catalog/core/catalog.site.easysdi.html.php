@@ -28,13 +28,13 @@ function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria
 		<div class="contentin">	
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
 	
-		<h3>Type de métadonnées:</h3>
+		<h3><?php echo JText::_("EASYSDI_CATALOG_METADATA_TYPE"); ?></h3>
 		<table>
 		  <tr>
-		    <td><a href="">Métadonnées publiques (count)</a></td>
+		    <td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PUBLIC"); ?></a></td>
 		  </tr>
 		  <tr>
-		    <td><a href="">Métadonnées privées (count)</a></td>
+		    <td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PRIVATE"); ?></a></td>
 		  </tr>
 		  <tr>
 		    <td>&nbsp;</td>
@@ -130,12 +130,31 @@ function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria
 			$db->setQuery( $query);
 
 			$metadataId_count = $db->loadResult();
+						
 			if ($db->getErrorNum()) {								
 					$metadataId_count = '0';					
-			}			
+			}
+
+			
+			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."'";
+			 
+			$db->setQuery( $query);
+
+			$hasPreview = $db->loadResult();
+			if ($db->getErrorNum()) {								
+					$hasPreview = 0;		
+						
+			}
+			
+			
+			
 			?>
 			<td><div class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?> </div></td>								
 			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?> ...</a></td>			
+			
+			<?php if ($hasPreview > 0){ ?>
+			<td><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></td>
+			<?php } ?>
 			</tr>			
 				<?php		
 		}		
