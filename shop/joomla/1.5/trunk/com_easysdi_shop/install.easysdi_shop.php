@@ -1188,26 +1188,7 @@ function com_install(){
 	}
 	if ($version == "0.992")
 	{
-		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
-		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-		if (!copy($file, $newfile)) {
-		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-		if (!copy($file, $newfile)) {
-		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-		if (!copy($file, $newfile)) {
-		   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
+		
 		$version = "0.993";
 		$query="UPDATE #__easysdi_version set version = '0.993' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
@@ -1314,6 +1295,29 @@ function com_install(){
 	}
 	
 
+	/**
+	 * Copy View files in Core component to allow  Menu Item Manger to find entries
+	 */
+		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
+		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+		if (!copy($file, $newfile)) {
+		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+		if (!copy($file, $newfile)) {
+		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
+		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+		if (!copy($file, $newfile)) {
+		   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+			return false;
+		}
 	/**
 	 * Menu creation
 	 */
