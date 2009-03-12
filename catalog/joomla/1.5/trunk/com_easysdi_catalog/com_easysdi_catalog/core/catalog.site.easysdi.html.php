@@ -276,7 +276,7 @@ $i++;
 
 			 
 
-                map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>));
+                
                map.addControl(new OpenLayers.Control.LayerSwitcher());
                 map.addControl(new OpenLayers.Control.Attribution());                                
             vectors = new OpenLayers.Layer.Vector(
@@ -289,6 +289,8 @@ $i++;
                        
                         
             map.addLayer(vectors);
+            map.zoomToMaxExtent();
+            
             var containerPanel = document.getElementById("panelDiv");
             var panel = new OpenLayers.Control.Panel({div: containerPanel});
             
