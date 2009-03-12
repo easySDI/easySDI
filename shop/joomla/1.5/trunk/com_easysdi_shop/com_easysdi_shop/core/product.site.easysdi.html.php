@@ -673,7 +673,18 @@ class HTML_product{
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
-				
+
+		
+		
+		 $fileName = $_FILES['isoFile']["name"];
+		 if (strlen($fileName)>0){
+			 	$catalogUrlGetRecordById =  $_FILES['isoFile']["tmp_name"];
+		
+		 }	 	
+			 	
+			 	
+		
+		
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
  
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
@@ -686,7 +697,7 @@ class HTML_product{
 		
 			
 		?>				
-	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
+	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm" >
 <?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
@@ -771,7 +782,9 @@ class HTML_product{
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
 		if ($database->getErrorNum()) {						
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");	
+			echo $database->getErrorMsg(); 						
+			exit;	
 		}
 				
 		foreach ($rows as $row){
@@ -825,10 +838,6 @@ class HTML_product{
 			<?php 
 			echo $tabs->endPanel();						
 		}		
-		
-		echo $tabs->endPane();	
-
-		
 		?>
 		<input type="hidden" name="standard_id" value="<?php echo $rowProduct->metadata_standard_id; ?>" />
 		<input type="hidden" name="product_id" value="<?php echo $rowProduct->id; ?>" />
@@ -836,6 +845,40 @@ class HTML_product{
 		<input type="hidden" id="task" name="task" value="cancelEditProductMetadata">
 
 		</form>
+		<?php
+		
+		
+					
+			echo $tabs->startPanel(JText::_("EASYSDI_UPLOADMETADATA"),"productrPane");
+			?>
+			<br>
+			<table border="0" cellpadding="0" cellspacing="0">
+
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_UPLOADMETADATA") ?></legend>				
+						<table>
+							<tr><td><?php echo JText::_("EASYSDI_METADATA_FILE") ;?></td><td> 
+							<form action="index.php?option=<?php echo $option; ?>&id=<?php echo $rowProduct->id; ?>&standard_id=<?php echo $rowProduct->metadata_standard_id; ?>&task=editMetadata2" method="post" name="loadMetadataForm" id="loadMetadataForm" class="productForm" enctype="multipart/form-data">
+								<input type="file" name="isoFile" >
+								<button onClick="document.getElementById('loadMetadataForm').submit()" ><?php echo JText::_("EASYSDI_LOAD_METADATA_FILE") ;?></button>
+							</form>
+		
+							</td></tr>
+						</table>						
+					</fieldset>
+				</td>
+			</tr>
+		</table>				
+						
+						<?php
+		echo $tabs->endPanel();
+		echo $tabs->endPane();	
+
+		
+		?>
+
 		
 		<button type="button" onClick="document.getElementById('task').value='saveProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>			
 		<button type="button" onClick="document.getElementById('task').value='cancelEditProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>

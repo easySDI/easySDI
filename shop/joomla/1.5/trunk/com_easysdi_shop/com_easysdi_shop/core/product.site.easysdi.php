@@ -430,6 +430,7 @@ class SITE_product {
 	
 	function editMetadata2() {
 		global  $mainframe;
+		
 		if (!$isNew){
 		$id = JRequest::getVar('id');
 		}else {
