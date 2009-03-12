@@ -89,6 +89,20 @@ function com_install(){
 	}
 	if($version= '0.9')
 	{
+			
+		$version = '0.91';
+		$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_catalog'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+	}
+	
+	/**
+	 * Copy View files in Core component to allow  Menu Item Manger to find entries
+	 */
 			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
 			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl', 0700);
 			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
@@ -109,16 +123,6 @@ function com_install(){
 			   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
 				return false;
 			}
-		$version = '0.91';
-		$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_catalog'";
-		$db->setQuery( $query);
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-	}
-	
 	
 	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");
 	return true;
