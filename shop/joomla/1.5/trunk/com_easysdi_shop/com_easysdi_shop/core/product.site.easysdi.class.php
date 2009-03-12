@@ -34,6 +34,15 @@ class product extends JTable
 	var $metadata_standard_id=null;
 	var $is_free=0;
 	var $metadata_partner_id=0;
+	var $previewBaseMapId=0;
+	var $previewWmsUrl=null;
+	var $previewWmsLayers=null;
+	var $previewMinResolution=0;
+	var $previewMaxResolution=0;
+	var $previewProjection=null;
+	var $previewUnit=null;
+	var $previewImageFormat=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{

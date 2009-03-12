@@ -60,7 +60,7 @@ class HTML_basemap {
 								<td><select class="inputbox" name="unit" >
 								
 								<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_METERS"); ?></option>
-								<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
+								<option <?php if($rowBasemap->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
 								</select>
 								</td>
 							</tr>
@@ -255,6 +255,10 @@ class HTML_basemap {
 							</tr>			
 
 							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="alias" value="<?php echo $rowBasemap->alias; ?>" /></td>
+							</tr>
+							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowBasemap->projection; ?>" /></td>
 							</tr>
@@ -263,7 +267,7 @@ class HTML_basemap {
 								<td><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="unit" >								
 									<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_METERS"); ?></option>
-									<option <?php if($rowBasemap->unit == 'degree') echo "selected" ; ?> value="degree"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
+									<option <?php if($rowBasemap->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
 								</select>
 								</td>
 
@@ -338,6 +342,7 @@ class HTML_basemap {
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ID"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_MAXEXTENT"); ?></th>				
@@ -355,6 +360,7 @@ class HTML_basemap {
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 								
 				<td><?php echo $row->id; ?></td>
+				<td><?php echo $row->alias; ?></td>
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>

@@ -81,6 +81,14 @@ class HTML_product{
 			}		
 			
  
+		$baseMaplist = array();		
+		$database->setQuery( "SELECT id AS value,  alias AS text FROM #__easysdi_basemap_definition " );
+		$baseMaplist = $database->loadObjectList() ;
+		
+		if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}		
+		
 						 
 		
 		$database =& JFactory::getDBO(); 
@@ -187,7 +195,74 @@ class HTML_product{
 			</tr>
 			
 		</table>
+		<?php
+		echo $tabs->endPanel();
+		echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productrPane");
+		?>
+		<br>
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_PREVIEW"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">						
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_BASE_MAP_ID"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$baseMaplist, 'previewBaseMapId', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->previewBaseMapId ); ?></td>																
+							</tr>							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_WMS_URL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewWmsUrl" value="<?php echo $rowProduct->previewWmsUrl; ?>" /></td>								
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_WMS_LAYERS"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewWmsLayers" value="<?php echo $rowProduct->previewWmsLayers; ?>" /></td>								
+							</tr>							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_MIN_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewMinResolution" value="<?php echo $rowProduct->previewMinResolution; ?>" /></td>								
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_MAX_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewMaxResolution" value="<?php echo $rowProduct->previewMaxResolution; ?>" /></td>								
+							</tr>
+							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_PROJECTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewProjection" value="<?php echo $rowProduct->previewProjection; ?>" /></td>								
+							</tr>
+							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_UNIT"); ?> : </td>
+								<td><select class="inputbox" name="previewUnit" >								
+									<option <?php if($rowProduct->previewUnit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_PREVIEW_METERS"); ?></option>
+									<option <?php if($rowProduct->previewUnit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("EASYSDI_PREVIEW_DEGREES"); ?></option>
+								</select>
+								</td>																						
+							</tr>
+							
+							
+								
+								
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
+							</tr>
+							
+							
+							
+
+	
+	
+																	
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+		</table>
+							
 		
+	
 		
 		<?php
 		echo $tabs->endPanel();

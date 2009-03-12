@@ -1243,6 +1243,74 @@ function com_install(){
 		}
 		
 		
+	$query="ALTER TABLE #__easysdi_product add column previewBaseMapId bigint(20)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+
+		$query="ALTER TABLE #__easysdi_product add column previewWmsUrl varchar(400) default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		$query="ALTER TABLE #__easysdi_product add column previewWmsLayers varchar(400) default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_product add column previewMinResolution bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		$query="ALTER TABLE #__easysdi_product add column previewMaxResolution bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		
+		$query="ALTER TABLE #__easysdi_basemap_definition add column alias  varchar(400) default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+		$query="ALTER TABLE #__easysdi_product add column previewProjection varchar(400) NOT NULL default 'EPSG:4326'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+		$query="ALTER TABLE #__easysdi_product add column previewUnit varchar(400) NOT NULL default 'degrees'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+		$query="ALTER TABLE #__easysdi_product add column previewImageFormat varchar(400) NOT NULL default 'image/png'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+	
+	
 	}
 	
 

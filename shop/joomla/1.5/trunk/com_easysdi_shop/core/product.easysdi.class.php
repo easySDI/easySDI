@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
+defined('_JEXEC') or die('Restricted access');
 
 class product extends JTable
 {
@@ -33,6 +34,15 @@ class product extends JTable
 	var $metadata_standard_id=null;
 	var $is_free=0;
 	var $metadata_partner_id=0;
+	var $previewBaseMapId=0;
+	var $previewWmsUrl=null;
+	var $previewWmsLayers=null;
+	var $previewMinResolution=0;
+	var $previewMaxResolution=0;
+	var $previewProjection=null;
+	var $previewUnit=null;
+	var $previewImageFormat=null;
+	
 	
 	// Class constructor
 	function __construct( &$db )
