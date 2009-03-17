@@ -1250,7 +1250,7 @@ if (count($rows)>0){
 <form id="orderForm" name="orderForm"
 	action="<?php echo JRoute::_("index.php"); ?>"><input type='hidden'
 	id="fromStep" name='fromStep' value='5'> <input type="hidden"
-	name="task" id="task" value="none"> <input type="hidden" name="option"
+	name="task" id="taskOrderForm" value="none"> <input type="hidden" name="option"
 	value="<?php echo JRequest::getVar('option'); ?>"> <input type='hidden'
 	id="step" name='step' value='<?php echo $step; ?>'> <input
 	type='hidden' name='Itemid'
@@ -1260,10 +1260,10 @@ if (count($rows)>0){
 
 		if (!$user->guest){
 			?> <input
-	onClick="document.getElementById('task').value = 'saveOrder';submitOrderForm();"
+	onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
 	type="button"
 	value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
-	onClick="document.getElementById('task').value = 'sendOrder';submitOrderForm();"
+	onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
 	type="button"
 	value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
 		}else{?>
