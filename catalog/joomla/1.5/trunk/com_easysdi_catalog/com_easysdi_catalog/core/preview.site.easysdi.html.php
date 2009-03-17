@@ -81,7 +81,7 @@ function initMap(){
 			map.addLayer(baseLayerVector);
 <?php
 
-$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id; 
+$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();
 		  

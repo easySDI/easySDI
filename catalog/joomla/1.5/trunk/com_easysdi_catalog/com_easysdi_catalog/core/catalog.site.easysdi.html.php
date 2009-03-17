@@ -226,7 +226,7 @@ function generateMap(){
       
 var vectors = null;            
 function initMap(){
- OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
+ //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
 
 
 
@@ -263,7 +263,7 @@ if ($db->getErrorNum()) {
 
 <?php
 
-$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id; 
+$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id." order by ordering"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();		  
 if ($db->getErrorNum()) {						
@@ -276,7 +276,21 @@ foreach ($rows as $row){
 ?>				
 				  
 				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
-                    "<?php echo $row->url; ?>",
+                    
+                    
+                    <?php 
+					if ($row->user != null && strlen($row->user)>0){
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
+						echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
+					}else{	
+						//if no user and password then don't use any proxy.					
+						echo "\"$row->url\",";	
+					}					
+					?>
+                    
+                    
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
