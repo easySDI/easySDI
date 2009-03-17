@@ -115,6 +115,7 @@ class helper_easysdi{
 			$directinroot=1;
 		}
 		foreach($rows as $row){
+			
 			switch($row->type){
 				case "class":
 					if ($directinroot == 0){
@@ -124,7 +125,12 @@ class helper_easysdi{
 					}
 
 					$count  = $geoMD->isXPathResultCount("//".$key);
-
+					
+					
+					if ($count == 0 ){
+						helper_easysdi::generateMetadataHtml2($row->id,$geoMD,$key."[1]",$metadata_id,0);
+					}
+					
 					for ($i=0 ;$i<$count;$i++){
 						//echo "<table><tr><td><fieldset><legend>".JText::_($row->description)."looking for //$key  ==> ".($i+1)." of  $count<br>"."</legend>";
 						helper_easysdi::generateMetadataHtml2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0);
@@ -195,7 +201,7 @@ case "locfreetext":
 <tr>
 	<td><?php echo JText::_($row->description)."[$rowFreetext->lang]"?></td>
 	<td><textarea name="<?php echo "PARAM$row->id[]"?>"
-		rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?> </textarea>
+		rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?></textarea>
 	</td>
 </tr>
 		<?php
@@ -497,10 +503,7 @@ default:
 						$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
 
 					}
-					break;
-
-
-			
+					break;			
 		}
 		}
 	}

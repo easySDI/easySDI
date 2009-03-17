@@ -20,7 +20,81 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_basemap {
 	
 	
+	function orderUpBasemapContent($id,$basemapId){
+		
+
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+
+		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE id = $id AND basemap_def_id = $basemapId";
+		$database->setQuery( $query );
+		$row1 = $database->loadObject() ;
+			if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+
+		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE  basemap_def_id = $basemapId AND ordering < $row1->ordering  order by ordering";
+		$database->setQuery( $query );
+		$row2 = $database->loadObject() ;
+			if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}		
+		
+
+		$query = "update #__easysdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
+			$database->setQuery( $query );				
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+			}		
+				
+		$query = "update #__easysdi_basemap_content set ordering= $row2->ordering where id =$row1->id";
+			$database->setQuery( $query );				
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+			}		
+		
+		
+		
+		
+	}
 	
+		function orderDownBasemapContent($id,$basemapId){
+		
+
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+
+		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE id = $id AND basemap_def_id = $basemapId";
+		$database->setQuery( $query );
+		$row1 = $database->loadObject() ;
+			if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+
+		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE  basemap_def_id = $basemapId AND ordering > $row1->ordering  order by ordering";
+		$database->setQuery( $query );
+		$row2 = $database->loadObject() ;
+			if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}		
+		
+
+		$query = "update #__easysdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
+			$database->setQuery( $query );				
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+			}		
+				
+		$query = "update #__easysdi_basemap_content set ordering= $row2->ordering where id =$row1->id";
+			$database->setQuery( $query );				
+			if (!$database->query()) {		
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+			}		
+		
+		
+		
+		
+	}
 	
 	function listBasemapContent($basemap_id,$option) {
 		global  $mainframe;
@@ -46,7 +120,7 @@ class ADMIN_basemap {
 		// Recherche des enregistrements selon les limites
 		
 		
-		$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = ".$basemap_id;		
+		$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by ordering";		
 									
 		
 	
@@ -90,7 +164,12 @@ class ADMIN_basemap {
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id );
 			exit();
 		}
-				
+		$query = "SELECT COUNT(*) FROM  #__easysdi_basemap_content where basemap_def_id = ".$basemap_def_id ;
+		
+		$database->setQuery( $query );
+		$total = $database->loadResult();	
+			
+		$rowBasemap->ordering = $total;		
 		
 		if (!$rowBasemap->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -100,8 +179,7 @@ class ADMIN_basemap {
 		
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id);
-		}
-		
+		}		
 		
 	}
 	

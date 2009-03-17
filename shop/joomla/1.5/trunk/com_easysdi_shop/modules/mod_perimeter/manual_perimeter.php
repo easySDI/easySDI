@@ -63,9 +63,24 @@ $db =& JFactory::getDBO();
 					var maxfeatures="&MAXFEATURES=<?php echo $row->maxfeatures?>";					
 					<?php
 					}
+					
+					
+					if (1==1 || ($row->user !=null && strlen($row->user)>0)){
+						
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
+						$wfs_url =  $proxyhost.urlencode  (trim($row->url));
+					}else{
+						$wfs_url = $row->wfs_url;						
+					}
+					
+					
 					?>					
+
+
 						 		 	
-	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
+	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				
 	 			<?php } ?>
 	 			if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
@@ -111,9 +126,21 @@ $db =& JFactory::getDBO();
 	 		 	<?php }else{?>
 	 		 		var maxfeatures="";
 	 		 		<?php
-	 		 	} ?>
+	 		 	} 
 	 		 	
-	 		fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
+	 		 	if (1== 1 || ($row->user !=null && strlen($row->user)>0)){
+						
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
+						$wfs_url =  $proxyhost.urlencode  (trim($row->url));
+					}else{
+						$wfs_url = $row->wfs_url;						
+					}
+	 		 	
+	 		 	?>
+	 		 	
+	 		fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 	 
 	 <?php } ?>
@@ -191,7 +218,7 @@ function sortList(mylist) {
 			}
 		}
       	
-		function fillSelectPerimeterPerimeter(perimetersListPerimeterId,perimeter_perimeter_name,perimeter_wfs_url,perimeter_feature_type_name,perimeter_name_field_name,perimeter_id_field_name ,filter,isSort,maxfeatures){		
+		function fillSelectPerimeterPerimeter(perimetersListPerimeterId,perimeter_perimeter_name,perimeter_wfs_url,perimeter_feature_type_name,perimeter_name_field_name,perimeter_id_field_name ,filter,isSort,maxfeatures,user,password){		
 		
 		var elSel = document.getElementById(perimetersListPerimeterId);
 		freeSelectPerimeterPerimeter(perimetersListPerimeterId);
@@ -202,6 +229,7 @@ function sortList(mylist) {
 		
 		
 		perimeter_id_field = perimeter_id_field_name; 
+		
 		
 		var wfsUrlWithBBox = perimeter_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+perimeter_feature_type_name+'&VERSION=1.0.0' ;
 		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;		

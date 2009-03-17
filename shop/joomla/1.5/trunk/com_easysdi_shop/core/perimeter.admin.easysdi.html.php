@@ -135,6 +135,15 @@ class HTML_perimeter {
 							</td>
 							</tr>
 							
+							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_USER"); ?> : </td>
+							<td><input type="text" name="user"  value="<?php echo $rowPerimeter->user?>"></td>
+							</tr>
+							<tr>							
+							<td><?php echo JText::_("EASYSDI_PERIMETER_PASSWORD"); ?> : </td>
+							<td><input type="password" name="password"  value="<?php echo $rowPerimeter->password ?>"></td>
+							</tr>
+							
 							
 							
 						</table>

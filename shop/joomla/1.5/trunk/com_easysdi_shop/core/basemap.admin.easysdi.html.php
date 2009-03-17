@@ -102,8 +102,8 @@ class HTML_basemap {
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_SINGLE_TILE"); ?> : </td>
 								<td><select class="inputbox" name="singletile" >
-										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI__FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI__TRUE"); ?></option>
+										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI__TRUE"); ?></option>
+										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI__FALSE"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -116,7 +116,22 @@ class HTML_basemap {
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>							
-							</tr>						
+							</tr>
+							
+							
+								<tr>
+							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
+							</tr>
+							
+								<tr>
+							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
+								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
+							</tr>
+							
+													
 						</table>
 
 					</fieldset>
@@ -169,6 +184,7 @@ class HTML_basemap {
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_URL"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_LAYER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_PROJECTION"); ?></th>				
+				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ORDER"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -185,7 +201,12 @@ class HTML_basemap {
 				<td><?php echo $row->id; ?></td>
 				<td><?php echo $row->url; ?></td>
 				<td><?php echo $row->layers; ?></td>
-				<td><?php echo $row->projection; ?></td>				
+				<td><?php echo $row->projection; ?></td>
+				<td>
+				<?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemapcontent', 'Move Up'); ?>
+            	<?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemapcontent', 'Move Down' ); ?>
+            	</td> 
+            				
 			</tr>
 <?php
 			$k = 1 - $k;

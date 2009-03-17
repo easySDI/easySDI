@@ -73,12 +73,18 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
 
+
+
 require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
 switch($task){
 
+case "proxy":
+		SITE_proxy::proxy();	
+		break;
+	
 	case "orderReport":
 		ADMIN_cpanel::orderReport($cid[0]);
 		break;
@@ -438,6 +444,20 @@ switch($task){
 		
 		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );
 		break;
+		
+	case "orderupbasemapcontent":
+	
+		ADMIN_basemap::orderUpBasemapContent($cid[0],JRequest::getVar('basemap_def_id'));
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );
+		break;
+		
+	case "orderdownbasemapcontent":
+		ADMIN_basemap::orderDownBasemapContent($cid[0],JRequest::getVar('basemap_def_id'));
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );
+		break;
+		
+		
+		
 	case "listBasemapContent":
 		TOOLBAR_basemap::_LISTBASEMAPCONTENT($cid[0]);
 		ADMIN_basemap::listBasemapContent($cid[0],$option);

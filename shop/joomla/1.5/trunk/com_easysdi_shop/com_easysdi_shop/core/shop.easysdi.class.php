@@ -163,7 +163,7 @@ class HTML_shop {
 		$print =JRequest::getVar('print',0);
 
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
+		
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
@@ -387,8 +387,9 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
 
             
 function initMap(){
- OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
-
+ //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
+ 
+ //OpenLayers.ProxyHost="index.php?option=com_easysdi_shop&no_html=1&task=proxy&url=";
 
 
 
@@ -427,7 +428,7 @@ if ($db->getErrorNum()) {
 
 <?php
 
-$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id; 
+$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id." order by ordering"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();
 		  
@@ -441,7 +442,19 @@ foreach ($rows as $row){
 ?>				
 				  
 				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
-                    "<?php echo $row->url; ?>",
+				
+					<?php 
+					if ($row->user != null && strlen($row->user)>0){
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
+						echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
+					}else{	
+						//if no user and password then don't use any proxy.					
+						echo "\"$row->url\",";	
+					}					
+					?>
+					
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
@@ -604,7 +617,8 @@ function intersect() {
         var doc = format.read(gml.write(feature, true));               
 		
 		if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
-			wfsUrlWithFilter = wfsUrl+ '&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Polygon')+'</ogc:Intersect></ogc:Filter>');				
+			wfsUrlWithFilter = wfsUrl+ '&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Polygon')+'</ogc:Intersect></ogc:Filter>');
+							
 		}
 		
 		if (feature.geometry instanceof OpenLayers.Geometry.Point){
@@ -1177,8 +1191,8 @@ if (count($rows)>0){
 	if ($user->guest){
 		echo "<hr>";
 		echo JText::_("EASYSDI_USER_NOT_CONNECTED");
-		?> <input type="text" name="user"value""> <input type="password"
-	name="password"value""> <?php
+		?> <input type="text" name="user" value=""> <input type="password"
+	name="password" value=""> <?php
 	}
 	$query = "select a.partner_id as partner_id, a.partner_acronym as acronym from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id";
 	$db->setQuery( $query);

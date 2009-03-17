@@ -44,6 +44,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 
 
 $language=&JFactory::getLanguage();
@@ -70,6 +71,11 @@ if (!is_array( $cid )) {
 
 switch($task){
 
+
+	case "proxy":
+	
+	SITE_Proxy::proxy();
+	break;
 	/*
 	 * Favorites
 	 */

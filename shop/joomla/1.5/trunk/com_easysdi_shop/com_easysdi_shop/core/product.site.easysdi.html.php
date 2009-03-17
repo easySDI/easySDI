@@ -691,6 +691,14 @@ class HTML_product{
 		
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
 		$geoMD = new geoMetadata($cswResults);				 
+
+		$count  = $geoMD->isXPathResultCount("//gmd:fileIdentifier");
+		if ($count == 0) {
+			
+		$mainframe->redirect("index.php?option=$option&task=editMetadata&id=$id" );	
+		exit;
+		}
+		
 		
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
@@ -813,7 +821,9 @@ class HTML_product{
 						$count  = $geoMD->isXPathResultCount("//".$rowtab->iso_key);
 						?>
 						
-						<?php 
+						<?php
+						
+						 
 						for ($i=0 ;$i<$count;$i++){
 							?>
 							

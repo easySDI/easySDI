@@ -117,6 +117,18 @@ class HTML_location {
 							</td>
 							</tr>
 							
+							
+					
+							
+							<tr>
+							<td><?php echo JText::_("EASYSDI_LOCATION_USER"); ?> : </td>
+							<td><input type="text" name="user"  value="<?php echo $rowLocation->user?>"></td>
+							</tr>
+							<tr>							
+							<td><?php echo JText::_("EASYSDI_LOCATION_PASSWORD"); ?> : </td>
+							<td><input type="password" name="password"  value="<?php echo $rowLocation->password ?>"></td>
+							</tr>
+							
 						</table>
 					</fieldset>
 				</td>

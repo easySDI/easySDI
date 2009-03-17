@@ -1294,6 +1294,70 @@ function com_install(){
 	
 	}
 	
+	
+	if ($version == "0.994")
+	{
+	
+	
+		$version = "0.995";
+		$query="UPDATE #__easysdi_version set version = '0.995' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+	
+		$query="ALTER TABLE #__easysdi_basemap_content add column ordering int(11) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+	
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column user varchar(400) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column password varchar(400) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		
+		
+			$query="ALTER TABLE #__easysdi_basemap_content add column user varchar(400) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE #__easysdi_basemap_content add column password varchar(400) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		
+		$query = "insert  into #__easysdi_config (thekey, value) values('PROXYHOST','index.php?option=com_easysdi_shop&no_html=1&task=proxy')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	
+	
+	
+	}
 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries

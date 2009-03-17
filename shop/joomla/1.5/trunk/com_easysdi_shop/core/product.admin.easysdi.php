@@ -41,7 +41,7 @@ class ADMIN_product {
 
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
+		$use_pagination = JRequest::getVar('use_pagination',1);
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
@@ -58,9 +58,9 @@ class ADMIN_product {
 
 		// Recherche des enregistrements selon les limites
 
-
+		 
 		$query = "SELECT * FROM #__easysdi_product   ";
-			
+		if ($search !=null && strlen($search)>0 ) {$query = $query ." WHERE data_title like '%$search%' ";}	
 
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);
@@ -68,6 +68,8 @@ class ADMIN_product {
 		else {
 			$db->setQuery( $query );
 		}
+		
+		
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

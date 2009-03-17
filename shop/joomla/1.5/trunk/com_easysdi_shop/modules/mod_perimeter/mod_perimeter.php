@@ -106,9 +106,27 @@ $cid = 		$mainframe->getUserState('productList');
 
 	<?php	
 	foreach ($rows as $row)
-		{?>
+		{
+			
+			if (1==1 || ($row->user !=null && strlen($row->user)>0)){
+						
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
+						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+						
+						
+						$proxyhost = $proxyhostOrig."&type=wms&perimeterdefid=$row->id&url=";
+						
+						$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
+					}else{
+						$wfs_url = $row->wfs_url;
+						
+						$wms_url=	$row->wms_url;					
+					}
+			?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $row->wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");
 	 			enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
 	 		}
 	 
