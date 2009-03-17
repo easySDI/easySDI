@@ -63,10 +63,22 @@ $db =& JFactory::getDBO();
 					var maxfeatures="&MAXFEATURES=<?php echo $row->maxfeatures?>";
 					
 						<?php
-					}?>
+					}
+					
+					if (2 == 2 || ($row->user !=null && strlen($row->user)>0)){
+						
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
+						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+					}else{
+						
+						$wfs_url = $row->wfs_url;						
+					}
+					?>
 					
 						 		 	
-	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
+	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				
 	 			<?php } ?>
 	 			if (document.getElementById('locationblock<?php echo $row->id;?>')!=null)
@@ -111,9 +123,19 @@ $db =& JFactory::getDBO();
 	 		 	<?php }else{?>
 	 		 		var maxfeatures="";
 	 		 		<?php
-	 		 	} ?>
+	 		 	}
+	 		 	if (1==1 && ($row->user !=null && strlen($row->user)>0)){
+						
+						//if a user and password is requested then use the joomla proxy.
+						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
+						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+					}else{
+						$wfs_url = $row->wfs_url;						
+					}
+	 		 	 ?>
 	 		 	
-	 		fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $row->wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
+	 		fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 	 
 	 <?php } ?>

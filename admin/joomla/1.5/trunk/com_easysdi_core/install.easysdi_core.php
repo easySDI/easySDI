@@ -817,6 +817,36 @@ function com_install(){
 		
 	}
 	
+	
+	
+	if ($version == "0.94")
+	{
+		$version="0.95";
+		$query="UPDATE #__easysdi_version SET version ='0.95' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		$query="ALTER TABLE #__easysdi_location_definition add column user varchar(400)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+		$query="ALTER TABLE #__easysdi_location_definition add column password varchar(400)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+
+		
+	}
 		/**
 		 * Menu creation
 		 */

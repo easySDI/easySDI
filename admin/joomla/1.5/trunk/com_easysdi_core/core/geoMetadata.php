@@ -69,8 +69,8 @@ class geoMetadata{
 function isXPathResultCount($xpath){
 		if ($this->metadata){	
 		$nodes = $this->xpath->query($xpath);
-		if ($nodes === false) return "";
-		if ($nodes->length==0) return "";
+		if ($nodes === false) return 0;
+		if ($nodes->length==0) return 0;
 		$i=0;
 		foreach ($nodes as $node){
 			$i++;
