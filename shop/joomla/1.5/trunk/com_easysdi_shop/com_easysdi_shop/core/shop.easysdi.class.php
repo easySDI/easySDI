@@ -409,7 +409,7 @@ if ($db->getErrorNum()) {
 		
 				  
 ?>
-				   map = new OpenLayers.Map('map', {
+				map = new OpenLayers.Map('map', {
                 projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 units: "<?php echo $rows[0]->unit; ?>",
@@ -473,19 +473,16 @@ $i++;
 
 			 
 
-                map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>));
-               map.addControl(new OpenLayers.Control.LayerSwitcher());
-                map.addControl(new OpenLayers.Control.Attribution());                                
-            vectors = new OpenLayers.Layer.Vector(
-                "Vector Layer",
-                {isBaseLayer: false,transparent: "true"                                
-                }
-            );
-            
-           
-                       
+                
+               	map.addControl(new OpenLayers.Control.LayerSwitcher());
+                map.addControl(new OpenLayers.Control.Attribution());       
+                
+                                         
+            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
                         
             map.addLayer(vectors);
+            
+             map.zoomToMaxExtent()
 			/*zb = new OpenLayers.Control.ZoomBox();
 			md = new OpenLayers.Control.MouseDefaults();
 			zo =  new OpenLayers. Control. ZoomOut();*/
