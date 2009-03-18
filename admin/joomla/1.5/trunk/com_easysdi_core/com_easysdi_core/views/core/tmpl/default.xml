@@ -5,5 +5,8 @@
 			<![CDATA[STANDARD REGISTER LAYOUT DESC]]>
 		</message>
 	</layout>
-
+	<state>
+		<name>Enregistrement</name>
+		<description><![CDATA[STANDARD REGISTER LAYOUT DESC]]></description>
+	</state>
 </metadata>
