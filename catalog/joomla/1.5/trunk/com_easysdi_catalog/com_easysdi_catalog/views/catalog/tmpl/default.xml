@@ -5,5 +5,8 @@
 			<![CDATA[STANDARD CSEARCH LAYOUT DESC]]>
 		</message>
 	</layout>
-
+	<state>
+		<name>Recherche</name>
+		<description><![CDATA[STANDARD CSEARCH LAYOUT DESC]]></description>
+	</state>
 </metadata>
