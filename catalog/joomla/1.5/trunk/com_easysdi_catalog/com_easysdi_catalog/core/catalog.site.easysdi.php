@@ -21,13 +21,32 @@ class SITE_catalog {
 	
 	
 	function listCatalogContent(){
+		global $mainframe;
+		/**
+		 * Manage Pathway 
+		 */
+		 // Get the menu item object
+	    $menus = &JSite::getMenu();
+	    $menu  = $menus->getActive();
+	    $params = &$mainframe->getParams();
+	 	 //Handle the breadcrumbs
+	        if(!$menu)
+	        {
+	        $params->set('page_title',	JText::_("EASYSDI_PATHWAY_CATALOG"));
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_PATHWAY_CATALOG"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
+	        }
+		/**/
 	
 	$catalogUrlBase = config_easysdi::getValue("catalog_url");
 	
 	$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw:http://www.opengis.net/cat/csw&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 	$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 	
-	global  $mainframe;
+	
 	$option=JRequest::getVar("option");
 	$limit = JRequest::getVar('limit', 5 );
 	$limitstart = JRequest::getVar('limitstart', 0 );
