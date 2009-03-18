@@ -28,14 +28,18 @@ function manageFavoriteProduct ( $orderable = 1)
 	 // Get the menu item object
         $menus = &JSite::getMenu();
         $menu  = $menus->getActive();
- 	 //Handle the breadcrumbs
+         $params = &$mainframe->getParams();
+ 	 	//Handle the breadcrumbs
         if(!$menu)
         {
-		//Add item in pathway		
-		$breadcrumbs = & $mainframe->getPathWay();
-	    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_FAVORITES"), '' );
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_FAVORITES"));
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_FAVORITES"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
         }
-	/**/
+		/**/
         
 	$user = JFactory::getUser();		
 	

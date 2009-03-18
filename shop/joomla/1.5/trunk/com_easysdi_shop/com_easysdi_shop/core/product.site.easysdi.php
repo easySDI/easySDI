@@ -474,12 +474,16 @@ class SITE_product {
 		 // Get the menu item object
 	     $menus = &JSite::getMenu();
         $menu  = $menus->getActive();
+        $params = &$mainframe->getParams();
  		 //Handle the breadcrumbs
         if(!$menu)
         {
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_PRODUCTS"));
 			//Add item in pathway		
 			$breadcrumbs = & $mainframe->getPathWay();
 		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_PRODUCTS"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
         }
 		/**/
         
@@ -574,12 +578,16 @@ class SITE_product {
 		 // Get the menu item object
 	     $menus = &JSite::getMenu();
         $menu  = $menus->getActive();
+        $params = &$mainframe->getParams();
  		 //Handle the breadcrumbs
         if(!$menu)
         {
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_METADATA"));
 			//Add item in pathway		
 			$breadcrumbs = & $mainframe->getPathWay();
 		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_METADATA"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
         }
 		/**/
 		
