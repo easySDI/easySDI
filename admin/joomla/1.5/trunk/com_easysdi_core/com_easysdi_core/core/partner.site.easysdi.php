@@ -15,8 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-/*foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';*/
+
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -46,15 +45,19 @@ class SITE_partner {
 		 // Get the menu item object
         $menus = &JSite::getMenu();
         $menu  = $menus->getActive();
+        $params = &$mainframe->getParams();
  		 //Handle the breadcrumbs
         if(!$menu)
         {
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"));
 			//Add item in pathway		
 			$breadcrumbs = & $mainframe->getPathWay();
 		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
         }
 		/**/	
-        
+
 		$user = JFactory::getUser();
 		if(!userManager::isUserAllowed($user,"ACCOUNT"))
 		{
@@ -255,12 +258,16 @@ class SITE_partner {
 		 // Get the menu item object
         $menus = &JSite::getMenu();
         $menu  = $menus->getActive();
+        $params = &$mainframe->getParams();
  		 //Handle the breadcrumbs
         if(!$menu)
         {
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"));
 			//Add item in pathway		
 			$breadcrumbs = & $mainframe->getPathWay();
 		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
         }
 		/**/	
 			
@@ -447,6 +454,45 @@ class SITE_partner {
 	
 	function createUser()
 	{		
+		global $mainframe;
+		//$user     =& JFactory::getUser();
+		$params = &$mainframe->getParams();
+		$menus	= &JSite::getMenu();
+		$menu	= $menus->getActive();
+
+		// because the application sets a default page title, we need to get it
+		// right from the menu item itself
+		if (is_object( $menu )) {
+			/*$menu_params = new JParameter( $menu->params );
+			if (!$menu_params->get( 'page_title')) {
+				$params->set('page_title',	JText::_("EASYSDI_PATHWAY_REGISTRATION"));
+			}*/
+		} else {
+			$params->set('page_title',	JText::_("EASYSDI_PATHWAY_REGISTRATION"));
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_PATHWAY_REGISTRATION"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
+		}
+		
+
+		
+		/**
+		 * Manage Pathway 
+		 */
+		 // Get the menu item object
+	    /*$menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_PATHWAY_REGISTRATION"), '' );
+        }*/
+		/**/
+        
 		$option = JRequest::getVar("option");
 		HTML_partner::createUser( $option );
 		
