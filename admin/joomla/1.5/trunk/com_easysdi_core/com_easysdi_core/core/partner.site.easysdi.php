@@ -38,8 +38,23 @@ class SITE_partner {
 	}
 
 	function listPartner() {
+		global  $mainframe;
 
-
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+        $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"), '' );
+        }
+		/**/	
+        
 		$user = JFactory::getUser();
 		if(!userManager::isUserAllowed($user,"ACCOUNT"))
 		{
@@ -55,7 +70,7 @@ class SITE_partner {
 			return;
 		}*/
 		
-			global  $mainframe;
+			
 			$option=JRequest::getVar("option");
 
 			$db =& JFactory::getDBO();
@@ -233,6 +248,21 @@ class SITE_partner {
 	function showPartner( ) {
 		global  $mainframe;
 		$user = JFactory::getUser();
+		
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+        $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"), '' );
+        }
+		/**/	
 			
 		if ($user->guest){
 			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");		
