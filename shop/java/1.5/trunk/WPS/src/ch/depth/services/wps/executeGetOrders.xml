@@ -7,7 +7,7 @@
 			<ows:Identifier>userName</ows:Identifier>
 			<ows:Title>provider userName</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>rmi</wps:LiteralData>
+				<wps:LiteralData>sd</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		
@@ -15,7 +15,7 @@
 			<ows:Identifier>status</ows:Identifier>
 			<ows:Title>status</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>AWAIT</wps:LiteralData>
+				<wps:LiteralData>SENT</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		
