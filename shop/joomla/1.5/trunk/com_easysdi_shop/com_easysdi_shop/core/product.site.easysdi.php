@@ -468,6 +468,21 @@ class SITE_product {
 	
 	function listProduct(){
 		global  $mainframe;
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+	     $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_PRODUCTS"), '' );
+        }
+		/**/
+        
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
@@ -553,6 +568,21 @@ class SITE_product {
 	
 	function listProductMetadata(){
 		global  $mainframe;
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+	     $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_METADATA"), '' );
+        }
+		/**/
+		
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
