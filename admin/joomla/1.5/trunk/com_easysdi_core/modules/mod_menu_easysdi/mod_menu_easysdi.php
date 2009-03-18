@@ -33,6 +33,7 @@ if (!$user->guest)
 	<?php 
 	if(userManagerRight::isEasySDIUser($user))
 	{
+		
 		?>
 		<ul class="menu">
 		<?php 
