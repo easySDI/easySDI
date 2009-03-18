@@ -324,6 +324,21 @@ class SITE_cpanel {
 	function listOrders(){
 
 		global  $mainframe;
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+	     $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+ 		 //Handle the breadcrumbs
+        if(!$menu)
+        {
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYORDERS"), '' );
+        }
+		/**/
+        
 		$option=JRequest::getVar("option");
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
