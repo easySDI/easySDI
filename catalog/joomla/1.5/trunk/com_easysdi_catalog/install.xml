@@ -16,6 +16,10 @@
 	<uninstallfile>uninstall.easysdi_catalog.php</uninstallfile>
 	
 	<administration>			
+	<languages folder="./language/admin">
+			<language tag="fr-FR">fr-FR.com_easysdi_catalog.ini</language>
+			<language tag="en-GB">en-GB.com_easysdi_catalog.ini</language>
+		</languages>
 	</administration>
 	
 	<files folder="com_easysdi_catalog"> 

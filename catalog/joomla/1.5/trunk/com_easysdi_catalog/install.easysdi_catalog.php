@@ -103,7 +103,7 @@ function com_install(){
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
-			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
+		/*	mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
 			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl', 0700);
 			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
 			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
@@ -122,7 +122,22 @@ function com_install(){
 			if (!copy($file, $newfile)) {
 			   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
 				return false;
+			}*/
+	
+			$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 			}
+			
+	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
+		values('EasySDI - Catalog','option=com_easysdi_catalog','Easysdi Catalog','com_easysdi_catalog','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+	if (!$db->query()) 
+	{
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+	}
 	
 	$mainframe->enqueueMessage("Congratulation catalog for EasySdi is installed and ready to be used. Enjoy EasySdi Catalog!","INFO");
 	return true;
