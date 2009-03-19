@@ -52,7 +52,7 @@ if ($xmlConfig === false){
 $configFilePath = $xmlConfig->proxy->configFilePath;
 $xml = simplexml_load_file($configFilePath);
 */
-
+$configFilePath = config_easysdi::getValue("PROXY_CONFIG");
 $xml = simplexml_load_file(config_easysdi::getValue("PROXY_CONFIG"));
 
 if ($xml === false){
