@@ -1523,24 +1523,7 @@ if (count($rows)>0){
 	function order(){
 
 		global $mainframe;
-		/**
-		 * Manage Pathway 
-		 */
-		 // Get the menu item object
-	    $menus = &JSite::getMenu();
-        $menu  = $menus->getActive();
-        $params = &$mainframe->getParams();
- 		 //Handle the breadcrumbs
-        if(!$menu)
-        {
-        	$params->set('page_title',	JText::_("EASYSDI_PATHWAY_ORDER"));
-			//Add item in pathway		
-			$breadcrumbs = & $mainframe->getPathWay();
-		    $breadcrumbs->addItem( JText::_("EASYSDI_PATHWAY_ORDER"), '' );
-		    $document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-        }
-		/**/
+		
         
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
