@@ -26,9 +26,9 @@ function com_install(){
 
 	/*if (!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'license.txt')){
 
-		$mainframe->enqueueMessage("Core component does not exists. Easysdi_shop could not be installed. Please install core component first.","ERROR");
-		return false;
-		
+	$mainframe->enqueueMessage("Core component does not exists. Easysdi_shop could not be installed. Please install core component first.","ERROR");
+	return false;
+
 	}*/
 
 	/**
@@ -48,18 +48,18 @@ function com_install(){
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			
+				
 		}
-		return false;		
+		return false;
 	}
-	
+
 	/*if (!file_exists(JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'license.txt')){
 
-		$mainframe->enqueueMessage("Catalog component is not installed. Easysdi_shop could not be installed. Please install catalog component first.","ERROR");
-		return false;
-		
+	$mainframe->enqueueMessage("Catalog component is not installed. Easysdi_shop could not be installed. Please install catalog component first.","ERROR");
+	return false;
+
 	}*/
-	
+
 	/**
 	 * Check the CATALOG installation
 	 */
@@ -77,12 +77,12 @@ function com_install(){
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			
+				
 		}
-		return false;		
-	}	
-	
-	
+		return false;
+	}
+
+
 	/**
 	 * Creates the database structure
 	 */
@@ -96,7 +96,7 @@ function com_install(){
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
-	
+
 
 	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
 			  `component` varchar(100) NOT NULL default '',
@@ -108,7 +108,7 @@ function com_install(){
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
-			
+		
 	/**
 	 * Gets the component versions
 	 */
@@ -116,32 +116,32 @@ function com_install(){
 	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_shop'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
-	if ($db->getErrorNum()) {								
+	if ($db->getErrorNum()) {
 		$version = '0';
-	//	$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		//	$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
 	if (!$version){
 		$version="0";
-	}	
+	}
 	if (strlen($version)==0){$version ='0';}
-				
+
 	//When there is no DB version, then we create the full db
-	if ($version == '0') 
-	{	
-		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";	
+	if ($version == '0')
+	{
+		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES (null, 'com_easysdi_shop', '0.9')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-		
+
+
+
 		$query="
 			CREATE TABLE `#__easysdi_basemap_content` (
 			  `id` bigint(20) NOT NULL auto_increment,
@@ -177,7 +177,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="CREATE TABLE `#__easysdi_order` (
 				  `order_id` bigint(20) NOT NULL auto_increment,
 				  `remark` varchar(4000) NOT NULL default '',
@@ -277,9 +277,9 @@ function com_install(){
 		$query="ALTER TABLE #__easysdi_product add column metadata_standard_id bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_product_perimeter` (
 			  `id` bigint(20) NOT NULL auto_increment,
 			  `product_id` bigint(20) NOT NULL default '0',
@@ -332,8 +332,8 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-		
-		
+
+
 		$version = "0.9";
 	}
 	if ($version == "0.9")
@@ -341,11 +341,11 @@ function com_install(){
 		$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-				//The table does not exists then create it
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$version = "0.91";
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes` (
 			  `id` bigint(20) NOT NULL auto_increment,
 			  `name` varchar(100) NOT NULL default '',
@@ -360,9 +360,9 @@ function com_install(){
 			)" ;
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes_classes` (
 		  	`id` bigint(20) NOT NULL auto_increment,
 		 	 `classes_from_id` bigint(20) NOT NULL default '0',
@@ -373,7 +373,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes_ext` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `classes_id` bigint(20) NOT NULL default '0',
@@ -382,9 +382,9 @@ function com_install(){
 		)"; 
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes_freetext` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `classes_id` bigint(20) NOT NULL default '0',
@@ -395,7 +395,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes_list` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `classes_id` bigint(20) NOT NULL default '0',
@@ -406,7 +406,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_classes_locfreetext` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `classes_id` bigint(20) NOT NULL default '0',
@@ -417,7 +417,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_date` (
 				  `id` bigint(20) NOT NULL auto_increment,
 				  `partner_id` bigint(20) default '0',
@@ -431,7 +431,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_ext` (
 				  `id` bigint(20) NOT NULL auto_increment,
 				  `name` varchar(400) NOT NULL default '',
@@ -444,7 +444,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_freetext` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `name` varchar(100) NOT NULL default '',
@@ -461,7 +461,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_list` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `partner_id` bigint(20) NOT NULL default '0',
@@ -473,7 +473,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_list_content` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `list_id` bigint(20) NOT NULL default '0',
@@ -489,7 +489,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_loc_freetext` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `lang` varchar(100) NOT NULL default '',
@@ -504,7 +504,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_numeric` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `default_value` bigint(20) NOT NULL default '0',
@@ -518,7 +518,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_standard` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `name` varchar(100) NOT NULL default '',
@@ -533,7 +533,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_standard_classes` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `standard_id` bigint(20) NOT NULL default '0',
@@ -547,7 +547,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metadata_tabs` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `partner_id` bigint(20) NOT NULL default '0',
@@ -558,7 +558,7 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="CREATE TABLE `#__easysdi_metatada_constant` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `name` varchar(100) NOT NULL default '',
@@ -573,12 +573,12 @@ function com_install(){
 	}
 	if ($version == "0.91")
 	{
-		
+
 		$query="UPDATE #__easysdi_version set version = '0.92' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$version = "0.92";
 	}
@@ -588,32 +588,32 @@ function com_install(){
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$version = "0.97";
-		
+
 		$query="ALTER TABLE #__easysdi_metadata_freetext add column is_number tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="SET SQL_MODE=\"NO_AUTO_VALUE_ON_ZERO\"";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_classes`";
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_classes` (`id`, `name`, `iso_key`, `partner_id`, `is_global`, `description`, `is_final`, `is_editable`, `type`) VALUES
 		(2, 'gmd:fileIdentifier', 'gmd:fileIdentifier', 0, 0, 'Unique id fileIdentifier', 1, 1, 'freetext'),
 		(3, 'gmd:organisationName', 'gmd:organisationName', 0, 0, 'Organisation name', 0, 1, 'locfreetext'),
@@ -685,15 +685,15 @@ function com_install(){
 		(72, 'gmd:description(Source DQ)', 'gmd:description', 0, 0, 'Description source', 0, 1, 'locfreetext')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_classes_classes`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_classes_classes` (`id`, `classes_from_id`, `classes_to_id`) VALUES
 		(75, 15, 12),
 		(74, 15, 14),
@@ -758,26 +758,26 @@ function com_install(){
 		(142, 31, 57)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_classes_ext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_classes_ext` (`id`, `classes_id`, `ext_id`) VALUES
 		(6, 27, 2)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_classes_freetext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="INSERT INTO `#__easysdi_metadata_classes_freetext` (`id`, `classes_id`, `freetext_id`) VALUES
@@ -799,28 +799,28 @@ function com_install(){
 		$db->setQuery( $query);
 
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_classes_list`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}		
-		
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
 		$query="INSERT INTO `#__easysdi_metadata_classes_list` (`id`, `classes_id`, `list_id`) VALUES
 		(4, 56, 1)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_classes_locfreetext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_classes_locfreetext` (`id`, `classes_id`, `loc_freetext_id`) VALUES
 		(24, 21, 2),
 		(23, 3, 2),
@@ -836,29 +836,29 @@ function com_install(){
 		(30, 53, 2)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_ext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_ext` (`id`, `name`, `value`, `description`, `partner_id`) VALUES
 		(1, 'champ 1 ', '', '', 0),
 		(2, 'champ 2', '', '', 0)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_freetext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_freetext` (`id`, `name`, `description`, `partner_id`, `is_global`, `is_constant`, `is_date`, `is_number`, `is_id`, `default_value`) VALUES
 		(1, 'Simple freetext without a default value', 'Simple freetext field without default value', 0, 0, 0, 0, 0, 0, ''),
 		(2, 'ISO 19115:2003/19139 Freetext', 'Free text contenant la norme des métadonnées utilisée', 0, 0, 1, 0, 0, 0, 'ISO 19115:2003/19139'),
@@ -868,28 +868,28 @@ function com_install(){
 		(6, 'pointOfContact', 'pointOfContact', 0, 0, 0, 0, 0, 0, 'pointOfContact')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_list`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="INSERT INTO `#__easysdi_metadata_list` (`id`, `partner_id`, `multiple`, `name`) VALUES
 				(1, 0, 1, 'thématique')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_list_content`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_list_content` (`id`, `list_id`, `code_key`, `key`, `value`, `partner_id`, `is_global`, `default`) VALUES
 		(1, 0, '21', '22', '23', 1, 0, 0),
 		(15, 1, 'farming', 'farming', 'farming', 0, 0, 0),
@@ -916,29 +916,29 @@ function com_install(){
 		(31, 1, 'utilitiesCommunications', 'utilitiesCommunications', 'utilitiesCommunications', 0, 0, 0)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_loc_freetext`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_loc_freetext` (`id`, `lang`, `name`, `description`, `partner_id`, `is_global`, `default_value`) VALUES
 				(1, 'fr-CH', 'Texte en  Francais suisse sans valeur par défaut', 'Texte en  Francais suisse sans valeur par défaut', 1, 1, ''),
 				(2, 'en-GB', 'Texte en  Anglais GB sans valeur par défaut', 'Texte en  Anglais GB sans valeur par défaut', 1, 1, '')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "DELETE FROM `#__easysdi_metadata_standard`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_standard` (`id`, `name`, `inherited`, `partner_id`, `is_global`, `is_deleted`, `key`) VALUES
 		(1, 'ISO19115 - CORE', '0', 0, 1, 1, 'ISO19115'),
 		(2, 'ISO 19115:2003/19139 ', '0', 0, 1, 0, ''),
@@ -947,15 +947,15 @@ function com_install(){
 		(5, 'dddd', '2', 1, 0, 1, '')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_standard_classes`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_standard_classes` (`id`, `standard_id`, `position`, `partner_id`, `tab_id`, `class_id`) VALUES
 		(66, 1, 0, 1, 1, 2),
 		(87, 2, 0, 0, 10, 49),
@@ -975,15 +975,15 @@ function com_install(){
 		(82, 2, 0, 0, 2, 2)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "DELETE FROM `#__easysdi_metadata_tabs`";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="INSERT INTO `#__easysdi_metadata_tabs` (`id`, `partner_id`, `text`) VALUES
 		(1, 0, 'Diffusion'),
 		(2, 0, 'Identification'),
@@ -997,23 +997,23 @@ function com_install(){
 		(10, 0, 'Aquisition')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	if ($version == "0.97")
-	{		
+	{
 		$query="UPDATE #__easysdi_version set version = '0.98' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-				//The table does not exists then create it
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$version = "0.98";
-	
+
 		$query="ALTER TABLE #__easysdi_product_properties_definition add column type_code varchar(100) NOT NULL default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	if ($version == "0.98")
@@ -1021,110 +1021,110 @@ function com_install(){
 		$query="UPDATE #__easysdi_version set version = '0.99' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-				//The table does not exists then create it
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-			}
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		$version = "0.99";
-	
+
 		$query="ALTER TABLE #__easysdi_product add column is_free tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column wms_scale_min double NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column wms_scale_max double NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column filter_field_name varchar(100) NOT NULL default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}		
-		
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column id_perimeter_filter bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}		
- 
-	  	$query="ALTER TABLE #__easysdi_perimeter_definition add column is_localisation tinyint(1) NOT NULL default '0'";
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column is_localisation tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}	
-  	
-		$query="CREATE TABLE `#__easysdi_user_product_favorite` (`id` bigint(20) NOT NULL auto_increment, `partner_id` bigint(20) NOT NULL default '0', `product_id` bigint(20) NOT NULL default '0', `notify_metadata_modification` tinyint(1) NOT NULL default '0', PRIMARY KEY  (`id`))"; 
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		 
+		$query="CREATE TABLE `#__easysdi_user_product_favorite` (`id` bigint(20) NOT NULL auto_increment, `partner_id` bigint(20) NOT NULL default '0', `product_id` bigint(20) NOT NULL default '0', `notify_metadata_modification` tinyint(1) NOT NULL default '0', PRIMARY KEY  (`id`))";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 	}
 	if ($version == "0.99")
 	{
 		$query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-				//The table does not exists then create it
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-			}
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		$version = "0.991";
-	
+
 		$query="ALTER TABLE #__easysdi_order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="ALTER TABLE #__easysdi_order_product_list add column `data` longblob ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		  
+
 		$query="ALTER TABLE #__easysdi_order_product_list add `filename` varchar(100) default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add `maxfeatures` int(11) NOT NULL default '-1'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add `searchbox` tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add `sort` tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	if ($version == "0.991")
@@ -1133,255 +1133,255 @@ function com_install(){
 		$query="UPDATE #__easysdi_version set version = '0.992' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE #__easysdi_product add column `metadata_partner_id` bigint(20) default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		$query =  "INSERT INTO `#__easysdi_community_role` 
+
+		$query =  "INSERT INTO `#__easysdi_community_role`
 				  (`publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`)
 				   VALUES 
 				  ( 0, 1, 'FAVORITE', 'EASYSDI_FAVORITE_RIGHT', 'Gestion des favoris', NULL),
 				  (0, 1, 'PRODUCT', 'EASYSDI_PRODUCT_RIGHT', 'Gestion des produits', NULL);";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE `#__easysdi_basemap_content` add column `img_format` varchar(100) NOT NULL default 'image/png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE `#__easysdi_perimeter_definition` add column `img_format` varchar(100) NOT NULL default 'image/png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="ALTER TABLE `#__easysdi_product` add column `hasMetadata` tinyint(4) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-		
+
 		$query = "insert  into #__easysdi_config (thekey, value) values('ARCHIVE_DELAY','1')";
 		$db->setQuery( $query);
 		if (!$db->query())
-		{	
+		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "insert  into #__easysdi_config (thekey, value) values('HISTORY_DELAY','1')";
 		$db->setQuery( $query);
 		if (!$db->query())
-		{	
+		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
+
+
 	}
 	if ($version == "0.992")
 	{
-		
+
 		$version = "0.993";
 		$query="UPDATE #__easysdi_version set version = '0.993' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
-	
+
 	if ($version == "0.993")
 	{
-	
-	
+
+
 		$version = "0.994";
 		$query="UPDATE #__easysdi_version set version = '0.994' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	
+
+
 		$query="ALTER TABLE #__easysdi_order add column buffer bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_product_perimeter add column isBufferAllowed tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-	$query="ALTER TABLE #__easysdi_product add column previewBaseMapId bigint(20)";
+
+
+		$query="ALTER TABLE #__easysdi_product add column previewBaseMapId bigint(20)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 
 		$query="ALTER TABLE #__easysdi_product add column previewWmsUrl varchar(400) default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="ALTER TABLE #__easysdi_product add column previewWmsLayers varchar(400) default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_product add column previewMinResolution bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="ALTER TABLE #__easysdi_product add column previewMaxResolution bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-		
+
+
+
 		$query="ALTER TABLE #__easysdi_basemap_definition add column alias  varchar(400) default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="ALTER TABLE #__easysdi_product add column previewProjection varchar(400) NOT NULL default 'EPSG:4326'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="ALTER TABLE #__easysdi_product add column previewUnit varchar(400) NOT NULL default 'degrees'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="ALTER TABLE #__easysdi_product add column previewImageFormat varchar(400) NOT NULL default 'image/png'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	
-	
+
+
+
 	}
-	
-	
+
+
 	if ($version == "0.994")
 	{
-	
-	
+
+
 		$version = "0.995";
 		$query="UPDATE #__easysdi_version set version = '0.995' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	
+
+
 		$query="ALTER TABLE #__easysdi_basemap_content add column ordering int(11) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column user varchar(400) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column password varchar(400) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-		
-		
-			$query="ALTER TABLE #__easysdi_basemap_content add column user varchar(400) ";
+
+
+
+
+		$query="ALTER TABLE #__easysdi_basemap_content add column user varchar(400) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_basemap_content add column password varchar(400) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-		
+
+
+
 		$query = "insert  into #__easysdi_config (thekey, value) values('PROXYHOST','index.php?option=com_easysdi_shop&no_html=1&task=proxy')";
 		$db->setQuery( $query);
 		if (!$db->query())
-		{	
+		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	
-	
-	
+
+
+
+
 	}
 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
-		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
-		mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-		if (!copy($file, $newfile)) {
-		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-		if (!copy($file, $newfile)) {
-		    $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
-		$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-		$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-		if (!copy($file, $newfile)) {
-		   $mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-		}
+	/*mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
+	mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
+	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
+	if (!copy($file, $newfile)) {
+		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+		return false;
+	}
+	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
+	if (!copy($file, $newfile)) {
+		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+		return false;
+	}
+	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
+	if (!copy($file, $newfile)) {
+		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
+		return false;
+	}*/
 	/**
 	 * Menu creation
 	 */
@@ -1394,18 +1394,31 @@ function com_install(){
 	else
 	{
 		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
-	    return false;	
+		return false;
 	}
-	
-					
+
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+			}
+		
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
+	values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
+		values('EasySDI - Shop','option=com_easysdi_shop','Easysdi Shop','com_easysdi_shop','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+	if (!$db->query()) 
+	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
-	
-	$mainframe->enqueueMessage("Congratulation shop for EasySdi is installed and ready to be used. 
+	$mainframe->enqueueMessage("Congratulation shop for EasySdi is installed and ready to be used.
 	Enjoy EasySdi Shop!","INFO");
 
 }
