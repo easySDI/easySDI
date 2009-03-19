@@ -54,6 +54,7 @@ $language->load('com_easysdi_shop');
 <?php
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
+$view = JRequest::getVar('view');
 $myFavoritesFirst = JRequest::getVar('myFavoritesFirst');
 $simpleSearchCriteria = JRequest::getVar('simpleSearchCriteria');
 $limitstart= JRequest::getVar('limitstart');
@@ -68,7 +69,17 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-
+if ($view)
+{
+	switch($view){
+		default:
+		case "shop":
+			HTML_shop::order();
+			break;
+	}
+}
+else
+{
 switch($task){
 
 
@@ -315,6 +326,6 @@ switch($task){
 		$mainframe->enqueueMessage(JText::_("EASYSDI_ACTION_NOT_ALLOWED"), "INFO");
 
 		break;
-		
+}
 }
  ?>
