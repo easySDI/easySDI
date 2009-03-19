@@ -43,27 +43,18 @@ $view = JRequest::getVar('view');
 $db =& JFactory::getDBO();
 
 /* Handle Menu Item Manager entries */
-switch($view){
-	case "shop":
-		$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_shop' ";
-		$db->setQuery( $query);
-		$count = $db->loadResult();
-		if ($count > 0) {
-			$mainframe->redirect("index.php?option=com_easysdi_shop&task=order" );
-		}
-		break;
-	case "core":
-		$mainframe->redirect("index.php?option=$option&task=createUser" );
-		break;
-	case "catalog":
-		$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_easysdi_catalog' ";
-		$db->setQuery( $query);
-		$count = $db->loadResult();
-		if ($count > 0) {
-			$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listCatalogContent" );
-		}
-		break;
+if ($view)
+{
+	switch($view){
+		default:
+		case "core":
+			require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');	
+			SITE_partner::createUser(0);
+			break;
+	}
 }
+else
+{
 
 
 switch($task){	
@@ -128,5 +119,6 @@ switch($task){
 		SITE_partner::showPartner();
 		break;	
 				
+}
 }
  ?>
