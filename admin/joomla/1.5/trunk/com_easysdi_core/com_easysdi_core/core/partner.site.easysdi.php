@@ -456,17 +456,17 @@ class SITE_partner {
 	{		
 		global $mainframe;
 		//$user     =& JFactory::getUser();
-		$params = &$mainframe->getParams();
+	/*	$params = &$mainframe->getParams();
 		$menus	= &JSite::getMenu();
 		$menu	= $menus->getActive();
 
 		// because the application sets a default page title, we need to get it
 		// right from the menu item itself
 		if (is_object( $menu )) {
-			/*$menu_params = new JParameter( $menu->params );
+			$menu_params = new JParameter( $menu->params );
 			if (!$menu_params->get( 'page_title')) {
 				$params->set('page_title',	JText::_("EASYSDI_PATHWAY_REGISTRATION"));
-			}*/
+			}
 		} else {
 			$params->set('page_title',	JText::_("EASYSDI_PATHWAY_REGISTRATION"));
 			//Add item in pathway		
@@ -474,7 +474,7 @@ class SITE_partner {
 		    $breadcrumbs->addItem( JText::_("EASYSDI_PATHWAY_REGISTRATION"), '' );
 		    $document	= &JFactory::getDocument();
 			$document->setTitle( $params->get( 'page_title' ) );
-		}
+		}*/
 		
 
 		
@@ -940,7 +940,7 @@ class SITE_partner {
 		$database->setQuery( $query );
 		$row = $database->loadObjectList();
 		//$mailer =& JFactory::getMailer();		
-		SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
+		SITE_partner::sendMail($row,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
 		
 		//redirect		
 		$mainframe->redirect("index.php" );	
