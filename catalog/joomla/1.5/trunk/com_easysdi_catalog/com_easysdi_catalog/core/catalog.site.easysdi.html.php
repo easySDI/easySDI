@@ -249,8 +249,8 @@ if ($db->getErrorNum()) {
                 projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 units: "<?php echo $rows[0]->unit; ?>",
-                minResolution: <?php echo $rows[0]->minResolution; ?>,
-               maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
+                minScale: <?php echo $rows[0]->minResolution; ?>,
+               maxScale: <?php echo $rows[0]->maxResolution; ?>,    
                 maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
             });
 				  
@@ -295,8 +295,8 @@ foreach ($rows as $row){
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
-                      	minResolution: <?php echo $row->minResolution; ?>,
-                        maxResolution: <?php echo $row->maxResolution; ?>,                 
+                      	minScale: <?php echo $row->minResolution; ?>,
+                        maxScale: <?php echo $row->maxResolution; ?>,                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
                       transparent: "true"

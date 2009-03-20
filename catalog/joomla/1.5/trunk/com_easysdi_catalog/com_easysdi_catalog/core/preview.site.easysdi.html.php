@@ -68,8 +68,8 @@ function initMap(){
 
 //Bug when prohection == 4326 the resolutions are not managed properly
 <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
-            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
+            minScale: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
             maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
             });
@@ -101,8 +101,8 @@ foreach ($rows as $row){
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-                      	minResolution: <?php echo $row->minResolution; ?>,
-                        maxResolution: <?php echo $row->maxResolution; ?>,
+                      	minScale: <?php echo $row->minResolution; ?>,
+                        maxScale: <?php echo $row->maxResolution; ?>,
                         <?php } ?>                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
@@ -123,8 +123,8 @@ $i++;
                        
                       maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>),
                       <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>                                          
-                      minResolution: <?php echo $rowProduct->previewMinResolution; ?>,
-                      maxResolution: <?php echo $rowProduct->previewMaxResolution; ?>,
+                      minScale: <?php echo $rowProduct->previewMinResolution; ?>,
+                      maxScale: <?php echo $rowProduct->previewMaxResolution; ?>,
                       <?php } ?>                 
                      projection:"<?php echo $rowProduct->previewProjection; ?>",
                       units: "<?php echo $rowProduct->previewUnit; ?>",
