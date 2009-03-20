@@ -961,7 +961,7 @@ function isSelfIntersect(){
 		$task = JRequest::getVar('task');
 		$cid = $mainframe->getUserState('productList');
 		?>
-<h2 class="contentheading"><?php echo JText::_("EASYSDI_PROPERTIES_SELECT_TITLE"); ?></h2>
+
 
 <script>
  function submitOrderForm(){
@@ -1139,7 +1139,7 @@ if (count($rows)>0){
 		$task = JRequest::getVar ('task' );
 
 		?>
-<h2 class="contentheading"><?php echo JText::_("EASYSDI_USER_INFO_TITLE"); ?></h2>
+
 		<?php
 		$user = JFactory::getUser();
 		if (!$user->guest){
@@ -1168,7 +1168,7 @@ if (count($rows)>0){
 	type='hidden' id="fromStep" name='fromStep' value='4'> <input
 	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
 	type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
-<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'>
+<input type='hidden' id="task" name='task' value='order'>
 <input type='hidden' name='Itemid'
 	value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php echo JText::_("EASYSDI_ORDER_NAME"); ?><input
 	type="text" name="order_name" id="order_name"
@@ -1236,7 +1236,6 @@ if (count($rows)>0){
 
 		?>
 <div class="contentin">
-<h2 class="contentheading"><?php echo JText::_("EASYSDI_ORDER_CONFIRM"); ?></h2>
 <br>
 <br>
 <script>
@@ -1244,30 +1243,31 @@ if (count($rows)>0){
  	document.getElementById('orderForm').submit();
  }
  </script>
-<form id="orderForm" name="orderForm"
-	action="<?php echo JRoute::_("index.php"); ?>"><input type='hidden'
-	id="fromStep" name='fromStep' value='5'> <input type="hidden"
-	name="task" id="taskOrderForm" value="none"> <input type="hidden" name="option"
-	value="<?php echo JRequest::getVar('option'); ?>"> <input type='hidden'
-	id="step" name='step' value='<?php echo $step; ?>'> <input
-	type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
+<form id="orderForm" name="orderForm" action="<?php echo JRoute::_("index.php"); ?>">
+	<input type='hidden' id="fromStep" name='fromStep' value='5'> 
+	<input type="hidden" name="task" id="taskOrderForm" value="order"> 
+	<input type="hidden" name="option" value="<?php echo JRequest::getVar('option'); ?>">
+	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+</form>
 
+	<?php
+	if (!$user->guest){
+		?> 
+		<input onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
+				type="button"
+				value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> 
+		<input onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
+				type="button"
+				value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> 
 		<?php
-
-		if (!$user->guest){
-			?> <input
-	onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
-	type="button"
-	value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
-	onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
-	type="button"
-	value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
-		}else{?>
-<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
+	}else{
+		?>
+		<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
 		<?php
-		}
-		?></div>
+	}
+		?>
+		</div>
 		<?php
 	}
 
@@ -1553,7 +1553,8 @@ if (count($rows)>0){
 			</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
+			<?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 			<?php } ?> 
 		
@@ -1625,9 +1626,12 @@ if (count($rows)>0){
 	</tr>
 	<tr>
 		<td>
-		<div class="bodyShop"><?php if ($step ==1) HTML_shop::searchProducts();?>
-		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?> <?php if ($step ==3) HTML_shop::orderProperties($cid,$option);?>
-		<?php if ($step ==4) HTML_shop::orderDefinition($cid);?> <?php if ($step ==5) HTML_shop::orderSend($cid);?>
+		<div class="bodyShop">
+		<?php if ($step ==1) HTML_shop::searchProducts();?>
+		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?>
+		<?php if ($step ==3) HTML_shop::orderProperties($cid,$option);?>
+		<?php if ($step ==4) HTML_shop::orderDefinition($cid);?> 
+		<?php if ($step ==5) HTML_shop::orderSend($cid);?>
 		</div>
 		</td>
 	</tr>
@@ -1834,7 +1838,7 @@ if (count($rows)>0){
  </script>
 <form name="orderForm" id="orderForm"
 	action='<?php echo JRoute::_("index.php") ?>' method='POST'>
-<h2 class="contentheading"><?php echo JText::_("EASYSDI_SEARCH_PRODUCT_TITLE"); ?></h2>
+
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 <br>
