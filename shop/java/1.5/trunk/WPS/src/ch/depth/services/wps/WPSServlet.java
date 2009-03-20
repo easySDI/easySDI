@@ -506,7 +506,7 @@ public class WPSServlet extends HttpServlet {
 		    }else{
 			res.append("<easysdi:TYPE>VALUES</easysdi:TYPE>\n");
 		    }		 
-
+		    res.append("<easysdi:CODE>"+rsPerim.getString("perimeter_code")+"</easysdi:CODE>\n");
 		    do{							   		
 			res.append("<easysdi:CONTENT>"+rsPerim.getString("value")+"</easysdi:CONTENT>\n");
 		    }
