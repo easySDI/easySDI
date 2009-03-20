@@ -55,6 +55,7 @@ $language->load('com_easysdi_shop');
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
+
 $myFavoritesFirst = JRequest::getVar('myFavoritesFirst');
 $simpleSearchCriteria = JRequest::getVar('simpleSearchCriteria');
 $limitstart= JRequest::getVar('limitstart');
@@ -69,20 +70,17 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-if ($view)
+if ($view && $task != 'deleteProduct')
 {
-	switch($view){
-		default:
-		case "shop":
-			HTML_shop::order();
-			break;
-	}
+	$task = $view;
 }
-else
-{
+
 switch($task){
 
-
+	case "shop":
+			HTML_shop::order();
+			break;
+			
 	case "proxy":
 	
 	SITE_Proxy::proxy();
@@ -327,5 +325,5 @@ switch($task){
 
 		break;
 }
-}
+
  ?>
