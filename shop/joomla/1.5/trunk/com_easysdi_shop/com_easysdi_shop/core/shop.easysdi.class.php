@@ -287,7 +287,7 @@ function removeSelection(){
 	}*/
 }
 }
-function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat){
+function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
 
 	
 	document.getElementById('perimeter_id').value = perimId;
@@ -339,13 +339,17 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
                     wmsUrl,
                     {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
                      {singleTile: true},                                                    
-                     {     
+                     {                     
+					  minScale: pMaxResolution,
+               		  maxScale: pMinResolution,                                    	     
                       maxExtent: map.maxExtent,
                       projection: map.projection,
                       units: map.units,
                       transparent: "true"
                      }
                     );
+                 layerPerimeter.alwaysInRange=false;  
+                    
                  map.addLayer(layerPerimeter);      
     
     wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
@@ -413,8 +417,10 @@ if ($db->getErrorNum()) {
                 projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 units: "<?php echo $rows[0]->unit; ?>",
+                                                    	     
+                
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
-               maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
+                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
                 maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
                 // , controls: []
             });
@@ -459,6 +465,7 @@ foreach ($rows as $row){
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
+                      
                       	minResolution: <?php echo $row->minResolution; ?>,
                         maxResolution: <?php echo $row->maxResolution; ?>,                 
                      projection:"<?php echo $row->projection; ?>",
@@ -472,7 +479,17 @@ $i++;
 } ?>                    
 
 			 
-
+				map.events.register("zoomend", null, function() { 
+							$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(2); 
+							 text = "";
+							 
+							for (i=0; i<map.layers.length ;i++){
+									if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
+									 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+									} 
+								}
+								$("scaleStatus").innerHTML = text;
+							})
                 
                	map.addControl(new OpenLayers.Control.LayerSwitcher());
                 map.addControl(new OpenLayers.Control.Attribution());       
@@ -496,20 +513,25 @@ $i++;
 			rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
 			rectControl.featureAdded = function() { intersect();};												
 			rectControl.handler.setOptions({irregular: true});                                  
+            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
+            
             
             
             polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
             polyControl.featureAdded = function() { intersect();};
+			polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
 			
             pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
             pointControl.featureAdded = function() { intersect();};
-            
+			pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
             
             modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
-
+			modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
+			
 			vectors.events.on({
                 "afterfeaturemodified": intersect                
             });
+
 
             
             navHistory = new OpenLayers.Control.NavigationHistory();
@@ -760,6 +782,15 @@ if (oldLoad) oldLoad();
 </script>
 
 <div id="map" class="smallmap"></div>
+<br>
+<div id="scale">  </div>
+<br>
+<div id="scaleStatus">  </div>
+<br>
+<div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
+<br>
+
+<div id="status">  </div>
 <br>
 <div id="docs"></div>
 <br>

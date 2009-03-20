@@ -75,6 +75,9 @@ class perimeter extends JTable
 	var $img_format=null;
 	var $user=null;
 	var $password=null;
+	var $min_resolution=0;
+	var $max_resolution=0;
+	var $perimeter_code=null;
 	
 	// Class constructor
 	function __construct( &$db )

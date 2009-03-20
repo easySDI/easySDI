@@ -58,6 +58,19 @@ class HTML_perimeter {
 								<td><?php echo JText::_("EASYSDI_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="wms_url" value="<?php echo $rowPerimeter->wms_url; ?>" /></td>
 							</tr>
+							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_WMS_MIN_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="min_resolution" value="<?php echo $rowPerimeter->min_resolution; ?>" /></td>
+							</tr>
+							
+
+							<tr>
+								<td><?php echo JText::_("EASYSDI_WMS_MAX_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="max_resolution" value="<?php echo $rowPerimeter->max_resolution; ?>" /></td>
+							</tr>
+							
+														
 							<tr>
 								<td><?php echo JText::_("EASYSDI_IMG_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="img_format" value="<?php echo $rowPerimeter->img_format; ?>" /></td>
@@ -142,6 +155,10 @@ class HTML_perimeter {
 							<tr>							
 							<td><?php echo JText::_("EASYSDI_PERIMETER_PASSWORD"); ?> : </td>
 							<td><input type="password" name="password"  value="<?php echo $rowPerimeter->password ?>"></td>
+							</tr>
+							<tr>							
+							<td><?php echo JText::_("EASYSDI_PERIMETER_CODE"); ?> : </td>
+							<td><input type="text" name="perimeter_code"  value="<?php echo $rowPerimeter->perimeter_code ?>"></td>
 							</tr>
 							
 							

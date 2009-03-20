@@ -126,7 +126,7 @@ $cid = 		$mainframe->getUserState('productList');
 					}
 			?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>");
+	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
 	 			enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
 	 		}
 	 
@@ -154,7 +154,7 @@ $cid = 		$mainframe->getUserState('productList');
 		</td></tr>
 		<tr><td><div id="panelEdition" class="olControlEditingToolbar"></div></td></tr>  
 <tr><td>
-<div id="status">  </div>
+
 </td></tr>
 <tr><td><?php echo JText::_("EASYSDI_BUFFER"); ?><input type="text" id="bufferValue" value="0"></td></tr>
 </table>

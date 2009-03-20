@@ -1306,6 +1306,27 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
+		
+		
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column min_resolution bigint(20) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column max_resolution bigint(20) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+
+		
+		
+	
 
 		$query="ALTER TABLE #__easysdi_basemap_content add column ordering int(11) NOT NULL default '0'";
 		$db->setQuery( $query);
@@ -1354,10 +1375,48 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-
-
+		
+		
+		$query="ALTER TABLE #__easysdi_order_product_list add `remark` varchar(4000) default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+	
+	 $query="ALTER TABLE #__easysdi_order_product_list add `price` decimal(10,0) default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
 	}
+	
+	
+	
+	if ($version == "0.995")
+	{
+
+
+		$version = "0.996";
+		$query="UPDATE #__easysdi_version set version = '0.996' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	
+			$query="ALTER TABLE #__easysdi_perimeter_definition add column perimeter_code varchar(400) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	}	
+	
+	
 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
