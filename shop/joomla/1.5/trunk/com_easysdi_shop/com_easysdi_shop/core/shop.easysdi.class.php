@@ -329,10 +329,11 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
 	if (perimUrl.length ==0 && wmsUrl.length ==0){
 		//Free selection permiter.
 		isFreeSelectionPerimeter = true;
+	
 	}else{
 	
 	isFreeSelectionPerimeter = false;
-	
+
 	if (wmsUrl.length > 0){
 	
 		layerPerimeter = new OpenLayers.Layer.WMS(perimName,
