@@ -70,13 +70,15 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-if ($view && $task != 'deleteProduct')
+/**
+ * Handle view shop
+ */
+if ($view == 'shop' && $task != 'deleteProduct')
 {
 	$task = $view;
 }
 
 switch($task){
-
 	case "shop":
 			HTML_shop::order();
 			break;
