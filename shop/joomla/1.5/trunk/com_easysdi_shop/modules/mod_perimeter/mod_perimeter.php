@@ -113,12 +113,19 @@ $cid = 		$mainframe->getUserState('productList');
 						//if a user and password is requested then use the joomla proxy.
 						$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
 						$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
 						
+						if ($row->wfs_url!=null && strlen($row->wfs_url)>0){
+							$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+						}else{
+							$wfs_url ="";
+						}
 						
 						$proxyhost = $proxyhostOrig."&type=wms&perimeterdefid=$row->id&url=";
-						
-						$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
+						if ( $row->wms_url!=null && strlen($row->wms_url)>0){
+							$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
+						}else{
+							$wms_url ="";
+						}
 					}else{
 						$wfs_url = $row->wfs_url;
 						
