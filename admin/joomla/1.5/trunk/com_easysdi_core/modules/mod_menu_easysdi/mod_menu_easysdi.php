@@ -124,6 +124,18 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
+			$query = "SELECT COUNT(*) FROM `#__easysdi_product` where `partner_id` = '".$rowPartner->partner_id."' ";
+			$db->setQuery( $query);
+			$product_count = $db->loadResult();
+			if($product_count > 0)
+			{
+				?>
+				<li>
+				<a href ="./index.php?option=com_easysdi_shop&task=listOrdersForProvider"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"); ?></span></a>
+				</li>
+				<?php
+			}
+			
 			?>
 		</ul>
 		<?php
