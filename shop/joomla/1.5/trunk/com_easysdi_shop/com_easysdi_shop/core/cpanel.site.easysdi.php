@@ -82,7 +82,28 @@ class SITE_cpanel {
 	function listOrdersForProvider(){
 
 		global  $mainframe;
+		
 		$option=JRequest::getVar("option");
+		
+		/**
+		 * Allow Pathway with mod_menu_easysdi
+		 */
+		 // Get the menu item object
+        $menus = &JSite::getMenu();
+        $menu  = $menus->getActive();
+         $params = &$mainframe->getParams();
+ 	 	//Handle the breadcrumbs
+        if(!$menu)
+        {
+        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"));
+			//Add item in pathway		
+			$breadcrumbs = & $mainframe->getPathWay();
+		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"), '' );
+		    $document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
+        }
+		/**/
+        
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 
@@ -432,7 +453,7 @@ class SITE_cpanel {
 		$option = JRequest::getVar('option');
 
 		$db =& JFactory::getDBO();
-
+		
 		$query = "SELECT * FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id";
 
 
@@ -457,12 +478,13 @@ class SITE_cpanel {
 		}
 
 
+
 		?>
 <h1><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h1>
 <table>
 <?php
 $i=0;
-foreach ($rowsProduct as $row){?>
+foreach ($rowsProduct as $row){ ?>
 	<tr>
 		<td><?php echo ++$i; ?></td>
 		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
@@ -475,6 +497,7 @@ foreach ($rowsProduct as $row){?>
 			<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
 			<?php
 			}
+			
 		}
 		?>
 	</tr>
