@@ -64,7 +64,8 @@ class HTML_shop {
 	{
 		global  $mainframe;
 		$id = JRequest::getVar('prodId');
-		
+		$option = JRequest::getVar('option');
+
 		$productList = $mainframe->getUserState('productList');
 		if (is_array($productList))
 		{
@@ -73,81 +74,87 @@ class HTML_shop {
 				if ($value == $id)
 				{
 					unset($productList[$key]);
+					$property = $mainframe->getUserState('property_'.$id);
+					unset ($property);
+					$mainframe->setUserState('property_'.$id);
 				}
 			}
-		 	$mainframe->setUserState('productList',$productList);
+			$mainframe->setUserState('productList',$productList);
+			
 		}
+		$productList = $mainframe->getUserState('productList');
+		
 		
 	}
 
 
 	function exportPdf(){
-		
-	/*	$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$id = JRequest::getVar('id');
 
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		/*	$option = JRequest::getVar('option');
+		 $task = JRequest::getVar('task');
+		 $id = JRequest::getVar('id');
 
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
 
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-			
+		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
+		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
-		$processor = new xsltProcessor();
-		$style = new DomDocument();
+		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		 	
 
-		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		 $processor = new xsltProcessor();
+		 $style = new DomDocument();
 
-		if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+		 $user =& JFactory::getUser();
+		 $language = $user->getParam('language', '');
+
+		 if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
 			$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-		}else{
+			}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
-		}
-		$processor->importStylesheet($style);
-		$myHtml = $processor->transformToXml($cswResults);
+			}
+			$processor->importStylesheet($style);
+			$myHtml = $processor->transformToXml($cswResults);
 
-		helper_easysdi::exportPDF($myHtml);*/
+			helper_easysdi::exportPDF($myHtml);*/
 	}
 
 	function exportXml(){
 
-	/*	$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$id = JRequest::getVar('id');
+		/*	$option = JRequest::getVar('option');
+		 $task = JRequest::getVar('task');
+		 $id = JRequest::getVar('id');
 
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
 
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
+		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-			
+		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		 	
 
-		$xpath = new DomXPath($cswResults);
-		$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-		$xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
-		$nodes = $xpath->query("//gmd:MD_Metadata");
+		 $xpath = new DomXPath($cswResults);
+		 $xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+		 $xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+		 $nodes = $xpath->query("//gmd:MD_Metadata");
 
-		$dom = new DOMDocument();
-	if($nodes->item(0) != "")
-		{
+		 $dom = new DOMDocument();
+		 if($nodes->item(0) != "")
+		 {
 			$xmlContent = $dom ->importNode($nodes->item(0),true);
 			$dom->appendChild($xmlContent);
-		}
+			}
 
 
-		error_reporting(0);
-		ini_set('zlib.output_compression', 0);
-		header('Pragma: public');
-		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-		header('Content-Tran§sfer-Encoding: none');
-		header('Content-Type: text/xml');
-		header('Content-Disposition: attachement; filename="metadata.xml"');
+			error_reporting(0);
+			ini_set('zlib.output_compression', 0);
+			header('Pragma: public');
+			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+			header('Content-Tran§sfer-Encoding: none');
+			header('Content-Type: text/xml');
+			header('Content-Disposition: attachement; filename="metadata.xml"');
 
-		echo $dom->saveXML();*/
+			echo $dom->saveXML();*/
 
 
 
@@ -155,60 +162,60 @@ class HTML_shop {
 
 
 	function showMetadata(){
-		
-	/*	$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$id = JRequest::getVar('id');
-		$toolbar =JRequest::getVar('toolbar',1);
-		$print =JRequest::getVar('print',0);
 
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+		/*	$option = JRequest::getVar('option');
+		 $task = JRequest::getVar('task');
+		 $id = JRequest::getVar('id');
+		 $toolbar =JRequest::getVar('toolbar',1);
+		 $print =JRequest::getVar('print',0);
 
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-			
+		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
 
-		$processor = new xsltProcessor();
-		$style = new DomDocument();
+		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
+		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
-		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		 	
 
-		if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+		 $processor = new xsltProcessor();
+		 $style = new DomDocument();
+
+		 $user =& JFactory::getUser();
+		 $language = $user->getParam('language', '');
+
+		 if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
 			$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-		}else{
+			}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
-		}
-		$processor->importStylesheet($style);
-		$myHtml = $processor->transformToXml($cswResults);
-		if ($toolbar==1){
+			}
+			$processor->importStylesheet($style);
+			$myHtml = $processor->transformToXml($cswResults);
+			if ($toolbar==1){
 			echo "<table width='100%'><tr align='right'> <td><a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=exportPdf&id=$id\"> <img src=\"components/com_easysdi_shop/img/pdfButton.png\" alt=\"PDF\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\" href=\"./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id\"> <img src=\"components/com_easysdi_shop/img/xmlButton.png\" alt=\"XML\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=showMetadata&id=$id&toolbar=0&print=1\" onclick=\"window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;\"><img src=\"components/com_easysdi_shop/img/printButton.png\" alt=\"PRINT\"  /></td></tr></table>";
-		}
-		if ($print ==1 ){
+			}
+			if ($print ==1 ){
 			echo "<script>window.print();</script>";
 
-		}
-		echo $myHtml ;
+			}
+			echo $myHtml ;
 
-			
-		*Add consultation informations*
-		$db =& JFactory::getDBO();
+				
+			*Add consultation informations*
+			$db =& JFactory::getDBO();
 
 
-		$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
-		$db->setQuery( $query);
-		$maxHit = $db->loadResult();
-		if ($maxHit){
+			$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
+			$db->setQuery( $query);
+			$maxHit = $db->loadResult();
+			if ($maxHit){
 			$query = "update #__easysdi_product set weight = $maxHit where metadata_id='$id' ";
 			$db->setQuery( $query);
 			if (!$db->query()) {
-				echo "<div class='alert'>";
-				echo $db->getErrorMsg();
-				echo "</div>";
+			echo "<div class='alert'>";
+			echo $db->getErrorMsg();
+			echo "</div>";
 			}
-		}
+			}
 			*/
 	}
 
@@ -224,7 +231,7 @@ class HTML_shop {
 	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
 
 
-<script>
+<script><!--
 var map;
 var wfs=null;
 var wfs3=null;
@@ -780,7 +787,7 @@ initMap();
 selectPerimeter('perimeterList');
 if (oldLoad) oldLoad();
 }
-</script>
+--></script>
 
 <div id="map" class="smallmap"></div>
 <br>
@@ -795,8 +802,7 @@ if (oldLoad) oldLoad();
 <br>
 <div id="docs"></div>
 <br>
-<div id="panelDiv"
-	class="historyContent"></div>
+<div id="panelDiv" class="historyContent"></div>
 
 <br>
 
@@ -907,9 +913,8 @@ function isSelfIntersect(){
  </script>
 <div style="display: none;">
 <form name="orderForm" id="orderForm"
-	action='<?php echo JRoute::_("index.php") ?>' method='POST'>
-	<input type="hidden" id="bufferValue2" name="bufferValue" value="0">
-	<select
+	action='<?php echo JRoute::_("index.php") ?>' method='POST'><input
+	type="hidden" id="bufferValue2" name="bufferValue" value="0"> <select
 	multiple="multiple" size="10" id="replicSelectedSurface"
 	name="replicSelectedSurface[]"></select> <select multiple="multiple"
 	size="10" id="replicSelectedSurfaceName"
@@ -921,8 +926,7 @@ function isSelfIntersect(){
 	type='hidden' id="task" name='task' value='<?php echo $task; ?>'> <input
 	type='hidden' id="perimeter_id" name='perimeter_id' value='0'> <input
 	type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>">
-</form>
+	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
 </div>
 <?php
 
@@ -1195,27 +1199,20 @@ if (count($rows)>0){
  	document.getElementById('orderForm').submit();
  }
  </script>
-<form name="orderForm" id="orderForm"
-	action='<?php echo JRoute::_("index.php") ?>' method='GET'><input
-	type='hidden' id="fromStep" name='fromStep' value='4'> <input
-	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
-	type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
-<input type='hidden' id="task" name='task' value='order'>
-<input type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php echo JText::_("EASYSDI_ORDER_NAME"); ?><input
-	type="text" name="order_name" id="order_name"
-	value="<?php echo $mainframe->getUserState('order_name'); ?>"> <br>
-		<?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?><input type="radio"
-	name="order_type" id="order_type_d" value="D"
-	<?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
-<br>
-	<?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?><input
-	type="radio" name="order_type" id="order_type_o" value="O"
-	<?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
-
-
+<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='GET'>
+	<input type='hidden' id="fromStep" name='fromStep' value='4'> 
+	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
+	<input type='hidden' id="task" name='task' value='order'> 
+	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php echo JText::_("EASYSDI_ORDER_NAME"); ?>
+	<input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"> 
+	<br>
+	<?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?>
+	<input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
+	<br>
+	<?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?>
+	<input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
 	<?php
-
 
 	if ($user->guest){
 		echo "<hr>";
@@ -1267,39 +1264,37 @@ if (count($rows)>0){
 
 
 		?>
-<div class="contentin">
-<br>
+<div class="contentin"><br>
 <br>
 <script>
  function submitOrderForm(){
  	document.getElementById('orderForm').submit();
  }
  </script>
-<form id="orderForm" name="orderForm" action="<?php echo JRoute::_("index.php"); ?>">
-	<input type='hidden' id="fromStep" name='fromStep' value='5'> 
-	<input type="hidden" name="task" id="taskOrderForm" value="order"> 
-	<input type="hidden" name="option" value="<?php echo JRequest::getVar('option'); ?>">
-	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
-	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
-</form>
+<form id="orderForm" name="orderForm"
+	action="<?php echo JRoute::_("index.php"); ?>"><input type='hidden'
+	id="fromStep" name='fromStep' value='5'> <input type="hidden"
+	name="task" id="taskOrderForm" value="order"> <input type="hidden"
+	name="option" value="<?php echo JRequest::getVar('option'); ?>"> <input
+	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
+	type='hidden' name='Itemid'
+	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
 
-	<?php
-	if (!$user->guest){
-		?> 
-		<input onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
-				type="button"
-				value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> 
-		<input onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
-				type="button"
-				value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> 
 		<?php
-	}else{
-		?>
-		<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
-		<?php
-	}
-		?>
-		</div>
+		if (!$user->guest){
+			?> <input
+	onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
+	type="button"
+	value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
+	onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
+	type="button"
+	value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
+		}else{
+			?>
+<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
+			<?php
+		}
+		?></div>
 		<?php
 	}
 
@@ -1312,14 +1307,14 @@ if (count($rows)>0){
 		$user = JFactory::getUser();
 		if (!$user->guest){
 			$cid = $mainframe->getUserState('productList');
-				
+
 			$option = JRequest::getVar('option');
 			$task = JRequest::getVar('task');
-			$order_type = $mainframe->getUserState('order_type');				
-			$order_name = $mainframe->getUserState('order_name');				
+			$order_type = $mainframe->getUserState('order_type');
+			$order_name = $mainframe->getUserState('order_name');
 			$third_party = $mainframe->getUserState('third_party');
 			$bufferValue = $mainframe->getUserState('bufferValue');
-			
+				
 			$db =& JFactory::getDBO();
 
 			jimport("joomla.utilities.date");
@@ -1337,12 +1332,12 @@ if (count($rows)>0){
 			$order_id	= $db->insertId();
 			$totalArea = $mainframe->getUserState('totalArea');
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
-				
+
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
+
 				
-			
-			
+				
 			$i=0;
 			foreach ($selSurfaceList as $sel){
 
@@ -1372,23 +1367,24 @@ if (count($rows)>0){
 					$productProperties  = $mainframe->getUserState('property_'.$product_id);
 					$mainframe->setUserState('property_'.$product_id,null);
 
+					$order_product_list_id = $db->insertId();
 					foreach ($productProperties as $property_id){
-						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$db->insertId().",".$property_id.")";
+						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$order_product_list_id.",".$property_id.")";
 
 						$db->setQuery($query );
 						if (!$db->query()) {
 							echo "<div class='alert'>";
 							echo $db->getErrorMsg();
 							echo "</div>";
-						}							
+						}
 					}
 				}
 			}
 
 			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
-				
+
 			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='AWAIT' and o.type='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
-				
+
 			$db->setQuery( $query );
 			$rows = $db->loadObjectList();
 			if ($db->getErrorNum()) {
@@ -1407,13 +1403,13 @@ if (count($rows)>0){
 					echo "</div>";
 				}
 				$user = JFactory::getUser();
-				
+
 				SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
 					
-			}						
-					
-			
-			
+			}
+				
+				
+				
 			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
 			$db->setQuery($query);
 			$total = $db->loadResult();
@@ -1485,10 +1481,10 @@ if (count($rows)>0){
 			$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
 			$selSurfaceListName = JRequest::getVar ('replicSelectedSurfaceName', array(0) );
 			$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
-			
+				
 			$bufferValue = JRequest::getVar ('bufferValue', 0 );
 			$mainframe->setUserState('bufferValue',$bufferValue);
-			
+				
 			$totalArea = JRequest::getVar ('totalArea', 0 );
 			$mainframe->setUserState('totalArea',$totalArea);
 
@@ -1548,6 +1544,7 @@ if (count($rows)>0){
 
 			if (count($productList)==0){
 				JRequest::setVar('step',1);
+				JRequest::setVar('fromStep',0);
 			}
 		}
 	}
@@ -1555,8 +1552,8 @@ if (count($rows)>0){
 	function order(){
 
 		global $mainframe;
-		
-        
+
+
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$cid = JRequest::getVar ('cid', array(0) );
@@ -1572,95 +1569,84 @@ if (count($rows)>0){
 <table>
 	<tr>
 		<td>
-		<div class="headerShop">
-		<?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-			<div
-				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
-			</div>
+		<div
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
-			<?php echo JText::_("EASYSDI_STEP".$curStep); ?>
-		</div>
-			<?php } ?> 
-		
-		<?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+			<?php echo JText::_("EASYSDI_STEP".$curStep); ?></div>
+			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-			<div
-				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
-			</div>
+		<div
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-			<?php } ?>
-		
-			<?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-			<div
-				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
-			</div>
+		<div
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-			<?php } ?>
-			
-			<?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-			<div
-				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
-			</div>
+		<div
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-			<?php } ?>
-			
-			<?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
 			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-			<div
-				onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-				class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?> 
-			</div>
+		<div
+			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
 		</div>
-			<?php } ?>
-		</div>
+		<?php } ?></div>
 		</td>
 	</tr>
 	<tr>
 		<td>
 		<div class="bodyShop">
 		<?php if ($step ==1) HTML_shop::searchProducts();?>
-		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?>
+		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?> 
 		<?php if ($step ==3) HTML_shop::orderProperties($cid,$option);?>
 		<?php if ($step ==4) HTML_shop::orderDefinition($cid);?> 
 		<?php if ($step ==5) HTML_shop::orderSend($cid);?>
@@ -1697,7 +1683,7 @@ if (count($rows)>0){
 			$inc = 1;
 			//$countMD
 			for ($i=1; $i<=$countMD;$i=$i+$inc){
-			//for ($i=1; $i<=1;$i=$i+$inc){
+				//for ($i=1; $i<=1;$i=$i+$inc){
 				$catalogUrlGetRecordsMD =  $catalogUrlGetRecords . "&startPosition=".$i."&maxRecords=".$inc;
 				$cswResults= simplexml_load_file($catalogUrlGetRecordsMD);
 				echo $catalogUrlGetRecordsMD."<br>";
@@ -1706,7 +1692,7 @@ if (count($rows)>0){
 					$md = new geoMetadata($metadata);
 
 					echo "<b>".$i."</b><br>";
-					
+						
 					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title,metadata_standard_id,hasMetadata) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).",(select id from #__easysdi_metadata_standard WHERE name = 'ASITVD - ISO 19115:2003/19139' ),1)";
 					echo $query."<br>";
 					$db->setQuery( $query);
@@ -1724,6 +1710,7 @@ if (count($rows)>0){
 
 
 	}
+
 	function searchProducts($orderable = 1){
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -1772,7 +1759,7 @@ if (count($rows)>0){
 
 		if($partner->partner_id == 0)
 		{
-			//No user logged, display only external products   
+			//No user logged, display only external products
 			$filter .= " AND (EXTERNAL=1) ";
 		}
 		else
@@ -1782,13 +1769,13 @@ if (count($rows)>0){
 			{
 				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.EXTERNAL=1 
-								 OR 
-							 	(p.INTERNAL =1 AND 
-							 	(p.partner_id =  $partner->partner_id 
-							 		OR
-							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-							 	 	))) ";
+					$filter .= " AND (p.EXTERNAL=1
+					OR
+					(p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					))) ";
 				}
 				else
 				{
@@ -1799,11 +1786,11 @@ if (count($rows)>0){
 			{
 				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.INTERNAL =1 AND 
-							 	(p.partner_id =  $partner->partner_id 
-							 		OR
-							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-							 	 	))) ";
+					$filter .= " AND (p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					))) ";
 				}
 				else
 				{
@@ -1812,7 +1799,7 @@ if (count($rows)>0){
 				}
 			}
 		}
-		
+
 		//$filter .= " AND (EXTERNAL=1 OR (INTERNAL =1 AND PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
 
 		if ($simpleSearchCriteria == "favoriteProduct"){
@@ -1928,14 +1915,14 @@ if (count($rows)>0){
 <table width="100%">
 
 	<tr>
-		<td width="80%" ><span class="mdtitle"><a class="modal"
+		<td width="80%"><span class="mdtitle"><a class="modal"
 			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 			href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
 			rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $row->data_title; ?></a></span><br>
 		<span class="mdsupplier"><?php echo $row->supplier_name;?></span><br>
 		</td>
-		<td width="20%" ><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]"
-			value="<?php echo $row->id; ?>"
+		<td width="20%"><input type="checkbox" id="cb<?php echo $i;?>"
+			name="cid[]" value="<?php echo $row->id; ?>"
 			<?php if (in_array($row->id,$cid)) { echo "checked";};?> /></td>
 	</tr>
 </table>
