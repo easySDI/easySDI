@@ -99,6 +99,56 @@ function com_install(){
 			return false;
 		}
 	}
+	if($version = '0.91')
+	{	
+		$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_metadata_topic_category` (			  
+			  `id` bigint(20) NOT NULL auto_increment,
+			  `code` varchar(100) NOT NULL UNIQUE default '',
+			  `value` varchar(100) NOT NULL default '',
+			  PRIMARY KEY  (`id`)
+				)"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$query = "INSERT INTO `#__easysdi_metadata_topic_category` (`code`, `value`) VALUES 
+				  ('farming', 'EASYSDI_METADATA_CATEGORY_FARMING'),
+				  ('biota', 'EASYSDI_METADATA_CATEGORY_BIOTA'),
+				  ('bounderies', 'EASYSDI_METADATA_CATEGORY_BOUNDERIES'),
+				  ('climatologyMeteorologyAtmosphere', 'EASYSDI_METADATA_CATEGORY_CLIMATOLOGYMETEOROLOGYATMOSPHERE'),
+				  ('economy', 'EASYSDI_METADATA_CATEGORY_ECONOMY'),
+				  ('elevation', 'EASYSDI_METADATA_CATEGORY_ELEVATION'),
+				  ('environment', 'EASYSDI_METADATA_CATEGORY_ENVIRONMENT'),
+				  ('geoscientificinformation', 'EASYSDI_METADATA_CATEGORY_GEOSCIENTIFICINFORMATION'),
+				  ('health', 'EASYSDI_METADATA_CATEGORY_HEALTH'),
+				  ('imageryBaseMapsEarthCover', 'EASYSDI_METADATA_CATEGORY_IMAGERYBASEMAPSEARTHCOVER'),
+				  ('intelligenceMilitary', 'EASYSDI_METADATA_CATEGORY_INTELLIGENCEMILITARY'),
+				  ('inlandWaters', 'EASYSDI_METADATA_CATEGORY_INLANDWATERS'),
+				  ('location', 'EASYSDI_METADATA_CATEGORY_LOCATION'),
+				  ('oceans', 'EASYSDI_METADATA_CATEGORY_OCEANS'),
+				  ('planningCadastre', 'EASYSDI_METADATA_CATEGORY_PLANNINGCADASTRE'),
+				  ('society', 'EASYSDI_METADATA_CATEGORY_SOCIETY'),
+				  ('structure', 'EASYSDI_METADATA_CATEGORY_STRUCTURE'),
+				  ('transportation', 'EASYSDI_METADATA_CATEGORY_TRANSPORTATION'),
+				  ('utilitiesCommunication','EASYSDI_METADATA_CATEGORY_UTILITIESCOMMUNICATION')
+				";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$version = '0.92';
+		$query="UPDATE #__easysdi_version set version = '0.92' where component = 'com_easysdi_catalog'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+	}
 	
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
