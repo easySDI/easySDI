@@ -1,226 +1,320 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or 
+ * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
+
+
 
 defined('_JEXEC') or die('Restricted access');
 
 class HTML_catalog{
 
-	
-function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria){
-	global  $mainframe;
-	$db =& JFactory::getDBO();
-		$tabs =& JPANE::getInstance('Tabs');
-		?>	
-		<div class="contentin">	
+
+	function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria){
+		global $mainframe;
+		foreach($_POST as $key => $val) 
+		echo '$_POST["'.$key.'"]='.$val.'<br />';
+		
+		
+		//$pageNav = new JPagination('100',$limitstart,$limit);
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		
+		?>
+		
+		<div class="contentin">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
-	
+		
 		<h3><?php echo JText::_("EASYSDI_CATALOG_METADATA_TYPE"); ?></h3>
 		<table>
-		  <tr>
-		    <td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PUBLIC"); ?></a></td>
-		  </tr>
-		  <tr>
-		    <td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PRIVATE"); ?></a></td>
-		  </tr>
-		  <tr>
-		    <td>&nbsp;</td>
-		  </tr>
-		</table>
-		
-		<h3> <?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
-		
-		<?php
-		echo $tabs->startPane("catalogPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA"),"catalogPane");
-		?>
-		<br>
-		<table width="100%"><tr><td>
-		<form name="catalog_search_form" id="catalog_search_form" method="POST" > 
-		<table width="100%">
 			<tr>
-				<td align="left">
-					<b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
-					<input type="text" name="filterfreetextcriteria" value="<?php echo $searchCriteria;?>" class="inputbox"  />			
-				</td>
+				<td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PUBLIC"); ?></a></td>
 			</tr>
-			</table>	
-				
-			<input type="hidden" name="bboxMinX" id="bboxMinX" value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>">
-			<input type="hidden" name="bboxMinY" id="bboxMinY" value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>">
+			<tr>
+				<td><a href=""><?php echo JText::_("EASYSDI_CATALOG_METADATA_PRIVATE"); ?></a></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+
+		<form name="catalog_search_form" id="catalog_search_form"  method="GET">
+			<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>">
+			<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>">
+			<input type="hidden" name="bboxMinX" id="bboxMinX" value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>"> 
+			<input type="hidden" name="bboxMinY" id="bboxMinY" value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>"> 
 			<input type="hidden" name="bboxMaxX" id="bboxMaxX" value="<?php echo JRequest::getVar('bboxMaxX', "180" ); ?>">
 			<input type="hidden" name="bboxMaxY" id="bboxMaxY" value="<?php echo JRequest::getVar('bboxMaxY', "90" );?>">
+			<input type="hidden" name="tabIndex" id="tabIndex" value="">
+			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
+		
+				<?php
+				$index = JRequest::getVar('tabIndex');
+				$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
+				echo $tabs->startPane("catalogPane");
+				echo $tabs->startPanel(JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA"),"catalogPanel1");
+				?> <br>
+
+			<table width="100%">
+				<tr>
+					<td>
+						<table width="100%">
+							<tr>
+								<td align="left"><b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
+								<input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
+							</tr>
+						</table>
+						
+					</td>
+				</tr>
+				</table>
+				<table>
+				<tr>
+					<td>
+					<button type="submit" class="easysdi_search_button"
+						onClick="clearDetailsForm();
+								 document.getElementById('tabIndex').value = '0';
+								 document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+					</td>
+					<td>
+					<button type="submit" class="easysdi_clear_button"
+						onClick="clearForm();
+								 document.getElementById('tabIndex').value = '0';
+								document.getElementById('catalog_search_form').submit()">
+								<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
+					</td>
+				</tr>
+			</table>
+				<?php
+				echo $tabs->endPanel();
+				echo $tabs->startPanel(JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"),"catalogPanel2");
+				?><br>
+			<table width="100%" >
+				<tr>
+					<td><?php
+					HTML_catalog::generateMap();
+					?></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td>
+					<button type="submit" class="easysdi_search_button"
+						onClick="clearForm();
+								 document.getElementById('tabIndex').value = '1';
+								 document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+					</td>
+				
+					<td>
+					<button type="submit" class="easysdi_search_button"
+						onClick="clearDetailsForm();
+								  document.getElementById('tabIndex').value = '1';
+								 document.getElementById('catalog_search_form').submit()">
+						<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
+					</td>
+				</tr>
+			</table>
+			<script>
+				function clearDetailsForm ()
+				{
+					document.getElementById('filterfreetextcriteria').value = '';
+					 document.getElementById('filter_visible').value = '';
+					 document.getElementById('partner_id').value = '';
+					 document.getElementById('filter_orderable').value = '';
+					 document.getElementById('filter_theme').value = '';	
+				}
+				function clearForm()
+				{
+					document.getElementById('simple_filterfreetextcriteria').value = '';
+				}
+			</script>
 		</form>
-		</td>		
-		</tr><tr><td><button type="submit" class="easysdi_search_button" onClick="document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button></td></tr></table>
+
 		<?php
-		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"),"catalogPane");
-		?><br>
-		<table width="100%">
-		<tr><td>
-		<?php
-		
-		HTML_catalog::generateMap();
-		
-		?></td></tr>
-		<tr><td><button type="submit" class="easysdi_search_button" onClick="document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button></td></tr>
-		</table>
-		
-		<?php
-		
+
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
-		?>
-		
-		
-		<?php if($cswResults){ ?>
-		<br>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
-	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
-	
-	<span class="easysdi_number_of_metadata_found"><?php echo JText::_("EASYSDI_CATALOG_NUMBER_OF_METADATA_FOUND");?> <?php echo $total ?> </span>
-	<table>
-	<thead>
-	<tr>	
-	<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
-	<th><?php echo JText::_('EASYSDI_CATALOG_ORDERABLE'); ?></th>	
-	<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_NAME'); ?></th>
+
+		?> <?php if($cswResults){ ?> <br>
+<table width="100%">
+	<tr>
+		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
 	</tr>
+</table>
+<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+
+<span class="easysdi_number_of_metadata_found"><?php echo JText::_("EASYSDI_CATALOG_NUMBER_OF_METADATA_FOUND");?>
+		<?php echo $total ?> </span>
+<table>
+	<thead>
+		<tr>
+			<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
+			<th><?php echo JText::_('EASYSDI_CATALOG_ORDERABLE'); ?></th>
+			<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_NAME'); ?></th>
+		</tr>
 	</thead>
 	<tbody>
 	<?php
-		$i=0;
-		$param = array('size'=>array('x'=>800,'y'=>800) );
-		JHTML::_("behavior.modal","a.modal",$param);
-		
+	$i=0;
+	$param = array('size'=>array('x'=>800,'y'=>800) );
+	JHTML::_("behavior.modal","a.modal",$param);
 
-		
-		$xpath = new DomXPath($cswResults);		
-		$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');		
-		$nodes = $xpath->query('//gmd:MD_Metadata');
-				 
-		foreach($nodes  as $metadata){
+
+
+	$xpath = new DomXPath($cswResults);
+	$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+	$nodes = $xpath->query('//gmd:MD_Metadata');
+
+	foreach($nodes  as $metadata){
 			
-			$i++;
+		$i++;
 			
-			 $md = new geoMetadata($metadata);	
-			?>		
-			<tr >			
+		$md = new geoMetadata($metadata);
+		?>
+		<tr>
 			<td><?php echo $i; ?></td>
 			<?php
 			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 			$db->setQuery( $query);
 
 			$metadataId_count = $db->loadResult();
-						
-			if ($db->getErrorNum()) {								
-					$metadataId_count = '0';					
+
+			if ($db->getErrorNum()) {
+				$metadataId_count = '0';
 			}
 
-			
+
 			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."'";
-			 
+
 			$db->setQuery( $query);
 
 			$hasPreview = $db->loadResult();
-			if ($db->getErrorNum()) {								
-					$hasPreview = 0;		
-						
+			if ($db->getErrorNum()) {
+				$hasPreview = 0;
+
 			}
-			
-			
-			
+
+
+
 			?>
-			<td><div class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?> </div></td>								
-			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?> ...</a></td>			
-			
+			<td>
+			<div
+				class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?>
+			</div>
+			</td>
+			<td><a class="modal"
+				title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
+				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
+				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?>
+			...</a></td>
+
 			<?php if ($hasPreview > 0){ ?>
-			<td><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></td>
-			<?php } ?>
-			</tr>			
-				<?php		
-		}		
+			<td><a class="modal"
+				href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
+				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></td>
+				<?php } ?>
+		</tr>
+		<?php
+	}
 	?>
 	</tbody>
-	</table>
-	<?php } ?>
-		</div>
-	<?php
-		
-}
-function generateMap(){	
-?>
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js-compressed.js"></script>
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
-<table width="100%">
- <tr>
-  <td width="50%" valign="top">
-   <table>
-    <tr>
-		<td>&nbsp;</td>
-	</tr>
-   	<tr>
-	<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></td>
-	  <td><input type="text" name="filterfreetextcriteria" value="<?php echo $searchCriteria;?>" class="inputbox"  /></td>
-	</tr>
-	<tr>
-	<td>Fournisseur:</td>
-	  <td>
-	  	<select>
-			<option>---</option>
-		</select>
-	  </td>
-	</tr>
-	<tr>
-	<td>Thématique:</td>
-	  <td><input type="text" name="" value="" class="inputbox" /></td>
-	</tr>
-	<tr>
-	<td>Visualisable?</td>
-	  <td><input type="checkbox" name="" value="" class="inputbox" /></td>
-	</tr>
-	<tr>
-	<td>Commandable?</td>
-	  <td><input type="checkbox" name="" value="" class="inputbox" /></td>
-	</tr>
-   </table>
-  </td>
-  <td width="50%">
-   <table>
-    <tr>
-     <td><div id="map" class="tinymap"></div></td>
-    </tr>
-    <tr>
-      <td><div id="panelDiv" class="olControlEditingToolbar" ></div></td>
-    </tr>
-   </table>
-  </td>
- </tr>
 </table>
+	<?php } ?></div>
+	<?php
+
+	}
+	function generateMap(){
+		global  $mainframe;
+		$option= JRequest::getVar('option');
+		$db =& JFactory::getDBO();
+		$partners = array();
+		$partners[0]='';
+		$query = "SELECT #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id ";
+		$db->setQuery( $query);
+		$partners = array_merge( $partners, $db->loadObjectList() );
+		if ($db->getErrorNum()) 
+		{
+		}
+		
+		
+		$themes = array();
+		$themes[] = JHTML::_('select.option', '', '');
+		$query = "SELECT #__easysdi_metadata_topic_category.code as value, #__easysdi_metadata_topic_category.value as text FROM `#__easysdi_metadata_topic_category`";
+		$db->setQuery( $query);
+		$themes = array_merge( $themes, $db->loadObjectList() );		
+		HTML_catalog::alter_array_value_with_Jtext($themes);
+		
+		?>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js-compressed.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
+	<table width="100%">
+	<tr>
+		<td width="50%" valign="top" >
+		<table>
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></td>
+				<td><input type="text" name="filterfreetextcriteria" id="filterfreetextcriteria"
+					value="<?php echo JRequest::getVar('filterfreetextcriteria');?>" class="inputbox" /></td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_PARTNER");?></td>
+				<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?>
+				</td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_THEME");?></td>
+				<td><?php echo JHTML::_("select.genericlist", $themes, 'filter_theme', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_theme')); ?></td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_VISIBLE");?></td>
+				<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_ORDERABLE");?></td>
+				<td><input type="checkbox" id="filter_orderable" name="filter_orderable" <?php if (JRequest::getVar('filter_orderable')) echo " checked"; ?> class="inputbox" /></td>
+			</tr>
+		</table>
+		</td>
+		<td width="50%">
+		<table>
+			<tr>
+				<td>
+				<div id="map" class="tinymap"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<div id="panelDiv" class="olControlEditingToolbar"></div>
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+
+
 <br>
 
 
-<div id="docs">
-</div>
+<div id="docs"></div>
 <br>
 <script>
       
@@ -387,9 +481,36 @@ initMap();
 
 </script>
 
-	
-	
+
+
 <?php
+
+	}
+	
+	function alter_array_value_with_Jtext(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
+
+	function getPages($pageNav)
+	{
+		echo 'getPages';
+		//$list = array();
+		$pages = $pageNav->getPagesLinks();
+		$links = $pages['pages'];
+		foreach ($links as $page )
+		{
+			echo $page;	
+		}
+		//return $list;	
+	}
 }
-}
+
+
 ?>
