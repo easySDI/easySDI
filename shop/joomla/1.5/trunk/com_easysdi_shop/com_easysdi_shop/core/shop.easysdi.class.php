@@ -519,6 +519,7 @@ $i++;
             
 	
 			rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
+			
 			rectControl.featureAdded = function() { intersect();};												
 			rectControl.handler.setOptions({irregular: true});                                  
             rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
@@ -593,9 +594,12 @@ function intersect() {
  //initSelectedSurface();
  
   if (isFreeSelectionPerimeter){
- 
+  
+  		
+ 		    
+            
  	 var features = vectors.features; 
-     var feature= features[features.length-1];
+     var feature = features[features.length-1];
      
      document.getElementById("selectedSurface").options.length=0;
      
@@ -627,7 +631,7 @@ function intersect() {
    	 document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 			new Option(feature.geometry,feature.geometry);
 }      
-		 
+	drawSelectedSurface();	 
  }else{
 	  $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
 
