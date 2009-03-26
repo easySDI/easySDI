@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -78,12 +79,12 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String responseContentType=null; 
     protected String bbox = null;
     protected String srsName = null;
-    protected List<String> filePathList = new Vector<String>();
-    protected List<String> layerFilePathList = new Vector<String>();
-    protected List<String> featureTypePathList = new Vector<String>();
-    
+    protected Vector<String> filePathList = new Vector<String>();
+    protected Vector<String> layerFilePathList = new Vector<String>();
+    protected Vector<String> featureTypePathList = new Vector<String>();
 
-    private List<String> lLogs;
+
+    private List<String> lLogs = new Vector<String>();
     protected boolean hasPolicy = true;
     //protected String prefix = "SRV";
 
@@ -138,7 +139,7 @@ public abstract class ProxyServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
 	//Get the date and time of the request
-	lLogs = null;
+	//lLogs = null;
 
 	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	Date d = new Date();	
@@ -153,7 +154,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
-	lLogs = null;
+	//lLogs = null;
 	//Get the date and time of the request
 	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	Date d = new Date();	
@@ -228,28 +229,34 @@ public abstract class ProxyServlet extends HttpServlet {
 		dump("SYSTEM","RequestURL",req.getRequestURL());
 
 		if (newLog)bWriter.write("<Log>");
-		bWriter.write("<LogRequest user=\""+u+"\" requestTime=\""+date+"\"> \n");		
-		for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-		    bWriter.write(i.next()+"\n");
-		} 
+		bWriter.write("<LogRequest user=\""+u+"\" requestTime=\""+date+"\"> \n");
+		synchronized (lLogs) {
+		    for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
+			bWriter.write(i.next()+"\n");
+		    } 
+		}
 		bWriter.write("</LogRequest>"+"\n");
 		bWriter.close();}
 	    else{
 		String sHeader = "<LogRequest user=\""+u+"\" requestTime=\""+date+"\">"+"\n";
-		System.err.println(sHeader);		
-		for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-		    System.err.println(i.next()+"\n");
-		} 
+		System.err.println(sHeader);
+		synchronized (lLogs) {
+		    for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
+			System.err.println(i.next()+"\n");
+		    } 
+		}
 		System.err.println("</LogRequest>"+"\n");
 	    }
 	}
 	catch(Exception e){
 	    e.printStackTrace();
 	    String sHeader = "<LogRequest user=\""+u+"\" requestTime=\""+date+"\">"+"\n";
-	    System.err.println(sHeader);		
-	    for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-		System.err.println(i.next()+"\n");
-	    } 
+	    System.err.println(sHeader);
+	    synchronized (lLogs) {
+		for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
+		    System.err.println(i.next()+"\n");
+		} 
+	    }
 	    System.err.println("</LogRequest>"+"\n");	    	    
 
 	}
@@ -283,8 +290,11 @@ public abstract class ProxyServlet extends HttpServlet {
 	sb.append(">");
 	sb.append(s);
 	sb.append("</logEntry>");
-	if (lLogs==null) lLogs=new Vector<String>();
-	lLogs.add(sb.toString());
+
+	synchronized (lLogs) {	    	
+	    if (lLogs==null) lLogs=new Vector<String>();
+	    lLogs.add(sb.toString());
+	}
     }
     protected void dump(String s, String s2) {
 	if (s2!=null)dump(s, null,s2);
@@ -381,21 +391,21 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (getLoginService(urlstr) != null) {
 		cookie = geonetworkLogIn(getLoginService(urlstr));
 	    }
-	    
-	    
+
+
 	    String encoding =null;
-	    
+
 	    if (getUsername(urlstr) != null && getPassword(urlstr) != null) {
 		String userPassword = getUsername(urlstr) + ":" + getPassword(urlstr);
 		encoding = new sun.misc.BASE64Encoder()
 		.encode(userPassword.getBytes());
-				
+
 	    }
 
 	    if (method.equalsIgnoreCase("GET")) {	
-		
+
 		urlstr = urlstr + "?" + parameters;
-		
+
 	    }
 	    URL url = new URL(urlstr);
 	    HttpURLConnection hpcon = null;
@@ -450,11 +460,11 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	    byte[] buf = new byte[32768];
 	    int nread;	    	    
-		    
+
 	    while((nread = in.read(buf, 0, buf.length)) >= 0) {
-			  tempFos.write(buf, 0, nread);	       
+		tempFos.write(buf, 0, nread);	       
 	    }		    
-	
+
 	    tempFos.flush();
 	    tempFos.close();
 	    in.close();	 
@@ -475,38 +485,38 @@ public abstract class ProxyServlet extends HttpServlet {
 
 
     protected String geonetworkLogIn (String loginServiceUrl){
-	
+
 	String cookie = null;
 	//dump("SYSTEM","LoginServiceUrl",loginServiceUrl);
 	try{
-	URL urlLoginService = new URL(loginServiceUrl);
-	HttpURLConnection hpconLoginService = null;
-	hpconLoginService = (HttpURLConnection) urlLoginService
-	.openConnection();
-	hpconLoginService.setRequestMethod("GET");
-	hpconLoginService.setUseCaches(false);
-	hpconLoginService.setDoInput(true);
-	hpconLoginService.setDoOutput(false);
+	    URL urlLoginService = new URL(loginServiceUrl);
+	    HttpURLConnection hpconLoginService = null;
+	    hpconLoginService = (HttpURLConnection) urlLoginService
+	    .openConnection();
+	    hpconLoginService.setRequestMethod("GET");
+	    hpconLoginService.setUseCaches(false);
+	    hpconLoginService.setDoInput(true);
+	    hpconLoginService.setDoOutput(false);
 
-	BufferedReader inLoginService = new BufferedReader(
-		new InputStreamReader(hpconLoginService
-			.getInputStream()));
-	String inputLoginService;
-	cookie = hpconLoginService.getHeaderField("Set-Cookie");
-	
-	while ((inputLoginService = inLoginService.readLine()) != null) {
-	   // dump(inputLoginService);
-	}
-	inLoginService.close();
+	    BufferedReader inLoginService = new BufferedReader(
+		    new InputStreamReader(hpconLoginService
+			    .getInputStream()));
+	    String inputLoginService;
+	    cookie = hpconLoginService.getHeaderField("Set-Cookie");
+
+	    while ((inputLoginService = inLoginService.readLine()) != null) {
+		// dump(inputLoginService);
+	    }
+	    inLoginService.close();
 	}catch (Exception e){
 	    e.printStackTrace();
 	}
-	
+
 	return cookie;
-	
+
     }
-    
-    
+
+
     /*
      * Send a file using mulipart/form-data
      *  @param urlstr the url where to send
@@ -517,90 +527,90 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected StringBuffer sendFile(String urlstr, String filePath, String loginServiceUrl,String parameterName,String parameterFileName) {
 	try{
-	InputStream is = new FileInputStream(filePath);
-	return sendFile( urlstr,is , loginServiceUrl,parameterName,parameterFileName) ;
+	    InputStream is = new FileInputStream(filePath);
+	    return sendFile( urlstr,is , loginServiceUrl,parameterName,parameterFileName) ;
 	}catch (Exception e){
 	    e.printStackTrace();
 	}
 	return new StringBuffer();
     }
-    
+
     protected StringBuffer sendFile(String urlstr, InputStream in, String loginServiceUrl,String parameterName,String parameterFileName) {
-    	
+
 	try{
-		String cookie = null;
-		if (loginServiceUrl!=null) {		    
-		    cookie = geonetworkLogIn(loginServiceUrl);
+	    String cookie = null;
+	    if (loginServiceUrl!=null) {		    
+		cookie = geonetworkLogIn(loginServiceUrl);
+	    }
+
+	    URL url = new URL(urlstr);
+	    HttpURLConnection hpcon = null;
+
+	    hpcon = (HttpURLConnection) url.openConnection();
+	    hpcon.setRequestMethod("POST");
+	    hpcon.addRequestProperty("Cookie", cookie);
+
+	    hpcon.setUseCaches(false); 
+	    hpcon.setDoInput(true);
+	    hpcon.setDoOutput(true);
+
+
+	    Random random = new Random();
+
+	    String boundary = "---------------------------" + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36);
+	    hpcon.setRequestProperty("Content-Type","multipart/form-data; boundary=" + boundary);
+
+	    hpcon.connect();	    
+	    DataOutputStream os = new DataOutputStream(hpcon.getOutputStream());
+
+	    String s1 = "--" +boundary +"\r\ncontent-disposition: form-data; name=\"" +parameterName +"\"; filename=\"" +parameterFileName +"\"\r\nContent-Type: application/octet-stream\r\n\r\n";
+
+	    os.writeBytes(s1);		
+
+	    byte[] buf = new byte[32768];
+	    int nread;	    	    
+	    synchronized (in) {
+		while((nread = in.read(buf, 0, buf.length)) >= 0) {
+		    os.write(buf, 0, nread);	       
 		}
-			
-		 URL url = new URL(urlstr);
-		 HttpURLConnection hpcon = null;
+	    }
+	    os.flush();
 
-		 hpcon = (HttpURLConnection) url.openConnection();
-		 hpcon.setRequestMethod("POST");
-		 hpcon.addRequestProperty("Cookie", cookie);
-		
-		 hpcon.setUseCaches(false); 
-		 hpcon.setDoInput(true);
-		 hpcon.setDoOutput(true);
-		    
-		    	    	    
-		 Random random = new Random();
-		   		      
-		 String boundary = "---------------------------" + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36);
-		 hpcon.setRequestProperty("Content-Type","multipart/form-data; boundary=" + boundary);
+	    String boundar = "\r\n--" +boundary +"--";
+	    os.writeBytes(boundar);	   	        
+	    buf = null;	   
+	    os.close();
+	    in= null;
+	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) { 
+		in = new GZIPInputStream(hpcon.getInputStream());		
+	    }else{
+		in= hpcon.getInputStream();
+	    }	    	    	    
+	    BufferedReader br = new BufferedReader(
+		    new InputStreamReader(in));
 
-		 hpcon.connect();	    
-		 DataOutputStream os = new DataOutputStream(hpcon.getOutputStream());
-		   	   
-		 String s1 = "--" +boundary +"\r\ncontent-disposition: form-data; name=\"" +parameterName +"\"; filename=\"" +parameterFileName +"\"\r\nContent-Type: application/octet-stream\r\n\r\n";
-		   
-		 os.writeBytes(s1);		
-		    
-		  byte[] buf = new byte[32768];
-		  int nread;	    	    
-		    synchronized (in) {
-		      while((nread = in.read(buf, 0, buf.length)) >= 0) {
-		       os.write(buf, 0, nread);	       
-		      }
-		    }
-		    os.flush();
-		    
-		   String boundar = "\r\n--" +boundary +"--";
-		   os.writeBytes(boundar);	   	        
-		   buf = null;	   
-		   os.close();
-		   in= null;
-		    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) { 
-			in = new GZIPInputStream(hpcon.getInputStream());		
-		    }else{
-			in= hpcon.getInputStream();
-		    }	    	    	    
-		    BufferedReader br = new BufferedReader(
-				new InputStreamReader(in));
-					
-		    String input;
-		    StringBuffer response= new StringBuffer();
-		    while ((input = br.readLine()) != null) {
-			response.append(input);			    
-		    }  	    	    	    
-		return response;    
-	    }catch(Exception e){
-		e.printStackTrace();
-	    }   
-	    return new StringBuffer();
+	    String input;
+	    StringBuffer response= new StringBuffer();
+	    while ((input = br.readLine()) != null) {
+		response.append(input);			    
+	    }  	    	    	    
+	    return response;    
+	}catch(Exception e){
+	    e.printStackTrace();
+	}   
+	return new StringBuffer();
     }
 
-    
-    
+
+
     protected StringBuffer send( String urlstr, String loginServiceUrl) {
 	try {
-	   
+
 	    String cookie = null;
 	    if (loginServiceUrl != null) {
 		cookie = geonetworkLogIn(loginServiceUrl);
 	    }
-	    
+
 	    URL url = new URL(urlstr);
 	    HttpURLConnection hpcon = null;
 
@@ -609,13 +619,13 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (cookie != null) {
 		hpcon.addRequestProperty("Cookie", cookie);
 	    }
-	    
+
 
 	    hpcon.setUseCaches(false);
 	    hpcon.setDoInput(true);
 
 	    hpcon.setDoOutput(false);
-	    
+
 
 	    // getting the response is required to force the request, otherwise
 	    // it might not even be sent at all
@@ -627,28 +637,28 @@ public abstract class ProxyServlet extends HttpServlet {
 		in= hpcon.getInputStream();
 	    }
 
-	    
 
-	    
+
+
 	    BufferedReader br = new BufferedReader(
-			new InputStreamReader(in));
-				
+		    new InputStreamReader(in));
+
 	    String input;
 	    StringBuffer response= new StringBuffer();
 	    while ((input = br.readLine()) != null) {
 		response.append(input);			    
 	    }  	    	    	    
-	return response;
+	    return response;
 
-	    	    
+
 
 	} catch (Exception e) {
 	    e.printStackTrace();	    
 	}
 	return new StringBuffer();
     }
-    
-    
+
+
     protected boolean isAcceptingTransparency(String responseContentType) {		
 	boolean isTransparent = true;
 	if (responseContentType== null) return true;
@@ -674,7 +684,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	return isTransparent;
     }
-    
+
     /**
      * @param responseContentType2
      * @return
@@ -718,6 +728,8 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     protected void deleteTempFileList(){
+	
+	
 	try{
 	    for (int i = 0;i<temporaryFileList.size();i++){
 		File f = new File(new URI(temporaryFileList.get(i)));
@@ -825,7 +837,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	if (policy.getAvailabilityPeriod() !=null) {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
-	
+
 	if (policy.getOperations().isAll()) return true;
 	List<Operation> operationList = policy.getOperations().getOperation();
 	for (int i=0;i<operationList.size();i++){
@@ -846,7 +858,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
 
-	
+
 	boolean isServerFound = false;	
 	List<Server> serverList = policy.getServers().getServer();
 
@@ -925,7 +937,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
 
-	
+
 	boolean isServerFound = false;	
 	List<Server> serverList = policy.getServers().getServer();
 
@@ -1019,7 +1031,7 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String getLayerFilter(String layer){
 
 	if (policy == null) return null;
-	
+	if (layer == null) return null;
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){
@@ -1212,7 +1224,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
 
-	
+
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){
@@ -1237,7 +1249,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
 
-	
+
 	List<Server> serverList = policy.getServers().getServer();
 
 	for (int i=0;i<serverList.size();i++){

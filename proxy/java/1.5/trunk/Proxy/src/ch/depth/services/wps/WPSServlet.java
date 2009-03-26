@@ -17,10 +17,16 @@ package ch.depth.services.wps;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -32,37 +38,113 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import net.opengis.ows._1.CodeType;
+import net.opengis.wps._1_0.ComplexDataType;
+import net.opengis.wps._1_0.DataType;
 import net.opengis.wps._1_0.ExecuteResponse;
 import net.opengis.wps._1_0.ObjectFactory;
+import net.opengis.wps._1_0.OutputDataType;
 import net.opengis.wps._1_0.StatusType;
+import net.opengis.wps._1_0.ExecuteResponse.ProcessOutputs;
 
 import sun.text.CompactShortArray.Iterator;
 
 import ch.depth.proxy.core.ProxyServlet;
 import ch.depth.xml.handler.mapper.NamespacePrefixMapperImpl;
 
-/**
- * If no xslt is found in the path, generate the default one that will change the IP address and remove the wrong operation  
- * @author rmi
- */
 public class WPSServlet extends HttpServlet {
 
 
+    //Connexion sttring to the joomla database
     private String connexionString ="jdbc:mysql://localhost/joomla?user=root&password=root&noDatetimeStringSync=true";
+    //Joomla table prefix
     private String joomlaPrefix = "jos_";
+    //Jdbc Driver to connect to Joomla 
     private String jdbcDriver ="com.mysql.jdbc.Driver";
+    //Name of the platform
     private String platformName = "EASYSDI";
+
+
+
+    public void init(ServletConfig config) throws ServletException {
+	String conn = config.getInitParameter("connexionString");
+	String prefix = config.getInitParameter("joomlaPrefix");
+	String driver = config.getInitParameter("jdbcDriver");
+	String platform = config.getInitParameter("platformName");
+
+	if (conn !=null && conn.length()>0){
+	    connexionString= conn;
+	}
+
+	if (prefix !=null && prefix.length()>0){
+	    joomlaPrefix= prefix;
+	}
+
+	if (driver !=null && driver.length()>0){
+	    jdbcDriver = driver;
+	}
+
+	if (platform !=null && platform.length()>0){
+	    platformName = platform;
+	}	
+    }
+
+
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp){    
 
+	try{
+	    JAXBContext jc =JAXBContext.newInstance(net.opengis.wps._1_0.Execute.class);
+	    Unmarshaller um = jc.createUnmarshaller();
 
+
+	    net.opengis.wps._1_0.Execute execute = (net.opengis.wps._1_0.Execute) um.unmarshal(req.getInputStream());
+	    if (execute!=null && execute.getIdentifier() !=null && execute.getIdentifier().getValue()!=null){
+		String executeType = execute.getIdentifier().getValue();
+		if (executeType.equalsIgnoreCase("getOrders")){
+		    resp.setContentType("text/xml");
+		    resp.getOutputStream().write(executeGetOrders(execute).getBytes());
+		}else{		
+		    if (executeType.equalsIgnoreCase("setOrder")){
+			resp.setContentType("text/xml");
+			resp.getOutputStream().write(executeSetOrderResponse(execute).getBytes());
+		    }else{
+			resp.setContentType("text/xml");
+			resp.getOutputStream().write(error("UNKNOWNIDENTIFIER",executeType+" is unkwnon").getBytes());
+			// Type not allowed
+		    }
+		}
+
+
+	    }else{
+		resp.setContentType("text/xml");
+		resp.getOutputStream().write(error("UNDEFINEDIDENTIFIER","Identifier is undefined").getBytes());				
+	    }
+	}catch (Exception e){
+	    e.printStackTrace();
+	    try{
+		resp.setContentType("text/xml");
+		resp.getOutputStream().write(error("UNEXPECTED ERROR",e.getMessage()).getBytes());
+	    }catch(Exception e2){
+		e2.printStackTrace();
+	    }
+
+	}    
 
     }
 
@@ -106,27 +188,34 @@ public class WPSServlet extends HttpServlet {
 	    if (operation.equalsIgnoreCase("GetCapabilities")){		
 		resp.setContentType("text/xml");		
 		resp.getOutputStream().write(getCapabilities(req).getBytes());
-	    }
-	    if (operation.equalsIgnoreCase("execute")){		
-		resp.setContentType("text/xml");		
-		resp.getOutputStream().write(execute().getBytes());
-	    }
+	    }else{
+		resp.setContentType("text/xml");
+		resp.getOutputStream().write(error("OPERATIONNOTDEFINED","This operation is not defined in GET method").getBytes());
+		// Type not allowed
+	    }	    	 	    	
 
 	}catch(Exception e){
-	    e.printStackTrace();	    
+	    e.printStackTrace();
+	    try{
+		resp.setContentType("text/xml");
+		resp.getOutputStream().write(error("UNEXPECTED ERROR",e.getMessage()).getBytes());
+	    }catch(Exception e2){
+		e2.printStackTrace();
+	    }
+
 	}
     }
 
-    public void setJoomlaPrefix(String prefix){
+    private void setJoomlaPrefix(String prefix){
 
 	joomlaPrefix = prefix;
     }
-    public String getJoomlaPrefix(){
+    private String getJoomlaPrefix(){
 
 	return joomlaPrefix;
     }
 
-    public String getCapabilities(HttpServletRequest req){
+    private String getCapabilities(HttpServletRequest req){
 
 	InputStream is = this.getClass().getResourceAsStream("capabilities.xml");
 	StringBuffer sb = new StringBuffer();
@@ -171,33 +260,63 @@ public class WPSServlet extends HttpServlet {
 
 
 
-    public String execute (){
-	return executeGetOrders ();
-    }
 
 
-    public String executeGetOrders (){
+    private String executeGetOrders (net.opengis.wps._1_0.Execute execute){
 	Connection conn = null;
 
 	try {
 
 
-	    InputStream is = this.getClass().getResourceAsStream("executeGetOrdersResponse.xml");
-	    StringBuffer sb = new StringBuffer();
 
-	    try{
+	    List lInputs = execute.getDataInputs().getInput();
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		String input;
+	    java.util.Iterator itInputs = lInputs.iterator();
 
-		while ((input = in.readLine()) != null) {
-		    sb.append (input);
+	    String userName = null;
+	    String statusToRead ="SENT";
+
+	    while(itInputs.hasNext()){
+		net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)itInputs.next();
+		if (inputType.getIdentifier().getValue().equalsIgnoreCase("userName")){
+		    userName = inputType.getData().getLiteralData().getValue();
+		}else{
+		    if (inputType.getIdentifier().getValue().equalsIgnoreCase("status")){
+			statusToRead = inputType.getData().getLiteralData().getValue();
+		    }   		    
 		}
-
-	    }catch (Exception e){
-		e.printStackTrace();
 	    }
 
+	    if (userName == null){		    
+		return error("PARTNERNOTDEFINED","paremeter containaing the partner id is not defined");
+	    }
+
+
+	    net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
+	    ExecuteResponse er = of.createExecuteResponse();
+	    StatusType st = of.createStatusType();
+	    st.setProcessSucceeded("processSucceeded");
+	    er.setStatus(st);
+
+	    ProcessOutputs po = new ProcessOutputs();
+	    OutputDataType odt = of.createOutputDataType();
+
+	    CodeType ct = new CodeType();
+	    ct.setValue("getOrders");
+	    odt.setIdentifier(ct );
+
+
+	    DataType dt = of.createDataType();
+
+	    ComplexDataType cdt = of.createComplexDataType();
+
+	    dt.setComplexData(cdt );
+	    odt.setData(dt );
+
+	    po.getOutput().add(odt);
+
+
+	    er.setProcessOutputs(po );
 
 
 
@@ -208,7 +327,8 @@ public class WPSServlet extends HttpServlet {
 	    conn =  DriverManager.getConnection(getConnexionString());
 
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p where o.status = 'SENT' AND o.user_id = p.user_id");
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p , " +getJoomlaPrefix()+"users u where o.status = '"+statusToRead+"' AND o.user_id = p.user_id AND u.id = p.user_id AND u.username = '"+userName+"'");
+	    
 	    StringBuffer res = new StringBuffer();
 	    res.append("<easysdi:orders  	xmlns:easysdi=\"http://www.easysdi.org\">");
 	    List<String> orderIdList = new Vector<String>();
@@ -368,6 +488,39 @@ public class WPSServlet extends HttpServlet {
 	    }
 	    res.append("</easysdi:orders>\n");
 
+	    
+	 try{   
+	    javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+	    javax.xml.parsers.DocumentBuilder db = factory.newDocumentBuilder();
+	    org.xml.sax.InputSource inStream = new org.xml.sax.InputSource();
+	 
+	    inStream.setCharacterStream(new java.io.StringReader(res.toString()));
+	     Document doc = db.parse(inStream);
+	     NodeList nl = doc.getElementsByTagName("easysdi:orders");	     
+	     
+	    if (nl.getLength()>0){
+		cdt.getContent().add(nl.item(0));
+	    }
+
+	 }catch(Exception e){
+	     e.printStackTrace();
+	 }
+
+	    JAXBContext jc = JAXBContext.newInstance(net.opengis.wps._1_0.Execute.class);
+
+
+	    Marshaller m = jc.createMarshaller();
+
+	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+	    m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+		    new NamespacePrefixMapperImpl());
+	    m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+	    m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.FALSE);
+
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+	    m.marshal(er, baos);
+
 
 
 	    if (orderIdList.size()>0){
@@ -390,11 +543,9 @@ public class WPSServlet extends HttpServlet {
 
 
 
-	    return (sb.toString().replaceAll("<ComplexData></ComplexData>", res.toString()).toString());
 
 
-
-	    // Do something with the Connection
+	    return (baos.toString());
 
 	} catch (Exception ex) {
 	    // handle any errors	   
@@ -402,44 +553,74 @@ public class WPSServlet extends HttpServlet {
 	}
 
 
+	return error("ERROR","An error just occured");
+    }
+
+    private String error(String errorCode, String errorMessage){
+
 	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 	"<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ows/1.1../../../ows/1.1.0/owsExceptionReport.xsd\" version=\"1.0.0\" xml:lang=\"en-CA\">"+
-	"<ows:Exception exceptionCode=\"ERROR\">"+
-	"<ows:ExceptionText>An error just occured</ows:ExceptionText>"+
+	"<ows:Exception exceptionCode=\""+errorCode+"\">"+
+	"<ows:ExceptionText>"+errorMessage+"</ows:ExceptionText>"+
 	"</ows:Exception>"+
 	"</ows:ExceptionReport>";
     }
-    public String getConnexionString() {
+    private String getConnexionString() {
 	return connexionString;
     }
-    public void setConnexionString(String connexionString) {
+    private void setConnexionString(String connexionString) {
 	this.connexionString = connexionString;
     }
-    public String getJdbcDriver() {
+    private String getJdbcDriver() {
 	return jdbcDriver;
     }
-    public void setJdbcDriver(String jdbcDriver) {
+    private  void setJdbcDriver(String jdbcDriver) {
 	this.jdbcDriver = jdbcDriver;
     }
-    public String getPlatformName() {
+    private  String getPlatformName() {
 	return platformName;
     }
-    public void setPlatformName(String platformName) {
+    private void setPlatformName(String platformName) {
 	this.platformName = platformName;
     }
 
 
     public static void main(String args[]) throws Exception{
-    }
-
-    public String executeSetOrderResponse(){
 
 	try{
-	    JAXBContext jc =JAXBContext.newInstance(net.opengis.wps._1_0.Execute.class);
-	    Unmarshaller um = jc.createUnmarshaller();
+	    //URL url = new URL("http://localhost:8081/wps/WPSServlet");
+	    
+	    URL url = new URL("http://demo.easysdi.org:8080/wps/WPSServlet");
+	    URLConnection conn = url.openConnection();
+	    conn.setDoOutput(true);
+	    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+	    WPSServlet w = new WPSServlet();
+	    
+	    wr.write(w.getResourceAsString("requete.xml"));
+	    wr.flush();
 
+	    FileOutputStream fos = new FileOutputStream(new File("C:\\output.xml"));
 
-	    net.opengis.wps._1_0.Execute execute = (net.opengis.wps._1_0.Execute) um.unmarshal(new File("D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\src\\ch\\depth\\services\\wps\\executesetOrder.xml"));
+	    // Get the response
+	    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	    String line;
+	    while ((line = rd.readLine()) != null) {
+		fos.write(line.getBytes());
+		System.out.println(line);
+	    }
+	    fos.close();
+	    wr.close();
+	    rd.close();
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
+
+    }
+
+    private String executeSetOrderResponse(net.opengis.wps._1_0.Execute execute ){
+
+	try{
+
 	    List lInputs = execute.getDataInputs().getInput();
 
 	    java.util.Iterator it = lInputs.iterator();
@@ -478,7 +659,7 @@ public class WPSServlet extends HttpServlet {
 	    }
 
 
-	    
+
 	    if (responseDate!=null && order_id!=null && product_id!=null && filename !=null && data !=null){
 		Connection conn = null;
 		Class.forName(jdbcDriver).newInstance();
@@ -505,45 +686,81 @@ public class WPSServlet extends HttpServlet {
 		    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = 'PROGRESS'   where order_id = "+order_id );
 		}
 
-
-
-
 		pre.close();
 		stmt.close();
 		conn.close();
 
 
+		
+		net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
+		    ExecuteResponse er = of.createExecuteResponse();
+		    StatusType st = of.createStatusType();
+		    st.setProcessSucceeded("processSucceeded");
+		    er.setStatus(st);
+
+		    ProcessOutputs po = new ProcessOutputs();
+		    OutputDataType odt = of.createOutputDataType();
+
+		    CodeType ct = new CodeType();
+		    ct.setValue("setOrders");
+		    odt.setIdentifier(ct );
 
 
-		InputStream is = this.getClass().getResourceAsStream("executeSetOrderResponse.xml");
-		StringBuffer sb = new StringBuffer();
+		    DataType dt = of.createDataType();
+
+		    ComplexDataType cdt = of.createComplexDataType();
+
+		    dt.setComplexData(cdt );
+		    odt.setData(dt );
+
+		    po.getOutput().add(odt);
 
 
+		    er.setProcessOutputs(po );
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		String input;
-
-		while ((input = in.readLine()) != null) {
-		    sb.append (input);
-		}
-
-		return sb.toString();
+		    
+		    JAXBContext jc = JAXBContext.newInstance(net.opengis.wps._1_0.Execute.class);
 
 
+		    Marshaller m = jc.createMarshaller();
+
+		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		    m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+			    new NamespacePrefixMapperImpl());
+		    m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		    m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.FALSE);
+
+		    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		    m.marshal(er, baos);
+
+		    
+		return baos.toString();
 	    }
-
 	}catch (Exception e){
 	    e.printStackTrace();
 	}
 
-
-
-
-	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
-	"<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ows/1.1../../../ows/1.1.0/owsExceptionReport.xsd\" version=\"1.0.0\" xml:lang=\"en-CA\">"+
-	"<ows:Exception exceptionCode=\"ERROR\">"+
-	"<ows:ExceptionText>An error just occured</ows:ExceptionText>"+
-	"</ows:Exception>"+
-	"</ows:ExceptionReport>";
+	return error ("ERROR","An error just occured");
     }
+
+    private String getResourceAsString(String resourceName){
+	try{
+
+	    InputStream is = this.getClass().getResourceAsStream(resourceName);
+	    StringBuffer sb = new StringBuffer();
+
+	    BufferedReader in = new BufferedReader(new InputStreamReader(is));
+	    String input;
+
+	    while ((input = in.readLine()) != null) {
+		sb.append (input);
+	    }
+	    return sb.toString();
+
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
+	return "";
+    } 
 }

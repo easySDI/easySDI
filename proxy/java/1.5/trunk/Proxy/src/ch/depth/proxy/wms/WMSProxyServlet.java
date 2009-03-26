@@ -33,6 +33,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -151,6 +152,8 @@ import ch.depth.xml.resolver.ResourceResolver;
 public class WMSProxyServlet extends ProxyServlet {
     private String layers;
     private String styles;
+public	   HashMap filePathListHash =new HashMap(); 					    					    
+	public   HashMap layerFilePathListHash = new HashMap ();					    					   
 
     protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req,int remoteServerIndex){
 
@@ -303,7 +306,9 @@ public class WMSProxyServlet extends ProxyServlet {
 	    if (isXML(responseContentType)){			    
 		tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));			
 	    }else{
-		tempFile = new File(filePathList.get(0));
+		if (filePathList.size()>0){
+		    if(filePathList.get(0)!=null) tempFile = new File(filePathList.get(0));
+		}
 	    }
 	    Transformer transformer = null;
 
@@ -348,14 +353,21 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		}else{
 		    if (currentOperation.equals("GetMap") || "Map".equalsIgnoreCase(currentOperation)) {			
-			
+
 			boolean isTransparent= isAcceptingTransparency(responseContentType);
+			dump("DEBUG","LAYER N°:"
+				+0+" "+layerFilePathList.get(0));
+
 			BufferedImage imageSource =filterImage(getLayerFilter(layerFilePathList.get(0)),filePathList.get(0),isTransparent);
 			Graphics2D g = imageSource.createGraphics();
 
-			for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++){			    			
-			    BufferedImage image = filterImage(getLayerFilter(layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
-			    if (image !=null) g.drawImage(image, null, 0, 0);
+			for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++){			
+			    dump("DEBUG","LAYER N°:"
+				    +iFilePath+" "+layerFilePathList.get(iFilePath));
+			    if(layerFilePathList.get(iFilePath)!=null){
+				BufferedImage image = filterImage(getLayerFilter(layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
+				if (image !=null) g.drawImage(image, null, 0, 0);
+			    }
 			}
 
 
@@ -364,8 +376,8 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			if (iter.hasNext()) {
 			    ImageWriter writer = (ImageWriter)iter.next();
-			    			    
-			    
+
+
 			    tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));
 			    FileImageOutputStream output = 
 				new FileImageOutputStream(tempFile);			 
@@ -457,11 +469,12 @@ public class WMSProxyServlet extends ProxyServlet {
 		//final WorldFileReader reader = new WorldFileReader(new File(filePath));
 
 		BufferedImage imageSource = ImageIO.read(new File(fileName));
-			
+
 		BufferedImage imageOut = imageFiltering(imageSource,bbox,polygon,isTransparent);
 		return imageOut;
 	    }else{
-		return (ImageIO.read(new File(fileName)));
+		if (fileName!=null)
+		    return (ImageIO.read(new File(fileName)));
 	    }	    
 	}catch(Exception e){
 	    e.printStackTrace();
@@ -509,7 +522,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    }	        	        	        	        
 
 	    File f = createTempFile(UUID.randomUUID().toString(),".xml");
-	    System.out.println(f.toURI());
+	    //System.out.println(f.toURI());
 	    FileOutputStream fluxSortie = new FileOutputStream(f);
 	    LSSerializer serialiseur = implLS.createLSSerializer();
 	    LSOutput sortie = implLS.createLSOutput();
@@ -556,7 +569,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}else{
 		    value = URLEncoder.encode(req.getParameter(key));
 		}
-		 
+
 		//String value = req.getParameter(key);
 		if (!key.equalsIgnoreCase("LAYERS"))
 		    if (!key.equalsIgnoreCase("STYLES"))
@@ -607,7 +620,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		user= req.getUserPrincipal().getName();
 	    }	    	  
 	    List<RemoteServerInfo> grsiList = getRemoteServerInfoList();
-	   
+
 	    for (int j=0;j<grsiList.size();j++){
 		String paramUrl = "";	
 		boolean loopOnLayer=false;
@@ -625,7 +638,18 @@ public class WMSProxyServlet extends ProxyServlet {
 		    //Only if the initial request has "LAYER" parameter
 		    if (sendRequest && layers!=null && layers.length()>0){
 			String[] layerArray = layers.split(",");
-			String[] layerStyleArray = styles.split(",");
+
+			String[] layerStyleArray;
+			if (styles!=null){
+			    styles="";
+			    //Le paramètre style est obligatoire mais on l'émule si il n'est pas présent
+			    for (int i=0; i<layerArray.length-1;i++){
+				styles=styles+",";
+			    }
+			}
+
+			layerStyleArray = styles.split(",");			
+
 			String layersParam ="";
 			String stylesParam ="";
 			for (int i = 0; i<layerArray.length;i++){		    			
@@ -686,91 +710,169 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		    if (loopOnLayer){
 
-			for (int iLayers=0;iLayers<layerToKeepList.size();iLayers++){
-			    boolean iscoveredByfilter = true;
-			    if (("GetMap".equalsIgnoreCase(operation)||"map".equalsIgnoreCase(operation) )){
-				//If the bbox is not in the filter then don't send the request.
-				System.setProperty("org.geotools.referencing.forceXY", "true");
 
-				String []s = bbox.split(",");																
-
-				//create the geometry of the filter
-				//and transform to the srs of the bbox
-				String filter = getLayerFilter(getRemoteServerUrl(j),layerToKeepList.get(iLayers));
-				if (filter!=null&&filter.length()>0){
-				    InputStream bis = new ByteArrayInputStream(filter.getBytes());
-				    Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);			
-				    WKTReader wktReader= new WKTReader();
-				    Geometry polygon = wktReader.read(object.toString());
-				    filter.indexOf("srsName");
-				    String srs= filter.substring(filter.indexOf("srsName"));			
-				    srs = srs.substring(srs.indexOf("\"")+1);			
-				    srs = srs.substring(0,srs.indexOf("\""));						
-				    polygon.setSRID(Integer.parseInt(srs.substring(5)));							
+			//Si on doit envoyer de multiples requêtes aux wms distants
+			//Alors on le fait sous forme de threads
+			class SendLayerThread extends Thread {
 
 
-				    CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:"+(new Integer(polygon.getSRID())).toString());
-				    CoordinateReferenceSystem targetCRS = CRS.decode(srsName);	    
+			    String operation;
+			    String paramUrl;
+			    List layerToKeepList;
+			    int iLayers;
+			    List stylesToKeepList;
+			    String paramUrlBase;
+			    String width;
+			    String height;
+			    String format;
+			    int j;
+			    public SendLayerThread(String pOperation,String pParamUrl,List pLayerToKeepList,int pILayers,List pStylesToKeepList,String pParamUrlBase,int pJ,String pWidth,String pHeight,String pFormat){
+				operation = pOperation;
+				paramUrl = pParamUrl;
+				layerToKeepList = pLayerToKeepList;
+				iLayers = pILayers;
+				stylesToKeepList = pStylesToKeepList;
+				paramUrlBase = pParamUrlBase;
+				j = pJ;
+				width = pWidth;
+				height= pHeight;
+				format = pFormat;
+			    }
 
-				    //ReferencedEnvelope env = new ReferencedEnvelope(Double.parseDouble(s[0]),Double.parseDouble(s[1]),Double.parseDouble(s[2]),Double.parseDouble(s[3]),targetCRS);
 
-				    double x1 = 	Double.parseDouble(s[0]);
-				    double y1 = Double.parseDouble(s[1]);
-				    double x2 =Double.parseDouble(s[2]); 
-				    double y2 = Double.parseDouble(s[3]);
-				    MathTransform a = CRS.findMathTransform(sourceCRS, targetCRS,false);
+			    public void run() {
+				{
+				    try{			                
+					boolean iscoveredByfilter = true;
+					if (("GetMap".equalsIgnoreCase(operation)||"map".equalsIgnoreCase(operation) )){
+					    //If the bbox is not in the filter then don't send the request.
+					    System.setProperty("org.geotools.referencing.forceXY", "true");
 
-				    polygon = JTS.transform(polygon, a);
-				    polygon.setSRID(Integer.parseInt(srs.substring(5)));				
-				    //Geometry bboxGeom = JTS.toGeometry(env);
-				    Coordinate []c = {new Coordinate(x1,y1),new Coordinate(x1,y1),new Coordinate(x2,y1),new Coordinate(x2,y2),new Coordinate(x1,y2),new Coordinate(x1,y1)};
-				    GeometryFactory gf= new GeometryFactory (); 
-				    Geometry bboxGeom=gf.createPolygon(gf.createLinearRing(c), null);
+					    String []s = bbox.split(",");																
+
+					    //create the geometry of the filter
+					    //and transform to the srs of the bbox
+					    String filter = getLayerFilter(getRemoteServerUrl(j),(String)layerToKeepList.get(iLayers));
+					    if (filter!=null&&filter.length()>0){
+						InputStream bis = new ByteArrayInputStream(filter.getBytes());
+						Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);			
+						WKTReader wktReader= new WKTReader();
+						Geometry polygon = wktReader.read(object.toString());
+						filter.indexOf("srsName");
+						String srs= filter.substring(filter.indexOf("srsName"));			
+						srs = srs.substring(srs.indexOf("\"")+1);			
+						srs = srs.substring(0,srs.indexOf("\""));						
+						polygon.setSRID(Integer.parseInt(srs.substring(5)));							
 
 
-				    bboxGeom.setSRID(Integer.parseInt(srs.substring(5)));
-				    IntersectionMatrix mat1 = bboxGeom.relate(polygon);
-				    IntersectionMatrix mat2 = polygon.relate(bboxGeom);
-				    /*System.out.println(mat1.isContains());
-				System.out.println(mat1.isCoveredBy());
-				System.out.println(mat1.isDisjoint());
-				System.out.println(mat1.isOverlaps(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat1.isCrosses(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat1.isTouches(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat1.isWithin());
-				System.out.println(mat1.isIntersects());
-				System.out.println("==================");
-				System.out.println(mat2.isContains());
-				System.out.println(mat2.isCoveredBy());
-				System.out.println(mat2.isDisjoint());
-				System.out.println(mat2.isOverlaps(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat2.isCrosses(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat2.isTouches(bboxGeom.getDimension(), polygon.getDimension()));
-				System.out.println(mat2.isWithin());
-				System.out.println(mat2.isIntersects());*/
-				    //geom1 hardly knows geom2
+						CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:"+(new Integer(polygon.getSRID())).toString());
+						CoordinateReferenceSystem targetCRS = CRS.decode(srsName);	    
 
-				    if(mat1.isIntersects()||mat2.isIntersects() ||bboxGeom.overlaps(polygon)||polygon.overlaps(bboxGeom)||polygon.coveredBy(bboxGeom)||bboxGeom.coveredBy(polygon) || bboxGeom.touches(polygon) ||polygon.touches(bboxGeom) || bboxGeom.intersects((polygon))||bboxGeom.covers((polygon))||bboxGeom.crosses((polygon))||polygon.crosses(bboxGeom)||polygon.intersects((bboxGeom))||polygon.covers((bboxGeom))){
-					iscoveredByfilter=true;
-					
-				    }
-				    else {
-					iscoveredByfilter=false;
-									 
-				    }
+						//ReferencedEnvelope env = new ReferencedEnvelope(Double.parseDouble(s[0]),Double.parseDouble(s[1]),Double.parseDouble(s[2]),Double.parseDouble(s[3]),targetCRS);
+
+						double x1 = 	Double.parseDouble(s[0]);
+						double y1 = Double.parseDouble(s[1]);
+						double x2 =Double.parseDouble(s[2]); 
+						double y2 = Double.parseDouble(s[3]);
+						MathTransform a = CRS.findMathTransform(sourceCRS, targetCRS,false);
+
+						polygon = JTS.transform(polygon, a);
+						polygon.setSRID(Integer.parseInt(srs.substring(5)));				
+						//Geometry bboxGeom = JTS.toGeometry(env);
+						Coordinate []c = {new Coordinate(x1,y1),new Coordinate(x1,y1),new Coordinate(x2,y1),new Coordinate(x2,y2),new Coordinate(x1,y2),new Coordinate(x1,y1)};
+						GeometryFactory gf= new GeometryFactory (); 
+						Geometry bboxGeom=gf.createPolygon(gf.createLinearRing(c), null);
+
+
+						bboxGeom.setSRID(Integer.parseInt(srs.substring(5)));
+						IntersectionMatrix mat1 = bboxGeom.relate(polygon);
+						IntersectionMatrix mat2 = polygon.relate(bboxGeom);
+						/*System.out.println(mat1.isContains());
+						System.out.println(mat1.isCoveredBy());
+						System.out.println(mat1.isDisjoint());
+						System.out.println(mat1.isOverlaps(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat1.isCrosses(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat1.isTouches(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat1.isWithin());
+						System.out.println(mat1.isIntersects());
+						System.out.println("==================");
+						System.out.println(mat2.isContains());
+						System.out.println(mat2.isCoveredBy());
+						System.out.println(mat2.isDisjoint());
+						System.out.println(mat2.isOverlaps(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat2.isCrosses(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat2.isTouches(bboxGeom.getDimension(), polygon.getDimension()));
+						System.out.println(mat2.isWithin());
+						System.out.println(mat2.isIntersects());*/
+						//geom1 hardly knows geom2
+
+						if(mat1.isIntersects()||mat2.isIntersects() ||bboxGeom.overlaps(polygon)||polygon.overlaps(bboxGeom)||polygon.coveredBy(bboxGeom)||bboxGeom.coveredBy(polygon) || bboxGeom.touches(polygon) ||polygon.touches(bboxGeom) || bboxGeom.intersects((polygon))||bboxGeom.covers((polygon))||bboxGeom.crosses((polygon))||polygon.crosses(bboxGeom)||polygon.intersects((bboxGeom))||polygon.covers((bboxGeom))){
+						    iscoveredByfilter=true;
+
+						}
+						else {
+						    iscoveredByfilter=false;
+
+						}
+					    }
+
+					}
+					if(iscoveredByfilter){
+					    paramUrl="LAYERS="+layerToKeepList.get(iLayers)+"&STYLES="+stylesToKeepList.get(iLayers);
+					    String filePath  = sendData("GET", getRemoteServerUrl(j), paramUrlBase+paramUrl);
+
+					    synchronized (filePathList) {
+						synchronized (layerFilePathList){
+						    dump("DEBUG","Thread : "+iLayers+" ==> "+filePath+"  "+(String)layerToKeepList.get(iLayers));
+						    
+						    //System.out.println("========>"+iLayers);
+
+						    
+						    filePathListHash.put(new Integer(iLayers),filePath);					    					    
+						    layerFilePathListHash.put(new Integer(iLayers),(String)layerToKeepList.get(iLayers));
+						    
+//						    filePathList.add(iLayers,filePath);					    					    
+//						    layerFilePathList.add(iLayers,(String)layerToKeepList.get(iLayers));					    					   
+						}
+					    }
+
+					}else{
+					    
+
+					    generateEmptyImage(width, height, format,true,iLayers);
+					}
+
+				    }catch(Exception e){
+					e.printStackTrace();
+				    }   
+
+				 //   System.out.println("[Thread] Le thread "+iLayers+" se termine");
 				}
 
 			    }
-			    if(iscoveredByfilter){
-				paramUrl="LAYERS="+layerToKeepList.get(iLayers)+"&STYLES="+stylesToKeepList.get(iLayers);
-				String filePath  = sendData("GET", getRemoteServerUrl(j), paramUrlBase+paramUrl);
-				filePathList.add(filePath);
-				layerFilePathList.add(layerToKeepList.get(iLayers));
-			    }else{
-				generateEmptyImage(width, height, format,true);
-			    }
+
 			}
 
+			List<SendLayerThread> threadList = new Vector<SendLayerThread>();
+
+
+			for (int iLayers=0;iLayers<layerToKeepList.size();iLayers++){
+			    SendLayerThread s =new SendLayerThread(operation,paramUrl,layerToKeepList,iLayers,stylesToKeepList,paramUrlBase,j,width,height,format);
+			    s.start();		
+			    threadList.add(s);
+			}
+
+			for (int i = 0;i<threadList.size();i++){
+			  //  System.out.println("[MAIN] Attend que le thread "+i+" foit fini");
+			    threadList.get(i).join();
+			    
+			    
+			    filePathList.add(i,(String)filePathListHash.get(new Integer(i)));					    					    
+			    layerFilePathList.add(i,(String)layerFilePathListHash.get(new Integer(i)));					    					   
+
+			   // System.out.println("[MAIN] le thread "+i+" est fini");
+
+			}
 
 		    }else{
 			String filePath  = sendData("GET", getRemoteServerUrl(j), paramUrlBase+paramUrl);
@@ -799,6 +901,54 @@ public class WMSProxyServlet extends ProxyServlet {
     /**
      * 
      */
+
+    private void generateEmptyImage(String width,String height,String format,boolean isTransparent,int iLayer) {
+	//In the case of a GetMap, it should returns an empty image
+	try{
+	   // System.out.println("========>  TTTTTTTTTTTt"+iLayer);
+
+	    BufferedImage imgOut = null;
+	    if (isTransparent){
+		imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.BITMASK);		    
+	    }else{
+		imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.TYPE_INT_ARGB);
+	    }
+	    responseContentType=URLDecoder.decode(format);
+	    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+//System.out.println("[BLANK] +"+responseContentType);
+	    if (iter.hasNext()) {
+		//System.out.println("[BLANK] 2");
+		ImageWriter writer = (ImageWriter)iter.next();
+		File tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));
+		FileImageOutputStream output = 
+		    new FileImageOutputStream(tempFile);			 
+		writer.setOutput(output);
+		writer.write(imgOut);
+		String filePath =tempFile.getPath();
+		synchronized (filePathList) {
+		    synchronized (layerFilePathList){
+			dump("DEBUG","Thread : "+iLayer+" ==> "+filePath+"  "+" BLANK IMAGE");
+
+			/*if (filePathList.size()<iLayer){
+			    filePathList.setSize(iLayer);
+			    layerFilePathList.setSize(iLayer);
+			}*/
+			
+			 filePathListHash.put(new Integer(iLayer),filePath);					    					    
+			 layerFilePathListHash.put(new Integer(iLayer),"");
+			   
+			//filePathList.add(iLayer,filePath);
+			//layerFilePathList.add(iLayer,"");
+		    }
+		}
+	    }
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
+    }
+
+
+
     private void generateEmptyImage(String width,String height,String format,boolean isTransparent) {
 	//In the case of a GetMap, it should returns an empty image
 	try{
@@ -808,7 +958,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    }else{
 		imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.TYPE_INT_ARGB);
 	    }
-	    responseContentType=format;
+	    responseContentType=URLDecoder.decode(format);
 	    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 
 	    if (iter.hasNext()) {
@@ -883,7 +1033,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    if (isTransparent){
 		imageType = BufferedImage.TYPE_INT_ARGB;
 	    }
-	    
+
 	    BufferedImage dimg = new BufferedImage(imageSource.getWidth(), imageSource.getHeight(), imageType);
 	    Graphics2D g = dimg.createGraphics();
 	    g.setComposite(AlphaComposite.Src);
@@ -1052,4 +1202,5 @@ public class WMSProxyServlet extends ProxyServlet {
 	    System.out.println("\t" + names[i]);
 	}
     }
+
 }
