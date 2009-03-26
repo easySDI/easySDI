@@ -36,18 +36,34 @@ $language->load('com_easysdi_catalog');
 <?php
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
+$view = JRequest::getVar('view');
 
 
-switch($task){
-	default:
-	case "listCatalogContent":			
-		SITE_catalog::listCatalogContent();
-		break;
-
-	case "previewProduct":
+	
+if ($view)
+{
+	switch($view){
+		default:
+		case "catalog":
+			SITE_catalog::listCatalogContent();
+			break;	
+	}
+}
+else
+{
+	switch($task){
+		default:
+			
+		case "listCatalogContent":			
+			SITE_catalog::listCatalogContent();
+			///$mainframe->redirect("index.php?option=$option&task=ListCatalog&filterfreetextcriteria=$filterfreetextcriteria&limitstart=$limitstart&partner_id=$partner_id" );
+			break;
 		
-		HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
-		break;
-				
+		case "previewProduct":
+			
+			HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
+			break;
+					
+	}
 }
  ?>
