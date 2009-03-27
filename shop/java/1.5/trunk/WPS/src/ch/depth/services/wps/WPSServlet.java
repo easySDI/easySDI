@@ -484,6 +484,8 @@ public class WPSServlet extends HttpServlet {
 		    
 		    
 		    
+		}else{
+		    res.append("</easysdi:TIERCE_ID>\n");  
 		}
 		
 		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
@@ -515,6 +517,56 @@ public class WPSServlet extends HttpServlet {
 		res.append("</easysdi:PERIMETER>\n");
 		res.append("<easysdi:PRODUCTS>\n");
 
+		
+		
+		
+		res.append("<easysdi:PROPERTIES>\n");
+
+
+		Statement stmtProp = conn.createStatement();
+		ResultSet rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_product_properties_values_definition pd, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id and op.property_id = pd.id");
+
+		while(rsProp.next()){
+		    
+		    res.append("<easysdi:PROPERTY>\n");
+			    	 
+		    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
+		    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
+		    
+		    res.append("</easysdi:PROPERTY>\n");
+		}
+		
+		
+		
+		rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id " );
+
+		while(rsProp.next()){
+		    
+		    res.append("<easysdi:PROPERTY>\n");
+			    	 
+		    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
+		    res.append("<easysdi:VALUE>"+rsProp.getString("property_value")+"</easysdi:VALUE>\n");		    		    	    
+		    
+		    res.append("</easysdi:PROPERTY>\n");
+		}		
+		
+		res.append("</easysdi:PROPERTIES>\n");
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		res.append("<easysdi:PRODUCTS>\n");
+
+		
+		
+		
+		
+		
 		Statement stmtProducts = conn.createStatement();
 		ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p WHERE p.id=pl.product_id and pl.order_id = "+order_id);
 		while(rsProducts.next()){
@@ -526,6 +578,11 @@ public class WPSServlet extends HttpServlet {
 		}
 		res.append("</easysdi:PRODUCTS>\n");
 
+		
+		
+		
+		
+		
 		/*Statement stmtProducts = conn.createStatement();
 		ResultSet rsProducts = stmtProducts.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p WHERE p.id=pl.product_id and pl.order_id = "+order_id);
 		while(rsProducts.next()){
