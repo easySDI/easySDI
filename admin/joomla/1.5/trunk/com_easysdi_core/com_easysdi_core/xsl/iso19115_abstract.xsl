@@ -44,17 +44,15 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 </td></tr>
 
-<xsl:choose>
-	<xsl:when test = "./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview">
-		<xsl:for-each select = "./gmd:identificationInfo/gmd:MD_DataIdentification">
-			<xsl:apply-templates select='gmd:graphicOverview'/>
-		</xsl:for-each>
-	</xsl:when>
-	<xsl:otherwise>
-		<tr valign="top"><td>Synoptique:</td></tr>
-		 <tr valign="top"><td>Extrait:</td></tr>
-	</xsl:otherwise>
-</xsl:choose>
+<tr valign="top"><td>Synoptique:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
+<tr valign="top"><td>Extrait:</td><td>
+ <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
+ 	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Extrait' ">
+				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
+      </xsl:if>
+</xsl:for-each>
+</td>
+</tr>
 
 <tr valign="top"><td>Sous-produits:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
@@ -75,11 +73,11 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	</table>
 </td></tr>
 </table>
-<hr></hr>
+
 
 <hr></hr>
 <h3>Point de contact</h3>
-<table  border="1">
+<table  >
 <tr valign="top"><td>Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td>Nom:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></td></tr>
 <tr valign="top"><td>Téléphone:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/></td></tr>
@@ -127,7 +125,7 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 				<xsl:when test="$categoryCode = 'health'">
 					<xsl:text>Santé</xsl:text>	
 				</xsl:when>	
-				<xsl:when test="$categoryCode = 'imageryBaseMapEarthCover'">
+				<xsl:when test="$categoryCode = 'imageryBaseMapsEarthCover'">
 					<xsl:text> 	Cartes de base, imagerie</xsl:text>	
 				</xsl:when>	
 				<xsl:when test="$categoryCode = 'intelligenceMilitary'">

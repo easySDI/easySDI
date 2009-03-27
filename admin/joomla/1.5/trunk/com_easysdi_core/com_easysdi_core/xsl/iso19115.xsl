@@ -27,6 +27,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
    </td></tr>
 </xsl:template>
 
+
 <xsl:template match="gmd:MD_Metadata">
 
 
@@ -38,27 +39,35 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <tr valign="top"><td>Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
 <tr valign="top"><td>Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td>Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td>Dernière Mise à jour :</td><td>
-     <xsl:if test="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
-		<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"/>        
+<tr valign="top"><td>Date de création :</td><td>
+ <xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
+     <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation'">
+		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
      </xsl:if>
+ </xsl:for-each>
+</td></tr>
+
+<tr valign="top"><td>Dernière Mise à jour :</td><td>
+<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
+     <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
+		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
+     </xsl:if>
+ </xsl:for-each>
 </td></tr>
 <tr valign="top"><td>Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td>Couverture spatiale:</td><td>
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 </td></tr>
 
-<xsl:choose>
-	<xsl:when test = "./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview">
-		<xsl:for-each select = "./gmd:identificationInfo/gmd:MD_DataIdentification">
-			<xsl:apply-templates select='gmd:graphicOverview'/>
-		</xsl:for-each>
-	</xsl:when>
-	<xsl:otherwise>
-		<tr valign="top"><td>Synoptique:</td></tr>
-		 <tr valign="top"><td>Extrait:</td></tr>
-	</xsl:otherwise>
-</xsl:choose>
+<tr valign="top"><td>Synoptique:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
+<tr valign="top"><td>Extrait:</td><td>
+ <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
+ 	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Extrait' ">
+				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
+      </xsl:if>
+</xsl:for-each>
+</td>
+</tr>
 
 
 <tr valign="top"><td>Sous-produits:</td><td>
@@ -148,11 +157,8 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 			</xsl:choose>
 		</td></tr>
 		<tr valign="top"><td>Echelle de référence:</td><td>
-			<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Représentation']">
-			      <xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Echelle de référence' ">
-							<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
-			      </xsl:if>
-			</xsl:for-each>
+			<xsl:value-of disable-output-escaping="yes" select ="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer" />
+			      
 			</td></tr>
 		<tr valign="top"><td>Précision:</td><td>
 			<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Représentation']">
@@ -163,9 +169,9 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 		</td></tr>
 	</table>
 
-	<h4>Produit vecteur*:</h4>
-	<xsl:if test="./gmd:extendedMetadata[@xlink:title='Produit vecteur']">
 	
+	<xsl:if test="./gmd:extendedMetadata[@xlink:title='Produit vecteur']">
+	<h4>Produit vecteur*:</h4>
 	<table>
 		<tr valign="top"><td>Type d'objet graphique* : </td><td>
 		<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Produit vecteur']">
@@ -198,8 +204,9 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 		</td></tr>
 	</table>
 </xsl:if>
-	<h4>Produit rasteur*:</h4>
+	
 	<xsl:if test="./gmd:extendedMetadata[@xlink:title='Produit raster']">
+	<h4>Produit rasteur*:</h4>
 	<table>
 		<tr valign="top"><td>Résolution* : </td><td>
 			<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Produit raster']">
@@ -232,9 +239,8 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	 	 <tr valign="top"><td>Description*:</td><td>
 	 	 <xsl:value-of disable-output-escaping="yes" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:definition/gco:CharacterString"/>
 	 	 </td></tr>
-	 	 <tr valign="top"><td>Type:</td><td>
-	 	 </td></tr>
 	 	 <tr valign="top"><td>Format:</td><td>
+	 	 <xsl:value-of disable-output-escaping="yes" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:rule/gco:CharacterString"/>
 	 	 </td></tr>
 	 	 <tr valign="top"><td>Statut:</td><td>
 	 	 <xsl:call-template name="obligationCodeTemplate">
@@ -434,8 +440,8 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 				<xsl:when test="$categoryCode = 'health'">
 					<xsl:text>Santé</xsl:text>	
 				</xsl:when>	
-				<xsl:when test="$categoryCode = 'imageryBaseMapEarthCover'">
-					<xsl:text> 	Cartes de base, imagerie</xsl:text>	
+				<xsl:when test="$categoryCode = 'imageryBaseMapsEarthCover'">
+					<xsl:text>Cartes de base, imagerie</xsl:text>	
 				</xsl:when>	
 				<xsl:when test="$categoryCode = 'intelligenceMilitary'">
 					<xsl:text>Activités militaires</xsl:text>	
@@ -462,7 +468,7 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 					<xsl:text>Transport</xsl:text>	
 				</xsl:when>	
 				<xsl:when test="$categoryCode = 'utilitiesCommunication'">
-					<xsl:text>Réseau de dsitribution et d'évacuation</xsl:text>	
+					<xsl:text>Réseau de distribution et d'évacuation</xsl:text>	
 				</xsl:when>	
 				<xsl:otherwise>
 					<xsl:text>Inconnu</xsl:text>
