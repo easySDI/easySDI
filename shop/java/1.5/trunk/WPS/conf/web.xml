@@ -22,11 +22,11 @@
     
     <init-param> 
     	<param-name>connexionString</param-name>
-		<param-value>jdbc:mysql://localhost/joomla?user=root&amp;password=root&amp;noDatetimeStringSync=true</param-value>
+		<param-value>jdbc:mysql://localhost/easysdi?user=joomla&amp;password=RpSnRtuc8&amp;noDatetimeStringSync=true</param-value>
 	</init-param>
 	<init-param> 
     	<param-name>joomlaPrefix</param-name>
-		<param-value>jos_</param-value>
+		<param-value>easysdi_</param-value>
 	</init-param>
 	<init-param> 
     	<param-name>jdbcDriver</param-name>

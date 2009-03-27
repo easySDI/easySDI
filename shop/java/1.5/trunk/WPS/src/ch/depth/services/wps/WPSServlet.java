@@ -485,7 +485,7 @@ public class WPSServlet extends HttpServlet {
 		    
 		    
 		}else{
-		    res.append("</easysdi:TIERCE_ID>\n");  
+		    res.append("<easysdi:TIERCE_ID></easysdi:TIERCE_ID>\n");  
 		}
 		
 		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
