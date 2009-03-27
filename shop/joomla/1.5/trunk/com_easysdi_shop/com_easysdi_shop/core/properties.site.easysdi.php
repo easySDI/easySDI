@@ -165,7 +165,7 @@ class SITE_properties {
 	function editProperties( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties( $database );
-		$rowProperties->load( $id );					
+		$rowProperties->load( $id );				
 			
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
 			if ($id==0){

@@ -25,7 +25,7 @@ class properties extends JTable
 	var $update_date = null;
 	var $partner_id=null;
 	var $type_code=null;
-	
+	var $code=null;
 	// Class constructor
 	function __construct( &$db )
 	{

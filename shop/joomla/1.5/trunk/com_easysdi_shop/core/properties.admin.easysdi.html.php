@@ -80,8 +80,12 @@ class HTML_properties {
 								<input type="hidden"  name="update_date" value="<?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?>" />
 								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?></td>
 							</tr>
-							<tr>
-															
+							
+								
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_CODE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $rowProperties->code; ?>" /></td>
+							</tr>							
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="text" value="<?php echo $rowProperties->text; ?>" /></td>

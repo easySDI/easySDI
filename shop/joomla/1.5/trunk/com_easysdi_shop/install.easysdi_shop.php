@@ -1428,13 +1428,27 @@ function com_install(){
 		}
 	
 	
-			$query="ALTER TABLE #__easysdi_order_product_properties add column property_value varchar(400) NOT NULL default '' ";
+			$query="ALTER TABLE #__easysdi_order_product_properties add column property_value varchar(4000) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	
+		$query="ALTER TABLE #__easysdi_product_properties_definition add column code varchar(400) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	$query="ALTER TABLE #__easysdi_order_product_properties add column code varchar(400) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 	}	
 	
 
