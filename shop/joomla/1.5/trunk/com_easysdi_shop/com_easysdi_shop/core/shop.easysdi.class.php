@@ -19,45 +19,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-/*
- class geoMeatdata{
- var $metadata;
-
- function __construct( &$md )
- {
- $this->metadata  = $md;
-
- //var_dump($metadata);
- }
-
- function getFileIdentifier(){
-
- return $this->metadata->fileIdentifier->children("http://www.isotc211.org/2005/gco")->CharacterString;
- }
-
- function getDataIdentificationTitle($lang="fr"){
-
- if (count($this->metadata->identificationInfo->MD_DataIdentification->citation->CI_Citation->title->LocalisedCharacterString) >0){
- return $this->metadata->identificationInfo->MD_DataIdentification->citation->CI_Citation->title->LocalisedCharacterString;
- }else{
- return $this->metadata->identificationInfo->MD_DataIdentification->citation->CI_Citation->title->PT_FreeText->textGroup->LocalisedCharacterString;
- }
- return "";
-
- }
-
- function getOrganisationName($lang="fr") {
- if (count($this->metadata->identificationInfo->MD_DataIdentification->pointOfContact->CI_ResponsibleParty->organisationName->LocalisedCharacterString )>0){
- return $this->metadata->identificationInfo->MD_DataIdentification->pointOfContact->CI_ResponsibleParty->organisationName->LocalisedCharacterString;
- }else{
- return $this->metadata->identificationInfo->MD_DataIdentification->pointOfContact->CI_ResponsibleParty->organisationName->PT_FreeText->textGroup->LocalisedCharacterString;
- }
- return "";
- }
-
-
-
- }*/
 class HTML_shop {
 
 	function deleteProduct()
@@ -68,10 +29,16 @@ class HTML_shop {
 		$option = JRequest::getVar('option');
 
 		$productList = $mainframe->getUserState('productList');
+		$newProductList = array ();
+		
 		if (is_array($productList))
 		{
 			foreach ($productList as $key => $value)
 			{
+				if ($value != $id)
+				{
+					$newProductList[]= $value;
+				}
 				if ($value == $id)
 				{
 					$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $id." order by a.order";
@@ -79,8 +46,6 @@ class HTML_shop {
 					$rows = $db->loadObjectList();
 					
 					foreach($rows as $row){
-					
-					unset($productList[$key]);
 					$property = $mainframe->getUserState($row->code.'_text_property_'.$id);
 					unset ($property);
 					$mainframe->setUserState($row->code.'_text_property_'.$id);
@@ -103,144 +68,10 @@ class HTML_shop {
 					}
 				}
 			}
-			$mainframe->setUserState('productList',$productList);
 			
 		}
-		$productList = $mainframe->getUserState('productList');
-		
-		
-	}
+		$mainframe->setUserState('productList',$newProductList);
 
-
-	function exportPdf(){
-
-		/*	$option = JRequest::getVar('option');
-		 $task = JRequest::getVar('task');
-		 $id = JRequest::getVar('id');
-
-		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		 	
-
-		 $processor = new xsltProcessor();
-		 $style = new DomDocument();
-
-		 $user =& JFactory::getUser();
-		 $language = $user->getParam('language', '');
-
-		 if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
-			$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-			}else{
-			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
-			}
-			$processor->importStylesheet($style);
-			$myHtml = $processor->transformToXml($cswResults);
-
-			helper_easysdi::exportPDF($myHtml);*/
-	}
-
-	function exportXml(){
-
-		/*	$option = JRequest::getVar('option');
-		 $task = JRequest::getVar('task');
-		 $id = JRequest::getVar('id');
-
-		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		 	
-
-		 $xpath = new DomXPath($cswResults);
-		 $xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-		 $xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
-		 $nodes = $xpath->query("//gmd:MD_Metadata");
-
-		 $dom = new DOMDocument();
-		 if($nodes->item(0) != "")
-		 {
-			$xmlContent = $dom ->importNode($nodes->item(0),true);
-			$dom->appendChild($xmlContent);
-			}
-
-
-			error_reporting(0);
-			ini_set('zlib.output_compression', 0);
-			header('Pragma: public');
-			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-			header('Content-Tran§sfer-Encoding: none');
-			header('Content-Type: text/xml');
-			header('Content-Disposition: attachement; filename="metadata.xml"');
-
-			echo $dom->saveXML();*/
-
-
-
-	}
-
-
-	function showMetadata(){
-
-		/*	$option = JRequest::getVar('option');
-		 $task = JRequest::getVar('task');
-		 $id = JRequest::getVar('id');
-		 $toolbar =JRequest::getVar('toolbar',1);
-		 $print =JRequest::getVar('print',0);
-
-		 $catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		 $catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		 $catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		 $cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		 	
-
-		 $processor = new xsltProcessor();
-		 $style = new DomDocument();
-
-		 $user =& JFactory::getUser();
-		 $language = $user->getParam('language', '');
-
-		 if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
-			$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-			}else{
-			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
-			}
-			$processor->importStylesheet($style);
-			$myHtml = $processor->transformToXml($cswResults);
-			if ($toolbar==1){
-			echo "<table width='100%'><tr align='right'> <td><a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=exportPdf&id=$id\"> <img src=\"components/com_easysdi_shop/img/pdfButton.png\" alt=\"PDF\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\" href=\"./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id\"> <img src=\"components/com_easysdi_shop/img/xmlButton.png\" alt=\"XML\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=showMetadata&id=$id&toolbar=0&print=1\" onclick=\"window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;\"><img src=\"components/com_easysdi_shop/img/printButton.png\" alt=\"PRINT\"  /></td></tr></table>";
-			}
-			if ($print ==1 ){
-			echo "<script>window.print();</script>";
-
-			}
-			echo $myHtml ;
-
-				
-			*Add consultation informations*
-			$db =& JFactory::getDBO();
-
-
-			$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
-			$db->setQuery( $query);
-			$maxHit = $db->loadResult();
-			if ($maxHit){
-			$query = "update #__easysdi_product set weight = $maxHit where metadata_id='$id' ";
-			$db->setQuery( $query);
-			if (!$db->query()) {
-			echo "<div class='alert'>";
-			echo $db->getErrorMsg();
-			echo "</div>";
-			}
-			}
-			*/
 	}
 
 	function orderPerimeter ($cid){
@@ -618,20 +449,16 @@ function intersect() {
  //initSelectedSurface();
  
   if (isFreeSelectionPerimeter){
-  
-  		
- 		    
-            
- 	 var features = vectors.features; 
+  	 var features = vectors.features; 
      var feature = features[features.length-1];
      
      document.getElementById("selectedSurface").options.length=0;
      
      if (feature.geometry.components[0].components.length > 2){
-   			 featureArea = feature.geometry.getArea();
-    	}else{
-    		featureArea = 0;
-    	}
+   		 featureArea = feature.geometry.getArea();
+    }else{
+    	featureArea = 0;
+    }
 	document.getElementById('totalSurface').value =  parseFloat(featureArea );
      
      if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
@@ -940,21 +767,19 @@ function isSelfIntersect(){
  }
  </script>
 <div style="display: none;">
-<form name="orderForm" id="orderForm"
-	action='<?php echo JRoute::_("index.php") ?>' method='POST'><input
-	type="hidden" id="bufferValue2" name="bufferValue" value="0"> <select
-	multiple="multiple" size="10" id="replicSelectedSurface"
-	name="replicSelectedSurface[]"></select> <select multiple="multiple"
-	size="10" id="replicSelectedSurfaceName"
-	name="replicSelectedSurfaceName[]"></select> <input type='hidden'
-	id="totalArea" name='totalArea' value='0'> <input type='hidden'
-	id="fromStep" name='fromStep' value='2'> <input type='hidden' id="step"
-	name='step' value='<?php echo $step; ?>'> <input type='hidden'
-	id="option" name='option' value='<?php echo $option; ?>'> <input
-	type='hidden' id="task" name='task' value='<?php echo $task; ?>'> <input
-	type='hidden' id="perimeter_id" name='perimeter_id' value='0'> <input
-	type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
+<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+	<input type="hidden" id="bufferValue2" name="bufferValue" value="0"> 
+	<select multiple="multiple" size="10" id="replicSelectedSurface" name="replicSelectedSurface[]"></select> 
+	<select multiple="multiple" size="10" id="replicSelectedSurfaceName" name="replicSelectedSurfaceName[]"></select> 
+	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
+	<input type='hidden' id="fromStep" name='fromStep' value='2'> 
+	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'> 
+	<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+	<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'> 
+	<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
+	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+</form>
 </div>
 <?php
 
@@ -1193,12 +1018,15 @@ if (count($rows)>0){
 <?php
 
 	}
-	?> <input type='hidden' id="fromStep" name='fromStep' value='3'> <input
-	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
-	type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
-<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'>
-<input type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
+	?> 
+	<input type='hidden' id="fromStep" name='fromStep' value='3'> 
+	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
+	<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'>
+	<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'>
+	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
+	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+</form>
 	<?php
 
 	}
@@ -1644,10 +1472,30 @@ if (count($rows)>0){
 			/*
 			 * Save the product list from the step 1
 			 */
-			if (is_array($mainframe->getUserState('productList'))){
+			$productList = $mainframe->getUserState('productList');
+			if (is_array($productList))
+			{
+				foreach ($cid as $key => $value)
+				{
+					if(array_key_exists($value , $productList))
+					{
+						
+					}
+					else
+					{
+						$productList[]=$value;
+					}
+				}
+				$mainframe->setUserState('productList',$productList);
+			}
+			else 
+			{
+				$mainframe->setUserState('productList',$cid);
+			}
+			/*if (is_array($mainframe->getUserState('productList'))){
 				$cid = array_merge($cid,$mainframe->getUserState('productList'));
 			}
-			$mainframe->setUserState('productList',$cid);
+			$mainframe->setUserState('productList',$cid);*/
 		}
 
 		if ($fromStep == 2) {
@@ -1741,17 +1589,14 @@ if (count($rows)>0){
 
 			}
 		}
-
-
+		
 		$productList = $mainframe->getUserState('productList');
-
-		if (is_array($productList)){
-
-			if (count($productList)==0){
-				JRequest::setVar('step',1);
-				JRequest::setVar('fromStep',0);
-			}
+		if ( !is_array($productList) || count($productList) == 0){
+			JRequest::setVar('step',1);
+			JRequest::setVar('fromStep',0);
 		}
+		
+		
 	}
 
 	function order(){
@@ -1766,11 +1611,13 @@ if (count($rows)>0){
 
 		HTML_shop::manageSession();
 		$productList = $mainframe->getUserState('productList');
-
-
+		if ( !is_array($productList) || count($productList) == 0)
+		{
+			$step = 1;
+			$curStep = '';
+			$fromStep = '';
+		}
 		?>
-
-
 <table>
 	<tr>
 		<td>
@@ -1860,10 +1707,7 @@ if (count($rows)>0){
 	</tr>
 </table>
 		<?php
-
 	}
-
-
 
 	function importProduct(){
 
@@ -1927,6 +1771,7 @@ if (count($rows)>0){
 
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
+		$view = JRequest::getVar('view');
 		$step = JRequest::getVar('step',"1");
 		$countMD = JRequest::getVar('countMD');
 		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','lastAddedMD');
@@ -2061,37 +1906,41 @@ if (count($rows)>0){
  }
  </script>
 <form name="orderForm" id="orderForm"
-	action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+	action='<?php echo JRoute::_("index.php") ?>' method='GET'>
 
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 <br>
-<span class="searchCriteria"> <input name="freetextcriteria" type="text"
-	value=""><br>
-<input type="radio" name="simpleSearchCriteria" value="lastAddedMD"
-		<?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?>> <?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?><br>
-<input type="radio" name="simpleSearchCriteria" value="moreConsultedMD"
-<?php if ($simpleSearchCriteria == "moreConsultedMD") echo "checked";?>>
-<?php echo JText::_("EASYSDI_MORECONSULTED_MD"); ?><br>
-<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD"
-<?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?>> <?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?><br>
-<?php if (!$user->guest){ ?> <input type="radio"
-	name="simpleSearchCriteria" value="favoriteProduct"
-	<?php if ($simpleSearchCriteria == "favoriteProduct") echo "checked";?>>
-	<?php echo JText::_("EASYSDI_FAVORITE_PRODUCT"); ?><br>
-	<?php  }?> </span> <br>
+<span class="searchCriteria"> <input name="freetextcriteria" type="text" value="<?php echo JRequest::getVar('freetextcriteria'); ?>">
+<br>
+<input type="radio" name="simpleSearchCriteria" value="lastAddedMD" <?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?>> 
+	<?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?>
+<br>
+<input type="radio" name="simpleSearchCriteria" value="moreConsultedMD" <?php if ($simpleSearchCriteria == "moreConsultedMD") echo "checked";?>>
+	<?php echo JText::_("EASYSDI_MORECONSULTED_MD"); ?>
+<br>
+<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD" <?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?>> 
+	<?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?>
+<br>
+	<?php if (!$user->guest){ ?> <input type="radio" name="simpleSearchCriteria" value="favoriteProduct" <?php if ($simpleSearchCriteria == "favoriteProduct") echo "checked";?>>
+	<?php echo JText::_("EASYSDI_FAVORITE_PRODUCT"); ?>
+<br>
+	<?php  }?> 
+</span> 
+<br>
 <button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 <button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_ADD_TO_PANEL"); ?></button>
 <br>
 <br>
 <h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 
-<input type='hidden' name='option' value='<?php echo $option;?>'> <input
-	type='hidden' id="task" name='task' value='<?php echo $task; ?>'> <input
-	type='hidden' id="fromStep" name='fromStep' value='1'> <input
-	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
-	type='hidden' name='Itemid'
-	value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
+<input type='hidden' name='option' value='<?php echo $option;?>'> 
+<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
+<input type='hidden' id="fromStep" name='fromStep' value='1'> 
+<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> 
+	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <span class="searchCriteria">
 <table width="100%">
 	<tr>
