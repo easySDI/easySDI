@@ -74,9 +74,25 @@ class HTML_shop {
 				if ($value == $id)
 				{
 					unset($productList[$key]);
-					$property = $mainframe->getUserState('property_'.$id);
+					$property = $mainframe->getUserState('text_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState('property_'.$id);
+					$mainframe->setUserState('text_property_'.$id);
+					
+					$property = $mainframe->getUserState('textarea_property_'.$id);
+					unset ($property);
+					$mainframe->setUserState('textarea_property_'.$id);
+					
+					$property = $mainframe->getUserState('list_property_'.$id);
+					unset ($property);
+					$mainframe->setUserState('list_property_'.$id);
+					
+					$property = $mainframe->getUserState('mlist_property_'.$id);
+					unset ($property);
+					$mainframe->setUserState('mlist_property_'.$id);
+					
+					$property = $mainframe->getUserState('cbox_property_'.$id);
+					unset ($property);
+					$mainframe->setUserState('cbox_property_'.$id);
 				}
 			}
 			$mainframe->setUserState('productList',$productList);
@@ -1054,9 +1070,9 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 
 
-				echo "<select name='property_".$product->id."[]'>";
+				echo "<select name='list_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selProduct = $mainframe->getUserState('list_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
@@ -1074,9 +1090,9 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 
 
-				echo "<select multiple size='10' name='property_".$product->id."[]'>";
+				echo "<select multiple size='10' name='mlist_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selProduct = $mainframe->getUserState('mlist_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
@@ -1096,14 +1112,14 @@ if (count($rows)>0){
 
 
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selProduct = $mainframe->getUserState('cbox_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="checked";
 					}
 
 
-					echo "<input type='checkbox' name='property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."<br>";
+					echo "<input type='checkbox' name='cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."<br>";
 				}
 
 				break;
@@ -1116,10 +1132,14 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 					
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selProduct = $mainframe->getUserState('text_property_'.$product->id);
 
-
-					echo "<input type='text' name='property_".$product->id."[]'  value='".$rowValue->value."'>";
+					if (count($selProduct)>0){
+						$selected = $selProduct[0];
+					}else{
+						$selected = $rowValue->value_text;
+					}
+					echo "<input type='text' name='text_property_".$product->id."[]'  value='$selected'>";
 					break;
 				}
 
@@ -1133,9 +1153,15 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 					
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState('property_'.$product->id);
+					$selProduct = $mainframe->getUserState('textarea_property_'.$product->id);
+									
+					if (count($selProduct)>0){
+						$selected = $selProduct[0];
+					}else{
+						$selected = $rowValue->value_text;
+					}
 
-					echo "<TEXTAREA  rows=10 COLS=40 name='property_".$product->id."[]'>$rowValue->value</textarea>";
+					echo "<TEXTAREA  rows=10 COLS=40 name='textarea_property_".$product->id."[]'>$selected</textarea>";
 					break;
 				}
 
@@ -1352,6 +1378,7 @@ if (count($rows)>0){
 					echo "<div class='alert'>";
 					echo $db->getErrorMsg();
 					echo "</div>";
+					exit;
 				}
 				$i++;
 			}
@@ -1366,14 +1393,49 @@ if (count($rows)>0){
 						echo "<div class='alert'>";
 						echo $db->getErrorMsg();
 						echo "</div>";
+						exit;
 					}
 
-					$productProperties  = $mainframe->getUserState('property_'.$product_id);
-					$mainframe->setUserState('property_'.$product_id,null);
-
 					$order_product_list_id = $db->insertId();
+
+					$productProperties  = $mainframe->getUserState("list_property_".$product_id);
+					
+					if (count($productProperties)>0){
+					
+					
+					
+					$mainframe->setUserState('list_property_'.$product_id,null);
+
+					
 					foreach ($productProperties as $property_id){
-						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$order_product_list_id.",".$property_id.")";
+						
+							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$order_product_list_id.",".$property_id.")";
+
+						$db->setQuery($query );
+						if (!$db->query()) {
+							echo "<div class='alert'>";
+							echo $db->getErrorMsg();
+							echo "</div>";
+							exit;
+						}
+						
+						
+						
+					}
+					}
+
+					$productProperties  = $mainframe->getUserState("mlist_property_".$product_id);
+					
+					if (count($productProperties)>0){
+					
+					
+					
+					$mainframe->setUserState('mlist_property_'.$product_id,null);
+
+					
+					foreach ($productProperties as $property_id){
+						
+							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$order_product_list_id.",".$property_id.")";
 
 						$db->setQuery($query );
 						if (!$db->query()) {
@@ -1381,7 +1443,96 @@ if (count($rows)>0){
 							echo $db->getErrorMsg();
 							echo "</div>";
 						}
+						
+						
+						
 					}
+					}
+					
+					
+					$productProperties  = $mainframe->getUserState("cbox_property_".$product_id);
+					
+					if (count($productProperties)>0){
+					
+					
+					
+					$mainframe->setUserState('cbox_property_'.$product_id,null);
+
+					
+					foreach ($productProperties as $property_id){
+						
+							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id) VALUES (0,".$order_product_list_id.",".$property_id.")";
+
+						$db->setQuery($query );
+						if (!$db->query()) {
+							echo "<div class='alert'>";
+							echo $db->getErrorMsg();
+							echo "</div>";
+							exit;
+						}
+						
+						
+						
+					}
+					}
+					
+					
+					
+					$productProperties  = $mainframe->getUserState("text_property_".$product_id);
+					
+					if (count($productProperties)>0){
+					
+					
+					
+					$mainframe->setUserState('text_property_'.$product_id,null);
+
+					
+					foreach ($productProperties as $property_id){
+						
+						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value) VALUES (0,$order_product_list_id,\"$property_id\")";
+						
+
+						$db->setQuery($query );
+						if (!$db->query()) {
+							echo "<div class='alert'>";
+							echo $db->getErrorMsg();
+							echo "</div>";
+							exit;
+						}
+						
+						
+						
+					}
+					}
+					
+					
+					$productProperties  = $mainframe->getUserState("textarea_property_".$product_id);
+					
+					if (count($productProperties)>0){
+					
+					
+					
+					$mainframe->setUserState('textarea_property_'.$product_id,null);
+
+					
+					foreach ($productProperties as $property_id){
+						
+						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value) VALUES (0,$order_product_list_id,\"$property_id\")";
+						
+
+						$db->setQuery($query );
+						if (!$db->query()) {
+							echo "<div class='alert'>";
+							echo $db->getErrorMsg();
+							echo "</div>";
+							exit;
+						}
+						
+						
+						
+					}
+					}					
+					
 				}
 			}
 
@@ -1501,9 +1652,26 @@ if (count($rows)>0){
 			 * Save the properties from the step 3
 			 */
 			$cid = $mainframe->getUserState('productList');
-			foreach ($cid as $id){
-				$property=	JRequest::getVar("property_".$id, array(0) );
-				$mainframe->setUserState('property_'.$id,$property);
+			//
+			foreach ($cid as $key =>  $id){
+				$property=	JRequest::getVar("text_property_$id", array(0) );
+				$mainframe->setUserState('text_property_'.$id,$property);
+
+				
+				$property=	JRequest::getVar("textarea_property_$id", array(0) );
+				$mainframe->setUserState('textarea_property_'.$id,$property);
+
+				$property=	JRequest::getVar("list_property_$id", array(0) );
+				$mainframe->setUserState('list_property_'.$id,$property);
+
+
+				$property=	JRequest::getVar("cbox_property_$id", array(0) );
+				$mainframe->setUserState('cbox_property_'.$id,$property);
+
+				$property=	JRequest::getVar("mlist_property_$id", array(0) );
+				$mainframe->setUserState('mlist_property_'.$id,$property);
+				 
+				 
 			}
 
 		}

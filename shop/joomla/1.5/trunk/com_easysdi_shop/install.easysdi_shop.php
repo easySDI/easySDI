@@ -1416,6 +1416,26 @@ function com_install(){
 	
 	}	
 	
+	if ($version == "0.996")
+	{
+
+
+		$version = "0.997";
+		$query="UPDATE #__easysdi_version set version = '0.997' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	
+			$query="ALTER TABLE #__easysdi_order_product_properties add column property_value varchar(400) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	}	
 	
 
 	/**

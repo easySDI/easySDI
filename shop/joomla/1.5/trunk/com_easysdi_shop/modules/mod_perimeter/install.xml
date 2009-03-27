@@ -11,6 +11,7 @@
 	<description>module to manage the perimeters.</description>
 	<files>
 		<filename module="mod_perimeter">mod_perimeter.php</filename>
+		<filename module="mod_perimeter">manual_perimeter.php</filename>
 	</files>
 
 </install>
