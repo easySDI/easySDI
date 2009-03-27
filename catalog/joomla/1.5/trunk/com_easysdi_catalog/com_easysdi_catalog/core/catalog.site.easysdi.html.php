@@ -243,7 +243,7 @@ class HTML_catalog{
 		$db =& JFactory::getDBO();
 		$partners = array();
 		$partners[0]='';
-		$query = "SELECT #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id ";
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
 		$db->setQuery( $query);
 		$partners = array_merge( $partners, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
