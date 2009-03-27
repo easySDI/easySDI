@@ -24,7 +24,7 @@ class displayManager{
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
+				
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		return $cswResults;
 	}
@@ -39,6 +39,7 @@ class displayManager{
 		}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 		}
+		//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 		$xml = displayManager::getCSWresult();
 		displayManager::DisplayMetadata($style,$xml);
 	}
@@ -54,7 +55,7 @@ class displayManager{
 		}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 		}
-		
+		//$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 		$xml = displayManager::getCSWresult();
 		
 		displayManager::DisplayMetadata($style,$xml);
@@ -150,6 +151,11 @@ class displayManager{
 		}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 		}*/
+		$doc .= '<esdi:ID><title>Test titre</title></esdi:ID>';
+		
+		$document = new DomDocument();
+		$document->loadXML($doc);
+		
 		$processor->importStylesheet($xslStyle);
 		$myHtml = $processor->transformToXml($xml);
 		if ($toolbar==1){
