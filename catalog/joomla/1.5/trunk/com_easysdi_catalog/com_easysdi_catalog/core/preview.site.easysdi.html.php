@@ -68,8 +68,8 @@ function initMap(){
 
 //Bug when prohection == 4326 the resolutions are not managed properly
 <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-            minScale: <?php echo $rowsBaseMap->minResolution; ?>,
-            maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
+            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
             maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
             });
@@ -123,8 +123,8 @@ $i++;
                        
                       maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>),
                       <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>                                          
-                      minScale: <?php echo $rowProduct->previewMinResolution; ?>,
-                      maxScale: <?php echo $rowProduct->previewMaxResolution; ?>,
+                      minResolution: <?php echo $rowProduct->previewMinResolution; ?>,
+                      maxResolution: <?php echo $rowProduct->previewMaxResolution; ?>,
                       <?php } ?>                 
                      projection:"<?php echo $rowProduct->previewProjection; ?>",
                       units: "<?php echo $rowProduct->previewUnit; ?>",
