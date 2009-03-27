@@ -87,7 +87,7 @@ function com_install(){
 			return false;
 		}
 	}
-	if($version= '0.9')
+	if($version== '0.9')
 	{
 			
 		$version = '0.91';
@@ -99,7 +99,7 @@ function com_install(){
 			return false;
 		}
 	}
-	if($version = '0.91')
+	if($version == '0.91')
 	{	
 		$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_metadata_topic_category` (			  
 			  `id` bigint(20) NOT NULL auto_increment,
