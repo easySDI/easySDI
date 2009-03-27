@@ -1,4 +1,5 @@
 <?php
+defined('_JEXEC') or die('Restricted access');
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
@@ -46,7 +47,6 @@ class helper_easysdi{
 
 	}
 
-
 	function generateHtmlPerimeterSelect($row,$parent){
 		$db =& JFactory::getDBO();
 
@@ -90,8 +90,6 @@ class helper_easysdi{
 
 		return ($total > 0 );
 	}
-
-
 
 	function generateMetadataHtml2($classId,$geoMD,$parentkey,$metadata_id,$root=0){
 
@@ -760,4 +758,7 @@ default:
 }
 
 }
+
 ?>
+
+

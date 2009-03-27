@@ -25,6 +25,7 @@ class ADMIN_basemap {
 
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
+		
 
 		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE id = $id AND basemap_def_id = $basemapId";
 		$database->setQuery( $query );
@@ -108,6 +109,13 @@ class ADMIN_basemap {
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		$order_field = JRequest::getVar('order_field');
+		
+		if($basemap_id == "")
+		{
+			$basemap_id = JRequest::getVar('basemap_def_id');
+		}
+		
 
 		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_content where basemap_def_id = ".$basemap_id;
 		
@@ -119,8 +127,14 @@ class ADMIN_basemap {
 		
 		// Recherche des enregistrements selon les limites
 		
-		
-		$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by ordering";		
+		if($order_field)
+		{
+			$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by $order_field";
+		}
+		else
+		{
+			$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by ordering";
+		}		
 									
 		
 	
@@ -204,7 +218,7 @@ class ADMIN_basemap {
 			}												
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );		
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );		
 	}
 		
 		
@@ -330,3 +344,12 @@ class ADMIN_basemap {
 }
 	
 ?>
+<script>
+	function tableOrder(task, orderField)
+	{
+		document.forms['adminForm'].elements['order_field'].value=orderField;
+		document.forms['adminForm'].submit();
+		return;
+	
+	}
+</script>

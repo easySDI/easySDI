@@ -23,6 +23,7 @@ class TOOLBAR_basemap{
 		
 		JToolBarHelper::save('saveBasemap');
 		JToolBarHelper::cancel('cancelBasemap');
+		
 	}
 	
 	function _LISTBASEMAP() {
@@ -52,7 +53,8 @@ class TOOLBAR_basemap{
 		JToolBarHelper::addNew('newBasemapContent');
 		JToolBarHelper::editList('editBasemapContent');
 		JToolBarHelper::deleteList('','deleteBasemapContent');		
-		JToolBarHelper::cancel('cancelBasemap');
+		//JToolBarHelper::cancel('cancelBasemap');
+		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
 	}
 	
 }

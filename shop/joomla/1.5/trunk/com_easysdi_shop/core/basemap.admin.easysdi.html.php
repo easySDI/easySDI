@@ -15,6 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
+
 defined('_JEXEC') or die('Restricted access');
 
 class HTML_basemap {
@@ -154,10 +155,10 @@ class HTML_basemap {
 	
 	
 	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option){
-	
+
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAPCONTENT"));
-		
+		$order_field = JRequest::getVar ('order_field');
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">
@@ -181,10 +182,10 @@ class HTML_basemap {
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ID"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_URL"); ?></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'url');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_URL"); ?></a></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_LAYER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_PROJECTION"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ORDER"); ?></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'ordering');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ORDER"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -192,19 +193,34 @@ class HTML_basemap {
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
-			$row = $rows[$i];	  				
+			$row = $rows[$i];	 
+			$link = 'index.php?option='.$option.'&task=editBasemapContent&cid[]='.$row->id.'&basemap_def_id='.$basemap_id;	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 								
 				<td><?php echo $row->id; ?></td>
-				<td><?php echo $row->url; ?></td>
+				<td><a href="<?php echo $link ?>"><?php echo $row->url; ?></a></td>
 				<td><?php echo $row->layers; ?></td>
 				<td><?php echo $row->projection; ?></td>
-				<td>
-				<?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemapcontent', 'Move Up'); ?>
-            	<?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemapcontent', 'Move Down' ); ?>
+				<td class="order" nowrap="nowrap">
+				<?php
+				$disabled = ($order_field == 'ordering'||$order_field == "") ? true : false;
+								
+					?>
+					
+							<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemapcontent', 'Move Up', $disabled);  ?></span>							
+							<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemapcontent', 'Move Down', $disabled);   ?></span>
+							
+							<?php echo $row->ordering ;?>
+							
+            		 
+            		 <?php
+				
+				
+				?>
+
             	</td> 
             				
 			</tr>
@@ -227,12 +243,12 @@ class HTML_basemap {
 		}
 ?>
 	  	</table>
+	  	<input type="hidden" name="order_field" value="" />
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listBasemap" />
+	  	<input type="hidden" name="task" value="listBasemapContent" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="basemap_def_id" value="<?php echo $basemap_id; ?>">
-	  	
 	  </form>
 <?php
 		
@@ -337,6 +353,8 @@ class HTML_basemap {
 	
 	function listBasemap($use_pagination, $rows, $pageNav,$option){
 	
+		
+		
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
 		
@@ -374,14 +392,15 @@ class HTML_basemap {
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
-			$row = $rows[$i];	  				
+			$row = $rows[$i];
+			$link = 'index.php?option='.$option.'&task=editBasemap&cid[]='.$row->id;	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 								
 				<td><?php echo $row->id; ?></td>
-				<td><?php echo $row->alias; ?></td>
+				<td><a href="<?php echo $link ?>"><?php echo $row->alias; ?></a></td>
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>
