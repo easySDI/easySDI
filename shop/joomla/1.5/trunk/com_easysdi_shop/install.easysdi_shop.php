@@ -1450,7 +1450,30 @@ function com_install(){
 		}
 		
 	}	
-	
+if ($version == "0.997")
+	{
+
+
+		$version = "0.998";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column ordering double NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		
+		
+		
+	}	
 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
