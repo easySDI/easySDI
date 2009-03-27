@@ -19,7 +19,7 @@
     <servlet-class>ch.depth.proxy.core.OgcProxyServlet</servlet-class>    
 	<init-param> 
     	<param-name>configFile</param-name>
-		<param-value>D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\conf\\config.xml</param-value>
+		<param-value>/home/users/depthch/easysdi/proxy/config.xml</param-value>
 	</init-param>
   </servlet>
   

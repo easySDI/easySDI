@@ -835,7 +835,7 @@ public abstract class ProxyServlet extends HttpServlet {
     protected boolean isOperationAllowed (String operation){
 	if (policy == null) return false;
 	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+	    //if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
 
 	if (policy.getOperations().isAll()) return true;

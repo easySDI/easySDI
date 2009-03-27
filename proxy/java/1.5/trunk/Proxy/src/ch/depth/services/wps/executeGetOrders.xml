@@ -15,7 +15,7 @@
 			<ows:Identifier>status</ows:Identifier>
 			<ows:Title>status</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>AWAIT</wps:LiteralData>
+				<wps:LiteralData>PROGRESS</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		

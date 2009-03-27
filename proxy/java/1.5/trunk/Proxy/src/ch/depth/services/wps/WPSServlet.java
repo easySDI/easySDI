@@ -588,15 +588,15 @@ public class WPSServlet extends HttpServlet {
     public static void main(String args[]) throws Exception{
 
 	try{
-	    //URL url = new URL("http://localhost:8081/wps/WPSServlet");
+	    URL url = new URL("http://localhost:8081/wps/WPSServlet");
 	    
-	    URL url = new URL("http://demo.easysdi.org:8080/wps/WPSServlet");
+	    //URL url = new URL("http://demo.easysdi.org:8080/wps/WPSServlet");
 	    URLConnection conn = url.openConnection();
 	    conn.setDoOutput(true);
 	    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 	    WPSServlet w = new WPSServlet();
 	    
-	    wr.write(w.getResourceAsString("requete.xml"));
+	    wr.write(w.getResourceAsString("executeGetOrders.xml"));
 	    wr.flush();
 
 	    FileOutputStream fos = new FileOutputStream(new File("C:\\output.xml"));
