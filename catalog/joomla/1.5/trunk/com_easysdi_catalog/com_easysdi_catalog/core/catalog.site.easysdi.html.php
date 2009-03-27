@@ -343,8 +343,8 @@ if ($db->getErrorNum()) {
                 projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 units: "<?php echo $rows[0]->unit; ?>",
-                minScale: <?php echo $rows[0]->minResolution; ?>,
-               maxScale: <?php echo $rows[0]->maxResolution; ?>,    
+                minResolution: <?php echo $rows[0]->minResolution; ?>,
+               maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
                 maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
             });
 				  

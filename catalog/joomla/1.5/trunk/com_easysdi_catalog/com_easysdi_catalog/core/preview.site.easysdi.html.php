@@ -101,8 +101,8 @@ foreach ($rows as $row){
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-                      	minScale: <?php echo $row->minResolution; ?>,
-                        maxScale: <?php echo $row->maxResolution; ?>,
+                      	minResolution: <?php echo $row->minResolution; ?>,
+                        maxResolution: <?php echo $row->maxResolution; ?>,
                         <?php } ?>                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
