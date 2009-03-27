@@ -81,7 +81,7 @@ class SITE_catalog {
 			foreach ($list_id as $md_id)
 			{
 				$cswPartnerFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>any</PropertyName>
+				<PropertyName>fileId</PropertyName>
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
@@ -103,7 +103,7 @@ class SITE_catalog {
 			foreach ($list_id as $md_id)
 			{
 				$cswVisibleFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>any</PropertyName>
+				<PropertyName>fileId</PropertyName>
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
@@ -125,7 +125,7 @@ class SITE_catalog {
 			foreach ($list_id as $md_id)
 			{
 				$cswOrderableFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>any</PropertyName>
+				<PropertyName>fileId</PropertyName>
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
