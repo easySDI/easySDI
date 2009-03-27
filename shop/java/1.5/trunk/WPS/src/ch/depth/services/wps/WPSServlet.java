@@ -515,7 +515,7 @@ public class WPSServlet extends HttpServlet {
 		    while(rsPerim.next());
 		}
 		res.append("</easysdi:PERIMETER>\n");
-		res.append("<easysdi:PRODUCTS>\n");
+		//res.append("<easysdi:PRODUCTS>\n");
 
 		
 		
