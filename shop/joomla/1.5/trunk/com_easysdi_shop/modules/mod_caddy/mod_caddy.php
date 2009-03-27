@@ -3,7 +3,7 @@ global  $mainframe;
 $db =& JFactory::getDBO();
 
 //	$cid = JRequest::getVar ('cid', array(0) );
-$cid = 		$mainframe->getUserState('productList');
+$cid = 	$mainframe->getUserState('productList');
 
 if (is_array(($cid)))
 {
@@ -61,6 +61,18 @@ if (is_array(($cid)))
 		}
 		
 	}
+	else
+	{
+		?>
+		<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
+		<?php
+	}	
+}
+else
+{
+	?>
+	<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
+	<?php
 
 }
 

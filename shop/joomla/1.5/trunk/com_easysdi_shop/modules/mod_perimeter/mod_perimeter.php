@@ -200,6 +200,7 @@ $cid = 		$mainframe->getUserState('productList');
 		$totalArea = $mainframe->getUserState('totalArea');
 		if (!$totalArea) $totalArea=0;
 		
+		
 		echo JText::_("EASYSDI_SURFACE_SELECTED");?>
 		<input type="text" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>"><br>
 		<select multiple="multiple" size="10" id="selectedSurface" onChange="changeSelectedSurface()">
@@ -218,7 +219,7 @@ $cid = 		$mainframe->getUserState('productList');
 		
 		
 		  
-		<script>
+		<script><!--
 		function removeSelected()  {
 		     
      if (isFreeSelectionPerimeter){
@@ -409,6 +410,7 @@ function recenterOnPerimeter(){
 				
 				}
 		}
+		
 		function changeSelectedSurface(){
 			if (isFreeSelectionPerimeter){
 						
@@ -492,7 +494,7 @@ function recenterOnPerimeter(){
               
               */
             }
-		</script>
+		--></script>
 		
 		<button class="deletePerimeterButton" type="button" onClick="removeSelected();"><?php echo JText::_("EASYSDI_REMOVE_SELECTED_VALUE");?></button>
 						
