@@ -912,7 +912,7 @@ if (count($rows)>0){
 					}
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";
 				}
-
+				echo "</select>";
 				break;
 			case "mlist":
 				echo 	JText::_($row->property_text);
@@ -932,7 +932,7 @@ if (count($rows)>0){
 					}
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";
 				}
-
+				echo "</select>";
 				break;
 			case "cbox":
 				echo 	JText::_($row->property_text);
