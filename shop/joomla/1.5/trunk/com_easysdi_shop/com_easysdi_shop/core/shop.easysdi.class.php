@@ -203,8 +203,8 @@ function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,a
                     {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
                      {singleTile: true},                                                    
                      {                     
-					  minScale: pMaxResolution,
-               		  maxScale: pMinResolution,                                    	     
+					  minResolution: pMinResolution,
+               		  maxResolution: pMaxResolution,                                    	     
                       maxExtent: map.maxExtent,
                       projection: map.projection,
                       units: map.units,
