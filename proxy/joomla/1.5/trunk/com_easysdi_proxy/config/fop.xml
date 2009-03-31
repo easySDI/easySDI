@@ -77,36 +77,36 @@
 				-->
 
 				<font
-					metrics-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/arial.xml"
+					metrics-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/arial.xml"
 					kerning="yes"
-					embed-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/arial.ttf">
+					embed-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/arial.ttf">
 					<font-triplet name="Arial" style="normal"
 						weight="normal" />
 					<font-triplet name="arial" style="normal"
 						weight="normal" />
 				</font>
 				<font
-					metrics-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/arialbd.xml"
+					metrics-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/arialbd.xml"
 					kerning="yes"
-					embed-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/arialbd.ttf">
+					embed-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/arialbd.ttf">
 					<font-triplet name="Arial" style="normal"
 						weight="bold" />
 					<font-triplet name="arial" style="normal"
 						weight="bold" />
 				</font>
 				<font
-					metrics-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\arialbi.xml"
+					metrics-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\arialbi.xml"
 					kerning="yes"
-					embed-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/arialbi.ttf">
+					embed-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/arialbi.ttf">
 					<font-triplet name="Arial" style="italic"
 						weight="bold" />
 					<font-triplet name="arial" style="italic"
 						weight="bold" />
 				</font>
 				<font
-					metrics-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/ariali.xml"
+					metrics-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/ariali.xml"
 					kerning="yes"
-					embed-url="file:C:\Program Files\Apache Software Foundation\Apache2.2\htdocs\joomla\administrator\components\com_easysdi\font/ariali.ttf">
+					embed-url="file:C:\www\Site\Joomla\administrator\components\com_easysdi\font/ariali.ttf">
 					<font-triplet name="arial" style="italic"
 						weight="normal" />
 				</font>
