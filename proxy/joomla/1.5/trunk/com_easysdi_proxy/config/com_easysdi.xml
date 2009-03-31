@@ -2,7 +2,7 @@
 <config>
 	<proxy>
 		<configFilePath>
-			D:\DEPTH\Projets\projets\eclipse\workspace\Proxy\conf\config.xml
+			C:\www\tomcat-5-5\webapps\proxy\conf\config.xml
 		</configFilePath>
 	</proxy>
 </config>
