@@ -468,7 +468,7 @@ class HTML_product{
 	
 	
 	function editMetadata( $rowProduct,$id, $option ){
-		
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 

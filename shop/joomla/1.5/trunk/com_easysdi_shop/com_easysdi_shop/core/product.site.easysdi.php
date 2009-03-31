@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 class SITE_product {
 	
 	function saveProductMetadata(){
-
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
@@ -346,6 +346,7 @@ class SITE_product {
 	}
 	
 	function editProduct( $isNew = false) {
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 		global  $mainframe;
 		$user = JFactory::getUser();
 		//Check user's rights
