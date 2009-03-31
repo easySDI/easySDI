@@ -415,7 +415,7 @@ default:
 
 	}
 
-
+	
 	function generateMetadata2($classId,$geoMD,$parentkey,$metadata_id,$root=0,$doc){
 
 
@@ -506,181 +506,178 @@ default:
 		}
 	}
 
+	
+	function generateMetadata($row,$tab_id,$metadata_standard_id,$iso_key,$doc,$n){
+		global  $mainframe;
+		$database =& JFactory::getDBO();
 
-		function generateMetadata($row,$tab_id,$metadata_standard_id,$iso_key,$doc,$n){
-			global  $mainframe;
-			$database =& JFactory::getDBO();
+		switch($row->type){
+			case  "list" :
 
-			switch($row->type){
-				case  "list" :
-
-					$query = "SELECT * FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->class_id and a.list_id = b.id";
+				$query = "SELECT * FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->class_id and a.list_id = b.id";
+				$database->setQuery($query);
+				$rowsList = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsList as $rowList){
+					$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
 					$database->setQuery($query);
-					$rowsList = $database->loadObjectList();
+					$rowsListContent = $database->loadObjectList();
 					if ($database->getErrorNum()) {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					}
-					foreach($rowsList as $rowList){
-						$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
-						$database->setQuery($query);
-						$rowsListContent = $database->loadObjectList();
-						if ($database->getErrorNum()) {
-							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+
+					foreach ($rowsListContent as $rowListContent){
+
+	//					$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+						$array  = JRequest::getVar("PARAM$row->id");
+						$value = $array [$n];
+	
+
+						if (strlen  ($value)>0){
+							$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
 						}
-
-						foreach ($rowsListContent as $rowListContent){
-
-		//					$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-							$array  = JRequest::getVar("PARAM$row->id");
-							$value = $array [$n];
-		
-
-							if (strlen  ($value)>0){
-								$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
-							}
-							?>
-							<?php } ?>
-							<?php
-					}
-					break;
+						?>
+						<?php } ?>
+						<?php
+				}
+				break;
 
 case  "ext" :
 
-	$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
-	$database->setQuery($query);
-	$rowsExt = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	foreach($rowsExt as $rowExt){
-		//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-		$array  = JRequest::getVar("PARAM$row->id");
-		$value = $array [$n];
-		
-		$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>".htmlspecialchars    (stripslashes($rowExt->name) )."</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";
-	}
-	break;
+$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
+$database->setQuery($query);
+$rowsExt = $database->loadObjectList();
+if ($database->getErrorNum()) {
+	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+}
+foreach($rowsExt as $rowExt){
+	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+	$array  = JRequest::getVar("PARAM$row->id");
+	$value = $array [$n];
+	
+	$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>".htmlspecialchars    (stripslashes($rowExt->name) )."</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";
+}
+break;
 
 case "locfreetext":
 
-	$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
-	$database->setQuery($query);
-	$rowsFreetext = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	//$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
-	foreach($rowsFreetext as $rowFreetext){
-		//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
-		
-		//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-		$array  = JRequest::getVar("PARAM$row->id");
-		$value = $array [$n];
-		
-		
+$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
+$database->setQuery($query);
+$rowsFreetext = $database->loadObjectList();
+if ($database->getErrorNum()) {
+	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+}
+//$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
+foreach($rowsFreetext as $rowFreetext){
+	//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
 	
-		$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
-	}
-	//$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
-	break;
+	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+	$array  = JRequest::getVar("PARAM$row->id");
+	$value = $array [$n];
+	
+	
+
+	$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
+}
+//$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
+break;
 case  "freetext" :
 
-	$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->class_id and a.freetext_id = b.id";
-	$database->setQuery($query);
-	$rowsFreetext = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	foreach($rowsFreetext as $rowFreetext){
-		//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-		$array  = JRequest::getVar("PARAM$row->id");
-		$value = $array [$n];
-				
-		if ($rowFreetext->is_number == 1){
-			$doc=$doc."<gco:Decimal>$value</gco:Decimal>";
-		}else
-		if ($rowFreetext->is_date == 1){
-			$doc=$doc."<gco:Date>$value</gco:Date>";
-		}else	$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value) )."</gco:CharacterString>";
-	}
-	break;
+$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->class_id and a.freetext_id = b.id";
+$database->setQuery($query);
+$rowsFreetext = $database->loadObjectList();
+if ($database->getErrorNum()) {
+	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+}
+foreach($rowsFreetext as $rowFreetext){
+	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+	$array  = JRequest::getVar("PARAM$row->id");
+	$value = $array [$n];
+			
+	if ($rowFreetext->is_number == 1){
+		$doc=$doc."<gco:Decimal>$value</gco:Decimal>";
+	}else
+	if ($rowFreetext->is_date == 1){
+		$doc=$doc."<gco:Date>$value</gco:Date>";
+	}else	$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value) )."</gco:CharacterString>";
+}
+break;
 case "class":
 
-	$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+$database->setQuery($query);
+$rowsClasses = $database->loadObjectList();
+if ($database->getErrorNum()) {
+	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+}
+foreach ($rowsClasses as $rowClasses){
+
+	$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
 	$database->setQuery($query);
-	$rowsClasses = $database->loadObjectList();
+	$rowsClassesClasses = $database->loadObjectList();
 	if ($database->getErrorNum()) {
 		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 	}
-	foreach ($rowsClasses as $rowClasses){
-
-		$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
-		$database->setQuery($query);
-		$rowsClassesClasses = $database->loadObjectList();
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-		foreach ($rowsClassesClasses  as $rowClassesClasses ){
-			$doc=$doc."<$rowClassesClasses->iso_key>";
-			helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,&$doc,$n);
-			$doc=$doc."</$rowClassesClasses->iso_key>";
-		}
+	foreach ($rowsClassesClasses  as $rowClassesClasses ){
+		$doc=$doc."<$rowClassesClasses->iso_key>";
+		helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,&$doc,$n);
+		$doc=$doc."</$rowClassesClasses->iso_key>";
 	}
+}
 
-	break;
+break;
 
 
 default:
-	$mainframe->enqueueMessage($row->type,"INFO");
+$mainframe->enqueueMessage($row->type,"INFO");
 
-			}
 		}
+	}
 
-	
+	function searchForLastEntry($row,$metadata_standard_id){
+		global  $mainframe;
+		$database =& JFactory::getDBO();
 
-		function searchForLastEntry($row,$metadata_standard_id){
-			global  $mainframe;
-			$database =& JFactory::getDBO();
+		switch($row->type){
+		
+			case "class":
 
-			switch($row->type){
-			
-				case "class":
+				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+				$database->setQuery($query);
+				$rowsClasses = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach ($rowsClasses as $rowClasses){
 
-					$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
-					$database->setQuery($query);
-					$rowsClasses = $database->loadObjectList();
-					if ($database->getErrorNum()) {
+						$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
+						$database->setQuery($query);
+						$rowsClassesClasses = $database->loadObjectList();
+						if ($database->getErrorNum()) {
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					}
-					foreach ($rowsClasses as $rowClasses){
-
-							$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
-							$database->setQuery($query);
-							$rowsClassesClasses = $database->loadObjectList();
-							if ($database->getErrorNum()) {
-								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-								}
-								
-							foreach ($rowsClassesClasses  as $rowClassesClasses ){
-								$a = 		helper_easysdi::searchForLastEntry($rowClassesClasses,$metadata_standard_id);																				
-									return $a;																																		
 							}
-					}
-				break;
+							
+						foreach ($rowsClassesClasses  as $rowClassesClasses ){
+							$a = 		helper_easysdi::searchForLastEntry($rowClassesClasses,$metadata_standard_id);																				
+								return $a;																																		
+						}
+				}
+			break;
 
-			default:										
-					return count(JRequest::getVar("PARAM$row->id"));
-					//$mainframe->enqueueMessage($row->type,"ERROR");
-			}
-			
+		default:										
+				return count(JRequest::getVar("PARAM$row->id"));
+				//$mainframe->enqueueMessage($row->type,"ERROR");
 		}
+		
+	}
 
+	function getUniqueId(){
+		return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+	}
 
-		function getUniqueId(){
-			return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
-		}
-
-		function exportPDF( $myHtml) {
+	function exportPDF( $myHtml) {
 		/*	global  $mainframe;
 
 			$database =& JFactory::getDBO();
