@@ -962,7 +962,7 @@ class HTML_product{
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
 			
-			<?php if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){?> 
+			<?php if (userManager::hasRight($rootPartner->partner_id,"INTERNAL")){?> 
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='deleteProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='editProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
@@ -1041,7 +1041,7 @@ class HTML_product{
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
 			<?php
-			if (helper_easysdi::hasRight($rootPartner->partner_id,"METADATA")){?>
+			if (userManager::hasRight($rootPartner->partner_id,"METADATA")){?>
 			
 			<button type="button" onClick="document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_METADATA"); ?></button>
 			<?php }?>
