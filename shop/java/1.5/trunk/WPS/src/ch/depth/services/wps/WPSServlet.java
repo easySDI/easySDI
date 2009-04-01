@@ -802,8 +802,8 @@ public class WPSServlet extends HttpServlet {
 
 
 		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = 'AVAILABLE',data=? where order_id = "+order_id +" AND product_id = "+product_id);
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
+		
+		ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
 
 		pre.setBinaryStream(1,bais,data.length());
 
