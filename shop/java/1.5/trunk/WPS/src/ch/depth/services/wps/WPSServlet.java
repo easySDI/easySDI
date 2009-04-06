@@ -347,9 +347,6 @@ public class WPSServlet extends HttpServlet {
 		res.append("<easysdi:REQUEST>\n");
 		res.append("<easysdi:ID>"+order_id+"</easysdi:ID>\n");
 		
-		res.append("<easysdi:NBELEMENTS>1</easysdi:NBELEMENTS>\n");
-		
-		
 		if(type.equalsIgnoreCase("D")){
 		    res.append("<easysdi:TYPE>ESTIMATE</easysdi:TYPE>\n");    
 		}
@@ -369,7 +366,7 @@ public class WPSServlet extends HttpServlet {
 		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -386,7 +383,7 @@ public class WPSServlet extends HttpServlet {
 		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -404,7 +401,7 @@ public class WPSServlet extends HttpServlet {
 		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -416,26 +413,22 @@ public class WPSServlet extends HttpServlet {
 		    res.append("</easysdi:DELIVERYADDRESS>\n");																
 		}		
 		res.append("</easysdi:CLIENT>\n");
-		res.append("<easysdi:BILLINGINFO>\n");
+		
 		
 		if (!third_party.equalsIgnoreCase("0")){
-		    res.append("<easysdi:TIERCE_ID>"+third_party+"</easysdi:TIERCE_ID>\n");    
-		    Statement stmtTierce = conn.createStatement();
-		    ResultSet rsTierce = stmtTierce.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_partner p WHERE p.partner_id = "+third_party);
-
-		    while(rsTierce.next()){				
-			res.append("<easysdi:TIERCE_NAME>"+rsTierce.getString("partner_acronym")+"</easysdi:TIERCE_NAME>\n");		    
-		    }
-		    		    		    		   			
-		    rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
-
-		    while(rsAddContact.next()){
+			res.append("<easysdi:TIERCE>\n");
+			res.append("<easysdi:ID>"+third_party+"</easysdi:ID>\n");
+			Statement stmtTierce = conn.createStatement();
+		    
+			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
+			
+			while(rsAddContact.next()){
 
 			    res.append("<easysdi:CONTACTADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -452,7 +445,7 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -470,7 +463,7 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
 			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
 			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
 			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
@@ -480,12 +473,11 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
 			    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
 			    res.append("</easysdi:DELIVERYADDRESS>\n");																
-			}		
-		    
-		    
-		    
+			}	
+			res.append("</easysdi:TIERCE>\n");
+		
 		}else{
-		    res.append("<easysdi:TIERCE_ID></easysdi:TIERCE_ID>\n");  
+		    res.append("<easysdi:TIERCE></easysdi:TIERCE>\n");  
 		}
 		
 		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
@@ -493,9 +485,6 @@ public class WPSServlet extends HttpServlet {
 		    res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
 		}
 		
-		res.append("</easysdi:BILLINGINFO>\n");
-
-
 		Statement stmtPerim = conn.createStatement();
 		ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
 
@@ -515,74 +504,38 @@ public class WPSServlet extends HttpServlet {
 		    while(rsPerim.next());
 		}
 		res.append("</easysdi:PERIMETER>\n");
-		//res.append("<easysdi:PRODUCTS>\n");
-
-		
-		
-		
-		res.append("<easysdi:PROPERTIES>\n");
-
-
-		Statement stmtProp = conn.createStatement();
-		ResultSet rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_product_properties_values_definition pd, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id and op.property_id = pd.id");
-
-		while(rsProp.next()){
-		    
-		    res.append("<easysdi:PROPERTY>\n");
-			    	 
-		    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
-		    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
-		    
-		    res.append("</easysdi:PROPERTY>\n");
-		}
-		
-		
-		
-		rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id " );
-
-		while(rsProp.next()){
-		    
-		    res.append("<easysdi:PROPERTY>\n");
-			    	 
-		    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
-		    res.append("<easysdi:VALUE>"+rsProp.getString("property_value")+"</easysdi:VALUE>\n");		    		    	    
-		    
-		    res.append("</easysdi:PROPERTY>\n");
-		}		
-		
-		res.append("</easysdi:PROPERTIES>\n");
-		
-		
-		
-		
-		
-		
-		
-		
 		
 		res.append("<easysdi:PRODUCTS>\n");
 
-		
-		
-		
-		
 		
 		Statement stmtProducts = conn.createStatement();
 		ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p WHERE p.id=pl.product_id and pl.order_id = "+order_id);
 		while(rsProducts.next()){
 		    res.append("<easysdi:PRODUCT>\n");		
-		    res.append("<easysdi:DATA_ID>"+rsProducts.getString("metadata_id")+"</easysdi:DATA_ID>\n");
-		    res.append("<easysdi:PRODUCT_ID>"+rsProducts.getString("product_id")+"</easysdi:PRODUCT_ID>\n");
-		    res.append("<easysdi:DATA_NAME>"+rsProducts.getString("data_title")+"</easysdi:DATA_NAME>\n");
-		    res.append("</easysdi:PRODUCT>\n");		
+		    res.append("<easysdi:METADATA_ID>"+rsProducts.getString("metadata_id")+"</easysdi:METADATA_ID>\n");
+		    res.append("<easysdi:ID>"+rsProducts.getString("product_id")+"</easysdi:ID>\n");
+		    res.append("<easysdi:NAME>"+rsProducts.getString("data_title")+"</easysdi:NAME>\n");
+			
+			res.append("<easysdi:PROPERTIES>\n");
+
+			Statement stmtProp = conn.createStatement();
+			ResultSet rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_product_properties_values_definition pd, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id and op.property_id = pd.id and opl.product_id = " + rsProducts.getString("product_id"));
+
+			while(rsProp.next()){
+			    
+			    res.append("<easysdi:PROPERTY>\n");
+				    	 
+			    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
+			    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
+			    
+			    res.append("</easysdi:PROPERTY>\n");
+			}
+			
+			res.append("</easysdi:PROPERTIES>\n");
+			res.append("</easysdi:PRODUCT>\n");		
 		}
 		res.append("</easysdi:PRODUCTS>\n");
 
-		
-		
-		
-		
-		
 		/*Statement stmtProducts = conn.createStatement();
 		ResultSet rsProducts = stmtProducts.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p WHERE p.id=pl.product_id and pl.order_id = "+order_id);
 		while(rsProducts.next()){
@@ -593,10 +546,6 @@ public class WPSServlet extends HttpServlet {
 		}	*/
 
 		res.append("</easysdi:order>\n");
-
-
-
-
 
 		stmtProducts.close();
 		stmtProducts.close();
