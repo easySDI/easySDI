@@ -536,15 +536,6 @@ public class WPSServlet extends HttpServlet {
 		}
 		res.append("</easysdi:PRODUCTS>\n");
 
-		/*Statement stmtProducts = conn.createStatement();
-		ResultSet rsProducts = stmtProducts.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p WHERE p.id=pl.product_id and pl.order_id = "+order_id);
-		while(rsProducts.next()){
-		res.append("<easysdi:ELEMENT>\n");	
-		res.append("<easysdi:name>PROJECTION</easysdi:name>\n");
-		res.append("<easysdi:value>SWITZERLAND</easysdi:value>\n");
-		res.append("</easysdi:ELEMENT>\n");
-		}	*/
-
 		res.append("</easysdi:order>\n");
 
 		stmtProducts.close();
