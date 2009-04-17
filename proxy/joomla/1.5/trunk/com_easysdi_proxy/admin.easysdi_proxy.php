@@ -30,6 +30,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.ph
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
+JHTML::_('stylesheet', 'com_easysdi_proxy.css', 'administrator/components/com_easysdi_proxy/templates/css/');
 
 $task = JRequest::getVar('task');
 $cid = JRequest::getVar ('cid', array(0) );
@@ -155,12 +156,16 @@ switch($task){
 		TOOLBAR_proxy::configList();
 		HTML_proxy::showConfigList($xml);
 		break;
-	case 'cancel':
+	case 'cancel':	
 	case 'showConfigList':
 		TOOLBAR_proxy::configList();
 		HTML_proxy::showConfigList($xml);
 		break;
 
+	case 'cpanel':
+		$mainframe->redirect("index.php?option=com_easysdi_core" );
+		break;
+		
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:
