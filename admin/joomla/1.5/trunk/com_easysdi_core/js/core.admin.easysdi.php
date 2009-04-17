@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 				|| form.elements['address_corporate_name1[0]'].value == ''
 				|| form.elements['address_agent_firstname[0]'].value == ''
 				|| form.elements['address_agent_lastname[0]'].value == ''
-				|| form.elements['address_agent_function[0]'].value == ''
+				//|| form.elements['address_agent_function[0]'].value == ''
 				|| form.elements['address_street1[0]'].value == ''
 				|| form.elements['address_locality[0]'].value == ''
 				|| form.elements['address_postalcode[0]'].value == ''
