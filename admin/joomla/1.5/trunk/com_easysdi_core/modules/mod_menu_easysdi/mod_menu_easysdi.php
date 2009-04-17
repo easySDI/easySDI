@@ -137,6 +137,9 @@ if (!$user->guest)
 			}
 			
 			?>
+		<li>
+			<a href ="./index.php?option=com_user&view=login"><span><?php echo JText::_("EASYSDI_MENU_ITEM_LOGIN"); ?></span></a>
+		</li>
 		</ul>
 		<?php
 		}
