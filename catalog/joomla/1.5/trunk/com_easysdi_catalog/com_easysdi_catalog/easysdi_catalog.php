@@ -38,9 +38,15 @@ $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
 
-
-	
 if ($view)
+{
+	switch($view){
+		case "catalog":
+			$task="listCatalogContent";
+	}
+}
+	
+/*if ($view)
 {
 	switch($view){
 		default:
@@ -50,7 +56,7 @@ if ($view)
 	}
 }
 else
-{
+{*/
 	switch($task){
 		default:
 			
@@ -65,5 +71,5 @@ else
 			break;
 					
 	}
-}
+//}
  ?>
