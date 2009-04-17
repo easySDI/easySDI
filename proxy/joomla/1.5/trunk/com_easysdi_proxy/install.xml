@@ -21,7 +21,8 @@
 			<folder>com_easysdi_proxy</folder>
 			<folder>config</folder>
 			<folder>core</folder>
-			<folder>language</folder>			
+			<folder>language</folder>		
+			<folder>templates</folder>	
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_proxy.ini</language>
