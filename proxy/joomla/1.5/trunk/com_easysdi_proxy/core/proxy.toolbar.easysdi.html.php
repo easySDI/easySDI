@@ -59,7 +59,8 @@ function editPolicy(){
 		JToolBarHelper::custom('deleteConfig','delete.png','delete.png',JText::_( 'EASYSDI_DELETE CONFIG' ),false);
 		JToolBarHelper::custom('editPolicyList','edit.png','edit.png',JText::_( 'EASYSDI_POLICIES LIST' ),false);
 				
-		JToolBarHelper::cancel('cancelConfigList');		
+		//JToolBarHelper::cancel('cancelConfigList');		
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
 	
 }
