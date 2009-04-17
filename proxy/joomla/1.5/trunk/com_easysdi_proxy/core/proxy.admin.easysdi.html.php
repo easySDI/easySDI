@@ -585,17 +585,17 @@ function addNewServer(){
 		?>
 
 
-<form name='adminForm' action='index.php' method='GET'><input
-	type='hidden' name='option' value='<?php echo $option;?>'><input
-	type='hidden' name='task' value='<?php echo $task; ?>'><input
-	type='hidden' name='configId' value='<?php echo $configId;?>'><input 
+<form name='adminForm'  action='index.php' method='GET'><input
+	type='hidden' name='option' id='option' value='<?php echo $option;?>'><input
+	type='hidden' name='task' id='task' value='<?php echo $task; ?>'><input
+	type='hidden' name='configId'id='configId' value='<?php echo $configId;?>'><input 
 	type="hidden" name="boxchecked" value="0" />
 <table>
 	<tr>
-		<td width="100%"><?php echo JText::_( 'EASYSDI_FILTER' ); ?>: <input
-			type="text" name="search" id="search" value="" class="text_area"
-			onchange="document.adminForm.submit();" />
-		<button onclick="this.form.submit();"><?php echo JText::_( 'EASYSDI_GO' ); ?></button>
+		
+		<td align="right" width="100%">
+			<?php echo JText::_("EASYSDI_FILTER");?>&nbsp;
+			<input type="text" name="search" id="search" value="<?php echo $search;?>" class="inputbox" onchange="document.adminForm.submit();"  />			
 		</td>
 		<td nowrap="nowrap"></td>
 	</tr>
@@ -605,6 +605,7 @@ function addNewServer(){
 	<thead>
 		<tr class="title">
 			<th width="2%"><?php echo JText::_( 'EASYSDI_NUM'); ?></th>
+			<th width="20" class='title'></th>
 			<th width="30%"><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></th>
 			<th><?php echo JText::_( 'EASYSDI_USERS AND ROLES'); ?></th>
 			<th><?php echo JText::_( 'EASYSDI_ORDER'); ?></th>
@@ -663,9 +664,27 @@ function addNewServer(){
 		<tr class="row<?php echo $i%2;?>">
 			<td><?php echo $i + 1; ?></td>
 			<td><input
-			<?php if (strlen($policyId)==0){ if (!$isChecked) {echo 'checked'; $isChecked =true;}}else{ if(strcmp($policyId,$policy['Id'])==0){echo 'checked';} }?>
-				type='radio' id="cb<?php echo$i ?>" name="policyId" value="<?php echo $policy['Id']; ?>"> <?php echo $policy['Id']; ?>					
-								 
+			<?php 
+				if (strlen($policyId)==0)
+				{ 
+					if (!$isChecked) 
+					{
+						echo 'checked'; $isChecked =true;
+					}
+				}
+				else
+				{ 
+					if(strcmp($policyId,$policy['Id'])==0)
+					{
+						echo 'checked';
+					} 
+				}?>
+				type='radio' id="cb<?php echo$i ?>" name="policyId" value="<?php echo $policy['Id']; ?>"> 
+				</td>
+				<td>
+								
+				<a href="#edit" onclick="document.getElementById('configId').value='<?php echo $configId;?>';document.getElementById('task').value='editPolicy';document.getElementById('cb<?php echo $i;?>').checked=true;document.adminForm.submit();;">
+				<?php echo $policy['Id']; ?>	</a>
 				
 				</td>
 			<td><?php  
@@ -837,6 +856,14 @@ document.getElementById(list).disabled=false;
 }
 }
 
+function disableButton(chkBox,button){
+
+if (document.getElementById(chkBox).checked==true){
+document.getElementById(button).disabled=true;
+}else{
+document.getElementById(button).disabled=false;
+}
+}
 
 function activateFeatureType(featureType){
 
@@ -872,11 +899,11 @@ function activateLayer(layerName){
 <fieldset class="adminform"><legend>Users and Groups</legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
+		<th  ><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
 		<th></th>
-		<th><b><?php echo JText::_( 'EASYSDI_USER OR ROLE NAME'); ?></b></th>
+		<th ><b><?php echo JText::_( 'EASYSDI_USER OR ROLE NAME'); ?></b></th>
 		<th></th>
-		<th><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
+		<th  ><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
 	</tr>
 	<tr>
 		<td></td>
@@ -884,8 +911,8 @@ function activateLayer(layerName){
 
 		<td><input
 		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo 'checked';} ?>
-			type="checkBox" name="AllUsers[]" id="AllUsers"
-			onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');">
+			type="checkBox" name="AllUsers[]" id="AllUsers" 
+			onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');disableButton('AllUsers','addUser'),disableButton('AllUsers','removeUser'),disableButton('AllUsers','addRole'),disableButton('AllUsers','removeRole')">
 		All</td>
 		<td></td>
 		<td></td>
@@ -893,7 +920,7 @@ function activateLayer(layerName){
 	<tr>
 		<td><select
 		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-			name="userNameList[]" id="userNameList" size="10" multiple="multiple">
+			name="userNameList[]" id="userNameList" size="10" multiple="multiple"  >
 			<?php
 			foreach ($thePolicy->Subjects->User as $user){
 				echo "<option value='".$user."'>".$user."</option>";
@@ -904,11 +931,12 @@ function activateLayer(layerName){
 		<td>
 		<table>
 			<tr>
-				<td><input type="button" value="<=="
+
+				<td><input type="button" value="<=="  id="addUser" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
 					onclick="addOption('userNameList','textUserRole');"></td>
 			</tr>
 			<tr>
-				<td><input type="button" value="X"
+				<td><input type="button" value="X" id="removeUser" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
 					onclick="removeOptionSelected('userNameList');"></td>
 			</tr>
 		</table>
@@ -918,18 +946,18 @@ function activateLayer(layerName){
 		<td>
 		<table>
 			<tr>
-				<td><input type="button" value="==>"
+				<td><input type="button" value="==>" id ="addRole" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
 					onclick="addOption('roleNameList','textUserRole');"></td>
 			</tr>
 			<tr>
-				<td><input type="button" value="X"
+				<td><input type="button" value="X" id="removeRole" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
 					onclick="removeOptionSelected('roleNameList');"></td>
 			</tr>
 		</table>
 		</td>
 		<td><select
 		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-			name="roleNameList[]" id="roleNameList" size="10" multiple="multiple">
+			name="roleNameList[]" id="roleNameList" size="10" multiple="multiple"  >
 			<?php
 			foreach ($thePolicy->Subjects->Role as $role){
 				echo "<option value='".$role."'>".$role."</option>";
@@ -951,15 +979,11 @@ function activateLayer(layerName){
 	</tr>
 	<tr>
 			
-		<td><b><?php echo JText::_( 'EASYSDI_FROM : '); ?></b> <input size="40"
-			id="dateFrom" name="dateFrom" type="text"
-			value="<?php echo $thePolicy->{'AvailabilityPeriod'}->From->Date; ?>"  >
-			<input type="button" onClick="showCalendar('dateFrom','%d-%m-%Y');">			
+		<td><b><?php echo JText::_( 'EASYSDI_FROM'); ?></b> 	
+			<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->From->Date, "dateFrom","dateFrom","%d-%m-%Y"); ?>		
 			</td>
-		<td><b><?php echo JText::_( 'EASYSDI_TO : '); ?></b><input size="40"
-			name="dateTo" id="dateTo" type="text"
-			value="<?php echo $thePolicy->{'AvailabilityPeriod'}->To->Date; ?>">
-			<input type="button" onClick="showCalendar('dateTo','%d-%m-%Y');">
+		<td><b><?php echo JText::_( 'EASYSDI_TO'); ?></b>		
+			<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->To->Date, "dateTo","dateTo","%d-%m-%Y"); ?>
 			</td>
 			
 	</tr>
@@ -1020,7 +1044,7 @@ $remoteServerList = $config->{'remote-server-list'};
 			<input type="hidden"
 	name="remoteServer<?php echo $iServer;?>"
 	value="<?php echo $remoteServer->url ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW SERVER :'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
 <table  class="admintable">
 <thead>
 	<tr>
@@ -1106,7 +1130,7 @@ function generateWMSHTML($config,$thePolicy){
 <input type="hidden"
 	name="remoteServer<?php echo $iServer;?>"
 	value="<?php echo $remoteServer->url ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WMS SERVER :'); ?> <?php echo $remoteServer->url ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
 		<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
@@ -1216,7 +1240,7 @@ function generateWMSHTML($config,$thePolicy){
 <input type="hidden"
 	name="remoteServer<?php echo $iServer; ?>"
 	value="<?php echo $remoteServer->url; ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS SERVER'); ?> <?php echo $remoteServer->url ?></legend>
+<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
 		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
@@ -1375,10 +1399,10 @@ function generateWMSHTML($config,$thePolicy){
 
 <table>
 	<tr>
-		<td width="100%"><?php echo JText::_( 'EASYSDI_FILTER' ); ?>: <input
-			type="text" name="search" id="search" value="" class="text_area"
-			onchange="document.adminForm.submit();" />
-		<button onclick="this.form.submit();"><?php echo JText::_( 'EASYSDI_GO' ); ?></button>
+
+		<td align="right" width="100%">
+			<?php echo JText::_("EASYSDI_FILTER");?>&nbsp;
+			<input type="text" name="search" id="search" value="<?php echo $search;?>" class="inputbox" onchange="document.adminForm.submit();"  />			
 		</td>
 		<td nowrap="nowrap"></td>
 	</tr>
