@@ -46,15 +46,16 @@ $db =& JFactory::getDBO();
 if ($view)
 {
 	switch($view){
-		default:
+		//default:
 		case "core":
-			require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');	
-			SITE_partner::createUser(0);
-			break;
+			// require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');	
+			// SITE_partner::createUser(0);
+			// break;
+			$task="createUser";
 	}
 }
-else
-{
+
+
 
 
 switch($task){	
@@ -120,5 +121,5 @@ switch($task){
 		break;	
 				
 }
-}
+
  ?>
