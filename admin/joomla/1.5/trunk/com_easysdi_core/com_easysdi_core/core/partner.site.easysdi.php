@@ -862,7 +862,7 @@ class SITE_partner {
 		{
 			$rowPartner->partner_code = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		}
-
+		
 		if (!$rowPartner->store(false)) {
 				
 			echo "<div class='alert'>";
@@ -889,7 +889,7 @@ class SITE_partner {
 			$rowAddress->address_locality=$_POST['address_locality'];
 			$rowAddress->address_phone=$_POST['address_phone'];
 			$rowAddress->address_fax=$_POST['address_fax'];
-			/*$rowAddress->address_email=$_POST['address_email'];*/
+			$rowAddress->address_email=$rowUser->email;
 			$rowAddress->type_id=$i;
 
 			if (!$rowAddress->store())
