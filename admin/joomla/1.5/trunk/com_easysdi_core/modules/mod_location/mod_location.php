@@ -17,13 +17,15 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
 
 global  $mainframe;
 $curstep = JRequest::getVar('step',0);
 
-if ($curstep == "2"){
-$db =& JFactory::getDBO(); 		
+if ($curstep == "2")
+{
+	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
+	
+	$db =& JFactory::getDBO(); 		
 
 	$query = "SELECT * FROM #__easysdi_location_definition where is_localisation = 1 ";
 
@@ -33,6 +35,7 @@ $db =& JFactory::getDBO();
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
 			echo $db->getErrorMsg();
 	}
+	
 	?>
 	
 	<script>			
@@ -289,4 +292,5 @@ function recenterOnLocationLocation(locationsListLocationId){
 		</script>				
 		<?php	
 }
+
 ?>
