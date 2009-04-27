@@ -837,6 +837,7 @@ class HTML_product {
 	
 function listProduct($use_pagination, $rows, $pageNav,$option){
 
+
 $database =& JFactory::getDBO();
 JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); $partners =
 array(); ?>
@@ -916,7 +917,7 @@ array(); ?>
 			
 		<?php			
 		
-		if (JRequest::getVar('use_pagination',0))
+		if ($use_pagination == 1)
 		{?>
 		<tfoot>
 		<tr>	
