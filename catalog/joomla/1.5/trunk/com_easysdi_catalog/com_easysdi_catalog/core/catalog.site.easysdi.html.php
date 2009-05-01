@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_catalog{
 
 
-	function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria){
+	function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr){
 		global $mainframe;
 		foreach($_POST as $key => $val) 
 		echo '$_POST["'.$key.'"]='.$val.'<br />';
@@ -162,8 +162,11 @@ class HTML_catalog{
 <table>
 	<thead>
 		<tr>
-			<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
+<!--
+	 		<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
 			<th><?php echo JText::_('EASYSDI_CATALOG_ORDERABLE'); ?></th>
+ -->
+			<th><?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO'); ?></th>
 			<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_NAME'); ?></th>
 		</tr>
 	</thead>
@@ -186,7 +189,7 @@ class HTML_catalog{
 		$md = new geoMetadata($metadata);
 		?>
 		<tr>
-			<td><?php echo $i; ?></td>
+			<!-- <td><?php echo $i; ?></td>  -->
 			<?php
 			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 			$db->setQuery( $query);
@@ -208,22 +211,48 @@ class HTML_catalog{
 
 			}
 
-
-
+			$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+			$db->setQuery($queryPartnerID);
+			$partner_id = $db->loadResult();
+			
+			$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
+			$db->setQuery($queryPartnerLogo);
+			$partner_logo = $db->loadResult();
+			
+			$query="select CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id = a.partner_id WHERE p.partner_id = ".$partner_id ." and a.type_id=1" ;
+			$db->setQuery($query);
+			$supplier= $db->loadResult();
+			
+			$user =& JFactory::getUser();
+			$language = $user->getParam('language', '');
+			
+			$logoWidth = config_easysdi::getValue("logo_width");
+			$logoHeight = config_easysdi::getValue("logo_height");
+		
 			?>
+			<!-- 
 			<td>
 			<div
 				class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?>
 			</div>
 			</td>
-			<td><a class="modal"
+			 -->
+			<td valign="top">
+				<img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
+			</td>
+			<td valign="top"><a class="modal"
 				title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?>
-			...</a></td>
+				rel="{handler:'iframe',size:{x:650,y:550}}">
+				<span><?php echo $md->getDataIdentificationTitle();?></span><br></a>
+				<span><?php echo JText::_("EASYSDI_VIEW_MD_ROOT"); ?> <b><?php echo $supplier;?></b></span><br>
+				<?php if ($md->getDescription($language) <>"") { ?>
+				<span><?php echo JText::_("EASYSDI_VIEW_MD_DESC")." "; echo substr($md->getDescription($language), 0, $maxDescr);?></span>
+				<?php }; ?>
+			</td>
 
 			<?php if ($hasPreview > 0){ ?>
-			<td><a class="modal"
+			<td valign="top"><a class="modal"
 				href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
 				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></td>
 				<?php } ?>

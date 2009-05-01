@@ -24,6 +24,8 @@ class SITE_catalog {
 	function listCatalogContent(){
 		global $mainframe;
 
+		$maxDescr = config_easysdi::getValue("description_length");
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw:http://www.opengis.net/cat/csw&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
@@ -170,7 +172,7 @@ class SITE_catalog {
 			$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
 			$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
 		}
-		HTML_catalog::listCatalogContent($pageNav,$cswResults,$option,$total,$filterfreetextcriteria );
+		HTML_catalog::listCatalogContent($pageNav,$cswResults,$option,$total,$filterfreetextcriteria,$maxDescr );
 	}
 
 
