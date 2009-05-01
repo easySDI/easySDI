@@ -274,6 +274,10 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="<?php echo $rowPartner->partner_acronym; ?>" /></td>
 							</tr>
 							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_LOGO"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_logo" value="<?php echo $rowPartner->partner_logo; ?>" /></td>
+							</tr>
+							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_description" value="<?php echo $rowPartner->partner_description; ?>" /></td>
 							</tr>

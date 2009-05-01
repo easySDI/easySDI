@@ -36,6 +36,7 @@ class partner extends JTable
  	var $notify_order_ready=0;
  	var $rebate=0;
  	var $isrebate=0;
+ 	var $partner_logo=null;
  	
 	// Class constructor
 	function __construct( &$db )
