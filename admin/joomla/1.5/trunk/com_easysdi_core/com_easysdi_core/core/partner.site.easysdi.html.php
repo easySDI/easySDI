@@ -187,6 +187,10 @@ class HTML_partner
 								<td><?php echo $rowPartner->partner_acronym; ?> </td>
 							</tr>
 							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_LOGO"); ?> : </td>
+								<td><?php echo $rowPartner->partner_logo; ?> </td>
+							</tr>
+							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_DESCRIPTION"); ?> : </td>
 								<td><?php echo $rowPartner->partner_description; ?> </td>
 							</tr>
@@ -552,6 +556,10 @@ class HTML_partner
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="<?php echo $rowPartner->partner_acronym; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_TEXT_LOGO"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_logo" value="<?php echo $rowPartner->partner_logo; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_DESCRIPTION"); ?> : </td>

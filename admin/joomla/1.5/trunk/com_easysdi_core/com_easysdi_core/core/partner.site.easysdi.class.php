@@ -29,6 +29,7 @@ class partnerByUserId extends JTable
 	var $partner_url=null;
 	var $partner_description=null;
 	var $partner_contract=0;
+	var $partner_logo=0;
 /*	var $partner_entry=null;*/
 	/*var $partner_exit=null;*/
 	var $notify_new_metadata=0;
@@ -58,6 +59,7 @@ class partnerByPartnerId extends JTable
 	var $partner_url=null;
 	var $partner_description=null;
 	var $partner_contract=0;
+	var $partner_logo=0;
 	var $partner_entry=null;
 	var $partner_exit=null;
 	var $notify_new_metadata=0;
