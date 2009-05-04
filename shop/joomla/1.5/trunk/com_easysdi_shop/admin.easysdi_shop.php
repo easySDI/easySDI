@@ -70,8 +70,10 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlpanel.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.easysdi.class.php');
 
 
 
@@ -91,9 +93,25 @@ case "proxy":
 	
 		
 	case "listOrders":
+		TOOLBAR_cpanel::_LISTORDERS();
 		ADMIN_cpanel::listOrders();
 		break;
-		
+	/*case "editOrder":
+		TOOLBAR_cpanel::_EDITORDERS();	
+		ADMIN_cpanel::editOrder($cid[0],$option);
+		break;*/
+	case "deleteOrder":
+		ADMIN_cpanel::deleteOrder($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+	case "saveOrder":
+		ADMIN_cpanel::saveOrder($option);
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+	case "cancelOrder":
+		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		break;
+			
 	case "saveMDTABS":
 		ADMIN_metadata::saveMDTabs($option);
 		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
@@ -114,7 +132,18 @@ case "proxy":
 		TOOLBAR_metadata::_LISTMDTABS();
 		ADMIN_metadata::listMetadataTabs($option);
 		break;
-	
+	case "orderupMetadataTabs":
+		ADMIN_metadata::goUpMetadataTabs($cid,$option);
+	break;
+	case "orderdownMetadataTabs":
+		ADMIN_metadata::goDownMetadataTabs($cid,$option);
+	break;
+	case "saveOrderMetadataTabs":
+		ADMIN_metadata::saveOrderMetadataTabs($cid, $option);
+	break;
+	case "orderMetadataTabs":
+		ADMIN_metadata::orderMetadataTabs($cid, $option);
+	break;
 		
 	case "deleteMetadataStandard":
 		ADMIN_metadata::deleteMDStandard($cid,$option);
@@ -173,13 +202,15 @@ case "proxy":
 		TOOLBAR_metadata::_LISTSTANDARDCLASSES();;
 		ADMIN_metadata::listStandardClasses($option);
 	break;
-	
-	
-	
-	
-	
-	
-	
+	case "orderupMetadataStandardClasses":
+		ADMIN_metadata::goUpMetadataStandardClasses($cid,$option);
+	break;
+	case "orderdownMetadataStandardClasses":
+		ADMIN_metadata::goDownMetadataStandardClasses($cid,$option);
+	break;
+	case "saveOrderMetadataStandardClasses":
+		ADMIN_metadata::saveOrderMetadataStandardClasses($cid, $option);
+	break;
 	
 	case "editMetadataStandard":
 		TOOLBAR_metadata::_EDITSTANDARD();		
@@ -280,9 +311,16 @@ case "proxy":
 		TOOLBAR_metadata::_LISTClass();
 		ADMIN_metadata::listClass($option);
 	break;
-	
-	
-	
+	case "orderupMetadataClass":
+		ADMIN_metadata::goUpMetadataClass($cid,$option);
+		
+	break;
+	case "orderdownMetadataClass":
+		ADMIN_metadata::goDownMetadataClass($cid,$option);		
+	break;
+	case "saveOrderMetadataClass":
+		ADMIN_metadata::saveOrderMetadataClass($cid, $option);
+	break;
 	
 	case "editMetadataFreetext":
 		TOOLBAR_metadata::_EDITFREETEXT();
