@@ -25,6 +25,7 @@ class MDClasses extends JTable
 	var $is_global=null;
 	var $description=null;
 	var $is_final=null;
+	var $ordering=null;
 	
 	function __construct( &$db )
 	{
@@ -167,6 +168,7 @@ class MDStandardClasses extends JTable{
 	var $partner_id=null;
 	var $tab_id=null;
 	var $text_prompt=null;
+	var $ordering=null;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_standard_classes', 'id', $db ) ;    		
@@ -179,7 +181,9 @@ class MDTabs extends JTable{
 	
 	var $id=null;	
 	var $text=null;
+	var $name=null;
 	var $partner_id=null;
+	var $ordering=null;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_tabs', 'id', $db ) ;    		

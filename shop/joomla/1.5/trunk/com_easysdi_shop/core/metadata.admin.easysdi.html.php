@@ -20,16 +20,26 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_metadata {
 
-function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
+function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_TABS"));
 		
 		$partners = array();
 		
+		$ordering = ($filter_order == 'ordering');
 		?>
 	<form action="index.php" method="post" name="adminForm">
-		
+		<table>
+			<tr>
+				<td align="left" width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table width="100%">
 			<tr>																																			
 				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataStandardClasses\');"',$use_pagination); ?></td>
@@ -38,11 +48,14 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TABS_SHARP"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TABS_ID"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TABS_TEXT"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?></th>																															
+				<th class='title' width="10px"><?php echo JText::_("EASYSDI_METADATA_TABS_SHARP"); ?></th>
+				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
+				<th class='title' width="50px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_TABS_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataTabs' ); ?></th>			
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_TABS_TEXT"), 'text', @$filter_order_Dir, @$filter_order); ?></th>
+				<!-- <th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_PARTNER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th> -->
+				<th class='title' ><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?></th>																															
 			</tr>
 		</thead>
 		<tbody>		
@@ -53,16 +66,23 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
 		{				  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>	
+				<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
+				<td align="center"><?php echo $row->id; ?></td>
+				<td align="center">
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataTabs', 'Move Up', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataTabs', 'Move Down', isset($rows[$i+1]) ); ?>
+		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+	            </td>	
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataTab&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->text; ?></a></td>																							
 				<?php 
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
-				<td><?php echo $database->loadResult(); ?></td>																											
+				<td><?php echo $database->loadResult(); ?></td>
+				<!-- <td><?php echo $row->partner_name; ?></td>  -->																											
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -88,6 +108,8 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option){
 	  	<input type="hidden" name="task" value="listMetadataTabs" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">	  	
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		
@@ -118,20 +140,18 @@ function editMetadataTabs($row,$id, $option ){
 		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
 	</tr>				
 
-	 
+	</table> 
 	<input type="hidden" name="order" value="0" />
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
 			
-	
-	</table>
 </form>
 	<?php 	
 		
 	}
 	
-function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
+function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type, $filter_order, $filter_order_Dir, $search){
 	
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_STANDARD_CLASSES"));
@@ -143,9 +163,19 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 	
 		$partners = array();
 		
+		$ordering = ($filter_order == 'ordering');
 		?>
 	<form action="index.php" method="post" name="adminForm">
-		
+		<table>
+			<tr>
+				<td align="left" width="100%">
+					<?php echo JText::_( 'Filter' ); ?>:
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( 'Go' ); ?></button>
+					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'Reset' ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table width="100%">
 			<tr>																																			
 				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataStandardClasses\');"',$use_pagination); ?></td>
@@ -160,10 +190,12 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 			<tr>					 			
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_ID"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANTARD_NAME"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_CLASS_NAME"); ?></th>																							
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_POSITION"); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>		
+					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataStandardClasses' ); ?></th>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANTARD_NAME"), 'standard_name', @$filter_order_Dir, @$filter_order ); ?>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_CLASS_NAME"), 'class_name', @$filter_order_Dir, @$filter_order ); ?>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_POSITION"), 'position', @$filter_order_Dir, @$filter_order ); ?>
 			</tr>
 		</thead>
 		<tbody>		
@@ -176,9 +208,15 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>			
+				<td><?php echo $row->id; ?></td>
+				<td align="center">
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataStandardClasses', 'Move Up', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataStandardClasses', 'Move Down', isset($rows[$i+1]) ); ?>
+		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+	            </td>
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataStandardClasses&cid[]=$row->id";?>
-				<td><a href="<?php echo $link;?>"><?php echo $row->standard_name; ?></a></td>																												
+				<td><a href="<?php echo $link;?>"><?php echo $row->standard_name; ?></a></td>
 				<td><a href="<?php echo $link;?>"><?php echo $row->class_name; ?></a></td>																												
 				<td><?php echo $row->position; ?></td>							
 			</tr>
@@ -206,6 +244,8 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type){
 	  	<input type="hidden" name="task" value="listMetadataStandardClasses" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">	  	
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		
@@ -683,12 +723,12 @@ function editLocfreetext($row,$id, $option ){
 		<td><input size="50" type="text" name ="default_value" value="<?php echo $row->default_value?>"> </td>		 
 	</tr>
 	 
+	</table>
+	
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
 	<input type="hidden" name="task" value="" />		
-			
 	
-	</table>
 </form>
 	<?php 	
 		
@@ -696,16 +736,27 @@ function editLocfreetext($row,$id, $option ){
 	
 	
 	
-function listClass($use_pagination, $rows, $pageNav,$option){
+function listClass($use_pagination, $rows, $pageNav,$option, $filter_order, $filter_order_Dir, $search){
 	
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_METADATA_CLASS"));
 		
 		$partners = array();
 		
+		$ordering = ($filter_order == 'ordering');
 		?>
 	<form action="index.php" method="post" name="adminForm">
-		
+		<table>
+			<tr>
+				
+				<td align="left" width="100%">
+					<?php echo JText::_( 'Filter' ); ?>:
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( 'Go' ); ?></button>
+					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'Reset' ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table width="100%">
 			<tr>																																			
 				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listMetadataClass\');"',$use_pagination); ?></td>
@@ -716,11 +767,13 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 			<tr>					 			
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_ID"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_PARTNER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_NAME"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_ISOKEY"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_TYPE"); ?></th>																						
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?></th>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataClass' ); ?></th>		
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_PARTNER_NAME"); ?></th>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_NAME"), 'name', @$filter_order_Dir, @$filter_order ); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_ISOKEY"), 'iso_key', @$filter_order_Dir, @$filter_order ); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_TYPE"), 'type', @$filter_order_Dir, @$filter_order ); ?></th>																				
 			</tr>
 		</thead>
 		<tbody>		
@@ -738,6 +791,12 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 				$database->setQuery($query);				 
 		 		?>
+				<td align="center">
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+	            </td>
 				<td><?php echo $database->loadResult(); ?></td>								
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataClass&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>												
@@ -768,6 +827,8 @@ function listClass($use_pagination, $rows, $pageNav,$option){
 	  	<input type="hidden" name="task" value="listMetadataClass" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">	  	
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		

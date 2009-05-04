@@ -206,34 +206,7 @@ function deleteMetadataListContent($cid,$option){
 		
 	}
 	
-	function listMetadataTabs($option){
-		
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		$limit = JRequest::getVar('limit', 10 );
-		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
-		
-		
-		$query = "select count(*) from  #__easysdi_metadata_tabs ";								
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		
-		$query = "select * from  #__easysdi_metadata_tabs order by id";
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);	
-		}else{
-			$db->setQuery( $query);
-		}	
-			
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {						
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-		}		
-
-		HTML_metadata::listMetadataTabs($use_pagination,$rows,$pageNav,$option);		
-	}
+	
 	
 	
 	
@@ -342,63 +315,6 @@ function deleteMetadataListContent($cid,$option){
 		HTML_metadata::editStandardClasses($row,$id, $option );
 		
 	}
-	
-	function listStandardClasses($option){
-		
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		$limit = JRequest::getVar('limit', 10 );
-		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
-		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
-		
-		if (strlen($type)==0){
-			
-			$type = JRequest::getVar('type','');
-		}
-		
-		if (strlen($type)==0){			
-			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
-			$db->setQuery( $query ,0,1);
-			 $type = $db->loadResult();
-		
-		}
-		$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		
-		$query = "select a.id as id, b.name as standard_name , c.name as class_name ,a.position from  #__easysdi_metadata_standard_classes a ,#__easysdi_metadata_standard b,#__easysdi_metadata_classes c  where b.is_deleted =0 AND b.id=a.standard_id and c.id = a.class_id and standard_id = $type order by standard_name,position";
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);	
-		}else{
-			$db->setQuery( $query);
-		}	
-		
-	
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {						
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-		}		
-
-		HTML_metadata::listStandardClasses($use_pagination,$rows,$pageNav,$option,$type);
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	function saveMDStandard($option){
@@ -611,37 +527,6 @@ function deleteMetadataListContent($cid,$option){
 	
 	
 	
-function listClass($option){
-		
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		$limit = JRequest::getVar('limit', 10 );
-		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
-		
-		
-		$query = "select count(*) from  #__easysdi_metadata_classes ";								
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		
-		$query = "select * from  #__easysdi_metadata_classes ";
-		if ($use_pagination) {
-		$db->setQuery( $query ,$limitstart,$limit);	
-		}else{
-			$db->setQuery( $query);
-		}
-	
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {						
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
-			exit();			
-		}		
-
-		HTML_metadata::listClass($use_pagination,$rows,$pageNav,$option);
-		
-	}
-	
 	
 	function saveMDClass($option){
 		global  $mainframe;
@@ -791,11 +676,6 @@ function listClass($option){
 	}
 	
 	
-	
-	
-	
-	
-	
 	function saveMDListContent($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
@@ -835,10 +715,8 @@ function listClass($option){
 			exit();
 		}
 	}
-
 	
-	
-function saveMDFreetext($option){
+	function saveMDFreetext($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
@@ -857,7 +735,7 @@ function saveMDFreetext($option){
 		}
 	}
 
-		function editNumerics($id,$option){
+	function editNumerics($id,$option){
 		
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -916,7 +794,7 @@ function saveMDFreetext($option){
 		HTML_metadata::editListContent($rowMDList,$id, $option,$list_id );
 		
 	}
-function listNumerics($option){
+	function listNumerics($option){
 			global  $mainframe;
 		$db =& JFactory::getDBO();
 		$limit = JRequest::getVar('limit', 10 );
@@ -947,7 +825,7 @@ function listNumerics($option){
 		
 	
 } 	
-function listFreetext($option){
+	function listFreetext($option){
 		
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -1011,7 +889,7 @@ function listFreetext($option){
 		
 	}
 	
-function listList($option){
+	function listList($option){
 		
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -1043,12 +921,7 @@ if ($use_pagination) {
 		
 	}
 	
-	
-
-	
-
-
-function listListContent($list_id,$option){
+	function listListContent($list_id,$option){
 		
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -1080,7 +953,567 @@ if ($use_pagination) {
 		
 	}
 	
+	function goDownMetadataClass($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_metadata_classes  where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+							
+			$query = "select * from  #__easysdi_metadata_classes  where ordering > $row1->ordering   order by ordering ";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_classes set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_classes set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+
+			$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
+	}
+	function goUpMetadataClass($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_metadata_classes  where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+								
+			$query = "select * from  #__easysdi_metadata_classes  where ordering < $row1->ordering  order by ordering desc";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_classes set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_classes set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}	
+			$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );				
+	}
 	
+	function listClass($option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		$limit = JRequest::getVar('limit', 10 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		
+		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
+		if ($search)
+		{
+			$where = ' where LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(type) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(iso_key) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			//$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		$query = "select count(*) from  #__easysdi_metadata_classes ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "name" and $filter_order <> "type" and $filter_order <> "iso_key" and $filter_order <> "text" and $filter_order <> "ordering" and $filter_order <> "id")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		
+		$query = "select * from  #__easysdi_metadata_classes ";
+		$query .= $where;
+		$query .= $orderby;
+		
+		if ($use_pagination) {
+		$db->setQuery( $query ,$limitstart,$limit);	
+		}else{
+			$db->setQuery( $query);
+		}
+	
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}		
+
+		HTML_metadata::listClass($use_pagination,$rows,$pageNav,$option, $filter_order, $filter_order_Dir, $search);
+		
+	}
+	
+	function saveOrderMetadataClass($cid, $option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$query = "select count(*) from  #__easysdi_metadata_classes ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+
+		if (empty( $cid)) {
+			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
+		}
+
+		$rowMDClass =& new MDClasses( $db );
+		
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}
+		
+		$order = $_POST[order];
+		
+		// update ordering values
+		
+		for ($i = 0; $i < $total; $i++)
+		{
+			$rowMDClass->load($cid[$i]);
+			
+			if ($rowMDClass->ordering != $order[$i])
+			{
+				$rowMDClass->ordering = $order[$i];
+				if (!$rowMDClass->store()) {
+					return JError::raiseError( 500, $db->getErrorMsg() );
+				}
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClass" );
+	}
+	
+	
+	
+	function goDownMetadataStandardClasses($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
+		
+			if (strlen($type)==0){
+				
+				$type = JRequest::getVar('type','');
+			}
+			
+			if (strlen($type)==0){			
+				$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
+				$db->setQuery( $query ,0,1);
+				 $type = $db->loadResult();
+			
+			}
+			
+			$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
+			$db->setQuery( $query );
+			$total = $db->loadResult();
+			
+			
+			$query = "select * from  #__easysdi_metadata_standard_classes  where id=$cid[0] and standard_id = $type ";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+							
+			$query = "select * from  #__easysdi_metadata_standard_classes  where ordering > $row1->ordering  and standard_id = ".$type." order by ordering ";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_standard_classes set ordering= $row1->ordering where id =$row2->id  and standard_id = $type ";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_standard_classes set ordering= $row2->ordering where id =$row1->id  and standard_id = $type ";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+
+			$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
+	}
+	function goUpMetadataStandardClasses($cid,$option){
+
+				global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
+		
+			if (strlen($type)==0){
+				
+				$type = JRequest::getVar('type','');
+			}
+			
+			if (strlen($type)==0){			
+				$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
+				$db->setQuery( $query ,0,1);
+				 $type = $db->loadResult();
+			
+			}
+			
+			$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
+			$db->setQuery( $query );
+			$total = $db->loadResult();
+			
+			
+			$query = "select * from  #__easysdi_metadata_standard_classes  where id=$cid[0] and standard_id = $type ";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+								
+			$query = "select * from  #__easysdi_metadata_standard_classes  where ordering < $row1->ordering  and standard_id = ".$type." order by ordering desc";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_standard_classes set ordering= $row1->ordering where id =$row2->id  and standard_id = $type ";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_standard_classes set ordering= $row2->ordering where id =$row1->id  and standard_id = $type ";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );				
+	}
+	
+	function listStandardClasses($option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		$limit = JRequest::getVar('limit', 10 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
+		
+		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
+		if ($search)
+		{
+			$where = ' and( LOWER(a.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(b.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(c.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(a.position) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ')';
+		}
+		
+		if (strlen($type)==0){
+			
+			$type = JRequest::getVar('type','');
+		}
+		
+		if (strlen($type)==0){			
+			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
+			$db->setQuery( $query ,0,1);
+			 $type = $db->loadResult();
+		
+		}
+		$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "id" and $filter_order <> "standard_name" and $filter_order <> "class_name" and $filter_order <> "ordering" and $filter_order <> "position")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		
+		$query = "select a.id as id, b.name as standard_name , c.name as class_name ,a.position, a.ordering as ordering from  #__easysdi_metadata_standard_classes a ,#__easysdi_metadata_standard b,#__easysdi_metadata_classes c  where b.is_deleted =0 AND b.id=a.standard_id and c.id = a.class_id and standard_id = $type";
+		$query .= $where;
+		$query .= $orderby;
+		
+		if ($use_pagination) {
+			$db->setQuery( $query ,$limitstart,$limit);	
+		}else{
+			$db->setQuery( $query);
+		}	
+		
+	
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+		}		
+
+		HTML_metadata::listStandardClasses($use_pagination,$rows,$pageNav,$option,$type, $filter_order, $filter_order_Dir, $search);
+		
+	}
+	
+	function saveOrderMetadataStandardClasses($cid, $option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
+			
+		if (strlen($type)==0){
+			
+			$type = JRequest::getVar('type','');
+		}
+		
+		if (strlen($type)==0){			
+			$query  = "SELECT id AS value FROM #__easysdi_metadata_standard";
+			$db->setQuery( $query ,0,1);
+			 $type = $db->loadResult();
+		
+		}
+	
+		$query = "select count(*) from  #__easysdi_metadata_standard_classes where standard_id = $type ";							
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+
+		if (empty( $cid)) {
+			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
+		}
+
+		$rowMDStandardClasses =& new MDStandardClasses( $db );
+		
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}
+		
+		$order = $_POST[order];
+		
+		// update ordering values
+		
+		for ($i = 0; $i < $total; $i++)
+		{
+			$rowMDStandardClasses->load($cid[$i]);
+			
+			if ($rowMDStandardClasses->ordering != $order[$i])
+			{
+				$rowMDStandardClasses->ordering = $order[$i];
+				if (!$rowMDStandardClasses->store()) {
+					return JError::raiseError( 500, $db->getErrorMsg() );
+				}
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listMetadataStandardClasses" );
+	}
+
+	function goDownMetadataTabs($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_metadata_tabs  where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+							
+			$query = "select * from  #__easysdi_metadata_tabs  where ordering > $row1->ordering   order by ordering ";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_tabs set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_tabs set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+
+			$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
+	}
+	function goUpMetadataTabs($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_metadata_tabs where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+								
+			$query = "select * from  #__easysdi_metadata_tabs  where ordering < $row1->ordering  order by ordering desc";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_metadata_tabs set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_metadata_tabs set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}	
+			$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );				
+	}
+	
+	function listMetadataTabs($option){
+		
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		$limit = JRequest::getVar('limit', 10 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		
+		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
+		if ($search)
+		{
+			$where = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		$query = "select count(*) from  #__easysdi_metadata_tabs ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+		$pageNav = new JPagination($total,$limitstart,$limit);
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "id" and $filter_order <> "text" and $filter_order <> "name" and $filter_order <> "ordering")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		
+		//$query = "SELECT t.*, b.name AS partner_name FROM #__easysdi_metadata_tabs t, #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND a.partner_id=t.partner_id";
+		$query = "select * from  #__easysdi_metadata_tabs ";
+		$query .= $where;
+		$query .= $orderby;
+		
+		if ($use_pagination) {
+			$db->setQuery( $query ,$limitstart,$limit);	
+		}else{
+			$db->setQuery( $query);
+		}	
+			
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+		}		
+
+		HTML_metadata::listMetadataTabs($use_pagination,$rows,$pageNav,$option, $filter_order_Dir, $filter_order, $search);		
+	}
+	
+	
+	function saveOrderMetadataTabs($cid, $option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$query = "select count(*) from  #__easysdi_metadata_tabs ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+
+		if (empty( $cid)) {
+			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
+		}
+
+		$rowMDTabs =& new MDTabs( $db );
+		
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}
+		
+		$order = $_POST[order];
+		
+		// update ordering values
+		
+		for ($i = 0; $i < $total; $i++)
+		{
+			$rowMDTabs->load($cid[$i]);
+			
+			if ($rowMDTabs->ordering != $order[$i])
+			{
+				$rowMDTabs->ordering = $order[$i];
+				if (!$rowMDTabs->store()) {
+					return JError::raiseError( 500, $db->getErrorMsg() );
+				}
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listMetadataTabs" );
+	}
 }
 
 ?>
