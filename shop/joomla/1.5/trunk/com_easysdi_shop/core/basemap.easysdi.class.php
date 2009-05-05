@@ -24,6 +24,8 @@ class basemap extends JTable
 	var $minResolution=null;
 	var $maxResolution=null;	
 	var $maxExtent=null;
+	var $restrictedExtend=null;
+	var $restrictedScales=null;
 	var $def=null;
 	var $alias=null;
 	// Class constructor

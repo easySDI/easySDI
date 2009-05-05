@@ -83,7 +83,7 @@ class HTML_shop {
 	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 <script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
 
 
 <script><!--
@@ -273,21 +273,33 @@ if ($db->getErrorNum()) {
 			echo 			$db->getErrorMsg();
 			echo "</div>";
 }
-		
-				  
+
 ?>
 				map = new OpenLayers.Map('map', {
-                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
-                displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
+                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
+				displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
                 units: "<?php echo $rows[0]->unit; ?>",
-                                                    	     
-                
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
                 maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
-                // , controls: []
+                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+                //controls: [],
+				<?php
+					if($rows[0]->restrictedExtend == '1') echo  "restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent."),\n"
+			    ?>
+				<?php
+					if($rows[0]->restrictedScales != '') echo  "scales: [".$rows[0]->restrictedScales."]\n"
+			    ?>
             });
 				  
+				map.addControl(new OpenLayers.Control.MousePosition({ 
+				div: document.getElementById("mouseposition"),
+				prefix: '', 
+				suffix: '', 
+				separator: ' / ', 
+				numDigits: 0
+				}));
+				
+				
 				 baseLayerVector = new OpenLayers.Layer.Vector(
                 "BackGround",
                 {isBaseLayer: true,transparent: "true"}
@@ -339,13 +351,13 @@ foreach ($rows as $row){
                  map.addLayer(layer<?php echo $row->i; ?>);
 <?php 
 $i++;
-} ?>                    
 
+} ?>                    
 			 
 				map.events.register("zoomend", null, function() { 
-							$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(2); 
+							$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 							 text = "";
-							 
+							
 							for (i=0; i<map.layers.length ;i++){
 									if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
 									 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
@@ -359,9 +371,10 @@ $i++;
                 
                                          
             	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
-                        
-            map.addLayer(vectors);
-            
+                map.addLayer(vectors);
+				$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+				
+			
              map.zoomToMaxExtent()
 			/*zb = new OpenLayers.Control.ZoomBox();
 			md = new OpenLayers.Control.MouseDefaults();
@@ -370,9 +383,8 @@ $i++;
             
             
             var panel = new OpenLayers.Control.Panel({div: containerPanel});
-
-            
-	
+			
+						
 			rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
 			
 			rectControl.featureAdded = function() { intersect();};												
@@ -380,15 +392,17 @@ $i++;
             rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
             
             
-            
+            //Polygonal  bounding box selection
             polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
             polyControl.featureAdded = function() { intersect();};
 			polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
-			
+		
+			//Point selection
             pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
             pointControl.featureAdded = function() { intersect();};
 			pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
-            
+         
+			//Modify feature shape  
             modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
 			modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
 			
@@ -558,12 +572,8 @@ function intersect() {
             map.addLayer(wfs2);		
             map.removeLayer(wfs2);    
                 }
+				
               
-                 
-              
-                
-			 	
-		                        
    // }
  }
  
@@ -640,21 +650,44 @@ var oldLoad = window.onload;
 window.onload=function(){
 initMap();
 selectPerimeter('perimeterList');
-if (oldLoad) oldLoad();
-}
+if (oldLoad) oldLoad();}
 --></script>
 
 <div id="map" class="smallmap"></div>
-<br>
-<div id="scale">  </div>
-<br>
-<div id="scaleStatus">  </div>
-<br>
-<div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
-<br>
 
-<div id="status">  </div>
-<br>
+<hr>
+
+<table width="100%">
+ <tr>
+  <td width="40" rowspan=2>
+    <div id="infoLogo" class="shopInfoLogo"/>
+  </td>
+  <td width="120">
+    <div id="scale"/>
+  </td>
+  <td>
+    <div id="scaleStatus"/>
+  </td>
+  <td width="100" align="right">
+    <?php echo JText::_("EASYSDI_MAP_COORDINATE") ?>
+  </td>
+  <td width="100" align="right">
+    <div id="mouseposition"></div>
+  </td>
+ </tr>
+ <tr>
+  <td colspan=4>
+    <div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
+  </td>
+ </tr>
+ <tr>
+  <td colspan=4>
+    <div id="status"/>
+  </td>
+ </tr>
+</table>
+
+
 <div id="docs"></div>
 <br>
 <div id="panelDiv" class="historyContent"></div>
@@ -1649,72 +1682,73 @@ if (count($rows)>0){
 		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
-			<?php echo JText::_("EASYSDI_STEP".$curStep); ?></div>
+			<table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+		</div>
 			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="selectableStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
-			class="previousStep"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><?php echo JText::_("EASYSDI_STEP".$curStep); ?>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?></div>
 		</td>

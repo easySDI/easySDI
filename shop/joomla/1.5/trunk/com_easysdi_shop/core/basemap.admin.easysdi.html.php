@@ -324,6 +324,20 @@ class HTML_basemap {
 							</tr>
 							<tr>
 							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_MAXEXTEND_IS_RESTRICTIVE"); ?> : </td>
+								<td><select class="inputbox" name="restrictedExtend" >
+										<option value="0" <?php if($rowBasemap->restrictedExtend == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->restrictedExtend == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								</select>
+								</td>															
+							</tr>	
+							<tr>
+							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_RESTRICTEDSCALES"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedScales" value="<?php echo $rowBasemap->restrictedScales; ?>" /></td>							
+							</tr>
+							<tr>
+							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_IS_DEFAULT"); ?> : </td>
 								<td><select class="inputbox" name="def" >
 										<option value="0" <?php if($rowBasemap->def == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
