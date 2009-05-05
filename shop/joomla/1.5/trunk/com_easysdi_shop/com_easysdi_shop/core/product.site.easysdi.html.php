@@ -361,7 +361,6 @@ class HTML_product{
 					<fieldset>
 						<legend><?php echo JText::_("EASYSDI_TEXT_PROPERTIES") ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
 <?php
 			
 																
@@ -382,15 +381,8 @@ class HTML_product{
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 					}		
 					foreach ($propertiesList as $curProperty){
-						?><td><?php echo JText::_($curProperty->text); ?></td>
+						?><tr><?php echo JText::_($curProperty->text); ?></tr>
 						<?php
-					}
-					
-					?>
-					</tr>
-					<tr>
-					<?php
-					foreach ($propertiesList as $curProperty){
 					
 				$propertiesValueList = array();
 				$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
@@ -403,18 +395,18 @@ class HTML_product{
 
 					case "list":
 						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>							
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
 						<?php
 						break;
 						
 					case "mlist":
 						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
 						<?php
 						break;
 					case "cbox":
 						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
 						<?php
 						break;
 						
@@ -425,7 +417,7 @@ class HTML_product{
 							
 						}
 						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></td>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></tr>
 						<?php
 						break;
 						
@@ -436,12 +428,11 @@ class HTML_product{
 							
 						}
 						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></td>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
 						<?php
 						break;
 					}	
-					 } ?>								
-							</tr>
+					 } ?>		
 						</table>
 					</fieldset>
 				</td>

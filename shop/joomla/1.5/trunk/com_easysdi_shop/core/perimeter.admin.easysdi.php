@@ -146,7 +146,7 @@ class ADMIN_perimeter {
 		
 		HTML_Perimeter::editPerimeter( $rowPerimeter,$id, $option );
 	}
-		function savePerimeter($returnList ,$option){
+	function savePerimeter($returnList ,$option){
 						global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		

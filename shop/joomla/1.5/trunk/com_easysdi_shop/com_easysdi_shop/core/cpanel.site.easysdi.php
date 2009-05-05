@@ -63,7 +63,12 @@ class SITE_cpanel {
 
 			$rootPartner = new partnerByUserId($database);
 			$rootPartner->load($user->id);
-			$query = "update #__easysdi_order set archived = 1 where user_id = ".$user->id." AND ORDER_ID =".$order_id;
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+			$database->setQuery($queryStatus);
+			$status_id = $database->loadResult();
+			
+			$query = "update #__easysdi_order set status = ".$status_id." where user_id = ".$user->id." AND ORDER_ID =".$order_id;
 			$database->setQuery($query);
 			if (!$database->query()) {
 				echo "<div class='alert'>";
@@ -71,13 +76,8 @@ class SITE_cpanel {
 				echo "</div>";
 				exit;
 			}
-
-
 		}
-
-
 	}
-
 
 	function listOrdersForProvider(){
 
@@ -104,10 +104,13 @@ class SITE_cpanel {
         }
 		/**/
         
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
-		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-
-
+		/*
+			$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
+			$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0);
+		*/
+		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
+		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$rootPartner = new partnerByUserId($database);
@@ -119,41 +122,57 @@ class SITE_cpanel {
 		$filter = "";
 
 		$productorderstatus = JRequest::getVar("productorderstatus","");
-		$orderStatus=" (o.status='SENT' OR o.status='PROGRESS' or o.status='AWAIT') ";
+		$orderStatus=" (osl.code='SENT' or osl.code='PROGRESS' or osl.code='AWAIT') ";
 		if ($productorderstatus == ""){
-			$productorderstatus ="AWAIT";
+			$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
+			$database->setQuery($queryStatus);
+			$productorderstatus = $database->loadResult();
 				
 		}
 
 		// Ne montre que les commandes traitées ou partiellement traitées.
-		if ($productorderstatus == "AVAILABLE"){
-			$orderStatus=" (o.status='FINISH' OR o.status='PROGRESS' ) ";
+		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+		$database->setQuery($queryStatus);
+		$status_id = $database->loadObjectList();
+		
+		if ($productorderstatus == $status_id){
+			$orderStatus=" (osl.code='FINISH' OR osl.code='PROGRESS' ) ";
 				
 		}
 
-
-
-
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
-			$filter .= " AND (o.type ='$ordertype')";
+			$filterList[] = "(o.type ='$ordertype')";
 		}
 
 		if ( $search ) {
-			$filter .= " AND (o.name LIKE '%$search%')";
+			$filterList[] = "(o.name LIKE '%$search%')";
 		}
 
+		if (count($filterList) > 0)
+			$filter .= implode(" AND ", $filterList);
+		if (count($filterList)==1)
+			$filter = " AND ".$filterList[0];
+			
+		$queryStatus = "select * from #__easysdi_order_status_list ";
+		$database->setQuery($queryStatus);
+		$productStatusFilter = $database->loadObjectList();
+		
+		$queryType = "select * from #__easysdi_order_type_list ";
+		$database->setQuery($queryType);
+		$productTypeFilter = $database->loadObjectList();
+		
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
-		$query = "SELECT o.order_id as order_id, u.name as username,p.data_title as data_title,o.name as name,o.type as type, o.status as status FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='$productorderstatus' and o.archived = 0  and $orderStatus AND o.order_id NOT IN (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='AWAIT' and o.archived = 0  and $orderStatus and o.type ='D' and p.is_free = 1)";
-
+		$query = "SELECT o.order_id as order_id, u.name as username,p.data_title as data_title,o.name as name,o.type as type, o.status as status, osl.code as code, osl.translation as status_translation, tl.translation as type_translation FROM  #__easysdi_order o, #__easysdi_order_product_list opl, #__easysdi_product p, #__easysdi_community_partner pa, #__users u, #__easysdi_order_status_list osl, #__easysdi_order_type_list tl WHERE o.status=osl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='$productorderstatus' and $orderStatus AND o.order_id NOT IN (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl, #__easysdi_product p,#__easysdi_community_partner pa, #__users u, #__easysdi_order_status_list osl , #__easysdi_order_product_status_list psl, #__easysdi_order_type_list tl WHERE o.type=tl.id and o.status=osl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status=osl.id and psl.code='AWAIT' and $orderStatus and o.type = tl.id and tl.code ='D' and p.is_free = 1)";
 
 		$query .= $filter;
 		$query .= " order by o.order_id";
-		$queryCount = "SELECT count(*) FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa , #__users u WHERE pa.user_id = u.id and  o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='$productorderstatus' and o.archived = 0 and $orderStatus  AND o.order_id NOT IN (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='AWAIT' and o.archived = 0  and $orderStatus and o.type ='D' and p.is_free = 1)";
+		
+		$queryCount = "SELECT count(*) FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa , #__users u, #__easysdi_order_status_list osl WHERE pa.user_id = u.id and  o.status=osl.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='$productorderstatus' and $orderStatus  AND o.order_id NOT IN (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u, #__easysdi_order_product_status_list psl , #__easysdi_order_type_list tl WHERE opl.status=psl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and psl.code='AWAIT' and $orderStatus and  o.type = tl.id and tl.code ='D' and p.is_free = 1)";
 		$queryCount .= $filter;
-
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
+		
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
@@ -162,7 +181,7 @@ class SITE_cpanel {
 
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		$database->setQuery($query);
+		$database->setQuery($query, $pageNav->limitstart, $pageNav->limit);
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";
@@ -170,7 +189,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$productorderstatus);
+		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$productorderstatus, $productStatusFilter, $productTypeFilter);
 
 	}
 
@@ -183,14 +202,14 @@ class SITE_cpanel {
 	 * AWAIT => En cours de traitement chez le fournisseur
 	 * PROGESS => Partiellement traitée par le fournisseur
 	 * FINISH => Complètement traitée
+	 * ARCHIVED => Archivée
+	 * HISTORIZED => Archivée et BLOB de donn�es vid�
 	 */
 
 	function saveOrdersForProvider(){
 
 		global  $mainframe;
 		$database =& JFactory::getDBO();
-
-
 
 		$products_id = JRequest::getVar("product_id");
 
@@ -201,7 +220,11 @@ class SITE_cpanel {
 			$price = JRequest::getVar("price".$product_id,"0");
 			if (strlen($price)!=0){
 
-				$query = "UPDATE   #__easysdi_order_product_list  SET status = 'AVAILABLE', remark= '.$remark.',price = $price ";
+				$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+				$database->setQuery($queryStatus);
+				$status_id = $database->loadResult();
+				
+				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= '.$remark.',price = $price ";
 					
 			 $fileName = $_FILES['file'.$product_id]["name"];
 			 if (strlen($fileName)>0){
@@ -223,18 +246,22 @@ class SITE_cpanel {
 
 			 	break;
 			 }
-
-			 $query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
+			
+			 $query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=".$order_id." AND sl.code = 'AWAIT' ";
 			 $database->setQuery($query);
 			 $total = $database->loadResult();
 			 jimport("joomla.utilities.date");
 			 $date = new JDate();
 			 if ( $total == 0){
-					$query = "UPDATE   #__easysdi_order  SET status ='FINISH' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id ";
-				}else{
-					$query = "UPDATE   #__easysdi_order  SET status ='PROGRESS' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id ";
-				}
-
+				$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+				$database->setQuery($queryStatus);
+				$status_id = $database->loadResult();
+			 }else{
+				$queryStatus = "select id from #__easysdi_order_status_list where code ='PROGRESS'";
+				$database->setQuery($queryStatus);
+				$status_id = $database->loadResult();
+			}
+			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id ";
 
 			 //Mise à jour du statut de la commande
 
@@ -247,31 +274,12 @@ class SITE_cpanel {
 			 	break;
 			 }
 
-
-
 			 if ($total ==0){
-
 			 	SITE_cpanel::notifyUserByEmail($order_id);
-			 		
 			 }
-
-
-
 			}
 		}
-
-
-			
-
-
-
-			
-			
-
 	}
-
-
-
 
 	function notifyUserByEmail($order_id){
 		/*
@@ -307,7 +315,7 @@ class SITE_cpanel {
 		$user = JFactory::getUser();
 
 
-		$query = "SELECT p.id as product_id, o.order_id as order_id, u.name as username,p.metadata_id as metadata_id, p.data_title as data_title,o.name as name,o.type as type, opl.status as status FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='AWAIT' and o.archived = 0  and o.order_id=".$order_id;
+		$query = "SELECT p.id as product_id, o.order_id as order_id, u.name as username,p.metadata_id as metadata_id, p.data_title as data_title,o.name as name,o.type as type, opl.status as status FROM  #__easysdi_order o, #__easysdi_order_status_list osl, #__easysdi_order_product_list opl, #__easysdi_order_product_status_list psl, #__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE o.status=osl.id and opl.status=psl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and psl.code='AWAIT' and osl.code <> 'ARCHIVED'  and o.order_id=".$order_id;
 		$query .= " order by o.order_id";
 
 		$database->setQuery($query);
@@ -365,9 +373,12 @@ class SITE_cpanel {
 		/**/
         
 		$option=JRequest::getVar("option");
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
+		/*$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-
+		*/
+		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
+		
 
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
@@ -381,12 +392,23 @@ class SITE_cpanel {
 		$rootPartner->load($user->id);
 		
 		
-		//Automatic Archive of the orders 
-		//Get the delay in days unit
+		//Automatic Archive and/or Historize of the orders 
+		//Get the delays in days unit
 		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY");
+		$history_delay = config_easysdi::getValue("HISTORY_DELAY") - $archive_delay;
+		
 		if ($archive_delay == null) $archive_delay=30; 
-		$query = "update #__easysdi_order set archived = 1, ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $archive_delay  AND STATUS = 'FINISH' AND ARCHIVED = 0";
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$database->setQuery($queryStatus);
+		$status_id = $database->loadResult();
+			
+		$query = "update #__easysdi_order set status=".$status_id.", ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $archive_delay AND DATEDIFF(NOW() ,ORDER_UPDATE) < $history_delay ";
 
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+		$database->setQuery($queryStatus);
+		$status_id = $database->loadResult();
+		
+		$query .= " AND STATUS = ".$status_id;
 		$database->setQuery($query);
 		if (!$database->query()) {
 				echo "<div class='alert'>";
@@ -394,35 +416,81 @@ class SITE_cpanel {
 				echo "</div>";
 				exit;
 			}
+
+		if ($history_delay == null) $history_delay=60- $archive_delay; 
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
+		$database->setQuery($queryStatus);
+		$history = $database->loadResult();
 		
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$database->setQuery($queryStatus);
+		$archive = $database->loadResult();
+		
+		$query = "select order_id from #__easysdi_order where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $history_delay AND (STATUS = ".$archive." OR STATUS = ".$status_id.")";
+		$database->setQuery($query);
+		$toUpdate = $database->loadResultArray();
+		
+		$query = "update #__easysdi_order set status=".$history.", ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $history_delay AND (STATUS = ".$archive." OR STATUS = ".$status_id.")";
+		$database->setQuery($query);
+		
+		if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+		}
+		
+		foreach ($toUpdate as $field)
+		{
+			$query = "update #__easysdi_order_product_list set data=NULL where order_id = ".$field;
+			$database->setQuery($query);
 			
-		
-		
+			if (!$database->query()) {
+					echo "<div class='alert'>";
+					echo $database->getErrorMsg();
+					echo "</div>";
+					exit;
+			}
+		}
 		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
 
+		$queryType = "select * from #__easysdi_order_type_list ";
+		$database->setQuery($queryType);
+		$typeFilter = $database->loadObjectList();
+		
+		$queryStatus = "select * from #__easysdi_order_status_list where code<>'ARCHIVED' and code<>'HISTORIZED'";
+		$database->setQuery($queryStatus);
+		$statusFilter = $database->loadObjectList();
+		
 		$orderstatus=JRequest::getVar("orderstatus","");
 		if ($orderstatus !=""){
-			$filter .= " AND (status ='$orderstatus')";
+			$filterList[]= "(o.status ='$orderstatus')";
 		}
 
 
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
-			$filter .= " AND (type ='$ordertype')";
+			$filterList[]= "(o.type ='$ordertype')";
 		}
 
 		if ( $search ) {
-			$filter .= " AND (name LIKE '%$search%')";
+			$filterList[]= "(o.name LIKE '%$search%')";
 		}
 
-		$query = "select * from #__easysdi_order where archived = 0 AND user_id = ".$user->id;
+		if (count($filterList) > 1)
+			$filter .= " AND ".implode(" AND ", $filterList);
+		elseif (count($filterList) == 1)
+			$filter .= " AND ".$filterList[0];	
+		
+		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id ";
 		$query .= $filter;
-			
-		$queryCount = "select count(*) from #__easysdi_order where archived = 0 AND  user_id = ".$user->id;
+		$query .= " and o.status <> ".$archive." and o.status <> ".$history;
+		
+		$queryCount = "select count(*) from #__easysdi_order o where o.status <> ".$archive." and o.status <> ".$history." AND  o.user_id = ".$user->id;
 		$queryCount .= $filter;
 
 		$database->setQuery($queryCount);
@@ -435,7 +503,7 @@ class SITE_cpanel {
 
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		$database->setQuery($query);
+		$database->setQuery($query, $pageNav->limitstart, $pageNav->limit);
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";
@@ -443,7 +511,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search);
+		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter);
 
 	}
 
@@ -466,8 +534,6 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-
-
 		$query = "SELECT * FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
 		$db->setQuery($query );
 		$rowsProduct = $db->loadObjectList();
@@ -477,20 +543,28 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-
-
 		?>
 <h1><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h1>
 <table>
 <?php
 $i=0;
+
+$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+$db->setQuery($queryStatus);
+$status_id = $db->loadResult();
+		
 foreach ($rowsProduct as $row){ ?>
 	<tr>
 		<td><?php echo ++$i; ?></td>
 		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
 		<?php
-		if ($row->status == "AVAILABLE"){
-			if($rows[0]->type=='O'){?>
+		
+		if ($row->status == $status_id){
+			$queryType = "select id from #__easysdi_order_type_list where code='O'";
+			$db->setQuery($queryType);
+			$type = $db->loadResult();
+		
+			if($rows[0]->type==$type){?>
 
 		<td><a target="RAW"
 			href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
@@ -549,22 +623,30 @@ foreach ($rows as $row){?>
 	 $date = new JDate();
 
 	 $order_id=JRequest::getVar("order_id",0);
-	 $query = "UPDATE  #__easysdi_order set status = 'SENT', order_update ='". $date->toMySQL()."' WHERE order_id = $order_id";
+	 
+	$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AWAIT'";
+	$db->setQuery($queryType );
+	$await_type = $db->loadResult();
+	$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AVAILABLE'";
+	$db->setQuery($queryType );
+	$available_type = $db->loadResult();
+	
+	$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+	$db->setQuery($queryStatus);
+	$status_id = $db->loadResult();
+
+	 $query = "UPDATE  #__easysdi_order set status = ".$status_id.", order_update ='". $date->toMySQL()."' WHERE order_id = ".$order_id;
 
 	 $db->setQuery($query );
 
-	 if (!$db->query()) {
+		if (!$db->query()) {
 	 	echo "<div class='alert'>";
 			echo $db->getErrorMsg();
 			echo "</div>";
 		}
 
-
-
-
-		$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='AWAIT' and o.type='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
-
-			
+		$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o, #__easysdi_order_product_status_list psl, #__easysdi_order_status_list osl, #__easysdi_order_type_list tl WHERE opl.status=psl.id and o.status=osl.id and opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and psl.code='AWAIT' and o.type=tl.id and tl.code='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and osl.code='SENT' ";
+				
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -575,7 +657,7 @@ foreach ($rows as $row){?>
 
 		foreach ($rows as $row){
 				
-			$query = "UPDATE   #__easysdi_order_product_list opl set status = 'AVAILABLE' WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
+			$query = "UPDATE   #__easysdi_order_product_list opl set status = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
 			$db->setQuery( $query );
 			if (!$db->query()) {
 				echo "<div class='alert'>";
@@ -586,23 +668,34 @@ foreach ($rows as $row){?>
 				
 			SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->username));
 		}
-			
 
 		/*
 		 * Mise à jour du statut de la commande.
 		 * Si il n'y a plus rien à traiter, on la marque comme terminée
 		 * dans les autres cas on la marque comme en cours de traitement
 		 */
-		$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
+		$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id AND sl.code = 'AWAIT' ";
 		$db->setQuery($query);
 		$total = $db->loadResult();
+		
 		jimport("joomla.utilities.date");
 		$date = new JDate();
 		if ( $total == 0){
-			$query = "UPDATE   #__easysdi_order  SET status ='FINISH' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+			$db->setQuery($queryStatus);
+			$status_id = $db->loadResult();
 		}else{
-			$query = "UPDATE   #__easysdi_order  SET status ='PROGRESS' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='PROGRESS'";
+			$db->setQuery($queryStatus);
+			$status_id = $db->loadResult();
 		}
+		
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+		$db->setQuery($queryStatus);
+		$sent = $db->loadResult();
+		
+		$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
+		
 		$db->setQuery($query);
 		if (!$db->query()) {
 			echo "<div class='alert'>";
@@ -611,15 +704,8 @@ foreach ($rows as $row){?>
 		}
 
 		if ($total ==0){
-			SITE_cpanel::notifyUserByEmail($order_id);
-				
+			SITE_cpanel::notifyUserByEmail($order_id);			
 		}
-
-
-
 	}
-
-
-
 }
 ?>

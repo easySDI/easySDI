@@ -21,29 +21,34 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_cpanel {
 
 	
-	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search=""){
+	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter=""){
 	
+		$db =& JFactory::getDBO();
+	
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
+		$db->setQuery($queryStatus);
+		$saved = $db->loadResult();
+		
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+		$db->setQuery($queryStatus);
+		$finish = $db->loadResult();
 	?>	
 	<script>
 	
 	
-	function showAllowedButton(status){
-	
-	if (status == 'SAVED'){
-	 document.getElementById('buttonArchive').disabled=false;
-	 document.getElementById('buttonSent').disabled=false;
-	}else
-	if (status == 'FINISH'){
-	 document.getElementById('buttonArchive').disabled=false;
-	 document.getElementById('buttonSent').disabled=true;
-	}else{
-	 document.getElementById('buttonArchive').disabled=true;
-	 document.getElementById('buttonSent').disabled=true;
-	}
-
-
-	
-	
+	function showAllowedButton(status, saved, finish){
+		
+		if (status == saved){
+		 document.getElementById('buttonArchive').disabled=false;
+		 document.getElementById('buttonSent').disabled=false;
+		}else
+		if (status == finish){
+		 document.getElementById('buttonArchive').disabled=false;
+		 document.getElementById('buttonSent').disabled=true;
+		}else{
+		 document.getElementById('buttonArchive').disabled=true;
+		 document.getElementById('buttonSent').disabled=true;
+		}
 	}
 	
 	</script>
@@ -57,21 +62,27 @@ class HTML_cpanel {
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
+					<input type="text" name="search" class="inputbox" value="<?php echo $search;?>" />			
 				</td>
 				<td>
 				<select name="ordertype" >
-					<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
-					<option value="D" <?php if($ordertype=="D") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_D"); ?></option>
-					<option value="O" <?php if($ordertype=="O") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_O"); ?></option>
+				<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
+				 <?php  foreach($typeFilter as $type){ ?>
+	              <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
+					<?php echo JText::_($type->translation); ?>
+				  </option>
+				 <?php } ?>
 				</select>
 				</td>
 				<td>
 				<select name="orderstatus" >
-					<option value=""><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_ALL"); ?></option>
-					<option value="SAVED" <?php if($orderstatus=="SAVED") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_SAVED"); ?></option>
-					<option value="SENT" <?php if($orderstatus=="SENT") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_SENT"); ?></option>
-				</select>
+				 <option value=""><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_ALL"); ?></option>
+				 <?php  foreach($statusFilter as $stat){ ?>
+	              <option value="<?php echo $stat->id;?>" <?php if ($orderstatus==$stat->id){?>selected="selected"<?php }?>>
+					<?php echo JText::_($stat->translation); ?>
+				  </option>
+				 <?php } ?>
+				</select>				
 				</td>
 				</tr>
 		</table>
@@ -79,7 +90,7 @@ class HTML_cpanel {
 		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
 		<table width="100%">
-			<tr>																																						
+			<tr>
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
@@ -105,13 +116,14 @@ class HTML_cpanel {
 		{	$i++;
 			?>		
 			<tr>
-			<td><?php echo $i; ?></td>
-			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>')" ></td>
+			<td><?php echo $row->order_id; ?></td>
+			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>', '<?php echo $saved ;?>', '<?php echo $finish ;?>')" ></td>
 			
 			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></span><br></td>
 			
-			<td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td>
-			<td><?php echo JText::_("EASYSDI_ORDER_STATUS_".$row->status) ;?></td>
+			<!-- <td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td> -->
+			 <td><?php echo JText::_($row->type_translation) ;?></td>
+			<td><?php echo JText::_($row->status_translation) ;?></td>
 			</tr>
 			
 				<?php		
@@ -136,7 +148,7 @@ class HTML_cpanel {
 		<?php JHTML::_("behavior.modal","a.modal",$param); ?>
 		<div class="contentin">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_PROCESS_ORDER_TITLE")." : ".$rowOrder->name; ?></h2>						
-		<h3><?php echo JText::_("EASYSDI_ORDER_TYPE_".$rowOrder->type) ;?> : <?php echo $partner->name; ?></h3>
+		<h3><?php echo JText::_($row->type_translation) ;?> : <?php echo $partner->name; ?></h3>
 		
 		<form enctype="multipart/form-data" action="index.php?option=<?php echo $option; ?>" method="POST" id="processOrderForm" name="processOrderForm">
 		<?php
@@ -150,11 +162,14 @@ class HTML_cpanel {
 										
 			
 			<table>
-			
+			<thead>
+			<tr>
 			<th colspan="2"><?php echo JText::_("EASYSDI_DATA")." ".$i?> : <a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"><?php echo $row->data_title ;?></a><br></th>
+			</tr>
 			<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
 			<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
 			<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
+			</thead>
 			</table>
 			<hr>
 			<input type="hidden" name="product_id[]" value="<?php echo $row->product_id?>">
@@ -175,7 +190,7 @@ class HTML_cpanel {
 	
 	
 	
-	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="",$productorderstatus=""){
+	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="",$productorderstatus="", $productStatusFilter="", $productTypeFilter=""){
 	
 	?>	
 		<div class="contentin">
@@ -186,26 +201,34 @@ class HTML_cpanel {
 	
 		<table width="100%">
 			<tr>
+				
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
-				</td>
-				<td>
-				<select name="ordertype" >
-					<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
-					<option value="D" <?php if($ordertype=="D") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_D"); ?></option>
-					<option value="O" <?php if($ordertype=="O") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_FILTER_O"); ?></option>
-				</select>
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
 				</td>
 				
 				<td>
-				<select name="productorderstatus" >
-					<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
-					<option value="AWAIT" <?php if($productorderstatus=="AWAIT") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_WAITING"); ?></option>
-					<option value="AVAILABLE" <?php if($productorderstatus=="AVAILABLE") echo "selected"; ?>><?php echo JText::_("EASYSDI_CMD_PROCESSED"); ?></option>
-				</select>
+					<select name="ordertype" >
+						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
+						 <?php  foreach($productTypeFilter as $type){ ?>
+			              <option value="<?php echo $type->id;?>" <?php if (ordertype==$type->id){?>selected="selected"<?php }?>>
+							<?php echo JText::_($type->translation); ?>
+						  </option>
+						 <?php } ?>
+					</select>
 				</td>
-				</tr>
+				
+				<td>
+					<select name="productorderstatus" >
+						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
+						 <?php  foreach($productStatusFilter as $stat){ ?>
+			              <option value="<?php echo $stat->id;?>" <?php if (productorderstatus==$stat->id){?>selected="selected"<?php }?>>
+							<?php echo JText::_($stat->translation); ?>
+						  </option>
+						 <?php } ?>
+					</select>				
+				</td>
+			</tr>
 		</table>
 		
 		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
@@ -247,8 +270,8 @@ class HTML_cpanel {
 				<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>"></td>
 				<td><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></b></span><br></td>
 				<td><?php echo $row->username ;?></td>
-				<td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td>
-				<td><?php echo JText::_("EASYSDI_ORDER_STATUS_".$row->status) ;?></td>				
+				<td><?php echo JText::_($row->type_translation) ;?></td>
+				<td><?php echo JText::_($row->status_translation) ;?></td>				
 			</tr>
 				
 			<?php
@@ -265,7 +288,13 @@ class HTML_cpanel {
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
-			<?php if($productorderstatus=="AWAIT") {?>
+			<?php 
+			$database =& JFactory::getDBO();
+			$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
+			$database->setQuery($queryStatus);
+			$await = $database->loadResult();
+			
+			if($productorderstatus==$await) {?>
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='processOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_PROCESS_ORDER"); ?></button>
 			<?php }?>			
 		</form>

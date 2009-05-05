@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -695,7 +695,7 @@ function isSelfIntersect(){
      		count=0;
      		for (j=0;j< lines.length;j++){
      		
-     		//On ne doit pas comparer la ligne avec elle mÃªme
+     		//On ne doit pas comparer la ligne avec elle même
      			if (i != j){
 	     			if (lines[i].intersects (lines[j])) {
 	     			count++;	     			
@@ -1190,7 +1190,22 @@ if (count($rows)>0){
 			jimport("joomla.utilities.date");
 			$date = new JDate();
 
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_update,user_id,buffer) VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','$date->toMySQL()',$user->id,$bufferValue)";
+			$queryStatus = "SELECT id from #__easysdi_order_status_list where code = '".$orderStatus."'";
+			$db->setQuery($queryStatus );
+			$orderStatus = $db->loadResult();
+
+			$queryType = "SELECT id from #__easysdi_order_type_list where code = '".$order_type."'";
+			$db->setQuery($queryType );
+			$order_type = $db->loadResult();
+			
+			$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AWAIT'";
+			$db->setQuery($queryType );
+			$await_type = $db->loadResult();
+			$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AVAILABLE'";
+			$db->setQuery($queryType );
+			$available_type = $db->loadResult();
+			
+			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,order_update,user_id,buffer) VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','$date->toMySQL()','$date->toMySQL()',$user->id,$bufferValue)";
 			$db->setQuery($query );
 
 			if (!$db->query()) {
@@ -1206,8 +1221,6 @@ if (count($rows)>0){
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
 
-				
-				
 			$i=0;
 			foreach ($selSurfaceList as $sel){
 
@@ -1228,7 +1241,7 @@ if (count($rows)>0){
 
 				if ($product_id != "0"){					
 					
-					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id) VALUES (0,".$product_id.",".$order_id.")";
+					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id, status) VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
 
 					$db->setQuery($query );
 					if (!$db->query()) {
@@ -1385,9 +1398,9 @@ if (count($rows)>0){
 				}
 			}
 
-			/* Met Ã  jour le status pour un devis dont le prix est connu comme Ã©tant gratuit et envoi un mail pour dire qu'un devis sur la donnÃ©e gratuite Ã  Ã©tÃ© demandÃ©*/
+			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
 
-			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='AWAIT' and o.type='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
+			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o, #__easysdi_product p,#__easysdi_order_type_list otl WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='".$await_type."' and opl.type=otl.id and otl.code='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
 
 			$db->setQuery( $query );
 			$rows = $db->loadObjectList();
@@ -1398,8 +1411,7 @@ if (count($rows)>0){
 			}
 
 			foreach ($rows as $row){
-					
-				$query = "UPDATE   #__easysdi_order_product_list opl set status = 'AVAILABLE' WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
+				$query = "UPDATE   #__easysdi_order_product_list opl set status = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
 				$db->setQuery( $query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";
@@ -1415,16 +1427,27 @@ if (count($rows)>0){
 				
 				
 				
-			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = 'AWAIT' ";
+			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = '".$await_type."' ";
 			$db->setQuery($query);
 			$total = $db->loadResult();
 			jimport("joomla.utilities.date");
 			$date = new JDate();
 			if ( $total == 0){
-				$query = "UPDATE   #__easysdi_order  SET status ='FINISH' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+				$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+				$db->setQuery($queryStatus);
+				$status_id = $db->loadResult();
 			}else{
-				$query = "UPDATE   #__easysdi_order  SET status ='PROGRESS' ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status='SENT'";
+				$queryStatus = "select id from #__easysdi_order_status_list where code ='PROGRESS'";
+				$db->setQuery($queryStatus);
+				$status_id = $db->loadResult();
 			}
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+			$db->setQuery($queryStatus);
+			$sent = $db->loadResult();
+			
+			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
+
 			$db->setQuery($query);
 			if (!$db->query()) {
 				echo "<div class='alert'>";

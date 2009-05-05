@@ -151,7 +151,7 @@ $db =& JFactory::getDBO();
         
         <tr>
         <td>         
-	<select id="perimeterListPerimeter"  disabled="true" onChange="selectPerimeterPerimeter(document.getElementById('perimeterListPerimeter')[document.getElementById('perimeterListPerimeter').selectedIndex].value)">
+	<select id="perimeterListPerimeter"  disabled="disabled" onChange="selectPerimeterPerimeter(document.getElementById('perimeterListPerimeter')[document.getElementById('perimeterListPerimeter').selectedIndex].value)">
 	<option value =""> </option>
 	<?php
 	foreach ($rows as $row)

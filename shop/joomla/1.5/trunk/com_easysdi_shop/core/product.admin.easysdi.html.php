@@ -378,10 +378,8 @@ class HTML_product {
 					<fieldset>
 						<legend><?php echo $row->type_name ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
 <?php
-			
-																
+															
 				$selected = array();
 				$query = "SELECT property_value_id as value FROM #__easysdi_product_property WHERE product_id=".$rowProduct->id;				
 				$database->setQuery( $query );
@@ -391,7 +389,6 @@ class HTML_product {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
 
-				
 				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code,mandatory FROM #__easysdi_product_properties_definition b order by b.order";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
@@ -399,67 +396,58 @@ class HTML_product {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 					}		
 					foreach ($propertiesList as $curProperty){
-						?><td><?php echo JText::_($curProperty->text); ?></td>
-						<?php
-					}					
-					?>
-					</tr>
-					<tr>
-					<?php
-					foreach ($propertiesList as $curProperty){					
-				$propertiesValueList = array();
-				$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
-				$database->setQuery( $query );
-				$propertiesValueList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-					}
-					switch($curProperty->type_code){
-
-					case "list":
-						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>							
-						<?php
-						break;
-						
-					case "mlist":
-						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
-						<?php
-						break;
-					case "cbox":
-						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
-						<?php
-						break;
-						
-					case "text":
-						if ($curProperty->mandatory == 0 ){
-						$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
-							
-						}
-						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></td>
-						<?php
-						break;
-						
-					case "textarea":
-					if ($curProperty->mandatory == 0 ){
-						$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
-							
-						}
-						?>
-						<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></td>
-						<?php
-						break;
-					}	
-																	
-?>
-								
-						<?php } ?>								
-							</tr>
+						?><tr><?php echo JText::_($curProperty->text); ?></tr>
+						<?php			
+							$propertiesValueList = array();
+							$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+							$database->setQuery( $query );
+							$propertiesValueList = $database->loadObjectList() ;
+							if ($database->getErrorNum()) {						
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+								}
+								switch($curProperty->type_code){
+			
+								case "list":
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
+									<?php
+									break;
+									
+								case "mlist":
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<?php
+									break;
+								case "cbox":
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<?php
+									break;
+									
+								case "text":
+									if ($curProperty->mandatory == 0 ){
+									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
+										
+									}
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></tr>
+									<?php
+									break;
+									
+								case "textarea":
+								if ($curProperty->mandatory == 0 ){
+									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
+										
+									}
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<?php
+									break;
+								}	
+							?>	
+						<?php } ?>
 						</table>
 					</fieldset>
 				</td>

@@ -51,8 +51,8 @@ class HTML_properties {
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td width="100p"><?php echo JText::_("EASYSDI_ID"); ?> : </td>
-								<td><?php echo $rowProperties->id; ?></td>
-								<input type="hidden" name="id" value="<?php echo $id;?>">								
+								<td><?php echo $rowProperties->id; ?>
+								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
 			
   							<tr>
@@ -62,10 +62,11 @@ class HTML_properties {
 								<option value="1" <?php if( $rowProperties->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>															
 							</tr>
-  							<tr>
+  							<!-- <tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PARTNER_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProperties->partner_id ); ?></td>															
 							</tr>
+							 -->
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
@@ -77,8 +78,8 @@ class HTML_properties {
   
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"); ?> : </td>																
-								<input type="hidden"  name="update_date" value="<?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?>" />
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?></td>
+								<td><input type="hidden"  name="update_date" value="<?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?>" />
+								<?php echo date('d.m.Y H:i:s',strtotime($rowProperties->update_date)); ?></td>
 							</tr>
 							
 								
@@ -255,8 +256,8 @@ class HTML_properties {
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td width="100p"><?php echo JText::_("EASYSDI_ID"); ?> : </td>
-								<td><?php echo $rowProperties->id; ?></td>
-								<input type="hidden" name="id" value="<?php echo $id;?>">								
+								<td><?php echo $rowProperties->id; ?>
+								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_PROPERTIES_NAME"); ?> : </td>																						
@@ -345,8 +346,9 @@ class HTML_properties {
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>								
 				<td><?php echo $row->id; ?></td>						
 				<td>				
-            <span><?php echo $pageNav->orderUpIcon($i, true, 'orderupproperties', 'Move Up', isset($rows[$i-1]) ); ?></span>
-            <span><?php echo $pageNav->orderDownIcon($i, $n, true, 'orderdownproperties', 'Move Down', isset($rows[$i+1]) ); ?></span>
+		            <span><?php echo $pageNav->orderUpIcon($i, true, 'orderupproperties', 'Move Up', isset($rows[$i-1]) ); ?></span>
+		            <span><?php echo $pageNav->orderDownIcon($i, $n, true, 'orderdownproperties', 'Move Down', isset($rows[$i+1]) ); ?></span>
+	            </td>
 				<td><?php echo $row->value; ?></td>
 				<td><?php echo $row->text; ?></td>
 				
