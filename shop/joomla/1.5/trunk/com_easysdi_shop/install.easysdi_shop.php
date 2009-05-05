@@ -1473,6 +1473,150 @@ if ($version == "0.997")
 		
 		
 		
+	}
+if ($version == "0.998")
+	{
+
+
+		$version = "0.999";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		$query="ALTER TABLE #__easysdi_metadata_classes add column ordering bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_standard_classes add column ordering bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_tabs add column ordering bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_order add column order_date datetime NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_order drop column archived";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_order_product_list alter column status drop default";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="CREATE TABLE #__easysdi_order_status_list (id bigint(2) NOT NULL AUTO_INCREMENT, code varchar(20) NOT NULL, translation varchar(50) NOT NULL, name varchar(50) NOT NULL, description varchar(200), created datetime, updated datetime, primary key (id))";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SAVED','EASYSDI_ORDER_PRODUCT_STATUS_SAVED', 'SAVED')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SENT','EASYSDI_ORDER_PRODUCT_STATUS_SENT', 'SENT')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('PROGRESS','EASYSDI_ORDER_PRODUCT_STATUS_PROGRESS', 'PROGRESS')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('AWAIT','EASYSDI_ORDER_PRODUCT_STATUS_AWAIT', 'AWAIT')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('FINISH','EASYSDI_ORDER_PRODUCT_STATUS_FINISH', 'FINISH')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('ARCHIVED','EASYSDI_ORDER_PRODUCT_STATUS_ARCHIVED', 'ARCHIVED')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('HISTORIZED','EASYSDI_ORDER_PRODUCT_STATUS_HISTORIZED', 'HISTORIZED')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="CREATE TABLE #__easysdi_order_product_status_list (id bigint(2) NOT NULL AUTO_INCREMENT, code varchar(20) NOT NULL, translation varchar(50) NOT NULL, name varchar(50) NOT NULL, description varchar(200), created datetime, updated datetime, primary key (id))";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "insert  into #__easysdi_order_product_status_list (code, translation, name) values('AWAIT','EASYSDI_ORDER_PRODUCT_STATUS_AWAIT', 'AWAIT')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_product_status_list (code, translation, name) values('AVAILABLE','EASYSDI_ORDER_PRODUCT_STATUS_AVAILABLE', 'AVAILABLE')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="CREATE TABLE #__easysdi_order_type_list (id bigint(2) NOT NULL AUTO_INCREMENT, code varchar(20) NOT NULL, translation varchar(50) NOT NULL, name varchar(50) NOT NULL, description varchar(200), created datetime, updated datetime, primary key (id))";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('D','EASYSDI_ORDER_PRODUCT_STATUS_D', 'D')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('D','EASYSDI_ORDER_PRODUCT_STATUS_O', 'O')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 	}	
 
 	/**
