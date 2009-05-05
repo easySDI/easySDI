@@ -154,7 +154,7 @@ class displayManager{
 		$doc .= '<esdi:ID><title>Test titre</title></esdi:ID>';
 		
 		$document = new DomDocument();
-		$document->loadXML($doc);
+		@$document->loadXML($doc);
 		
 		$processor->importStylesheet($xslStyle);
 		$myHtml = $processor->transformToXml($xml);
