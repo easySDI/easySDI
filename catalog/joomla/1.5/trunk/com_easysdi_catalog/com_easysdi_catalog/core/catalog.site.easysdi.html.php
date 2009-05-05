@@ -159,18 +159,19 @@ class HTML_catalog{
 
 <span class="easysdi_number_of_metadata_found"><?php echo JText::_("EASYSDI_CATALOG_NUMBER_OF_METADATA_FOUND");?>
 		<?php echo $total ?> </span>
-<table>
+<table class="mdsearchresult">
+<!--
 	<thead>
 		<tr>
-<!--
+
 	 		<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
 			<th><?php echo JText::_('EASYSDI_CATALOG_ORDERABLE'); ?></th>
- -->
+
 			<th><?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO'); ?></th>
 			<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_NAME'); ?></th>
 		</tr>
 	</thead>
-	<tbody>
+-->
 	<?php
 	$i=0;
 	$param = array('size'=>array('x'=>800,'y'=>800) );
@@ -237,31 +238,45 @@ class HTML_catalog{
 			</div>
 			</td>
 			 -->
-			<td valign="top">
-				<img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
-			</td>
-			<td valign="top"><a class="modal"
+			 
+			 
+	  <td valign="top" rowspan=3>
+	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
+	  </td>
+	  <td colspan=3><span class="mdtitle"><a class="modal"
 				title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-				rel="{handler:'iframe',size:{x:650,y:550}}">
-				<span><?php echo $md->getDataIdentificationTitle();?></span><br></a>
-				<span><?php echo JText::_("EASYSDI_VIEW_MD_ROOT"); ?> <b><?php echo $supplier;?></b></span><br>
-				<?php if ($md->getDescription($language) <>"") { ?>
-				<span><?php echo JText::_("EASYSDI_VIEW_MD_DESC")." "; echo substr($md->getDescription($language), 0, $maxDescr);?></span>
-				<?php }; ?>
-			</td>
+				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?>
+			</a></span>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr);?></span></td>
+	 </tr>
+	 <tr>
+	  <td><span class="mdmdorderproduct">
+	     <a	class="<?php if ($metadataId_count>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
+		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_ORDER_PRODUCT"); ?>
+		 </a></span>
+	  </td>
+	  	<?php if ($hasPreview > 0){ ?>
+	  <td><span class="mdviewproduct">
+	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
+			rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+      </td>
+		<?php } ?>
+	  <td>&nbsp;</td>
+	 </tr>
+	 <tr>
+	   <td colspan=4>&nbsp;</td>
+	 </tr>
+	 
 
-			<?php if ($hasPreview > 0){ ?>
-			<td valign="top"><a class="modal"
-				href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
-				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></td>
-				<?php } ?>
-		</tr>
-		<?php
+	 <?php
 	}
 	?>
-	</tbody>
-</table>
+	</table>
+	
 	<?php } ?></div>
 	<?php
 
@@ -289,7 +304,7 @@ class HTML_catalog{
 		
 		?>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js-compressed.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
 	<table width="100%">
 	<tr>
@@ -374,7 +389,14 @@ if ($db->getErrorNum()) {
                 units: "<?php echo $rows[0]->unit; ?>",
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
+                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+				<?php
+					if($rows[0]->restrictedExtend == '1') echo  "restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent."),\n"
+			    ?>
+				<?php
+					if($rows[0]->restrictedScales != '') echo  "scales: [".$rows[0]->restrictedScales."]\n"
+			    ?>
+				//controls: []
             });
 				  
 				 baseLayerVector = new OpenLayers.Layer.Vector(
