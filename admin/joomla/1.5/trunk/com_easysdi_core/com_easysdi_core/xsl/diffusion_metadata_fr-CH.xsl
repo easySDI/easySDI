@@ -17,7 +17,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 
 
 <h2 class="contentheading">Metadonnée</h2>
-<div class="contentin">
+<div id="metadata" class="contentin">
 
 <h3>Diffusion</h3>
 <table >
@@ -34,6 +34,21 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 
 </table>
 </div>
+
+<!-- Script to open all hyperlinks in a new window -->
+<script>
+
+var container = document.getElementById("metadata");
+var hlinks = container.getElementsByTagName("a");
+i=0;
+while(true){
+	if(hlinks.length == i)
+		break;
+	if(!hlinks[i].href.match("mailto:"))
+		hlinks[i].setAttribute('target', '_blank');
+	i++;
+}
+</script>
 
 </xsl:template>
 </xsl:stylesheet>

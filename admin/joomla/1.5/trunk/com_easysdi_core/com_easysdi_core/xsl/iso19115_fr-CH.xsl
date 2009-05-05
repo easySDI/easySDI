@@ -32,7 +32,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 
 
 <h2 class="contentheading">Metadonnée</h2>
-<div class="contentin">
+<div id="metadata" class="contentin">
 <h3>Identification</h3>
 
 <table  >
@@ -158,7 +158,11 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 		</td></tr>
 		<tr valign="top"><td>Echelle de référence:</td><td>
 			<xsl:value-of disable-output-escaping="yes" select ="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer" />
-			      
+			<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Représentation']">
+				<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Echelle de référence' ">
+							<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
+						</xsl:if>
+			</xsl:for-each>
 			</td></tr>
 		<tr valign="top"><td>Précision:</td><td>
 			<xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Représentation']">
@@ -321,6 +325,21 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 
 </table>
 </div>
+
+<!-- Script to open all hyperlinks in a new window -->
+<script>
+
+var container = document.getElementById("metadata");
+var hlinks = container.getElementsByTagName("a");
+i=0;
+while(true){
+	if(hlinks.length == i)
+		break;
+	if(!hlinks[i].href.match("mailto:"))
+		hlinks[i].setAttribute('target', '_blank');
+	i++;
+}
+</script>
 
 </xsl:template>
 
