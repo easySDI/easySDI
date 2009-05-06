@@ -39,6 +39,8 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
 
+require_once(JPATH_BASE.DS.'administrator'.DS.'components'.DS.'com_easysdi_core'.DS.'com_easysdi_core'.DS.'Common'.DS.'easysdi.displayManager.class.php');
+
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
 
@@ -48,6 +50,7 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 
 
 $language=&JFactory::getLanguage();
+$language->load('com_easysdi_core');
 $language->load('com_easysdi_shop');
 
 ?>
@@ -251,7 +254,7 @@ switch($task){
 		SITE_product::editMetadata2();
 		break;
 	case "showMetadata":
-		HTML_shop::showMetadata();
+		displayManager::showMetadata();
 		break;
 	/*
 	 * Product
