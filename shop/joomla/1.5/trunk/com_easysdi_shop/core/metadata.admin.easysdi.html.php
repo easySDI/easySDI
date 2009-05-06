@@ -68,19 +68,36 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_orde
 				<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
 				<td width="30px" align="center"><?php echo $row->id; ?></td>
+				<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 				<td width="100px" align="right">
-					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 					<?php
 					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
-					 ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataTabs', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataTabs', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataTabs', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataTabs', 'Move Down', isset($rows[$i+1]) ); ?>
+					<?php
+						}		
 					}
-					else{ ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+					else{ 
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataTabs', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataTabs', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataTabs', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataTabs', 'Move Up', isset($rows[$i+1]) ); ?>
+					<?php
+						}
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
@@ -214,22 +231,39 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type, $fi
 				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
 				<td width="30px"><?php echo $row->id; ?></td>
+				<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 				<td width="100px" align="right">
-					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 					<?php
 					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
-					 ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataStandardClasses', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataStandardClasses', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataStandardClasses', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataStandardClasses', 'Move Down', isset($rows[$i+1]) ); ?>
+					<?php
+						}		
 					}
-					else{ ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+					else{ 
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataStandardClasses', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataStandardClasses', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataStandardClasses', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataStandardClasses', 'Move Up', isset($rows[$i+1]) ); ?>
+					<?php
+						}
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
-	            </td>
+	            </td>	
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataStandardClasses&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->standard_name; ?></a></td>
 				<td><a href="<?php echo $link;?>"><?php echo $row->class_name; ?></a></td>																												
@@ -801,22 +835,39 @@ function listClass($use_pagination, $rows, $pageNav,$option, $filter_order, $fil
 			<tr class="<?php echo "row$k"; ?>">
 				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td width="30px"><?php echo $row->id; ?></td>				
+				<td width="30px"><?php echo $row->id; ?></td>
+	            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 				<td width="100px" align="right">
-					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
 					<?php
 					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
-					 ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+					<?php
+						}		
 					}
-					else{ ?>
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+					else{ 
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', '', false ); ?>
 		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+					<?php
+						}
 					}?>
-		            <input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
 				<td><?php echo $row->user_name; ?></td>								
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataClass&cid[]=$row->id";?>
