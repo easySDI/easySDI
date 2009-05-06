@@ -50,12 +50,11 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_orde
 			<tr>					 			
 				<th class='title' width="10px"><?php echo JText::_("EASYSDI_METADATA_TABS_SHARP"); ?></th>
 				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title' width="50px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_TABS_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_TABS_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataTabs' ); ?></th>			
 				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_TABS_TEXT"), 'text', @$filter_order_Dir, @$filter_order); ?></th>
-				<!-- <th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_PARTNER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th> -->
-				<th class='title' ><?php echo JText::_("EASYSDI_METADATA_PARTNER_NAME"); ?></th>																															
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_PARTNER_NAME"), 'partner_name', @$filter_order_Dir, @$filter_order); ?></th>														
 			</tr>
 		</thead>
 		<tbody>		
@@ -68,20 +67,26 @@ function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_orde
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td align="center"><?php echo $row->id; ?></td>
-				<td align="center">
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataTabs', 'Move Up', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataTabs', 'Move Down', isset($rows[$i+1]) ); ?>
-		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+				<td width="30px" align="center"><?php echo $row->id; ?></td>
+				<td width="100px" align="right">
+					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<?php
+					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
+					 ?>
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+		            <?php
+					}
+					else{ ?>
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+		            <?php
+					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataTab&cid[]=$row->id";?>
-				<td><a href="<?php echo $link;?>"><?php echo $row->text; ?></a></td>																							
-				<?php 
-				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
-				$database->setQuery($query);				 
-		 		?>
-				<td><?php echo $database->loadResult(); ?></td>
+				<td><a href="<?php echo $link;?>"><?php echo $row->text; ?></a></td>
+				<td><?php echo $row->partner_name; ?></td>
 				<!-- <td><?php echo $row->partner_name; ?></td>  -->																											
 			</tr>
 <?php
@@ -188,10 +193,10 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type, $fi
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_SHARP"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?>		
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>		
+				<th class='title' width="10px"><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_SHARP"); ?></th>
+				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
+				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?>		
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>		
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataStandardClasses' ); ?></th>		
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_STANTARD_NAME"), 'standard_name', @$filter_order_Dir, @$filter_order ); ?>		
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_STANDARD_CLASSES_CLASS_NAME"), 'class_name', @$filter_order_Dir, @$filter_order ); ?>		
@@ -206,13 +211,23 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type, $fi
 		{				  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>
-				<td align="center">
-					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataStandardClasses', 'Move Up', isset($rows[$i-1]) ); ?>
-		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataStandardClasses', 'Move Down', isset($rows[$i+1]) ); ?>
-		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
+				<td width="30px"><?php echo $row->id; ?></td>
+				<td width="100px" align="right">
+					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<?php
+					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
+					 ?>
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
+		            <?php
+					}
+					else{ ?>
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+		            <?php
+					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataStandardClasses&cid[]=$row->id";?>
@@ -765,13 +780,13 @@ function listClass($use_pagination, $rows, $pageNav,$option, $filter_order, $fil
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_SHARP"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?></th>		
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>
+				<th width="10px" class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_SHARP"); ?></th>
+				<th width="10px" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
+				<th width="30px" class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_ID"), 'id', @$filter_order_Dir, @$filter_order ); ?></th>		
+				<th width="100px" class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order ); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMetadataClass' ); ?></th>		
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_CLASS_PARTNER_NAME"); ?></th>		
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_NAME"), 'name', @$filter_order_Dir, @$filter_order ); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_PARTNER_NAME"), 'user_name', @$filter_order_Dir, @$filter_order ); ?></th>		
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_NAME"), 'class_name', @$filter_order_Dir, @$filter_order ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_ISOKEY"), 'iso_key', @$filter_order_Dir, @$filter_order ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_METADATA_CLASS_TYPE"), 'type', @$filter_order_Dir, @$filter_order ); ?></th>																				
 			</tr>
@@ -784,22 +799,28 @@ function listClass($use_pagination, $rows, $pageNav,$option, $filter_order, $fil
 		{				  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
-				<td><?php echo $row->id; ?></td>				
-				<?php 
-				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
-				$database->setQuery($query);				 
-		 		?>
-				<td align="center">
+				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
+				<td width="30px"><?php echo $row->id; ?></td>				
+				<td width="100px" align="right">
+					<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<?php
+					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
+					 ?>
 					<?php echo $pageNav->orderUpIcon($i, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i-1]) ); ?>
 		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i+1]) ); ?>
-		            <?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
-					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+		            <?php
+					}
+					else{ ?>
+					<?php echo $pageNav->orderUpIcon($i, true, 'orderdownMetadataClass', 'Move Down', isset($rows[$i-1]) ); ?>
+		            <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupMetadataClass', 'Move Up', isset($rows[$i+1]) ); ?>
+		            <?php
+					}?>
+		            <input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				<td><?php echo $database->loadResult(); ?></td>								
+				<td><?php echo $row->user_name; ?></td>								
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataClass&cid[]=$row->id";?>
-				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>												
+				<td><a href="<?php echo $link;?>"><?php echo $row->class_name; ?></a></td>												
 				<td><?php echo $row->iso_key; ?></td>
 				<td><?php echo $row->type; ?></td>						
 			</tr>

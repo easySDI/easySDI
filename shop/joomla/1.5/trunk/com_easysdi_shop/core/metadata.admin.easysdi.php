@@ -965,7 +965,7 @@ if ($use_pagination) {
 			if ($db->getErrorNum()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-							
+						
 			$query = "select * from  #__easysdi_metadata_classes  where ordering > $row1->ordering   order by ordering ";
 			$db->setQuery( $query );
 			$row2 = $db->loadObject() ;
@@ -1032,9 +1032,10 @@ if ($use_pagination) {
 		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
 		$search				= JString::strtolower( $search );
 		
+		$where="";
 		if ($search)
 		{
-			$where = ' where LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where = ' and LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(type) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(iso_key) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			//$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
@@ -1051,7 +1052,7 @@ if ($use_pagination) {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "name" and $filter_order <> "type" and $filter_order <> "iso_key" and $filter_order <> "text" and $filter_order <> "ordering" and $filter_order <> "id")
+		if ($filter_order <> "user_name" and $filter_order<>"class_name" and $filter_order <> "type" and $filter_order <> "iso_key" and $filter_order <> "text" and $filter_order <> "ordering" and $filter_order <> "id")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -1059,7 +1060,7 @@ if ($use_pagination) {
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
-		$query = "select * from  #__easysdi_metadata_classes ";
+		$query = "select c.*, c.name as class_name, u.name AS user_name from  #__easysdi_metadata_classes c left outer join #__easysdi_community_partner p on p.partner_id=c.partner_id left outer join #__users u on u.id=p.user_id ";
 		$query .= $where;
 		$query .= $orderby;
 		
@@ -1240,6 +1241,7 @@ if ($use_pagination) {
 		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
 		$search				= JString::strtolower( $search );
 		
+		$where="";
 		if ($search)
 		{
 			$where = ' and( LOWER(a.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
@@ -1431,6 +1433,7 @@ if ($use_pagination) {
 		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
 		$search				= JString::strtolower( $search );
 		
+		$where="";
 		if ($search)
 		{
 			$where = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
@@ -1447,7 +1450,7 @@ if ($use_pagination) {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "text" and $filter_order <> "name" and $filter_order <> "ordering")
+		if ($filter_order <> "id" and $filter_order <> "text" and $filter_order <> "partner_name" and $filter_order <> "ordering")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -1455,8 +1458,7 @@ if ($use_pagination) {
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
-		//$query = "SELECT t.*, b.name AS partner_name FROM #__easysdi_metadata_tabs t, #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND a.partner_id=t.partner_id";
-		$query = "select * from  #__easysdi_metadata_tabs ";
+		$query = "select t.*, u.name as partner_name from  #__easysdi_metadata_tabs t left outer join #__easysdi_community_partner p on t.partner_id=p.partner_id left outer join #__users u on u.id=p.user_id";
 		$query .= $where;
 		$query .= $orderby;
 		
