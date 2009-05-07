@@ -910,14 +910,15 @@ function isSelfIntersect(){
 
 
 	foreach ($products as $product  ){
-
-		$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text ,a.type_code,a.code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." order by a.order"
+		//$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text ,a.type_code,a.code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." and a.published=1 order by a.order"
+		$query = "SELECT DISTINCT pd.id as id, pd.order as property_order, pd.mandatory as mandatory, pd.text as property_text, pd.type_code as type_code, pd.code as code FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 order by property_order";
 ?>
 
 
 <fieldset><legend><?php echo JText::_($product->data_title);?></legend> <?php
 $db->setQuery( $query );
 $rows = $db->loadObjectList();
+		
 ?>
 <ol>
 
@@ -930,14 +931,16 @@ if (count($rows)>0){
 			case "list":
 				echo 	JText::_($row->property_text);
 
-				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-
+				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-
-
-				echo "<select name='".$row->code."_list_property_".$product->id."[]'>";
+				
+								echo "<select name='".$row->code."_list_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
+					
+
 					$selProduct = $mainframe->getUserState($row->code.'_list_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
@@ -950,8 +953,9 @@ if (count($rows)>0){
 			case "mlist":
 				echo 	JText::_($row->property_text);
 
-				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-
+				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 
@@ -970,8 +974,9 @@ if (count($rows)>0){
 			case "cbox":
 				echo 	JText::_($row->property_text);
 
-				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-
+				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 
@@ -992,8 +997,9 @@ if (count($rows)>0){
 			case "text":
 				echo 	JText::_($row->property_text);
 
-				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-
+				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 					
@@ -1015,8 +1021,9 @@ if (count($rows)>0){
 			case "textarea":
 				echo 	JText::_($row->property_text);
 
-				$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-
+				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 					
