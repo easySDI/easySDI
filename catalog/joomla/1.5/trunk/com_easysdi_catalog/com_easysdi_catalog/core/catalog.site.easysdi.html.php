@@ -251,7 +251,7 @@ class HTML_catalog{
 	  </td>
 	 </tr>
 	 <tr>
-	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr);?></span></td>
+	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
 	 </tr>
 	 <tr>
 	  <td><span class="mdmdorderproduct">
