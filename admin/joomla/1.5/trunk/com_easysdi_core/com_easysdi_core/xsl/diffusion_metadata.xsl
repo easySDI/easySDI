@@ -19,20 +19,20 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <div id="metadata" class="contentin">
 <h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
 
-<table width="100%" id="metadataTitle">
+<table class="descr" id="metadataTitle">
  <tr>
- 	<td rowspan="2"><img width="__ref__asit_1$s" heigth="__ref__asit_2$s" src="__ref__asit_3$s"/></td>
-	<td>Fournisseur: __ref__asit_4$s</td>
+ 	<td rowspan="2">__ref__asit_1$s</td>
+	<td>Fournisseur: __ref__asit_2$s</td>
  </tr>
  <tr>
- 	<td>Fiche créée le __ref__asit_5$s, mise à jour le __ref__asit_6$s</td>
+ 	<td>Fiche créée le __ref__asit_3$s, mise à jour le __ref__asit_4$s</td>
  </tr>
 </table>
 <!-- The buttons links -->
-__ref__asit_7$s
+__ref__asit_5$s
 <br/>
 <!-- The menu links -->
-__ref__asit_8$s
+__ref__asit_6$s
 <!-- <h3>Identification</h3> -->
 <hr/>
 
