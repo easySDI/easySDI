@@ -26,7 +26,7 @@ if ($curstep == "2"){
 $db =& JFactory::getDBO(); 		
 
 
- $query = "SELECT * FROM #__easysdi_perimeter_definition where is_localisation = 1 ";
+ $query = "SELECT * FROM #__easysdi_perimeter_definition where is_localisation = 1 order by ordering";
 
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
@@ -40,7 +40,7 @@ $db =& JFactory::getDBO();
 	function selectPerimeterPerimeter(selected){
 	
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition ";
+	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering ";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		
@@ -97,7 +97,7 @@ $db =& JFactory::getDBO();
 
 
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition ";
+	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		

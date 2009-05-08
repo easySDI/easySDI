@@ -25,7 +25,7 @@ $db =& JFactory::getDBO();
 $cid = 		$mainframe->getUserState('productList');
 					
 	if (count($cid)>0){
-			$query = "SELECT * FROM #__easysdi_perimeter_definition";
+			$query = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
 	
 			
 	$query = "select count(*)  from #__easysdi_product where id in (";
@@ -47,6 +47,7 @@ $cid = 		$mainframe->getUserState('productList');
 		}			
 	$query  = substr($query , 0, -1);
 	$query = $query . ") group by perimeter_id  having  count(*)  = ".$nbProduct.")";
+	$query .= " order by ordering";
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {						
