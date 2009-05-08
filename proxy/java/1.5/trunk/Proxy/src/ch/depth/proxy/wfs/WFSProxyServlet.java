@@ -18,12 +18,15 @@ package ch.depth.proxy.wfs;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -307,7 +310,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			    "<gml:null>unavailable</gml:null>"+
 			    "</gml:boundedBy>"+
 			    "</ogcwfs:FeatureCollection>";
-			File tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
+			File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
 
 			FileOutputStream tempFos = new FileOutputStream(tempFile);
 			tempFos.write(s.getBytes());
@@ -750,344 +753,549 @@ public class WFSProxyServlet extends ProxyServlet {
 	return paramUrl;
     }
 
-    public void transform(String version,String currentOperation,  HttpServletRequest req,
-	    HttpServletResponse resp) {
+//************************************************************************************************************************************************************************************************************
+//************************************************************************************************************************************************************************************************************	
+    public void transform(String version,String currentOperation,  HttpServletRequest req, HttpServletResponse resp) 
+		{
+		try 
+			{
+		    String userXsltPath = getConfiguration().getXsltPath();
 
-	try {
+		    if(req.getUserPrincipal() != null)
+				{
+				userXsltPath=userXsltPath+"/"+req.getUserPrincipal().getName()+"/";
+				} 
 
-	    String userXsltPath = getConfiguration().getXsltPath();
+		    userXsltPath = userXsltPath+"/"+version+"/"+currentOperation+".xsl";
+		    String globalXsltPath = getConfiguration().getXsltPath()+"/"+version+"/"+currentOperation+".xsl";;
 
-	    if(req.getUserPrincipal() != null){
-		userXsltPath=userXsltPath+"/"+req.getUserPrincipal().getName()+"/";
-	    } 
-
-	    userXsltPath = userXsltPath+"/"+version+"/"+currentOperation+".xsl";
-	    String globalXsltPath = getConfiguration().getXsltPath()+"/"+version+"/"+currentOperation+".xsl";;
-
-	    File xsltFile = new File(userXsltPath);
-	    boolean isPostTreat = false;	    
-	    if(!xsltFile.exists()){	
-		dump("Postreatment file "+xsltFile.toString()+"does not exist");
-		xsltFile = new File(globalXsltPath);
-		if (xsltFile.exists()){
-		    isPostTreat=true;		    
-		}else{
-		    dump("Postreatment file "+xsltFile.toString()+"does not exist");
-		}
-	    }else{
-		isPostTreat=true;
-	    }
-
-	    // Transforms the results using a xslt before sending the response
-	    // back	    
-
-	    InputStream xml = null;//new FileInputStream(filePathList.get(0));
-	    TransformerFactory tFactory = TransformerFactory.newInstance();
-
-	    File tempFile = null;
-	    OutputStream tempFos = null;	    	  	    	    
-
-	    Transformer transformer = null;
-
-
-	    if (currentOperation != null) {
-		if (currentOperation.equals("GetCapabilities")) {			    
-		    List<File> tempFileCapaList = new Vector<File>();
-
-		    for (int i = 0;i<getRemoteServerInfoList().size();i++){
-
-			tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-			tempFos = new FileOutputStream(tempFile);
-			ByteArrayInputStream xslt = null;
-
-			xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req,i).toString().getBytes());
-
-			transformer = tFactory.newTransformer(new StreamSource(xslt));
-			//Write the result in a temporary file
-			xml = new BufferedInputStream(new FileInputStream(filePathList.get(i)));
-			transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
-			tempFos.close();
-			tempFileCapaList.add(tempFile);
-		    }		   		    
-		    tempFile = mergeCapabilities(tempFileCapaList);
-
-		}else{
-		    if(currentOperation.equals("DescribeFeatureType")){
-			if (hasPolicy){
-			    List<File> tempFileDescribeType = new Vector<File>();
-			    for (int j = 0;j<getRemoteServerInfoList().size();j++){
-				StringBuffer WFSDescribeFeatureType = new StringBuffer ();
-				WFSDescribeFeatureType.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-				//On récupère le gml
-				InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));			
-				Schema schema = org.geotools.xml.SchemaFactory.getInstance(null, dataSourceInputStream);
-
-				ComplexType[] ct = schema.getComplexTypes();
-
-				for (int i =0;i<ct.length;i++){
-				    String tmpFT = ct[i].getName();
-				    if (tmpFT!=null){
-					String [] s = tmpFT.split(":");
-					tmpFT = s[s.length-1];
-				    }
-
-				    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(j))){
-					org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
-					for (int k=0;k<elem.length;k++){				    
-					    if (!isAttributeAllowed(getRemoteServerUrl(j),tmpFT,elem[k].getName())){
-						WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']//xsd:element[@name='"+elem[k].getName()+"']\">"); 
-						WFSDescribeFeatureType.append("</xsl:template>");
-					    }			       
-					}					
-				    }else{
-					WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']\">"); 
-					WFSDescribeFeatureType.append("</xsl:template>");
-					WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:element[@name ='"+ct[i].getName()+"']\">"); 
-					WFSDescribeFeatureType.append("</xsl:template>");
-				    }    
-				}			
-
-
-
-
-				WFSDescribeFeatureType.append("  <!-- Whenever you match any node or any attribute -->");
-				WFSDescribeFeatureType.append("<xsl:template match=\"node()|@*\">");
-				WFSDescribeFeatureType.append("<!-- Copy the current node -->");
-				WFSDescribeFeatureType.append("<xsl:copy>");
-				WFSDescribeFeatureType.append("<!-- Including any attributes it has and any child nodes -->");
-				WFSDescribeFeatureType.append("<xsl:apply-templates select=\"@*|node()\"/>");
-				WFSDescribeFeatureType.append("</xsl:copy>");
-				WFSDescribeFeatureType.append("</xsl:template>");
-
-				WFSDescribeFeatureType.append("</xsl:stylesheet>");
-
-				xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
-				tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-				tempFos = new FileOutputStream(tempFile);
-				ByteArrayInputStream xslt = null;
-				xslt = new ByteArrayInputStream(WFSDescribeFeatureType.toString().getBytes());
-				transformer = tFactory.newTransformer(new StreamSource(xslt));
-				//Write the result in a temporary file
-				transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
-				tempFos.close();
-				tempFileDescribeType.add(tempFile);
-			    }
-			    tempFile = mergeDescribeFeatureType(tempFileDescribeType);
-
-			}
-
-		    }else
-			if (currentOperation.equals("GetFeature")) {
-			    //On récupère le srs
-			    if (hasPolicy){
-				List<File> tempGetFeatureFile = new Vector();
-				WFSGetFeatureRenameFt.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
-				for (int iServer = 0;iServer<getRemoteServerInfoList().size();iServer++){
-				    DataInputStream dis = new DataInputStream(new FileInputStream(filePathList.get(iServer)));
-				    String srsSource = null;
-				    while (dis.available() != 0) {
-					String s=dis.readLine(); 				
-					if (s.indexOf("srsName")>0){
-					    srsSource= s.substring(s.indexOf("srsName"));
-					    if (srsSource.indexOf("\"")>0){
-					    srsSource = srsSource.substring(srsSource.indexOf("\"")+1);			
-					    srsSource = srsSource.substring(0,srsSource.indexOf("\""));
-					    }else{
-						if (srsSource.indexOf("\'")>0){
-						    srsSource = srsSource.substring(srsSource.indexOf("\'")+1);			
-						    srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
-						}
-					    }
-					    
-					    break;
-					}				
-				    }
-
-				    tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");			    
-
-				    tempFos = new FileOutputStream(tempFile);
-				    ByteArrayInputStream xslt = null;
-				    List<String> featureTypeListToRemove = null;
-				    List<String> featureTypeListToKeep = null;
-
-				    xslt = new ByteArrayInputStream(buildGetFeatureXSLT(iServer).toString().getBytes());
-
-				    XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-				    String user =(String)getUsername(getRemoteServerUrl(iServer));
-				    String password = (String)getPassword(getRemoteServerUrl(iServer));
-				    ResourceResolver rr = null;
-				    if (user!=null && user.length()>0){			
-					rr = new ResourceResolver(user,password);
-					xmlReader.setEntityResolver(rr);
-				    }
-				    // END Added to hook in my EntityResolver					  
-				    xml = new BufferedInputStream(new FileInputStream(filePathList.get(iServer)));
-				    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
-				    transformer = tFactory.newTransformer(new StreamSource(xslt));
-				    transformer.transform(saxSource, new StreamResult(tempFos));
-
-				    tempFos.close();
-				    String filter= null;			
-				    if (featureTypePathList.get(iServer).length()>0){
-				    filter =getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypePathList.get(iServer));
-				    }
-				    // filter =getFeatureTypeFilter(getRemoteServerUrl(iServer));
-
-
-				    Map hints = new HashMap();		
-				    hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-
-				    GMLFeatureCollection  doc =null;
-				    if (user!=null && user.length()>0){
-					doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
-				    }else
-					doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
-
-				    File tempFile2 = createTempFile(UUID.randomUUID().toString(), ".xml");
-
-				    tempFos = new FileOutputStream(tempFile2);
-				    
-				    if (filter !=null){
-					dump(filter);
-				    }
-				    
-				    filterFC( tempFos, filter,doc,getServletUrl(req),srsSource);
-				    if (filter!=null){
-					tempFos.close();
-					if (tempFile!=null) tempFile.delete();
-					tempFile = tempFile2;    
-				    }
-
-				    tempGetFeatureFile.add(tempFile);
-
+		    File xsltFile = new File(userXsltPath);
+		    boolean isPostTreat = false;	    
+		    if(!xsltFile.exists())
+				{	
+				dump("User postreatment file "+xsltFile.toString()+" does not exist");
+				xsltFile = new File(globalXsltPath);
+				if (xsltFile.exists())
+					{
+					isPostTreat=true;		    
+					}
+				else
+					{
+					dump("Global postreatment file "+xsltFile.toString()+" does not exist");
+					}
 				}
-				WFSGetFeatureRenameFt.append("  <!-- Whenever you match any node or any attribute -->");
-				WFSGetFeatureRenameFt.append("<xsl:template match=\"node()|@*\">\n");
-				WFSGetFeatureRenameFt.append("<!-- Copy the current node -->\n");
-				WFSGetFeatureRenameFt.append("<xsl:copy>\n");
-				WFSGetFeatureRenameFt.append("<!-- Including any attributes it has and any child nodes -->\n");
-				WFSGetFeatureRenameFt.append("<xsl:apply-templates select=\"@*|node()\"/>\n");
-				WFSGetFeatureRenameFt.append("</xsl:copy>\n");
-				WFSGetFeatureRenameFt.append("</xsl:template>\n");
-				WFSGetFeatureRenameFt.append("</xsl:stylesheet>");
-				tempFile = mergeGetFeatures(tempGetFeatureFile);
-			    }
+			else
+				{
+				isPostTreat=true;
+				}
+			
+//***********************************************************************************************************************!!!!********************************************************************************************
+
+		    // Transforms the results using a xslt before sending the response
+		    // back	    
+
+		    InputStream xml = null;//new FileInputStream(filePathList.get(0));
+		    TransformerFactory tFactory = TransformerFactory.newInstance();
+
+		    File tempFile = null;
+		    OutputStream tempFos = null;	    	  	    	    
+
+		    Transformer transformer = null;
+
+
+		    if (currentOperation != null)
+				{
+				if (currentOperation.equals("GetCapabilities"))
+					{			    
+				    List<File> tempFileCapaList = new Vector<File>();
+
+				    for (int i = 0;i<getRemoteServerInfoList().size();i++)
+						{
+
+						tempFile = createTempFile("transform_GetCapabilities"+UUID.randomUUID().toString(), ".xml");
+						tempFos = new FileOutputStream(tempFile);
+						ByteArrayInputStream xslt = null;
+
+						xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req,i).toString().getBytes());
+
+						transformer = tFactory.newTransformer(new StreamSource(xslt));
+						//Write the result in a temporary file
+						xml = new BufferedInputStream(new FileInputStream(filePathList.get(i)));
+						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
+						tempFos.close();
+						tempFileCapaList.add(tempFile);
+						}		   		    
+				    tempFile = mergeCapabilities(tempFileCapaList);
+
+					}
+				else if(currentOperation.equals("DescribeFeatureType"))
+					{
+					if (hasPolicy)
+						{
+					    List<File> tempFileDescribeType = new Vector<File>();
+					    for (int j = 0;j<getRemoteServerInfoList().size();j++)
+							{
+							StringBuffer WFSDescribeFeatureType = new StringBuffer ();
+							WFSDescribeFeatureType.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+							//On récupère le gml
+							InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));			
+							Schema schema = org.geotools.xml.SchemaFactory.getInstance(null, dataSourceInputStream);
+
+							ComplexType[] ct = schema.getComplexTypes();
+
+							for (int i =0;i<ct.length;i++)
+								{
+							    String tmpFT = ct[i].getName();
+							    if (tmpFT!=null)
+									{
+									String [] s = tmpFT.split(":");
+									tmpFT = s[s.length-1];
+									}
+
+							    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(j)))
+									{
+									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
+									for (int k=0;k<elem.length;k++)
+										{				    
+									    if (!isAttributeAllowed(getRemoteServerUrl(j),tmpFT,elem[k].getName()))
+											{
+											WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']//xsd:element[@name='"+elem[k].getName()+"']\">"); 
+											WFSDescribeFeatureType.append("</xsl:template>");
+											}			       
+										}					
+									}
+								else
+									{
+									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']\">"); 
+									WFSDescribeFeatureType.append("</xsl:template>");
+									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:element[@name ='"+ct[i].getName()+"']\">"); 
+									WFSDescribeFeatureType.append("</xsl:template>");
+								    }    
+								}			
+							WFSDescribeFeatureType.append("  <!-- Whenever you match any node or any attribute -->");
+							WFSDescribeFeatureType.append("<xsl:template match=\"node()|@*\">");
+							WFSDescribeFeatureType.append("<!-- Copy the current node -->");
+							WFSDescribeFeatureType.append("<xsl:copy>");
+							WFSDescribeFeatureType.append("<!-- Including any attributes it has and any child nodes -->");
+							WFSDescribeFeatureType.append("<xsl:apply-templates select=\"@*|node()\"/>");
+							WFSDescribeFeatureType.append("</xsl:copy>");
+							WFSDescribeFeatureType.append("</xsl:template>");
+
+							WFSDescribeFeatureType.append("</xsl:stylesheet>");
+							
+							File tempFileXslt = createTempFile("transform_DescribeFeatureType_xslt"+UUID.randomUUID().toString(), ".xml");
+							PrintWriter bwrite = new PrintWriter(new BufferedWriter(new FileWriter(tempFileXslt)));
+							bwrite.write(WFSDescribeFeatureType.toString());
+							bwrite.flush();
+							bwrite.close();
+							xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
+							tempFile = createTempFile("transform_DescribeFeatureType"+UUID.randomUUID().toString(), ".xml");
+							tempFos = new FileOutputStream(tempFile);
+							ByteArrayInputStream xslt = null;
+							xslt = new ByteArrayInputStream(WFSDescribeFeatureType.toString().getBytes());
+							transformer = tFactory.newTransformer(new StreamSource(xslt));
+							//Write the result in a temporary file
+							transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
+							tempFos.close();
+							tempFileDescribeType.add(tempFile);
+						    }
+					    tempFile = mergeDescribeFeatureType(tempFileDescribeType);
+						}
+					}
+				else if (currentOperation.equals("GetFeature"))
+					{
+					dump("CurrentOperation GetFeature");
+					
+				    //On récupère le srs
+				    if (hasPolicy)
+						{
+						dump("GetFeature hasPolicy");
+						
+						List<File> tempGetFeatureFile = new Vector();
+						WFSGetFeatureRenameFt.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
+						for (int iServer = 0;iServer<getRemoteServerInfoList().size();iServer++)
+							{
+							dump("GetFeature begin for loop");
+//**************************************************************************************************************************************************************************
+							
+					   	 	//DataInputStream dis = new DataInputStream(new FileInputStream(filePathList.get(iServer)));
+							BufferedReader  dis = new BufferedReader(new FileReader(filePathList.get(iServer)));
+							boolean breakOut = false;
+							int bufSize = 512;
+							int srsIndex = 1;
+							char[] cbuf = new char[bufSize];
+							String s=null;
+							String srsSource = null;
+							dump("GetFeature begin srsName extract");
+							if(dis.ready() && dis.markSupported())
+								{
+								dis.mark(bufSize+1);
+								while(dis.read(cbuf,0,bufSize) != -1)
+									{
+									s= new String(cbuf);
+									if ((srsIndex=s.indexOf("srsName"))>0)
+										{
+										dis.reset();
+										dis.skip(srsIndex); // index of 'srsName' in  the buffer
+										dis.mark(bufSize+1);
+										dis.read(cbuf,0,bufSize);
+										srsSource = new String(cbuf);
+									    if (srsSource.indexOf("\"")>0)
+											{
+									    	srsIndex = srsSource.indexOf("\"")+1;
+										    srsSource = srsSource.substring(srsSource.indexOf("\"")+1);
+										    if (srsSource.indexOf("\"")>0)
+										    	{
+										    	srsSource = srsSource.substring(0,srsSource.indexOf("\""));
+										    	break;
+										    	}
+										    else
+										    	{						    	
+												dis.reset();
+												dis.skip(srsIndex); // index of first '"' in  the buffer
+												dis.mark(bufSize+1);
+												srsSource = "";
+												while(dis.read(cbuf,0,bufSize) != -1)
+													{
+													s = new String(cbuf);
+													srsSource = srsSource.concat(s);
+													if (srsSource.indexOf("\"")>0)
+												    	{
+												    	srsSource = srsSource.substring(0,srsSource.indexOf("\""));
+												    	breakOut = true;
+												    	break;
+												    	}
+													}
+										    	}
+											}
+										else if (srsSource.indexOf("\'")>0)
+											{
+											srsIndex = srsSource.indexOf("\'")+1;
+											srsSource = srsSource.substring(srsSource.indexOf("\'")+1);
+										    if (srsSource.indexOf("\'")>0)
+										    	{
+										    	srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
+										    	break;
+										    	}
+										    else
+									    		{
+												dis.reset();
+												dis.skip(srsIndex); // index of first "'" in  the buffer
+												dis.mark(bufSize+1);
+												srsSource = "";
+												while(dis.read(cbuf,0,bufSize) != -1)
+													{
+													s = new String(cbuf);
+													srsSource = srsSource.concat(s);
+													if (srsSource.indexOf("\'")>0)
+												    	{
+												    	srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
+												    	breakOut = true;
+												    	break;
+												    	}
+													}
+										    	}
+											}
+										}
+									if(breakOut == false)
+										{
+										dis.reset();
+										dis.skip(bufSize-8); // 8 because 'srsName' have 7 char
+										dis.mark(bufSize+1);
+										srsSource = null;
+										}
+									else
+										{
+										break;
+										}
+									}
+								}
+							System.out.println(srsSource);
+							dis.close();
+							dump("GetFeature end srsName extract");
+//**************************************************************************************************************************************************************************
+							
+							String tempFileName = "transform_GetFeature"+UUID.randomUUID().toString();
+						    tempFile = createTempFile(tempFileName, ".xml");			    
+							
+							dump("GetFeature tempFile created");
+							
+						    tempFos = new FileOutputStream(tempFile);
+							
+					//*******************************************************************************************************************************************
+							dump("GetFeature tempFos created");
+							
+						    ByteArrayInputStream xslt = null;
+						    List<String> featureTypeListToRemove = null;
+						    List<String> featureTypeListToKeep = null;
+
+						    xslt = new ByteArrayInputStream(buildGetFeatureXSLT(iServer).toString().getBytes());
+
+						    XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+						    String user =(String)getUsername(getRemoteServerUrl(iServer));
+						    String password = (String)getPassword(getRemoteServerUrl(iServer));
+						    ResourceResolver rr = null;
+						    if (user!=null && user.length()>0)
+								{			
+								rr = new ResourceResolver(user,password);
+								xmlReader.setEntityResolver(rr);
+								
+								dump("GetFeature xmlReader set");
+								}
+						    // END Added to hook in my EntityResolver					  
+						    xml = new BufferedInputStream(new FileInputStream(filePathList.get(iServer)));
+						    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
+						    transformer = tFactory.newTransformer(new StreamSource(xslt));
+						    //write the tempFile via tempFos
+							transformer.transform(saxSource, new StreamResult(tempFos));
+							
+							tempFos.close();
+							
+							dump("GetFeature tempFos closed");
+					//*******************************************************************************************************************************************
+/*
+							BufferedReader  dis = new BufferedReader(new FileReader(tempFileName+".xml"));
+							String s = null;
+							String srsSource = null;
+							
+							//Extract the srsName GML attribute value. Example of searched value: http://www.opengis.net/gml/srs/epsg.xml#4181
+							while ((s = dis.readLine()) != null)
+								{
+								dump("GetFeature begin while loop");
+								
+								if (s.indexOf("srsName")>0)
+									{
+									dump("GetFeature if index of srsName");
+								    srsSource= s.substring(s.indexOf("srsName"));
+									dump("GetFeature substring at index");
+								    if (srsSource.indexOf("\"")>0)
+										{
+										dump("GetFeature if index of bkslash 1");
+									    srsSource = srsSource.substring(srsSource.indexOf("\"")+1);
+										dump("GetFeature substring at index bkslash 1");
+									    srsSource = srsSource.substring(0,srsSource.indexOf("\""));
+										dump("GetFeature substring at index bkslash 2");
+										}
+									else
+										{
+										dump("GetFeature else index of bkslash 1");
+										if (srsSource.indexOf("\'")>0)
+											{
+											dump("GetFeature if index of bkslash 2");
+											srsSource = srsSource.substring(srsSource.indexOf("\'")+1);
+											dump("GetFeature substring at index bkslash 1");
+											srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
+											dump("GetFeature substring at index bkslash 2");
+											}
+										}
+									dump("GetFeature break while loop");									
+									break;
+									}									
+								dump("GetFeature end while loop");
+								}
+							dis.close();
+*/
+								
+							String filter= null;			
+							if (featureTypePathList.get(iServer).length()>0)
+								{
+								filter =getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypePathList.get(iServer));
+								dump("GetFeature filter get");
+								}
+							// filter =getFeatureTypeFilter(getRemoteServerUrl(iServer));
+
+
+						    Map hints = new HashMap();		
+						    hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+
+						    GMLFeatureCollection  doc =null;
+						    if (user!=null && user.length()>0)
+								{
+								doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
+								}
+							else
+								doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+
+						    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");
+
+						    tempFos = new FileOutputStream(tempFile2);
+							
+							dump("GetFeature tempFos created");
+						    
+						    if (filter !=null)
+								{
+								dump(filter);
+								}
+//***********************************************************************************************************************!!!!********************************************************************************************				    
+							filterFC( tempFos, filter,doc,getServletUrl(req),srsSource);
+							if (filter!=null)
+								{
+								tempFos.close();
+								
+								dump("GetFeature tempFos closed");
+								
+								if (tempFile!=null) tempFile.delete();
+									tempFile = tempFile2;    
+								}
+
+							tempGetFeatureFile.add(tempFile);
+							
+							dump("GetFeature end for loops");
+							}
+						
+						dump("GetFeature begin of append");
+						WFSGetFeatureRenameFt.append("  <!-- Whenever you match any node or any attribute -->");
+						WFSGetFeatureRenameFt.append("<xsl:template match=\"node()|@*\">\n");
+						WFSGetFeatureRenameFt.append("<!-- Copy the current node -->\n");
+						WFSGetFeatureRenameFt.append("<xsl:copy>\n");
+						WFSGetFeatureRenameFt.append("<!-- Including any attributes it has and any child nodes -->\n");
+						WFSGetFeatureRenameFt.append("<xsl:apply-templates select=\"@*|node()\"/>\n");
+						WFSGetFeatureRenameFt.append("</xsl:copy>\n");
+						WFSGetFeatureRenameFt.append("</xsl:template>\n");
+						WFSGetFeatureRenameFt.append("</xsl:stylesheet>");
+						
+						File tempFileXslt = createTempFile("transform_GetFeature_xslt"+UUID.randomUUID().toString(), ".xml");
+						PrintWriter bwrite = new PrintWriter(new BufferedWriter(new FileWriter(tempFileXslt)));
+						bwrite.write(WFSGetFeatureRenameFt.toString());
+						bwrite.flush();
+						bwrite.close();
+						
+						dump("GetFeature begin of merge");
+						tempFile = mergeGetFeatures(tempGetFeatureFile);
+						dump("GetFeature end of merge");
+						}
+					}
+				/*
+				 * if a xslt file exists then 
+				 * post-treat the response
+				 */				
+				if (isPostTreat)
+					{
+					dump("GetFeature begin is PostTreat");
+				    PrintWriter out = resp.getWriter();
+				    transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				    if (tempFile !=null) transformer.transform(new StreamSource(tempFile), new StreamResult(out));
+				    else transformer.transform(new StreamSource(filePathList.get(0)), new StreamResult(out)); 
+				    //delete the temporary file
+				    tempFile.delete();
+				    out.close();
+				    //the job is done. we can go out
+				    dump("GetFeature the job is done. we can go out");
+				    return;
+					}
+				}
+
+		    //No post rule to apply. 
+		    //Copy the file result on the output stream
+		    
+		    resp.setContentType("text/xml");
+		    
+		    InputStream is = null;
+		    dump("GetFeature 1");
+		    if (tempFile == null )
+				{
+		    	dump("GetFeature if 1");
+				is  = new FileInputStream(filePathList.get(0));
+				resp.setContentLength((int)new File(filePathList.get(0)).length());
+				}
+		    else
+				{
+		    	dump("GetFeature else 1");
+				is = new FileInputStream(tempFile);
+				resp.setContentLength((int)tempFile.length());
+				}
+		    
+		    
+		    //OutputStream os = resp.getOutputStream();	    
+		    dump("GetFeature 2");	    
+		    BufferedOutputStream os = new BufferedOutputStream( resp.getOutputStream() );
+		      	     
+		    byte byteRead[] = new byte[ 32768 ];
+		    int index = is.read( byteRead, 0, 32768 );
+		    dump("GetFeature 2b");
+		    try 
+				{		
+				while(index != -1) 
+					{			    
+				    os.write( byteRead, 0, index );
+				    index = is.read( byteRead, 0, 32768 );		
+					}		
+				os.flush();
+				is.close();
+				} 
+			catch(Exception e)
+				{
+				e.printStackTrace();
+				dump("BufferedOutputStream ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
+				dump("BufferedOutputStream ERROR",e.toString());
+				}
+			finally
+				{		
+				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+				Date d = new Date();	
+				dump("SYSTEM","ClientResponseDateTime",dateFormat.format(d));		
+
+				if (tempFile !=null)
+					{
+					dump("SYSTEM","ClientResponseLength",tempFile.length());
+					tempFile.delete();	
+					}
+				}
+			dump("GetFeature 3");
 			}
-
-		}
-		/*
-		 * if a xslt file exists then 
-		 * post-treat the response
-		 */				
-		if (isPostTreat){		    
-		    PrintWriter out = resp.getWriter();
-		    transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-		    if (tempFile !=null) transformer.transform(new StreamSource(tempFile), new StreamResult(out));
-		    else transformer.transform(new StreamSource(filePathList.get(0)), new StreamResult(out)); 
-		    //delete the temporary file
-		    tempFile.delete();
-		    out.close();
-		    //the job is done. we can go out
-		    return;
-
-		}
-	    }
-
-	    //No post rule to apply. 
-	    //Copy the file result on the output stream
-	    
-	    resp.setContentType("text/xml");
-	    
-	    InputStream is = null;
-	    if (tempFile == null ) {		
-		is  = new FileInputStream(filePathList.get(0));
-		resp.setContentLength((int)new File(filePathList.get(0)).length());
-	    }
-	    else {
-		is = new FileInputStream(tempFile);
-		resp.setContentLength((int)tempFile.length());
-	    }
-	    
-	    
-	    //OutputStream os = resp.getOutputStream();	    
-	    	    
-	    BufferedOutputStream os = new BufferedOutputStream( resp.getOutputStream() );
-	      	     
-	    byte byteRead[] = new byte[ 32768 ];
-	    int index = is.read( byteRead, 0, 32768 );
-	    try {		
-		while(index != -1) {			    
-		    os.write( byteRead, 0, index );
-		    index = is.read( byteRead, 0, 32768 );		
-		}		
-		os.flush();
-		is.close();
-	    } catch(Exception e){
-		e.printStackTrace();
-		dump("ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
-		dump("ERROR",e.toString());
-	    }finally{		
-		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-		Date d = new Date();	
-		dump("SYSTEM","ClientResponseDateTime",dateFormat.format(d));		
-
-		if (tempFile !=null) {
-		    dump("SYSTEM","ClientResponseLength",tempFile.length());
-		    tempFile.delete();	
-		}
-	    }		 
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    dump("ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
-	    dump("ERROR",e.toString());
+		catch (Exception e)
+			{
+		    e.printStackTrace();
+		    dump("Transform ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
+		    dump("Transform ERROR",e.toString());
+			}
 	}
 
-    }
-
-
+//************************************************************************************************************************************************************************************************************
+//************************************************************************************************************************************************************************************************************
     private File mergeGetFeatures(List<File> tempGetFeaturesList){
 	if (tempGetFeaturesList.size() == 0) return null;
 
 
 
 	try{
+		dump("mergeGetFeatures enter try");
 	    File fMaster = tempGetFeaturesList.get(0);
 	    DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
 	    db.setNamespaceAware(true);
 	    Document documentMaster = db.newDocumentBuilder().parse(fMaster);
 	    DOMImplementationLS implLS = null;
-	    if(documentMaster.getImplementation().hasFeature("LS", "3.0")) {
-		implLS = (DOMImplementationLS)
-		documentMaster.getImplementation();
-	    }
-	    else { 
-		DOMImplementationRegistry enregistreur = 
+	    if(documentMaster.getImplementation().hasFeature("LS", "3.0"))
+			{
+			implLS = (DOMImplementationLS)
+			documentMaster.getImplementation();
+			}
+	    else 
+			{ 
+			DOMImplementationRegistry enregistreur = 
 		    DOMImplementationRegistry.newInstance();
-		implLS = (DOMImplementationLS)
-		enregistreur.getDOMImplementation("LS 3.0");
-	    }
-	    if(implLS == null){
-		dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-		return fMaster;
-	    }
+			implLS = (DOMImplementationLS)
+			enregistreur.getDOMImplementation("LS 3.0");
+			}
+	    if(implLS == null)
+			{
+			dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+			return fMaster;
+			}
 	    NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs","FeatureCollection");
 	    Node ItemMaster = nlMaster.item(0);
+	    for (int i=1;i<tempGetFeaturesList.size();i++)
+			{
+			File fChild = tempGetFeaturesList.get(i);
+			Document documentChild = db.newDocumentBuilder().parse(fChild);
+			NodeList nlFeatureMember = documentChild.getElementsByTagNameNS("http://www.opengis.net/gml","featureMember");
+			for (int j=0;j<nlFeatureMember.getLength();j++)
+				{		    		    
+				ItemMaster.insertBefore(documentMaster.importNode(nlFeatureMember.item(j).cloneNode(true), true), null);
+				}	    
+			}
 
-	    for (int i=1;i<tempGetFeaturesList.size();i++){
-		File fChild = tempGetFeaturesList.get(i);
-		Document documentChild = db.newDocumentBuilder().parse(fChild);
-
-		NodeList nlFeatureMember = documentChild.getElementsByTagNameNS("http://www.opengis.net/gml","featureMember");
-		for (int j=0;j<nlFeatureMember.getLength();j++){		    		    
-		    ItemMaster.insertBefore(documentMaster.importNode(nlFeatureMember.item(j).cloneNode(true), true), null);
-		}	    
-	    }
-
-
-
-	    File f = createTempFile(UUID.randomUUID().toString(),".xml");
-
+	    File f = createTempFile("mergeGetFeatures_f_"+UUID.randomUUID().toString(),".xml");
 	    FileOutputStream fluxSortie = new FileOutputStream(f);
 	    LSSerializer serialiseur = implLS.createLSSerializer();
 	    LSOutput sortie = implLS.createLSOutput();
@@ -1097,34 +1305,47 @@ public class WFSProxyServlet extends ProxyServlet {
 	    serialiseur.write(documentMaster, sortie);
 	    fluxSortie.flush();
 	    fluxSortie.close();
-
+	    
+	    dump("mergeGetFeatures before XML reader");
 	    XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 	    String user =(String)getUsername(getRemoteServerUrl(0));
 	    String password = (String)getPassword(getRemoteServerUrl(0));
 	    ResourceResolver rr = null;
-	    if (user!=null && user.length()>0){			
-		rr = new ResourceResolver(user,password);
-		xmlReader.setEntityResolver(rr);
-	    }
-
+	    if (user!=null && user.length()>0)
+			{
+			dump("mergeGetFeatures before resolver");
+			rr = new ResourceResolver(user,password);
+			xmlReader.setEntityResolver(rr);
+			}
+	    
+	    dump("mergeGetFeatures before InputStream");
 	    InputStream xslt = new ByteArrayInputStream(WFSGetFeatureRenameFt.toString().getBytes());
 	    InputStream xml = new BufferedInputStream(new FileInputStream(f));
+		//xmlReader has detect user and password!
 	    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
-	    File f2 = createTempFile(UUID.randomUUID().toString(),".xml");
-
+	    File f2 = createTempFile("mergeGetFeatures_f2_"+UUID.randomUUID().toString(),".xml");
 	    FileOutputStream tempFos = new FileOutputStream(f2);
 	    TransformerFactory tFactory = TransformerFactory.newInstance();
+		//InputStream xslt = new ByteArrayInputStream(WFSGetFeatureRenameFt.toString().getBytes());
 	    Transformer  transformer = tFactory.newTransformer(new StreamSource(xslt));
+	    dump("mergeGetFeatures before transformer.transform test4");
+		//this line is the problem!!!
 	    transformer.transform(saxSource, new StreamResult(tempFos));
-
-	    tempFos.close();	    
+		//transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+	    dump("mergeGetFeatures after transformer.transform");
+		
+	    tempFos.close();
+	    
 	    return f2;
-	}catch(Exception e){
+		}
+		catch(Exception e)
+		{
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    dump("ERROR on mergeGetFeatures",e.getMessage());
 	    return null;
-	}
+		}
     }
+    
     private File mergeDescribeFeatureType(List<File> tempFileDescribeType){
 	if (tempFileDescribeType.size() == 0) return null;
 	try{
@@ -1186,7 +1407,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 	    }
 
-	    File f = createTempFile(UUID.randomUUID().toString(),".xml");
+	    File f = createTempFile("mergeDescribeFeatureType_f_"+UUID.randomUUID().toString(),".xml");
 
 	    FileOutputStream fluxSortie = new FileOutputStream(f);
 	    LSSerializer serialiseur = implLS.createLSSerializer();
@@ -1241,7 +1462,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		}
 	    }	        	        	        	        
 
-	    File f = createTempFile(UUID.randomUUID().toString(),".xml");
+	    File f = createTempFile("mergeCapabilities_f_"+UUID.randomUUID().toString(),".xml");
 
 	    FileOutputStream fluxSortie = new FileOutputStream(f);
 	    LSSerializer serialiseur = implLS.createLSSerializer();
@@ -1402,30 +1623,36 @@ public class WFSProxyServlet extends ProxyServlet {
 
 
 	    Filter filter = null;
-	    if (customFilter!=null){
-		InputStream is = new ByteArrayInputStream(customFilter.getBytes());		 
-
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();		       
-		Document dom = db.parse(is);
-		// first grab a filter node
-		NodeList nodes = dom.getElementsByTagName("Filter");
-		if (nodes.getLength() == 0) nodes = dom.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
-		for (int j = 0; j < nodes.getLength(); j++) {
-		    Element filterNode = (Element) nodes.item(j);
-		    NodeList list = filterNode.getChildNodes();
-		    Node child = null;
-
-		    for (int k = 0; k < list.getLength(); k++) {
-			child = list.item(k);
-			if ((child == null)
-				|| (child.getNodeType() != Node.ELEMENT_NODE)) {
-			    continue;
-			}
-			filter = FilterDOMParser.parseFilter(child);		                
+	    if (customFilter!=null)
+	    	{
+			InputStream is = new ByteArrayInputStream(customFilter.getBytes());		 
+	
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();		       
+			Document dom = db.parse(is);
+			// first grab a filter node
+			NodeList nodes = dom.getElementsByTagName("Filter");
+			if (nodes.getLength() == 0)
+				{
+				nodes = dom.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+				}
+			for (int j = 0; j < nodes.getLength(); j++)
+				{
+			    Element filterNode = (Element) nodes.item(j);
+			    NodeList list = filterNode.getChildNodes();
+			    Node child = null;
+	
+			    for (int k = 0; k < list.getLength(); k++) 
+			    	{
+			    	child = list.item(k);
+			    	if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) 
+			    		{
+			    		continue;
+			    		}
+			    	filter = FilterDOMParser.parseFilter(child);		                
+			    	}
+				}		
 		    }
-		}		
-	    }
 
 
 	    FeatureTransformer ft = new FeatureTransformer();
