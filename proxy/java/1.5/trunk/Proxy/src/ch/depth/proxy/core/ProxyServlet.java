@@ -147,9 +147,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	    requestPreTreatmentPOST(req, resp);
 	}
 	finally{
-	    deleteTempFileList();
+	    //deleteTempFileList();
+	    writeInLog(dateFormat.format(d),req);
 	}
-	writeInLog(dateFormat.format(d),req);
+	
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -162,9 +163,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	try{	
 	    requestPreTreatmentGET(req,  resp);
 	}finally{
-	    deleteTempFileList();
+	    //deleteTempFileList();
+	    writeInLog(dateFormat.format(d),req);
 	}
-	writeInLog(dateFormat.format(d),req);
+	
     }
 
     protected abstract void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp);    
@@ -454,7 +456,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    String tmpDir = System.getProperty("java.io.tmpdir");
 	    dump (" tmpDir :  "+tmpDir);
 
-	    File tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));
+	    File tempFile = createTempFile("sendData_"+UUID.randomUUID().toString(), getExtension(responseContentType));
 
 	    FileOutputStream tempFos = new FileOutputStream(tempFile);
 
