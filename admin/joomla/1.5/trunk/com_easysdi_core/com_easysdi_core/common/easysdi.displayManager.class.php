@@ -131,7 +131,35 @@ class displayManager{
 		$id = JRequest::getVar('id');
 		$toolbar =JRequest::getVar('toolbar',1);
 		$print =JRequest::getVar('print',0);
+		$buttonsHtml;
+		$menuLinkHtml;
+		$queryPartnerLogo;
+		$supplier;
+		$product_creation_date;
+		$product_update_date;
+		
+		$db =& JFactory::getDBO();
+		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($queryPartnerID);
+			$partner_id = $db->loadResult();
+			
+		$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
+			$db->setQuery($queryPartnerLogo);
+			$partner_logo = $db->loadResult();
+		
+		$query="select u.name from #__easysdi_community_partner p inner join #__users u on p.user_id = u.id WHERE p.partner_id = ".$partner_id;
+   			$db->setQuery($query);
+   			$supplier= $db->loadResult();
+			
+		$query = "select creation_date from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($query);
+			$product_creation_date = $db->loadResult();
+		
+		$query = "select update_date from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($query);
+			$product_update_date = $db->loadResult();
 
+			
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
@@ -155,46 +183,102 @@ class displayManager{
 		
 		$document = new DomDocument();
 		@$document->loadXML($doc);
-		
 		$processor->importStylesheet($xslStyle);
-		$myHtml = $processor->transformToXml($xml);
+		$xmlToHtml = $processor->transformToXml($xml);
+		$myHtml;
 		if ($toolbar==1){
-			echo "<table width='100%'><tr align='right'> <td><a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=exportPdf&id=$id\"> <img src=\"components/com_easysdi_core/img/pdfButton.png\" alt=\"PDF\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\" href=\"./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id\"> <img src=\"components/com_easysdi_core/img/xmlButton.png\" alt=\"XML\"  /></a> <a  class=\"buttonheading\" target=\"_TOP\"  href=\"./index.php?tmpl=component&option=$option&task=$task&id=$id&toolbar=0&print=1\" onclick=\"window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;\"><img src=\"components/com_easysdi_core/img/printButton.png\" alt=\"PRINT\"  /></td></tr></table>";
+			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
+				<td><div id=\"exportPdf\"/></td>
+					<td><div id=\"exportXml\"/></td>
+					<td><div id=\"printMetadata\"/></td>
+					<td><div id=\"orderProduct\"/></a></td>
+				</td></tr></table>";		
 		}
 		if ($print ==1 ){
-			echo "<script>window.print();</script>";
-
+			$myHtml .= "<script>window.print();</script>";
+			
 		}
 		
 		//Affichage des onglets
-	echo "	<div id=\"container\">
-			  <div id=\"menu\">
-			    <div class=\"box\">
-			      <a href=\"./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id\" rel=\"{handler:<\"iframe\",size:{x:510,y:510}}\" >
-			        ".JText::_('EASYSDI_METADATA_ABSTRACT_TAB')."
-			        <span class=\"topleft\"></span>
-			        <span class=\"topright\"></span>
-			      </a>
-			    </div>
-			    <div class=\"box\">
-			      <a href=\"./index.php?tmpl=component&option=com_easysdi_core&task=showCompleteMetadata&id=$id\" rel=\"{handler:'iframe',size:{x:510,y:510}}\">
-			        ".JText::_('EASYSDI_METADATA_COMPLETE_TAB')."
-			        <span class=\"topleft\"></span>
-			        <span class=\"topright\"></span>
-			      </a>
-			    </div>
-			    <div class=\"box\">
-			      <a href=\"./index.php?tmpl=component&option=com_easysdi_core&task=showDiffusionMetadata&id=$id\" rel=\"{handler:'iframe',size:{x:510,y:510}}\">
-			       ".JText::_('EASYSDI_METADATA_DIFFUSION_TAB')."
-			        <span class=\"topleft\"></span>
-			        <span class=\"topright\"></span>
-			      </a>
-			    </div>
-			  </div>
-			</div>";
+		if ($print !=1 ){
+		$index = JRequest::getVar('tabIndex');
+		$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
+		
+		$menuLinkHtml .= $tabs->startPane("catalogPane");
+		$menuLinkHtml .= $tabs->startPanel(JText::_("EASYSDI_METADATA_ABSTRACT_TAB"),"catalogPanel1");
+		$menuLinkHtml .= $tabs->endPanel();
+		$menuLinkHtml .= $tabs->startPanel(JText::_("EASYSDI_METADATA_COMPLETE_TAB"),"catalogPanel2");
+		$menuLinkHtml .= $tabs->endPanel();
+		$menuLinkHtml .= $tabs->startPanel(JText::_("EASYSDI_METADATA_DIFFUSION_TAB"),"catalogPanel3");
+		$menuLinkHtml .= $tabs->endPanel();
+		$menuLinkHtml .= $tabs->endPane();
+		
+		//Define links for onclick event
+		$myHtml .= "<script>\n";
 		
 		
-		echo $myHtml ;
+		//Manage display class
+		
+		$myHtml .= "window.addEvent('domready', function() {
+		
+		$('catalogPanel1').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id', '_self');
+		});
+		$('catalogPanel2').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showCompleteMetadata&id=$id', '_self');
+		});
+		$('catalogPanel3').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showDiffusionMetadata&id=$id', '_self');
+		});
+		$('exportPdf').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=$option&task=exportPdf&id=$id', '_self');
+		});
+		$('exportXml').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id', '_self');
+		});
+		$('printMetadata').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+		});
+		$('orderProduct').addEvent( 'click' , function() { 
+			window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
+		});
+
+		task = '$task';
+		$('catalogPanel1').className = 'closed';
+		$('catalogPanel2').className = 'closed';
+		$('catalogPanel3').className = 'closed';
+		if(task == 'showMetadata'){
+        	$('catalogPanel1').className = 'open';
+		}
+		if(task == 'showCompleteMetadata'){
+        	$('catalogPanel2').className = 'open';
+		}
+		if(task == 'showDiffusionMetadata'){
+        	$('catalogPanel3').className = 'open';
+		}
+		});\n"; 
+
+		$myHtml .= "</script>";
+
+		}
+		
+		//Workaround to avoid printf problem with text with a "%", must
+		//be changed to "%%".
+		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
+		$xmlToHtml = str_replace("__ref__asit_", "%", $xmlToHtml);
+		$myHtml .= $xmlToHtml;
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
+		
+		$temp = explode(" ", $product_creation_date);
+		$temp = explode("-", $temp[0]);
+		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		$temp = explode(" ", $product_update_date);
+		$temp = explode("-", $temp[0]);
+		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+		
+		printf($myHtml, $logoWidth, $logoHeight, $partner_logo, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
+		
 
 			
 		/***Add consultation informations*/
