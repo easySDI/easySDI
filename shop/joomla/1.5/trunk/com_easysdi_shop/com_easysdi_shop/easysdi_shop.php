@@ -43,7 +43,6 @@ require_once(JPATH_BASE.DS.'administrator'.DS.'components'.DS.'com_easysdi_core'
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
-
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
