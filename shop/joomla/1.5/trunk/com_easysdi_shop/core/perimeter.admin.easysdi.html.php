@@ -183,20 +183,23 @@ class HTML_perimeter {
 	
 	
 	
-	function listPerimeter($use_pagination, $rows, $pageNav,$option){
+	function listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_PERIMETER"));
 		
+		$ordering = ($filter_order == 'ordering');
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">
 		
 		<table width="100%">
 			<tr>
-				<td align="right">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listPerimeter\');" />			
+				<td align="left" width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -208,13 +211,15 @@ class HTML_perimeter {
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_DEF"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_ID"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_WFS_URL"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_LAYER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_PERIMETER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PERIMETER_PERIMETER_DESC"); ?></th>
+				<th class='title' width="10px"><?php echo JText::_("EASYSDI_PERIMETER_DEF"); ?></th>
+				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
+				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPerimeter' ); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_WFS_URL"), 'wfs_url', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_LAYER_NAME"), 'layer_name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_NAME"), 'perimeter_name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_DESC"), 'perimeter_desc', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -225,10 +230,43 @@ class HTML_perimeter {
 			$row = $rows[$i];	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
+				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 								
-				<td><?php echo $row->id; ?></td>
+				<td width="30px"><?php echo $row->id; ?></td>
+				<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+				<td width="100px" align="right">
+					<?php
+					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupPerimeter', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownPerimeter', '', false ); ?>
+		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupPerimeter', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownPerimeter', 'Move Down', isset($rows[$i+1]) ); ?>
+					<?php
+						}		
+					}
+					else{ 
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownPerimeter', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupPerimeter', '', false ); ?>
+		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownPerimeter', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupPerimeter', 'Move Up', isset($rows[$i+1]) ); ?>
+					<?php
+						}
+					}?>
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+	            </td>	
 				<td><?php echo $row->wfs_url; ?></td>				
 				<td><?php echo $row->layer_name; ?></td>
 				<td><?php echo $row->perimeter_name; ?></td>
@@ -257,6 +295,8 @@ class HTML_perimeter {
 	  	<input type="hidden" name="task" value="listPerimeter" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		

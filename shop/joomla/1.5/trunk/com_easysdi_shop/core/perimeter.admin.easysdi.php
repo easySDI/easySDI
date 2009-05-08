@@ -93,15 +93,33 @@ class ADMIN_perimeter {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
+		/*$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
+		*/
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		/*$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
+		*/
+		$limit = JRequest::getVar('limit', 10 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		$use_pagination = JRequest::getVar('use_pagination',0);		
+		
+		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
+		$where="";
+		if ($search)
+		{
+			$where = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(wfs_url) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(layer_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(perimeter_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(perimeter_desc) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
 		$query = "SELECT COUNT(*) FROM #__easysdi_perimeter_definition";
 		
 		//$query .= $filter;
@@ -109,29 +127,153 @@ class ADMIN_perimeter {
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "id" and $filter_order <> "wfs_url" and $filter_order <> "layer_name" and $filter_order <> "perimeter_name" and $filter_order <> "perimeter_desc" and $filter_order <> "ordering")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		// Recherche des enregistrements selon les limites
-		
-		
-		$query = "SELECT id,wfs_url,layer_name,perimeter_name,perimeter_desc FROM #__easysdi_perimeter_definition ";		
+		$query = "SELECT id,wfs_url,layer_name,perimeter_name,perimeter_desc, ordering FROM #__easysdi_perimeter_definition ";		
+		$query .= $where;
+		$query .= $orderby;
 									
-		
-	
 		if ($use_pagination) {
+			$db->setQuery( $query ,$limitstart,$limit);	
+		}else{
+			$db->setQuery( $query);
+		}	
+	
+		/*if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}
 		$db->setQuery( $query );
+		*/
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			echo $db->stderr();
 			return false;
 		}		
 	
-		HTML_Perimeter::listPerimeter($use_pagination, $rows, $pageNav,$option);	
+		HTML_Perimeter::listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 
 	}
 	
+	function goDownPerimeter($cid,$option){
 
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_perimeter_definition  where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+							
+			$query = "select * from  #__easysdi_perimeter_definition  where ordering > $row1->ordering   order by ordering ";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_perimeter_definition set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_perimeter_definition set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+
+			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+	}
+	function goUpPerimeter($cid,$option){
+
+			global  $mainframe;
+			$db =& JFactory::getDBO();
+			
+			$query = "select * from  #__easysdi_perimeter_definition where id=$cid[0]";
+			$db->setQuery( $query );
+			
+			$row1 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+								
+			$query = "select * from  #__easysdi_perimeter_definition  where ordering < $row1->ordering  order by ordering desc";
+			$db->setQuery( $query );
+			$row2 = $db->loadObject() ;
+			if ($db->getErrorNum()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "update #__easysdi_perimeter_definition set ordering= $row1->ordering where id =$row2->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}		
+			
+			$query = "update #__easysdi_perimeter_definition set ordering= $row2->ordering where id =$row1->id";
+			$db->setQuery( $query );				
+			if (!$db->query()) {		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
+			}	
+			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );				
+	}
+	
+	function saveOrderPerimeter($cid, $option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$query = "select count(*) from  #__easysdi_metadata_tabs ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+
+		if (empty( $cid)) {
+			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
+		}
+
+		$rowMPerimeter =& new Perimeter( $db );
+		
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}
+		
+		$order = $_POST[order];
+		
+		// update ordering values
+		
+		for ($i = 0; $i < $total; $i++)
+		{
+			$rowMPerimeter->load($cid[$i]);
+			
+			if ($rowMPerimeter->ordering != $order[$i])
+			{
+				$rowMPerimeter->ordering = $order[$i];
+				if (!$rowMPerimeter->store()) {
+					return JError::raiseError( 500, $db->getErrorMsg() );
+				}
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+	}
+	
 	function editPerimeter( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowPerimeter = new Perimeter( $database );
