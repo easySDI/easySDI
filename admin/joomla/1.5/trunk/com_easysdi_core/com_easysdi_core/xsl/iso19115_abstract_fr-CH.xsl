@@ -16,36 +16,54 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 
  
 <xsl:template match='gmd:graphicOverview[1]'>
-	<tr valign="top"><td>Synoptique:</td><td>
+	<tr valign="top"><td class="title">Synoptique:</td><td>
    <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
    </td></tr>
 </xsl:template>
 
 <xsl:template match='gmd:graphicOverview[2]'>
-   <tr valign="top"><td>Extrait:</td><td>
+   <tr valign="top"><td class="title">Extrait:</td><td>
      <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
    </td></tr>
 </xsl:template>
 
+
 <xsl:template match="gmd:MD_Metadata">
 
-
-<h2 class="contentheading">Metadonnée</h2>
 <div id="metadata" class="contentin">
+<!-- Title of the metadata -->
+<h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
 
-<h3>Identification</h3>
-<table  >
-<tr valign="top"><td>Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
-<tr valign="top"><td>Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td>Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/></td></tr>
+<table class="descr" id="metadataTitle">
+ <tr>
+ 	<td rowspan="2"><img width="__ref__asit_1$s" heigth="__ref__asit_2$s" src="__ref__asit_3$s"/></td>
+	<td>Fournisseur: __ref__asit_4$s</td>
+ </tr>
+ <tr>
+ 	<td>Fiche créée le __ref__asit_5$s, mise à jour le __ref__asit_6$s</td>
+ </tr>
+</table>
+<!-- The buttons links -->
+__ref__asit_7$s
+<br/>
+<!-- The menu links -->
+__ref__asit_8$s
+<!-- <h3>Identification</h3> -->
+<hr/>
 
-<tr valign="top"><td>Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td>Couverture spatiale:</td><td>
+<table class="descr"  >
+<!--<tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
+<tr valign="top"><td class="title">Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></td></tr>
+-->
+<tr valign="top"><td class="title">Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/></td></tr>
+
+<tr valign="top"><td class="title">Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/></td></tr>
+<tr valign="top"><td class="title">Couverture spatiale:</td><td>
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 </td></tr>
 
-<tr valign="top"><td>Synoptique:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
-<tr valign="top"><td>Extrait:</td><td>
+<tr valign="top"><td class="title">Synoptique:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
+<tr valign="top"><td class="title">Extrait:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
  	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Extrait' ">
 				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
@@ -54,17 +72,19 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 </td>
 </tr>
 
-<tr valign="top"><td>Sous-produits:</td><td>
+<tr valign="top"><td class="title">Sous-produits:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
       <xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Sous-produits' ">
 			<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
       </xsl:if>
 </xsl:for-each>
-</td></tr>
-<tr valign="top"><td>Thématique*:</td><td>
-	<table>
+</td>
+</tr>
+
+<tr valign="top"><td class="title">Thématique*:</td><td>
+	<table class="descr">
 	<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
-		<tr valign="top"><td>
+		<tr valign="top"><td class="title">
 		<xsl:call-template name="categoryCodeTemplate">
 			<xsl:with-param name="categoryCode" select="gmd:MD_TopicCategoryCode"/>
 		</xsl:call-template>
@@ -73,15 +93,12 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	</table>
 </td></tr>
 </table>
-
-
-<hr></hr>
-<h3>Point de contact</h3>
-<table  >
-<tr valign="top"><td>Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td>Nom:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></td></tr>
-<tr valign="top"><td>Téléphone:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/></td></tr>
-<tr valign="top"><td>Email:</td><td>
+<br/>
+<table class="descr" id="contactInfo">
+<tr valign="top"><td class="title">Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
+<tr valign="top"><td class="title">Nom:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></td></tr>
+<tr valign="top"><td class="title">Téléphone:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/></td></tr>
+<tr valign="top"><td class="title">Email:</td><td>
 <xsl:element name="a">
 <xsl:attribute name="href">
 mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/>
