@@ -277,9 +277,10 @@ class displayManager{
 		$temp = explode("-", $temp[0]);
 		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
 		
-		printf($myHtml, $logoWidth, $logoHeight, $partner_logo, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
+		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$partner_logo.'">';
 		
-
+		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
+		
 			
 		/***Add consultation informations*/
 		$db =& JFactory::getDBO();
