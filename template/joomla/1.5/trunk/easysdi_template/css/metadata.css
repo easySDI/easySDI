@@ -65,7 +65,7 @@ div#metadata .descr{
 
 div#exportPdf{
 	background-color:transparent;
-	background-image:url(../images/openlayers/btn_facturer_1.png);
+	background-image:url(../images/pdfButton.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:26px;
@@ -73,12 +73,12 @@ div#exportPdf{
 }
 
 div#exportPdf:hover{ 
-	background-image:url(../images/openlayers/btn_facturer_2.png);
+	background-image:url(../images/pdfButton_pressed.png);
 }
 
 div#printMetadata{
 	background-color:transparent;
-	background-image:url(../images/openlayers/btn_imprimer_1.png);
+	background-image:url(../images/printButton.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:26px;
@@ -86,12 +86,12 @@ div#printMetadata{
 }
 
 div#printMetadata:hover{ 
-	background-image:url(../images/openlayers/btn_imprimer_2.png);
+	background-image:url(../images/printButton_pressed.png);
 }
 
 div#exportXml{
 	background-color:transparent;
-	background-image:url(../images/openlayers/btn_export_1.png);
+	background-image:url(../images/xmlButton.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:26px;
@@ -99,12 +99,12 @@ div#exportXml{
 }
 
 div#exportXml:hover{ 
-	background-image:url(../images/openlayers/btn_export_2.png);
+	background-image:url(../images/xmlButton_pressed.png);
 }
 
 div#orderProduct{
 	background-color:transparent;
-	background-image:url(../images/openlayers/btn_commander_1.png);
+	background-image:url(../images/orderProduct.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:26px;
@@ -112,5 +112,5 @@ div#orderProduct{
 }
 
 div#orderProduct:hover{ 
-	background-image:url(../images/openlayers/btn_commander_2.png);
+	background-image:url(../images/orderProduct_pressed.png);
 }
