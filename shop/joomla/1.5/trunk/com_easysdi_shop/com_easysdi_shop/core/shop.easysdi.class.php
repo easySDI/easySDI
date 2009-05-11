@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½Arche 40b, CH-1870 Monthey, easysdi@depth.ch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -281,13 +281,13 @@ if ($db->getErrorNum()) {
                 units: "<?php echo $rows[0]->unit; ?>",
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
                 maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
                 //controls: [],
 				<?php
-					if($rows[0]->restrictedExtend == '1') echo  "restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent."),\n"
+					if($rows[0]->restrictedExtend == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
 			    ?>
 				<?php
-					if($rows[0]->restrictedScales != '') echo  "scales: [".$rows[0]->restrictedScales."]\n"
+					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
 			    ?>
             });
 				  
@@ -728,7 +728,7 @@ function isSelfIntersect(){
      		count=0;
      		for (j=0;j< lines.length;j++){
      		
-     		//On ne doit pas comparer la ligne avec elle même
+     		//On ne doit pas comparer la ligne avec elle mï¿½me
      			if (i != j){
 	     			if (lines[i].intersects (lines[j])) {
 	     			count++;	     			
@@ -1438,7 +1438,7 @@ if (count($rows)>0){
 				}
 			}
 
-			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
+			/* Met ï¿½ jour le status pour un devis dont le prix est connu comme ï¿½tant gratuit et envoi un mail pour dire qu'un devis sur la donnï¿½e gratuite ï¿½ ï¿½tï¿½ demandï¿½*/
 
 			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o, #__easysdi_product p,#__easysdi_order_type_list otl WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='".$await_type."' and opl.type=otl.id and otl.code='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
 
