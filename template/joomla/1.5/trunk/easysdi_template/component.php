@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <head>
 	<jdoc:include type="head" />
 	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/template.css" type="text/css" />
-
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/metadata.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/easysdi.css" type="text/css" />
 <?php if($this->direction == 'rtl') : ?>
 	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/template_rtl.css" type="text/css" />
 <?php endif; ?>
