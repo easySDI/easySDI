@@ -30,11 +30,9 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 </table>
 <!-- The buttons links -->
 __ref__asit_5$s
-<br/>
 <!-- The menu links -->
 __ref__asit_6$s
 <!-- <h3>Identification</h3> -->
-<hr/>
 
 <table>
 <xsl:for-each select="./Property">
