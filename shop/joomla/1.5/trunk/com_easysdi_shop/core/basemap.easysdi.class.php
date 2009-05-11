@@ -24,10 +24,11 @@ class basemap extends JTable
 	var $minResolution=null;
 	var $maxResolution=null;	
 	var $maxExtent=null;
-	var $restrictedExtend=null;
+	var $restrictedExtent=null;
 	var $restrictedScales=null;
 	var $def=null;
 	var $alias=null;
+	var $decimalPrecisionDisplayed=null;
 	// Class constructor
 	function __construct( &$db )
 	{
