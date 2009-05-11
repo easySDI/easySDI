@@ -127,6 +127,7 @@ function initSelectedSurface(){
 		elSel.remove(elSel.length - 1);
 	}
 	document.getElementById('totalSurface').value = 0;
+				document.getElementById('totalSurfaceDisplayed').value =  0;    		
 	removeSelection();
 }
 function removeSelection(){
@@ -263,7 +264,8 @@ function initMap(){
 <?php
 global  $mainframe;
 $db =& JFactory::getDBO(); 
-	
+
+
 	
 $query = "select * from #__easysdi_basemap_definition where def = 1"; 
 $db->setQuery( $query);
@@ -274,6 +276,7 @@ if ($db->getErrorNum()) {
 			echo "</div>";
 }
 
+$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
 ?>
 				map = new OpenLayers.Map('map', {
                 projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
@@ -284,7 +287,7 @@ if ($db->getErrorNum()) {
                 maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
                 //controls: [],
 				<?php
-					if($rows[0]->restrictedExtend == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
+					if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
 			    ?>
 				<?php
 					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
@@ -458,22 +461,23 @@ function loadendfunc(){
 alert("END");
 }
 
-function intersect() {
- 
- //initSelectedSurface();
- 
-  if (isFreeSelectionPerimeter){
+function intersect() 
+{
+  if (isFreeSelectionPerimeter)
+  {
   	 var features = vectors.features; 
      var feature = features[features.length-1];
      
      document.getElementById("selectedSurface").options.length=0;
      
-     if (feature.geometry.components[0].components.length > 2){
+     if (feature.geometry.components[0].components.length > 2)
+     {
    		 featureArea = feature.geometry.getArea();
     }else{
     	featureArea = 0;
     }
 	document.getElementById('totalSurface').value =  parseFloat(featureArea );
+	document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
      
      if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
      	
@@ -485,7 +489,7 @@ function intersect() {
      	while (i< polygonSize){
      	
      	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-			new Option(components [i].x +" "+components [i].y,components [i].x +" "+components [i].y);
+			new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
 			i++;
      	}          
      
@@ -493,6 +497,7 @@ function intersect() {
 	if (feature.geometry instanceof OpenLayers.Geometry.Point){
          	 		 	 
      document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
+   	 document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
    	 document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 			new Option(feature.geometry,feature.geometry);
 }      
@@ -607,6 +612,7 @@ function wfsRegisterEvents()
 								//Remove the value							
 								document.getElementById("selectedSurface").remove(k);								
 								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
+								document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
 																								
 								found=k;																			
 							}            				
@@ -637,6 +643,7 @@ function wfsRegisterEvents()
                        	
                        	//Add the new value
 	            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+	            document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
 	   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
             	new Option(name,id);
             			
