@@ -34,7 +34,7 @@ __ref__asit_5$s
 __ref__asit_6$s
 <!-- <h3>Identification</h3> -->
 
-<table>
+<table class="descr">
 <xsl:for-each select="./Property">
 	<tr><td><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
 	<table >
