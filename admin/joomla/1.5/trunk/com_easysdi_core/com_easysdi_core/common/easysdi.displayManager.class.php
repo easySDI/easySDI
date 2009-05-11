@@ -97,7 +97,7 @@ class displayManager{
 					 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
  						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
  					 ON #__easysdi_product_properties_definition.id=T.properties_id 
- 					 Where #__easysdi_product_properties_definition.text = '".$row->PropDef."'";
+ 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
 			
 			$database->setQuery($subQuery);
 			$results = $database->loadObjectList();
