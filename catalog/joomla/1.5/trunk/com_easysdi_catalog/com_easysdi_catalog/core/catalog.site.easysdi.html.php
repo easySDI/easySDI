@@ -58,6 +58,8 @@ class HTML_catalog{
 			<input type="hidden" name="bboxMinY" id="bboxMinY" value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>"> 
 			<input type="hidden" name="bboxMaxX" id="bboxMaxX" value="<?php echo JRequest::getVar('bboxMaxX', "180" ); ?>">
 			<input type="hidden" name="bboxMaxY" id="bboxMaxY" value="<?php echo JRequest::getVar('bboxMaxY', "90" );?>">
+			<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid');?>">
+			<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>">
 			<input type="hidden" name="tabIndex" id="tabIndex" value="">
 			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 		
