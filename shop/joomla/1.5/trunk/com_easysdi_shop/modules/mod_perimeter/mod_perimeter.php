@@ -560,7 +560,7 @@ if ($curstep == "2"){
 }else{
 
 	if ($curstep > 2){
-
+		$db =& JFactory::getDBO();
 		$bufferValue = $mainframe->getUserState('bufferValue');
 
 		$query = "select * from #__easysdi_basemap_definition where def = 1";
