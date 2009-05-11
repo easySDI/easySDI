@@ -324,6 +324,11 @@ class HTML_basemap {
 							</tr>
 							<tr>
 							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalPrecisionDisplayed" value="<?php echo $rowBasemap->decimalPrecisionDisplayed; ?>" /></td>							
+							</tr>
+							<tr>
+							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_MAXEXTEND_IS_RESTRICTIVE"); ?> : </td>
 								<td><select class="inputbox" name="restrictedExtend" >
 										<option value="0" <?php if($rowBasemap->restrictedExtend == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
