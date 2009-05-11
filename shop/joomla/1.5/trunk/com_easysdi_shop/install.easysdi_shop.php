@@ -1653,6 +1653,23 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}	
+	if ($version == "0.9992")
+	{
+		$version = "0.9993";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		$query="ALTER TABLE #__easysdi_basemap_definition add column decimalPrecisionDisplayed int(2) NOT NULL default '3'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
