@@ -6,8 +6,7 @@
 
 div#metadata h2{
 	color: #FFFFFF;
-	background-color: #5bad27;
-	background: #5bad27;
+	background-color: #0C3A6D;
 }
 
 div#metadata h3{
@@ -15,12 +14,12 @@ div#metadata h3{
 }
 
 table#metadataTitle{
-	background-color:#a8d092;
+	background-color:#d4deff;
 	
 }
 
 table#contactInfo{
-	background-color:#a8d092;	
+	background-color:#d4deff;	
 }
 
 div#metadata hr {
