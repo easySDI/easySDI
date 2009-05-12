@@ -944,7 +944,16 @@ class SITE_partner {
 			SITE_partner::sendMail($row,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
 
 			//redirect
-			$mainframe->redirect("index.php" );
+			$url = config_easysdi::getValue("WELCOME_REDIRECT_URL");
+			if($url)
+			{
+				$mainframe->redirect($url);
+			}
+			else
+			{
+				$mainframe->redirect('index.php');
+			}
+			
 		}
 	}
 
