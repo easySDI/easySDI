@@ -72,15 +72,15 @@ __ref__asit_6$s
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 </td></tr>
 
-<tr valign="top"><td class="title">Synoptique:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
-<tr valign="top"><td class="title">Extrait:</td><td>
+<tr valign="top"><td class="title">Synoptique:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
- 	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Extrait' ">
+ 	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Synoptique' ">
 				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
       </xsl:if>
 </xsl:for-each>
 </td>
 </tr>
+<tr valign="top"><td class="title">Extrait:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/></td></tr>
 
 
 <tr valign="top"><td class="title">Sous-produits:</td><td>
@@ -370,7 +370,7 @@ while(true){
 					<xsl:text>Conditionnel</xsl:text>	
 				</xsl:when>			
 				<xsl:otherwise>
-					<xsl:text>Inconnu</xsl:text>
+					<xsl:text></xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 	</xsl:template>
