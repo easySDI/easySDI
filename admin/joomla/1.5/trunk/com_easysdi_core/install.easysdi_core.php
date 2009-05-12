@@ -843,8 +843,61 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
+	}
+	
+	if ($version == "0.95")
+	{
+		$query="ALTER TABLE #__easysdi_community_partner add column partner_logo varchar(400) ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "insert  into #__easysdi_config (thekey, value) values('DESCRIPTION_LENGTH','150')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 
+		$query = "insert  into #__easysdi_config (thekey, value) values('LOGO_WIDTH','50')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 
+		$query = "insert  into #__easysdi_config (thekey, value) values('LOGO_HEIGHT','20')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$query = "insert  into #__easysdi_config (thekey, value) values('PAGINATION_METADATA','20')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Url used for redirection after a new user made a registration request
+		$query = "insert  into #__easysdi_config (thekey, value) values('WELCOME_REDIRECT_URL','')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$version="0.96";
+		$query="UPDATE #__easysdi_version SET version ='0.96' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		
 	}
 		/**
