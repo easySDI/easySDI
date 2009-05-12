@@ -325,7 +325,7 @@ $i=0;
 foreach ($rows as $row){				  
 ?>				
 				  
-				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+				layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
 				
 					<?php 
 					if ($row->user != null && strlen($row->user)>0){
@@ -351,7 +351,7 @@ foreach ($rows as $row){
                       transparent: "true"
                      }
                     );
-                 map.addLayer(layer<?php echo $row->i; ?>);
+                 map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
 
