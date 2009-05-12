@@ -883,7 +883,7 @@ function com_install(){
 		}
 		
 		//Url used for redirection after a new user made a registration request
-		$query = "insert  into #__easysdi_config (thekey, value) values('WELCOME_REDIRECT_URL','')";
+		$query = "insert  into #__easysdi_config (thekey, value) values('WELCOME_REDIRECT_URL','index.php?option=com_content&view=article&id=46&Itemid=104')";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
