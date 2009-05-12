@@ -606,6 +606,13 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			
 			HTML_partner::print_child($src_list );
 			
+
+			
+			
+			?>
+			
+<?php
+			
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
 ?>
@@ -628,22 +635,64 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 	}
 				
 	
-	function print_child($childList){
+	function print_child($childList)
+	{
 		$database =& JFactory::getDBO();		
-			echo "<ol>";
-			foreach ($childList as $childUser ){
-					echo "<li><b><i>$childUser->name ($childUser->username)</i></b>";
-					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
-					$database->setQuery( $query );
-					$src_list = $database->loadObjectList();
-					if (count ($src_list)>0){
-						HTML_partner::print_child($src_list);
-					}
-					echo "</li>";					
+		?><!--  -->
+		<script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
+	
+			
+	<div class="dtree">
+		<p><a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a></p>
+		<script type="text/javascript"><!--
+			d = new dTree('d');
+			<?php 
+			$i = 0;
+			foreach ($childList as $childUser )
+			{
+				?>	
+				d.add(<?php echo $i?>,0,'<?php echo $childUser->name;  ?>','example01.html');
+				<?php 
+				$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
+				$database->setQuery( $query );
+				$src_list = $database->loadObjectList();
+				if (count ($src_list)>0){
+					HTML_partner::addChildToTree($i,$i + 1,$src_list);
+					$i = $i + count($src_list);
 				}
-			echo "</ol>";
-							
+				
+				$i++;					
 			}
+			?>
+		
+			document.write(d);
+
+		//
+		--></script>
+	</div>
+
+     <?php
+	}		
+	
+	function addChildToTree($parentNodeId,$startId, $childList)
+	{
+		$database =& JFactory::getDBO();
+		$i = $startId;
+		foreach ($childList as $childUser )
+		{
+			?>	
+				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','example01.html');
+			<?php
+			$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
+			$database->setQuery( $query );
+			$src_list = $database->loadObjectList();
+			if (count ($src_list)>0){
+				HTML_partner::addChildToTree($i,$i + 1,$src_list);
+				$i = $i + count($src_list);
+			}
+			$i++;
+		}
+	}
 						
 	function editAffiliatePartner( &$rowUser, &$rowPartner, $rowContact, $option )
 	{
