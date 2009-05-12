@@ -23,9 +23,9 @@ class HTML_catalog{
 
 
 	function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr){
-		global $mainframe;
-		foreach($_POST as $key => $val) 
-		echo '$_POST["'.$key.'"]='.$val.'<br />';
+		/*global $mainframe;*/
+/*		foreach($_POST as $key => $val) 
+		echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 		
 		
 		//$pageNav = new JPagination('100',$limitstart,$limit);
@@ -51,7 +51,7 @@ class HTML_catalog{
 			</tr>
 		</table>
 
-		<form name="catalog_search_form" id="catalog_search_form"  method="GET">
+			<form name="catalog_search_form" id="catalog_search_form"  method="GET">
 			<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>">
 			<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>">
 			<input type="hidden" name="bboxMinX" id="bboxMinX" value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>"> 
@@ -68,7 +68,7 @@ class HTML_catalog{
 				$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
 				echo $tabs->startPane("catalogPane");
 				echo $tabs->startPanel(JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA"),"catalogPanel1");
-				?> <br>
+				?> <br/>
 
 			<table width="100%">
 				<tr>
@@ -87,13 +87,14 @@ class HTML_catalog{
 				<tr>
 					<td>
 					<button type="submit" class="easysdi_search_button"
-						onClick="clearDetailsForm();
+						onclick="clearDetailsForm();
 								 document.getElementById('tabIndex').value = '0';
-								 document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+								 document.getElementById('catalog_search_form').submit()">
+								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
 					</td>
 					<td>
 					<button type="submit" class="easysdi_clear_button"
-						onClick="clearForm();
+						onclick="clearForm();
 								 document.getElementById('tabIndex').value = '0';
 								document.getElementById('catalog_search_form').submit()">
 								<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
@@ -103,7 +104,7 @@ class HTML_catalog{
 				<?php
 				echo $tabs->endPanel();
 				echo $tabs->startPanel(JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"),"catalogPanel2");
-				?><br>
+				?><br/>
 			<table width="100%" >
 				<tr>
 					<td><?php
@@ -115,21 +116,21 @@ class HTML_catalog{
 				<tr>
 					<td>
 					<button type="submit" class="easysdi_search_button"
-						onClick="clearForm();
+						onclick="clearForm();
 								 document.getElementById('tabIndex').value = '1';
-								 document.getElementById('catalog_search_form').submit()"><?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+								 document.getElementById('catalog_search_form').submit()">
+								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
 					</td>
-				
 					<td>
-					<button type="submit" class="easysdi_search_button"
-						onClick="clearDetailsForm();
+					<button type="submit" class="easysdi_clear_button"
+						onclick="clearDetailsForm();
 								  document.getElementById('tabIndex').value = '1';
 								 document.getElementById('catalog_search_form').submit()">
 						<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
 					</td>
 				</tr>
 			</table>
-			<script>
+			<script  type="text/javascript">
 				function clearDetailsForm ()
 				{
 					document.getElementById('filterfreetextcriteria').value = '';
@@ -143,14 +144,13 @@ class HTML_catalog{
 					document.getElementById('simple_filterfreetextcriteria').value = '';
 				}
 			</script>
+			<?php
+			echo $tabs->endPanel();
+			echo $tabs->endPane();
+			?>
 		</form>
 
-		<?php
-
-		echo $tabs->endPanel();
-		echo $tabs->endPane();
-
-		?> <?php if($cswResults){ ?> <br>
+		 <?php if($cswResults){ ?> <br/>
 <table width="100%">
 	<tr>
 		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
@@ -253,7 +253,11 @@ class HTML_catalog{
 	  </td>
 	 </tr>
 	 <tr>
-	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
+	  <td colspan=3>
+	  	<span class="mddescr">
+	  		<?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?>
+	  	</span>
+	  </td>
 	 </tr>
 	 <tr>
 	  <td><span class="mdmdorderproduct">
@@ -357,12 +361,12 @@ class HTML_catalog{
 </table>
 
 
-<br>
+<br/>
 
 
 <div id="docs"></div>
-<br>
-<script>
+<br/>
+<script  type="text/javascript">
       
 var vectors = null;            
 function initMap(){
@@ -391,12 +395,12 @@ if ($db->getErrorNum()) {
                 units: "<?php echo $rows[0]->unit; ?>",
                 minResolution: <?php echo $rows[0]->minResolution; ?>,
                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
 				<?php
-					if($rows[0]->restrictedExtend == '1') echo  "restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent."),\n"
+					if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
 			    ?>
 				<?php
-					if($rows[0]->restrictedScales != '') echo  "scales: [".$rows[0]->restrictedScales."]\n"
+					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
 			    ?>
 				//controls: []
             });
@@ -422,7 +426,7 @@ $i=0;
 foreach ($rows as $row){				  
 ?>				
 				  
-				layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+				layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
                     
                     
                     <?php 
@@ -449,7 +453,7 @@ foreach ($rows as $row){
                       transparent: "true"
                      }
                     );
-                 map.addLayer(layer<?php echo $row->i; ?>);
+                 map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
 } ?>                    
