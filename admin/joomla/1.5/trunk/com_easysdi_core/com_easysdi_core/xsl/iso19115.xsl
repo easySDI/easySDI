@@ -14,18 +14,6 @@ xmlns:ext="http://www.depth.ch/2008/ext"
     <xsl:output encoding="utf-8"/>
     <xsl:output method="html"/>
     
-    
-<xsl:template match='gmd:graphicOverview[1]'>
-	<tr valign="top"><td class="title">Synoptique:</td><td>
-   <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
-
-<xsl:template match='gmd:graphicOverview[2]'>
-   <tr valign="top"><td class="title">Extrait:</td><td>
-     <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
 
 
 <xsl:template match="gmd:MD_Metadata">
@@ -259,6 +247,11 @@ __ref__asit_6$s
 	 	 <tr valign="top"><td class="title">Format:</td><td>
 	 	 <xsl:value-of disable-output-escaping="yes" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:rule/gco:CharacterString"/>
 	 	 </td></tr>
+	 	 <tr valign="top"><td class="title">Type:</td><td>
+	 	 <xsl:call-template name="DataTypeCodeTemplate">
+			<xsl:with-param name="DataTypeCode" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:dataType/gmd:MD_DataTypeCode/@codeListValue"/>
+		 </xsl:call-template>
+		 </td></tr>
 	 	 <tr valign="top"><td class="title">Statut:</td><td>
 	 	 <xsl:call-template name="obligationCodeTemplate">
 			<xsl:with-param name="obligationCode" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:obligation/gmd:MD_ObligationCode"/>
@@ -355,6 +348,61 @@ while(true){
 </script>
 
 </xsl:template>
+
+	<!-- Template DataTypeCode -->
+	<xsl:template name="DataTypeCodeTemplate">
+		<xsl:param name="DataTypeCode"/>
+			<xsl:choose>
+				<xsl:when test="$DataTypeCode = 'class'">
+					<xsl:text>classe</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'codelist'">
+					<xsl:text>liste de codes</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$DataTypeCode = 'enumeration'">
+					<xsl:text>énumération</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$DataTypeCode = 'codelistElement'">
+					<xsl:text>élément d'une liste</xsl:text>	
+				</xsl:when>		
+				<xsl:when test="$DataTypeCode = 'abstractClass'">
+					<xsl:text>classe abstraite</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'aggregatedClass'">
+					<xsl:text>classe globale</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'specifiedClass'">
+					<xsl:text>classe spécifique</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'datatypeClass'">
+					<xsl:text>classe d'un type de données</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'interfaceClass'">
+					<xsl:text>classe d'interface</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'unionClass'">
+					<xsl:text>classe d'union</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'metaClass'">
+					<xsl:text>métaclasse</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'typeClass'">
+					<xsl:text>classe de type</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'characterString'">
+					<xsl:text>texte libre</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'integer'">
+					<xsl:text>entier</xsl:text>
+				</xsl:when>
+				<xsl:when test="$DataTypeCode = 'association'">
+					<xsl:text>association</xsl:text>
+				</xsl:when>	
+				<xsl:otherwise>
+					<xsl:text></xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+	</xsl:template>
 
 <!-- Template ObligationCode -->
 	<xsl:template name="obligationCodeTemplate">
