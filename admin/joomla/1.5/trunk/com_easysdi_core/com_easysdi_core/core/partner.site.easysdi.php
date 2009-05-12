@@ -934,26 +934,24 @@ class SITE_partner {
 			$mailer =& JFactory::getMailer();
 
 			SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_BODY",$rowUser->username));
+		}
+		//Send email notification to user
+		$query = "SELECT * FROM #__users ";
+		$query .= " WHERE id= ".$rowUser->id;
+		$database->setQuery( $query );
+		$row = $database->loadObjectList();
+		//$mailer =& JFactory::getMailer();
+		SITE_partner::sendMail($row,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
 
-			//Send email notification to user
-			$query = "SELECT * FROM #__users ";
-			$query .= " WHERE id= ".$rowUser->id;
-			$database->setQuery( $query );
-			$row = $database->loadObjectList();
-			//$mailer =& JFactory::getMailer();
-			SITE_partner::sendMail($row,JText::_("EASYSDI_NEW_USER_MAIL_NOTIFICATION_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY").JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY1",$rowUser->username).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY2",JRequest::getVar('password','')).JText::sprintf("EASYSDI_NEW_USER_MAIL_NOTIFICATION_BODY3"));
-
-			//redirect
-			$url = config_easysdi::getValue("WELCOME_REDIRECT_URL");
-			if($url)
-			{
-				$mainframe->redirect($url);
-			}
-			else
-			{
-				$mainframe->redirect('index.php');
-			}
-			
+		//redirect
+		$url = config_easysdi::getValue("WELCOME_REDIRECT_URL");
+		if($url)
+		{
+			$mainframe->redirect($url);
+		}
+		else
+		{
+			$mainframe->redirect('index.php');
 		}
 	}
 
