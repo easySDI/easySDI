@@ -15,17 +15,6 @@ xmlns:ext="http://www.depth.ch/2008/ext"
     <xsl:output method="html"/>
 
  
-<xsl:template match='gmd:graphicOverview[1]'>
-	<tr valign="top"><td class="title">Synoptique:</td><td>
-   <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
-
-<xsl:template match='gmd:graphicOverview[2]'>
-   <tr valign="top"><td class="title">Extrait:</td><td>
-     <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
 
 
 <xsl:template match="gmd:MD_Metadata">
@@ -45,9 +34,11 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 </table>
 <!-- The buttons links -->
 __ref__asit_5$s
+<br/>
 <!-- The menu links -->
 __ref__asit_6$s
 <!-- <h3>Identification</h3> -->
+<hr/>
 
 <table class="descr"  >
 <!--<tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
