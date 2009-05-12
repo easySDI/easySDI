@@ -66,10 +66,16 @@ class displayManager{
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
 		$id = JRequest::getVar('id');
+		$title;
+		
+		$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
+		$database->setQuery($titleQuery);
+		$title = $database->loadResult();
 		
 		$doc = '';
+		$doc .= '<?xml version="1.0"?>';
 		$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
-		
+		$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
 		$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
 					from #__easysdi_product_properties_definition 
 					INNER JOIN 
