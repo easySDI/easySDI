@@ -922,12 +922,12 @@ class SITE_partner {
 		SITE_partner::includePartnerExtension(0,'BOTTOM','registerPartner',$rowPartner->partner_id);
 
 		//Send email notification to administrator
-		$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
+		$query = "SELECT count(*) FROM #__users WHERE (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
 		$database->setQuery( $query );
 		$total = $database->loadResult();
 		if($total >0)
 		{
-			$query = "SELECT * FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
+			$query = "SELECT * FROM #__users WHERE  (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
 			$database->setQuery( $query );
 
 			$rows = $database->loadObjectList();
