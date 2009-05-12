@@ -4,6 +4,41 @@
 /*** EasySDI Metadata ***/
 /************************/
 
+/* Info logos in the summary  */
+
+table#info_md div{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:20px;
+	width:20px;
+}
+
+div .publicMd{
+	background-image:url(../images/md_public.gif);
+}
+
+div .privateMd{
+	background-image:url(../images/md_private.gif);
+}
+
+div .easysdi_product_exists{
+	background-image:url(../images/md_orderable.gif);
+}
+
+div .easysdi_product_does_not_exist{
+	background-image:url(../images/md_not_orderable.gif);
+}
+
+div .freeMd{
+	background-image:url(../images/md_free.gif);
+}
+
+div .notFreeMd{
+	background-image:url(../images/md_not_free.gif);
+}
+
+/* Buttons in the metadata view  */
 
 div#exportPdf{
 	background-color:transparent;
@@ -52,7 +87,7 @@ div#orderProduct{
 
 }
 
-.mdsearchresult .mdmdorderproduct{
+.mdsearchresult .mdviewfile{
 	font-weight: bold;
 }
 
