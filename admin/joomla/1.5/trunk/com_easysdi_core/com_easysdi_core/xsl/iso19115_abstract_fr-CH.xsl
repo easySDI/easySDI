@@ -14,18 +14,6 @@ xmlns:ext="http://www.depth.ch/2008/ext"
     <xsl:output encoding="utf-8"/>
     <xsl:output method="html"/>
 
- 
-<xsl:template match='gmd:graphicOverview[1]'>
-	<tr valign="top"><td class="title">Synoptique:</td><td>
-   <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
-
-<xsl:template match='gmd:graphicOverview[2]'>
-   <tr valign="top"><td class="title">Extrait:</td><td>
-     <xsl:value-of disable-output-escaping="yes" select='gmd:MD_BrowseGraphic/gmd:fileDescription/gmd:LocalisedCharacterString'/>
-   </td></tr>
-</xsl:template>
 
 
 <xsl:template match="gmd:MD_Metadata">
