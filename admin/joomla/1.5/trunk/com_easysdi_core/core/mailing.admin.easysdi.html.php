@@ -47,7 +47,7 @@ class HTML_mailing {
 			<tr>
 				<td align="right">
 					<b><?php echo JTEXT::_("EASYSDI_TEXT_FILTER"); ?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listMailing\');" />
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listMailing');" />
 				</td>
 			</tr>
 		</table>
