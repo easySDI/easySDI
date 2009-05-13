@@ -60,7 +60,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		<table >
 			<tr>				
 				<th class="user">
-				<?php echo JText::_("EASYSDI_TITLE_ACCOUNT"); ?>&nbsp;<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'listPartner\');"', 'value', 'text', $type ); ?>
+				<?php echo JText::_("EASYSDI_TITLE_ACCOUNT"); ?>&nbsp;<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'listPartner\');"', 'value', 'text', $type ); ?>
 				</th>
 			</tr>
 		</table>
@@ -68,7 +68,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listPartner\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listPartner');" />			
 				</td>
 			</tr>
 		</table>
@@ -132,8 +132,8 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listPartner" />
 	  	<input type="hidden" name="boxchecked" value="0" />
-	  	<input type="hidden" name="hidemainmenu" value="0">
-	  	<input type="hidden" name="JId" value="">
+	  	<input type="hidden" name="hidemainmenu" value="0" />
+	  	<input type="hidden" name="JId" value="" />
 	  </form>
 <?php
 	}
