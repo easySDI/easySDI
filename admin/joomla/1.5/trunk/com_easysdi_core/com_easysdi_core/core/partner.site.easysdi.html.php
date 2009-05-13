@@ -50,7 +50,7 @@ class HTML_partner
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listPartner\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listPartner');" />			
 				</td>
 				<td>
 					<?php echo JText::_("EASYSDI_TITLE_ACCOUNT"); ?>&nbsp;<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" "', 'value', 'text', $type ); ?>				
