@@ -113,7 +113,7 @@ class HTML_properties {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listProperties\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProperties');" />			
 				</td>
 			</tr>
 		</table>		
@@ -279,7 +279,7 @@ class HTML_properties {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listProperties\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProperties');" />			
 				</td>
 			</tr>
 		</table>
