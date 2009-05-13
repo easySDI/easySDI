@@ -16,11 +16,11 @@ table#info_md div{
 }
 
 div .publicMd{
-	background-image:url(../images/fff/silk/lock.png);
+	/* background-image:url(../images/fff/silk/lock_disabled.png); */
 }
 
 div .privateMd{
-	background-image:url(../images/lock_disabled.png);
+	background-image:url(../images/fff/silk/lock.png);
 }
 
 div .easysdi_product_exists{
