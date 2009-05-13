@@ -64,53 +64,57 @@ div#metadata .descr{
 
 
 div#exportPdf{
+	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/pdfButton.png);
+	background-image:url(../images/fff/silk/page_white_acrobat.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:26px;
-	width:28px;
+	height:16px;
+	width:16px;
 }
 
 div#exportPdf:hover{ 
-	background-image:url(../images/pdfButton_pressed.png);
+	border-style: inset;
 }
 
 div#printMetadata{
+	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/printButton.png);
+	background-image:url(../images/fff/silk/printer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:26px;
-	width:28px;
+	height:16px;
+	width:16px;
 }
 
 div#printMetadata:hover{ 
-	background-image:url(../images/printButton_pressed.png);
+	border-style: inset;
 }
 
 div#exportXml{
+	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/xmlButton.png);
+	background-image:url(../images/fff/silk/script_code.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:26px;
-	width:28px;
+	height:16px;
+	width:16px;
 }
 
 div#exportXml:hover{ 
-	background-image:url(../images/xmlButton_pressed.png);
+	border-style: inset;
 }
 
 div#orderProduct{
+	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/orderProduct.png);
+	background-image:url(../images/fff/silk/cart_go.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:26px;
-	width:28px;
+	height:16px;
+	width:16px;
 }
 
 div#orderProduct:hover{ 
-	background-image:url(../images/orderProduct_pressed.png);
+	border-style: inset;
 }
