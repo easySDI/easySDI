@@ -167,7 +167,7 @@ class HTML_basemap {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listBasemap\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listBasemap');" />			
 				</td>
 			</tr>
 		</table>
@@ -385,7 +385,7 @@ class HTML_basemap {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listBasemap\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
 				</td>
 			</tr>
 		</table>
