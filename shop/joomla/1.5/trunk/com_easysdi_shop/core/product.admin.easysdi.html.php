@@ -835,7 +835,7 @@ array(); ?>
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("FILTER");?></b>&nbsp;
-					<input size="50" type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listProduct\');" />			
+					<input size="50" type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProduct');" />			
 				</td>
 			</tr>
 		</table>
