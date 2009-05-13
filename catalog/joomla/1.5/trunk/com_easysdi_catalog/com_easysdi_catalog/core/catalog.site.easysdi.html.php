@@ -64,7 +64,7 @@ class HTML_catalog{
 			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 		
 				<?php
-				$index = JRequest::getVar('tabIndex');
+				$index = JRequest::getVar('tabIndex', 0);
 				$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
 				echo $tabs->startPane("catalogPane");
 				echo $tabs->startPanel(JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA"),"catalogPanel1");
@@ -232,38 +232,53 @@ class HTML_catalog{
 			$logoWidth = config_easysdi::getValue("logo_width");
 			$logoHeight = config_easysdi::getValue("logo_height");
 		
+			// Please insert the code here to define if a md is public or private
+			// and affect the variable $isMdPublic accordingly
+			$isMdPublic = false;
+			
+			
+			
+			// Please insert the code here to define if a md is free or not
+			// and affect the variable $isMdFree accordingly
+			$isMdFree = false;
+			
+			
 			?>
-			<!-- 
-			<td>
-			<div
-				class="<?php if ($metadataId_count>0) {echo "easysdi_product_exists";} else {echo "easysdi_product_does_not_exist";} ?>"><?php echo $metadataId_count;?>
-			</div>
-			</td>
-			 -->
-			 
 			 
 	  <td valign="top" rowspan=3>
 	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
 	  </td>
-	  <td colspan=3><span class="mdtitle"><a class="modal"
-				title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
+	  <td colspan=3><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></a></span>
+	  </td>
+	  <td valign="top" rowspan=2>
+	    <table id="info_md">
+		  <tr>
+		     <td><div class="<?php if($isMdPublic) echo 'publicMd'; else echo 'privateMd';?>"></div></td>
+		  </tr>
+		  <tr>
+		     <td><div class="<?php if($metadataId_count>0) echo 'easysdi_product_exists'; else echo 'easysdi_product_does_not_exist';?>"></div></td>
+		  </tr>
+		  <tr>
+		     <td><div class="<?php if($isMdFree) echo 'freeMd'; else echo 'notFreeMd';?>"></div></td>
+		  </tr>
+		</table>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
+	 </tr>
+	 <tr> 
+	 <!--
+	 <a	class="<?php if ($metadataId_count>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
+		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
+		 </a>
+	 --> 
+	  <td><span class="mdviewfile">
+	  	<a class="modal"
+				title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-				rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $md->getDataIdentificationTitle();?>
+				rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 			</a></span>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td colspan=3>
-	  	<span class="mddescr">
-	  		<?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?>
-	  	</span>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td><span class="mdmdorderproduct">
-	     <a	class="<?php if ($metadataId_count>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
-		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_ORDER_PRODUCT"); ?>
-		 </a></span>
 	  </td>
 	  	<?php if ($hasPreview > 0){ ?>
 	  <td><span class="mdviewproduct">
@@ -376,8 +391,8 @@ function initMap(){
 
 
 <?php
-global  $mainframe;
-$db =& JFactory::getDBO(); 
+//global  $mainframe;
+//$db =& JFactory::getDBO(); 
 	
 	
 $query = "select * from #__easysdi_basemap_definition where def = 1"; 
@@ -402,7 +417,7 @@ if ($db->getErrorNum()) {
 				<?php
 					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
 			    ?>
-				//controls: []
+				//,controls: []
             });
 				  
 				 baseLayerVector = new OpenLayers.Layer.Vector(
