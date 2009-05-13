@@ -163,7 +163,7 @@ class HTML_location {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton(\'listLocation\');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listLocation');" />			
 				</td>
 			</tr>
 		</table>
