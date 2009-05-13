@@ -232,15 +232,28 @@ class HTML_catalog{
 			$logoWidth = config_easysdi::getValue("logo_width");
 			$logoHeight = config_easysdi::getValue("logo_height");
 		
-			// Please insert the code here to define if a md is public or private
-			// and affect the variable $isMdPublic accordingly
 			$isMdPublic = false;
-			
-			
-			
-			// Please insert the code here to define if a md is free or not
-			// and affect the variable $isMdFree accordingly
-			$isMdFree = false;
+			$isMdFree = true;
+			if( $metadataId_count != 0)
+			{
+				//Define if the md is free or not
+				$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+				$db->setQuery($queryPartnerID);
+				$is_free = $db->loadResult();
+				if($is_free == 0)
+				{
+					$isMdFree = false;
+				}
+				
+				//Define if the md is public or not
+				$queryPartnerID = "select external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+				$db->setQuery($queryPartnerID);
+				$external = $db->loadResult();
+				if($external == 1)
+				{
+					$isMdPublic = true;
+				}
+			}
 			
 			
 			?>
@@ -248,7 +261,7 @@ class HTML_catalog{
 	  <td valign="top" rowspan=3>
 	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
 	  </td>
-	  <td colspan=3><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></a></span>
+	  <td colspan=3><span class="mdtitle"><a><?php echo $md->getDataIdentificationTitle();?></a></span>
 	  </td>
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
