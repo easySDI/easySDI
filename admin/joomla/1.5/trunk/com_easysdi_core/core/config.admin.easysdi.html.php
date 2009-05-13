@@ -352,8 +352,11 @@ class HTML_config {
 			
 			$database->setQuery( $query );
 			$src_list = $database->loadObjectList();
-			
-		HTML_partner::print_child($src_list );
+		if(count($src_list) != 0)
+		{	
+			userTree::buildTreeView($src_list[0]);
+		}
+		//HTML_partner::print_child($src_list );
 			
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
