@@ -47,6 +47,8 @@ class HTML_product {
 
 		$partners = array_merge( $partners, $database->loadObjectList() );
 		
+		
+		
 		JHTML::_('behavior.calendar');
 
 		//List of partner with METADATA right
@@ -78,6 +80,18 @@ class HTML_product {
 		
 		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
+		$database->setQuery("SELECT a.partner_id AS value, 
+							   b.name AS text 
+							   FROM 
+							    #__easysdi_community_partner a,
+							    #__users b  
+							    where 
+							    a.user_id = b.id 
+							    AND  (a.root_id = $rowPartner->root_id OR a.root_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->root_id)							    
+							    ORDER BY b.name");
+		$diffusion_partner = array();
+		$diffusion_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$diffusion_partner = array_merge($diffusion_partner, $database->loadObjectList());
 		
 		$baseMaplist = array();		
 		$database->setQuery( "SELECT id AS value,  alias AS text FROM #__easysdi_basemap_definition " );
@@ -160,6 +174,10 @@ class HTML_product {
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_DIFFUSION_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$diffusion_partner, 'diffusion_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->diffusion_partner_id ); ?></td>								
 							</tr>
 							<tr>
 							
