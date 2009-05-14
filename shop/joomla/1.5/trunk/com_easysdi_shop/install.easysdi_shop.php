@@ -1509,6 +1509,7 @@ if ($version == "0.998")
 		
 	}		
 		
+	
 	if ($version == "0.9991")
 	{
 
@@ -1570,43 +1571,43 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SAVED','EASYSDI_ORDER_PRODUCT_STATUS_SAVED', 'SAVED')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SAVED','EASYSDI_ORDER_STATUS_SAVED', 'SAVED')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SENT','EASYSDI_ORDER_PRODUCT_STATUS_SENT', 'SENT')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('SENT','EASYSDI_ORDER_STATUS_SENT', 'SENT')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('PROGRESS','EASYSDI_ORDER_PRODUCT_STATUS_PROGRESS', 'PROGRESS')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('PROGRESS','EASYSDI_ORDER_STATUS_PROGRESS', 'PROGRESS')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('AWAIT','EASYSDI_ORDER_PRODUCT_STATUS_AWAIT', 'AWAIT')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('AWAIT','EASYSDI_ORDER_STATUS_AWAIT', 'AWAIT')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('FINISH','EASYSDI_ORDER_PRODUCT_STATUS_FINISH', 'FINISH')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('FINISH','EASYSDI_ORDER_STATUS_FINISH', 'FINISH')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('ARCHIVED','EASYSDI_ORDER_PRODUCT_STATUS_ARCHIVED', 'ARCHIVED')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('ARCHIVED','EASYSDI_ORDER_STATUS_ARCHIVED', 'ARCHIVED')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('HISTORIZED','EASYSDI_ORDER_PRODUCT_STATUS_HISTORIZED', 'HISTORIZED')";
+		$query = "insert  into #__easysdi_order_status_list (code, translation, name) values('HISTORIZED','EASYSDI_ORDER_STATUS_HISTORIZED', 'HISTORIZED')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
@@ -1640,19 +1641,19 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('D','EASYSDI_ORDER_PRODUCT_STATUS_D', 'D')";
+		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('D','EASYSDI_CMD_FILTER_D', 'D')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('O','EASYSDI_ORDER_PRODUCT_STATUS_O', 'O')";
+		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('O','EASYSDI_CMD_FILTER_O', 'O')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}	
+	}
 	if ($version == "0.9992")
 	{
 		$version = "0.9993";
