@@ -1675,7 +1675,7 @@ if ($version == "0.998")
 	if($version == "0.9993")
 	{
 		//Add diffusion partner field for product
-		$query="ALTER TABLE #__easysdi_product add column `diffusion_partner_id` bigint(20)";
+		$query="ALTER TABLE #__easysdi_product add column `diffusion_partner_id` bigint(20) default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
