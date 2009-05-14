@@ -32,6 +32,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 JHTML::_('stylesheet', 'com_easysdi_core.css', 'administrator/components/com_easysdi_core/templates/css/');
 
 
+
 $task = JRequest::getVar('task');
 $cid = JRequest::getVar ('cid', array(0) );
 $JId = JRequest::getVar('JId', '');
@@ -53,7 +54,11 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.easysdi.class.ph
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.php');
+require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
 
+?>
+<script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
+<?php 
 
 $option = JRequest::getVar('option');
 
