@@ -68,6 +68,19 @@ class HTML_product{
 								    ORDER BY b.name");
 		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
+		$database->setQuery("SELECT a.partner_id AS value, 
+							   b.name AS text 
+							   FROM 
+							    #__easysdi_community_partner a,
+							    #__users b  
+							    where 
+							    a.user_id = b.id 
+							    AND  (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)							    
+							    ORDER BY b.name");
+		$diffusion_partner = array();
+		$diffusion_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$diffusion_partner = array_merge($diffusion_partner, $database->loadObjectList());
+		
 		jimport("joomla.utilities.date");
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -140,8 +153,11 @@ class HTML_product{
 								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
 							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_DIFFUSION_PARTNER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$diffusion_partner, 'diffusion_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->diffusion_partner_id ); ?></td>								
+							</tr>
 							<tr>
-							
 								<td><?php echo JText::_("EASYSDI_SURFACE_MIN"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surface_min" value="<?php echo $rowProduct->surface_min; ?>" /></td>							
 							</tr>
