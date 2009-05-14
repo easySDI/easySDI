@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport("joomla.html.pagination");
 
 jimport("joomla.html.pane");
-
+require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 require_once(JPATH_COMPONENT.DS.'core'.DS.'partner.site.easysdi.php');
@@ -37,6 +37,7 @@ $language=&JFactory::getLanguage();
 $language->load('com_easysdi_partner');
 
 ?>
+<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/dtree.js"></script>
 <?php
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
