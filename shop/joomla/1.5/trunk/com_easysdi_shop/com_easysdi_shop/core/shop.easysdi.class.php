@@ -1445,9 +1445,33 @@ if (count($rows)>0){
 				}
 			}
 
-			/* Met � jour le status pour un devis dont le prix est connu comme �tant gratuit et envoi un mail pour dire qu'un devis sur la donn�e gratuite � �t� demand�*/
-
-			$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__easysdi_order_product_list opl , #__easysdi_product p,#__easysdi_order o, #__easysdi_product p,#__easysdi_order_type_list otl WHERE opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and opl.status='".$await_type."' and opl.type=otl.id and otl.code='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and o.status='SENT' ";
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+			$db->setQuery($queryStatus);
+			$sent = $db->loadResult();
+			
+			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit 
+				et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
+			$query = "SELECT o.name as cmd_name,
+							 u.email as email , 
+							 p.id as product_id, 
+							 p.data_title as data_title , 
+							 p.partner_id as partner_id   
+					  FROM #__users u,
+					  	   #__easysdi_community_partner pa, 
+					  	   #__easysdi_order_product_list opl , 
+					  	   #__easysdi_product p,
+					  	   #__easysdi_order o, 
+					  	   #__easysdi_order_type_list otl 
+					  WHERE opl.order_id= $order_id 
+					  AND p.id = opl.product_id 
+					  and p.is_free = 1 
+					  and opl.status='".$await_type."' 
+					  and o.type=otl.id 
+					  and otl.code='D' 
+					  AND p.diffusion_partner_id = pa.partner_id 
+					  and pa.user_id = u.id 
+					  and o.order_id=opl.order_id 
+					  and o.status='".$sent."' ";
 
 			$db->setQuery( $query );
 			$rows = $db->loadObjectList();
@@ -1489,9 +1513,7 @@ if (count($rows)>0){
 				$status_id = $db->loadResult();
 			}
 			
-			$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
-			$db->setQuery($queryStatus);
-			$sent = $db->loadResult();
+			
 			
 			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
 
