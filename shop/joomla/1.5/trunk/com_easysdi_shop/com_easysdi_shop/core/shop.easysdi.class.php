@@ -15,7 +15,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 defined('_JEXEC') or die('Restricted access');
 
 
@@ -75,754 +76,777 @@ class HTML_shop {
 	}
 
 	function orderPerimeter ($cid){
-		?>
-<!-- script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script -->
-
-<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-
-
-<script><!--
-var map;
-var wfs=null;
-var wfs3=null;
-var vectors;
-var nameField;
-var idField;
-var areaField;
-var layerPerimeter;
-var wfsUrl ;
-var isFreeSelectionPerimeter = false;
-function onFeatureSelect(feature) {
-            selectedFeature = feature;
-            popup = new OpenLayers.Popup.FramedCloud("chicken", 
-                                     feature.geometry.getBounds().getCenterLonLat(),
-                                     null,
-                                     "<div style='font-size:.8em'>Feature: " + feature.id +"<br />Area: " + feature.geometry.getArea()+"</div>",
-                                     null, true, onPopupClose);
-            feature.popup = popup;
-            map.addPopup(popup);
-        }
-
-
-function onFeatureSelect(feature) {
-            selectedFeature = feature;
-            popup = new OpenLayers.Popup.FramedCloud("chicken", 
-                                     feature.geometry.getBounds().getCenterLonLat(),
-                                     null,
-                                     "<div style='font-size:.8em'>Feature: " + feature.id +"<br />Area: " + feature.geometry.getArea()+"</div>",
-                                     null, true, onPopupClose);
-            feature.popup = popup;
-            map.addPopup(popup);
-        }
-
-function initSelectedSurface(){
-	var elSel = document.getElementById("selectedSurface");
-	while (elSel.length > 0)
+	?>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
+	<script><!--
+	var map;
+	var wfs=null;
+	var wfs3=null;
+	var vectors;
+	var nameField;
+	var idField;
+	var areaField;
+	var layerPerimeter;
+	var wfsUrl ;
+	var isFreeSelectionPerimeter = false;
+	
+	function onFeatureSelect(feature) 
 	{
-		elSel.remove(elSel.length - 1);
-	}
-	document.getElementById('totalSurface').value = 0;
-				document.getElementById('totalSurfaceDisplayed').value =  0;    		
-	removeSelection();
-}
-function removeSelection(){
-	if (vectors){
-
-		var features = vectors.features;
-		vectors.removeFeatures(features);
-		//vectors.drawFeature (feature);
-		/*for (var i = features.length-1;i>=0;i--){ 		
-		var feature= features[i];
-		if (features.length>=0){
-			if (feature){				
-		
-			features = vectors.features;	
-			vectors.addFeatures([feature]);
-			vectors.drawFeature (feature);		
-			features = vectors.features;			
+            selectedFeature = feature;
+            popup = new OpenLayers.Popup.FramedCloud("chicken", 
+                                     feature.geometry.getBounds().getCenterLonLat(),
+                                     null,
+                                     "<div style='font-size:.8em'>Feature: " + feature.id +"<br />Area: " + feature.geometry.getArea()+"</div>",
+                                     null, true, onPopupClose);
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+	
+	
+	function onFeatureSelect(feature) 
+	{
+            selectedFeature = feature;
+            popup = new OpenLayers.Popup.FramedCloud("chicken", 
+                                     feature.geometry.getBounds().getCenterLonLat(),
+                                     null,
+                                     "<div style='font-size:.8em'>Feature: " + feature.id +"<br />Area: " + feature.geometry.getArea()+"</div>",
+                                     null, true, onPopupClose);
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+	
+	function initSelectedSurface(){
+		var elSel = document.getElementById("selectedSurface");
+		while (elSel.length > 0)
+		{
+			elSel.remove(elSel.length - 1);
 		}
-		}
-	}*/
-}
-}
-function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
-
-	
-	document.getElementById('perimeter_id').value = perimId;
-	//freeSelectPerimeter();
-	document.getElementById('manualPerimDivId').style.display='none';
-	document.getElementById('manualAddGeometry').style.display='none';
-	
-		
-	//Delete the current selection
-	initSelectedSurface();
-	
-	        						 
-	nameField = name;
-	idField = id;
-	areaField =area;
-
-	
-
-	if (wfs) {
-		map.removeLayer(wfs);
-		wfs.destroy();				
-		wfs=null;		
+		document.getElementById('totalSurface').value = 0;
+					document.getElementById('totalSurfaceDisplayed').value =  0;    		
+		removeSelection();
 	}
-	if (wfs3) {	
-		wfs3.destroy();				
-		wfs3=null;		
+	function removeSelection(){
+		if (vectors){
+	
+			var features = vectors.features;
+			vectors.removeFeatures(features);
+			//vectors.drawFeature (feature);
+			/*for (var i = features.length-1;i>=0;i--){ 		
+			var feature= features[i];
+			if (features.length>=0){
+				if (feature){				
+			
+				features = vectors.features;	
+				vectors.addFeatures([feature]);
+				vectors.drawFeature (feature);		
+				features = vectors.features;			
+			}
+			}
+		}*/
 	}
-
-
-	if (layerPerimeter){
-				map.removeLayer(layerPerimeter);
-				layerPerimeter=null;
-		}
-	if (vectors){
-		var features = vectors.features;
-		vectors.removeFeatures(features)
 	}
-
-	if (perimUrl.length ==0 && wmsUrl.length ==0){
-		//Free selection permiter.
-		isFreeSelectionPerimeter = true;
+	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
 	
-	}else{
-	
-	isFreeSelectionPerimeter = false;
-
-	if (wmsUrl.length > 0){
-	
-		layerPerimeter = new OpenLayers.Layer.WMS(perimName,
-                    wmsUrl,
-                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-                     {singleTile: true},                                                    
-                     {                     
-					  minResolution: pMinResolution,
-               		  maxResolution: pMaxResolution,                                    	     
-                      maxExtent: map.maxExtent,
-                      projection: map.projection,
-                      units: map.units,
-                      transparent: "true"
-                     }
-                    );
-                 layerPerimeter.alwaysInRange=false;  
-                    
-                 map.addLayer(layerPerimeter);      
-    
-    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
-  
-	}else{
-	
-	var myStyles = new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({                 
-                    fillColor: "#ffcc66",
-                    strokeColor: "#ff9933",
-                    strokeWidth: 2
-                }),
-                "select": new OpenLayers.Style({
-                    fillColor: "#66ccff",
-                    strokeColor: "#3399ff"
-                })
-            });
-	
-	
-	wfs = new OpenLayers.Layer.WFS( perimName,
-	                perimUrl,
-	                {typename: featureTypeName}, {
-	                    typename: featureTypeName,                                    
-	                    extractAttributes: false
-	                       
-	                },
-                { featureClass: OpenLayers.Feature.WFS}
-	                 );
-	
-	
-	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
-	
-	map.addLayer(wfs);
-	 }
-	}
-	
-}
-
-            
-function initMap(){
- //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
- 
- //OpenLayers.ProxyHost="index.php?option=com_easysdi_shop&no_html=1&task=proxy&url=";
-
-
-
-<?php
-global  $mainframe;
-$db =& JFactory::getDBO(); 
-
-
-	
-$query = "select * from #__easysdi_basemap_definition where def = 1"; 
-$db->setQuery( $query);
-$rows = $db->loadObjectList();		  
-if ($db->getErrorNum()) {						
-			echo "<div class='alert'>";			
-			echo 			$db->getErrorMsg();
-			echo "</div>";
-}
-
-$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
-?>
-				map = new OpenLayers.Map('map', {
-                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
-				displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
-                units: "<?php echo $rows[0]->unit; ?>",
-                minResolution: <?php echo $rows[0]->minResolution; ?>,
-                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
-                //controls: [],
-				<?php
-					if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
-			    ?>
-				<?php
-					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
-			    ?>
-            });
-				  
-				map.addControl(new OpenLayers.Control.MousePosition({ 
-				div: document.getElementById("mouseposition"),
-				prefix: '', 
-				suffix: '', 
-				separator: ' / ', 
-				numDigits: 0
-				}));
-				
-				
-				 baseLayerVector = new OpenLayers.Layer.Vector(
-                "BackGround",
-                {isBaseLayer: true,transparent: "true"}
-            ); 
-				  map.addLayer(baseLayerVector);
-
-
-<?php
-
-$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id." order by ordering"; 
-$db->setQuery( $query);
-$rows = $db->loadObjectList();
-		  
-if ($db->getErrorNum()) {						
-			echo "<div class='alert'>";			
-			echo 			$db->getErrorMsg();
-			echo "</div>";
-}
-$i=0;
-foreach ($rows as $row){				  
-?>				
-				  
-				layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
-				
-					<?php 
-					if ($row->user != null && strlen($row->user)>0){
-						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
-						$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
-						echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
-					}else{	
-						//if no user and password then don't use any proxy.					
-						echo "\"$row->url\",";	
-					}					
-					?>
-					
-                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-                     {singleTile: <?php echo $row->singletile; ?>},                                                    
-                     {     
-                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
-                      
-                      	minResolution: <?php echo $row->minResolution; ?>,
-                        maxResolution: <?php echo $row->maxResolution; ?>,                 
-                     projection:"<?php echo $row->projection; ?>",
-                      units: "<?php echo $row->unit; ?>",
-                      transparent: "true"
-                     }
-                    );
-                 map.addLayer(layer<?php echo $i; ?>);
-<?php 
-$i++;
-
-} ?>                    
-			 
-				map.events.register("zoomend", null, function() { 
-							$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
-							 text = "";
-							
-							for (i=0; i<map.layers.length ;i++){
-									if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
-									 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
-									} 
-								}
-								$("scaleStatus").innerHTML = text;
-							})
-                
-               	map.addControl(new OpenLayers.Control.LayerSwitcher());
-                map.addControl(new OpenLayers.Control.Attribution());       
-                
-                                         
-            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
-                map.addLayer(vectors);
-				$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
-				
-			
-             map.zoomToMaxExtent()
-			/*zb = new OpenLayers.Control.ZoomBox();
-			md = new OpenLayers.Control.MouseDefaults();
-			zo =  new OpenLayers. Control. ZoomOut();*/
-			var containerPanel = document.getElementById("panelDiv");
-            
-            
-            var panel = new OpenLayers.Control.Panel({div: containerPanel});
-			
-						
-			rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
-			
-			rectControl.featureAdded = function() { intersect();};												
-			rectControl.handler.setOptions({irregular: true});                                  
-            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
-            
-            
-            //Polygonal  bounding box selection
-            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
-            polyControl.featureAdded = function() { intersect();};
-			polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
 		
-			//Point selection
-            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
-            pointControl.featureAdded = function() { intersect();};
-			pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
-         
-			//Modify feature shape  
-            modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
-			modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
-			
-			vectors.events.on({
-                "afterfeaturemodified": intersect                
-            });
-
-
-            
-            navHistory = new OpenLayers.Control.NavigationHistory();
-            map.addControl (navHistory);
-			
-            panel.addControls([            	
- 	          navHistory.previous, 	          
- 	          navHistory.next
-            ]);
-          map.addControl(panel);
-             
-            var containerEdition = document.getElementById("panelEdition");
-            var panelEdition = new OpenLayers.Control.Panel({div: containerEdition});
-            
-            panelEdition.addControls([
-            modifyFeatureControl,            	 	              
- 	          polyControl,
- 	           rectControl, 	 
- 	          pointControl
- 	          
- 	          
-            ]);
-           
-            
-            
-            
-            map.addControl(panelEdition);        	
-}
-         
-var format = new OpenLayers.Format.XML();
-function getElementsByTagNameNS(node, uri, name) {
-			
-            var nodes = format.getElementsByTagNameNS(node, uri, name);
-            var pieces = [];
-            for(var i=0; i<nodes.length; ++i) {
-                pieces.push(format.write(nodes[i]));
-            }
-            return (pieces.join(' '));
-}
-
-
-function loadstartfunc(){
-alert("START");
-}
-function loadendfunc(){
-alert("END");
-}
-
-function intersect() 
-{
-  if (isFreeSelectionPerimeter)
-  {
-  	 var features = vectors.features; 
-     var feature = features[features.length-1];
-     
-     document.getElementById("selectedSurface").options.length=0;
-     
-     if (feature.geometry.components[0].components.length > 2)
-     {
-   		 featureArea = feature.geometry.getArea();
-    }else{
-    	featureArea = 0;
-    }
-	document.getElementById('totalSurface').value =  parseFloat(featureArea );
-	document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
-     
-     if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
-     	
-     	var polygonSize = feature.geometry.components[0].components.length;
-     	
-     	var components = feature.geometry.components[0].components;
-     	
-     	var i = 0;
-     	while (i< polygonSize){
-     	
-     	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-			new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
-			i++;
-     	}          
-     
-     }
-	if (feature.geometry instanceof OpenLayers.Geometry.Point){
-         	 		 	 
-     document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
-   	 document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
-   	 document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-			new Option(feature.geometry,feature.geometry);
-}      
-	drawSelectedSurface();	 
- }else{
-	  $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
-
-   var features = vectors.features;
-          var gmlOptions = {
-                featureType: "feature",
-                featureNS: "http://example.com/feature"
-            };
-
-	gml = new OpenLayers. Format. GML.v2(gmlOptions);
-
-	//for(var i=features.length-1; i>=0; i--) {
-        feature = features[features.length-1];
-        var doc = format.read(gml.write(feature, true));               
+		document.getElementById('perimeter_id').value = perimId;
+		//freeSelectPerimeter();
+		document.getElementById('manualPerimDivId').style.display='none';
+		document.getElementById('manualAddGeometry').style.display='none';
 		
-		if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
-			wfsUrlWithFilter = wfsUrl+ '&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Polygon')+'</ogc:Intersect></ogc:Filter>');
-							
+			
+		//Delete the current selection
+		initSelectedSurface();
+		
+		        						 
+		nameField = name;
+		idField = id;
+		areaField =area;
+	
+		
+	
+		if (wfs) {
+			map.removeLayer(wfs);
+			wfs.destroy();				
+			wfs=null;		
 		}
-		
-		if (feature.geometry instanceof OpenLayers.Geometry.Point){
-			wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
+		if (wfs3) {	
+			wfs3.destroy();				
+			wfs3=null;		
 		}
-		
-		if (!wfs) {				
-		//	wfs.destroy();
-	     wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
-                    strategies: [new OpenLayers.Strategy.Fixed()],
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: wfsUrlWithFilter,
-                        format: new OpenLayers.Format.GML()
-                    })
-                });		    	            
 	
-
-			 wfsRegisterEvents();
-			 map.addLayer(wfs);			
-			}else{
-			    
-			  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
-                    strategies: [new OpenLayers.Strategy.Fixed()],
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: wfsUrlWithFilter,
-                        format: new OpenLayers.Format.GML()                                                
-                    })});	
-                
-                
-                wfs2.events.register("featureadded", null, function(myEvent) { 
-                $("status").innerHTML = "";
-				removeSelection();
-				
-				
-				var wfsFeatures = wfs.features;
-
-				// look for a feature with the same id
-				var idToLookFor = myEvent.feature.attributes[idField];
-				var found = false;
-				for(var j=wfsFeatures.length-1; j>=0; j--) {
-                    feat2 = wfsFeatures[j];                       
-                      
-                       if (idToLookFor == feat2.attributes[idField]){
-                       	found=true;
-                       
-                       	wfs.removeFeatures([wfsFeatures[j]]);
-                       	break;
-                       }
-                       }
-                       
-                       if (!found){
-                       	wfs.addFeatures([myEvent.feature]);
-                       }
-			});
-            map.addLayer(wfs2);		
-            map.removeLayer(wfs2);    
-                }
-				
-              
-   // }
- }
- 
-return;                     
-}
-function wfsRegisterEvents()			
- {
- 
- //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-//	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
+	
+		if (layerPerimeter){
+					map.removeLayer(layerPerimeter);
+					layerPerimeter=null;
+			}
+		if (vectors){
+			var features = vectors.features;
+			vectors.removeFeatures(features)
+		}
+	
+		if (perimUrl.length ==0 && wmsUrl.length ==0){
+			//Free selection permiter.
+			isFreeSelectionPerimeter = true;
+		
+		}else{
+		
+		isFreeSelectionPerimeter = false;
+	
+		if (wmsUrl.length > 0){
+		
+			layerPerimeter = new OpenLayers.Layer.WMS(perimName,
+	                    wmsUrl,
+	                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
+	                     {singleTile: true},                                                    
+	                     {                     
+						  minResolution: pMinResolution,
+	               		  maxResolution: pMaxResolution,                                    	     
+	                      maxExtent: map.maxExtent,
+	                      projection: map.projection,
+	                      units: map.units,
+	                      transparent: "true"
+	                     }
+	                    );
+	                 layerPerimeter.alwaysInRange=false;  
+	                    
+	                 map.addLayer(layerPerimeter);      
+	    
+	    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
 	  
- 			wfs.events.register("featureremoved",null,function(event){
-			
-			        feat2 = event.feature;
-                    var name = feat2.attributes[nameField];
-                    //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-                    var id = feat2.attributes[idField];   
-            		var area = feat2.attributes[areaField];
-            		var featArea = 0;	
-            		if (areaField.length > 0 && area){
-            					featArea = area; 
-            			}else {
-            					featArea = feat2.geometry.getArea();
-            			}
-			
-						var found = -1;
-												
-						for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--){
-														
-							if (document.getElementById("selectedSurface").options[k].value ==  id){
-								//Remove the value							
-								document.getElementById("selectedSurface").remove(k);								
-								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-								document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
-																								
-								found=k;																			
-							}            				
-						}						                
-            }
-            
-			
-			);
-			 
-		wfs.events.register("featureadded", null, function(event) { 
-			removeSelection();
-			$("status").innerHTML = "";
-			    		
-              feat2 = event.feature;
-              var name = feat2.attributes[nameField];
-              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-              var id = feat2.attributes[idField];
-                       
-              var area = feat2.attributes[areaField];
-              var featArea = 0;	
-            	if (areaField.length > 0 && area){
-            					featArea = area; 
-            				}else {
-            					featArea = feat2.geometry.getArea();
-            				}
-
+		}else{
+		
+		var myStyles = new OpenLayers.StyleMap({
+	                "default": new OpenLayers.Style({                 
+	                    fillColor: "#ffcc66",
+	                    strokeColor: "#ff9933",
+	                    strokeWidth: 2
+	                }),
+	                "select": new OpenLayers.Style({
+	                    fillColor: "#66ccff",
+	                    strokeColor: "#3399ff"
+	                })
+	            });
+		
+		
+		wfs = new OpenLayers.Layer.WFS( perimName,
+		                perimUrl,
+		                {typename: featureTypeName}, {
+		                    typename: featureTypeName,                                    
+		                    extractAttributes: false
+		                       
+		                },
+	                { featureClass: OpenLayers.Feature.WFS}
+		                 );
+		
+		
+		wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+		wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
+		
+		map.addLayer(wfs);
+		 }
+		}
+		
+	}
+	
+	            
+	function initMap(){
+	 //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
+	 
+	 //OpenLayers.ProxyHost="index.php?option=com_easysdi_shop&no_html=1&task=proxy&url=";
+	
+	
+	
+	<?php
+	global  $mainframe;
+	$db =& JFactory::getDBO(); 
+	
+	
+		
+	$query = "select * from #__easysdi_basemap_definition where def = 1"; 
+	$db->setQuery( $query);
+	$rows = $db->loadObjectList();		  
+	if ($db->getErrorNum()) {						
+				echo "<div class='alert'>";			
+				echo 			$db->getErrorMsg();
+				echo "</div>";
+	}
+	
+	$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+	?>
+					map = new OpenLayers.Map('map', {
+	                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
+					displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
+	                units: "<?php echo $rows[0]->unit; ?>",
+	                minResolution: <?php echo $rows[0]->minResolution; ?>,
+	                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
+	                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
+	                //controls: [],
+					<?php
+						if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
+				    ?>
+					<?php
+						if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
+				    ?>
+	            });
+					  
+					map.addControl(new OpenLayers.Control.MousePosition({ 
+					div: document.getElementById("mouseposition"),
+					prefix: '', 
+					suffix: '', 
+					separator: ' / ', 
+					numDigits: 0
+					}));
+					
+					
+					 baseLayerVector = new OpenLayers.Layer.Vector(
+	                "BackGround",
+	                {isBaseLayer: true,transparent: "true"}
+	            ); 
+					  map.addLayer(baseLayerVector);
+	
+	
+	<?php
+	
+	$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id." order by ordering"; 
+	$db->setQuery( $query);
+	$rows = $db->loadObjectList();
+			  
+	if ($db->getErrorNum()) {						
+				echo "<div class='alert'>";			
+				echo 			$db->getErrorMsg();
+				echo "</div>";
+	}
+	$i=0;
+	foreach ($rows as $row){				  
+	?>				
+					  
+					layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+					
+						<?php 
+						if ($row->user != null && strlen($row->user)>0){
+							//if a user and password is requested then use the joomla proxy.
+							$proxyhost = config_easysdi::getValue("PROXYHOST");
+							$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
+							echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
+						}else{	
+							//if no user and password then don't use any proxy.					
+							echo "\"$row->url\",";	
+						}					
+						?>
 						
-                       	
-                       	//Add the new value
-	            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-	            document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
-	   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-            	new Option(name,id);
-            			
-            }
-            
-			 //}
-			 );
- }
- 
-var oldLoad = window.onload;
-window.onload=function(){
-initMap();
-selectPerimeter('perimeterList');
-if (oldLoad) oldLoad();}
---></script>
-
-<div id="map" class="smallmap"></div>
-
-<hr>
-
-<table width="100%">
- <tr>
-  <td width="40" rowspan=2>
-    <div id="infoLogo" class="shopInfoLogo"/>
-  </td>
-  <td width="120">
-    <div id="scale"/>
-  </td>
-  <td>
-    <div id="scaleStatus"/>
-  </td>
-  <td width="100" align="right">
-    <?php echo JText::_("EASYSDI_MAP_COORDINATE") ?>
-  </td>
-  <td width="100" align="right">
-    <div id="mouseposition"></div>
-  </td>
- </tr>
- <tr>
-  <td colspan=4>
-    <div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
-  </td>
- </tr>
- <tr>
-  <td colspan=4>
-    <div id="status"/>
-  </td>
- </tr>
-</table>
-
-
-<div id="docs"></div>
-<br>
-<div id="panelDiv" class="historyContent"></div>
-
-<br>
-
-<?php 	$step = JRequest::getVar('step',"2");
-$option = JRequest::getVar('option');
-$task = JRequest::getVar('task');
-?>
-<script>
-
-function isSelfIntersect(){
- var features = vectors.features;
- if (features.length == 0) {
-			 return;
-	} 
-  var feature= features[features.length-1];
-  var lines = new Array();
-			  	
-   
-  if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
-     	
-     	var polygonSize = feature.geometry.components[0].components.length;     	
-     	var components = feature.geometry.components[0].components;
-     	     
-     	var i = 0;
-     	while (i< polygonSize-1){		     	
-		     		lines.push (new OpenLayers.Geometry.LineString ([
-		     				new OpenLayers. Geometry. Point(components [i].x,components [i].y),
-		     				new OpenLayers. Geometry. Point(components [i+1].x,components [i+1].y)
-		     				]));		     				
-		     			     			     	
-			i++;
-     	}     	
-     	
-     	for (i=0;i< lines.length;i++){
-     		count=0;
-     		for (j=0;j< lines.length;j++){
-     		
-     		//On ne doit pas comparer la ligne avec elle m�me
-     			if (i != j){
-	     			if (lines[i].intersects (lines[j])) {
-	     			count++;	     			
-	     			}     	
-	     			//alert (i+" "+j+" "+lines[i].intersects (lines[j]));		
-     			}
-     			if (count > 2) {
-     				//More than 2 intersectios for a line, mean that a line intersects another one.
-     				alert("<?php echo JText::_("EASYSDI_SELF_INTERSECTING_POLYGON"); ?>");	     			
-	     			return true;
-     			}     			     				     		
-     		}
-     
-     		
-     	}     	
-     }
-     
-     return false;
-}
-
- function submitOrderForm(){ 	
- 	var selectedSurface = document.getElementById('selectedSurface');
- 	
- 	if (document.getElementById('step').value == 3 && 
- 			isSelfIntersect()==true){
- 				
- 				return ;
- 		}
- 		
- 		
- 		
- if (selectedSurface.options.length>0){	  	
- 	var replicSelectedSurface = document.getElementById('replicSelectedSurface');
- 	var replicSelectedSurfaceName = document.getElementById('replicSelectedSurfaceName');
- 	 	
- 
-	 var i=0; 
-	 for (i=0;i<selectedSurface.options.length;i++){  
-		 replicSelectedSurface.options[i] = new Option(selectedSurface.options[i].value,selectedSurface.options[i].value);
-		 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
-		 replicSelectedSurface.options[i].selected=true;
-		 replicSelectedSurfaceName.options[i].selected=true;	 
+	                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+	                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+	                     {     
+	                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
+	                      
+	                      	minResolution: <?php echo $row->minResolution; ?>,
+	                        maxResolution: <?php echo $row->maxResolution; ?>,                 
+	                     projection:"<?php echo $row->projection; ?>",
+	                      units: "<?php echo $row->unit; ?>",
+	                      transparent: "true"
+	                     }
+	                    );
+	                 map.addLayer(layer<?php echo $i; ?>);
+	<?php 
+	$i++;
+	
+	} ?>                    
+				 
+					map.events.register("zoomend", null, 
+										function() { 
+													document.getElementById('previousExtent').value = map.getExtent().toBBOX();
+													//$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+													$("scale").innerHTML = document.getElementById('previousExtent').value ;
+													 text = "";
+								
+													for (i=0; i<map.layers.length ;i++){
+															if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
+															 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+															} 
+														}
+														$("scaleStatus").innerHTML = text;
+													}
+										)
+	                
+	               	map.addControl(new OpenLayers.Control.LayerSwitcher());
+	                map.addControl(new OpenLayers.Control.Attribution());       
+	                
+	                                         
+	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
+	                map.addLayer(vectors);
+					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+					
+				<?php
+					if ( JRequest::getVar('previousExtent') != "")
+					{
+				?>
+					map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
+				<?php
+					}
+					else
+					{
+				?>
+					map.zoomToMaxExtent();
+				<?php	
+					}
+				?>
+	             
+				/*zb = new OpenLayers.Control.ZoomBox();
+				md = new OpenLayers.Control.MouseDefaults();
+				zo =  new OpenLayers. Control. ZoomOut();*/
+				var containerPanel = document.getElementById("panelDiv");
+	            
+	            
+	            var panel = new OpenLayers.Control.Panel({div: containerPanel});
+				
+							
+				rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
+				
+				rectControl.featureAdded = function() { intersect();};												
+				rectControl.handler.setOptions({irregular: true});                                  
+	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
+	            
+	            
+	            //Polygonal  bounding box selection
+	            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
+	            polyControl.featureAdded = function() { intersect();};
+				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
+			
+				//Point selection
+	            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
+	            pointControl.featureAdded = function() { intersect();};
+				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
+	         
+				//Modify feature shape  
+	            modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
+				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
+				
+				vectors.events.on({
+	                "afterfeaturemodified": intersect                
+	            });
+	
+	
+	            
+	            navHistory = new OpenLayers.Control.NavigationHistory();
+	            map.addControl (navHistory);
+				
+	            panel.addControls([            	
+	 	          navHistory.previous, 	          
+	 	          navHistory.next
+	            ]);
+	          map.addControl(panel);
+	             
+	            var containerEdition = document.getElementById("panelEdition");
+	            var panelEdition = new OpenLayers.Control.Panel({div: containerEdition});
+	            
+	            panelEdition.addControls([
+	            modifyFeatureControl,            	 	              
+	 	          polyControl,
+	 	           rectControl, 	 
+	 	          pointControl
+	 	          
+	 	          
+	            ]);
+	           
+	            
+	            
+	            
+	            map.addControl(panelEdition);        	
+	}
+	         
+	var format = new OpenLayers.Format.XML();
+	function getElementsByTagNameNS(node, uri, name) {
+				
+	            var nodes = format.getElementsByTagNameNS(node, uri, name);
+	            var pieces = [];
+	            for(var i=0; i<nodes.length; ++i) {
+	                pieces.push(format.write(nodes[i]));
+	            }
+	            return (pieces.join(' '));
+	}
+	
+	
+	function loadstartfunc(){
+	alert("START");
+	}
+	function loadendfunc(){
+	alert("END");
+	}
+	
+	function intersect() 
+	{
+	  if (isFreeSelectionPerimeter)
+	  {
+	  	 var features = vectors.features; 
+	     var feature = features[features.length-1];
+	     
+	     document.getElementById("selectedSurface").options.length=0;
+	     
+	     if (feature.geometry.components[0].components.length > 2)
+	     {
+	   		 featureArea = feature.geometry.getArea();
+	    }else{
+	    	featureArea = 0;
+	    }
+		document.getElementById('totalSurface').value =  parseFloat(featureArea );
+		document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
+	     
+	     if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+	     	
+	     	var polygonSize = feature.geometry.components[0].components.length;
+	     	
+	     	var components = feature.geometry.components[0].components;
+	     	
+	     	var i = 0;
+	     	while (i< polygonSize){
+	     	
+	     	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+				new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
+				i++;
+	     	}          
+	     
+	     }
+		if (feature.geometry instanceof OpenLayers.Geometry.Point){
+	         	 		 	 
+	     document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
+	   	 document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
+	   	 document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+				new Option(feature.geometry,feature.geometry);
+	}      
+		drawSelectedSurface();	 
+	 }else{
+		  $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
+	
+	   var features = vectors.features;
+	          var gmlOptions = {
+	                featureType: "feature",
+	                featureNS: "http://example.com/feature"
+	            };
+	
+		gml = new OpenLayers. Format. GML.v2(gmlOptions);
+	
+		//for(var i=features.length-1; i>=0; i--) {
+	        feature = features[features.length-1];
+	        var doc = format.read(gml.write(feature, true));               
+			
+			if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+				wfsUrlWithFilter = wfsUrl+ '&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Polygon')+'</ogc:Intersect></ogc:Filter>');
+								
+			}
+			
+			if (feature.geometry instanceof OpenLayers.Geometry.Point){
+				wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
+			}
+			
+			if (!wfs) {				
+			//	wfs.destroy();
+		     wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+	                    strategies: [new OpenLayers.Strategy.Fixed()],
+	                    protocol: new OpenLayers.Protocol.HTTP({
+	                        url: wfsUrlWithFilter,
+	                        format: new OpenLayers.Format.GML()
+	                    })
+	                });		    	            
+		
+	
+				 wfsRegisterEvents();
+				 map.addLayer(wfs);			
+				}else{
+				    
+				  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
+	                    strategies: [new OpenLayers.Strategy.Fixed()],
+	                    protocol: new OpenLayers.Protocol.HTTP({
+	                        url: wfsUrlWithFilter,
+	                        format: new OpenLayers.Format.GML()                                                
+	                    })});	
+	                
+	                
+	                wfs2.events.register("featureadded", null, function(myEvent) { 
+	                $("status").innerHTML = "";
+					removeSelection();
+					
+					
+					var wfsFeatures = wfs.features;
+	
+					// look for a feature with the same id
+					var idToLookFor = myEvent.feature.attributes[idField];
+					var found = false;
+					for(var j=wfsFeatures.length-1; j>=0; j--) {
+	                    feat2 = wfsFeatures[j];                       
+	                      
+	                       if (idToLookFor == feat2.attributes[idField]){
+	                       	found=true;
+	                       
+	                       	wfs.removeFeatures([wfsFeatures[j]]);
+	                       	break;
+	                       }
+	                       }
+	                       
+	                       if (!found){
+	                       	wfs.addFeatures([myEvent.feature]);
+	                       }
+				});
+	            map.addLayer(wfs2);		
+	            map.removeLayer(wfs2);    
+	                }
+					
+	              
+	   // }
 	 }
-	document.getElementById('totalArea').value=document.getElementById('totalSurface').value;
- 	
- 	
- 	
- 	
- 	var totalArea = document.getElementById('totalArea').value;
- 	var selectedSurfaceMin = document.getElementById('totalSurfaceMin').value;
- 	var selectedSurfaceMax = document.getElementById('totalSurfaceMax').value;
- 	 
- 	 
- 	if ( (parseFloat(totalArea) > parseFloat(selectedSurfaceMax))|| (parseFloat(totalArea) < parseFloat(selectedSurfaceMin))){
- 		alert("<?php echo JText::_("EASYSDI_BAD_AREA"); ?>");
- 		return ;
- 	}
- 	
- 	document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value; 
- 	document.getElementById('orderForm').submit();
- 	}else {
- 		if (document.getElementById('step').value == 1){
- 			document.getElementById('orderForm').submit();
- 			 			
- 		}else{
- 			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
- 			}
- 	}
- }
- </script>
-<div style="display: none;">
-<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
-	<input type="hidden" id="bufferValue2" name="bufferValue" value="0"> 
-	<select multiple="multiple" size="10" id="replicSelectedSurface" name="replicSelectedSurface[]"></select> 
-	<select multiple="multiple" size="10" id="replicSelectedSurfaceName" name="replicSelectedSurfaceName[]"></select> 
-	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
-	<input type='hidden' id="fromStep" name='fromStep' value='2'> 
-	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
-	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'> 
-	<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
-	<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'> 
-	<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
-	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
-</form>
-</div>
-<?php
-
+	 
+	return;                     
+	}
+	function wfsRegisterEvents()			
+	 {
+	 
+	 //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+	//	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
+		  
+	 			wfs.events.register("featureremoved",null,function(event){
+				
+				        feat2 = event.feature;
+	                    var name = feat2.attributes[nameField];
+	                    //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+	                    var id = feat2.attributes[idField];   
+	            		var area = feat2.attributes[areaField];
+	            		var featArea = 0;	
+	            		if (areaField.length > 0 && area){
+	            					featArea = area; 
+	            			}else {
+	            					featArea = feat2.geometry.getArea();
+	            			}
+				
+							var found = -1;
+													
+							for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--){
+															
+								if (document.getElementById("selectedSurface").options[k].value ==  id){
+									//Remove the value							
+									document.getElementById("selectedSurface").remove(k);								
+									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
+									document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+																									
+									found=k;																			
+								}            				
+							}						                
+	            }
+	            
+				
+				);
+				 
+			wfs.events.register("featureadded", null, function(event) { 
+				removeSelection();
+				$("status").innerHTML = "";
+				    		
+	              feat2 = event.feature;
+	              var name = feat2.attributes[nameField];
+	              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+	              var id = feat2.attributes[idField];
+	                       
+	              var area = feat2.attributes[areaField];
+	              var featArea = 0;	
+	            	if (areaField.length > 0 && area){
+	            					featArea = area; 
+	            				}else {
+	            					featArea = feat2.geometry.getArea();
+	            				}
+	
+							
+	                       	
+	                       	//Add the new value
+		            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+		            document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+		   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+	            	new Option(name,id);
+	            			
+	            }
+	            
+				 //}
+				 );
+	 }
+	 
+	var oldLoad = window.onload;
+	window.onload=function(){
+	initMap();
+	selectPerimeter('perimeterList');
+	if (oldLoad) oldLoad();}
+	--></script>
+	
+	<div id="map" class="smallmap"></div>
+	
+	<hr>
+	
+	<table width="100%">
+	 <tr>
+	  <td width="40" rowspan=2>
+	    <div id="infoLogo" class="shopInfoLogo"/>
+	  </td>
+	  <td width="120">
+	    <div id="scale"/>
+	  </td>
+	  <td>
+	    <div id="scaleStatus"/>
+	  </td>
+	  <td width="100" align="right">
+	    <?php echo JText::_("EASYSDI_MAP_COORDINATE") ?>
+	  </td>
+	  <td width="100" align="right">
+	    <div id="mouseposition"></div>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan=4>
+	    <div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan=4>
+	    <div id="status"/>
+	  </td>
+	 </tr>
+	</table>
+	
+	
+	<div id="docs"></div>
+	<br>
+	<div id="panelDiv" class="historyContent"></div>
+	
+	<br>
+	
+	<?php 	$step = JRequest::getVar('step',"2");
+	$option = JRequest::getVar('option');
+	$task = JRequest::getVar('task');
+	
+	?>
+	<script>
+	
+	function isSelfIntersect(){
+	 var features = vectors.features;
+	 if (features.length == 0) {
+				 return;
+		} 
+	  var feature= features[features.length-1];
+	  var lines = new Array();
+				  	
+	   
+	  if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+	     	
+	     	var polygonSize = feature.geometry.components[0].components.length;     	
+	     	var components = feature.geometry.components[0].components;
+	     	     
+	     	var i = 0;
+	     	while (i< polygonSize-1){		     	
+			     		lines.push (new OpenLayers.Geometry.LineString ([
+			     				new OpenLayers. Geometry. Point(components [i].x,components [i].y),
+			     				new OpenLayers. Geometry. Point(components [i+1].x,components [i+1].y)
+			     				]));		     				
+			     			     			     	
+				i++;
+	     	}     	
+	     	
+	     	for (i=0;i< lines.length;i++){
+	     		count=0;
+	     		for (j=0;j< lines.length;j++){
+	     		
+	     		//On ne doit pas comparer la ligne avec elle m�me
+	     			if (i != j){
+		     			if (lines[i].intersects (lines[j])) {
+		     			count++;	     			
+		     			}     	
+		     			//alert (i+" "+j+" "+lines[i].intersects (lines[j]));		
+	     			}
+	     			if (count > 2) {
+	     				//More than 2 intersectios for a line, mean that a line intersects another one.
+	     				alert("<?php echo JText::_("EASYSDI_SELF_INTERSECTING_POLYGON"); ?>");	     			
+		     			return true;
+	     			}     			     				     		
+	     		}
+	     
+	     		
+	     	}     	
+	     }
+	     
+	     return false;
+	}
+	
+	 function submitOrderForm(){ 	
+	 	var selectedSurface = document.getElementById('selectedSurface');
+	 	
+	 	if (document.getElementById('step').value == 3 && 
+	 			isSelfIntersect()==true){
+	 				return ;
+	 		}
+	 		
+	 		
+		 		
+		 if (selectedSurface.options.length>0)
+		 {	  	
+		 	var replicSelectedSurface = document.getElementById('replicSelectedSurface');
+		 	var replicSelectedSurfaceName = document.getElementById('replicSelectedSurfaceName');
+		 	 	
+		 
+			 var i=0; 
+			 for (i=0;i<selectedSurface.options.length;i++)
+			 {  
+				 replicSelectedSurface.options[i] = new Option(selectedSurface.options[i].value,selectedSurface.options[i].value);
+				 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
+				 replicSelectedSurface.options[i].selected=true;
+				 replicSelectedSurfaceName.options[i].selected=true;	 
+			 }
+			document.getElementById('totalArea').value=document.getElementById('totalSurface').value;
+		 	
+		 	var totalArea = document.getElementById('totalArea').value;
+		 	var selectedSurfaceMin = document.getElementById('totalSurfaceMin').value;
+		 	var selectedSurfaceMax = document.getElementById('totalSurfaceMax').value;
+		 	 
+		 	if ( (parseFloat(totalArea) > parseFloat(selectedSurfaceMax))|| (parseFloat(totalArea) < parseFloat(selectedSurfaceMin)))
+		 	{
+		 		alert("<?php echo JText::_("EASYSDI_BAD_AREA"); ?>");
+		 		return ;
+		 	}
+		 	
+		 	var bufferValue = document.getElementById('bufferValue').value;
+			if( parseFloat(bufferValue) < 0)
+			{
+		 		alert("<?php echo JText::_("EASYSDI_MESSAGE_ERROR_BUFFER_VALUE"); ?>");
+		 		return ;
+		 	}
+		 	
+		 	
+		 	document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value; 
+		 	document.getElementById('orderForm').submit();
+		 }
+		 else 
+		 {
+		 	if (document.getElementById('step').value == 1){
+		 		document.getElementById('orderForm').submit();
+		 		 			
+		 	}else
+		 	{
+	 			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
+	 		}
+		 }
+	 }
+	 </script>
+	<div style="display: none;">
+	<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+		<input type="hidden" id="bufferValue2" name="bufferValue2" value="0"> 
+		<select multiple="multiple" size="10" id="replicSelectedSurface" name="replicSelectedSurface[]"></select> 
+		<select multiple="multiple" size="10" id="replicSelectedSurfaceName" name="replicSelectedSurfaceName[]"></select> 
+		<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
+		<input type='hidden' id="fromStep" name='fromStep' value='2'> 
+		<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+		<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'> 
+		<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+		<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'> 
+		<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
+		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+		<input type='hidden' id='previousExtent' name='previousExtent' value="" />
+	</form>
+	</div>
+	<?php
+	
 	}
 
 	function orderRecap ($cid,$option){
@@ -1601,7 +1625,7 @@ if (count($rows)>0){
 			$selSurfaceListName = JRequest::getVar ('replicSelectedSurfaceName', array(0) );
 			$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
 				
-			$bufferValue = JRequest::getVar ('bufferValue', 0 );
+			$bufferValue = JRequest::getVar ('bufferValue2', 0 );
 			$mainframe->setUserState('bufferValue',$bufferValue);
 				
 			$totalArea = JRequest::getVar ('totalArea', 0 );
