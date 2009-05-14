@@ -1114,16 +1114,7 @@ if (count($rows)>0){
  	document.getElementById('orderForm').submit();
  }
  </script>
- <?php
- 	$queryType = "SELECT id from #__easysdi_order_type_list where code = 'D'";
-	$db->setQuery($queryType );
-	$dType = $db->loadResult();
-	
-	$queryType = "SELECT id from #__easysdi_order_type_list where code = 'O'";
-	$db->setQuery($queryType );
-	$oType = $db->loadResult();
- ?>
-<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='GET'>
+ <form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='GET'>
 	<input type='hidden' id="fromStep" name='fromStep' value='4'> 
 	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
 	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
@@ -1132,10 +1123,10 @@ if (count($rows)>0){
 	<input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"> 
 	<br>
 	<?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?>
-	<input type="radio" name="order_type" id="order_type_d" value="<?php echo $dType; ?>" <?php if (dType == $mainframe->getUserState('order_type')) echo "checked"; ?>>
+	<input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
 	<br>
 	<?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?>
-	<input type="radio" name="order_type" id="order_type_o" value="<?php echo $oType; ?>" <?php if (oType == $mainframe->getUserState('order_type')) echo "checked"; ?>>
+	<input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
 	<?php
 
 	if ($user->guest){
