@@ -438,7 +438,12 @@ class HTML_partner
 					$database->setQuery( $query );
 					$src_list = $database->loadObjectList();
 					
-					HTML_partner::print_child($src_list );				
+					if(count($src_list) != 0)
+					{	
+						
+						userTree::buildTreeView($src_list[0]);
+					}
+		//			HTML_partner::print_child($src_list );				
 ?>
 				</fieldset>		
 				</td>
@@ -1260,8 +1265,11 @@ class HTML_partner
 				
 		$database->setQuery( $query );
 		$src_list = $database->loadObjectList();
-		
-		HTML_partner::print_child($src_list );
+		if(count($src_list) != 0)
+		{	
+			userTree::buildTreeView($src_list[0]);
+		}
+		//HTML_partner::print_child($src_list );
 			
 		
 	
