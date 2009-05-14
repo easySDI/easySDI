@@ -41,10 +41,10 @@ function dTree(objName) {
 		inOrder					: false
 	}
 	this.icon = {
-		root				: '../templates/easysdi/images/dtree/empty.gif',
-		folder			: '../templates/easysdi/images/dtree/folder.gif',
-		folderOpen	: '../templates/easysdi/images/dtree/folderopen.gif',
-		node				: '../templates/easysdi/images/dtree/page.gif',
+		root				: '../../../../../../../../templates/easysdi/images/dtree/empty.gif',
+		folder			: '../../../../../../../../templates/easysdi/images/dtree/folder.gif',
+		folderOpen	: '../../../../../../../../templates/easysdi/images/dtree/folderopen.gif',
+		node				: '../../../../../../../../templates/easysdi/images/dtree/page.gif',
 		empty				: '../templates/easysdi/images/dtree/empty.gif',
 		line				: '../templates/easysdi/images/dtree/line.gif',
 		join				: '../templates/easysdi/images/dtree/join.gif',
