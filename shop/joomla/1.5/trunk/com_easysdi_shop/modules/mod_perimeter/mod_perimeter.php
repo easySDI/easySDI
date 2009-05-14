@@ -90,7 +90,7 @@ if ($curstep == "2"){
 
 		?>
 
-<script>
+<script><!--
 	
 	
 	function enableBufferByPerimeter(perimId){
@@ -152,20 +152,20 @@ if ($curstep == "2"){
 	 
 	 <?php } ?>
       }
-    </script>
+    --></script>
 
 
 
 <table>
 	<tr>
 		<td><select id="perimeterList"
-			onChange="selectPerimeter('perimeterList')">
+			onChange="selectPerimeter('perimeterList')"  >
 			<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 			<?php
 			foreach ($rows as $row)
 			{
 				?>
-			<option value="<?php echo $row->id ?>"><?php echo JText::_($row->perimeter_name); ?>
+			<option value="<?php echo $row->id ?>" <?php if ($row->id == JRequest::getVar('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->perimeter_name); ?>
 			</option>
 			<?php
 
@@ -182,8 +182,8 @@ if ($curstep == "2"){
 		<td></td>
 	</tr>
 	<tr>
-		<td><?php echo JText::_("EASYSDI_BUFFER"); ?><input type="text"
-			id="bufferValue" value="0"></td>
+		<td><?php echo JText::_("EASYSDI_BUFFER"); ?>
+		<input type="text" id="bufferValue"  value="0" onchange="checkBufferValue()"></td>
 	</tr>
 </table>
 <br>
@@ -246,6 +246,22 @@ if ($curstep == "2"){
 
 
 <script><!--
+
+
+function checkBufferValue()
+{
+	var bufferValue = document.getElementById('bufferValue').value;
+	if( parseFloat(bufferValue) < 0)
+	{
+		$("status").innerHTML = "<?php echo JText::_("EASYSDI_MESSAGE_ERROR_BUFFER_VALUE"); ?>";
+	}	
+	else
+	{
+		$("status").innerHTML = "";
+	}
+}
+
+
 		function removeSelected()  {
 		     
      if (isFreeSelectionPerimeter){
@@ -562,6 +578,7 @@ if ($curstep == "2"){
 	if ($curstep > 2){
 		$db =& JFactory::getDBO();
 		$bufferValue = $mainframe->getUserState('bufferValue');
+		 //$bufferValue = JRequest::getVar('bufferValue');
 
 		$query = "select * from #__easysdi_basemap_definition where def = 1";
 		$db->setQuery( $query);
