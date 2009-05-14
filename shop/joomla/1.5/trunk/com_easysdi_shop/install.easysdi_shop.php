@@ -1646,7 +1646,7 @@ if ($version == "0.998")
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('D','EASYSDI_ORDER_PRODUCT_STATUS_O', 'O')";
+		$query = "insert  into #__easysdi_order_type_list (code, translation, name) values('O','EASYSDI_ORDER_PRODUCT_STATUS_O', 'O')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{
@@ -1667,6 +1667,25 @@ if ($version == "0.998")
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	
+	if($version == "0.9993")
+	{
+		//Add diffusion partner field for product
+		$query="ALTER TABLE #__easysdi_product add column `diffusion_partner_id` bigint(20)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Update component version
+		$version = "0.9994";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
