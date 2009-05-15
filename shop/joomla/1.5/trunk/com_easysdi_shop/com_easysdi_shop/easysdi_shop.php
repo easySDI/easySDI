@@ -31,7 +31,7 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
-//require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'common.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
@@ -42,6 +42,7 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.
 require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php'); 
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+
 
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
