@@ -219,7 +219,7 @@ case  "list" :
 	}
 	foreach($rowsList as $rowList){
 		?>
-<table>
+
 	<tr>
 		<td><?php echo JText::_($row->description) ?></td>
 		<td><select name="<?php "PARAM$row->id[]"?>"
@@ -237,14 +237,14 @@ case  "list" :
 			foreach ($rowsListContent as $rowListContent){
 				?>
 			<option value="<?php echo $rowListContent->key ;?>"
-			<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo $rowListContent->value ;?>
-			<?php echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>
+			<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo $rowListContent->value ;?></option>
+			<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
 			<?php
 
 			} ?>
 		</select></td>
 	</tr>
-</table>
+
 			<?php
 	}
 	break;
@@ -254,7 +254,7 @@ case  "list" :
 	}
 
 	function generateMetadataHtml($row,$tab_id,$metadata_standard_id,$iso_key,$geoMD,$metadata_id){
-		global  $mainframe;
+		global $mainframe;
 
 		$database =& JFactory::getDBO();
 
@@ -330,7 +330,7 @@ case  "list" :
 
 
 		<option value="<?php echo $rowListContent->key ;?>"
-		<?php if ($geoMD->isXPathResultCount("//gmd:MD_Metadata/".$iso_key."[gco:CharacterString='$rowListContent->key']")>0){echo "selected";}?>><?php echo $rowListContent->value ;?></option>
+		<?php if ($geoMD->isXPathResultCount("//gmd:MD_Metadata/".$iso_key."[gco:CharacterString='$rowListContent->key']")>0){echo "selected=selected";}?>><?php echo $rowListContent->value ;?></option>
 		<?php } ?>
 	</select></td>
 </tr>
