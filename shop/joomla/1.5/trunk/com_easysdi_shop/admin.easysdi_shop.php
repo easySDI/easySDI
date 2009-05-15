@@ -579,7 +579,15 @@ case "proxy":
 		ADMIN_properties::listProperties($option);
 		
 		break;
-
+	case "orderupProperties":
+		ADMIN_properties::goUpProperties($cid,$option);
+	break;
+	case "orderdownProperties":
+		ADMIN_properties::goDownProperties($cid,$option);
+	break;
+	case "saveOrderProperties":
+		ADMIN_properties::saveOrderProperties($cid,$option);
+	break;
 		
 		
 		
@@ -650,6 +658,19 @@ case "saveLocation":
 		ADMIN_perimeter::listPerimeter($option);
 		
 		break;
+	case "orderupPerimeter":
+		ADMIN_perimeter::goupPerimeter($cid, $option);
+		
+		break;
+	case "orderdownPerimeter":
+		ADMIN_perimeter::godownPerimeter($cid, $option);
+		
+		break;
+	case "saveOrderPerimeter":
+		ADMIN_perimeter::saveOrderPerimeter($cid, $option);
+		
+		break;
+		
 	case "saveProductMetadata":		
 		ADMIN_product::saveProductMetadata($option);
 		$mainframe->redirect("index.php?option=$option&task=listProduct");				
