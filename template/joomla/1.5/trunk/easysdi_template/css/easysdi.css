@@ -15,10 +15,6 @@ table#info_md div{
 	width:16px;
 }
 
-div .publicMd{
-	/* background-image:url(../images/fff/silk/lock_disabled.png); */
-}
-
 div .privateMd{
 	background-image:url(../images/fff/silk/lock.png);
 }
@@ -35,9 +31,6 @@ div .freeMd{
 	background-image:url(../images/money_dollar_disabled.png);
 }
 
-div .notFreeMd{
-	background-image:url(../images/fff/silk/money_dollar.png);
-}
 
 /***********************/
 /*** EasySDI Catalog ***/
@@ -639,7 +632,7 @@ background-image: url(none);
 /*--------------------------------------------------|
 | dTree 2.05 | www.destroydrop.com/javascript/tree/ |
 |---------------------------------------------------|
-| Copyright (c) 2002-2003 Geir Landrö               |
+| Copyright (c) 2002-2003 Geir Landrï¿½               |
 |--------------------------------------------------*/
 
 .dtree {
