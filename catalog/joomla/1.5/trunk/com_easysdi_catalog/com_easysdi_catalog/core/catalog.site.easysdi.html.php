@@ -266,13 +266,13 @@ class HTML_catalog{
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
 		  <tr>
-		     <td><div class="<?php if($isMdPublic) echo 'publicMd'; else echo 'privateMd';?>"></div></td>
+		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
 		  </tr>
 		  <tr>
-		     <td><div class="<?php if($metadataId_count>0) echo 'easysdi_product_exists'; else echo 'easysdi_product_does_not_exist';?>"></div></td>
+		     <td><div <?php if($metadataId_count>0) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
 		  </tr>
 		  <tr>
-		     <td><div class="<?php if($isMdFree) echo 'freeMd'; else echo 'notFreeMd';?>"></div></td>
+		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
 		  </tr>
 		</table>
 	  </td>
