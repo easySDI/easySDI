@@ -2141,7 +2141,6 @@ if (count($rows)>0){
 </span> 
 <br>
 <button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-<button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_ADD_TO_PANEL"); ?></button>
 <br>
 <br>
 <h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
