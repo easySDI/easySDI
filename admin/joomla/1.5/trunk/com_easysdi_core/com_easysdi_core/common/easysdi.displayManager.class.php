@@ -194,10 +194,10 @@ class displayManager{
 		$myHtml;
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
-				<td><div id=\"exportPdf\"/></td>
-					<td><div id=\"exportXml\"/></td>
-					<td><div id=\"printMetadata\"/></td>
-					<td><div id=\"orderProduct\"/></a></td>
+				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>
 				</td></tr></table>";		
 		}
 		if ($print ==1 ){
