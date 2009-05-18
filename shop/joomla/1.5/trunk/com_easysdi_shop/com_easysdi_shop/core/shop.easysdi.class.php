@@ -15,8 +15,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';
+//foreach($_POST as $key => $val) 
+//echo '$_POST["'.$key.'"]='.$val.'<br />';
 defined('_JEXEC') or die('Restricted access');
 
 
@@ -280,8 +280,8 @@ class HTML_shop {
 	                units: "<?php echo $rows[0]->unit; ?>",
 	                minResolution: <?php echo $rows[0]->minResolution; ?>,
 	                maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-	                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
-	                //controls: [],
+	                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+	                controls: []
 					<?php
 						if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
 				    ?>
@@ -369,13 +369,48 @@ class HTML_shop {
 													}
 										)
 	                
-	               	map.addControl(new OpenLayers.Control.LayerSwitcher());
-	                map.addControl(new OpenLayers.Control.Attribution());       
+	               	//map.addControl(new OpenLayers.Control.LayerSwitcher());
+	                //map.addControl(new OpenLayers.Control.Attribution());       
 	                
 	                                         
 	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
 	                map.addLayer(vectors);
 					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+					
+					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
+						if(ctrl != null){
+							//If type buuton, trigger it directly
+							if(ctrl.type == OpenLayers.Control.TYPE_BUTTON){
+								ctrl.trigger();
+							}
+							//else deactivate buttons from both panels
+							else
+							{				
+								var controls = ctrlPanel.controls;	
+								for(var i = 0; i<controls.length; ++i){
+									if(controls[i].type != OpenLayers.Control.TYPE_BUTTON){
+										controls[i].deactivate();
+									}
+								}
+								controls = otherPanel.controls;	
+								for(var i = 0; i<controls.length; ++i){
+									if(controls[i].type != OpenLayers.Control.TYPE_BUTTON)
+										controls[i].deactivate();
+								}
+								//active the clicked button
+								ctrl.activate();
+							}
+							//display edit shap only if freeselction is active
+							/*
+							var selectedOption = document.getElementById("perimeterList").options[document.getElementById("perimeterList").selectedIndex].text;
+							if(selectedOption == 'Périmètre libre')
+								panelEdition.controls[0].div.style.visibility = "hidden";
+							else
+								panelEdition.controls[0].displayClass='';
+						*/
+							}
+					}
+					
 					
 				<?php
 					if ( JRequest::getVar('previousExtent') != "")
@@ -395,14 +430,43 @@ class HTML_shop {
 				/*zb = new OpenLayers.Control.ZoomBox();
 				md = new OpenLayers.Control.MouseDefaults();
 				zo =  new OpenLayers. Control. ZoomOut();*/
-				var containerPanel = document.getElementById("panelDiv");
-	            
-	            
-	            var panel = new OpenLayers.Control.Panel({div: containerPanel});
 				
+				// var containerPanel = document.getElementById("panelDiv");
+	            // var panel = new OpenLayers.Control.Panel({div: containerPanel});
+				
+				//enabling navigation history
+        	    navHistory = new OpenLayers.Control.NavigationHistory();
+        	    map.addControl (navHistory);
+				navHistory.previous.title='<?php echo JText::_("EASYSDI_TOOL_NAVPREVIOUS_HINT") ?>';
+ 	    	    navHistory.next.title='<?php echo JText::_("EASYSDI_TOOL_NAVNEXT_HINT") ?>';
+				  
+				//Zoom in
+				oZoomBoxInCtrl = new OpenLayers.Control.ZoomBox({
+        	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMIN_HINT") ?>'
+				});
+				
+				//Zoom out
+				oZoomBoxOutCtrl = new OpenLayers.Control.ZoomBox({
+        	    out: true, displayClass: "olControlZoomBoxOut",
+        	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMOUT_HINT") ?>'
+				});
+				
+				//Pan
+				oDragPanCtrl = new OpenLayers.Control.DragPan({
+        	    title: '<?php echo JText::_("EASYSDI_TOOL_PAN_HINT") ?>'
+				});
+				
+				//Zoom to full extends
+				oZoomMxExtCtrl = new OpenLayers.Control.ZoomToMaxExtent({
+        	    map: map, title: '<?php echo JText::_("EASYSDI_TOOL_MAXEXTENT_HINT") ?>'
+				});
+				
+				/*
+					OpenLayers Edition controls
+				*/
 							
-				rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});
-				
+				rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});		
+				rectControl.title = '<?php echo JText::_("EASYSDI_TOOL_RECTCTRL_HINT") ?>';
 				rectControl.featureAdded = function() { intersect();};												
 				rectControl.handler.setOptions({irregular: true});                                  
 	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
@@ -410,16 +474,19 @@ class HTML_shop {
 	            
 	            //Polygonal  bounding box selection
 	            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
+				polyControl.title = '<?php echo JText::_("EASYSDI_TOOL_POLYCTRL_HINT") ?>';
 	            polyControl.featureAdded = function() { intersect();};
 				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
 			
 				//Point selection
 	            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
-	            pointControl.featureAdded = function() { intersect();};
+                pointControl.title = '<?php echo JText::_("EASYSDI_TOOL_POINTCTRL_HINT") ?>';
+				pointControl.featureAdded = function() { intersect();};
 				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
 	         
 				//Modify feature shape  
 	            modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
+				modifyFeatureControl.title = '<?php echo JText::_("EASYSDI_TOOL_MODFEATURE_HINT") ?>';
 				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
 				
 				vectors.events.on({
@@ -427,32 +494,45 @@ class HTML_shop {
 	            });
 	
 	
+	            /*
+					Container panel for standard controls
+				*/
+				var panelEdition;
+				var panel;
 	            
-	            navHistory = new OpenLayers.Control.NavigationHistory();
-	            map.addControl (navHistory);
+				panel = new OpenLayers.Control.Panel({defaultControl: oZoomBoxInCtrl,
+				onClick: function (ctrl, evt) {
+					OpenLayerCtrlClicked(ctrl, evt, this, panelEdition);
+				}});
 				
-	            panel.addControls([            	
-	 	          navHistory.previous, 	          
-	 	          navHistory.next
-	            ]);
-	          map.addControl(panel);
-	             
-	            var containerEdition = document.getElementById("panelEdition");
-	            var panelEdition = new OpenLayers.Control.Panel({div: containerEdition});
-	            
-	            panelEdition.addControls([
-	            modifyFeatureControl,            	 	              
-	 	          polyControl,
-	 	           rectControl, 	 
-	 	          pointControl
-	 	          
-	 	          
-	            ]);
-	           
-	            
-	            
-	            
-	            map.addControl(panelEdition);        	
+				panel.addControls([   
+				  oZoomBoxInCtrl,
+				  oZoomBoxOutCtrl,
+				  oDragPanCtrl,
+ 	    	      navHistory.previous, 	          
+ 	    	      navHistory.next,
+				  oZoomMxExtCtrl
+				  
+        	    ]);
+        	    map.addControl(panel);
+        	     
+				/*
+					Container panel for custom controls
+				*/
+        	    var containerEdition = document.getElementById("panelEdition");
+        	    panelEdition = new OpenLayers.Control.Panel({div: containerEdition,
+				onClick: function (ctrl, evt) {
+        	        OpenLayerCtrlClicked(ctrl, evt, this, panel);
+        	    }});
+				
+        	    panelEdition.addControls([
+				  pointControl,
+				  rectControl,
+				  polyControl,
+				  modifyFeatureControl            	 	              
+        	    ]);
+        	    
+        	    map.addControl(panelEdition);
 	}
 	         
 	var format = new OpenLayers.Format.XML();
@@ -2023,6 +2103,19 @@ if (count($rows)>0){
  function submitOrderForm(){
  	document.getElementById('orderForm').submit();
  }
+ 
+ function addOrder(cid, id){
+ 	var form = document.getElementById('orderForm');
+	var elem = document.createElement('input');
+	elem.setAttribute('type', 'checkbox');
+	elem.setAttribute('id', 'ch'+id);
+	elem.setAttribute('name', 'cid[]');
+	elem.setAttribute('value', cid);
+	form.appendChild(elem);
+	elem.style.visibility = "hidden"; 
+	elem.checked=true;
+	form.submit();
+ }
  </script>
 <form name="orderForm" id="orderForm"
 	action='<?php echo JRoute::_("index.php") ?>' method='GET'>
@@ -2067,42 +2160,94 @@ if (count($rows)>0){
 		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
 	</tr>
 </table>
-
-<table width="100%">
-	<thead>
-		<tr>
-			<th align="left" width="80%"><?php echo JText::_("EASYSDI_SHOP_PRODUCT_TITLE"); ?></th>
-			<th align="left" width="20%"><?php echo JText::_("EASYSDI_SHOP_PRODUCT_SELECT"); ?></th>
-		</tr>
-	</thead>
-</table>
-
+<table class="mdsearchresult" width="100%">
 	<?php
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
 	$i=0;
 
 	foreach ($rows  as $row){
+		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
+		$db->setQuery($queryPartnerID);
+		$partner_id = $db->loadResult();
+		
+		$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
+		$db->setQuery($queryPartnerLogo);
+		$partner_logo = $db->loadResult();
+		
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
+		
+		$isMdPublic = false;
+		$isMdFree = true;
+		//Define if the md is free or not
+		$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
+		$db->setQuery($queryPartnerID);
+		$is_free = $db->loadResult();
+		if($is_free == 0)
+		{
+			$isMdFree = false;
+		}
+		
+		//Define if the md is public or not
+		$queryPartnerID = "select external from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
+		$db->setQuery($queryPartnerID);
+		$external = $db->loadResult();
+		if($external == 1)
+		{
+			$isMdPublic = true;
+		}
+		
+		$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
+		$db->setQuery( $query);
+		$hasPreview = $db->loadResult();
+		if ($db->getErrorNum()) {
+			$hasPreview = 0;
+		}
 		?>
-<hr>
-<table width="100%">
-
-	<tr>
-		<td width="80%"><span class="mdtitle"><a class="modal"
-			title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>"
-			href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
-			rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $row->data_title; ?></a></span><br>
-		<span class="mdsupplier"><?php echo $row->supplier_name;?></span><br>
-		</td>
-		<td width="20%"><input type="checkbox" id="cb<?php echo $i;?>"
-			name="cid[]" value="<?php echo $row->id; ?>"
-			<?php if (in_array($row->id,$cid)) { echo "checked";};?> /></td>
-	</tr>
-</table>
+<tr>
+	 <td valign="top" rowspan=3>
+	    <img src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
+	  </td>
+	  <td colspan=3><span class="mdtitle"><a><?php echo $row->data_title; ?></a></span>
+	  </td>
+	  <td valign="top" rowspan=2>
+	    <table id="info_md">
+		  <tr>
+		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
+		  </tr>
+		  <tr>
+		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
+		  </tr>
+		</table>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_name;?></span></td>
+	 </tr>
+     <tr>
+	  <td><span class="mdviewfile">
+	  	<a title="<?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>"
+				href="#" onclick="addOrder(<?php echo $row->id.",".$i; ?>)"><?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>
+			</a></span>
+	  </td>
+	  	<?php if ($hasPreview > 0){ ?>
+	  <td><span class="mdviewproduct">
+	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
+			rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+      </td>
+		<?php } ?>
+	  <td>&nbsp;</td>
+	 </tr>
+	 <tr>
+	   <td colspan=4>&nbsp;</td>
+	 </tr>
 			<?php
 			$i=$i+1;
 	}
-	?> <input type="hidden" name="countMD" value="<?php echo $countMD;?>">
+	?>
+	</table>
+	<input type="hidden" name="countMD" value="<?php echo $countMD;?>">
 </span></form>
 </div>
 	<?php
