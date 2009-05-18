@@ -16,11 +16,11 @@ table#info_md div{
 }
 
 div .privateMd{
-	background-image:url(../images/fff/silk/lock.png);
+	background-image:url(../icons/silk/lock.png);
 }
 
 div .easysdi_product_exists{
-	background-image:url(../images/fff/silk/cart.png);
+	background-image:url(../icons/silk/cart.png);
 }
 
 div .easysdi_product_does_not_exist{
@@ -128,13 +128,127 @@ div .freeMd{
             text-align: right;
         }
        
-.olControlPanel div { 
-          display:block;
-          width:  24px;
-          height: 24px;
-          margin: 5px;
-          background-color:blue;
-        }
+/* Control container panel div */
+.olControlPanel div {
+	display:block;
+	float:left;
+	margin:0 2px;
+	width:16px;
+	height:16px;
+}
+
+/* Control container panel */
+.olControlPanel {
+	background-color:#c2defd;
+	right:0px;
+	margin:0;
+	padding:2px 0;
+	right:5px;
+	top:5px;
+}
+
+/* Zoom Full Extends */
+.olControlPanel .olControlZoomToMaxExtentItemInactive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomToMaxExtentItemActive {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/arrow_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Search boundaries selection */
+.olControlPanel .olControlDrawFeatureRectangleItemInactive {
+background-image:url(../images/openlayers/btn_rectangle_1.png);
+background-color:transparent;
+background-position:0 0;
+background-repeat:no-repeat;
+width:28px;
+height:26px;
+}
+
+.olControlPanel .olControlDrawFeatureRectangleItemActive {
+background-image:url(../images/openlayers/btn_rectangle_2.png);
+background-color:transparent;
+background-position:0 0;
+background-repeat:no-repeat;
+width:28px;
+height:26px;
+}
+
+/* Zoom in */
+.olControlPanel .olControlZoomBoxItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/zoom_in.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomBoxItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/zoom_in.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Zoom out */
+.olControlPanel .olControlZoomBoxOutItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/zoom_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlZoomBoxOutItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/silk/zoom_out.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+/* Pan */
+.olControlPanel .olControlDragPanItemInactive  {
+border:1px outset #D4DEFF;
+background-image:url(../icons/geosilk/pan.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
+
+.olControlPanel .olControlDragPanItemActive  {
+border:1px inset #D4DEFF;
+background-image:url(../icons/geosilk/pan.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
 
 
 fieldset {
@@ -325,24 +439,44 @@ div.olControlMousePosition {
   position: relative;
 }
 
-.olControlNavigationHistory {
-   background-image: url("../images/navigation_history.png");
-   background-repeat: no-repeat;
-   width:  24px;
-   height: 24px;
+.olControlNavigationHistoryPreviousItemInactive {
+background-image:url(../icons/silk/arrow_left.png);
+border:1px outset #D4DEFF;
+background-color: #DDDDDD;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
+}
 
+.olControlNavigationHistoryPreviousItemActive {
+background-image:url(../icons/silk/arrow_left.png);
+border:1px outset #D4DEFF;
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
 }
-.olControlNavigationHistoryPreviousItemActive { 
-  background-position: 0px 0px;
+
+.olControlNavigationHistoryNextItemInactive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_right.png);
+background-color:#DDDDDD;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
 }
-.olControlNavigationHistoryPreviousItemInactive { 
-   background-position: 0px -24px;
-}
-.olControlNavigationHistoryNextItemActive { 
-   background-position: -24px 0px;
-}
-.olControlNavigationHistoryNextItemInactive { 
-   background-position: -24px -24px;
+
+.olControlNavigationHistoryNextItemActive {
+border:1px outset #D4DEFF;
+background-image:url(../icons/silk/arrow_right.png);
+background-color:#FFFFFF;
+background-position:0 0;
+background-repeat:no-repeat;
+width:16px;
+height:16px;
 }
 
 .olControlNavToolbar .olControlNavigationItemActive { 
@@ -519,15 +653,6 @@ div.olControlMousePosition {
  -moz-user-select: none;
 }
 
-
- .olControlPanel div { 
-          display:block;
-          width:  24px;
-          height: 24px;
-          margin: 5px;
-          background-color:red;
-        }
-        
 .olControlPanel .olControlMouseDefaultsItemActive { 
           background-color: blue;
           background-image: url("../images/pan_on.png");
@@ -546,23 +671,6 @@ div.olControlMousePosition {
           width:  22px;  
           height: 22px;
 			background-image: url("../images/pan_off.png");
-        }
-        .olControlPanel .olControlZoomBoxItemInactive { 
-          width:  22px;  
-          height: 22px;
-          background-color: orange;
-          background-image: url("../images/drag-rectangle-off.png");
-        }
-        .olControlPanel .olControlZoomBoxItemActive { 
-          width:  22px;  
-          height: 22px;
-          background-color: blue;
-          background-image: url("../images/drag-rectangle-on.png");
-        }
-        .olControlPanel .olControlZoomToMaxExtentItemInactive { 
-          width:  18px;  
-          height: 18px;
-          background-image: url("../images/zoom-world-mini.png");
         }
 
 .contentheading, .componentheading 
