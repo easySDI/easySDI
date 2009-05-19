@@ -17,6 +17,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <xsl:template match="Diffusion">
 
 <div id="metadata" class="contentin">
+<!-- Title of the metadata -->
 <h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
 
 <table class="descr" id="metadataTitle">
@@ -36,7 +37,7 @@ __ref__asit_6$s
 
 <table class="descr">
 <xsl:for-each select="./Property">
-	<tr><td><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
+	<tr><td class="title" valign="top"><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
 	<table >
 		<xsl:for-each select="PropertyValue">
 			<tr><td><xsl:value-of disable-output-escaping="yes" select="value"/></td></tr>  
