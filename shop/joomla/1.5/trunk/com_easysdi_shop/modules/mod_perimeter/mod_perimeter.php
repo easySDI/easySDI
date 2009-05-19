@@ -145,10 +145,18 @@ if ($curstep == "2"){
 						$wms_url=	$row->wms_url;					
 					}
 			?>
-	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>'){
-	 			selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
-	 			enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
-	 		}
+	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
+	 	{	
+	 		if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
+				text = '<?php echo $row->perimeter_name; ?>' + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
+				$("scaleStatus").innerHTML = text;
+				document.getElementById(perimListName)[selIndex].value = '<?php echo $mainframe->getUserState('perimeter_id'); ?>';
+				return;
+			} 
+			
+	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
+	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
+	 	}
 	 
 	 <?php } ?>
       }
@@ -230,7 +238,7 @@ if ($curstep == "2"){
 <input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
 <input type="text" size="30" id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea, $decimal_precision); ?>">
 <br>
-<select multiple="multiple" size="10" id="selectedSurface" 	onChange="changeSelectedSurface()">
+<select multiple="multiple" size="10" id="selectedSurface"  	onChange="changeSelectedSurface()">
 	<?php
 		$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
 		$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
@@ -313,13 +321,15 @@ function checkBufferValue()
 
 	 function drawSelectedSurface()
 	 {
-		var elSel = document.getElementById('selectedSurface');
+	 	
+	 	
+	 	var elSel = document.getElementById('selectedSurface');
 		var features = vectors.features;
 		if (features.length == 0) 
 		{
 			vectors.addFeatures([new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon())]);
 		} 
-         var feature= features[features.length-1];
+        var feature= features[features.length-1];
 		var selectedComponents = new Array();
 		if (feature)
 		{				  
@@ -348,6 +358,7 @@ function checkBufferValue()
 			document.getElementById('totalSurface').value =  parseFloat(featureArea );   
 			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
 		}
+		
 	}
 		
 		
