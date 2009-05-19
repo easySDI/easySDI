@@ -123,7 +123,7 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-		//document.getElementById('totalSurfaceDisplayed').value =  0;    		
+		document.getElementById('totalSurfaceDisplayed').value =  0;    		
 		removeSelection();
 	}
 	function removeSelection(){
