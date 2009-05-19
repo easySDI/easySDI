@@ -123,7 +123,7 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-					document.getElementById('totalSurfaceDisplayed').value =  0;    		
+		//document.getElementById('totalSurfaceDisplayed').value =  0;    		
 		removeSelection();
 	}
 	function removeSelection(){
@@ -198,7 +198,7 @@ class HTML_shop {
 			layerPerimeter = new OpenLayers.Layer.WMS(perimName,
 	                    wmsUrl,
 	                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-	                     {singleTile: true},                                                    
+	                     {singleTile: true, transitionEffect: 'resize'},                                                    
 	                     {                     
 						  minResolution: pMinResolution,
 	               		  maxResolution: pMaxResolution,                                    	     
@@ -336,7 +336,7 @@ class HTML_shop {
 						?>
 						
 	                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-	                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+	                     {singleTile: <?php echo $row->singletile; if(strtolower($row->url_type)=="wms") echo ", transitionEffect: 'resize'"; ?>},                                                    
 	                     {     
 	                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
 	                      
@@ -356,8 +356,8 @@ class HTML_shop {
 					map.events.register("zoomend", null, 
 										function() { 
 													document.getElementById('previousExtent').value = map.getExtent().toBBOX();
-													//$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
-													$("scale").innerHTML = document.getElementById('previousExtent').value ;
+													$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+													//$("scale").innerHTML = document.getElementById('previousExtent').value ;
 													 text = "";
 								
 													for (i=0; i<map.layers.length ;i++){
