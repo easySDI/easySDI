@@ -147,15 +147,25 @@ if ($curstep == "2"){
 			?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
 	 	{	
-	 		if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
-				text = '<?php echo $row->perimeter_name; ?>' + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
-				$("scaleStatus").innerHTML = text;
-				document.getElementById(perimListName)[selIndex].value = '<?php echo $mainframe->getUserState('perimeter_id'); ?>';
-				return;
+	 		$("scaleStatus").innerHTML = "";
+	 		if(<?php echo $row->min_resolution;?> == 0 && <?php echo $row->max_resolution; ?> == 0 )
+	 		{
+	 			//Free selection perimeter case
+	 		}
+	 		else
+	 		{
+			 	if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
+					text = '<?php echo $row->perimeter_name; ?>' + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" +" ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
+					$("scaleStatus").innerHTML = text;
+					document.getElementById(perimListName)[selIndex].value = '<?php echo $mainframe->getUserState('perimeter_id'); ?>';
+					
+					return;
+				}
 			} 
 			
 	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
-	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 		
+	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
+	 	
 	 	}
 	 
 	 <?php } ?>
@@ -320,9 +330,7 @@ function checkBufferValue()
 
 
 	 function drawSelectedSurface()
-	 {
-	 	
-	 	
+	 {	
 	 	var elSel = document.getElementById('selectedSurface');
 		var features = vectors.features;
 		if (features.length == 0) 
