@@ -71,11 +71,17 @@ class HTML_shop {
 			}
 			
 		}
+		if(count($newProductList)== 0)
+		{
+			$mainframe->setUserState('bufferValue',0);
+		}
 		$mainframe->setUserState('productList',$newProductList);
 
 	}
 
 	function orderPerimeter ($cid){
+		global  $mainframe;
+	
 	?>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
@@ -123,29 +129,79 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-		document.getElementById('totalSurfaceDisplayed').value =  0;    		
+		document.getElementById('totalSurfaceDisplayed').value =  0; 		
 		removeSelection();
 	}
-	function removeSelection(){
-		if (vectors){
 	
+	function removeSelection(){
+		if (vectors)
+		{
 			var features = vectors.features;
 			vectors.removeFeatures(features);
-			//vectors.drawFeature (feature);
-			/*for (var i = features.length-1;i>=0;i--){ 		
-			var feature= features[i];
-			if (features.length>=0){
-				if (feature){				
-			
-				features = vectors.features;	
-				vectors.addFeatures([feature]);
-				vectors.drawFeature (feature);		
-				features = vectors.features;			
-			}
-			}
-		}*/
+		}
 	}
+	
+	function reCallWFSselection(wfsUrlWithFilter)
+	{
+		if(wfsUrlWithFilter.length > 0 )
+		{
+		
+			if (!wfs) 
+			{				
+				//	wfs.destroy();
+		     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+	                    strategies: [new OpenLayers.Strategy.Fixed()],
+	                    protocol: new OpenLayers.Protocol.HTTP({
+	                        url: wfsUrlWithFilter,
+	                        format: new OpenLayers.Format.GML()
+	                    })
+	                });		    	            
+				 wfsRegisterEvents();
+				 map.addLayer(wfs);			
+			}
+			else
+			{
+				    
+			  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: wfsUrlWithFilter,
+                        format: new OpenLayers.Format.GML()                                                
+                    })});	
+                
+               
+              wfs2.events.register("featureadded", null, 
+              						function(myEvent) { 
+                										$("status").innerHTML = "";
+														removeSelection();
+														var wfsFeatures = wfs.features;
+
+														// look for a feature with the same id
+														var idToLookFor = myEvent.feature.attributes[idField];
+														var found = false;
+														for(var j=wfsFeatures.length-1; j>=0; j--) 
+														{
+										                    feat2 = wfsFeatures[j];                       
+										                    if (idToLookFor == feat2.attributes[idField])
+										                    {
+										                       	found=true;
+										                       	wfs.removeFeatures([wfsFeatures[j]]);
+										                       	break;
+										                    }
+										                 }
+										                 if (!found)
+										                 {
+										                 	wfs.addFeatures([myEvent.feature]);
+										                 }
+													}
+									);
+           		map.addLayer(wfs2);		
+	            //map.removeLayer(wfs2);    
+			}
+		 }
+		 return;
 	}
+	
 	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
 	
 		
@@ -156,7 +212,10 @@ class HTML_shop {
 		
 			
 		//Delete the current selection
-		initSelectedSurface();
+		if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>')
+		{
+			initSelectedSurface();
+		}
 		
 		        						 
 		nameField = name;
@@ -188,65 +247,89 @@ class HTML_shop {
 		if (perimUrl.length ==0 && wmsUrl.length ==0){
 			//Free selection permiter.
 			isFreeSelectionPerimeter = true;
-		
-		}else{
-		
-		isFreeSelectionPerimeter = false;
+		}
+		else
+		{
+			isFreeSelectionPerimeter = false;
 	
-		if (wmsUrl.length > 0){
-		
-			layerPerimeter = new OpenLayers.Layer.WMS(perimName,
-	                    wmsUrl,
-	                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-	                     {singleTile: true, transitionEffect: 'resize'},                                                    
-	                     {                     
-						  minResolution: pMinResolution,
-	               		  maxResolution: pMaxResolution,                                    	     
-	                      maxExtent: map.maxExtent,
-	                      projection: map.projection,
-	                      units: map.units,
-	                      transparent: "true"
-	                     }
-	                    );
-	                 layerPerimeter.alwaysInRange=false;  
-	                    
-	                 map.addLayer(layerPerimeter);      
-	    
-	    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
-	  
-		}else{
-		
-		var myStyles = new OpenLayers.StyleMap({
-	                "default": new OpenLayers.Style({                 
-	                    fillColor: "#ffcc66",
-	                    strokeColor: "#ff9933",
-	                    strokeWidth: 2
-	                }),
-	                "select": new OpenLayers.Style({
-	                    fillColor: "#66ccff",
-	                    strokeColor: "#3399ff"
-	                })
-	            });
-		
-		
-		wfs = new OpenLayers.Layer.WFS( perimName,
-		                perimUrl,
-		                {typename: featureTypeName}, {
-		                    typename: featureTypeName,                                    
-		                    extractAttributes: false
-		                       
-		                },
-	                { featureClass: OpenLayers.Feature.WFS}
-		                 );
-		
-		
-		wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-		wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
-		
-		map.addLayer(wfs);
-		 }
+			if (wmsUrl.length > 0)
+			{
+				layerPerimeter = new OpenLayers.Layer.WMS(perimName,
+		                    wmsUrl,
+		                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
+		                     {singleTile: true},                                                    
+		                     {                     
+							  minResolution: pMinResolution,
+		               		  maxResolution: pMaxResolution,                                    	     
+		                      maxExtent: map.maxExtent,
+		                      projection: map.projection,
+		                      units: map.units,
+		                      transparent: "true"
+		                     }
+		                    );
+		                 layerPerimeter.alwaysInRange=false;  
+		                    
+		                 map.addLayer(layerPerimeter);      
+		    
+		    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
+		  
+			}
+			else
+			{
+				var myStyles = new OpenLayers.StyleMap({
+			                "default": new OpenLayers.Style({                 
+			                    fillColor: "#ffcc66",
+			                    strokeColor: "#ff9933",
+			                    strokeWidth: 2
+			                }),
+			                "select": new OpenLayers.Style({
+			                    fillColor: "#66ccff",
+			                    strokeColor: "#3399ff"
+			                })
+			            });
+				
+				
+				wfs = new OpenLayers.Layer.WFS( perimName,
+				                perimUrl,
+				                {typename: featureTypeName}, {
+				                    typename: featureTypeName,                                    
+				                    extractAttributes: false
+				                       
+				                },
+			                { featureClass: OpenLayers.Feature.WFS}
+				                 );
+				
+				wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+				wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
+				
+				map.addLayer(wfs);
+		 	}
 		}
 		
+		if(isFreeSelectionPerimeter)
+		{
+			//draw selection polygon
+			drawSelectedSurface();
+		}
+		else
+		{
+			//call WFS to draw selected polygons
+			initSelectedSurface();
+			<?php 
+			$geomSelection = $mainframe->getUserState('geomSelection') ;
+			if($geomSelection )
+			{
+				if($geomSelection !='')
+				{
+					?>
+					reCallWFSselection( '<?php echo $geomSelection; ?>' );
+					<?php
+				}
+			}
+		?>
+		
+			
+		}
 	}
 	
 	            
@@ -336,7 +419,7 @@ class HTML_shop {
 						?>
 						
 	                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-	                     {singleTile: <?php echo $row->singletile; if(strtolower($row->url_type)=="wms") echo ", transitionEffect: 'resize'"; ?>},                                                    
+	                     {singleTile: <?php echo $row->singletile; ?>},                                                    
 	                     {     
 	                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
 	                      
@@ -361,6 +444,7 @@ class HTML_shop {
 													 text = "";
 								
 													for (i=0; i<map.layers.length ;i++){
+															//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 															if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
 															 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 															} 
@@ -554,85 +638,90 @@ class HTML_shop {
 	alert("END");
 	}
 	
+	/*
+	
+	*/
 	function intersect() 
 	{
-	  if (isFreeSelectionPerimeter)
-	  {
-	  	 var features = vectors.features; 
-	     var feature = features[features.length-1];
+		if (isFreeSelectionPerimeter)
+	  	{
+	   		var features = vectors.features; 
+			var feature = features[features.length-1];
+     
+     		document.getElementById("selectedSurface").options.length=0;
+     
+     		if (feature.geometry.components[0].components.length > 2)
+     		{
+   		 		featureArea = feature.geometry.getArea();
+	    	}else
+	    	{
+	    		featureArea = 0;
+	    	}
+	    	
+			document.getElementById('totalSurface').value =  parseFloat(featureArea );
+			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
 	     
-	     document.getElementById("selectedSurface").options.length=0;
-	     
-	     if (feature.geometry.components[0].components.length > 2)
-	     {
-	   		 featureArea = feature.geometry.getArea();
-	    }else{
-	    	featureArea = 0;
-	    }
-		document.getElementById('totalSurface').value =  parseFloat(featureArea );
-		document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
-	     
-	     if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+	     	if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
+	     	{
+	     		var polygonSize = feature.geometry.components[0].components.length;
+	     		var components = feature.geometry.components[0].components;
 	     	
-	     	var polygonSize = feature.geometry.components[0].components.length;
-	     	
-	     	var components = feature.geometry.components[0].components;
-	     	
-	     	var i = 0;
-	     	while (i< polygonSize){
-	     	
-	     	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-				new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
-				i++;
-	     	}          
-	     
-	     }
-		if (feature.geometry instanceof OpenLayers.Geometry.Point){
-	         	 		 	 
-	     document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
-	   	 document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
-	   	 document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+		     	var i = 0;
+		     	while (i< polygonSize)
+		     	{
+	     			document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
+					new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
+					i++;
+	     		}          
+	     	}
+			if (feature.geometry instanceof OpenLayers.Geometry.Point)
+			{
+	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
+			   	document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
+			   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 				new Option(feature.geometry,feature.geometry);
-	}      
-		drawSelectedSurface();	 
-	 }else{
-		  $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
+			}      
+			drawSelectedSurface();	 
+	 	}
+	 	else
+	 	{
+			$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
+			
+	   		var features = vectors.features;
+	        var gmlOptions = {featureType: "feature",featureNS: "http://example.com/feature"};
 	
-	   var features = vectors.features;
-	          var gmlOptions = {
-	                featureType: "feature",
-	                featureNS: "http://example.com/feature"
-	            };
+			gml = new OpenLayers. Format. GML.v2(gmlOptions);
 	
-		gml = new OpenLayers. Format. GML.v2(gmlOptions);
-	
-		//for(var i=features.length-1; i>=0; i--) {
+			//for(var i=features.length-1; i>=0; i--) {
 	        feature = features[features.length-1];
 	        var doc = format.read(gml.write(feature, true));               
 			
-			if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
+			if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
+			{
 				wfsUrlWithFilter = wfsUrl+ '&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Polygon')+'</ogc:Intersect></ogc:Filter>');
-								
 			}
 			
-			if (feature.geometry instanceof OpenLayers.Geometry.Point){
+			if (feature.geometry instanceof OpenLayers.Geometry.Point)
+			{
 				wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
 			}
-			
-			if (!wfs) {				
-			//	wfs.destroy();
-		     wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+			document.getElementById('geomSelection').value = wfsUrlWithFilter;
+			if (!wfs) 
+			{				
+				//	wfs.destroy();
+		     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
 	                    strategies: [new OpenLayers.Strategy.Fixed()],
 	                    protocol: new OpenLayers.Protocol.HTTP({
 	                        url: wfsUrlWithFilter,
 	                        format: new OpenLayers.Format.GML()
 	                    })
 	                });		    	            
-		
-	
 				 wfsRegisterEvents();
-				 map.addLayer(wfs);			
-				}else{
+				 map.addLayer(wfs);		
+				 document.getElementById('wfs').value = wfs;	
+			}
+			else
+			{
 				    
 				  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
 	                    strategies: [new OpenLayers.Strategy.Fixed()],
@@ -642,41 +731,40 @@ class HTML_shop {
 	                    })});	
 	                
 	                
-	                wfs2.events.register("featureadded", null, function(myEvent) { 
-	                $("status").innerHTML = "";
-					removeSelection();
-					
-					
-					var wfsFeatures = wfs.features;
+	              wfs2.events.register("featureadded", null, 
+	              						function(myEvent) { 
+	                										$("status").innerHTML = "";
+															removeSelection();
+															var wfsFeatures = wfs.features;
 	
-					// look for a feature with the same id
-					var idToLookFor = myEvent.feature.attributes[idField];
-					var found = false;
-					for(var j=wfsFeatures.length-1; j>=0; j--) {
-	                    feat2 = wfsFeatures[j];                       
-	                      
-	                       if (idToLookFor == feat2.attributes[idField]){
-	                       	found=true;
-	                       
-	                       	wfs.removeFeatures([wfsFeatures[j]]);
-	                       	break;
-	                       }
-	                       }
-	                       
-	                       if (!found){
-	                       	wfs.addFeatures([myEvent.feature]);
-	                       }
-				});
-	            map.addLayer(wfs2);		
-	            map.removeLayer(wfs2);    
-	                }
-					
-	              
-	   // }
-	 }
-	 
-	return;                     
+															// look for a feature with the same id
+															var idToLookFor = myEvent.feature.attributes[idField];
+															var found = false;
+															for(var j=wfsFeatures.length-1; j>=0; j--) 
+															{
+											                    feat2 = wfsFeatures[j];                       
+											                    if (idToLookFor == feat2.attributes[idField])
+											                    {
+											                       	found=true;
+											                       	wfs.removeFeatures([wfsFeatures[j]]);
+											                       	break;
+											                    }
+											                 }
+											                 if (!found)
+											                 {
+											                 	wfs.addFeatures([myEvent.feature]);
+											                 }
+														}
+										);
+	           		map.addLayer(wfs2);		
+		            map.removeLayer(wfs2);    
+		            document.getElementById('wfs').value = wfs2;
+				}
+		 }
+		return;                     
 	}
+	
+	
 	function wfsRegisterEvents()			
 	 {
 	 
@@ -715,42 +803,40 @@ class HTML_shop {
 				
 				);
 				 
-			wfs.events.register("featureadded", null, function(event) { 
-				removeSelection();
-				$("status").innerHTML = "";
-				    		
-	              feat2 = event.feature;
-	              var name = feat2.attributes[nameField];
-	              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-	              var id = feat2.attributes[idField];
-	                       
-	              var area = feat2.attributes[areaField];
-	              var featArea = 0;	
-	            	if (areaField.length > 0 && area){
-	            					featArea = area; 
-	            				}else {
-	            					featArea = feat2.geometry.getArea();
-	            				}
-	
-							
-	                       	
-	                       	//Add the new value
+			wfs.events.register("featureadded", null, function(event) 
+				{ 
+					removeSelection();
+					$("status").innerHTML = "";
+					    		
+		              feat2 = event.feature;
+		              var name = feat2.attributes[nameField];
+		              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+		              var id = feat2.attributes[idField];
+		                       
+		              var area = feat2.attributes[areaField];
+		              var featArea = 0;	
+		            	if (areaField.length > 0 && area){
+		            					featArea = area; 
+		            				}else {
+		            					featArea = feat2.geometry.getArea();
+		            				}
+		                   	
+	  				//Add the new value
 		            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
 		            document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
-		   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-	            	new Option(name,id);
-	            			
-	            }
-	            
-				 //}
-				 );
+		   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
+	           }
+			);
 	 }
 	 
 	var oldLoad = window.onload;
-	window.onload=function(){
-	initMap();
-	selectPerimeter('perimeterList');
-	if (oldLoad) oldLoad();}
+	window.onload=function()
+	{
+		initMap();
+		selectPerimeter('perimeterList');	
+		if (oldLoad) oldLoad();
+	}
+	
 	--></script>
 	
 	<div id="map" class="smallmap"></div>
@@ -850,16 +936,15 @@ class HTML_shop {
 	     return false;
 	}
 	
-	 function submitOrderForm(){ 	
+	 function submitOrderForm()
+	 { 	
 	 	var selectedSurface = document.getElementById('selectedSurface');
 	 	
-	 	if (document.getElementById('step').value == 3 && 
-	 			isSelfIntersect()==true){
-	 				return ;
-	 		}
-	 		
-	 		
-		 		
+	 	if (document.getElementById('step').value == 3 && isSelfIntersect()==true)
+	 	{
+	 		return ;
+	 	}
+	 	 		
 		 if (selectedSurface.options.length>0)
 		 {	  	
 		 	var replicSelectedSurface = document.getElementById('replicSelectedSurface');
@@ -899,7 +984,9 @@ class HTML_shop {
 		 }
 		 else 
 		 {
-		 	if (document.getElementById('step').value == 1){
+		 	if (document.getElementById('step').value == 1)
+		 	{
+		 		document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value; 
 		 		document.getElementById('orderForm').submit();
 		 		 			
 		 	}else
@@ -922,7 +1009,9 @@ class HTML_shop {
 		<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'> 
 		<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
 		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
-		<input type='hidden' id='previousExtent' name='previousExtent' value="" />
+		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
+		<input type='hidden' id='geomSelection' name='geomSelection' value="<?php echo $mainframe->getUserState('geomSelection'); ?>" />
+		<input type='hidden' id='wfs' name='wfs' value="" />
 	</form>
 	</div>
 	<?php
@@ -1177,6 +1266,7 @@ if (count($rows)>0){
 	<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'>
 	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 </form>
 	<?php
 
@@ -1223,6 +1313,7 @@ if (count($rows)>0){
 	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
 	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
 	<input type='hidden' id="task" name='task' value='order'> 
+	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php echo JText::_("EASYSDI_ORDER_NAME"); ?>
 	<input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"> 
 	<br>
@@ -1293,11 +1384,14 @@ if (count($rows)>0){
  }
  </script>
 <form id="orderForm" name="orderForm"
-	action="<?php echo JRoute::_("index.php"); ?>"><input type='hidden'
+	action="<?php echo JRoute::_("index.php"); ?>">
+	<input type='hidden'
 	id="fromStep" name='fromStep' value='5'> <input type="hidden"
 	name="task" id="taskOrderForm" value="order"> <input type="hidden"
 	name="option" value="<?php echo JRequest::getVar('option'); ?>"> <input
-	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> <input
+	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
+	<input
 	type='hidden' name='Itemid'
 	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
 
@@ -1702,6 +1796,7 @@ if (count($rows)>0){
 			 */
 			$selSurfaceList = JRequest::getVar ('replicSelectedSurface', array() );
 			$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
+			
 			$selSurfaceListName = JRequest::getVar ('replicSelectedSurfaceName', array(0) );
 			$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
 				
@@ -1713,6 +1808,10 @@ if (count($rows)>0){
 
 			$perimeter_id = JRequest::getVar ('perimeter_id', 0 );
 			$mainframe->setUserState('perimeter_id',$perimeter_id);
+			
+			$geomSelection = JRequest::getVar ('geomSelection', '' );
+			$mainframe->setUserState('geomSelection',$geomSelection);
+
 		}
 
 		if ($fromStep == 3) {
@@ -2150,6 +2249,7 @@ if (count($rows)>0){
 <input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
 <input type='hidden' id="fromStep" name='fromStep' value='1'> 
 <input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 <input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> 
 	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <span class="searchCriteria">
