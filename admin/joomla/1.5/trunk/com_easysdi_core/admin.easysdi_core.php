@@ -54,8 +54,11 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.easysdi.class.ph
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'config.admin.easysdi.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.toolbar.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.html.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.php');
 require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
-
 ?>
 <script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
 <?php 
@@ -139,7 +142,31 @@ switch($task){
 		ADMIN_partner::listPartner( $option );
 		break;
 		
-	
+	case "listResources":
+		TOOLBAR_resources::_DEFAULT();
+		ADMIN_resources::listResources( $option );
+		break;
+		
+	case "editResource":
+		TOOLBAR_resources::_EDIT();
+		ADMIN_resources::editResource($cid[0], $option );
+		break;
+		
+	case "saveResource":
+		ADMIN_resources::saveResource($option );
+		//TOOLBAR_resources::_DEFAULT();
+		//ADMIN_resources::listResources( $option );
+		break;
+		
+	case "cancelResource":
+		TOOLBAR_resources::_DEFAULT();
+		ADMIN_resources::listResources( $option );
+		break;
+		
+	case 'cpanel':
+		$mainframe->redirect("index.php?option=com_easysdi_core" );
+		break;
+		
 }
 
 ?>
