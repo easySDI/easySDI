@@ -17,6 +17,7 @@
 
 //foreach($_POST as $key => $val) 
 //echo '$_POST["'.$key.'"]='.$val.'<br />';
+
 defined('_JEXEC') or die('Restricted access');
 
 
@@ -74,6 +75,7 @@ class HTML_shop {
 		if(count($newProductList)== 0)
 		{
 			$mainframe->setUserState('bufferValue',0);
+			$totalArea = 0;
 		}
 		$mainframe->setUserState('productList',$newProductList);
 
@@ -85,7 +87,7 @@ class HTML_shop {
 	?>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-	<script><!--
+	<script>
 	var map;
 	var wfs=null;
 	var wfs3=null;
@@ -96,6 +98,7 @@ class HTML_shop {
 	var layerPerimeter;
 	var wfsUrl ;
 	var isFreeSelectionPerimeter = false;
+	var wfsSelection;
 	
 	function onFeatureSelect(feature) 
 	{
@@ -122,6 +125,10 @@ class HTML_shop {
             map.addPopup(popup);
         }
 	
+	
+	/**
+	Delete the previous selection
+	*/
 	function initSelectedSurface(){
 		var elSel = document.getElementById("selectedSurface");
 		while (elSel.length > 0)
@@ -141,35 +148,35 @@ class HTML_shop {
 		}
 	}
 	
-	function reCallWFSselection(wfsUrlWithFilter)
+	/**
+	Add a WFS layer to the current map  
+	*/
+	function addLayerWfs (layerUrl)
 	{
-		if(wfsUrlWithFilter.length > 0 )
+		if (!wfs) 
+		{				
+			//	wfs.destroy();
+	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: layerUrl,
+                        format: new OpenLayers.Format.GML()
+                    })
+                });		    	            
+			 wfsRegisterEvents();
+			 map.addLayer(wfs);		
+		}
+		else
 		{
-		
-			if (!wfs) 
-			{				
-				//	wfs.destroy();
-		     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
-	                    strategies: [new OpenLayers.Strategy.Fixed()],
-	                    protocol: new OpenLayers.Protocol.HTTP({
-	                        url: wfsUrlWithFilter,
-	                        format: new OpenLayers.Format.GML()
-	                    })
-	                });		    	            
-				 wfsRegisterEvents();
-				 map.addLayer(wfs);			
-			}
-			else
-			{
-				    
+			    
 			  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
-                        url: wfsUrlWithFilter,
+                        url: layerUrl,
                         format: new OpenLayers.Format.GML()                                                
                     })});	
                 
-               
+                
               wfs2.events.register("featureadded", null, 
               						function(myEvent) { 
                 										$("status").innerHTML = "";
@@ -196,12 +203,54 @@ class HTML_shop {
 													}
 									);
            		map.addLayer(wfs2);		
-	            //map.removeLayer(wfs2);    
+	            map.removeLayer(wfs2);    
 			}
-		 }
-		 return;
+	 
 	}
 	
+	/**
+	Reload the features of the user selection stored in the selectedSurface list
+	*/
+	function getWFSOfSelectedSurface()
+	{
+		var selectedSurface = document.getElementById('selectedSurface');
+		
+		if(selectedSurface.options.length > 0)
+		{
+			
+		
+		$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
+		
+		wfsUrlWithFilter = wfsUrl + '&FILTER=';
+		wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+		if(selectedSurface.options.length>1)
+		{
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+		}
+		
+		for(var i=0; i<selectedSurface.options.length ; i++) 
+		{
+			var idSurface = selectedSurface.options[i].value;
+            wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + idField +'</ogc:PropertyName><ogc:Literal>'+ idSurface +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+        }
+        if(selectedSurface.options.length>1)
+		{
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+		}
+		wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+		
+		$("status").innerHTML = wfsUrlWithFilter;
+		
+				
+		addLayerWfs(wfsUrlWithFilter);
+		}
+	}
+	
+	
+	/**
+	Init the map with layers corresponding to the selected WFS perimeter.
+	Add layers correponding to user selection if exists.
+	*/
 	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
 	
 		
@@ -212,6 +261,7 @@ class HTML_shop {
 		
 			
 		//Delete the current selection
+		//only if the perimeter is different from the one register in the user session
 		if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>')
 		{
 			initSelectedSurface();
@@ -313,29 +363,14 @@ class HTML_shop {
 		}
 		else
 		{
-			//call WFS to draw selected polygons
-			initSelectedSurface();
-			<?php 
-			$geomSelection = $mainframe->getUserState('geomSelection') ;
-			if($geomSelection )
-			{
-				if($geomSelection !='')
-				{
-					?>
-					reCallWFSselection( '<?php echo $geomSelection; ?>' );
-					<?php
-				}
-			}
-		?>
-		
-			
+			//call WFS to add selected surfaces
+			getWFSOfSelectedSurface();
 		}
 	}
 	
 	            
 	function initMap(){
 	 //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
-	 
 	 //OpenLayers.ProxyHost="index.php?option=com_easysdi_shop&no_html=1&task=proxy&url=";
 	
 	
@@ -638,6 +673,11 @@ class HTML_shop {
 	alert("END");
 	}
 	
+	
+	function is_array(input){
+    	return typeof(input)=='object'&&(input instanceof Array);
+    }
+	
 	/*
 	
 	*/
@@ -705,61 +745,8 @@ class HTML_shop {
 			{
 				wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
 			}
-			document.getElementById('geomSelection').value = wfsUrlWithFilter;
-			if (!wfs) 
-			{				
-				//	wfs.destroy();
-		     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
-	                    strategies: [new OpenLayers.Strategy.Fixed()],
-	                    protocol: new OpenLayers.Protocol.HTTP({
-	                        url: wfsUrlWithFilter,
-	                        format: new OpenLayers.Format.GML()
-	                    })
-	                });		    	            
-				 wfsRegisterEvents();
-				 map.addLayer(wfs);		
-				 document.getElementById('wfs').value = wfs;	
-			}
-			else
-			{
-				    
-				  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
-	                    strategies: [new OpenLayers.Strategy.Fixed()],
-	                    protocol: new OpenLayers.Protocol.HTTP({
-	                        url: wfsUrlWithFilter,
-	                        format: new OpenLayers.Format.GML()                                                
-	                    })});	
-	                
-	                
-	              wfs2.events.register("featureadded", null, 
-	              						function(myEvent) { 
-	                										$("status").innerHTML = "";
-															removeSelection();
-															var wfsFeatures = wfs.features;
-	
-															// look for a feature with the same id
-															var idToLookFor = myEvent.feature.attributes[idField];
-															var found = false;
-															for(var j=wfsFeatures.length-1; j>=0; j--) 
-															{
-											                    feat2 = wfsFeatures[j];                       
-											                    if (idToLookFor == feat2.attributes[idField])
-											                    {
-											                       	found=true;
-											                       	wfs.removeFeatures([wfsFeatures[j]]);
-											                       	break;
-											                    }
-											                 }
-											                 if (!found)
-											                 {
-											                 	wfs.addFeatures([myEvent.feature]);
-											                 }
-														}
-										);
-	           		map.addLayer(wfs2);		
-		            map.removeLayer(wfs2);    
-		            document.getElementById('wfs').value = wfs2;
-				}
+			
+			addLayerWfs(wfsUrlWithFilter);
 		 }
 		return;                     
 	}
@@ -815,16 +802,44 @@ class HTML_shop {
 		                       
 		              var area = feat2.attributes[areaField];
 		              var featArea = 0;	
-		            	if (areaField.length > 0 && area){
-		            					featArea = area; 
-		            				}else {
-		            					featArea = feat2.geometry.getArea();
-		            				}
+		              if (areaField.length > 0 && area)
+		              {
+            			 featArea = area; 
+            		  }else {
+            			 featArea = feat2.geometry.getArea();
+            		  }
 		                   	
-	  				//Add the new value
-		            document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
-		   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
+	  				
+		   		    //Add the surface in the selectedSurface list
+		   		    //To manage the reload of a previous selection, check if the surface exists already before adding it
+		   		    var selectSurface = document.getElementById('selectedSurface');
+		   		    if( selectSurface.options.length == 0 )
+		   		    {
+		   		    	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
+		   		    	//Add the new value
+		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+		            	document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+		   		    
+		   		    }
+		   		    else
+		   		    {
+			   		    for (var i=0 ; i < selectSurface.options.length ; i++)
+			   		    {
+			   		    	if(selectedSurface.options[i].value == id )
+			   		    	{
+			   		    		break;
+			   		    	}
+			   		    	if(i == selectSurface.options.length -1)
+			   		    	{
+			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
+			   		    		//Add the new value
+		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+		            			document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+		   		    
+			   		    	}
+			   		    }
+		   		    }
+		   		    
 	           }
 			);
 	 }
@@ -837,7 +852,7 @@ class HTML_shop {
 		if (oldLoad) oldLoad();
 	}
 	
-	--></script>
+	</script>
 	
 	<div id="map" class="smallmap"></div>
 	
@@ -1010,8 +1025,7 @@ class HTML_shop {
 		<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
 		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
-		<input type='hidden' id='geomSelection' name='geomSelection' value="<?php echo $mainframe->getUserState('geomSelection'); ?>" />
-		<input type='hidden' id='wfs' name='wfs' value="" />
+		<input type='hidden' id='wfs' name='wfs' value="<?php echo JRequest::getVar('wfs'); ?>" />
 	</form>
 	</div>
 	<?php
@@ -1267,6 +1281,8 @@ if (count($rows)>0){
 	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
+	<input type='hidden' id='wfs' name='wfs' value="<?php echo JRequest::getVar('wfs'); ?>" />
+	
 </form>
 	<?php
 
@@ -1809,8 +1825,7 @@ if (count($rows)>0){
 			$perimeter_id = JRequest::getVar ('perimeter_id', 0 );
 			$mainframe->setUserState('perimeter_id',$perimeter_id);
 			
-			$geomSelection = JRequest::getVar ('geomSelection', '' );
-			$mainframe->setUserState('geomSelection',$geomSelection);
+
 
 		}
 
