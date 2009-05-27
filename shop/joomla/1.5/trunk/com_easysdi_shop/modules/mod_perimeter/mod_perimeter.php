@@ -155,16 +155,17 @@ if ($curstep == "2"){
 	 		else
 	 		{
 			 	if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
-					text = '<?php echo $row->perimeter_name; ?>' + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" +" ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
+					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo $row->perimeter_name; ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
 					$("scaleStatus").innerHTML = text;
-					document.getElementById(perimListName)[selIndex].value = '<?php echo $mainframe->getUserState('perimeter_id'); ?>';
-					
+					document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
 					return;
+					
 				}
 			} 
-			
+			document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
 	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
 	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
+	 		
 	 	
 	 	}
 	 
@@ -173,11 +174,10 @@ if ($curstep == "2"){
     --></script>
 
 
-
+<input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
 <table>
 	<tr>
-		<td><select id="perimeterList"
-			onChange="selectPerimeter('perimeterList')"  >
+		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList')"  >
 			<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 			<?php
 			foreach ($rows as $row)
