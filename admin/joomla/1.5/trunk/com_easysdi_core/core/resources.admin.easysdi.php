@@ -22,106 +22,107 @@ class ADMIN_resources {
 	
 	function listResources($option) {
 		global $mainframe;
-		/*global $languages;
-		global $mosConfig_lang, $mosConfig_absolute_path, $mosConfig_list_limit;
 		
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
+		$currentLanguage = JFactory::getLanguage();
+		
+		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 100 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
+		
+		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
 		$rows = array();
 		
-		// get current languages
-		//$cur_language = $mosConfig_lang;
-		$cur_language = &JFactory::getLanguage();
-		$cur_language->load('com_easysdi', JPATH_ADMINISTRATOR);
-		
-		echo $cur_language."<br>";
-		*/
-		echo "TEST<br>";
-		/*// Read the template dir to find templates
-		//$languageBaseDir = mosPathName(mosPathName($mosConfig_absolute_path) . "/administrator/components/com_asitvd/lang");
-		$languageBaseDir	= JPath::clean($client->path.DS.'language');
+		// Récupérer tous les fichiers de langue d'easysdi, dans toutes les langues disponibles
+		$languagesDir =  array();
+		$path = JPATH_ADMINISTRATOR.DS.'language'.DS;
+		if ($handle = opendir($path))
+		{
+			while (false !== ($file = readdir($handle))) {
+					if (is_dir($path.$file) and $file != "." and $file != "..")
+			        {
+			        		$languagesDir[$file]=$path.$file;       
+					}
+			    }
+			closedir($handle);
+		}
+
+		//print_r($languagesDir);
+		//echo "<br>";
+		$languagesFiles =  array();
 		
 		$rowid = 0;
-
-		$ini	= $client->path.DS.'templates'.DS.$template.DS.'en-GB'.DS.'en-GB.com_easysdi_core.ini';
-		
-		$xmlFilesInDir = mosReadDirectory($languageBaseDir,'.xml$');
-
-		$dirName = $languageBaseDir;
-		foreach($xmlFilesInDir as $xmlfile) {
-			// Read the file to see if it's a valid template XML file
-			$xmlDoc = new DOMIT_Lite_Document();
-			$xmlDoc->resolveErrors( true );
-			if (!$xmlDoc->loadXML( $dirName . $xmlfile, false, true )) {
-				continue;
+		foreach($languagesDir as $dirName => $dir)
+		{
+			foreach(scandir($dir) as $languageFile)
+			{
+				if (strstr($languageFile, "com_easysdi_"))
+				{
+					if ($search =="" or strstr($languageFile, $search))
+					{
+						//echo $languageFile."<br>";
+						$languagesFiles[$languageFile]=$dir.DS.$languageFile;
+						
+						//Créer une entrée dans $rows pour chaque fichier de langue récupéré
+						$row 			= new StdClass();
+						$row->id 		= $rowid;
+						$row->language 	= $dirName;
+						$row->filename 	= $dir.DS.$languageFile;
+						$row->component	= substr($languageFile, strpos($languageFile, "com_easysdi_"), strpos($languageFile, ".ini")-strpos($languageFile, "com_easysdi_"));
+						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
+						if ($currentLanguage->_lang == $dirName)
+							$row->published	= "1";
+						else
+							$row->published	= "0";
+								
+						$rows[]=$row;
+						$rowid++;
+					}
+				}
 			}
-
-			$root = &$xmlDoc->documentElement;
-
-			if ($root->getTagName() != 'mosinstall') {
-				continue;
-			}
-			if ($root->getAttribute( "type" ) != "language") {
-				continue;
-			}
-
-			$row 			= new StdClass();
-			$row->id 		= $rowid;
-			$row->language 	= substr($xmlfile,0,-4);
-			$element 		= &$root->getElementsByPath('name', 1 );
-			$row->name 		= $element->getText();
-
-			$element		= &$root->getElementsByPath('creationDate', 1);
-			$row->creationdate = $element ? $element->getText() : 'Unknown';
-
-			$element 		= &$root->getElementsByPath('author', 1);
-			$row->author 	= $element ? $element->getText() : 'Unknown';
-
-			$element 		= &$root->getElementsByPath('copyright', 1);
-			$row->copyright = $element ? $element->getText() : '';
-
-			$element 		= &$root->getElementsByPath('authorEmail', 1);
-			$row->authorEmail = $element ? $element->getText() : '';
-
-			$element 		= &$root->getElementsByPath('authorUrl', 1);
-			$row->authorUrl = $element ? $element->getText() : '';
-
-			$element 		= &$root->getElementsByPath('version', 1);
-			$row->version 	= $element ? $element->getText() : '';
-
-			// if current than set published
-			if ($cur_language == $row->language) {
-				$row->published	= 1;
-			} else {
-				$row->published = 0;
-			}
-
-			$row->checked_out = 0;
-			$row->mosname = strtolower( str_replace( " ", "_", $row->name ) );
-			$rows[] = $row;
-			$rowid++;
 		}
-		*/
-		//$pageNav = new JPagination(count( $rows ), $limitstart, $limit );
+		
+		//print_r($languagesFiles);
+		//echo "<br>";
+		
+		//print_r($rows);
+		
+
+		$pageNav = new JPagination(count( $rows ), $limitstart, $limit );
 	
 		
-		//$rows = array_slice( $rows, $pageNav->limitstart, $pageNav->limit );
+		$rows = array_slice( $rows, $pageNav->limitstart, $pageNav->limit );
 		
-		//HTML_ressources::listResources($rows, $pageNav, $option, $cur_language);
+		HTML_resources::listResources($rows, $pageNav, $option, $search);
 	}
 
 	
 	//id = 0 means new Config entry
-	function editResource( $p_lname, $option ) {
-		 $file = stripslashes( "../administrator/components/com_asitvd/lang/$p_lname.php" );
-
+	function editResource( $option ) {
+		$file = $_GET['filename'];
+		clearstatcache();
 		if ($fp = fopen( $file, "r" )) {
-			$content = fread( $fp, filesize( $file ) );
+			$content = fread( $fp, filesize($file));
 			$content = htmlspecialchars( $content );
 
-			HTML_resources::editResource( $p_lname, $content, $option );
+			HTML_resources::editResource( $file, $content, $option );
 		} else {
 			$mainframe->enqueueMessage("Operation Failed: Could not open $file","error");
+			$mainframe->redirect("index.php?option=$option&task=listResources" );
+		}
+	}
+	
+	function saveResource( $option ) {
+		$file = $_POST['filename'];
+		$content = $_POST['filecontent'];
+		
+		clearstatcache();
+		if ($fp = fopen( $file, "w" )) {
+			$content = htmlspecialchars_decode( $content );
+			fwrite( $fp, $content);
+			
+		} else {
+			$mainframe->enqueueMessage("Operation Failed: Could not save $file","error");
 			$mainframe->redirect("index.php?option=$option&task=listResources" );
 		}
 	}

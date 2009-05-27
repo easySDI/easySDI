@@ -20,17 +20,27 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_resources {
 	
 	
-	function listResources(&$rows, &$pageNav, $option, $cur_lang)
+	function listResources(&$rows, &$pageNav, $option, $search)
 	{			
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_RESOURCES"));
 ?>
 	<form action="index.php" method="GET" name="adminForm">
 
+		<table width="100%">
+			<tr>
+				<td align="right">
+					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			
+				</td>
+			</tr>
+		</table>
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_RESOURCE_LANGUAGE"); ?></th>
-				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
+				<th width="50px" class='title'><?php echo JText::_("EASYSDI_RESOURCE_LANGUAGE"); ?></th>
+				<th width="30px" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_CURRENT"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_COMPONENT"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_UPDATEDATE"); ?></th>
@@ -41,12 +51,12 @@ class HTML_resources {
 		foreach ($rows as $row)
 		{		
 ?>
-			<tr class="<?php echo $pageNav->rowNumber( $i ); ?>">
-				<td align="center"><?php echo $row->language; ?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td><?php
+			<tr>
+				<td width="50px" align="center"><?php echo $row->language; ?></td>
+				<td width="30px" align="center"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
+				<td align="center"><?php
 				if ($row->published == 1) {	 ?>
-					<img src="images/tick.png" alt="<?php echo _RESOURCE_CURRENT ?>"/>
+					<img src="images/tick.png" alt="<?php echo JText::_("RESOURCE_CURRENT"); ?>"/>
 					<?php
 				} else {
 					?>
@@ -54,8 +64,8 @@ class HTML_resources {
 				<?php
 				}
 				?></td>
-				<td> echo $row->component; </td>
-				<td>echo $row->creationdate;</td>
+				<td><a href="index.php?option=com_easysdi_core&task=editResource&filename=<?php echo $row->filename; ?>"><?php echo $row->component;  ?></a></td>
+				<td><?php echo $row->updatedate; ?></td>
 			</tr>
 <?php
 		}
@@ -76,7 +86,7 @@ class HTML_resources {
 ?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listConfig" />
+	  	<input type="hidden" name="task" value="listResources" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  </form>
@@ -84,48 +94,27 @@ class HTML_resources {
 	}
 	
 	
-	function editResource($language, &$content, $option )
+	function editResource($file, &$content, $option )
 	{
 		global  $mainframe;
-		global $mosConfig_absolute_path;
-		$language_path = $mosConfig_absolute_path . "/administrator/components/com_asitvd/lang/" . $language . ".php";
 		?>
-		<form action="index2.php" method="post" name="adminForm">
+		<form action="index.php" method="post" name="adminForm">
 		<table cellpadding="1" cellspacing="1" border="0" width="100%">
 		<tr>
-			<td width="270"><table class="adminheading">
+			<td ><table class="adminheading">
 				<tr>
-					<th class="langmanager"><?php echo _ASITVD_TITLE_EDITRESOURCE ?><span class="componentheading">
-						&nbsp;[<?php echo $language.'.php : '; ?>
-						<?php echo is_writable($language_path) ? '<b><font color="green"> Modifiable</font>' : '<font color="red"> Non Modifiable</font></b>' ?>]
+					<th class="langmanager"><span class="componentheading">
+						&nbsp;[<?php echo $file.' : '; ?>
+						<?php echo is_writable($file) ? '<b><font color="green"> Modifiable</font>' : '<font color="red"> Non Modifiable</font></b>' ?>]
 					</span></th>
 			</tr></table></td>
-            <?php
-			if (mosIsChmodable($language_path)) {
-				if (is_writable($language_path)) {
-?>
-			<td>
-				<input type="checkbox" id="disable_write" name="disable_write" value="1"/>
-				<label for="disable_write"><?php echo _ASITVD_TITLE_CHANGENOTWRITABLE ?></label>
-			</td>
-<?php
-				} else {
-?>
-			<td>
-				<input type="checkbox" id="enable_write" name="enable_write" value="1"/>
-				<label for="enable_write"><?php echo _ASITVD_TITLE_IGNOREWRITABLE ?></label>
-			</td>
-<?php
-				} // if
-			} // if
-?>
 		</tr>
 		</table>
 		<table class="adminform">
-			<tr><th><?php echo $language_path; ?></th></tr>
+			<tr><th><?php echo $file; ?></th></tr>
 			<tr><td><textarea style="width:100%" cols="110" rows="50" name="filecontent" class="inputbox"><?php echo $content; ?></textarea></td></tr>
 		</table>
-		<input type="hidden" name="language" value="<?php echo $language; ?>" />
+		<input type="hidden" name="filename" value="<?php echo $file; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option;?>" />
 		<input type="hidden" name="task" value="editResource" />
 		</form>
