@@ -59,9 +59,6 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.toolbar.easys
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.php');
 require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
-?>
-<script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
-<?php 
 
 $option = JRequest::getVar('option');
 
@@ -149,13 +146,13 @@ switch($task){
 		
 	case "editResource":
 		TOOLBAR_resources::_EDIT();
-		ADMIN_resources::editResource($cid[0], $option );
+		ADMIN_resources::editResource($option);
 		break;
 		
 	case "saveResource":
 		ADMIN_resources::saveResource($option );
-		//TOOLBAR_resources::_DEFAULT();
-		//ADMIN_resources::listResources( $option );
+		TOOLBAR_resources::_DEFAULT();
+		ADMIN_resources::listResources( $option );
 		break;
 		
 	case "cancelResource":
