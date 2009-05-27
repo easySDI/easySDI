@@ -17,7 +17,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-
 class SITE_catalog {
 
 
@@ -25,13 +24,16 @@ class SITE_catalog {
 		global $mainframe;
 
 		$maxDescr = config_easysdi::getValue("description_length");
+		$MDPag = config_easysdi::getValue("pagination_metadata");
+		
+		//$sortString="//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString:A"; 
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw:http://www.opengis.net/cat/csw&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
+		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw:http://www.opengis.net/cat/csw&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0"; //&sortby=".$sortString;
 		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 5 );
+		$limit = JRequest::getVar('limit', $MDPag );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		$filterfreetextcriteria = JRequest::getVar('filterfreetextcriteria', '' );
 		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria', '');
@@ -133,7 +135,16 @@ class SITE_catalog {
 			}
 		}
 		
-
+/*		
+		$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
+		$sortBy="<SortBy>
+            <SortProperty>
+                <PropertyName>".$propertyTitle."</PropertyName>
+                <SortOrder>ASC</SortOrder>
+            </SortProperty>
+        </SortBy";
+*/		
+		
 		$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
 						<And>
 						<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
@@ -150,8 +161,8 @@ class SITE_catalog {
 						$cswVisibleFilter
 						$bboxfilter
 						</And>
-						</Filter>";
-
+						</Filter>";//.$sortBy;
+		
 		//$cswResults= simplexml_load_file($catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw%3Ahttp%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw&outputSchema=csw%3AIsoRecord&elementSetName=full&constraint=%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%0A%0A%3CFilter+xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%09%3CAnd%3E%0A%09%09%09%0A%09%09%09%3CBBOX%3E%0A%09%09%09%09%3CPropertyName%3Eows%3ABoundingBox%3C%2FPropertyName%3E%0A%09%09%09%09%3Cgml%3AEnvelope+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%2363266405%22%3E%0A%09%09%09%09%09%3Cgml%3AlowerCorner%3E-180+-90%3C%2Fgml%3AlowerCorner%3E%0A%09%09%09%09%09%3Cgml%3AupperCorner%3E180+90%3C%2Fgml%3AupperCorner%3E%0A%09%09%09%09%3C%2Fgml%3AEnvelope%3E%0A%09%09%09%3C%2FBBOX%3E%0A%09%09%0A%09%3C%2FAnd%3E%0A%3C%2FFilter%3E%0A&constraintLanguage=FILTER&constraint_language_version=1.1.0");
 		//$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".$cswfilter);
 		$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".urlencode($cswfilter));
@@ -167,15 +178,26 @@ class SITE_catalog {
 						
 			$pageNav = new JPagination($total,$limitstart,$limit);
 			
+			// Séparation en n éléments par page
 			//$catalogUrlGetRecordsMD = simplexml_load_file($catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw%3Ahttp%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw&outputSchema=csw%3AIsoRecord&elementSetName=full&constraint=%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%0A%0A%3CFilter+xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%09%3CAnd%3E%0A%09%09%09%0A%09%09%09%3CBBOX%3E%0A%09%09%09%09%3CPropertyName%3Eows%3ABoundingBox%3C%2FPropertyName%3E%0A%09%09%09%09%3Cgml%3AEnvelope+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%2363266405%22%3E%0A%09%09%09%09%09%3Cgml%3AlowerCorner%3E-180+-90%3C%2Fgml%3AlowerCorner%3E%0A%09%09%09%09%09%3Cgml%3AupperCorner%3E180+90%3C%2Fgml%3AupperCorner%3E%0A%09%09%09%09%3C%2Fgml%3AEnvelope%3E%0A%09%09%09%3C%2FBBOX%3E%0A%09%09%0A%09%3C%2FAnd%3E%0A%3C%2FFilter%3E%0A&constraintLanguage=FILTER&constraint_language_version=1.1.0");
 			//$catalogUrlGetRecordsMD =  $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".$cswfilter;
 			$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
 			$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
+
+			// Tri avec XSLT
+			// Chargement du fichier XSL
+			/*$xsl = new DOMDocument();
+			$xsl->load(dirname(__FILE__)."\..\xsl\sortMetadata.xsl");
+			// Import de la feuille XSL
+			$xslt = new XSLTProcessor();
+			$xslt->importStylesheet($xsl);
+			
+			$cswResults = DOMDocument::loadXML($xslt->transformToXml($cswResults));*/
+			// Fin du tri
 		}
-		HTML_catalog::listCatalogContent($pageNav,$cswResults,$option,$total,$filterfreetextcriteria,$maxDescr );
+		HTML_catalog::listCatalogContent($pageNav,$cswResults,$option,$total,$filterfreetextcriteria,$maxDescr);
 	}
-
-
+	
 	function Post($url,$array){
 		$args = http_build_query($array);
 		$url = parse_url($url);
