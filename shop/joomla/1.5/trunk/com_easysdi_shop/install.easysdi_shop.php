@@ -1691,6 +1691,67 @@ if ($version == "0.998")
 		}
 	}
 
+	if($version == "0.9994")
+	{
+		//Add translation fields for metadatas
+		$query="ALTER TABLE #__easysdi_metadata_ext ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_list ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_list_content ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_list_content drop column `value`";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_loc_freetext ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_metadata_freetext ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$query="ALTER TABLE #__easysdi_product_properties_definition ADD column `translation` varchar(50) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Update component version
+		$version = "0.9995";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	 
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
