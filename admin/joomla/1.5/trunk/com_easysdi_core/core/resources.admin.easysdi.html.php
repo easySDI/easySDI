@@ -20,10 +20,8 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_resources {
 	
 	
-	function listResources($use_pagination, &$rows, &$pageNav, $option)
-	{				
-		$database =& JFactory::getDBO();
-		 
+	function listResources(&$rows, &$pageNav, $option, $cur_lang)
+	{			
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_RESOURCES"));
 ?>
 	<form action="index.php" method="GET" name="adminForm">
@@ -43,12 +41,21 @@ class HTML_resources {
 		foreach ($rows as $row)
 		{		
 ?>
-			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $language;?></td>
+			<tr class="<?php echo $pageNav->rowNumber( $i ); ?>">
+				<td align="center"><?php echo $row->language; ?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td><?php
+				if ($row->published == 1) {	 ?>
+					<img src="images/tick.png" alt="<?php echo _RESOURCE_CURRENT ?>"/>
+					<?php
+				} else {
+					?>
+					&nbsp;
+				<?php
+				}
+				?></td>
+				<td> echo $row->component; </td>
+				<td>echo $row->creationdate;</td>
 			</tr>
 <?php
 		}
@@ -77,41 +84,52 @@ class HTML_resources {
 	}
 	
 	
-	function editResource( &$rowConfig,$option )
+	function editResource($language, &$content, $option )
 	{
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_EDIT_RESOURCE"), 'generic.png' );
-
-	?>				
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo $rowConfig->id; ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_CONFIG_KEY"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="thekey" value="<?php echo $rowConfig->thekey; ?>" /></td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_CONFIG_VALUE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="value" value="<?php echo $rowConfig->value; ?>" /></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $rowConfig->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
-	
+		global $mosConfig_absolute_path;
+		$language_path = $mosConfig_absolute_path . "/administrator/components/com_asitvd/lang/" . $language . ".php";
+		?>
+		<form action="index2.php" method="post" name="adminForm">
+		<table cellpadding="1" cellspacing="1" border="0" width="100%">
+		<tr>
+			<td width="270"><table class="adminheading">
+				<tr>
+					<th class="langmanager"><?php echo _ASITVD_TITLE_EDITRESOURCE ?><span class="componentheading">
+						&nbsp;[<?php echo $language.'.php : '; ?>
+						<?php echo is_writable($language_path) ? '<b><font color="green"> Modifiable</font>' : '<font color="red"> Non Modifiable</font></b>' ?>]
+					</span></th>
+			</tr></table></td>
+            <?php
+			if (mosIsChmodable($language_path)) {
+				if (is_writable($language_path)) {
+?>
+			<td>
+				<input type="checkbox" id="disable_write" name="disable_write" value="1"/>
+				<label for="disable_write"><?php echo _ASITVD_TITLE_CHANGENOTWRITABLE ?></label>
+			</td>
 <?php
+				} else {
+?>
+			<td>
+				<input type="checkbox" id="enable_write" name="enable_write" value="1"/>
+				<label for="enable_write"><?php echo _ASITVD_TITLE_IGNOREWRITABLE ?></label>
+			</td>
+<?php
+				} // if
+			} // if
+?>
+		</tr>
+		</table>
+		<table class="adminform">
+			<tr><th><?php echo $language_path; ?></th></tr>
+			<tr><td><textarea style="width:100%" cols="110" rows="50" name="filecontent" class="inputbox"><?php echo $content; ?></textarea></td></tr>
+		</table>
+		<input type="hidden" name="language" value="<?php echo $language; ?>" />
+		<input type="hidden" name="option" value="<?php echo $option;?>" />
+		<input type="hidden" name="task" value="editResource" />
+		</form>
+	<?php
 	}
 
 }

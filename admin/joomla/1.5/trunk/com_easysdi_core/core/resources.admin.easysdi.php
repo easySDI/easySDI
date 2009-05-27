@@ -21,48 +21,109 @@ class ADMIN_resources {
 
 	
 	function listResources($option) {
-		global  $mainframe;
-		$db =& JFactory::getDBO(); 
+		global $mainframe;
+		/*global $languages;
+		global $mosConfig_lang, $mosConfig_absolute_path, $mosConfig_list_limit;
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
+		$rows = array();
 		
-		$query = "SELECT COUNT(*) FROM #__easysdi_config";					
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
+		// get current languages
+		//$cur_language = $mosConfig_lang;
+		$cur_language = &JFactory::getLanguage();
+		$cur_language->load('com_easysdi', JPATH_ADMINISTRATOR);
+		
+		echo $cur_language."<br>";
+		*/
+		echo "TEST<br>";
+		/*// Read the template dir to find templates
+		//$languageBaseDir = mosPathName(mosPathName($mosConfig_absolute_path) . "/administrator/components/com_asitvd/lang");
+		$languageBaseDir	= JPath::clean($client->path.DS.'language');
+		
+		$rowid = 0;
+
+		$ini	= $client->path.DS.'templates'.DS.$template.DS.'en-GB'.DS.'en-GB.com_easysdi_core.ini';
+		
+		$xmlFilesInDir = mosReadDirectory($languageBaseDir,'.xml$');
+
+		$dirName = $languageBaseDir;
+		foreach($xmlFilesInDir as $xmlfile) {
+			// Read the file to see if it's a valid template XML file
+			$xmlDoc = new DOMIT_Lite_Document();
+			$xmlDoc->resolveErrors( true );
+			if (!$xmlDoc->loadXML( $dirName . $xmlfile, false, true )) {
+				continue;
+			}
+
+			$root = &$xmlDoc->documentElement;
+
+			if ($root->getTagName() != 'mosinstall') {
+				continue;
+			}
+			if ($root->getAttribute( "type" ) != "language") {
+				continue;
+			}
+
+			$row 			= new StdClass();
+			$row->id 		= $rowid;
+			$row->language 	= substr($xmlfile,0,-4);
+			$element 		= &$root->getElementsByPath('name', 1 );
+			$row->name 		= $element->getText();
+
+			$element		= &$root->getElementsByPath('creationDate', 1);
+			$row->creationdate = $element ? $element->getText() : 'Unknown';
+
+			$element 		= &$root->getElementsByPath('author', 1);
+			$row->author 	= $element ? $element->getText() : 'Unknown';
+
+			$element 		= &$root->getElementsByPath('copyright', 1);
+			$row->copyright = $element ? $element->getText() : '';
+
+			$element 		= &$root->getElementsByPath('authorEmail', 1);
+			$row->authorEmail = $element ? $element->getText() : '';
+
+			$element 		= &$root->getElementsByPath('authorUrl', 1);
+			$row->authorUrl = $element ? $element->getText() : '';
+
+			$element 		= &$root->getElementsByPath('version', 1);
+			$row->version 	= $element ? $element->getText() : '';
+
+			// if current than set published
+			if ($cur_language == $row->language) {
+				$row->published	= 1;
+			} else {
+				$row->published = 0;
+			}
+
+			$row->checked_out = 0;
+			$row->mosname = strtolower( str_replace( " ", "_", $row->name ) );
+			$rows[] = $row;
+			$rowid++;
+		}
+		*/
+		//$pageNav = new JPagination(count( $rows ), $limitstart, $limit );
 	
 		
-		// Recherche des enregistrements selon les limites
+		//$rows = array_slice( $rows, $pageNav->limitstart, $pageNav->limit );
 		
-		$query = "SELECT *  FROM #__easysdi_config ";
-		$query .= " ORDER BY thekey";
-		if ($use_pagination) {
-		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else{
-			$db->setQuery( $query);
-		}
-		
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo $db->stderr();
-			return false;
-		}		
-	
-		HTML_resources::listResources($use_pagination, $rows, $pageNav,$option);
+		//HTML_ressources::listResources($rows, $pageNav, $option, $cur_language);
 	}
 
 	
 	//id = 0 means new Config entry
-	function editResource( $id, $option ) {
-		$database =& JFactory::getDBO(); 
-		$rowConfig = new config( $database );
-		$rowConfig->load( $id );
-		 
+	function editResource( $p_lname, $option ) {
+		 $file = stripslashes( "../administrator/components/com_asitvd/lang/$p_lname.php" );
 
-		HTML_resources::editResource( $rowConfig,$option );
+		if ($fp = fopen( $file, "r" )) {
+			$content = fread( $fp, filesize( $file ) );
+			$content = htmlspecialchars( $content );
+
+			HTML_resources::editResource( $p_lname, $content, $option );
+		} else {
+			$mainframe->enqueueMessage("Operation Failed: Could not open $file","error");
+			$mainframe->redirect("index.php?option=$option&task=listResources" );
+		}
 	}
 
 }
