@@ -15,8 +15,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-//foreach($_POST as $key => $val) 
-//echo '$_POST["'.$key.'"]='.$val.'<br />';
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -75,7 +75,10 @@ class HTML_shop {
 		if(count($newProductList)== 0)
 		{
 			$mainframe->setUserState('bufferValue',0);
-			$totalArea = 0;
+			$mainframe->setUserState('totalArea',0);
+			$mainframe->setUserState('perimeter_id','');
+			$previousExtent = '';
+			//$totalArea = 0;
 		}
 		$mainframe->setUserState('productList',$newProductList);
 
@@ -136,7 +139,7 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-		document.getElementById('totalSurfaceDisplayed').value =  0; 		
+		document.getElementById('totalSurfaceDisplayed').value =  parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?> ); 		
 		removeSelection();
 	}
 	
@@ -202,6 +205,7 @@ class HTML_shop {
 										                 }
 													}
 									);
+					
            		map.addLayer(wfs2);		
 	            map.removeLayer(wfs2);    
 			}
@@ -217,32 +221,30 @@ class HTML_shop {
 		
 		if(selectedSurface.options.length > 0)
 		{
+			//$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
 			
-		
-		$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
-		
-		wfsUrlWithFilter = wfsUrl + '&FILTER=';
-		wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
-		if(selectedSurface.options.length>1)
-		{
-			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
-		}
-		
-		for(var i=0; i<selectedSurface.options.length ; i++) 
-		{
-			var idSurface = selectedSurface.options[i].value;
-            wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + idField +'</ogc:PropertyName><ogc:Literal>'+ idSurface +'</ogc:Literal></ogc:PropertyIsEqualTo>');
-        }
-        if(selectedSurface.options.length>1)
-		{
-			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
-		}
-		wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
-		
-		$("status").innerHTML = wfsUrlWithFilter;
-		
-				
-		addLayerWfs(wfsUrlWithFilter);
+			wfsUrlWithFilter = wfsUrl + '&FILTER=';
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+			if(selectedSurface.options.length>1)
+			{
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+			}
+			
+			for(var i=0; i<selectedSurface.options.length ; i++) 
+			{
+				var idSurface = selectedSurface.options[i].value;
+	            wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + idField +'</ogc:PropertyName><ogc:Literal>'+ idSurface +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+	        }
+	        if(selectedSurface.options.length>1)
+			{
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+			}
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+			
+			//$("status").innerHTML = wfsUrlWithFilter;
+			
+					
+			addLayerWfs(wfsUrlWithFilter);
 		}
 	}
 	
@@ -266,13 +268,10 @@ class HTML_shop {
 		{
 			initSelectedSurface();
 		}
-		
 		        						 
 		nameField = name;
 		idField = id;
 		areaField =area;
-	
-		
 	
 		if (wfs) {
 			map.removeLayer(wfs);
@@ -283,7 +282,6 @@ class HTML_shop {
 			wfs3.destroy();				
 			wfs3=null;		
 		}
-	
 	
 		if (layerPerimeter){
 					map.removeLayer(layerPerimeter);
@@ -466,6 +464,7 @@ class HTML_shop {
 	                     }
 	                    );
 	                 map.addLayer(layer<?php echo $i; ?>);
+	                 
 	<?php 
 	$i++;
 	
@@ -534,15 +533,15 @@ class HTML_shop {
 				<?php
 					if ( JRequest::getVar('previousExtent') != "")
 					{
-				?>
-					map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
-				<?php
+						?>
+							map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
+						<?php
 					}
 					else
 					{
-				?>
-					map.zoomToMaxExtent();
-				<?php	
+						?>
+							map.zoomToMaxExtent();
+						<?php	
 					}
 				?>
 	             
@@ -717,7 +716,7 @@ class HTML_shop {
 			if (feature.geometry instanceof OpenLayers.Geometry.Point)
 			{
 	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
-			   	document.getElementById('totalSurfaceDisplayed').value =  (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea ) ).toFixed(<?php echo $decimal_precision; ?> );    		
+			   	document.getElementById('totalSurfaceDisplayed').value =  parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?> );    		
 			   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 				new Option(feature.geometry,feature.geometry);
 			}      
@@ -780,7 +779,7 @@ class HTML_shop {
 									//Remove the value							
 									document.getElementById("selectedSurface").remove(k);								
 									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-									document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+									document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
 																									
 									found=k;																			
 								}            				
@@ -813,31 +812,35 @@ class HTML_shop {
 		   		    //Add the surface in the selectedSurface list
 		   		    //To manage the reload of a previous selection, check if the surface exists already before adding it
 		   		    var selectSurface = document.getElementById('selectedSurface');
-		   		    if( selectSurface.options.length == 0 )
+		   		   
+		   		    if( selectSurface.options.length > 0 )
 		   		    {
-		   		    	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
-		   		    	//Add the new value
-		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            	document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
-		   		    
-		   		    }
-		   		    else
-		   		    {
-			   		    for (var i=0 ; i < selectSurface.options.length ; i++)
+		   		    	for (var i=0 ; i < selectSurface.options.length ; i++)
 			   		    {
-			   		    	if(selectedSurface.options[i].value == id )
+			   		    	if(selectSurface.options[i].value == id )
 			   		    	{
+			   		    
 			   		    		break;
 			   		    	}
 			   		    	if(i == selectSurface.options.length -1)
 			   		    	{
+			   		    
 			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 			   		    		//Add the new value
 		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            			document.getElementById('totalSurfaceDisplayed').value = (parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea)).toFixed(<?php echo $decimal_precision; ?>);
+		            			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
 		   		    
 			   		    	}
 			   		    }
+		   		    	
+		   		    }
+		   		    else
+		   		    {
+			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
+		   		    	//Add the new value
+		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+		            	document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
+		   		    
 		   		    }
 		   		    
 	           }
@@ -1025,7 +1028,7 @@ class HTML_shop {
 		<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
 		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
-		<input type='hidden' id='wfs' name='wfs' value="<?php echo JRequest::getVar('wfs'); ?>" />
+		
 	</form>
 	</div>
 	<?php
@@ -1281,7 +1284,7 @@ if (count($rows)>0){
 	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
-	<input type='hidden' id='wfs' name='wfs' value="<?php echo JRequest::getVar('wfs'); ?>" />
+	
 	
 </form>
 	<?php
