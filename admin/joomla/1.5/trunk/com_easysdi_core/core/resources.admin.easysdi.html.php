@@ -17,25 +17,25 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_ressources {
+class HTML_resources {
 	
 	
-	function listRessources($use_pagination, &$rows, &$pageNav, $option)
+	function listResources($use_pagination, &$rows, &$pageNav, $option)
 	{				
 		$database =& JFactory::getDBO();
 		 
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_RESSOURCES"));
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_RESOURCES"));
 ?>
 	<form action="index.php" method="GET" name="adminForm">
 
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_RESSOURCE_LANGUAGE"); ?></th>
+				<th width="20" class='title'><?php echo JText::_("EASYSDI_RESOURCE_LANGUAGE"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_RESSOURCE_CURRENT"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_RESSOURCE_COMPONENT"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_RESSOURCE_UPDATEDATE"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_CURRENT"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_COMPONENT"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_UPDATEDATE"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -77,7 +77,7 @@ class HTML_ressources {
 	}
 	
 	
-	function editRessource( &$rowConfig,$option )
+	function editResource( &$rowConfig,$option )
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 

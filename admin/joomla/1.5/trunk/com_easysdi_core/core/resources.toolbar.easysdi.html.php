@@ -17,14 +17,14 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class TOOLBAR_ressources {
+class TOOLBAR_resources {
 function _DEFAULT() {
-		JToolBarHelper::editList('editRessource');
+		JToolBarHelper::editList('editRssource');
 	}
 
 	function _EDIT() {
-		JToolBarHelper::save('saveRessource');
-		JToolBarHelper::cancel('cancelRessource');
+		JToolBarHelper::save('saveResource');
+		JToolBarHelper::cancel('cancelResource');
 	}
 }
 

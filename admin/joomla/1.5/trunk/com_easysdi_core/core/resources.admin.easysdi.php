@@ -17,10 +17,10 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_ressources {
+class ADMIN_resources {
 
 	
-	function listRessources($option) {
+	function listResources($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
@@ -51,18 +51,18 @@ class ADMIN_ressources {
 			return false;
 		}		
 	
-		HTML_ressources::listRessources($use_pagination, $rows, $pageNav,$option);
+		HTML_resources::listResources($use_pagination, $rows, $pageNav,$option);
 	}
 
 	
 	//id = 0 means new Config entry
-	function editRessource( $id, $option ) {
+	function editResource( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowConfig = new config( $database );
 		$rowConfig->load( $id );
 		 
 
-		HTML_ressources::editRessource( $rowConfig,$option );
+		HTML_resources::editResource( $rowConfig,$option );
 	}
 
 }
