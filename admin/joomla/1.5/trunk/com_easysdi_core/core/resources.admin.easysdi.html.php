@@ -82,7 +82,7 @@ class HTML_resources {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_EDIT_CONFIG"), 'generic.png' );
+		JToolBarHelper::title( JText::_("EASYSDI_EDIT_RESOURCE"), 'generic.png' );
 
 	?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
