@@ -25,22 +25,30 @@ class helper_easysdi{
 			$query = "SELECT * FROM #__easysdi_location_definition where id = $row->id_location_filter";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
-			helper_easysdi::generateHtmlLocationSelect($rows2,$row->id);
+			helper_easysdi::generateHtmlLocationSelect($rows2,$row->id,1);
 
 		}
 		if ($parent == 0){
 			echo "<tr>";
-			echo "<td><select id=\"locationsListLocation$row->id\"	onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
+			echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
 
 			echo "</tr>";
 		}else{
-			echo "<tr>";
-			echo "<td><select id=\"locationsListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent') \"><option > </option></select></td>";
-			echo "</tr>";
+			
 			if ($row->searchbox == 1) {
-				echo "<tr >";
-				echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "<tr>";
+				echo "<td><select style='display:none'  id=\"locationsListLocation$row->id\"	><option > </option></select></td>";
+				echo "</tr>";
+				echo "<tr>";
+				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
+				echo "<input style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
+							type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "</tr>";
+			}
+			else
+			{
+				echo "<tr>";
+				echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \"><option > </option></select></td>";
 				echo "</tr>";
 			}
 		}
@@ -52,26 +60,37 @@ class helper_easysdi{
 
 		?>
 		<?php
-		if ($row->id_perimeter_filter > 0 ){
+		if ($row->id_perimeter_filter > 0 )
+		{
 			$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
 			helper_easysdi::generateHtmlPerimeterSelect($rows2,$row->id);
 
 		}
-		if ($parent == 0){
+		if ($parent == 0)
+		{
 			echo "<tr>";
 			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
 
 			echo "</tr>";
-		}else{
-			echo "<tr>";
-			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";
-			echo "</tr>";
-			if ($row->searchbox == 1) {
+		}
+		else
+		{
+			if ($row->searchbox == 1) 
+			{
+				echo "<tr>";
+				echo "<td><select id=\"perimetersListPerimeter$row->id\"><option > </option></select></td>";
+				echo "</tr>";
 				echo "<tr >";
 				echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
 				echo "<input onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "</tr>";
+			}
+			else
+			{
+				echo "<tr>";
+				echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";
 				echo "</tr>";
 			}
 		}
