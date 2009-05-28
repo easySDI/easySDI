@@ -97,7 +97,6 @@ if ($curstep == "2")
 					?>
 	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				document.getElementById("locationsListLocation<?php echo $row->id; ?>").style.display='block';
-	 				document.getElementById("locationsListLocation<?php echo $row->id; ?>").style.display='block';
 	 			<?php 
 				} 
 				?>
@@ -118,8 +117,19 @@ if ($curstep == "2")
       /**
       After selection in a combobox, fill the parent
       */
-      function fillParent(filterId, curId, parId)
+      function fillParent(filterId, curId, parId, parentId)
       {
+	    //Display the next parent elements
+      	document.getElementById(parId).style.display = 'block';
+      	if (document.getElementById('filter'+parentId)!=null )
+	 	{
+	 		document.getElementById('filter'+parentId).style.display = 'block';
+	 	}
+	 	if (document.getElementById('search'+parentId)!=null )
+	 	{
+	 		document.getElementById('search'+parentId).style.display = 'block';
+	 	}
+	 	
 		<?php
 		$query2 = "SELECT * FROM #__easysdi_location_definition ";
 		$db->setQuery( $query2 );
@@ -129,21 +139,21 @@ if ($curstep == "2")
 		{?>
 	 		if ( parId == 'locationsListLocation<?php echo $row->id; ?>')
 	 		{
-	 			document.getElementById(parId).style.display = 'block';
+	 			
 	 			var filter ="";
 	 			<?php 
-	 			if ($row->searchbox == 0) 
+	 			/*	if ($row->searchbox == 0) 
 	 			{
 	 			  	?>	 			  	
 	 			  	filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 			  	<?php
 	 			}
 	 			else
-	 			{?>
-	 				if (document.getElementById(filterId)!=null || document.getElementById(filterId).value.length>0)
+	 			{*/
+	 			?>
+	 				if (document.getElementById(filterId)!=null && document.getElementById(filterId).value.length>0)
 	 				{
 	 					filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-		 		 		//filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 		 		 	}
 		 		 	else
 		 		 	{
@@ -151,7 +161,7 @@ if ($curstep == "2")
 		 		 	}
 		 		 	
 	 		 	<?php 
-				}
+			/*	}*/
 	 		 	
 	 		 	if ($row->maxfeatures!="-1") 
 	 		 	{?>
@@ -179,7 +189,7 @@ if ($curstep == "2")
 				$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 				$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
 	 		 	 ?>
-	 		 	
+	 		 	$("status").innerHTML = '<?php echo $wfs_url; ?>';
 	 			fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 		 
@@ -287,7 +297,7 @@ if ($curstep == "2")
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		
 		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
-		$("status").innerHTML = wfsUrlWithBBox;
+		//$("status").innerHTML = wfsUrlWithBBox;
 		
 			
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
