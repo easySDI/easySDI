@@ -113,12 +113,56 @@ if ($curstep == "2")
 		} 
 		?>
       }
+ 
+	 /**
+	 In case of unselection in a combobox, disable the display of parent comboboxes already displayed
+	 */
+ 	  function hideParent(curId)
+      {
+      	<?php
+      	
+		$queryAll = "SELECT * FROM #__easysdi_location_definition";
+		$db->setQuery( $queryAll );
+		$rowsAll = $db->loadObjectList();
+		
+		foreach ($rowsAll as $rowall)
+		{	
+			?>
+			if(curId == '<?php echo $rowall->id_location_filter;?>')
+			{
+				if(document.getElementById('locationsListLocation<?php echo $rowall->id; ?>') != null)
+				{
+					document.getElementById('locationsListLocation<?php echo $rowall->id; ?>').style.display = 'none';
+				}
+		      	if (document.getElementById('filter<?php echo $rowall->id; ?>')!=null )
+			 	{
+			 		document.getElementById('filter<?php echo $rowall->id; ?>').style.display = 'none';
+			 	}
+			 	if (document.getElementById('search<?php echo $rowall->id; ?>')!=null )
+			 	{
+			 		document.getElementById('search<?php echo $rowall->id; ?>').style.display = 'none';
+			 	}
+				
+				hideParent('<?php echo $rowall->id; ?>');
+			}
+			
+			<?php
+		}?>
+      }
       
       /**
       After selection in a combobox, fill the parent
       */
       function fillParent(filterId, curId, parId, parentId)
       {
+      	if (document.getElementById(curId)[document.getElementById(curId).selectedIndex].value == "-1")
+      	{
+      		//Hide the next comboboxes
+      		hideParent(curId.substring(21,curId.length));
+      		//$("status").innerHTML = curId.substring(21,curId.length); 
+      		return;
+      	}
+      
 	    //Display the next parent elements
       	document.getElementById(parId).style.display = 'block';
       	if (document.getElementById('filter'+parentId)!=null )
@@ -189,7 +233,7 @@ if ($curstep == "2")
 				$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 				$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
 	 		 	 ?>
-	 		 	$("status").innerHTML = '<?php echo $wfs_url; ?>';
+	 		 	
 	 			fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 		 
@@ -297,8 +341,6 @@ if ($curstep == "2")
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		
 		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
-		//$("status").innerHTML = wfsUrlWithBBox;
-		
 			
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
@@ -314,7 +356,7 @@ if ($curstep == "2")
 							if (loadingLocation==true)
 							{
 								elSel.remove(0);
-								elSel.options[0] =  new Option("","");
+								elSel.options[0] =  new Option("- "+location_location_name+" -","-1");
 								loadingLocation=false;
 							}
 									
