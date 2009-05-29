@@ -25,7 +25,7 @@ class helper_easysdi{
 			$query = "SELECT * FROM #__easysdi_location_definition where id = $row->id_location_filter";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
-			helper_easysdi::generateHtmlLocationSelect($rows2,$row->id,1);
+			helper_easysdi::generateHtmlLocationSelect($rows2,$row->id);
 
 		}
 		if ($parent == 0){
@@ -55,6 +55,8 @@ class helper_easysdi{
 
 	}
 
+     
+      
 	function generateHtmlPerimeterSelect($row,$parent){
 		$db =& JFactory::getDBO();
 
