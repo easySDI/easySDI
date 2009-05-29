@@ -65,20 +65,20 @@ $db =& JFactory::getDBO();
 					}
 					
 					
-					if (1==1 || ($row->user !=null && strlen($row->user)>0)){
+					//if (1==1 || ($row->user !=null && strlen($row->user)>0)){
 						
 						//if a user and password is requested then use the joomla proxy.
 						$proxyhost = config_easysdi::getValue("PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->url));
-					}else{
-						$wfs_url = $row->wfs_url;						
-					}
+						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+					//}else{
+						//$wfs_url = $row->wfs_url;						
+					//}
 					
 					
 					?>					
 
-
+					
 						 		 	
 	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				
@@ -93,9 +93,8 @@ $db =& JFactory::getDBO();
 	 <?php } ?>
       }
       
-      function fillPerimeterParent(filterId, curId, parId){
-
-
+   function fillPerimeterParent(filterId, curId, parId)
+   {
 	<?php
 	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
 	$db->setQuery( $query2 );
@@ -128,15 +127,15 @@ $db =& JFactory::getDBO();
 	 		 		<?php
 	 		 	} 
 	 		 	
-	 		 	if (1== 1 || ($row->user !=null && strlen($row->user)>0)){
+	 		 	//if (1== 1 || ($row->user !=null && strlen($row->user)>0)){
 						
 						//if a user and password is requested then use the joomla proxy.
 						$proxyhost = config_easysdi::getValue("PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->url));
-					}else{
-						$wfs_url = $row->wfs_url;						
-					}
+						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+					//}else{
+						//$wfs_url = $row->wfs_url;						
+					//}
 	 		 	
 	 		 	?>
 	 		 	
@@ -151,13 +150,13 @@ $db =& JFactory::getDBO();
         
         <tr>
         <td>         
-	<select id="perimeterListPerimeter"  disabled="disabled" onChange="selectPerimeterPerimeter(document.getElementById('perimeterListPerimeter')[document.getElementById('perimeterListPerimeter').selectedIndex].value)">
+	<select id="perimeterListPerimeter" style='display:none' disabled="disabled" onChange="selectPerimeterPerimeter(document.getElementById('perimeterListPerimeter')[document.getElementById('perimeterListPerimeter').selectedIndex].value)">
 	<option value =""> </option>
 	<?php
 	foreach ($rows as $row)
 		{			
 			?>
-			<option value ="<?php echo $row->id ?>"> <?php echo JText::_($row->perimeter_name); ?> </option>
+			<option value ="<?php echo $row->id ?>"  > <?php echo JText::_($row->perimeter_name); ?> </option>
 			<?php 				  		
 		}
 		?>
@@ -181,61 +180,65 @@ $db =& JFactory::getDBO();
 				  
 <script>	
 
-
-function sortList(mylist) {
-	var lb = document.getElementById(mylist);
-	var arrTexts = new Array();
-	var arrValues = new Array();
-	var arrOldTexts = new Array();
-
-	for(i=0; i<lb.length; i++) {
-		arrTexts[i] = lb.options[i].text;
-		arrValues[i] = lb.options[i].value;	
-		arrOldTexts[i] = lb.options[i].text;
-	}
-
-	arrTexts.sort();
-
-	for(i=0; i<lb.length; i++){
-		lb.options[i].text = arrTexts[i];
-		for(j=0; j<lb.length; j++){
-			if (arrTexts[i] == arrOldTexts[j]){
-				lb.options[i].value = arrValues[j];
-				j = lb.length;
+	/**
+	*/
+	function sortList(mylist) 
+	{
+		var lb = document.getElementById(mylist);
+		var arrTexts = new Array();
+		var arrValues = new Array();
+		var arrOldTexts = new Array();
+	
+		for(i=0; i<lb.length; i++) {
+			arrTexts[i] = lb.options[i].text;
+			arrValues[i] = lb.options[i].value;	
+			arrOldTexts[i] = lb.options[i].text;
+		}
+	
+		arrTexts.sort();
+	
+		for(i=0; i<lb.length; i++){
+			lb.options[i].text = arrTexts[i];
+			for(j=0; j<lb.length; j++){
+				if (arrTexts[i] == arrOldTexts[j]){
+					lb.options[i].value = arrValues[j];
+					j = lb.length;
+				}
 			}
 		}
 	}
-}
 
+	/**
+	*/
 	var wfs4;
 	var perimeter_id_field;
 	var loadingPerimeter = false;
-	function freeSelectPerimeterPerimeter(perimetersListPerimeterId){
+	function freeSelectPerimeterPerimeter(perimetersListPerimeterId)
+	{
 			var elSel = document.getElementById(perimetersListPerimeterId);
 			while (elSel.length > 0)
-				{
-					elSel.remove(elSel.length - 1);
+			{
+				elSel.remove(elSel.length - 1);
 			}
-		}
+	}
       	
-		function fillSelectPerimeterPerimeter(perimetersListPerimeterId,perimeter_perimeter_name,perimeter_wfs_url,perimeter_feature_type_name,perimeter_name_field_name,perimeter_id_field_name ,filter,isSort,maxfeatures,user,password){		
-		
+	/**
+	*/
+	function fillSelectPerimeterPerimeter(perimetersListPerimeterId,perimeter_perimeter_name,perimeter_wfs_url,perimeter_feature_type_name,perimeter_name_field_name,perimeter_id_field_name ,filter,isSort,maxfeatures,user,password)
+	{		
 		var elSel = document.getElementById(perimetersListPerimeterId);
 		freeSelectPerimeterPerimeter(perimetersListPerimeterId);
 		
 		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
 		loadingPerimeter=true;
 		
-		
-		
 		perimeter_id_field = perimeter_id_field_name; 
-		
 		
 		var wfsUrlWithBBox = perimeter_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+perimeter_feature_type_name+'&VERSION=1.0.0' ;
 		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;		
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
-		
+	
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
@@ -268,8 +271,8 @@ function sortList(mylist) {
             }
             
             
-function recenterOnPerimeterPerimeter(perimetersListPerimeterId){
-		
+	function recenterOnPerimeterPerimeter(perimetersListPerimeterId)
+	{
 		var elSel = document.getElementById(perimetersListPerimeterId);
 			  for (i = elSel.length - 1; i>=0; i--) {
 			    if (elSel.options[i].selected) {			     	
