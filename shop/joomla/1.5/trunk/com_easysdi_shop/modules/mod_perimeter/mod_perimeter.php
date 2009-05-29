@@ -20,7 +20,8 @@ defined('_JEXEC') or die('Restricted access');
 global  $mainframe;
 $curstep = JRequest::getVar('step',0);
 
-if ($curstep == "2"){
+if ($curstep == "2")
+{
 	$db =& JFactory::getDBO();
 
 	$query = "select * from #__easysdi_basemap_definition where def = 1";
@@ -157,12 +158,12 @@ if ($curstep == "2"){
 			 	if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
 					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo $row->perimeter_name; ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
 					$("scaleStatus").innerHTML = text;
-					document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
+					//document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
 					return;
 					
 				}
 			} 
-			document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
+			//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
 	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
 	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
 	 		
