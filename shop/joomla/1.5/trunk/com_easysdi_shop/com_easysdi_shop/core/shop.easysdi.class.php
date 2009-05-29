@@ -264,7 +264,7 @@ class HTML_shop {
 			
 		//Delete the current selection
 		//only if the perimeter is different from the one register in the user session
-		if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>')
+		if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>' )
 		{
 			initSelectedSurface();
 		}
