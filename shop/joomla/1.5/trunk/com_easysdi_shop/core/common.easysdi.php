@@ -70,29 +70,19 @@ class helper_easysdi{
 			helper_easysdi::generateHtmlPerimeterSelect($rows2,$row->id);
 
 		}
-		if ($parent == 0)
-		{
+		if ($parent == 0){
 			echo "<tr>";
 			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
 
 			echo "</tr>";
-		}
-		else
-		{
-			if ($row->searchbox == 1) 
-			{
-				echo "<tr>";
-				echo "<td><select id=\"perimetersListPerimeter$row->id\"><option > </option></select></td>";
-				echo "</tr>";
+		}else{
+			echo "<tr>";
+			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";
+			echo "</tr>";
+			if ($row->searchbox == 1) {
 				echo "<tr >";
 				echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
 				echo "<input onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
-				echo "</tr>";
-			}
-			else
-			{
-				echo "<tr>";
-				echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";
 				echo "</tr>";
 			}
 		}
