@@ -53,7 +53,7 @@ if (is_array(($cid)))
 			newInput.type='hidden';newInput.name='prodId';
 			newInput.value='<?php echo $row->id;?>';
 			locOrderForm.appendChild(newInput);
-			document.forms['orderForm'].submit();"><?php echo JText::_('EASYSDI_REMOVE_PRODUCT'); ?></button>
+			submitOrderForm();"><?php echo JText::_('EASYSDI_REMOVE_PRODUCT'); ?></button>
 <hr>
 
 				<?php
