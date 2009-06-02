@@ -890,6 +890,14 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+		// New role for diffusion
+		$query = "insert  into #__easysdi_community_role (publish_id, type_id, role_code, role_name, role_description) values(0,1, 'DIFFUSION', 'EASYSDI_DIFFUSION_RIGHT', 'Gestionnaire de diffusion')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		$version="0.96";
 		$query="UPDATE #__easysdi_version SET version ='0.96' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
@@ -897,8 +905,22 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
+	}
+	if ($version == "0.96")
+	{
+		$query = "insert  into #__easysdi_config (thekey, value) values('FOP_URL','http://localhost:8080/fop/build/fop.jar')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$version="0.97";
+		$query="UPDATE #__easysdi_version SET version ='0.97' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 	}
 		/**
 		 * Menu creation
