@@ -329,14 +329,27 @@ class displayManager{
 			$xmlContent = $dom ->importNode($nodes->item(0),true);
 			$dom->appendChild($xmlContent);
 		}
+		/*
+		$xml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.'metadata.xml';
+		$file =fopen($xml, 'w');
+		fwrite($file, $dom->saveXML());
+		fclose($file);	
+		*/
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
 		header('Pragma: public');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		//header('Content-Transfer-Encoding: binary');
 		header('Content-Tran§sfer-Encoding: none');
 		header('Content-Type: text/xml');
+		//header('Content-Type: application/force-download');		
 		header('Content-Disposition: attachement; filename="metadata.xml"');
-
+		header("Content-Description: File Transfer" );
+ 		//header("Expires: 0"); 
+		//header("Content-Length: ".filesize($file));
+		
+		//readfile($file);
+		
 		echo $dom->saveXML();
 	}
 	
@@ -384,7 +397,6 @@ class displayManager{
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		
-		
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();   
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
@@ -392,61 +404,224 @@ class displayManager{
     	$result = $processor->transformToXml($pageDom);    	
 		//$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
 		
-		
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+    	//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
-		 
+		$fop_url = config_easysdi::getValue("FOP_URL");
+				 
 		if ($bridge_url ){ 
-			
-		require_once($bridge_url);
-			
-		$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-		$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
-			
-		$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
-		$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.uniqid().'pdf';
-		
-		
-	
-			
-				try {
-					@java_reset();		
-				java_require($java_library_path);
-			
-				$j_fw = new Java("FOPWrapper");
+			require_once($bridge_url);
+
+			if ($fop_url )
+			{ 
+				require_once($fop_url);
+					
+				$tmp = uniqid();
+				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
+				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
+				$fopxsl = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xsl';
+				$fopfo = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.fo';
+				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
 				
+				try {
+					// Ecrire le xml temporaire
+					$fp = fopen ($fopxml, 'w');
+					fwrite($fp, $pageDom->saveXML());
+					fclose ($fp);
+					
+					// Ecrire le xslt temporaire
+					$fp = fopen ($fopxsl, 'w');
+					fwrite($fp, $document->saveXML());
+					fclose ($fp);
+					
+					// Usefull FOP libraries
+					java_require("http://localhost:8080/fop/lib/xml-apis-1.3.04.jar;
+								  http://localhost:8080/fop/build/fop.jar;
+								  http://localhost:8080/fop/lib/xmlgraphics-commons-1.3.1.jar;
+								  http://localhost:8080/fop/lib/avalon-framework-4.2.0.jar;
+								  http://localhost:8080/fop/lib/commons-io-1.3.1.jar;
+								  http://localhost:8080/fop/lib/batik-all-1.7.jar;
+								  http://localhost:8080/fop/lib/commons-logging-1.0.4.jar");
+					
+					//Create the PDF file based on the FO file
+					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
+					displayManager::convertFO2PDF($fopfo, $foptmp);
+					
+					// Remove temporaries files
+					unlink($fopxml);
+					unlink($fopxsl);
+					unlink($fopfo);
+				    
+					if (file_exists($foptmp)) {
+					    header('Content-Description: File Transfer');
+					    header('Content-Type: application/octet-stream');
+					    header('Content-Disposition: attachment; filename=metadata.pdf');
+					    header('Content-Transfer-Encoding: binary');
+					    header('Expires: 0');
+					    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+					    header('Pragma: public');
+					    header('Content-Length: ' . filesize($foptmp));
+					    ob_clean();
+					    flush();
+					    readfile($foptmp);
+					    exit;
+					}
+					/*					
+					@java_reset();
+						
+				 	error_reporting(0);
+					ini_set('zlib.output_compression', 0);
+					
+					header('Pragma: public');
+					header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+					header('Content-Transfer-Encoding: binary');
+					header('Content-type: application/pdf');
+					header('Content-Disposition: attachement; filename="metadata.pdf"');
+					header("Expires: 0"); 
+					header("Content-Length: ".filesize($foptmp));
+					
+					ob_clean();
+				    flush();
+				    @readfile($foptmp);
+					*/
+					
+				}
+				catch (JavaException $ex) {
+					$trace = new Java("java.io.ByteArrayOutputStream");
+					$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
+					print "java stack trace: $trace\n";
+				}
+			}
+			else {
+				$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
+				
+				// FOP 0.93 - à tester
+				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+				
+				$tmp = uniqid();
+				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
+				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
+				
+				@java_reset();		
+				
+				java_require($java_library_path);
+				$j_fw = new Java("FOPWrapper");
 				$version = $j_fw->FOPVersion();
 				//Génération du document PDF sous forme de fichier
 				$j_fw->convert($fopcfg,$result,$foptmp);
 				
 				@java_reset();
-
-				$fp = fopen ($foptmp, 'r');
-				$result = fread($fp, filesize($foptmp));
-				fclose ($fp);
-
-				 
+						
+			 	error_reporting(0);
+				ini_set('zlib.output_compression', 0);
 				
-				 error_reporting(0);
-		ini_set('zlib.output_compression', 0);
-		header('Pragma: public');
-		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-		header('Content-TranÂ§sfer-Encoding: none');
-		header('Content-Type: application/octetstream; name="metadata.pdf"');
-		header('Content-Disposition: attachement; filename="metadata.pdf"');
-
-		echo $result;
-
-		
-			} catch (JavaException $ex) {
-				$trace = new Java("java.io.ByteArrayOutputStream");
-				$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
-				print "java stack trace: $trace\n";
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Content-Transfer-Encoding: binary');
+				header('Content-type: application/pdf');
+				header('Content-Disposition: attachement; filename="metadata.pdf"');
+				header("Expires: 0"); 
+				header("Content-Length: ".filesize($foptmp));
+				
+				ob_clean();
+			    flush();
+			    readfile($foptmp);
+				
+			    echo $result;
 			}
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
 		}
+	}
+	
+	function convertXML2FO($xml, $xslt, $fo)
+	{
+	// Transform path of fo and xslt files for javax.xml.transform.stream
+	$xml = new java("java.io.File", $xml);
+	$xmlFile= $xml->getAbsolutePath();
+	$fo = new java("java.io.File", $fo);
+	$foFile= $fo->getAbsolutePath();
+	$xslt = new java("java.io.File", $xslt);
+	$xsltFile= $xslt->getAbsolutePath();
+	
+	// Setup output
+	$out = new java("java.io.FileOutputStream", $fo);
+	
+	try
+	{
+ 		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
+		//Setup XSLT
+		$factory = new java("javax.xml.transform.TransformerFactory");
+		$factory = $factory->newInstance();
+		$xsltStream = new java("javax.xml.transform.stream.StreamSource", $xslt);
+		//$xsltStream->setSystemId($xmlSystemId);
+		$transformer = $factory->newTransformer($xsltStream);
+
+		//Setup input for XSLT transformation
+		$src = new java("javax.xml.transform.stream.StreamSource", $xml);
+		//Resulting SAX events (the generated FO) must be piped through to FOP
+		$res = new java("javax.xml.transform.stream.StreamResult", $out);
+		//Start XSLT transformation and FOP processing
+		$transformer->transform($src, $res);
+	}
+	catch (JavaException $ex)
+	{
+		$trace = new Java("java.io.ByteArrayOutputStream");
+		$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
+		print "java stack trace: $trace\n";
+	}
+	$out->close();		
+	}
+		
+	function convertFO2PDF($fo, $pdf)
+	{
+		$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
+		
+		try
+		{
+			// configure fopFactory as desired
+			$fopFactory = new java("org.apache.fop.apps.FopFactory");
+			$fopFactory = $fopFactory->newInstance();
+			
+			// configure foUserAgent as desired
+			$foUserAgent = $fopFactory->newFOUserAgent();
+	
+			// Setup output
+			$pdf = new java("java.io.File", $pdf);
+			$pdf= $pdf->getAbsolutePath();
+				
+			$out = new java("java.io.FileOutputStream", $pdf);
+			$out = new java("java.io.BufferedOutputStream", $out);
+	
+			// Construct fop with desired output format
+			$fop = $fopFactory->newFop($fop_mime_constants->MIME_PDF, $foUserAgent, $out);
+	
+			//Setup XSLT
+			$factory = new java("javax.xml.transform.TransformerFactory");
+			$factory = $factory->newInstance();
+			$transformer = $factory->newTransformer();
+	
+			// Set the value of a <param> in the stylesheet
+			$transformer->setParameter("versionParam", "2.0");
+
+			//Setup input for XSLT transformation
+			$src = new java("javax.xml.transform.stream.StreamSource", $fo);
+        
+			// Resulting SAX events (the generated FO) must be piped through to FOP
+			$res = new java("javax.xml.transform.sax.SAXResult", $fop->getDefaultHandler());
+	
+			//Start XSLT transformation and FOP processing
+			$transformer->transform($src, $res);
+		}
+		catch (JavaException $ex)
+		{
+			$trace = new Java("java.io.ByteArrayOutputStream");
+			$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
+			print "java stack trace: $trace\n";
+		}
+
+		$out->close();
 	}
 }
 
