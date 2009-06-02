@@ -1212,6 +1212,7 @@
         </xsl:when>
         <xsl:otherwise>
           <fo:table-column column-width="200pt"/>
+          <fo:table-column column-width="200pt"/>
         </xsl:otherwise>
       </xsl:choose>
       <fo:table-body>

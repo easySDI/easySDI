@@ -97,13 +97,10 @@ __ref__asit_6$s
 <tr valign="top"><td class="title">Conditions de diffusion:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints[@xlink:title='Conditions de diffusion']/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td class="title">Restriction d'utilisation:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td class="title">Principes et mode de tarification:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributionOrderProcess/gmd:MD_StandardOrderProcess/gmd:fees/gmd:LocalisedCharacterString"/></td></tr>
-
-
 </table>
 <hr></hr>
 <h3>Statut juridique</h3>
 <table class="descr"  >
-                     
 <tr valign="top"><td class="title">Statut:</td><td>
 <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Statut juridique']">
       <xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Statut' ">
@@ -112,8 +109,7 @@ __ref__asit_6$s
 </xsl:for-each>
 </td></tr>
 <tr valign="top"><td class="title">Référence du document légal:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints[@xlink:title='Référence du document légal']/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:LocalisedCharacterString"/></td></tr>
-  
-  </table>
+</table>
 <hr></hr> 
 
       
@@ -146,7 +142,7 @@ __ref__asit_6$s
  
  
 <h3>Représentation</h3>
-	<table class="descr"   >
+	<table class="descr">
 		<tr valign="top"><td class="title">Système de coordonnées:</td><td>
 			<xsl:choose>
 					<xsl:when test="./gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gmd:LocalisedCharacterString = 'EPSG:21781'">            
