@@ -34,9 +34,9 @@ class HTML_catalog{
 		
 		
 		?>
-		
-		<div class="contentin">
+		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
+		<div class="contentin">
 		
 		<h3><?php echo JText::_("EASYSDI_CATALOG_METADATA_TYPE"); ?></h3>
 		<table>
@@ -312,6 +312,7 @@ class HTML_catalog{
 	</table>
 	
 	<?php } ?></div>
+	</div>
 	<?php
 
 	}
