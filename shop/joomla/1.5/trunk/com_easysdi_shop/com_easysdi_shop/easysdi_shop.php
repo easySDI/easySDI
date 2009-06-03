@@ -242,7 +242,7 @@ switch($task){
 		break;
 	case "saveProductMetadata":
 		SITE_product::saveProductMetadata();
-		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
+		//$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
 	case "cancelEditProductMetadata" :
 		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
@@ -265,7 +265,7 @@ switch($task){
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
 	case "saveProduct":
-		SITE_product::saveProduct($option);
+		SITE_product::saveProduct(true, $option);
 		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
 	case "newProduct":
