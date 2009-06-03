@@ -1128,7 +1128,7 @@ class HTML_shop {
 
 	foreach ($products as $product  ){
 		//$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text ,a.type_code,a.code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." and a.published=1 order by a.order"
-		$query = "SELECT DISTINCT pd.id as id, pd.order as property_order, pd.mandatory as mandatory, pd.text as property_text, pd.type_code as type_code, pd.code as code FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 order by property_order";
+		$query = "SELECT DISTINCT pd.id as id, pd.order as property_order, pd.mandatory as mandatory, pd.text as property_text, pd.type_code as type_code, pd.code as code, pd.translation as translation FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 order by property_order";
 ?>
 
 
