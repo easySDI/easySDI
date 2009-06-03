@@ -18,10 +18,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 class TOOLBAR_resources {
-function _DEFAULT() {
+	function _DEFAULT() {
 		JToolBarHelper::editList('editResource');
 	}
-
 	function _EDIT() {
 		JToolBarHelper::save('saveResource');
 		JToolBarHelper::cancel('cancelResource');
