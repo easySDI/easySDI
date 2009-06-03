@@ -169,17 +169,17 @@ class helper_easysdi{
 <tr>
 	<td><?php echo JText::_($row->description) ?></td>
 	<td><?php } ?> <?php if( $rowFreetext->is_id == 1) { ?> <input
-		size="80" type="text"
+		size="20" type="text"
 		<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'"; ?>
 		name="<?php echo "PARAM$row->id[]"?>" value="<?php echo $metadata_id;?>" /> <?php 
 	}else{
 		if( $rowFreetext->is_constant == 1) {
-			?> <input size="80" type="text"
+			?> <input size="50" type="text"
 			<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
 		name="<?php echo "PARAM$row->id[]"?>"
 		value="<?php echo htmlentities($rowFreetext->default_value);?>" /> <?php 
 		}else{
-			?> <input size="80" type="text"
+			?> <input size="50" type="text"
 			<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
 		name="<?php echo "PARAM$row->id[]"?>"
 		value="<?php echo htmlentities($geoMD->getXPathResult("//".$key."/gco:CharacterString"))?>" />
@@ -222,7 +222,7 @@ case  "list" :
 	$key = $parentkey;
 
 
-	$query = "SELECT * FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->id and a.list_id = b.id";
+	$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->id and a.list_id = b.id";
 	$database->setQuery($query);
 	$rowsList = $database->loadObjectList();
 	if ($database->getErrorNum()) {
@@ -232,7 +232,7 @@ case  "list" :
 		?>
 
 	<tr>
-		<td><?php echo JText::_($row->description) ?></td>
+		<td><?php echo JText::_($rowList->trans) ?></td>
 		<td><select name="<?php "PARAM$row->id[]"?>"
 		<?php if ($rowList->multiple == 1) {echo "multiple";} ?>
 			size="<?php if ($rowList->multiple == 1) {echo "5";}else {echo "1";} ?>"
@@ -244,11 +244,11 @@ case  "list" :
 			if ($database->getErrorNum()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-
+	
 			foreach ($rowsListContent as $rowListContent){
 				?>
 			<option value="<?php echo $rowListContent->key ;?>"
-			<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo $rowListContent->value ;?></option>
+			<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo  JText::_($rowListContent->translation) ;?></option>
 			<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
 			<?php
 
@@ -336,12 +336,9 @@ case  "list" :
 		}
 
 		foreach ($rowsListContent as $rowListContent){
-
 			?>
-
-
 		<option value="<?php echo $rowListContent->key ;?>"
-		<?php if ($geoMD->isXPathResultCount("//gmd:MD_Metadata/".$iso_key."[gco:CharacterString='$rowListContent->key']")>0){echo "selected=selected";}?>><?php echo $rowListContent->value ;?></option>
+		<?php if ($geoMD->isXPathResultCount("//gmd:MD_Metadata/".$iso_key."[gco:CharacterString='$rowListContent->key']")>0){echo "selected=selected";}?>><?php echo $rowListContent->translation ;?></option>
 		<?php } ?>
 	</select></td>
 </tr>
