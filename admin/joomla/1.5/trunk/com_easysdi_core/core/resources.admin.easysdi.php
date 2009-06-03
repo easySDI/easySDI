@@ -22,7 +22,7 @@ class ADMIN_resources {
 	
 	function listResources($option) {
 		global $mainframe;
-		
+		$easysdi = "com_easysdi_";
 		$currentLanguage = JFactory::getLanguage();
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 100 );
@@ -33,20 +33,36 @@ class ADMIN_resources {
 		
 		$rows = array();
 		
-		// Récupérer tous les fichiers de langue d'easysdi, dans toutes les langues disponibles
+		// Récupérer tous les fichiers de langue d'easysdi côté Admin, dans toutes les langues disponibles
 		$languagesDir =  array();
 		$path = JPATH_ADMINISTRATOR.DS.'language'.DS;
+		
 		if ($handle = opendir($path))
 		{
 			while (false !== ($file = readdir($handle))) {
 					if (is_dir($path.$file) and $file != "." and $file != "..")
 			        {
-			        		$languagesDir[$file]=$path.$file;       
+			        		//$languagesDir[$file]=$path.$file;
+			        		$languagesDir[]=$path.$file;
 					}
 			    }
 			closedir($handle);
 		}
 
+		// Récupérer tous les fichiers de langue d'easysdi côté Site, dans toutes les langues disponibles
+		$path = JPATH_ROOT.DS.'language'.DS;
+		
+		if ($handle = opendir($path))
+		{
+			while (false !== ($file = readdir($handle))) {
+					if (is_dir($path.$file) and $file != "." and $file != "..")
+			        {
+			        		$languagesDir[]=$path.$file;       
+					}
+			    }
+			closedir($handle);
+		}
+		
 		//print_r($languagesDir);
 		//echo "<br>";
 		$languagesFiles =  array();
@@ -56,7 +72,7 @@ class ADMIN_resources {
 		{
 			foreach(scandir($dir) as $languageFile)
 			{
-				if (strstr($languageFile, "com_easysdi_"))
+				if (strstr($languageFile, $easysdi))
 				{
 					if ($search =="" or strstr($languageFile, $search))
 					{
@@ -66,11 +82,15 @@ class ADMIN_resources {
 						//Créer une entrée dans $rows pour chaque fichier de langue récupéré
 						$row 			= new StdClass();
 						$row->id 		= $rowid;
-						$row->language 	= $dirName;
+						$row->language 	= basename($dir);
 						$row->filename 	= $dir.DS.$languageFile;
-						$row->component	= substr($languageFile, strpos($languageFile, "com_easysdi_"), strpos($languageFile, ".ini")-strpos($languageFile, "com_easysdi_"));
+						if (strstr($dir, "\\administrator\\"))
+							$row->side	 	= "Admin";
+						else
+							$row->side	 	= "Site";
+						$row->component	= substr($languageFile, strpos($languageFile, $easysdi), strpos($languageFile, ".ini")-strpos($languageFile, $easysdi));
 						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
-						if ($currentLanguage->_lang == $dirName)
+						if ($currentLanguage->_lang == basename($dir))
 							$row->published	= "1";
 						else
 							$row->published	= "0";
@@ -113,15 +133,33 @@ class ADMIN_resources {
 	}
 	
 	function saveResource( $option ) {
+		global $mainframe;
 		$file = $_POST['filename'];
 		$content = $_POST['filecontent'];
 		
+		$enable_write = $_POST['enable_write'];
+		$oldperms = fileperms($file);
+		if ($enable_write) @chmod($file, $oldperms | 0222);
+
 		clearstatcache();
+		if (!is_writable( $file )) {
+			$mainframe->enqueueMessage("Operation Failed: The file is not writable.","error");
+			$mainframe->redirect("index.php?option=$option&task=listResources" );
+		}
+		
 		if ($fp = fopen( $file, "w" )) {
 			$content = htmlspecialchars_decode( $content );
 			fwrite( $fp, $content);
 			
+			if ($enable_write) {
+				@chmod($file, $oldperms);
+			} else {
+				if ($_POST['disable_write'])
+					@chmod($file, $oldperms & 0777555);
+			} // if
+			$mainframe->redirect("index.php?option=$option&task=listResources" );
 		} else {
+			if ($enable_write) @chmod($file, $oldperms);
 			$mainframe->enqueueMessage("Operation Failed: Could not save $file","error");
 			$mainframe->redirect("index.php?option=$option&task=listResources" );
 		}

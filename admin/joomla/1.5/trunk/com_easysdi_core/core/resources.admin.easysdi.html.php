@@ -42,6 +42,7 @@ class HTML_resources {
 				<th width="50px" class='title'><?php echo JText::_("EASYSDI_RESOURCE_LANGUAGE"); ?></th>
 				<th width="30px" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_CURRENT"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_SIDE"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_COMPONENT"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_RESOURCE_UPDATEDATE"); ?></th>
 			</tr>
@@ -53,7 +54,7 @@ class HTML_resources {
 ?>
 			<tr>
 				<td width="50px" align="center"><?php echo $row->language; ?></td>
-				<td width="30px" align="center"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
+				<td width="30px" align="center"><input type="checkbox" id="cb<?php echo $i;?>" name="filename" value="<?php echo $row->filename; ?>" onclick="isChecked(this.checked);" /></td>
 				<td align="center"><?php
 				if ($row->published == 1) {	 ?>
 					<img src="images/tick.png" alt="<?php echo JText::_("RESOURCE_CURRENT"); ?>"/>
@@ -64,6 +65,7 @@ class HTML_resources {
 				<?php
 				}
 				?></td>
+				<td><?php echo $row->side; ?></td>
 				<td><a href="index.php?option=com_easysdi_core&task=editResource&filename=<?php echo $row->filename; ?>"><?php echo $row->component;  ?></a></td>
 				<td><?php echo $row->updatedate; ?></td>
 			</tr>
@@ -103,13 +105,39 @@ class HTML_resources {
 		<tr>
 			<td ><table class="adminheading">
 				<tr>
-					<th class="langmanager"><span class="componentheading">
-						&nbsp;[<?php echo $file.' : '; ?>
-						<?php echo is_writable($file) ? '<b><font color="green"> Modifiable</font>' : '<font color="red"> Non Modifiable</font></b>' ?>]
-					</span></th>
+					<th class="langmanager">
+					
+					<?php echo JText::_(EASYSDI_EDIT_RESOURCE); ?><span class="componentheading">
+						&nbsp;[<?php echo basename($file).' : '; ?>
+						<?php echo is_writable($file) ? '<b><font color="green"> Modifiable</font></b>' : '<font color="red"> Non Modifiable</font></b>' ?>]
+					</span>
+					</th>
 			</tr></table></td>
+			<?php
+			jimport('joomla.filesystem.path');
+			
+			if (JPath::canChmod($file)) {
+				if (is_writable($file)) { ?>
+			<td>
+				<input type="checkbox" id="disable_write" name="disable_write" value="1"/>
+				<input type="hidden" name="enable_write" value="0" />
+				<label for="disable_write"><?php echo JText::_(TEXT_CHANGENOTWRITABLE); ?></label>
+			</td>
+				<?php } 
+				else
+				{ ?>
+			<td>
+				<input type="checkbox" id="enable_write" name="enable_write" value="1"/>
+				<input type="hidden" name="disable_write" value="0" />
+				<label for="enable_write"><?php echo JText::_(TEXT_IGNOREWRITABLE); ?></label>
+			</td>
+			<?php
+				} // if
+			} // if
+			?>
 		</tr>
 		</table>
+		
 		<table class="adminform">
 			<tr><th><?php echo $file; ?></th></tr>
 			<tr><td><textarea style="width:100%" cols="110" rows="50" name="filecontent" class="inputbox"><?php echo $content; ?></textarea></td></tr>
