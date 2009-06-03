@@ -21,21 +21,22 @@ class ADMIN_properties {
 	
 	
 	function goDown($cid,$option){
-
 			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
-			$query = "select * from  #__easysdi_product_properties_values_definition  where id=$cid[0]";
+			$query = "select * from  #__easysdi_product_properties_values_definition where id=$cid[0]";
 			$db->setQuery( $query );
+			
 			
 			$row1 = $db->loadObject() ;
 			if ($db->getErrorNum()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-								
+			
 			$query = "select * from  #__easysdi_product_properties_values_definition  where properties_id=$row1->properties_id and `order` > $row1->order   order by `order` ";
 			$db->setQuery( $query );
 			$row2 = $db->loadObject() ;
+			
 			if ($db->getErrorNum()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -55,11 +56,10 @@ class ADMIN_properties {
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
 	}
 	function goUp($cid,$option){
-
-				global  $mainframe;
+			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
-			$query = "select * from  #__easysdi_product_properties_values_definition  where id=$cid[0]";
+			$query = "select * from  #__easysdi_product_properties_values_definition where id=$cid[0]";
 			$db->setQuery( $query );
 			
 			$row1 = $db->loadObject() ;
@@ -67,7 +67,7 @@ class ADMIN_properties {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 								
-			$query = "select * from  #__easysdi_product_properties_values_definition  where properties_id=$row1->properties_id and `order` < $row1->order  order by `order` ";
+			$query = "select * from  #__easysdi_product_properties_values_definition  where properties_id=$row1->properties_id and `order` < $row1->order  order by `order` desc";
 			$db->setQuery( $query );
 			$row2 = $db->loadObject() ;
 			if ($db->getErrorNum()) {
@@ -85,8 +85,48 @@ class ADMIN_properties {
 			if (!$db->query()) {		
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
 			}	
-			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );				
+			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
 	}
+	function saveOrderPropertiesValues($cid, $properties_id, $option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		
+		$query = "select count(*) from  #__easysdi_product_properties_values_definition ";								
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+
+		if (empty( $cid)) {
+			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
+		}
+
+		$rowPropertiesValues =& new properties_values( $db );
+		
+		if ($db->getErrorNum()) {						
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
+			exit();			
+		}
+		
+		$order = $_POST[order];
+		
+		// update ordering values
+		
+		for ($i = 0; $i < $total; $i++)
+		{
+			$rowPropertiesValues->load($cid[$i]);
+			
+			if ($rowPropertiesValues->order != $order[$i])
+			{
+				$rowPropertiesValues->order = $order[$i];
+				if (!$rowPropertiesValues->store()) {
+					return JError::raiseError( 500, $db->getErrorMsg() );
+				}
+			}
+		}
+		
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$properties_id" );
+	}
+	
 	function publish($cid,$published){
 			global  $mainframe;
 			$db =& JFactory::getDBO(); 
@@ -355,7 +395,7 @@ class ADMIN_properties {
 	
 	
 	
-function listPropertiesValues($properties_id , $option) {
+	function listPropertiesValues($properties_id , $option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
@@ -367,7 +407,19 @@ function listPropertiesValues($properties_id , $option) {
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
+		
+		if ($properties_id == "")
+			$properties_id = JRequest::getVar('properties_id');
+		
+		$where="";
+		if ($search)
+		{
+			$where = ' and (LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(translation) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ')';
+		}
+		
 		$query = "SELECT COUNT(*) FROM #__easysdi_product_properties_values_definition WHERE properties_id=".$properties_id;
 		
 		//$query .= $filter;
@@ -375,12 +427,23 @@ function listPropertiesValues($properties_id , $option) {
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'asc',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "id" and $filter_order <> "properties" and $filter_order <> "order" and $filter_order <> "value" and $filter_order <> "text" and $filter_order <> "translation")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "asc";
+		}
+		
+		$orderby 	= ' order by `'. $filter_order .'` '. $filter_order_Dir;
 		
 		// Recherche des enregistrements selon les limites
-		
-		
-		$query = "SELECT * FROM #__easysdi_product_properties_values_definition where properties_id=$properties_id order by `order`";		
-									
+		$query = "SELECT * FROM #__easysdi_product_properties_values_definition where properties_id=$properties_id ";		
+		$query .= $where;
+		$query .= $orderby;						
 		
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);	
@@ -394,7 +457,7 @@ function listPropertiesValues($properties_id , $option) {
 			echo $db->getErrorMsg(); 			
 		}		
 	
-		HTML_properties::listPropertiesValues($properties_id,$use_pagination, $rows, $pageNav,$option);	
+		HTML_properties::listPropertiesValues($properties_id, $use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 
 	}
 	

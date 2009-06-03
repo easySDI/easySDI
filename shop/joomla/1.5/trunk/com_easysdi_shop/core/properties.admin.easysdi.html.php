@@ -25,7 +25,8 @@ class HTML_properties {
 		$database =& JFactory::getDBO();
 		
 		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		//$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_ROOT") );
 		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
 
 		$partners = array_merge( $partners, $database->loadObjectList() );
@@ -60,11 +61,11 @@ class HTML_properties {
 								<option value="1" <?php if( $rowProperties->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>															
 							</tr>
-  							<!-- <tr>
+  							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PARTNER_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProperties->partner_id ); ?></td>															
 							</tr>
-							 -->
+							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
@@ -87,6 +88,10 @@ class HTML_properties {
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="text" value="<?php echo $rowProperties->text; ?>" /></td>
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_TRANSLATION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="translation" value="<?php echo $rowProperties->translation; ?>" /></td>
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_TYPE_CODE"); ?> : </td>
@@ -157,6 +162,7 @@ class HTML_properties {
 				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_MANDATORY"), 'mandatory', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"), 'update_date', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TEXT"), 'text', @$filter_order_Dir, @$filter_order); ?></th>				
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TRANSLATION"), 'translation', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -209,6 +215,7 @@ class HTML_properties {
 							
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->update_date)); ?></td>
 				<td><?php echo $row->text; ?></td>
+				<td><?php echo $row->translation; ?></td>
 				
 				
 			</tr>
@@ -279,7 +286,7 @@ class HTML_properties {
 	<input type="hidden" name="properties_id" value="<?php echo $properties_id; ?>" />
 <?php
 		echo $tabs->startPane("propertiesPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"propertiesrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"propertiesPane");
 
 		?>		
 		
@@ -307,7 +314,10 @@ class HTML_properties {
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_TEXT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="text" value="<?php echo $rowProperties->text; ?>" /></td>
 							</tr>
-							
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_TRANSLATION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="translation" value="<?php echo $rowProperties->translation; ?>" /></td>
+							</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -330,7 +340,7 @@ class HTML_properties {
 	
 	
 	
-	function listPropertiesValues($properties_id,$use_pagination, $rows, $pageNav,$option){
+	function listPropertiesValues($properties_id,$use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
 		$query="select text from #__easysdi_product_properties_definition where id = $properties_id";		 
@@ -338,56 +348,85 @@ class HTML_properties {
 		$row = $database->loadObject() ;
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_PROPERTIES")." ".JText::_($row->text));
 		
-		
+		$ordering = ($filter_order == 'order');
 		?>
 	
 	<form action="index.php" method="post" name="adminForm">
-	<input type ="hidden" name ="properties_id" value ="<?php echo $properties_id ?>">	  
+	<input type ="hidden" name ="properties_id" value ="<?php echo $properties_id ?>">
 		<table width="100%">
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProperties');" />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listPropertiesValues');" />			
 				</td>
 			</tr>
 		</table>
 		<table width="100%">
 			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProperties\');"',$use_pagination); ?></td>
+				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listPropertiesValues\');"',$use_pagination); ?></td>
 			</tr>
 		</table>
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_DEF"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_VALUES_ID"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_ORDER"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_VALUE"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?></th>				
+				<th class='title' width="10px"><?php echo JText::_("EASYSDI_PROPERTIES_DEF"); ?></th>
+				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_VALUES_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'order', @$filter_order_Dir, @$filter_order); ?>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPropertiesValues' ); ?></th>			
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_VALUE"), 'value', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TEXT"), 'text', @$filter_order_Dir, @$filter_order); ?></th>				
+				<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TRANSLATION"), 'translation', @$filter_order_Dir, @$filter_order); ?></th>			
 			</tr>
 		</thead>
 		<tbody>		
 <?php
-
-
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
 			$row = $rows[$i];	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>								
-				<td><?php echo $row->id; ?></td>						
-				<td>				
-		            <span><?php echo $pageNav->orderUpIcon($i, true, 'orderupproperties', 'Move Up', isset($rows[$i-1]) ); ?></span>
-		            <span><?php echo $pageNav->orderDownIcon($i, $n, true, 'orderdownproperties', 'Move Down', isset($rows[$i+1]) ); ?></span>
+				<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
+				<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
+								
+				<td width="30px"><?php echo $row->id; ?></td>
+				<?php $disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+				<td width="100px" align="right">
+					<?php
+					if ($filter_order=="order" and $filter_order_Dir=="asc"){
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupPropertiesValues', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownPropertiesValues', '', false ); ?>
+		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupPropertiesValues', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderdownPropertiesValues', 'Move Down', isset($rows[$i+1]) ); ?>
+					<?php
+						}		
+					}
+					else{ 
+						if ($disabled){
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownPropertiesValues', '', false ); ?>
+				             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupPropertiesValues', '', false ); ?>
+		            <?php
+						}
+						else {
+					?>
+							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownPropertiesValues', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $pageNav->orderDownIcon($i, count($rows)-1, true, 'orderupPropertiesValues', 'Move Up', isset($rows[$i+1]) ); ?>
+					<?php
+						}
+					}?>
+					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->order;?>" class="text_area" style="text-align: center" />
 	            </td>
-				<td><?php echo $row->value; ?></td>
+				<td><?php echo $row->value; ?></td>				
 				<td><?php echo $row->text; ?></td>
-				
-				
+				<td><?php echo $row->translation; ?></td>
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -409,9 +448,11 @@ class HTML_properties {
 ?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listProperties" />
+	  	<input type="hidden" name="task" value="listPropertiesValues" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		

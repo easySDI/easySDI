@@ -26,6 +26,7 @@ class properties extends JTable
 	var $partner_id=null;
 	var $type_code=null;
 	var $code=null;
+	var $translation=null;
 	// Class constructor
 	function __construct( &$db )
 	{
@@ -37,11 +38,11 @@ class properties extends JTable
 class properties_values extends JTable
 {	
 	var $id=null;
-	var $properties_id=null;	
+	var $properties_id=null;
 	var $order=null;
 	var $value=null;
 	var $text=null;	
-	
+	var $translation=null;
 	// Class constructor
 	function __construct( &$db )
 	{
