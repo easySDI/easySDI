@@ -150,9 +150,9 @@ switch($task){
 		break;
 		
 	case "saveResource":
-		ADMIN_resources::saveResource($option );
+		ADMIN_resources::saveResource($option);
 		TOOLBAR_resources::_DEFAULT();
-		ADMIN_resources::listResources( $option );
+		ADMIN_resources::listResources($option);
 		break;
 		
 	case "cancelResource":
