@@ -124,10 +124,18 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			$query = "SELECT COUNT(*) FROM `#__easysdi_product` where `partner_id` = '".$rowPartner->partner_id."' ";
+			/*
+			$query = "SELECT role_id FROM `#__easysdi_community_role` where role_code='DIFFUSION'";
+			$db->setQuery( $query);
+			$diffusionRole = $db->loadResult();
+			
+			$query = "SELECT COUNT(*) FROM `#__easysdi_product` as p, `#__easysdi_community_actor` as a where p.partner_id=a.partner_id and a.role_id='".$diffusionRole."' and p.partner_id = '".$rowPartner->partner_id."' ";
+			//$query = "SELECT COUNT(*) FROM `#__easysdi_product` where a.diffusion_partner_id='".$rowPartner->partner_id."'";
+			
 			$db->setQuery( $query);
 			$product_count = $db->loadResult();
-			if($product_count > 0)
+			if($product_count > 0)*/
+			if (userManagerRight::hasRight($rowPartner->partner_id,"DIFFUSION"))
 			{
 				?>
 				<li>
