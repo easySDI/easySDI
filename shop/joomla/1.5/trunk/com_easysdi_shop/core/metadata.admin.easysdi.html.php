@@ -373,38 +373,21 @@ function editStandardClasses($row,$id, $option ){
 	 <tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_CLASSES_TAB_ID"); ?></td>
 		<td><?php echo JHTML::_("select.genericlist",$tabslist, 'tab_id', 'size="1" class="inputbox"', 'value', 'text', $row->tab_id ); ?></td>							
-	</tr> 
-	 
-	 
-	 
-	 
+	</tr> 		
+			
+	
+	</table>
 	 
 	<input type="hidden" name="order" value="0" />
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	
 function listStandard($use_pagination, $rows, $pageNav,$option){
 	
@@ -520,16 +503,16 @@ function editStandard($row,$id, $option ){
 		<td><?php echo JText::_("EASYSDI_METADATA_STANDARD_IS_GLOBAL"); ?></td>
 		<td><select name="is_global" > <option value="1" <?php if($row->is_global == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_global == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>		 
-	</tr>
+	</tr>		
+			
+	
+	</table>
 	 
 	 
 	 
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -564,7 +547,8 @@ function listExt($use_pagination, $rows, $pageNav,$option){
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_EXT_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_EXT_PARTNER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_EXT_NAME"); ?></th>				
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_EXT_NAME"); ?></th>			
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></th>	
 			</tr>
 		</thead>
 		<tbody>		
@@ -585,6 +569,7 @@ function listExt($use_pagination, $rows, $pageNav,$option){
 				<td><?php echo $database->loadResult(); ?></td>
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataExt&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+				<td><?php echo $row->translation; ?></td>
 												
 				
 			</tr>
@@ -638,16 +623,20 @@ function editExt($row,$id, $option ){
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
 	</tr>							
 	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></td>
+		<td><input size="50" type="text" name ="translation" value="<?php echo $row->translation?>"> </td>							
+	</tr>
+	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_PARTNER_ID"); ?></td>
 		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
-	</tr>				
-	 
-	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
+	</tr>						
 			
 	
 	</table>
+	 
+	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+	<input type="hidden" name="id" value="<?php echo $row->id?>" />
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -676,6 +665,7 @@ function listLocfreetext($use_pagination, $rows, $pageNav,$option){
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_PARTNER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_NAME"); ?></th>				
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_LANG"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_DEFAULT_VALUE"); ?></th>																			
 			</tr>
@@ -698,7 +688,7 @@ function listLocfreetext($use_pagination, $rows, $pageNav,$option){
 				<td><?php echo $database->loadResult(); ?></td>
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataLocfreetext&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
-												
+				<td><?php echo $row->translation; ?></td>
 				<td><?php echo $row->lang; ?></td>
 				<td><?php echo $row->default_value; ?></td>				
 			</tr>
@@ -749,6 +739,10 @@ function editLocfreetext($row,$id, $option ){
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
+	</tr>		
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></td>
+		<td><input size="50" type="text" name ="translation" value="<?php echo $row->translation?>"> </td>							
 	</tr>							
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LOCFREETEXT_DESCRIPTION"); ?></td>
@@ -1074,13 +1068,10 @@ window.onload=function(){
 	 	<td><?php echo JHTML::_("select.genericlist",$classeslist, 'class[]', 'size="10" multiple class="inputbox"', 'value', 'text', $selClassesList ); ?></td>
 	 </tr>
 	 
-	 
+	</table> 
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -1103,10 +1094,14 @@ window.onload=function(){
 ?>
 <form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 	<table border="0" cellpadding="3" cellspacing="0">	
-	
+	 
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>"> </td>							
+	</tr>
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></td>
+		<td><input size="50" type="text" name ="translation" value="<?php echo $row->translation?>"> </td>							
 	</tr>							
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_DESCRIPTION"); ?></td>
@@ -1152,13 +1147,10 @@ window.onload=function(){
 		<td><input size="50" type="text" name ="default_value" value="<?php echo $row->default_value?>"> </td>		 
 	</tr>
 	
-	 
+	</table>
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -1168,7 +1160,7 @@ window.onload=function(){
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 
-				
+			
 		$partners = array();
 		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
 		$database->setQuery( "SELECT a.partner_id AS value, b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id ORDER BY b.name" );
@@ -1186,23 +1178,27 @@ window.onload=function(){
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LIST_ISO_CODE"); ?></td>
 		<td><input size="50" type="text" name ="key" value="<?php echo $rowMDList->key?>"> </td>							
-	</tr>							
+	</tr>	
+	<!-- 						
 	<tr>
-		<td><?php echo JText::_("EASYSDI_METADATA_LIST_ISO_VALUE"); ?></td>
-		<td><input size="50" type="text" name ="value" value="<?php echo $rowMDList->value?>"> </td>							
-	</tr>				
+		<td><?php //echo JText::_("EASYSDI_METADATA_LIST_ISO_VALUE"); ?></td>
+		<td><input size="50" type="text" name ="value" value="<?php //echo $rowMDList->value?>"> </td>							
+	</tr>
+	 -->			
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></td>
+		<td><input size="50" type="text" name ="translation" value="<?php echo $rowMDList->translation?>"> </td>							
+	</tr>	
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LIST_PARTNER_ID"); ?></td>
 		<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $row->partner_id ); ?></td>							
 	</tr>				
 	
+	</table>
 	 <input type="hidden" name="list_id" value="<?php echo $list_id; ?>" />
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	<input type="hidden" name="id" value="<?php echo $row->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="id" value="<?php echo $id;?>" />
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -1231,6 +1227,10 @@ window.onload=function(){
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LIST_NAME"); ?></td>
 		<td><input size="50" type="text" name ="name" value="<?php echo $rowMDList->name?>"> </td>							
+	</tr>		
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></td>
+		<td><input size="50" type="text" name ="translation" value="<?php echo $rowMDList->translation?>"> </td>							
 	</tr>				
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_LIST_PARTNER_ID"); ?></td>
@@ -1242,13 +1242,10 @@ window.onload=function(){
 		<option value="0" <?php if($rowMDList->multiple == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td>		 
 	</tr>
 
-	 
+	</table> 
 	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	<input type="hidden" name="id" value="<?php echo $rowMDList->id?>" />
-	<input type="hidden" name="task" value="" />		
-			
-	
-	</table>
+	<input type="hidden" name="task" value="" />
 </form>
 	<?php 	
 		
@@ -1276,7 +1273,8 @@ window.onload=function(){
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_FREETEXT_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_FREETEXT_PARTNER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_FREETEXT_NAME"); ?></th>				
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_FREETEXT_NAME"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></th>				
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_FREETEXT_DEFAULT_VALUE"); ?></th>																			
 			</tr>
 		</thead>
@@ -1298,6 +1296,7 @@ window.onload=function(){
 				<td><?php echo $database->loadResult(); ?></td>								
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataFreetext&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+				<td><?php echo $row->translation; ?></td>
 
 				<td><?php echo $row->default_value; ?></td>				
 			</tr>
@@ -1354,7 +1353,8 @@ window.onload=function(){
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_PARTNER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_CODE_KEY"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_VALUE"); ?></th>															
+				<!-- <th class='title'><?php //echo JText::_("EASYSDI_METADATA_LIST_VALUE"); ?></th> -->															
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -1377,7 +1377,8 @@ window.onload=function(){
 				<td><a href="<?php echo $link;?>"><?php echo $row->code_key; ?></a></td>																												
 												
 				
-				<td><?php echo $row->value; ?></td>
+				<!-- <td><?php //echo $row->value; ?></td> -->
+				<td><?php echo $row->translation; ?></td>
 				
 			</tr>
 <?php
@@ -1433,6 +1434,7 @@ window.onload=function(){
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_PARTNER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_METADATA_LIST_NAME"); ?></th>															
+				<th class='title'><?php echo JText::_("EASYSDI_METADATA_TRANSLATION"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -1453,6 +1455,7 @@ window.onload=function(){
 				<td><?php echo $database->loadResult(); ?></td>								
 				<?php $link =  "index.php?option=$option&amp;task=editMetadataList&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>																												
+				<td><?php echo $row->translation; ?></td>
 				
 			</tr>
 <?php

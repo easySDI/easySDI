@@ -39,6 +39,7 @@ class MDExt extends JTable
 	var $name=null;
 	var $value=null;
 	var $partner_id=null;	
+	var $translation=null;
 	
 	function __construct( &$db )
 	{
@@ -75,6 +76,7 @@ class MDFreetext extends JTable
 	var $is_date=0;
 	var $is_number=0;
 	var $is_id=0;
+	var $translation=null;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_freetext', 'id', $db ) ;    		
@@ -87,6 +89,7 @@ class MDList extends JTable
 	var $name=null;
 	var $partner_id=null;
 	var $multiple=null;
+	var $translation=null;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_list', 'id', $db ) ;    		
@@ -102,10 +105,12 @@ class MDListContent extends JTable
 	var $code_key=null;
 	var $key=null;
 	var $value=null;
-	var $default=null;
 	var $partner_id=null;	
-	var $is_default=null;
+	//var $is_default=null;
 	var $is_global=0;
+	var $default=null;
+	var $translation=null;
+	
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_list_content', 'id', $db ) ;    		
@@ -122,6 +127,7 @@ class MDLocFreetext extends JTable
 	var $partner_id=null;	
 	var $lang=null;
 	var $is_global=0;
+	var $translation=null;
 	
 	function __construct( &$db )
 	{

@@ -680,9 +680,8 @@ function deleteMetadataListContent($cid,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowMDList =&	 new MDListContent($database);
+		$rowMDList =& new MDListContent($database);
 				
-		
 		if (!$rowMDList->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMetadataListContent" );
@@ -789,7 +788,6 @@ function deleteMetadataListContent($cid,$option){
 		$rowMDList = new MDListContent( $db );
 		$rowMDList->load( $id );					
 	
-		
 		
 		HTML_metadata::editListContent($rowMDList,$id, $option,$list_id );
 		
