@@ -44,7 +44,6 @@ class product extends JTable
 	var $previewImageFormat=null;
 	var $diffusion_partner_id=0;
 	
-	
 	// Class constructor
 	function __construct( &$db )
 	{

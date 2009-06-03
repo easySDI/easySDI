@@ -84,10 +84,12 @@ class HTML_product {
 							   b.name AS text 
 							   FROM 
 							    #__easysdi_community_partner a,
-							    #__users b  
+							    #__users b 
 							    where 
 							    a.user_id = b.id 
-							    AND  (a.root_id = $rowPartner->root_id OR a.root_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->root_id)							    
+							    AND  (a.root_id = $rowPartner->root_id OR a.root_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->partner_id OR a.partner_id = $rowPartner->root_id)
+							    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
+							    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='DIFFUSION'))
 							    ORDER BY b.name");
 		$diffusion_partner = array();
 		$diffusion_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );

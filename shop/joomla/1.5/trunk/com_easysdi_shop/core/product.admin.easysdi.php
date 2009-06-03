@@ -329,7 +329,20 @@ class ADMIN_product {
 		}
 
 		//	 ADMIN_product::SaveMetadata();
-			
+
+		/*
+		 * sdondainaz
+		 * 
+		 * Ajouter ici la mise à jour du paramètre de visibilité pour la métadonnée, avec CSW.
+		 * Se baser sur le paramètre "externe" (boolean)
+		 * "lors de la sauvegarde d'un produit, la valeur de la disponibilité interne/externe est
+		 * stockée également dans la métadonnée correspondante (geonetwork ne gère pas les mises
+		 * à jour et il est nécessaire de charger la totalité de la métadonnée en mémoire, modifier
+		 * l'attribut désiré, supprimer la métadonnée actuelle dans GeoNetwork puis insérer la
+		 * métadonnée mise à jour en prenant soin de conserver le même identifiant)"
+		 * 
+		 */ 
+		
 		if ($returnList == true) {
 			$mainframe->redirect("index.php?option=$option&task=listProduct");
 		}
