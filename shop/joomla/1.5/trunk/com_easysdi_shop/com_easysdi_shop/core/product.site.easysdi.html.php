@@ -69,14 +69,16 @@ class HTML_product{
 		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
 		$database->setQuery("SELECT a.partner_id AS value, 
-							   b.name AS text 
-							   FROM 
-							    #__easysdi_community_partner a,
-							    #__users b  
-							    where 
-							    a.user_id = b.id 
-							    AND  (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)							    
-							    ORDER BY b.name");
+								   b.name AS text 
+								   FROM 
+								    #__easysdi_community_partner a,
+								    #__users b  
+								    where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)
+								    AND 
+								    a.user_id = b.id 
+								    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
+								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='DIFFUSION'))
+								    ORDER BY b.name");
 		$diffusion_partner = array();
 		$diffusion_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
 		$diffusion_partner = array_merge($diffusion_partner, $database->loadObjectList());
@@ -102,8 +104,6 @@ class HTML_product{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}		
 		
-						 
-		
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
 		
@@ -112,7 +112,7 @@ class HTML_product{
 	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
 <?php
 		echo $tabs->startPane("productPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productPane");
 
 		?>		
 		<br>
@@ -145,10 +145,12 @@ class HTML_product{
 								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL() ?>" />								
 								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->creation_date)); ?></td>
 							</tr>
+							<!-- 
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->partner_id ); ?></td>								
+								<td><?php //echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
+								<td><?php //echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->partner_id ); ?></td>								
 							</tr>
+							 -->
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
@@ -213,7 +215,7 @@ class HTML_product{
 		</table>
 		<?php
 		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productPane");
 		?>
 		<br>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -257,32 +259,20 @@ class HTML_product{
 								</td>																						
 							</tr>
 							
-							
-								
-								
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
 							</tr>
-							
-							
-							
-
-	
-	
 																	
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>
-							
-		
 	
-		
 		<?php
 		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER"),"productPane");
 				
 		?>
 		<br>
@@ -331,7 +321,7 @@ class HTML_product{
 		
 		
 		echo $tabs->endPanel();		
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER_BUFFER"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER_BUFFER"),"productPane");
 		?>	
 		<br>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -363,7 +353,7 @@ class HTML_product{
 		</table>
 		<?php
 		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PROPERTIES"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PROPERTIES"),"productPane");
 		
 		
 		?>
@@ -467,8 +457,8 @@ class HTML_product{
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" id="task" name="task" value="cancelEditProduct">
 		</form>
-		<button type="button" onClick="document.getElementById('task').value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>			
-		<button type="button" onClick="document.getElementById('task').value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
+		<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>		
+		<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
 		
 	<?php
 	}
@@ -597,7 +587,7 @@ class HTML_product{
 				
 		foreach ($rows as $row){
 			
-			echo $tabs->startPanel(JText::_($row->text),"productrPane");
+			echo $tabs->startPanel(JText::_($row->text),"productPane");
 			?>
 			<br>
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -682,8 +672,10 @@ class HTML_product{
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
 
 		
-		
-		 $fileName = $_FILES['isoFile']["name"];
+		if ($_FILES)
+		 	$fileName = $_FILES['isoFile']["name"];
+		 else
+		 	$fileName = "";
 		 if (strlen($fileName)>0){
 			 	$catalogUrlGetRecordById =  $_FILES['isoFile']["tmp_name"];
 		
@@ -706,20 +698,20 @@ class HTML_product{
 		exit;
 		}
 		
+		jimport('joomla.html.pane');
 		
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		
 			
 		?>				
 	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm" >
 <?php
 		echo $tabs->startPane("productPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productPane");
 
 		?>		
 		<br>
-	<table width ="100%" border="0" cellpadding="0" cellspacing="0">
+		<table width ="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
@@ -804,10 +796,10 @@ class HTML_product{
 				
 		foreach ($rows as $row){
 			
-			echo $tabs->startPanel(JText::_($row->text),"productrPane");
+			echo $tabs->startPanel(JText::_($row->text),"productPane");
 			?>
 			<br>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
 
 			<tr>
 				<td>
@@ -822,39 +814,33 @@ class HTML_product{
 					$rowstab = $database->loadObjectList();		
 					if ($database->getErrorNum()) {						
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-					}				
+					}
+					//print_r($rowstab);
 					foreach ($rowstab as $rowtab){
 						
 						$count  = $geoMD->isXPathResultCount("//".$rowtab->iso_key);
-						?>
 						
-						<?php
-						
-						 
 						for ($i=0 ;$i<$count;$i++){
 							?>
 							
   						<div id="fieldset<?php echo $rowtab->iso_key."__".$i; ?>">
 							<fieldset>
 						<legend><?php echo JText::_($rowtab->description); ?><a href="#" onClick="var node1 = document.getElementById('fieldset<?php echo $rowtab->iso_key."__".$i; ?>');var node2 = node1.cloneNode(true);var container = document.getElementById('container<?php echo $rowtab->iso_key."__".$i; ?>');container.appendChild(node2);">+</a></legend>
-							<table><?php helper_easysdi::generateMetadataHtml2($rowtab->id,$geoMD,$rowtab->iso_key."[".($i+1)."]", $rowProduct->metadata_id,1);?></table>
+							<table width="100%"><?php helper_easysdi::generateMetadataHtml2($rowtab->id,$geoMD,$rowtab->iso_key."[".($i+1)."]", $rowProduct->metadata_id,1);?></table>
 						</fieldset>
 						</div>
 						<div id="container<?php echo $rowtab->iso_key."__".$i; ?>"></div> 							 
 							 <?php						
 						}
-						?>
-						<?php
 					}	
-					 ?>
-										
+					 ?>	
 					</fieldset>
 					</td>
 					</tr>
 				</table>
 			<?php 
 			echo $tabs->endPanel();						
-		}		
+		}			
 		?>
 		<input type="hidden" name="standard_id" value="<?php echo $rowProduct->metadata_standard_id; ?>" />
 		<input type="hidden" name="product_id" value="<?php echo $rowProduct->id; ?>" />
@@ -866,7 +852,7 @@ class HTML_product{
 		
 		
 					
-			echo $tabs->startPanel(JText::_("EASYSDI_UPLOADMETADATA"),"productrPane");
+			echo $tabs->startPanel(JText::_("EASYSDI_UPLOADMETADATA"),"productPane");
 			?>
 			<br>
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -875,7 +861,7 @@ class HTML_product{
 				<td>
 					<fieldset>
 						<legend><?php echo JText::_("EASYSDI_UPLOADMETADATA") ?></legend>				
-						<table>
+						<table width="100%">
 							<tr><td><?php echo JText::_("EASYSDI_METADATA_FILE") ;?></td><td> 
 							<form action="index.php?option=<?php echo $option; ?>&id=<?php echo $rowProduct->id; ?>&standard_id=<?php echo $rowProduct->metadata_standard_id; ?>&task=editMetadata2" method="post" name="loadMetadataForm" id="loadMetadataForm" class="productForm" enctype="multipart/form-data">
 								<input type="file" name="isoFile" >
@@ -887,18 +873,13 @@ class HTML_product{
 					</fieldset>
 				</td>
 			</tr>
-		</table>				
-						
-						<?php
+		</table>		
+		<?php
 		echo $tabs->endPanel();
-		echo $tabs->endPane();	
-
-		
+		echo $tabs->endPane();
 		?>
-
-		
-		<button type="button" onClick="document.getElementById('task').value='saveProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>			
-		<button type="button" onClick="document.getElementById('task').value='cancelEditProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
+		<button type="button" onClick="document.getElementById('productForm').task.value='saveProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>			
+		<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
 		
 	<?php
 	}

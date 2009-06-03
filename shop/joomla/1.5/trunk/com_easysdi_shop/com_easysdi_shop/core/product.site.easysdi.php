@@ -34,7 +34,6 @@ class SITE_product {
 		$metadata_standard_id = JRequest::getVar("standard_id");
 		$metadata_id = JRequest::getVar("metadata_id");
 		
-		
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) group by a.tab_id" ;
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -57,15 +56,12 @@ class SITE_product {
 				
 			foreach ($rowsClasses as $rowClasses){
 				$doc=$doc."<$rowClasses->iso_key>";
-				
-				
-					$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
+				$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
 				
 		for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
 			helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
 		}
 				
-		
 		//		helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
 				$doc=$doc."</$rowClasses->iso_key>";
 			}
@@ -83,28 +79,21 @@ class SITE_product {
 		</csw:Insert>
 		</csw:Transaction>";
 
-
-		
-		
-
 		$xmlstrToDelete = "<csw:Transaction service=\"CSW\" version=\"2.0.0\" 
-   xmlns:csw=\"http://www.opengis.net/cat/csw\" 
-   xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\"
-   xmlns:ogc=\"http://www.opengis.net/ogc\">
-  <csw:Delete typeName=\"csw:Record\">
-    <csw:Constraint version=\"2.0.0\">
-      <ogc:Filter>
-        <ogc:PropertyIsEqualTo>        
-            <ogc:PropertyName>//gmd:fileIdentifier/gco:CharacterString</ogc:PropertyName>
-            <ogc:Literal>$metadata_id</ogc:Literal>
-        </ogc:PropertyIsEqualTo>
-      </ogc:Filter>
-    </csw:Constraint>
-  </csw:Delete>
-</csw:Transaction>";
-
-
-
+						   xmlns:csw=\"http://www.opengis.net/cat/csw\" 
+						   xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\"
+						   xmlns:ogc=\"http://www.opengis.net/ogc\">
+						  <csw:Delete typeName=\"csw:Record\">
+						    <csw:Constraint version=\"2.0.0\">
+						      <ogc:Filter>
+						        <ogc:PropertyIsEqualTo>        
+						            <ogc:PropertyName>//gmd:fileIdentifier/gco:CharacterString</ogc:PropertyName>
+						            <ogc:Literal>$metadata_id</ogc:Literal>
+						        </ogc:PropertyIsEqualTo>
+						      </ogc:Filter>
+						    </csw:Constraint>
+						  </csw:Delete>
+						</csw:Transaction>";
 
 		//Try to discover if a metadata already exists. 
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -126,7 +115,7 @@ class SITE_product {
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 			exit();
 		}
 		
@@ -230,16 +219,17 @@ class SITE_product {
 		global  $mainframe;
 		$user = JFactory::getUser();
 		//Check user's rights
+		
 		if(!userManager::isUserAllowed($user,"PRODUCT"))
 		{
 			return;
 		}
+		
 		$database=& JFactory::getDBO(); 
 		
-		$rowProduct =&	 new Product($database);
-		$rowProductOld =&	 new Product($database);
+		$rowProduct =& new Product($database);
+		$rowProductOld =& new Product($database);
 		$sendMail = false;
-		
 		
 		$id = JRequest::getVar("id",0);
 		if($id >0){
@@ -392,7 +382,7 @@ class SITE_product {
 	}
 	
 	
-	function editMetadata() {
+	function editMetadata($isNew = false) {
 		global  $mainframe;
 		if (!$isNew){
 		$id = JRequest::getVar('id');
@@ -429,7 +419,7 @@ class SITE_product {
 	}
 	
 	
-	function editMetadata2() {
+	function editMetadata2($isNew = false) {
 		global  $mainframe;
 		
 		if (!$isNew){
