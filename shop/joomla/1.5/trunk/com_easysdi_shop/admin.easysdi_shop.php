@@ -428,12 +428,16 @@ case "proxy":
 		ADMIN_metadata::listDate($option);
 	break;
 	
-	case "orderdownproperties":
+	case "orderdownPropertiesValues":
 		ADMIN_properties::goDown($cid,$option);
 		
 		break;
-	case "orderupproperties":
+	case "orderupPropertiesValues":
 		ADMIN_properties::goUp($cid,$option);
+		
+		break;
+	case "saveOrderPropertiesValues":
+		ADMIN_properties::saveOrderPropertiesValues($cid, $properties_id, $option);
 		
 		break;
 	case "unpublish":
@@ -553,8 +557,6 @@ case "proxy":
 		TOOLBAR_properties::_LISTPROPERTIESVALUES();
 		ADMIN_properties::listPropertiesValues($cid[0],$option);		
 		break;
-	
-			
 	case "saveProperties":		
 		ADMIN_properties::saveProperties(true,$option);				
 		break;
@@ -677,7 +679,7 @@ case "saveLocation":
 		break;
 		
 	case "saveProduct":		
-		ADMIN_product::saveProduct(true,$option);				
+		ADMIN_product::saveProduct($option);				
 		break;
 	case "deleteProduct":		
 		ADMIN_product::deleteProduct($cid,$option);				
