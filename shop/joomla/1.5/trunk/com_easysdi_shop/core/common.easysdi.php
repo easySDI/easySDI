@@ -154,7 +154,7 @@ class helper_easysdi{
 						$key = $parentkey;
 					}
 
-					$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->id and a.freetext_id = b.id";
+					$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->id and a.freetext_id = b.id";
 
 					$database->setQuery($query);
 					$rowsFreetext = $database->loadObjectList();
@@ -166,102 +166,100 @@ class helper_easysdi{
 							
 						?>
 						<?php if ($rowFreetext->is_constant != 1) { ?>
-<tr>
-	<td><?php echo JText::_($row->description) ?></td>
-	<td><?php } ?> <?php if( $rowFreetext->is_id == 1) { ?> <input
-		size="20" type="text"
-		<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'"; ?>
-		name="<?php echo "PARAM$row->id[]"?>" value="<?php echo $metadata_id;?>" /> <?php 
-	}else{
-		if( $rowFreetext->is_constant == 1) {
-			?> <input size="50" type="text"
-			<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
-		name="<?php echo "PARAM$row->id[]"?>"
-		value="<?php echo htmlentities($rowFreetext->default_value);?>" /> <?php 
-		}else{
-			?> <input size="50" type="text"
-			<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
-		name="<?php echo "PARAM$row->id[]"?>"
-		value="<?php echo htmlentities($geoMD->getXPathResult("//".$key."/gco:CharacterString"))?>" />
-		<?php
-		}
-	}
-	?> <?php if ($rowFreetext->is_constant != 1) { ?></td>
-</tr>
-	<?php
-	}
+						<tr>
+							<td><?php echo JText::_($row->description) ?></td>
+							<td><?php } ?> <?php if( $rowFreetext->is_id == 1) { ?> <input
+								size="20" type="text"
+								<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'"; ?>
+								name="<?php echo "PARAM$row->id[]"?>" value="<?php echo $metadata_id;?>" /> <?php 
+							}else{
+								if( $rowFreetext->is_constant == 1) {
+									?> <input size="50" type="text"
+									<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
+								name="<?php echo "PARAM$row->id[]"?>"
+								value="<?php echo htmlentities($rowFreetext->trans);?>" /> <?php 
+								}else{
+									?> <input size="50" type="text"
+									<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
+								name="<?php echo "PARAM$row->id[]"?>"
+								value="<?php echo htmlentities($geoMD->getXPathResult("//".$key."/gco:CharacterString"))?>" />
+								<?php
+								}
+							}
+							?> <?php if ($rowFreetext->is_constant != 1) { ?></td>
+						</tr>
+							<?php
+							}
 					}
 					break;
-case "locfreetext":
-	if ($directinroot == 0){
-		$key = $parentkey."/".$row->iso_key;
-	}else{
-		$key = $parentkey;
-	}
-
-	$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->id and a.loc_freetext_id = b.id";
-	$database->setQuery($query);
-	$rowsFreetext = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	foreach($rowsFreetext as $rowFreetext){
-		?>
-<tr>
-	<td><?php echo JText::_($row->description)."[$rowFreetext->lang]"?></td>
-	<td><textarea name="<?php echo "PARAM$row->id[]"?>"
-		rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?></textarea>
-	</td>
-</tr>
-		<?php
-	}
-	break;
-
-case  "list" :
-
-	$key = $parentkey;
-
-
-	$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->id and a.list_id = b.id";
-	$database->setQuery($query);
-	$rowsList = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	foreach($rowsList as $rowList){
-		?>
-
-	<tr>
-		<td><?php echo JText::_($rowList->trans) ?></td>
-		<td><select name="<?php "PARAM$row->id[]"?>"
-		<?php if ($rowList->multiple == 1) {echo "multiple";} ?>
-			size="<?php if ($rowList->multiple == 1) {echo "5";}else {echo "1";} ?>"
-			class="inputbox">
-			<?php
-			$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
-			$database->setQuery($query);
-			$rowsListContent = $database->loadObjectList();
-			if ($database->getErrorNum()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				case "locfreetext":
+					if ($directinroot == 0){
+						$key = $parentkey."/".$row->iso_key;
+					}else{
+						$key = $parentkey;
+					}
+				
+					$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->id and a.loc_freetext_id = b.id";
+					$database->setQuery($query);
+					$rowsFreetext = $database->loadObjectList();
+					if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+					foreach($rowsFreetext as $rowFreetext){
+						?>
+				<tr>
+					<td><?php echo JText::_($row->description)."[$rowFreetext->trans]"?></td>
+					<td><textarea name="<?php echo "PARAM$row->id[]"?>"
+						rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?></textarea>
+					</td>
+				</tr>
+						<?php
+					}
+					break;
+				
+				case  "list" :
+				
+					$key = $parentkey;
+				
+				
+					$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_list a, #__easysdi_metadata_list b WHERE a.classes_id = $row->id and a.list_id = b.id";
+					$database->setQuery($query);
+					$rowsList = $database->loadObjectList();
+					if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+					foreach($rowsList as $rowList){
+						?>
+					<tr>
+						<td><?php echo JText::_($rowList->trans) ?></td>
+						<td><select name="<?php echo "PARAM$row->id[]"?>"
+						<?php if ($rowList->multiple == 1) {echo "multiple";} ?>
+							size="<?php if ($rowList->multiple == 1) {echo "5";}else {echo "1";} ?>"
+							class="inputbox">
+							<?php
+							$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
+							$database->setQuery($query);
+							$rowsListContent = $database->loadObjectList();
+							if ($database->getErrorNum()) {
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+							}
+					
+							foreach ($rowsListContent as $rowListContent){
+								?>
+							<option value="<?php echo $rowListContent->key ;?>"
+							<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo  JText::_($rowListContent->translation) ;?></option>
+							<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
+							<?php
+				
+							} ?>
+						</select></td>
+					</tr>
+				
+							<?php
+					}
+					break;
+				}
 			}
-	
-			foreach ($rowsListContent as $rowListContent){
-				?>
-			<option value="<?php echo $rowListContent->key ;?>"
-			<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo  JText::_($rowListContent->translation) ;?></option>
-			<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
-			<?php
-
-			} ?>
-		</select></td>
-	</tr>
-
-			<?php
-	}
-	break;
-			}
-		}
-			
 	}
 
 	function generateMetadataHtml($row,$tab_id,$metadata_standard_id,$iso_key,$geoMD,$metadata_id){
@@ -537,11 +535,11 @@ default:
 					}
 
 					foreach ($rowsListContent as $rowListContent){
-
-	//					$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+						// $value = array_pop  ( $_POST["PARAM$row->class_id"] );
 						$array  = JRequest::getVar("PARAM$row->id");
 						$value = $array [$n];
-	
+						print_r ($array);
+						echo "<br><b>Value ".$n."</b>: ".$value."<br>";
 
 						if (strlen  ($value)>0){
 							$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
@@ -552,95 +550,94 @@ default:
 				}
 				break;
 
-case  "ext" :
-
-$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
-$database->setQuery($query);
-$rowsExt = $database->loadObjectList();
-if ($database->getErrorNum()) {
-	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-}
-foreach($rowsExt as $rowExt){
-	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-	$array  = JRequest::getVar("PARAM$row->id");
-	$value = $array [$n];
-	
-	$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>".htmlspecialchars    (stripslashes($rowExt->name) )."</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";
-}
-break;
-
-case "locfreetext":
-
-$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
-$database->setQuery($query);
-$rowsFreetext = $database->loadObjectList();
-if ($database->getErrorNum()) {
-	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-}
-//$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
-foreach($rowsFreetext as $rowFreetext){
-	//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
-	
-	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-	$array  = JRequest::getVar("PARAM$row->id");
-	$value = $array [$n];
-	
-	
-
-	$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
-}
-//$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
-break;
-case  "freetext" :
-
-$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->class_id and a.freetext_id = b.id";
-$database->setQuery($query);
-$rowsFreetext = $database->loadObjectList();
-if ($database->getErrorNum()) {
-	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-}
-foreach($rowsFreetext as $rowFreetext){
-	//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
-	$array  = JRequest::getVar("PARAM$row->id");
-	$value = $array [$n];
+			case  "ext" :
+				$query = "SELECT * FROM #__easysdi_metadata_classes_ext a, #__easysdi_metadata_ext b WHERE a.classes_id = $row->class_id and a.ext_id = b.id";
+				$database->setQuery($query);
+				$rowsExt = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsExt as $rowExt){
+					//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+					$array  = JRequest::getVar("PARAM$row->id");
+					$value = $array [$n];
+					print_r ($array);
+					echo "<br><b>Value ".$n."</b>: ".$value."<br>";
+					
+					$doc=$doc."<gmd:MD_MetadataExtensionInformation><gmd:extendedElementInformation><gmd:MD_ExtendedElementInformation><gmd:name><gco:CharacterString>".htmlspecialchars    (stripslashes($rowExt->name) )."</gco:CharacterString></gmd:name><gmd:domainValue><gco:CharacterString>$value</gco:CharacterString></gmd:domainValue></gmd:MD_ExtendedElementInformation></gmd:extendedElementInformation></gmd:MD_MetadataExtensionInformation>";
+				}
+				break;
 			
-	if ($rowFreetext->is_number == 1){
-		$doc=$doc."<gco:Decimal>$value</gco:Decimal>";
-	}else
-	if ($rowFreetext->is_date == 1){
-		$doc=$doc."<gco:Date>$value</gco:Date>";
-	}else	$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value) )."</gco:CharacterString>";
-}
-break;
-case "class":
-
-$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
-$database->setQuery($query);
-$rowsClasses = $database->loadObjectList();
-if ($database->getErrorNum()) {
-	$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-}
-foreach ($rowsClasses as $rowClasses){
-
-	$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
-	$database->setQuery($query);
-	$rowsClassesClasses = $database->loadObjectList();
-	if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-	}
-	foreach ($rowsClassesClasses  as $rowClassesClasses ){
-		$doc=$doc."<$rowClassesClasses->iso_key>";
-		helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,&$doc,$n);
-		$doc=$doc."</$rowClassesClasses->iso_key>";
-	}
-}
-
-break;
-
-
-default:
-$mainframe->enqueueMessage($row->type,"INFO");
-
+			case "locfreetext":
+				$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
+				$database->setQuery($query);
+				$rowsFreetext = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				//$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
+				foreach($rowsFreetext as $rowFreetext){
+					//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
+					
+					//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+					$array  = JRequest::getVar("PARAM$row->id");
+					$value = $array [$n];
+					print_r ($array);
+					echo "<br><b>Value ".$n."</b>: ".$value."<br>";
+					
+					$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
+				}
+				//$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
+				break;
+				
+			case  "freetext" :
+				$query = "SELECT * FROM #__easysdi_metadata_classes_freetext a, #__easysdi_metadata_freetext b WHERE a.classes_id = $row->class_id and a.freetext_id = b.id";
+				$database->setQuery($query);
+				$rowsFreetext = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach($rowsFreetext as $rowFreetext){
+					//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
+					$array  = JRequest::getVar("PARAM$row->id");
+					$value = $array [$n];
+					print_r ($array);
+					echo "<br><b>Value ".$n."</b>: ".$value."<br>";
+							
+					if ($rowFreetext->is_number == 1){
+						$doc=$doc."<gco:Decimal>$value</gco:Decimal>";
+					}else
+					if ($rowFreetext->is_date == 1){
+						$doc=$doc."<gco:Date>$value</gco:Date>";
+					}else	$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value) )."</gco:CharacterString>";
+				}
+				break;
+			case "class":
+				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
+				$database->setQuery($query);
+				$rowsClasses = $database->loadObjectList();
+				if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				foreach ($rowsClasses as $rowClasses){
+				
+					$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
+					$database->setQuery($query);
+					$rowsClassesClasses = $database->loadObjectList();
+					if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+					foreach ($rowsClassesClasses  as $rowClassesClasses ){
+						$doc=$doc."<$rowClassesClasses->iso_key>";
+						helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,&$doc,$n);
+						$doc=$doc."</$rowClassesClasses->iso_key>";
+					}
+				}
+				
+				break;
+			
+			default:
+				$mainframe->enqueueMessage($row->type,"INFO");
 		}
 	}
 
@@ -668,15 +665,15 @@ $mainframe->enqueueMessage($row->type,"INFO");
 							}
 							
 						foreach ($rowsClassesClasses  as $rowClassesClasses ){
-							$a = 		helper_easysdi::searchForLastEntry($rowClassesClasses,$metadata_standard_id);																				
-								return $a;																																		
+							$a = helper_easysdi::searchForLastEntry($rowClassesClasses,$metadata_standard_id);																				
+							return $a;																																		
 						}
 				}
 			break;
 
-		default:										
-				return count(JRequest::getVar("PARAM$row->id"));
-				//$mainframe->enqueueMessage($row->type,"ERROR");
+			default:										
+					return count(JRequest::getVar("PARAM$row->id"));
+					//$mainframe->enqueueMessage($row->type,"ERROR");
 		}
 		
 	}
@@ -760,7 +757,7 @@ $mainframe->enqueueMessage($row->type,"INFO");
 			}else {
 				$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error');
 	}*/
-}
+	}
 
 }
 

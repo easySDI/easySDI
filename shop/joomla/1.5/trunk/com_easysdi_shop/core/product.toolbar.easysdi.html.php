@@ -34,7 +34,7 @@ class TOOLBAR_product{
 		JToolBarHelper::cancel('cancelProduct');
 	}
 	
-	function _LISTPROUCT() {
+	function _LISTPRODUCT() {
 		global $mainframe;
 
 		
