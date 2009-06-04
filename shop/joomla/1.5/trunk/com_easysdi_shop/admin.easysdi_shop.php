@@ -710,7 +710,7 @@ case "saveLocation":
 	case "cancelProductMetadata":
 	case "cancelProduct":
 	case "listProduct":
-		TOOLBAR_product::_LISTPROUCT();
+		TOOLBAR_product::_LISTPRODUCT();
 		ADMIN_product::listProduct($option);		
 		break;
 	default:
