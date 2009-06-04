@@ -1146,10 +1146,10 @@ if (count($rows)>0){
 		echo "<li>";
 		switch($row->type_code){
 			case "list":
-				echo 	JText::_($row->property_text);
+				echo 	JText::_($row->translation);
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1163,15 +1163,15 @@ if (count($rows)>0){
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
 					}
-					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";
+					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
 				}
 				echo "</select>";
 				break;
 			case "mlist":
-				echo 	JText::_($row->property_text);
+				echo 	JText::_($row->translation);
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1184,15 +1184,15 @@ if (count($rows)>0){
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
 					}
-					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."</option>";
+					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
 				}
 				echo "</select>";
 				break;
 			case "cbox":
-				echo 	JText::_($row->property_text);
+				echo 	JText::_($row->translation);
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1207,15 +1207,15 @@ if (count($rows)>0){
 					}
 
 
-					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_text)."<br>";
+					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."<br>";
 				}
 
 				break;
 			case "text":
-				echo 	JText::_($row->property_text);
+				echo 	JText::_($row->translation);
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1226,7 +1226,7 @@ if (count($rows)>0){
 					if (count($selProduct)>0){
 						$selected = $selProduct[0];
 					}else{
-						$selected = $rowValue->value_text;
+						$selected = $rowValue->val_trans;
 					}
 					echo "<input type='text' name='".$row->code."_text_property_".$product->id."[]'  value='$selected'>";
 					break;
@@ -1236,10 +1236,10 @@ if (count($rows)>0){
 				
 				
 			case "textarea":
-				echo 	JText::_($row->property_text);
+				echo 	JText::_($row->translation);
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1250,7 +1250,7 @@ if (count($rows)>0){
 					if (count($selProduct)>0){
 						$selected = $selProduct[0];
 					}else{
-						$selected = $rowValue->value_text;
+						$selected = $rowValue->val_trans;
 					}
 
 					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]'>$selected</textarea>";

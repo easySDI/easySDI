@@ -380,18 +380,18 @@ class HTML_product{
 				}		
 
 				
-				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code FROM #__easysdi_product_properties_definition b order by b.order";
+				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code, b.translation as trans FROM #__easysdi_product_properties_definition b order by b.order";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) {						
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 					}		
 					foreach ($propertiesList as $curProperty){
-						?><tr><?php echo JText::_($curProperty->text); ?></tr>
+						?><tr><?php echo JText::_($curProperty->trans); ?></tr>
 						<?php
 					
 				$propertiesValueList = array();
-				$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+				$query = "SELECT a.id as value, a.text as text, a.translation as trans FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
 				$database->setQuery( $query );
 				$propertiesValueList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) {						
@@ -401,18 +401,18 @@ class HTML_product{
 
 					case "list":
 						?>
-						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'trans', $selected ); ?></tr>							
 						<?php
 						break;
 						
 					case "mlist":
 						?>
-						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'trans', $selected ); ?></tr>
 						<?php
 						break;
 					case "cbox":
 						?>
-						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'trans', $selected ); ?></tr>
 						<?php
 						break;
 						
@@ -423,7 +423,7 @@ class HTML_product{
 							
 						}
 						?>
-						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></tr>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'trans', $selected ); ?></tr>
 						<?php
 						break;
 						
@@ -434,7 +434,7 @@ class HTML_product{
 							
 						}
 						?>
-						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+						<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'trans', $selected ); ?></tr>
 						<?php
 						break;
 					}	
@@ -760,11 +760,7 @@ class HTML_product{
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>								
 								<td><input type="checkbox" <?php if ($rowProduct->is_free == 1) echo "checked"; ?> disabled/> </td>
-																																								
 							</tr>
-							
-							
-							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
 								<?php

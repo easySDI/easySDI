@@ -34,7 +34,19 @@ class SITE_product {
 		$metadata_standard_id = JRequest::getVar("standard_id");
 		$metadata_id = JRequest::getVar("metadata_id");
 		
-		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) group by a.tab_id" ;
+		$query = "SELECT b.text as text,a.tab_id as tab_id 
+				  FROM #__easysdi_metadata_standard_classes a, 
+				  	   #__easysdi_metadata_tabs b 
+				  WHERE a.tab_id =b.id 
+				  		AND (a.standard_id = $metadata_standard_id 
+				  			 OR a.standard_id IN (SELECT inherited 
+				  			 					  FROM #__easysdi_metadata_standard 
+				  			 					  WHERE is_deleted =0 
+				  			 					  	    AND id = $metadata_standard_id
+				  			 					  )
+							) 
+				  GROUP BY a.tab_id";
+				  
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
 		if ($database->getErrorNum()) {
@@ -45,9 +57,19 @@ class SITE_product {
 		}
 		$doc="<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\" xmlns:ext=\"http://www.depth.ch/2008/ext\">";
 		foreach ($rows as $row){
-
-
-			$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND id = $metadata_standard_id)) order by position" ;
+			$query = "SELECT * 
+					  FROM #__easysdi_metadata_standard_classes a, 
+					  	   #__easysdi_metadata_classes b 
+					  WHERE a.class_id =b.id 
+					  		AND a.tab_id = $row->tab_id 
+					  		AND (a.standard_id = $metadata_standard_id 
+					  			 OR a.standard_id IN (SELECT inherited 
+					  			 					  FROM #__easysdi_metadata_standard 
+					  			 					  WHERE is_deleted =0 
+					  			 					  		AND id = $metadata_standard_id
+					  			 					  )
+					  			)
+					  ORDER BY position";
 			$database->setQuery($query);
 			$rowsClasses = $database->loadObjectList();
 			if ($database->getErrorNum()) {
@@ -58,11 +80,11 @@ class SITE_product {
 				$doc=$doc."<$rowClasses->iso_key>";
 				$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
 				
-		for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
-			helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
-		}
+				for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
+					helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
+				}
 				
-		//		helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
+				//helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
 				$doc=$doc."</$rowClasses->iso_key>";
 			}
 
@@ -78,7 +100,7 @@ class SITE_product {
 		$doc
 		</csw:Insert>
 		</csw:Transaction>";
-
+		
 		$xmlstrToDelete = "<csw:Transaction service=\"CSW\" version=\"2.0.0\" 
 						   xmlns:csw=\"http://www.opengis.net/cat/csw\" 
 						   xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\"
@@ -94,7 +116,7 @@ class SITE_product {
 						    </csw:Constraint>
 						  </csw:Delete>
 						</csw:Transaction>";
-
+		
 		//Try to discover if a metadata already exists. 
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
@@ -103,27 +125,20 @@ class SITE_product {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');		
 		$geoMD = new geoMetadata($cswResults);				 
 		
-		
-		
 		SITE_product::SaveMetadata($xmlstrToDelete);
 		SITE_product::SaveMetadata($xmlstr);
-		
-		
 			
 		$query = "UPDATE #__easysdi_product SET hasMetadata = 1 WHERE id = ".$metadata_standard_id = JRequest::getVar("id");
-		
 		$database->setQuery( $query );
-		if (!$database->query()) {
+		if (!$database->query()){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 			exit();
 		}
 		
-		
 		//Send a Mail to notify the administrator that a new product is created 
 		if ( strlen($geoMD->getFileIdentifier()) == 0){
 			//find all the users interrested to know if a new metadata is created.
-
 			$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_new_metadata=1";
 			$database->setQuery( $query );
 			$total = $database->loadResult();
@@ -138,7 +153,6 @@ class SITE_product {
 			}
 		}
 		
-		
 		//Send a Mail to the users that have requested to be notified when the metadata has just been changed
 		$product_id = JRequest::getVar("product_id",0);
 		$query = "SELECT email,data_title FROM #__easysdi_user_product_favorite f, #__easysdi_community_partner p,#__users u,#__easysdi_product pr  where f.partner_id = p.partner_id  AND p.user_id = u.id and pr.id = f.product_id AND f.product_id = $product_id AND notify_metadata_modification = 1";
@@ -149,8 +163,6 @@ class SITE_product {
 		if (count($rows) >0){
 			SITE_product::sendMail($rows,JText::_("EASYSDI_METADATA_HAS_CHANGED_MAIL_SUBJECT"),JText::sprintf("EASYSDI_METADATA_HAS_CHANGED_MAIL_BODY",$rows[0]->data_title));
 		}
-			
-		
 	}
 		
 	function sendMailByEmail($email,$subject,$body){
