@@ -15,6 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport("joomla.html.pagination");
@@ -36,9 +37,6 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_partner');
 
-?>
-<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/dtree.js"></script>
-<?php
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
 $db =& JFactory::getDBO();
@@ -60,7 +58,11 @@ if ($view)
 
 
 switch($task){	
-	
+	case "redirectAffiliate":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
+		$affiliate_id = JRequest::getVar('affiliate_id');
+		SITE_partner::editAffiliatePartner($affiliate_id);
+		break;
 	case "createBlockUser":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::createBlockUser();
