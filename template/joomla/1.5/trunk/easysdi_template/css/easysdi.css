@@ -748,6 +748,9 @@ background-image: url(none);
 	font-size: 11px;
 	color: #666;
 	white-space: nowrap;
+	margin-top: 5px;
+	margin-left: 5px;
+	
 }
 .dtree img {
 	border: 0px;
@@ -760,6 +763,7 @@ background-image: url(none);
 .dtree a.node, .dtree a.nodeSel {
 	white-space: nowrap;
 	padding: 1px 2px 1px 2px;
+	
 }
 .dtree a.node:hover, .dtree a.nodeSel:hover {
 	color: #333;
