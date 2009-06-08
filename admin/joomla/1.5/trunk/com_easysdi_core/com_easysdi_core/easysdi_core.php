@@ -58,11 +58,6 @@ if ($view)
 
 
 switch($task){	
-	case "redirectAffiliate":
-		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
-		$affiliate_id = JRequest::getVar('affiliate_id');
-		SITE_partner::editAffiliatePartner($affiliate_id);
-		break;
 	case "createBlockUser":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::createBlockUser();
