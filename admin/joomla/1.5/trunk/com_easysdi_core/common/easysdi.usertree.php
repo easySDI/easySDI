@@ -8,11 +8,21 @@ class userTree
 		$database =& JFactory::getDBO();		
 		?><!--  -->
 		<script type="text/javascript" src="administrator/components/com_easysdi_core/common/dtree.js"></script>
-		<a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a>
-		<br>
-		<div class="dtree">
 		
-			
+
+		<div class="dtree">
+			<table>
+			<tr>
+			<td>
+			<a href="javascript: d.openAll();"><?php echo JText::_("EASYSDI_USER_TREE_OPEN_ALL"); ?></a> | <a href="javascript: d.closeAll();"><?php echo JText::_("EASYSDI_USER_TREE_CLOSE_ALL"); ?></a>
+			</td>
+			<td>
+			</td>
+			</tr>
+			<tr>
+			<td>
+			</td>
+			<td>
 			<script type="text/javascript">
 				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/images/dtree/';  ?>');
 				
@@ -32,6 +42,9 @@ class userTree
 	
 			//
 			</script>
+			</td>
+			</tr>
+			</table>
 		</div>
 
      <?php
