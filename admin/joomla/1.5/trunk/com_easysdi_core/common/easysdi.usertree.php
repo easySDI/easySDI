@@ -58,8 +58,14 @@ class userTree
 		{
 			if($is_frontEnd == true)
 			{
+				$return = 'showPartner';
+				if (JRequest::getVar('return') == 'listAffiliatePartner')
+				{
+					$return = 'listAffiliatePartner';
+				}
+				
 			?>
-				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','<?php JUri::base(true);?>index.php?search=<?php echo JRequest::getVar('search'); ?>&type=3&affiliate_id=<?php echo $childUser->user_id; ?>&return=showPartner&option=com_easysdi_core&task=editAffiliateById');
+				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','<?php JUri::base(true);?>index.php?search=<?php echo JRequest::getVar('search'); ?>&type=3&affiliate_id=<?php echo $childUser->user_id; ?>&return=<?php echo $return; ?>&option=com_easysdi_core&task=editAffiliateById');
 			<?php
 			}
 			else
