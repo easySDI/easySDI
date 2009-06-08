@@ -1469,6 +1469,10 @@ if (count($rows)>0){
 			$db->setQuery($queryType );
 			$available_type = $db->loadResult();
 			
+			if( $bufferValue == '')
+			{
+				$bufferValue = 0;
+			}
 			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,order_update,user_id,buffer) VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','$date->toMySQL()','$date->toMySQL()',$user->id,$bufferValue)";
 			$db->setQuery($query );
 
