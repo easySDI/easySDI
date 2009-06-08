@@ -354,7 +354,7 @@ class HTML_config {
 			$src_list = $database->loadObjectList();
 		if(count($src_list) != 0)
 		{	
-			userTree::buildTreeView($src_list[0]);
+			userTree::buildTreeView($src_list[0],false);
 		}
 		//HTML_partner::print_child($src_list );
 			

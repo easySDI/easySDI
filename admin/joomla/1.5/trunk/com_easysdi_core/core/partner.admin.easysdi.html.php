@@ -604,7 +604,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			$src_list = $database->loadObjectList();
 			if(count($src_list) != 0)
 			{	
-				userTree::buildTreeView($src_list[0]);
+			userTree::buildTreeView($src_list[0], false);
 			}	
 			//HTML_partner::print_child($src_list );
 			
@@ -1045,7 +1045,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			
 		if(count($src_list) != 0)
 		{	
-			userTree::buildTreeView($src_list[0]);
+			userTree::buildTreeView($src_list[0], false);
 		}
 		//HTML_partner::print_child($src_list );
 			
