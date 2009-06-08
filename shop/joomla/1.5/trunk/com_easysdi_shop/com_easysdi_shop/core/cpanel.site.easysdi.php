@@ -204,7 +204,7 @@ class SITE_cpanel {
 	 * PROGESS => Partiellement traitée par le fournisseur
 	 * FINISH => Complètement traitée
 	 * ARCHIVED => Archivée
-	 * HISTORIZED => Archivée et BLOB de donn�es vid�
+	 * HISTORIZED => Archivée et BLOB de donn�es vid�
 	 */
 
 	function saveOrdersForProvider(){
@@ -523,8 +523,7 @@ class SITE_cpanel {
 
 		$db =& JFactory::getDBO();
 		
-		$query = "SELECT * FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id";
-
+		$query = "SELECT *, sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
 
 		$db->setQuery($query );
 
@@ -535,7 +534,8 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		$query = "SELECT * FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+		$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+		
 		$db->setQuery($query );
 		$rowsProduct = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -545,7 +545,17 @@ class SITE_cpanel {
 		}
 
 		?>
-<h1><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h1>
+<table>
+<tr>
+<td>
+<h1><?php echo JText::_($rows[0]->tlT); ?> : <?php echo $rows[0]->name; ?></h1>
+</td>
+<td>
+<p><?php echo JText::_($rows[0]->slT); ?></p>
+</td>
+</tr>
+</table>
+<h2><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h2>
 <table>
 <?php
 $i=0;
@@ -558,8 +568,7 @@ foreach ($rowsProduct as $row){ ?>
 	<tr>
 		<td><?php echo ++$i; ?></td>
 		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
-		<?php
-		
+				<?php
 		if ($row->status == $status_id){
 			$queryType = "select id from #__easysdi_order_type_list where code='O'";
 			$db->setQuery($queryType);
@@ -575,6 +584,66 @@ foreach ($rowsProduct as $row){ ?>
 			
 		}
 		?>
+	</tr>
+	<tr>
+		<td colspan="3">
+		<table>
+		<?php
+		//Get product properties
+		$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
+		$db->setQuery($queryPropertiesCode);
+		$rowsPropertiesCode = $db->loadObjectList();
+		
+		foreach($rowsPropertiesCode as $rowPropertyCode)
+		{
+			
+			$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
+			$db->setQuery($queryProductProperties);
+			$rowsProductProperties = $db->loadObjectList();
+			?>
+			<tr>
+			<td>
+			<?php
+			echo JText::_($rowPropertyCode->code);
+			?>
+			</td>
+			
+			<td>
+			<table>
+			<?php 
+			foreach ($rowsProductProperties as $rowProductProperties)
+			{
+				?>
+				<tr>
+				<td>
+				<?php 
+				if($rowProductProperties->property_id == 0)
+				{	
+					echo $rowProductProperties->property_value;
+				}
+				else
+				{
+					$queryPropertyValue = "SELECT translation FROM #__easysdi_product_properties_values_definition WHERE id = $rowProductProperties->property_id";
+					$db->setQuery($queryPropertyValue);
+					$rowProperty = $db->loadResult();
+					echo JText::_($rowProperty);
+				}
+				?>
+				</td>
+				</tr>
+				<?php
+			}
+			?>
+			</table>
+			</td>
+			</tr>
+			
+			<?php
+		}
+			
+		?>
+		</table>
+		</td>
 	</tr>
 	<?php }?>
 
@@ -592,7 +661,7 @@ foreach ($rowsProduct as $row){ ?>
 	}
 	if ($rows[0]->perimeter_id > 0){
 		?>
-<h1><?php echo $rowsPerimeter[0]->perimeter_name; ?> (<?php echo $rowsPerimeter[0]->perimeter_desc; ?>)</h1>
+<h2><?php echo $rowsPerimeter[0]->perimeter_name; ?> (<?php echo $rowsPerimeter[0]->perimeter_desc; ?>)</h2>
 		<?php }else{
 			echo "<h1>".JText::_("EASYSDI_GEOMETRY_TEXT")."</h1>";
 
@@ -611,9 +680,127 @@ foreach ($rows as $row){?>
 </table>
 
 
-	<?php
-
+<?php if($rows[0]->buffer != 0)
+{
+	?>
+<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?></h2>
+<table>
+  <tr>
+    <td><?php echo $rows[0]->buffer; ?> <?php echo JText::_("EASYSDI_RECAP_ORDER_METER") ; ?></td>
+  </tr>
+</table>
+<?php 
+	
+} ?>
+		<?php
+	SITE_cpanel::viewOrderPerimeterExtent($rows[0]->id,$rows[0]->perimeter_id );
 	}
+	
+function viewOrderPerimeterExtent($order_id, $perimeter_id){
+	
+		
+	?>
+	<link rel="stylesheet" href="/templates/easysdi/css/easysdi.css" type="text/css" />
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
+	
+	
+	
+	<?php	
+	global  $mainframe;
+	$db =& JFactory::getDBO(); 
+	
+
+	
+	$query = "select * from #__easysdi_basemap_definition where def=1"; 
+	$db->setQuery( $query);
+	$rowsBaseMap = $db->loadObject();		  
+	if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+	}					  
+?>
+<script>
+function initMap(){
+	map = new OpenLayers.Map('map', {
+    		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
+            displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
+            units: "<?php echo $rowsBaseMap->unit; ?>",
+
+//Bug when prohection == 4326 the resolutions are not managed properly
+<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
+			<?php } ?>
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
+            });
+				  
+			baseLayerVector = new OpenLayers.Layer.Vector(
+                "BackGround",
+                {isBaseLayer: true,transparent: "true"}
+            ); 
+			map.addLayer(baseLayerVector);
+<?php
+
+$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
+$db->setQuery( $query);
+$rows = $db->loadObjectList();
+		  
+if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+}
+$i=0;
+foreach ($rows as $row){				  
+?>				
+				  
+		layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+                    "<?php echo $row->url; ?>",
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+                     {     
+                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
+                   <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+                      	minResolution: <?php echo $row->minResolution; ?>,
+                        maxResolution: <?php echo $row->maxResolution; ?>,
+                        <?php } ?>                 
+                     projection:"<?php echo $row->projection; ?>",
+                      units: "<?php echo $row->unit; ?>",
+                      transparent: "true"
+                     }
+                    );
+                 map.addLayer(layer<?php echo $row->i; ?>);
+<?php 
+$i++;
+} ?>                    
+		
+		
+			
+      map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>));
+      //map.addControl(new OpenLayers.Control.LayerSwitcher());
+      map.addControl(new OpenLayers.Control.Attribution());         
+      
+      
+                                                            
+}
+var oldLoad = window.onload;
+window.onload=function(){
+initMap();
+if (oldLoad) oldLoad();
+}                       
+</script>   
+	
+	<div id="map" class="tinymap"></div>
+	
+	<?php
+}
 
 	function sendOrder(){
 		global $mainframe;
