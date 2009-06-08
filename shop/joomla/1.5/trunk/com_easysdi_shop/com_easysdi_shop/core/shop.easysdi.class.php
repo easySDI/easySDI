@@ -1154,7 +1154,7 @@ if (count($rows)>0){
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				
-								echo "<select name='".$row->code."_list_property_".$product->id."[]'>";
+								echo "<select name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
 					
 
@@ -1177,7 +1177,7 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 
 
-				echo "<select multiple size='10' name='".$row->code."_mlist_property_".$product->id."[]'>";
+				echo "<select multiple size='10' name='".$row->code."_mlist_property_".$product->id."[]' id='".$row->code."_mlist_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_mlist_property_'.$product->id);
 					$selected = "";
@@ -1207,7 +1207,7 @@ if (count($rows)>0){
 					}
 
 
-					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."<br>";
+					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."<br>";
 				}
 
 				break;
@@ -1228,7 +1228,7 @@ if (count($rows)>0){
 					}else{
 						$selected = $rowValue->val_trans;
 					}
-					echo "<input type='text' name='".$row->code."_text_property_".$product->id."[]'  value='$selected'>";
+					echo "<input type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' >";
 					break;
 				}
 
@@ -1253,7 +1253,7 @@ if (count($rows)>0){
 						$selected = $rowValue->val_trans;
 					}
 
-					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]'>$selected</textarea>";
+					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>$selected</textarea>";
 					break;
 				}
 
@@ -1609,17 +1609,14 @@ if (count($rows)>0){
 					
 					
 					$productProperties  = $mainframe->getUserState($row->code."_text_property_".$product_id);
-					print_r($productProperties);
-					if (count($productProperties)>0){
 					
-					
+					if ($productProperties != ''){
 					
 					$mainframe->setUserState($row->code.'_text_property_'.$product_id,null);
 
 					
-					foreach ($productProperties as $property_id){
 						
-						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$property_id\",'$row->code')";
+						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
 						
 
 						$db->setQuery($query );
@@ -1632,7 +1629,6 @@ if (count($rows)>0){
 						
 						
 						
-					}
 					}
 					
 					
@@ -1854,7 +1850,7 @@ if (count($rows)>0){
 					foreach($rows as $row){
 				
 				
-				$property=	JRequest::getVar($row->code."_text_property_$id", array() );
+				$property=	JRequest::getVar($row->code."_text_property_$id", '' );
 				$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
 
 				
