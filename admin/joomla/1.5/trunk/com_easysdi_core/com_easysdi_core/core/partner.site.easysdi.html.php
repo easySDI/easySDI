@@ -16,7 +16,6 @@
  */
 
 
-
 defined('_JEXEC') or die('Restricted access');
 
 
@@ -441,7 +440,7 @@ class HTML_partner
 					if(count($src_list) != 0)
 					{	
 						
-						userTree::buildTreeView($src_list[0]);
+						userTree::buildTreeView($src_list[0], true);
 					}
 		//			HTML_partner::print_child($src_list );				
 ?>
@@ -1267,7 +1266,7 @@ class HTML_partner
 		$src_list = $database->loadObjectList();
 		if(count($src_list) != 0)
 		{	
-			userTree::buildTreeView($src_list[0]);
+			userTree::buildTreeView($src_list[0], true);
 		}
 		//HTML_partner::print_child($src_list );
 			
