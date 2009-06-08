@@ -523,7 +523,7 @@ class SITE_cpanel {
 
 		$db =& JFactory::getDBO();
 		
-		$query = "SELECT *, sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
+		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
 
 		$db->setQuery($query );
 
@@ -693,12 +693,10 @@ foreach ($rows as $row){?>
 	
 } ?>
 		<?php
-	SITE_cpanel::viewOrderPerimeterExtent($rows[0]->id,$rows[0]->perimeter_id );
+	SITE_cpanel::viewOrderPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id );
 	}
 	
 function viewOrderPerimeterExtent($order_id, $perimeter_id){
-	
-		
 	?>
 	<link rel="stylesheet" href="/templates/easysdi/css/easysdi.css" type="text/css" />
 	<script
@@ -707,15 +705,28 @@ function viewOrderPerimeterExtent($order_id, $perimeter_id){
 	
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js">
 	
+	</script>
 	
 	
 	<?php	
 	global  $mainframe;
 	$db =& JFactory::getDBO(); 
+	$isFreeSelectionPerimeter = false;
+	$queryPerimeter = "select * from #__easysdi_perimeter_definition where id = $perimeter_id";
+	$db->setQuery($queryPerimeter);
+	$perimeterDef = $db->loadObject();
+	if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+	}	
 	
-
+	if($perimeterDef->wfs_url == '' && $perimeterDef->wms_url == '')
+	{	
+		$isFreeSelectionPerimeter = true;
+	}
 	
 	$query = "select * from #__easysdi_basemap_definition where def=1"; 
 	$db->setQuery( $query);
@@ -779,12 +790,92 @@ foreach ($rows as $row){
                  map.addLayer(layer<?php echo $row->i; ?>);
 <?php 
 $i++;
-} ?>                    
+} ?>                   
+		<?php
+		//Add the command perimeter
+		$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id";
+		$db->setQuery( $queryPerimeterValue);
+		$rowsPerimeterValue = $db->loadObjectList();
+		?>
 		
+	     <?php 
+		if($isFreeSelectionPerimeter == true)
+		{
+			?>
+			var vectors;
+			vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
+			map.addLayer(vectors);
+			//Draw polygon
+			var newLinearRingComponents = new Array();
+			<?php
+			foreach($rowsPerimeterValue as $value)
+			{
+				?>
+					var curValue = "<?php echo $value->value; ?>";
+					var x= curValue.substring(0,curValue .indexOf(" ", 0));
+					var y= curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
+					newLinearRingComponents.push (new OpenLayers.Geometry.Point(x,y));
+					<?php
+			}	
+			?>
+			var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
+			var feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
+			vectors.addFeatures([feature]);
+			<?php 
+		}
+		else
+		{
+			//Call wfs
+			
+			$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+			$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$perimeterDef->id&url=";
+				
+			if ($perimeterDef->wfs_url!=null && strlen($perimeterDef->wfs_url)>0){
+				$wfs_url =  $proxyhost.urlencode  (trim($perimeterDef->wfs_url));
+			}else{
+				$wfs_url ="";
+			}
+			
+			?>
+			
+			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '&FILTER=';
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+			<?php
+			if(count($rowsPerimeterValue) >1)
+			{
+				?>
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+				<?php	
+			}
+			foreach ( $rowsPerimeterValue as $value)
+			{
+				?>
+				var idSurface = <?php echo $value->value;  ?>;
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->id_field_name; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $rowsPerimeterValue[0]->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+				<?php 
+			}
+			if(count($rowsPerimeterValue) >1)
+			{
+				?>
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+				<?php	
+			}
+			?>
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: wfsUrlWithFilter,
+                        format: new OpenLayers.Format.GML()
+                    })
+                });		    	            
+			 map.addLayer(wfs);	
+			<?php 
+		}
+		?>
 		
 			
       map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>));
-      //map.addControl(new OpenLayers.Control.LayerSwitcher());
       map.addControl(new OpenLayers.Control.Attribution());         
       
       
