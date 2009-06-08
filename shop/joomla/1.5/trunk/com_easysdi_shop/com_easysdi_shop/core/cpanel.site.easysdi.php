@@ -837,8 +837,8 @@ $i++;
 			}
 			
 			?>
-			
-			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '&FILTER=';
+			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=district&VERSION=1.0.0';
+			wfsUrlWithFilter = wfsUrlWithFilter + '&FILTER=';
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
 			<?php
 			if(count($rowsPerimeterValue) >1)
