@@ -28,7 +28,7 @@ function Node(id, pid, name, url, title, target, icon, iconOpen, open) {
 };
 
 // Tree object
-function dTree(objName) {
+function dTree(objName, iconPath) {
 	this.config = {
 		target					: null,
 		folderLinks			: true,
@@ -41,20 +41,20 @@ function dTree(objName) {
 		inOrder					: false
 	}
 	this.icon = {
-		root				: '../../../../../../../../templates/easysdi/images/dtree/empty.gif',
-		folder			: '../../../../../../../../templates/easysdi/images/dtree/folder.gif',
-		folderOpen	: '../../../../../../../../templates/easysdi/images/dtree/folderopen.gif',
-		node				: '../../../../../../../../templates/easysdi/images/dtree/page.gif',
-		empty				: '../templates/easysdi/images/dtree/empty.gif',
-		line				: '../templates/easysdi/images/dtree/line.gif',
-		join				: '../templates/easysdi/images/dtree/join.gif',
-		joinBottom	: '../templates/easysdi/images/dtree/joinbottom.gif',
-		plus				: '../templates/easysdi/images/dtree/plus.gif',
-		plusBottom	: '../templates/easysdi/images/dtree/plusbottom.gif',
-		minus				: '../templates/easysdi/images/dtree/minus.gif',
-		minusBottom	: '../templates/easysdi/images/dtree/minusbottom.gif',
-		nlPlus			: '../templates/easysdi/images/dtree/nolines_plus.gif',
-		nlMinus			: '../templates/easysdi/images/dtree/nolines_minus.gif'
+		root				: iconPath + 'root.png',
+		folder			: iconPath + 'folder.gif',
+		folderOpen	: iconPath + 'folderopen.gif',
+		node				: iconPath + 'leaf.gif',
+		empty				: iconPath + 'empty.gif',
+		line				: iconPath + 'line.gif',
+		join				: iconPath + 'join.gif',
+		joinBottom	: iconPath + 'joinbottom.gif',
+		plus				: iconPath + 'plus.gif',
+		plusBottom	: iconPath + 'plusbottom.gif',
+		minus				: iconPath + 'minus.gif',
+		minusBottom	: iconPath + 'minusbottom.gif',
+		nlPlus			: iconPath + 'nolines_plus.gif',
+		nlMinus			: iconPath + 'nolines_minus.gif'
 	};
 	this.obj = objName;
 	this.aNodes = [];

@@ -3,16 +3,18 @@ defined('_JEXEC') or die('Restricted access');
 
 class userTree
 {
-	static function buildTreeView ($rootUser)
+	static function buildTreeView ($rootUser, $is_frontEnd)
 	{
 		$database =& JFactory::getDBO();		
 		?><!--  -->
-		<script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
+		<script type="text/javascript" src="administrator/components/com_easysdi_core/common/dtree.js"></script>
+		<a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a>
+		<br>
 		<div class="dtree">
 		
-			<a href="javascript: d.openAll();">open all</a> | <a href="javascript: d.closeAll();">close all</a>
+			
 			<script type="text/javascript">
-				d = new dTree('d');
+				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/images/dtree/';  ?>');
 				
 				d.add(0,-1,'<?php echo $rootUser->name;  ?>');
 				
@@ -21,7 +23,7 @@ class userTree
 				$database->setQuery( $query );
 				$src_list = $database->loadObjectList();
 				if (count ($src_list)>0){
-					userTree::addChildToTree(0,1,$src_list);				
+					userTree::addChildToTree(0,1,$src_list, $is_frontEnd);				
 				}							
 				
 				?>
@@ -35,20 +37,29 @@ class userTree
      <?php
 	}
  	
-	static function addChildToTree($parentNodeId,$startId, $childList)
+	static function addChildToTree($parentNodeId,$startId, $childList, $is_frontEnd)
 	{
 		$database =& JFactory::getDBO();
 		$i = $startId;
 		foreach ($childList as $childUser )
 		{
-			?>	
-				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','example01.html');
+			if($is_frontEnd == true)
+			{
+			?>
+				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','<?php JUri::base(true);?>index.php?search=<?php echo JRequest::getVar('search'); ?>&type=3&affiliate_id=<?php echo $childUser->user_id; ?>&return=showPartner&option=com_easysdi_core&task=editAffiliateById');
 			<?php
+			}
+			else
+			{
+				?>
+				d.add(<?php echo $i?>,<?php echo $parentNodeId?>,'<?php echo $childUser->name;  ?>','<?php JUri::base(true);?>index.php?cid[]=<?php echo $childUser->partner_id; ?>&option=com_easysdi_core&task=editAffiliatePartner');
+				<?php
+			}
 			$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id != up.parent_id  AND up.parent_id = '$childUser->partner_id' AND up.user_id = u.id ORDER BY partner_id";						
 			$database->setQuery( $query );
 			$src_list = $database->loadObjectList();
 			if (count ($src_list)>0){
-				userTree::addChildToTree($i,$i + 1,$src_list);
+				userTree::addChildToTree($i,$i + 1,$src_list, $is_frontEnd);
 				$i = $i + count($src_list);
 			}
 			$i++;
