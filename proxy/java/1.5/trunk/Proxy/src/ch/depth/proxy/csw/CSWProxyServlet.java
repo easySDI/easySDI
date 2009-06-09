@@ -1,6 +1,6 @@
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -339,6 +339,9 @@ public class CSWProxyServlet extends ProxyServlet {
 
 		//No post rule to apply. 
 		//Copy the file result on the output stream
+		resp.setContentType("application/xml");
+		//resp.setContentLength(Integer.MAX_VALUE);
+		resp.setContentLength((int)tempFile.length());
 		OutputStream os = resp.getOutputStream();
 		InputStream is = new FileInputStream(tempFile);
 
@@ -368,6 +371,8 @@ public class CSWProxyServlet extends ProxyServlet {
 	    }
 	}else{
 	    try{
+		resp.setContentType("application/xml");
+		resp.setContentLength(Integer.MAX_VALUE);
 		OutputStream os = resp.getOutputStream();
 		os.write(generateOgcError("Operation not allowed").toString().getBytes());
 		os.flush();
@@ -548,7 +553,8 @@ public class CSWProxyServlet extends ProxyServlet {
 		    cswResponse.append("</csw:TransactionSummary>");
 		    cswResponse.append("</csw:TransactionResponse>");			
 
-
+			resp.setContentType("application/xml");
+			resp.setContentLength(Integer.MAX_VALUE);
 		    OutputStream os = resp.getOutputStream();
 
 		    InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
@@ -602,6 +608,8 @@ public class CSWProxyServlet extends ProxyServlet {
 		    cswResponse.append("<csw:totalDeleted>"+count+"</csw:totalDeleted>");
 		    cswResponse.append("</csw:TransactionSummary>");
 		    cswResponse.append("</csw:TransactionResponse>");
+			resp.setContentType("application/xml");
+			resp.setContentLength(Integer.MAX_VALUE);
 		    OutputStream os = resp.getOutputStream();
 
 		    InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
