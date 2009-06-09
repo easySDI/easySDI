@@ -520,11 +520,12 @@ class SITE_cpanel {
 	function orderReport($id){
 		global $mainframe;
 		$option = JRequest::getVar('option');
-
+		
+		
+		
 		$db =& JFactory::getDBO();
 		
 		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
-
 		$db->setQuery($query );
 
 		$rows = $db->loadObjectList();
@@ -534,6 +535,22 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
+		//Customer name
+		$user =$rows[0]->user_id;
+		$queryUser = "SELECT name FROM #__users WHERE id = $user";
+		$db->setQuery($queryUser );
+		$user_name =  $db->loadResult();
+		
+		$third_name ='';
+		//Third name
+		$third = $rows[0]->third_party; 
+		if( $third != 0)
+		{
+			$queryUser = "SELECT name FROM #__users WHERE id = $third";
+			$db->setQuery($queryUser );
+			$third_name =  $db->loadResult();
+		}
+		
 		$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
 		
 		$db->setQuery($query );
@@ -545,7 +562,15 @@ class SITE_cpanel {
 		}
 
 		?>
-		<table class="orderRecap">
+		<table class="orderRecap" width="100%">
+		<tr>
+		<td>
+		<div title ="Print" id="printOrderRecap"><a href="javascript:window.print()"></a> </div>
+		<input type="button"
+  onClick="window.print()"
+  value="Print This Page"/>
+		</td>
+		</tr>
 		<tr>
 		<td colspan="2" class="ortitle1" >
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?>
@@ -606,7 +631,7 @@ class SITE_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
 		</td>
 		<td>
-		<?php echo $rows[0]->user_id; ?>
+		<?php echo $user_name; ?>
 		</td>
 		</tr>
 		<tr>
@@ -614,7 +639,7 @@ class SITE_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?>
 		</td>
 		<td>
-		<?php echo $rows[0]->third_party; ?>
+		<?php echo $third_name; ?>
 		</td>
 		</tr>
 		<tr>
@@ -644,8 +669,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 		if ($rows[0]->perimeter_id > 0){
-			echo $rowsPerimeter[0]->perimeter_name; 
-			echo "(".$rowsPerimeter[0]->perimeter_desc.")";
+			echo $rowsPerimeter[0]->perimeter_desc;
 			
 		}else
 		{
@@ -659,13 +683,14 @@ class SITE_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?>
 		</td>
 		<td>
-		<table>
+		<table width="100%">
 		<?php
 		$i=0;
 		foreach ($rows as $row){?>
 			<tr>
-				<td><?php echo ++$i; ?></td>
-				<td><?php echo $row->text?><?php if ($rows[0]->perimeter_id > 0) {echo "($row->value)";}?></td>
+				<td width="10%" class="ornum"><?php echo ++$i; ?> - </td>
+				<td width="90%"><?php echo $row->text; ?><br> [<?php echo $row->value;?>]</td>
+				
 			</tr>
 			<?php }?>
 		</table>
@@ -681,6 +706,10 @@ class SITE_cpanel {
 			echo $rows[0]->buffer; 
 			echo JText::_("EASYSDI_RECAP_ORDER_METER") ; 
 		} 
+		else
+		{
+			echo JText::_("EASYSDI_RECAP_ORDER_NONE") ; 
+		}
 		?>
 		</td>
 		</tr>
@@ -708,9 +737,9 @@ class SITE_cpanel {
 		foreach ($rowsProduct as $row){ ?>
 			<tr>
 			<td colspan="2" >
-			<table>
+			<table >
 				<tr>
-					<td ><?php echo ++$i; ?></td>
+					<td class="ornum"><?php echo ++$i; ?> - </td>
 					<td class="ortitle3"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
 							<?php
 					if ($row->status == $status_id){
@@ -720,7 +749,7 @@ class SITE_cpanel {
 					
 						if($rows[0]->type==$type){?>
 			
-					<td><a target="RAW"
+					<td ><a target="RAW"
 						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
 						<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
 						<?php
@@ -747,7 +776,7 @@ class SITE_cpanel {
 				$rowsProductProperties = $db->loadObjectList();
 				?>
 				<tr>
-				<td>
+				<td class="ortitle4">
 				<?php
 				echo JText::_($rowPropertyCode->code);
 				?>
@@ -790,6 +819,7 @@ class SITE_cpanel {
 		
 		
 		</table>
+
 		<?php
 	
 	}
