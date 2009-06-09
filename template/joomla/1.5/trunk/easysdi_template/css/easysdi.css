@@ -776,3 +776,28 @@ background-image: url(none);
 	overflow: hidden;
 }
 
+/***********************/
+/*** EasySDI Order Recap ***/
+/***********************/
+.orderRecap .ortitle1{
+	font-weight: bold;
+	font-size : 18px;
+	padding: 8px;
+	font-family: arial;
+	background-color:#d4deff;
+}
+.orderRecap .ortitle2{
+	font-weight: bold;
+	font-size : 14px;
+	background-color:  rgb( 240, 240, 240);
+	padding: 5px;
+	margin: 5px 0px 0px 0px;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+.orderRecap .ortitle3{
+	font-weight: bold;
+	font-size : 12px;
+	vertical-align: top;
+	padding-left:5px;
+}
