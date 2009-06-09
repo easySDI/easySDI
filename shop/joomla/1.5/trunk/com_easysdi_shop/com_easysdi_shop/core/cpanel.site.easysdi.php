@@ -545,155 +545,253 @@ class SITE_cpanel {
 		}
 
 		?>
-<table>
-<tr>
-<td>
-<h1><?php echo JText::_($rows[0]->tlT); ?> : <?php echo $rows[0]->name; ?></h1>
-</td>
-<td>
-<p><?php echo JText::_($rows[0]->slT); ?></p>
-</td>
-</tr>
-</table>
-<h2><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h2>
-<table>
-<?php
-$i=0;
-
-$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
-$db->setQuery($queryStatus);
-$status_id = $db->loadResult();
-		
-foreach ($rowsProduct as $row){ ?>
-	<tr>
-		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
-				<?php
-		if ($row->status == $status_id){
-			$queryType = "select id from #__easysdi_order_type_list where code='O'";
-			$db->setQuery($queryType);
-			$type = $db->loadResult();
-		
-			if($rows[0]->type==$type){?>
-
-		<td><a target="RAW"
-			href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
-			<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
-			<?php
-			}
-			
+		<table>
+		<tr>
+		<td colspan="2">
+		<h1><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h1>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2">
+		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?></h2>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?></h3>
+		</td>
+		<td>
+		<?php echo $id; ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?></h3>
+		</td>
+		<td>
+		<?php echo $rows[0]->name; ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?></h3>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->tlT); ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?></h3>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?></h3>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->slT); ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2">
+		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?></h2>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?></h3>
+		</td>
+		<td>
+		<?php echo $rows[0]->user_id; ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?></h3>
+		</td>
+		<td>
+		<?php echo $rows[0]->third_party; ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT_TYPE"); ?></h3>
+		</td>
+		<td>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2">
+		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?></h2>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_TYPE"); ?></h3>
+		</td>
+		<td>
+		<?php
+		$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;
+		$db->setQuery($query );
+		$rowsPerimeter = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$db->getErrorMsg();
+			echo "</div>";
 		}
-		?>
-	</tr>
-	<tr>
-		<td colspan="3">
+		if ($rows[0]->perimeter_id > 0){
+			echo $rowsPerimeter[0]->perimeter_name; 
+			echo "(".$rowsPerimeter[0]->perimeter_desc.")";
+			
+		}else
+		{
+			echo JText::_("EASYSDI_GEOMETRY_TEXT");
+
+		} ?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?></h3>
+		</td>
+		<td>
 		<table>
 		<?php
-		//Get product properties
-		$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
-		$db->setQuery($queryPropertiesCode);
-		$rowsPropertiesCode = $db->loadObjectList();
-		
-		foreach($rowsPropertiesCode as $rowPropertyCode)
-		{
-			
-			$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
-			$db->setQuery($queryProductProperties);
-			$rowsProductProperties = $db->loadObjectList();
-			?>
+		$i=0;
+		foreach ($rows as $row){?>
 			<tr>
-			<td>
-			<?php
-			echo JText::_($rowPropertyCode->code);
-			?>
-			</td>
-			
-			<td>
+				<td><?php echo ++$i; ?></td>
+				<td><?php echo $row->text?><?php if ($rows[0]->perimeter_id > 0) {echo "($row->value)";}?></td>
+			</tr>
+			<?php }?>
+		</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?></h3>
+		</td>
+		<td>
+		<?php if($rows[0]->buffer != 0)
+		{
+			echo $rows[0]->buffer; 
+			echo JText::_("EASYSDI_RECAP_ORDER_METER") ; 
+		} 
+		?>
+		</td>
+		</tr>
+		<tr>
+		<td>
+		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?></h3>
+		</td>
+		<td>
+		<?php SITE_cpanel::viewOrderPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id ); ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2">
+		<h2><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?></h2>
+		</td>
+		</tr>
+		
+		<?php
+		$i=0;
+		
+		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+		$db->setQuery($queryStatus);
+		$status_id = $db->loadResult();
+				
+		foreach ($rowsProduct as $row){ ?>
+			<tr>
+			<td colspan="2" >
 			<table>
-			<?php 
-			foreach ($rowsProductProperties as $rowProductProperties)
-			{
-				?>
 				<tr>
-				<td>
-				<?php 
-				if($rowProductProperties->property_id == 0)
-				{	
-					echo $rowProductProperties->property_value;
-				}
-				else
-				{
-					$queryPropertyValue = "SELECT translation FROM #__easysdi_product_properties_values_definition WHERE id = $rowProductProperties->property_id";
-					$db->setQuery($queryPropertyValue);
-					$rowProperty = $db->loadResult();
-					echo JText::_($rowProperty);
-				}
-				?>
-				</td>
+					<td><?php echo ++$i; ?></td>
+					<td><h3><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></h3></td>
+							<?php
+					if ($row->status == $status_id){
+						$queryType = "select id from #__easysdi_order_type_list where code='O'";
+						$db->setQuery($queryType);
+						$type = $db->loadResult();
+					
+						if($rows[0]->type==$type){?>
+			
+					<td><a target="RAW"
+						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
+						<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
+						<?php
+						}
+						
+					}
+					?>
 				</tr>
-				<?php
-			}
-			?>
 			</table>
 			</td>
 			</tr>
 			
 			<?php
-		}
+			//Get product properties
+			$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
+			$db->setQuery($queryPropertiesCode);
+			$rowsPropertiesCode = $db->loadObjectList();
 			
-		?>
+			foreach($rowsPropertiesCode as $rowPropertyCode)
+			{
+			
+				$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
+				$db->setQuery($queryProductProperties);
+				$rowsProductProperties = $db->loadObjectList();
+				?>
+				<tr>
+				<td>
+				<?php
+				echo JText::_($rowPropertyCode->code);
+				?>
+				</td>
+				
+				<td>
+				<table>
+				<?php 
+				foreach ($rowsProductProperties as $rowProductProperties)
+				{
+					?>
+					<tr>
+					<td>
+					<?php 
+					if($rowProductProperties->property_id == 0)
+					{	
+						echo $rowProductProperties->property_value;
+					}
+					else
+					{
+						$queryPropertyValue = "SELECT translation FROM #__easysdi_product_properties_values_definition WHERE id = $rowProductProperties->property_id";
+						$db->setQuery($queryPropertyValue);
+						$rowProperty = $db->loadResult();
+						echo JText::_($rowProperty);
+					}
+					?>
+					</td>
+					</tr>
+					<?php
+				}
+				?>
+				</table>
+				</td>
+				</tr>
+				<?php
+			}
+			?>
+
+		<?php }?>
+		
+		
 		</table>
-		</td>
-	</tr>
-	<?php }?>
-
-
-</table>
-	<?php
-
-	$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;
-	$db->setQuery($query );
-	$rowsPerimeter = $db->loadObjectList();
-	if ($db->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$db->getErrorMsg();
-		echo "</div>";
-	}
-	if ($rows[0]->perimeter_id > 0){
-		?>
-<h2><?php echo $rowsPerimeter[0]->perimeter_name; ?> (<?php echo $rowsPerimeter[0]->perimeter_desc; ?>)</h2>
-		<?php }else{
-			echo "<h1>".JText::_("EASYSDI_GEOMETRY_TEXT")."</h1>";
-
-		} ?>
-<table>
-
-<?php
-$i=0;
-foreach ($rows as $row){?>
-	<tr>
-		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->text?><?php if ($rows[0]->perimeter_id > 0) {echo "($row->value)";}?></td>
-
-	</tr>
-	<?php }?>
-</table>
-
-
-<?php if($rows[0]->buffer != 0)
-{
-	?>
-<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?></h2>
-<table>
-  <tr>
-    <td><?php echo $rows[0]->buffer; ?> <?php echo JText::_("EASYSDI_RECAP_ORDER_METER") ; ?></td>
-  </tr>
-</table>
-<?php 
-	
-} ?>
 		<?php
-	SITE_cpanel::viewOrderPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id );
+	
 	}
 	
 function viewOrderPerimeterExtent($order_id, $perimeter_id){
@@ -821,6 +919,10 @@ $i++;
 			var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
 			var feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
 			vectors.addFeatures([feature]);
+			
+			//Zoom to extent
+			var vFeatures = vectors.features;
+			map.zoomToExtent(vFeatures[0].geometry.getBounds(),false);
 			<?php 
 		}
 		else
@@ -837,7 +939,7 @@ $i++;
 			}
 			
 			?>
-			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=district&VERSION=1.0.0';
+			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeterDef->feature_type_name; ?>&VERSION=1.0.0';
 			wfsUrlWithFilter = wfsUrlWithFilter + '&FILTER=';
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
 			<?php
@@ -850,8 +952,7 @@ $i++;
 			foreach ( $rowsPerimeterValue as $value)
 			{
 				?>
-				var idSurface = <?php echo $value->value;  ?>;
-				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->id_field_name; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $rowsPerimeterValue[0]->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->id_field_name; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $value->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
 				<?php 
 			}
 			if(count($rowsPerimeterValue) >1)
@@ -862,6 +963,8 @@ $i++;
 			}
 			?>
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+			
+			var wfs;
 	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
@@ -870,17 +973,17 @@ $i++;
                     })
                 });		    	            
 			 map.addLayer(wfs);	
+			 
+			 //Zoom to extent
+			 var wFeatures = wfs.features;
+			 map.zoomToExtent(wfs.maxExtent, false);
 			<?php 
 		}
 		?>
-		
-			
-      map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>));
-      map.addControl(new OpenLayers.Control.Attribution());         
-      
-      
+		map.addControl(new OpenLayers.Control.Attribution());         
                                                             
 }
+
 var oldLoad = window.onload;
 window.onload=function(){
 initMap();
