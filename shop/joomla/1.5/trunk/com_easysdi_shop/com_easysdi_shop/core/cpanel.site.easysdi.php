@@ -545,93 +545,93 @@ class SITE_cpanel {
 		}
 
 		?>
-		<table>
+		<table class="orderRecap">
 		<tr>
-		<td colspan="2">
-		<h1><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h1>
+		<td colspan="2" class="ortitle1" >
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?>
 		</td>
 		</tr>
 		<tr>
-		<td colspan="2">
-		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?></h2>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?>
 		</td>
 		<td>
 		<?php echo $id; ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
 		</td>
 		<td>
 		<?php echo $rows[0]->name; ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?>
 		</td>
 		<td>
 		<?php echo JText::_($rows[0]->tlT); ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
 		</td>
 		<td>
 		<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>
 		</td>
 		<td>
 		<?php echo JText::_($rows[0]->slT); ?>
 		</td>
 		</tr>
 		<tr>
-		<td colspan="2">
-		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?></h2>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
 		</td>
 		<td>
 		<?php echo $rows[0]->user_id; ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?>
 		</td>
 		<td>
 		<?php echo $rows[0]->third_party; ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT_TYPE"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT_TYPE"); ?>
 		</td>
 		<td>
 		</td>
 		</tr>
 		<tr>
-		<td colspan="2">
-		<h2><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?></h2>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?>
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_TYPE"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_TYPE"); ?>
 		</td>
 		<td>
 		<?php
@@ -655,8 +655,8 @@ class SITE_cpanel {
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?>
 		</td>
 		<td>
 		<table>
@@ -672,8 +672,8 @@ class SITE_cpanel {
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?>
 		</td>
 		<td>
 		<?php if($rows[0]->buffer != 0)
@@ -685,16 +685,16 @@ class SITE_cpanel {
 		</td>
 		</tr>
 		<tr>
-		<td>
-		<h3><?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?></h3>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?>
 		</td>
 		<td>
 		<?php SITE_cpanel::viewOrderPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id ); ?>
 		</td>
 		</tr>
 		<tr>
-		<td colspan="2">
-		<h2><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?></h2>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?>
 		</td>
 		</tr>
 		
@@ -710,8 +710,8 @@ class SITE_cpanel {
 			<td colspan="2" >
 			<table>
 				<tr>
-					<td><?php echo ++$i; ?></td>
-					<td><h3><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></h3></td>
+					<td ><?php echo ++$i; ?></td>
+					<td class="ortitle3"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
 							<?php
 					if ($row->status == $status_id){
 						$queryType = "select id from #__easysdi_order_type_list where code='O'";
