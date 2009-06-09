@@ -779,11 +779,15 @@ background-image: url(none);
 /***********************/
 /*** EasySDI Order Recap ***/
 /***********************/
+.orderRecap
+{
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	
+}
 .orderRecap .ortitle1{
 	font-weight: bold;
 	font-size : 18px;
 	padding: 8px;
-	font-family: arial;
 	background-color:#d4deff;
 }
 .orderRecap .ortitle2{
@@ -800,4 +804,26 @@ background-image: url(none);
 	font-size : 12px;
 	vertical-align: top;
 	padding-left:5px;
+}
+.orderRecap .ortitle4{
+	vertical-align: top;
+	font-weight: bold;
+	color: grey;
+}
+.orderRecap .ornum{
+	font-style: italic ;
+	vertical-align: top;
+}
+ div#printOrderRecap{
+	border: 1px outset #d4deff;
+	background-color:transparent;
+	background-image:url(../images/fff/silk/printer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+div#printOrderRecap:hover{ 
+	border-style: inset;
+}
 }
