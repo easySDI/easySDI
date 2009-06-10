@@ -822,6 +822,9 @@ background-image: url(none);
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	right:5px;
+	top:10px;
+	position: absolute;
 }
 div#printOrderRecap:hover{ 
 	border-style: inset;
