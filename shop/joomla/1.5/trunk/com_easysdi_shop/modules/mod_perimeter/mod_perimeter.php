@@ -528,45 +528,7 @@ function checkBufferValue()
 		function fillSelectPerimeter()
 		{
 			selectPerimeterPerimeter(document.getElementById('perimeterList')[document.getElementById('perimeterList').selectedIndex].value)
-		
-		
-		/*var elSel = document.getElementById("perimeterListPerimeter");
-		
-		
-		freeSelectPerimeter();
-		
-		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
-		
-		var wfsUrlWithBBox = wfsUrl +"&BBOX="+map.maxExtent.toBBOX()+"&MAXFEATURES=50";
-		
-		wfs3 = new OpenLayers.Layer.Vector("selectedFeatures", {
-                    strategies: [new OpenLayers.Strategy.Fixed()],
-                    protocol: new OpenLayers.Protocol.HTTP({
-                        url: wfsUrlWithBBox,
-                        format: new OpenLayers.Format.GML()                        
-                    })
-                });		    	            
-		wfs3.events.register("featureadded", null, function(event) {
-		var elSel = document.getElementById("perimetersList");
-		if (elSel.options[0].value==""){
-				elSel.remove(0);
-		}
-		
-		
-		var feat2 = event.feature;
-		
-		var perim = document.getElementById("perimetersList");
-		var id = feat2.attributes[idField];
-		var name = feat2.attributes[nameField];
-		
-		perim.options[perim.options.length] =  new Option(name,id);
-              });
-              
-             map.addLayer(wfs3);
-              map.removeLayer(wfs3);    
-              
-              */
-            }
+        }
 		--></script>
 
 <button class="deletePerimeterButton" type="button"
