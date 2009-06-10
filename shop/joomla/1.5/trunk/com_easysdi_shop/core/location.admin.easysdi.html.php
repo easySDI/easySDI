@@ -23,6 +23,23 @@ class HTML_location {
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
+		
+		//Get if the current location is used by an other in the field "id_location_filter".
+		//This means that a location depends on this one for a filter and
+		//so this means that the current location can not be "shown in location"
+		$queryIsFilter = "select * from  #__easysdi_location_definition  where id_location_filter=$rowLocation->id ";
+		$database->setQuery( $queryIsFilter );
+		$result = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		$is_filter = false;
+		if(count($result) >0)
+		{
+			$is_filter = true;	
+		}
+		//
+		
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_LOCATION"), 'generic.png' );
 			
@@ -95,9 +112,25 @@ class HTML_location {
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_LOCALISATION"); ?> : </td>
+							<?php
+							if($is_filter == false)
+							{
+							?>
 							<td><select name="is_localisation" > <option value="1" <?php if($rowLocation->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 								<option value="0" <?php if($rowLocation->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
+							<?php
+							}
+							else
+							{
+							?>
+							<td colspan="2"><select name="is_localisation" disabled >  
+								<option value="0" selected ><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+								<?php echo JText::_("EASYSDI_LOCATION_DISABLE_VISIBLE_REASON"); ?>
+							</td>
+							<?php
+							}
+							?>
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_SEARCHBOX"); ?> : </td>

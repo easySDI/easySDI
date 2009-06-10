@@ -23,6 +23,23 @@ class HTML_perimeter {
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
+		
+		//Get if the current perimeter is used by an other in the field "id_perimeter_filter".
+		//This means that a perimeter depends on this one for a filter and
+		//so this means that the current perimeter can not be used in "manual perimeter"
+		$queryIsFilter = "select * from  #__easysdi_perimeter_definition  where id_perimeter_filter=$rowPerimeter->id ";
+		$database->setQuery( $queryIsFilter );
+		$result = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		$is_filter = false;
+		if(count($result) >0)
+		{
+			$is_filter = true;	
+		}
+		//
+		
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PERIMETER"), 'generic.png' );
 			
@@ -125,9 +142,25 @@ class HTML_perimeter {
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_LOCALISATION"); ?> : </td>
+							<?php
+							if($is_filter == false)
+							{
+							?>
 							<td><select name="is_localisation" > <option value="1" <?php if($rowPerimeter->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 								<option value="0" <?php if($rowPerimeter->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
+							<?php
+							}
+							else
+							{
+							?>
+							<td colspan="2"><select name="is_localisation" disabled >  
+								<option value="0" selected ><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+								<?php echo JText::_("EASYSDI_PERIMETER_DISABLE_VISIBLE_REASON"); ?>
+							</td>
+							<?php
+							}
+							?>
 							</tr>
 							
 						<tr>
