@@ -97,6 +97,8 @@ if ($curstep == "2")
 					?>
 	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				document.getElementById("locationsListLocation<?php echo $row->id; ?>").style.display='block';
+	 				hideLocationParent(<?php echo $row->id; ?>);
+	 				
 	 			<?php 
 				} 
 				?>
@@ -106,7 +108,9 @@ if ($curstep == "2")
 	 		else
 	 		{
 	 			if (document.getElementById('locationblock<?php echo $row->id;?>')!=null)
-	 			document.getElementById('locationblock<?php echo $row->id;?>').style.display='none';
+	 			{
+	 				document.getElementById('locationblock<?php echo $row->id;?>').style.display='none';
+	 			}
 	 		}
 		 
 		 <?php 
@@ -114,11 +118,14 @@ if ($curstep == "2")
 		?>
       }
  
+  
+
 	 /**
 	 In case of unselection in a combobox, disable the display of parent comboboxes already displayed
 	 */
- 	  function hideParent(curId)
+ 	  function hideLocationParent(curId)
       {
+      	$("status").innerHTML = 'start'; 
       	<?php
       	
 		$queryAll = "SELECT * FROM #__easysdi_location_definition";
@@ -128,6 +135,7 @@ if ($curstep == "2")
 		foreach ($rowsAll as $rowall)
 		{	
 			?>
+			
 			if(curId == '<?php echo $rowall->id_location_filter;?>')
 			{
 				if(document.getElementById('locationsListLocation<?php echo $rowall->id; ?>') != null)
@@ -143,11 +151,12 @@ if ($curstep == "2")
 			 		document.getElementById('search<?php echo $rowall->id; ?>').style.display = 'none';
 			 	}
 				
-				hideParent('<?php echo $rowall->id; ?>');
+				hideLocationParent('<?php echo $rowall->id; ?>');
 			}
 			
 			<?php
 		}?>
+		$("status").innerHTML = 'start + end'; 
       }
       
       /**
@@ -158,7 +167,7 @@ if ($curstep == "2")
       	if (document.getElementById(curId)[document.getElementById(curId).selectedIndex].value == "-1")
       	{
       		//Hide the next comboboxes
-      		hideParent(curId.substring(21,curId.length));
+      		hideLocationParent(curId.substring(21,curId.length));
       		//$("status").innerHTML = curId.substring(21,curId.length); 
       		return;
       	}
