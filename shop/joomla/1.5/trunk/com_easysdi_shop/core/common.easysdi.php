@@ -59,9 +59,6 @@ class helper_easysdi{
       
 	function generateHtmlPerimeterSelect($row,$parent){
 		$db =& JFactory::getDBO();
-
-		?>
-		<?php
 		if ($row->id_perimeter_filter > 0 )
 		{
 			$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
@@ -72,22 +69,23 @@ class helper_easysdi{
 		}
 		if ($parent == 0){
 			echo "<tr>";
-			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
+			echo "<td><select style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
 
 			echo "</tr>";
 		}else{
 			echo "<tr>";
-			echo "<td><select id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \"><option > </option></select></td>";
+			echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent', '$parent') \"><option > </option></select></td>";
 			echo "</tr>";
 			if ($row->searchbox == 1) {
 				echo "<tr >";
-				echo "<td><input size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
+				echo "<input style='display:none' onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent''') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
 				echo "</tr>";
 			}
 		}
 
 	}
+	
 
 	function hasRight($partner_id,$right){
 
