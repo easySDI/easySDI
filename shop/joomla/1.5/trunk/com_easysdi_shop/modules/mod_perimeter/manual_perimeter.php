@@ -38,7 +38,6 @@ $db =& JFactory::getDBO();
 	
 	<script>			
 	function selectPerimeterPerimeter(selected){
-	
 	<?php
 	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering ";
 	$db->setQuery( $query2 );
@@ -81,20 +80,79 @@ $db =& JFactory::getDBO();
 					
 						 		 	
 	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
-	 				
+	 				document.getElementById("perimetersListPerimeter<?php echo $row->id; ?>").style.display='block';
 	 			<?php } ?>
 	 			if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
 	 			document.getElementById('perimeterblock<?php echo $row->id;?>').style.display='block';
-	 		}else{
-	 		if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
-	 			document.getElementById('perimeterblock<?php echo $row->id;?>').style.display='none';
+	 		}else
+	 		{
+		 		if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
+		 		{
+		 			document.getElementById('perimeterblock<?php echo $row->id;?>').style.display='none';
+		 			hideParent('<?php echo $row->id; ?>');
+		 		}
 	 		}
 	 
 	 <?php } ?>
       }
       
-   function fillPerimeterParent(filterId, curId, parId)
+    
+      
+       /**
+	 In case of unselection in a combobox, disable the display of parent comboboxes already displayed
+	 */
+ 	  function hideParent(curId)
+      {
+      	<?php
+      	
+		$queryAll = "SELECT * FROM #__easysdi_location_definition";
+		$db->setQuery( $queryAll );
+		$rowsAll = $db->loadObjectList();
+		
+		foreach ($rowsAll as $rowall)
+		{	
+			?>
+			if(curId == '<?php echo $rowall->id_perimeter_filter;?>')
+			{
+				if(document.getElementById('perimetersListPerimeter<?php echo $rowall->id; ?>') != null)
+				{
+					document.getElementById('perimetersListPerimeter<?php echo $rowall->id; ?>').style.display = 'none';
+				}
+		      	if (document.getElementById('filter<?php echo $rowall->id; ?>')!=null )
+			 	{
+			 		document.getElementById('filter<?php echo $rowall->id; ?>').style.display = 'none';
+			 	}
+			 	if (document.getElementById('search<?php echo $rowall->id; ?>')!=null )
+			 	{
+			 		document.getElementById('search<?php echo $rowall->id; ?>').style.display = 'none';
+			 	}
+				
+				hideParent('<?php echo $rowall->id; ?>');
+			}
+			
+			<?php
+		}?>
+      }
+   function fillPerimeterParent(filterId, curId, parId, parentId)
    {
+  	 if (document.getElementById(curId)[document.getElementById(curId).selectedIndex].value == "-1")
+      	{
+      		//Hide the next comboboxes
+      		hideParent(curId.substring(23,curId.length));
+      		return;
+      	}
+      
+	    //Display the next parent elements
+      	document.getElementById(parId).style.display = 'block';
+      	if (document.getElementById('filter'+parentId)!=null )
+	 	{
+	 		document.getElementById('filter'+parentId).style.display = 'block';
+	 	}
+	 	if (document.getElementById('search'+parentId)!=null )
+	 	{
+	 		document.getElementById('search'+parentId).style.display = 'block';
+	 	}
+	 	
 	<?php
 	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
 	$db->setQuery( $query2 );
@@ -252,7 +310,7 @@ $db =& JFactory::getDBO();
 		if (loadingPerimeter==true){
 				
 				elSel.remove(0);
-				elSel.options[0] =  new Option("","");
+				elSel.options[0] =  new Option("- "+perimeter_perimeter_name+" -","-1");
 				loadingPerimeter=false;
 		}
 				
