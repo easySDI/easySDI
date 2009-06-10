@@ -870,23 +870,26 @@ function viewOrderPerimeterExtent($order_id, $perimeter_id){
 	}					  
 ?>
 <script>
-function initMap(){
-	map = new OpenLayers.Map('map', {
-    		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
+function initMap()
+{
+	var options = {
+	    	projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             units: "<?php echo $rowsBaseMap->unit; ?>",
-
-//Bug when prohection == 4326 the resolutions are not managed properly
-<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+			<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
             minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
             maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
-            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
-            });
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>), 
+            controls: [] 
+	};
+	var map = new OpenLayers.Map("map", options);
+
 				  
 			baseLayerVector = new OpenLayers.Layer.Vector(
                 "BackGround",
                 {isBaseLayer: true,transparent: "true"}
+               
             ); 
 			map.addLayer(baseLayerVector);
 <?php
@@ -1014,7 +1017,7 @@ $i++;
 			<?php 
 		}
 		?>
-		map.addControl(new OpenLayers.Control.Attribution());         
+		
                                                             
 }
 
