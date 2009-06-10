@@ -520,8 +520,8 @@ class SITE_cpanel {
 	function orderReport($id){
 		global $mainframe;
 		$option = JRequest::getVar('option');
-		
-		
+		$task = JRequest::getVar('task');
+		$print = JRequest::getVar('print');
 		
 		$db =& JFactory::getDBO();
 		
@@ -561,14 +561,25 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
+		if ($print ==1 ){
+			?>
+			<script>window.print();</script> 
+			<?php
+		}
 		?>
+		<script type="text/javascript" src="./media/system/js/mootools.js"></script>
+		<script>
+		window.addEvent('domready', function() {
+		$('printOrderRecap').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=<?php echo $option; ?>&task=<?php echo $task; ?>&cid[]=<?php echo $id; ?>&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+			});
+		});
+		</script>
+		
 		<table class="orderRecap" width="100%">
 		<tr>
-		<td>
-		<div title ="Print" id="printOrderRecap"><a href="javascript:window.print()"></a> </div>
-		<input type="button"
-  onClick="window.print()"
-  value="Print This Page"/>
+		<td colspan="2" width=100% >
+		<div title ="Print" id="printOrderRecap"></div>
 		</td>
 		</tr>
 		<tr>
@@ -640,13 +651,6 @@ class SITE_cpanel {
 		</td>
 		<td>
 		<?php echo $third_name; ?>
-		</td>
-		</tr>
-		<tr>
-		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT_TYPE"); ?>
-		</td>
-		<td>
 		</td>
 		</tr>
 		<tr>
