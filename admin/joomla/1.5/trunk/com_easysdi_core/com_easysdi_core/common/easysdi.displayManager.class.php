@@ -474,11 +474,6 @@ class displayManager{
 					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
 					displayManager::convertFO2PDF($fopfo, $foptmp);
 					
-					// Remove temporaries files
-					unlink($fopxml);
-					unlink($fopxsl);
-					unlink($fopfo);
-				    
 					if (file_exists($foptmp)) {
 						ob_end_clean();
 						@java_reset();
@@ -495,8 +490,14 @@ class displayManager{
 					    header('Pragma: public');
 					    header('Content-Length: ' . filesize($foptmp));
 					    readfile($foptmp);
-					    exit;
 					}
+					
+					// Remove temporaries files
+					unlink($fopxml);
+					unlink($fopxsl);
+					unlink($fopfo);
+				    unlink($foptmp);
+					
 					/*					
 					@java_reset();
 						
