@@ -387,12 +387,45 @@ class displayManager{
 	
 	function exportPDFfile( $myHtml) {
 		global  $mainframe;
-	
 		$database =& JFactory::getDBO();
-
+		$id = JRequest::getVar('id');
+		$supplier;
+		$product_creation_date;
+		$product_update_date;
 		
-		$document  = new DomDocument();
-				
+		$db =& JFactory::getDBO();
+		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($queryPartnerID);
+			$partner_id = $db->loadResult();
+		
+		$query="select u.name from #__easysdi_community_partner p inner join #__users u on p.user_id = u.id WHERE p.partner_id = ".$partner_id;
+   			$db->setQuery($query);
+   			$supplier= $db->loadResult();
+			
+		$query = "select creation_date from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($query);
+			$product_creation_date = $db->loadResult();
+		
+		$query = "select update_date from #__easysdi_product where metadata_id = '".$id."'";
+			$db->setQuery($query);
+			$product_update_date = $db->loadResult();
+			
+		$temp = explode(" ", $product_creation_date);
+		$temp = explode("-", $temp[0]);
+		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		$temp = explode(" ", $product_update_date);
+		$temp = explode("-", $temp[0]);
+		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+		
+
+		$myHtml = str_replace("__ref__asit_1\$s", "", $myHtml);
+		$myHtml = str_replace("__ref__asit_2\$s", $supplier, $myHtml);
+		$myHtml = str_replace("__ref__asit_3\$s", $product_creation_date, $myHtml);
+		$myHtml = str_replace("__ref__asit_4\$s", $product_update_date, $myHtml);
+		$myHtml = str_replace("__ref__asit_5\$s", "", $myHtml);
+		$myHtml = str_replace("__ref__asit_6\$s", "", $myHtml);
+
+		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
@@ -400,22 +433,16 @@ class displayManager{
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();   
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
-    	$pageDom->loadHTML($searchPage);
+    	@$pageDom->loadHTML($searchPage);
     	$result = $processor->transformToXml($pageDom);    	
-		//$result = $processor->transformToXml(DOMDocument::loadHTML($myHtml));
-		
-    	//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		
 		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 		$fop_url = config_easysdi::getValue("FOP_URL");
-				 
+	 
 		if ($bridge_url ){ 
 			require_once($bridge_url);
-
 			if ($fop_url )
 			{ 
-				require_once($fop_url);
-					
+
 				$tmp = uniqid();
 				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
 				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
@@ -435,13 +462,13 @@ class displayManager{
 					fclose ($fp);
 					
 					// Usefull FOP libraries
-					java_require("http://localhost:8080/fop/lib/xml-apis-1.3.04.jar;
-								  http://localhost:8080/fop/build/fop.jar;
-								  http://localhost:8080/fop/lib/xmlgraphics-commons-1.3.1.jar;
-								  http://localhost:8080/fop/lib/avalon-framework-4.2.0.jar;
-								  http://localhost:8080/fop/lib/commons-io-1.3.1.jar;
-								  http://localhost:8080/fop/lib/batik-all-1.7.jar;
-								  http://localhost:8080/fop/lib/commons-logging-1.0.4.jar");
+					java_require("http://localhost:8080/fop-0.95/build/fop.jar;
+						      	 http://localhost:8080/fop-0.95/lib/xmlgraphics-commons-1.3.1.jar;
+								 http://localhost:8080/fop-0.95/lib/batik-all-1.7.jar;
+								 http://localhost:8080/fop-0.95/lib/avalon-framework-4.2.0.jar;
+								 http://localhost:8080/fop-0.95/lib/xml-apis-1.3.04.jar;
+								 http://localhost:8080/fop-0.95/lib/commons-io-1.3.1.jar;
+								 http://localhost:8080/fop-0.95/lib/commons-logging-1.0.4.jar");
 					
 					//Create the PDF file based on the FO file
 					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
@@ -487,9 +514,7 @@ class displayManager{
 					
 				}
 				catch (JavaException $ex) {
-					$trace = new Java("java.io.ByteArrayOutputStream");
-					$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
-					print "java stack trace: $trace\n";
+					echo "An exception occured: "; echo $ex; echo "<br>\n";
 				}
 			}
 			else {
@@ -538,18 +563,18 @@ class displayManager{
 	function convertXML2FO($xml, $xslt, $fo)
 	{
 	// Transform path of fo and xslt files for javax.xml.transform.stream
-	$xml = new java("java.io.File", $xml);
-	$xmlFile= $xml->getAbsolutePath();
-	$fo = new java("java.io.File", $fo);
-	$foFile= $fo->getAbsolutePath();
-	$xslt = new java("java.io.File", $xslt);
-	$xsltFile= $xslt->getAbsolutePath();
-	
-	// Setup output
-	$out = new java("java.io.FileOutputStream", $fo);
-	
 	try
 	{
+		$xml = new java("java.io.File", $xml);
+		$xmlFile= $xml->getAbsolutePath();
+		$fo = new java("java.io.File", $fo);
+		$foFile= $fo->getAbsolutePath();
+		$xslt = new java("java.io.File", $xslt);
+		$xsltFile= $xslt->getAbsolutePath();
+	
+		// Setup output
+		$out = new java("java.io.FileOutputStream", $fo);
+	
  		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
 		//Setup XSLT
 		$factory = new java("javax.xml.transform.TransformerFactory");
@@ -565,21 +590,18 @@ class displayManager{
 		//Start XSLT transformation and FOP processing
 		$transformer->transform($src, $res);
 	}
-	catch (JavaException $ex)
-	{
-		$trace = new Java("java.io.ByteArrayOutputStream");
-		$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
-		print "java stack trace: $trace\n";
+	catch (JavaException $ex) {
+			echo "An exception occured: "; echo $ex; echo "<br>\n";
 	}
-	$out->close();		
+	if($out != null)
+		$out->close();		
 	}
 		
 	function convertFO2PDF($fo, $pdf)
 	{
-		$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
-		
 		try
 		{
+			$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
 			// configure fopFactory as desired
 			$fopFactory = new java("org.apache.fop.apps.FopFactory");
 			$fopFactory = $fopFactory->newInstance();
@@ -614,14 +636,11 @@ class displayManager{
 			//Start XSLT transformation and FOP processing
 			$transformer->transform($src, $res);
 		}
-		catch (JavaException $ex)
-		{
-			$trace = new Java("java.io.ByteArrayOutputStream");
-			$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
-			print "java stack trace: $trace\n";
+		catch (JavaException $ex) {
+			echo "An exception occured: "; echo $ex; echo "<br>\n";
 		}
-
-		$out->close();
+		if($out != null)
+			$out->close();
 	}
 }
 
