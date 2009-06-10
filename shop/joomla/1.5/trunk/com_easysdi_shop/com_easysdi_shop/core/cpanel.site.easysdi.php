@@ -870,6 +870,7 @@ function viewOrderPerimeterExtent($order_id, $perimeter_id){
 	}					  
 ?>
 <script>
+var map;
 function initMap()
 {
 	var options = {
@@ -883,15 +884,10 @@ function initMap()
             maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>), 
             controls: [] 
 	};
-	var map = new OpenLayers.Map("map", options);
-
+	map = new OpenLayers.Map("map", options);
 				  
-			baseLayerVector = new OpenLayers.Layer.Vector(
-                "BackGround",
-                {isBaseLayer: true,transparent: "true"}
-               
-            ); 
-			map.addLayer(baseLayerVector);
+	baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true,transparent: "true"}); 
+	map.addLayer(baseLayerVector);
 <?php
 
 $query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
