@@ -462,14 +462,14 @@ class displayManager{
 					fclose ($fp);
 					
 					// Usefull FOP libraries
-					java_require("http://localhost:8080/fop-0.95/build/fop.jar;
-						      	 http://localhost:8080/fop-0.95/lib/xmlgraphics-commons-1.3.1.jar;
-								 http://localhost:8080/fop-0.95/lib/batik-all-1.7.jar;
-								 http://localhost:8080/fop-0.95/lib/avalon-framework-4.2.0.jar;
-								 http://localhost:8080/fop-0.95/lib/xml-apis-1.3.04.jar;
-								 http://localhost:8080/fop-0.95/lib/commons-io-1.3.1.jar;
-								 http://localhost:8080/fop-0.95/lib/commons-logging-1.0.4.jar");
-					
+					java_require("$fop_url/build/fop.jar;
+								  $fop_url/lib/xmlgraphics-commons-1.3.1.jar;
+								  $fop_url/lib/batik-all-1.7.jar;
+								  $fop_url/lib/avalon-framework-4.2.0.jar;
+								  $fop_url/lib/xml-apis-1.3.04.jar;
+								  $fop_url/lib/commons-io-1.3.1.jar;
+								  $fop_url/lib/commons-logging-1.0.4.jar");
+										
 					//Create the PDF file based on the FO file
 					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
 					displayManager::convertFO2PDF($fopfo, $foptmp);
