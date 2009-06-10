@@ -538,7 +538,8 @@ class displayManager{
 				
 				@java_reset();
 						
-			 	error_reporting(0);
+			 	ob_end_clean();
+			    error_reporting(0);
 				ini_set('zlib.output_compression', 0);
 				
 				header('Pragma: public');
@@ -549,11 +550,10 @@ class displayManager{
 				header("Expires: 0"); 
 				header("Content-Length: ".filesize($foptmp));
 				
-				ob_clean();
-			    flush();
+				//flush();
 			    readfile($foptmp);
 				
-			    echo $result;
+			    //echo $result;
 			}
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
