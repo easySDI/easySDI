@@ -271,7 +271,7 @@ class displayManager{
 		//Workaround to avoid printf problem with text with a "%", must
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
-		$xmlToHtml = str_replace("__ref__asit_", "%", $xmlToHtml);
+		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
 		$myHtml .= $xmlToHtml;
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
@@ -418,12 +418,12 @@ class displayManager{
 		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
 		
 
-		$myHtml = str_replace("__ref__asit_1\$s", "", $myHtml);
-		$myHtml = str_replace("__ref__asit_2\$s", $supplier, $myHtml);
-		$myHtml = str_replace("__ref__asit_3\$s", $product_creation_date, $myHtml);
-		$myHtml = str_replace("__ref__asit_4\$s", $product_update_date, $myHtml);
-		$myHtml = str_replace("__ref__asit_5\$s", "", $myHtml);
-		$myHtml = str_replace("__ref__asit_6\$s", "", $myHtml);
+		$myHtml = str_replace("__ref_1\$s", "", $myHtml);
+		$myHtml = str_replace("__ref_2\$s", $supplier, $myHtml);
+		$myHtml = str_replace("__ref_3\$s", $product_creation_date, $myHtml);
+		$myHtml = str_replace("__ref_4\$s", $product_update_date, $myHtml);
+		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
+		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
 
 		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
@@ -480,6 +480,12 @@ class displayManager{
 					unlink($fopfo);
 				    
 					if (file_exists($foptmp)) {
+						ob_end_clean();
+						@java_reset();
+						
+						error_reporting(0);
+						ini_set('zlib.output_compression', 0);
+						
 					    header('Content-Description: File Transfer');
 					    header('Content-Type: application/octet-stream');
 					    header('Content-Disposition: attachment; filename=metadata.pdf');
@@ -488,8 +494,6 @@ class displayManager{
 					    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 					    header('Pragma: public');
 					    header('Content-Length: ' . filesize($foptmp));
-					    ob_clean();
-					    flush();
 					    readfile($foptmp);
 					    exit;
 					}
