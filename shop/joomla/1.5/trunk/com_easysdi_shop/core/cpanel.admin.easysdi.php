@@ -151,10 +151,29 @@ class ADMIN_cpanel {
 		$productFilter = $database->loadObjectList();
 		
 		//$query = "select o.*, sl.code, sl.translation, p.partner_id as partner_id, p.partner_acronym as partner_acronym, tp.partner_id as thirdparty_id, tp.partner_acronym as thirdparty_acronym from #__easysdi_order o inner join #__easysdi_order_status_list sl on o.status=sl.id inner join #__easysdi_community_partner p on o.provider_id=p.partner_id inner join #__easysdi_community_partner tp on o.third_party=tp.partner_id";
-		$query = "select distinct(o.order_id), prod.partner_id as supplier, o.*, o.order_date as orderDate, o.response_date as responseDate, sl.code, sl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list sl on o.status=sl.id inner join #__easysdi_order_type_list tl on o.type=tl.id left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id left outer join #__easysdi_community_partner p on  o.user_id=p.user_id left outer join #__easysdi_product prod on opl.product_id=prod.id";
+		$query = "select distinct(o.order_id), 
+						 
+						 o.*, 
+						 o.order_date as orderDate, 
+						 o.response_date as responseDate, 
+						 sl.code, 
+						 sl.translation as status_translation, 
+						 tl.translation as type_translation 
+				from #__easysdi_order o 
+				inner join #__easysdi_order_status_list sl on o.status=sl.id 
+				inner join #__easysdi_order_type_list tl on o.type=tl.id 
+				 
+				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";
+				
 		$query .= $filter;
 		
-		$queryCount = "select count(*) from #__easysdi_order o inner join #__easysdi_order_status_list sl on o.status=sl.id inner join #__easysdi_order_type_list tl on o.type=tl.id left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id left outer join #__easysdi_community_partner p on  o.user_id=p.user_id left outer join #__easysdi_product prod on opl.product_id=prod.id";
+		$queryCount = "select count(*) 
+						from #__easysdi_order o 
+						inner join #__easysdi_order_status_list sl on o.status=sl.id 
+						inner join #__easysdi_order_type_list tl on o.type=tl.id 
+						 
+						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
+						";
 		$queryCount .= $filter;
 		
 		$database->setQuery($queryCount);
@@ -175,88 +194,13 @@ class ADMIN_cpanel {
 			echo "</div>";
 		}	
 		
-		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter, $partnerFilter, $supplierFilter, $productFilter, $orderpartner, $ordersupplier, $orderproduct ,$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo);
+		HTMLadmin_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter, $partnerFilter, $supplierFilter, $productFilter, $orderpartner, $ordersupplier, $orderproduct ,$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo);
 		
 	}
 	
 
 function orderReport($id){
-	global $mainframe;
-	
-	$db =& JFactory::getDBO();
-	
-	$query = "SELECT * FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id";
-		
-	$db->setQuery($query );
-	
-	
-	$rows = $db->loadObjectList();
-	if ($db->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}	
-
-		
-
-	$query = "SELECT * FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";	
-	$db->setQuery($query );
-	$rowsProduct = $db->loadObjectList();
-	if ($db->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}	
-	
-	
-		?>
-		<h1><?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST") ?></h1>
-		<table>
-		<?php
-	$i=0;
-	foreach ($rowsProduct as $row){?>
-		<tr>
-		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->data_title?></td>				
-		
-		</tr>
-	<?php }?>
-	
-	
-		</table>
-		<?php 
-		
-	$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;	
-	$db->setQuery($query );
-	$rowsPerimeter = $db->loadObjectList();
-	if ($db->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$db->getErrorMsg();
-			echo "</div>";
-		}	
-	if ($rows[0]->perimeter_id > 0){		
-	?>
-	<h1><?php echo $rowsPerimeter[0]->perimeter_name; ?> (<?php echo $rowsPerimeter[0]->perimeter_desc; ?>)</h1>
-		<?php }else{
-			echo "<h1>".JText::_("EASYSDI_GEOMETRY_TEXT")."</h1>";
-			
-		} ?>
-	<table>
-		
-	<?php
-	$i=0;
-	foreach ($rows as $row){?>
-		<tr>
-		<td><?php echo ++$i; ?></td>
-		<td><?php echo $row->text?><?php if ($rows[0]->perimeter_id > 0) {echo "($row->value)";}?></td>				
-		
-		</tr>
-	<?php }?>
-	 </table>
-	 
-	
-	 <?php
-		
+	HTMLadmin_cpanel::orderReportRecap($id,false);
 }
 
 function sendOrder(){
