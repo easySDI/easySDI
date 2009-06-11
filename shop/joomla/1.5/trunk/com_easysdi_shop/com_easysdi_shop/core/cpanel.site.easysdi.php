@@ -518,6 +518,10 @@ class SITE_cpanel {
 
 
 	function orderReport($id){
+		HTMLadmin_cpanel::orderReportRecap($id, true);
+	}
+	/*
+	function temp($id){
 		global $mainframe;
 		
 		//Check the current user rights
@@ -849,7 +853,7 @@ class SITE_cpanel {
 		<?php
 	
 	}
-	
+	*/
 function viewOrderPerimeterExtent($order_id, $perimeter_id){
 	?>
 	<link rel="stylesheet" href="/templates/easysdi/css/easysdi.css" type="text/css" />
