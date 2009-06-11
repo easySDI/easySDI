@@ -1758,7 +1758,44 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
-	 
+	 if($version == "0.9995")
+	 {
+	 	//Add product treatment type
+		$query="ALTER TABLE #__easysdi_product add column `treatment_type` int(2) ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "CREATE TABLE #__easysdi_product_treatment_type (
+					`id` BIGINT( 20 ) NOT NULL ,
+					`code` TEXT NOT NULL auto_increment ,
+					`translation` TEXT NULL ,
+					`description` TEXT NULL ,
+					PRIMARY KEY ( `id` )
+					) ";
+	 	$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "INSERT INTO #__easysdi_product_treatment_type (code,translation) values ('AUTO' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_AUTO'), ('MANU' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_MANU')";
+	 	$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Update component version
+		$version = "0.9996";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
