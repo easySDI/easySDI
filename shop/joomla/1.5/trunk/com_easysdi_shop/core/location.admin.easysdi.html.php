@@ -43,7 +43,30 @@ class HTML_location {
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_LOCATION"), 'generic.png' );
 			
-		?>				
+		?>	
+		<script>
+		function chooseLocationAsFilter(locationId)
+		{
+			<?php
+			$query = "SELECT * FROM #__easysdi_location_definition WHERE is_localisation = 1 ";
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			foreach ($rows as $row)
+			{
+				?>
+				if(locationId == '<?php echo $row->id ;?>')
+				{
+					alert( "<?php echo JText::_("EASYSDI_LOCATION_DEF_VALIDATION");?> ");
+					return;
+				}
+				<?php 
+			}
+			?>
+		}
+		</script>			
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
 		echo $tabs->startPane("LocationPane");
@@ -104,7 +127,7 @@ class HTML_location {
 															?>
 								<td><?php echo JText::_("EASYSDI_LOCATION_FILTER_FIELD_NAME_DEPENDS_OF"); ?></td>
 								
-								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_location_filter', 'size="1" class="inputbox"', 'value', 'text', $rowLocation->id_location_filter ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_location_filter', 'size="1" class="inputbox" onChange="javascript:chooseLocationAsFilter(this.value);"', 'value', 'text', $rowLocation->id_location_filter ); ?></td>
 								<td>
 								
 								

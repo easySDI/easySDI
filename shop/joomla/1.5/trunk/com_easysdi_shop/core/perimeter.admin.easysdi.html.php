@@ -44,6 +44,29 @@ class HTML_perimeter {
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PERIMETER"), 'generic.png' );
 			
 		?>				
+		<script>
+		function choosePerimeterAsFilter(perimeterId)
+		{
+			<?php
+			$query = "SELECT * FROM #__easysdi_perimeter_definition WHERE is_localisation = 1 ";
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			foreach ($rows as $row)
+			{
+				?>
+				if(perimeterId == '<?php echo $row->id ;?>')
+				{
+					alert( "<?php echo JText::_("EASYSDI_PERIMETER_DEF_VALIDATION");?> ");
+					return;
+				}
+				<?php 
+			}
+			?>
+		}
+		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
 		echo $tabs->startPane("PerimeterPane");
@@ -123,7 +146,7 @@ class HTML_perimeter {
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="filter_field_name" value="<?php echo $rowPerimeter->filter_field_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="filter_field_name" value="<?php echo $rowPerimeter->filter_field_name; ?>"  /></td>
 								<?php
 									$perimList = array();
 									$perimList [] = JHTML::_('select.option','-1', JText::_("EASYSDI_PERIM_LIST") );
@@ -134,7 +157,7 @@ class HTML_perimeter {
 															?>
 								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME_DEPENDS_OF"); ?></td>
 								
-								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_perimeter_filter', 'size="1" class="inputbox"', 'value', 'text', $rowPerimeter->id_perimeter_filter ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_perimeter_filter', 'size="1" class="inputbox" onChange="javascript:choosePerimeterAsFilter(this.value);"', 'value', 'text', $rowPerimeter->id_perimeter_filter ); ?></td>
 								<td>
 								
 								

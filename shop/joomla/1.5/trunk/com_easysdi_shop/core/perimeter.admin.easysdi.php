@@ -288,8 +288,10 @@ class ADMIN_perimeter {
 		
 		HTML_Perimeter::editPerimeter( $rowPerimeter,$id, $option );
 	}
+	
+	//Save perimeter
 	function savePerimeter($returnList ,$option){
-						global  $mainframe;
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
 		$rowPerimeter =&	 new Perimeter($database);
@@ -300,7 +302,16 @@ class ADMIN_perimeter {
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit();
 		}
-				
+
+		//If a filter perimeter is selected, disable it for the use in manual perimeter (AKA localisation)
+		if($rowPerimeter->id_perimeter_filter > 0 )
+		{
+			$query = "UPDATE #__easysdi_perimeter_definition  SET is_localisation = 0 WHERE id = $rowPerimeter->id_perimeter_filter";
+			$database->setQuery($query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->stderr(),'error');
+			}
+		}
 		
 		if (!$rowPerimeter->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

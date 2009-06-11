@@ -89,6 +89,15 @@ class ADMIN_location {
 			exit();
 		}
 				
+		//If a filter location is selected, disable it for the use in location
+		if($rowLocation->id_location_filter > 0 )
+		{
+			$query = "UPDATE #__easysdi_location_definition  SET is_localisation = 0 WHERE id = $rowLocation->id_location_filter";
+			$database->setQuery($query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->stderr(),'error');
+			}
+		}
 		
 		if (!$rowLocation->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
