@@ -16,12 +16,14 @@
  */
  
 
-defined('_JEXEC') or die('Restricted access');
 
-class HTML_cpanel {
+
+class HTMLadmin_cpanel {
 	
-	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $partnerFilter="", $supplierFilter="", $productFilter="", $orderpartner="", $ordersupplier="", $orderproduct="",$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo){
-	JToolBarHelper::title( JText::_("EASYSDI_LIST_ORDERS"), 'generic.png' );
+	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $partnerFilter="", $supplierFilter="", $productFilter="", $orderpartner="", $ordersupplier="", $orderproduct="",$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo)
+	{
+		JToolBarHelper::title( JText::_("EASYSDI_LIST_ORDERS"), 'generic.png' );
+		
 		$database =& JFactory::getDBO();
 	?>	
 		
@@ -206,92 +208,565 @@ class HTML_cpanel {
 		
 	<?php	
 	}
-	/*
-	function editOrder($rowOrder,$id, $option){
-		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_ORDER"), 'generic.png' );
+
+	
+	function orderReportRecap ($id,$isfrontEnd)
+	{
+		global $mainframe;
+		
+		$option = JRequest::getVar('option');
+		$task = JRequest::getVar('task');
+		$print = JRequest::getVar('print');
+		
+		if($isfrontEnd == true)
+		{
+			//Check the current user rights
+			$database =& JFactory::getDBO();
+			$u = JFactory::getUser();
+			$rootPartner = new partnerByUserId($database);
+			$rootPartner->load($u->id);
 			
-		?>				
-		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-		<table border="0" cellpadding="0" cellspacing="0">
+			if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
+				!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+				return;
+			}
+		}
+		
+		$db =& JFactory::getDBO();
+		
+		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
+		$db->setQuery($query );
+
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+
+		//Customer name
+		$user =$rows[0]->user_id;
+		
+		if($isfrontEnd == true)
+		{
+			//Check if the current order belongs to the current logged user
+			if($user != $u->id)
+			{
+				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE") ,"INFO");
+				return;
+			}
+		}
+		$queryUser = "SELECT name FROM #__users WHERE id = $user";
+		$db->setQuery($queryUser );
+		$user_name =  $db->loadResult();
+		
+		$third_name ='';
+		//Third name
+		$third = $rows[0]->third_party; 
+		if( $third != 0)
+		{
+			$queryUser = "SELECT name FROM #__users WHERE id = $third";
+			$db->setQuery($queryUser );
+			$third_name =  $db->loadResult();
+		}
+		
+		$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+		
+		$db->setQuery($query );
+		$rowsProduct = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+
+		if ($print ==1 ){
+			?>
+			<script>window.print();</script> 
+			<?php
+		}
+		
+		
+		?>
+		<script type="text/javascript" src="./media/system/js/mootools.js"></script>
+		<script>
+		window.addEvent('domready', function() {
+		$('printOrderRecap').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=<?php echo $option; ?>&task=<?php echo $task; ?>&cid[]=<?php echo $id; ?>&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+			});
+		});
+		</script>
+		
+		<table class="orderRecap" width="100%">
+		<tr>
+		<td colspan="2" width=100% >
+		<div title ="Print" id="printOrderRecap"></div>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" class="ortitle1" >
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?>
+		</td>
+		<td>
+		<?php echo $id; ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
+		</td>
+		<td>
+		<?php echo $rows[0]->name; ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->tlT); ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>
+		</td>
+		<td>
+		<?php echo JText::_($rows[0]->slT); ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
+		</td>
+		<td>
+		<?php echo $user_name; ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?>
+		</td>
+		<td>
+		<?php echo $third_name; ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_TYPE"); ?>
+		</td>
+		<td>
+		<?php
+		$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;
+		$db->setQuery($query );
+		$rowsPerimeter = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+		}
+		if ($rows[0]->perimeter_id > 0){
+			echo $rowsPerimeter[0]->perimeter_desc;
+			
+		}else
+		{
+			echo JText::_("EASYSDI_GEOMETRY_TEXT");
+
+		} ?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?>
+		</td>
+		<td>
+		<table width="100%">
+		<?php
+		$i=0;
+		foreach ($rows as $row){?>
 			<tr>
-				<td>
-					<fieldset>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_ORDER_ID"); ?> : </td>
-								<td><?php echo $rowOrder->order_id; ?></td>
-								<td><input type="hidden" name="order_id" value="<?php echo $id;?>"></td>								
-							</tr>			
-
-							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowOrder->name; ?>" /></td>
-							</tr>
-							
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_ORDER_TYPE"); ?> : </td>
-								<td><?php echo $rowOrder->type; ?></td>
-								<td><input type="hidden" name="type" value="<?php echo $rowOrder->type;?>"></td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDER_STATUS"); ?> : </td>
-								<td><?php echo $rowOrder->status; ?></td>
-								<td><input type="hidden" name="status" value="<?php echo$rowOrder->status;?>"></td>
-							</tr>
-							
-							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDER_PROVIDER"); ?> : </td>
-								<td><?php echo $rowOrder->provider_id; ?></td>
-								<td><input type="hidden" name="provider_id" value="<?php echo $rowOrder->provider_id;?>"></td>
-							</tr>
-							
-
-							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDER_REMARK"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="remark" value="<?php echo $rowOrder->remark; ?>" /></td>
-							</tr>
-							
-														
-							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDER_UPDATE"); ?> : </td>
-								<td><?php echo $rowOrder->order_update; ?></td>
-								<td><input type="hidden" name="order_update" value="<?php echo $rowOrder->order_update;?>"></td>
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?> : </td>
-								<td><?php echo $rowOrder->third_party; ?></td>
-								<td><input type="hidden" name="third_party" value="<?php echo $rowOrder->third_party;?>"></td>
-							</tr>
-							<tr>
-							
-								<td><?php echo JText::_("EASYSDI_ORDER_RESPONSE_DATE"); ?> : </td>
-								<td><?php echo $rowOrder->response_date; ?></td>	
-								<td><input type="hidden" name="response_date" value="<?php echo $rowOrder->response_date;?>"></td>						
-							</tr>
-							<tr>
-							
-								<td><?php echo JText::_("EASYSDI_ORDER_RESPONSE_SEND"); ?> : </td>
-								<td><?php echo $rowOrder->response_send; ?></td>	
-								<td><input type="hidden" name="response_send" value="<?php echo $rowOrder->response_send;?>"></td>						
-							</tr>
-							<tr>
-							
-								<td><?php echo JText::_("EASYSDI_ORDER_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="user" value="<?php echo $rowOrder->user_id; ?>" /></td>							
-							</tr>
-						</table>
-					</fieldset>
-				</td>
+				<td width="10%" class="ornum"><?php echo ++$i; ?> - </td>
+				<td width="90%"><?php echo $row->text; ?><br> [<?php echo $row->value;?>]</td>
+				
+			</tr>
+			<?php }?>
+		</table>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?>
+		</td>
+		<td>
+		<?php if($rows[0]->buffer != 0)
+		{
+			echo $rows[0]->buffer; 
+			echo JText::_("EASYSDI_RECAP_ORDER_METER") ; 
+		} 
+		else
+		{
+			echo JText::_("EASYSDI_RECAP_ORDER_NONE") ; 
+		}
+		?>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?>
+		</td>
+		<td>
+		<?php HTMLadmin_cpanel::viewOrderRecapPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id , $isfrontEnd); ?>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" class="ortitle2">
+		<?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?>
+		</td>
+		</tr>
+		
+		<?php
+		$i=0;
+		
+		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+		$db->setQuery($queryStatus);
+		$status_id = $db->loadResult();
+				
+		foreach ($rowsProduct as $row){ ?>
+			<tr>
+			<td colspan="2" >
+			<table >
+				<tr>
+					<td class="ornum"><?php echo ++$i; ?> - </td>
+					<td class="ortitle3"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
+							<?php
+					if ($row->status == $status_id){
+						$queryType = "select id from #__easysdi_order_type_list where code='O'";
+						$db->setQuery($queryType);
+						$type = $db->loadResult();
+					
+						if($rows[0]->type==$type){?>
+			
+					<td ><a target="RAW"
+						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
+						<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
+						<?php
+						}
+						
+					}
+					?>
+				</tr>
+			</table>
+			</td>
 			</tr>
 			
+			<?php
+			//Get product properties
+			$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
+			$db->setQuery($queryPropertiesCode);
+			$rowsPropertiesCode = $db->loadObjectList();
+			
+			foreach($rowsPropertiesCode as $rowPropertyCode)
+			{
+			
+				$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
+				$db->setQuery($queryProductProperties);
+				$rowsProductProperties = $db->loadObjectList();
+				?>
+				<tr>
+				<td class="ortitle4">
+				<?php
+				echo JText::_($rowPropertyCode->code);
+				?>
+				</td>
+				
+				<td>
+				<table>
+				<?php 
+				foreach ($rowsProductProperties as $rowProductProperties)
+				{
+					?>
+					<tr>
+					<td>
+					<?php 
+					if($rowProductProperties->property_id == 0)
+					{	
+						echo $rowProductProperties->property_value;
+					}
+					else
+					{
+						$queryPropertyValue = "SELECT translation FROM #__easysdi_product_properties_values_definition WHERE id = $rowProductProperties->property_id";
+						$db->setQuery($queryPropertyValue);
+						$rowProperty = $db->loadResult();
+						echo JText::_($rowProperty);
+					}
+					?>
+					</td>
+					</tr>
+					<?php
+				}
+				?>
+				</table>
+				</td>
+				</tr>
+				<?php
+			}
+			?>
+
+		<?php }?>
+		
+		
 		</table>
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-		</form>
+
+		<?php
+	}
+	
+	
+function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd){
+	if($isfrontEnd == true)
+	{
+	?>
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js">
+	
+	</script>
 	<?php
 	}
-	*/
+	else
+	{ ?>
+	<script
+	type="text/javascript"
+	src="./components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	
+	<script
+	type="text/javascript"
+	src="./components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js">
+	</script>
+	<?php
+	} ?>
+	
+	
+	
+	<?php	
+	global  $mainframe;
+	$db =& JFactory::getDBO(); 
+	$isFreeSelectionPerimeter = false;
+	$queryPerimeter = "select * from #__easysdi_perimeter_definition where id = $perimeter_id";
+	$db->setQuery($queryPerimeter);
+	$perimeterDef = $db->loadObject();
+	if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+	}	
+	
+	if($perimeterDef->wfs_url == '' && $perimeterDef->wms_url == '')
+	{	
+		$isFreeSelectionPerimeter = true;
+	}
+	
+	$query = "select * from #__easysdi_basemap_definition where def=1"; 
+	$db->setQuery( $query);
+	$rowsBaseMap = $db->loadObject();		  
+	if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+	}					  
+?>
+<script>
+var map;
+function initMap()
+{
+	var options = {
+	    	projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
+            displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
+            units: "<?php echo $rowsBaseMap->unit; ?>",
+			<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
+			<?php } ?>
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>), 
+            controls: [] 
+	};
+	map = new OpenLayers.Map("map", options);
+				  
+	baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true,transparent: "true"}); 
+	map.addLayer(baseLayerVector);
+<?php
+
+$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
+$db->setQuery( $query);
+$rows = $db->loadObjectList();
+		  
+if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+}
+$i=0;
+foreach ($rows as $row){				  
+?>				
+				  
+		layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+                    "<?php echo $row->url; ?>",
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+                     {     
+                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
+                   <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+                      	minResolution: <?php echo $row->minResolution; ?>,
+                        maxResolution: <?php echo $row->maxResolution; ?>,
+                        <?php } ?>                 
+                     projection:"<?php echo $row->projection; ?>",
+                      units: "<?php echo $row->unit; ?>",
+                      transparent: "true"
+                     }
+                    );
+                 map.addLayer(layer<?php echo $i; ?>);
+<?php 
+$i++;
+} ?>                   
+		<?php
+		//Add the command perimeter
+		$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id";
+		$db->setQuery( $queryPerimeterValue);
+		$rowsPerimeterValue = $db->loadObjectList();
+		?>
+		
+	     <?php 
+		if($isFreeSelectionPerimeter == true)
+		{
+			?>
+			var vectors;
+			vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
+			map.addLayer(vectors);
+			//Draw polygon
+			var newLinearRingComponents = new Array();
+			<?php
+			foreach($rowsPerimeterValue as $value)
+			{
+				?>
+					var curValue = "<?php echo $value->value; ?>";
+					var x= curValue.substring(0,curValue .indexOf(" ", 0));
+					var y= curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
+					newLinearRingComponents.push (new OpenLayers.Geometry.Point(x,y));
+					<?php
+			}	
+			?>
+			var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
+			var feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
+			vectors.addFeatures([feature]);
+			
+			//Zoom to extent
+			var vFeatures = vectors.features;
+			map.zoomToExtent(vFeatures[0].geometry.getBounds(),false);
+			<?php 
+		}
+		else
+		{
+			//Call wfs
+			
+			$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+			$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$perimeterDef->id&url=";
+				
+			if ($perimeterDef->wfs_url!=null && strlen($perimeterDef->wfs_url)>0){
+				$wfs_url =  $proxyhost.urlencode  (trim($perimeterDef->wfs_url));
+			}else{
+				$wfs_url ="";
+			}
+			
+			?>
+			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeterDef->feature_type_name; ?>&VERSION=1.0.0';
+			wfsUrlWithFilter = wfsUrlWithFilter + '&FILTER=';
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
+			<?php
+			if(count($rowsPerimeterValue) >1)
+			{
+				?>
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Or>');
+				<?php	
+			}
+			foreach ( $rowsPerimeterValue as $value)
+			{
+				?>
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->id_field_name; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $value->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+				<?php 
+			}
+			if(count($rowsPerimeterValue) >1)
+			{
+				?>
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
+				<?php	
+			}
+			?>
+			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
+			
+			var wfs;
+	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+                    strategies: [new OpenLayers.Strategy.Fixed()],
+                    protocol: new OpenLayers.Protocol.HTTP({
+                        url: wfsUrlWithFilter,
+                        format: new OpenLayers.Format.GML()
+                    })
+                });		    	            
+			 map.addLayer(wfs);	
+			 
+			 //Zoom to extent
+			 var wFeatures = wfs.features;
+			 map.zoomToExtent(wfs.maxExtent, false);
+			<?php 
+		}
+		?>
+		
+                                                            
+}
+
+var oldLoad = window.onload;
+window.onload=function(){
+initMap();
+if (oldLoad) oldLoad();
+}                       
+</script>   
+	
+	<div id="map" class="tinymap"></div>
+	
+	<?php
+}
+
 }
 ?>
