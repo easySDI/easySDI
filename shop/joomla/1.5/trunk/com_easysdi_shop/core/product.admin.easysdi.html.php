@@ -139,6 +139,7 @@ class HTML_product {
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
+		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList)
 		
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -956,5 +957,16 @@ array(); ?>
 <?php
 		
 }	
+
+	function alter_array_value_with_JTEXT_(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
 }
 ?>
