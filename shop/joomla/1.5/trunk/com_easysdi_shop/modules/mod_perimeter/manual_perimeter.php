@@ -81,6 +81,7 @@ $db =& JFactory::getDBO();
 						 		 	
 	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				document.getElementById("perimetersListPerimeter<?php echo $row->id; ?>").style.display='block';
+	 				hideParent('<?php echo $row->id; ?>');
 	 			<?php } ?>
 	 			if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
 	 			document.getElementById('perimeterblock<?php echo $row->id;?>').style.display='block';
@@ -89,7 +90,7 @@ $db =& JFactory::getDBO();
 		 		if (document.getElementById('perimeterblock<?php echo $row->id;?>')!=null)
 		 		{
 		 			document.getElementById('perimeterblock<?php echo $row->id;?>').style.display='none';
-		 			hideParent('<?php echo $row->id; ?>');
+		 			
 		 		}
 	 		}
 	 
