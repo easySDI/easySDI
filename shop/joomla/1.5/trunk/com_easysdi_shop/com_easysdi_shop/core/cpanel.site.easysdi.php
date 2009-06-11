@@ -373,26 +373,26 @@ class SITE_cpanel {
         }
 		/**/
         
+		$database =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$rootPartner = new partnerByUserId($database);
+		$rootPartner->load($user->id);
+		
+		//Check the use rights
+		if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
+			!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+			return;
+		}
+        
 		$option=JRequest::getVar("option");
 		/*$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		*/
 		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
 		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
-		
 
-		$database =& JFactory::getDBO();
-		$user = JFactory::getUser();
-		
-		if(!userManager::isUserAllowed($user, "REQUEST_INTERNAL") && !userManager::isUserAllowed($user, "REQUEST_EXTERNAL") )
-		{
-			return;
-		}
-		
-		$rootPartner = new partnerByUserId($database);
-		$rootPartner->load($user->id);
-		
-		
 		//Automatic Archive and/or Historize of the orders 
 		//Get the delays in days unit
 		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY");
@@ -487,7 +487,7 @@ class SITE_cpanel {
 		elseif (count($filterList) == 1)
 			$filter .= " AND ".$filterList[0];	
 		
-		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id ";
+		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id AND  o.user_id = ".$user->id;
 		$query .= $filter;
 		$query .= " and o.status <> ".$archive." and o.status <> ".$history;
 		
@@ -519,6 +519,20 @@ class SITE_cpanel {
 
 	function orderReport($id){
 		global $mainframe;
+		
+		//Check the current user rights
+		$database =& JFactory::getDBO();
+		$u = JFactory::getUser();
+		$rootPartner = new partnerByUserId($database);
+		$rootPartner->load($u->id);
+		
+		if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
+			!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+			return;
+		}
+		
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$print = JRequest::getVar('print');
@@ -537,6 +551,14 @@ class SITE_cpanel {
 
 		//Customer name
 		$user =$rows[0]->user_id;
+		
+		//Check if the current order belongs to the current logged user
+		if($user != $u->id)
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE") ,"INFO");
+			return;
+		}
+		
 		$queryUser = "SELECT name FROM #__users WHERE id = $user";
 		$db->setQuery($queryUser );
 		$user_name =  $db->loadResult();
