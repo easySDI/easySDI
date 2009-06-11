@@ -255,6 +255,12 @@ class HTML_shop {
 	*/
 	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
 	
+		//If the modifyFeatureControl has been activated, it needs to be deactivate to avoid "ghost" features to be displayed
+		modifyFeatureControl.deactivate();
+		if($("toolsStatus").innerHTML == "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>")
+		{
+			$("toolsStatus").innerHTML = "";
+		}
 		
 		document.getElementById('perimeter_id').value = perimId;
 		//freeSelectPerimeter();
@@ -289,7 +295,7 @@ class HTML_shop {
 			}
 		if (vectors){
 			var features = vectors.features;
-			vectors.removeFeatures(features)
+			vectors.removeFeatures(features);
 		}
 	
 		if (perimUrl.length ==0 && wmsUrl.length ==0){
