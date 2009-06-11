@@ -1781,7 +1781,7 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query = "INSERT INTO #__easysdi_product_treatment_type (code,translation) values ('AUTO' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_AUTO'), ('MANU' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_MANU')";
+		$query = "INSERT INTO #__easysdi_product_treatment_type (code,translation) values ('MANU' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_MANU'),('AUTO' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_AUTO')";
 	 	$db->setQuery( $query);
 		if (!$db->query()) 
 		{
