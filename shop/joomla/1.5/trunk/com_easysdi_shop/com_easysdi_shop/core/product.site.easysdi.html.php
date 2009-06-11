@@ -104,6 +104,11 @@ class HTML_product{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}		
 		
+		//Product treatment
+		$treatmentTypeList = array();		
+		$database->setQuery( "SELECT id AS value,  translation AS text FROM #__easysdi_product_treatment_type " );
+		$treatmentTypeList = $database->loadObjectList() ;
+			
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
 		
@@ -181,7 +186,10 @@ class HTML_product{
 								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
-							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PRODUCT_TREATMENT"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$treatmentTypeList, 'treatment_type', 'size="1" class="inputbox"', 'value',  'text', $rowProduct->treatment_type ); ?></td>															
+							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_TITLE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="data_title" value="<?php echo $rowProduct->data_title; ?>" /></td>								
