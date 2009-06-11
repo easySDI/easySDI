@@ -152,6 +152,8 @@ if ($curstep == "2")
 	 		if(<?php echo $row->min_resolution;?> == 0 && <?php echo $row->max_resolution; ?> == 0 )
 	 		{
 	 			//Free selection perimeter case
+	 			//Always display the button for manual perimeter
+	 			document.getElementById('addPerimeterButton').style.display='block';
 	 		}
 	 		else
 	 		{
@@ -162,7 +164,17 @@ if ($curstep == "2")
 					return;
 					
 				}
+				//Display the button for manual perimeter
+				if(<?php echo $row->is_localisation;?> == 0)
+				{
+					document.getElementById('addPerimeterButton').style.display='none';
+				}
+				else
+				{
+					document.getElementById('addPerimeterButton').style.display='block';
+				}
 			} 
+			
 			//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
 	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
 	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
@@ -534,7 +546,7 @@ function checkBufferValue()
 <button class="deletePerimeterButton" type="button"
 	onClick="removeSelected();"><?php echo JText::_("EASYSDI_REMOVE_SELECTED_VALUE");?></button>
 
-<button class="addPerimeterButton" type="button"
+<button class="addPerimeterButton" type="button" id="addPerimeterButton"
 	onClick="selectManualPerimeter();"><?php echo JText::_("EASYSDI_SELECT_MANUAL_PERIMETER");?></button>
 
 
