@@ -125,7 +125,7 @@ if ($curstep == "2")
 	 */
  	  function hideLocationParent(curId)
       {
-      	$("status").innerHTML = 'start'; 
+      	//$("status").innerHTML = 'start'; 
       	<?php
       	
 		$queryAll = "SELECT * FROM #__easysdi_location_definition";
@@ -156,7 +156,7 @@ if ($curstep == "2")
 			
 			<?php
 		}?>
-		$("status").innerHTML = 'start + end'; 
+		//$("status").innerHTML = 'start + end'; 
       }
       
       /**
