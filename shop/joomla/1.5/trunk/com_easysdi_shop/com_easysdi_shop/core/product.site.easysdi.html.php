@@ -108,7 +108,8 @@ class HTML_product{
 		$treatmentTypeList = array();		
 		$database->setQuery( "SELECT id AS value,  translation AS text FROM #__easysdi_product_treatment_type " );
 		$treatmentTypeList = $database->loadObjectList() ;
-			
+		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList);
+		
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
 		
@@ -1044,5 +1045,15 @@ class HTML_product{
 		
 	}
 	
+	function alter_array_value_with_JTEXT_(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
 }
 ?>
