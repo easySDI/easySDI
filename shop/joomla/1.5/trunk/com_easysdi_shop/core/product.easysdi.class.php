@@ -43,6 +43,7 @@ class product extends JTable
 	var $previewUnit=null;
 	var $previewImageFormat=null;
 	var $diffusion_partner_id=0;
+	var $treatment_type=null;
 	
 	// Class constructor
 	function __construct( &$db )
