@@ -139,7 +139,7 @@ class HTML_product {
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList)
+		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList);
 		
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
