@@ -302,5 +302,5 @@ class HTML_cpanel {
 	<?php	
 	}
 	
-}
+	}
 ?>
