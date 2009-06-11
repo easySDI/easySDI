@@ -59,7 +59,7 @@ class ADMIN_product {
 		// Recherche des enregistrements selon les limites
 
 		 
-		$query = "SELECT * FROM #__easysdi_product   ";
+		$query = "SELECT p.*, t.translation FROM #__easysdi_product p INNER JOIN #__easysdi_product_treatment_type t ON  p.treatment_type=t.id ";
 		if ($search !=null && strlen($search)>0 ) {$query = $query ." WHERE data_title like '%$search%' ";}	
 
 		if ($use_pagination) {
@@ -251,7 +251,7 @@ class ADMIN_product {
 	function saveProduct($returnList ,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();
-
+		$option =  JRequest::getVar("option");
 		$rowProduct =&	 new Product($database);
 
 
@@ -293,7 +293,7 @@ class ADMIN_product {
 			}
 		}
 
-	foreach( $_POST['buffer'] as $bufferPerimeterId )
+		foreach( $_POST['buffer'] as $bufferPerimeterId )
 		{
 			$query = "UPDATE #__easysdi_product_perimeter SET isBufferAllowed=1 WHERE product_id = $rowProduct->id AND perimeter_id = $bufferPerimeterId";
 			
@@ -333,13 +333,13 @@ class ADMIN_product {
 		/*
 		 * sdondainaz
 		 * 
-		 * Ajouter ici la mise à jour du paramètre de visibilité pour la métadonnée, avec CSW.
-		 * Se baser sur le paramètre "externe" (boolean)
-		 * "lors de la sauvegarde d'un produit, la valeur de la disponibilité interne/externe est
-		 * stockée également dans la métadonnée correspondante (geonetwork ne gère pas les mises
-		 * à jour et il est nécessaire de charger la totalité de la métadonnée en mémoire, modifier
-		 * l'attribut désiré, supprimer la métadonnée actuelle dans GeoNetwork puis insérer la
-		 * métadonnée mise à jour en prenant soin de conserver le même identifiant)"
+		 * Ajouter ici la mise ï¿½ jour du paramï¿½tre de visibilitï¿½ pour la mï¿½tadonnï¿½e, avec CSW.
+		 * Se baser sur le paramï¿½tre "externe" (boolean)
+		 * "lors de la sauvegarde d'un produit, la valeur de la disponibilitï¿½ interne/externe est
+		 * stockï¿½e ï¿½galement dans la mï¿½tadonnï¿½e correspondante (geonetwork ne gï¿½re pas les mises
+		 * ï¿½ jour et il est nï¿½cessaire de charger la totalitï¿½ de la mï¿½tadonnï¿½e en mï¿½moire, modifier
+		 * l'attribut dï¿½sirï¿½, supprimer la mï¿½tadonnï¿½e actuelle dans GeoNetwork puis insï¿½rer la
+		 * mï¿½tadonnï¿½e mise ï¿½ jour en prenant soin de conserver le mï¿½me identifiant)"
 		 * 
 		 */ 
 		
