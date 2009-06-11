@@ -129,10 +129,17 @@ class HTML_product {
 		$standardlist= $database->loadObjectList() ;
 		
 		if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}		
 	
-			
+		//Product treatment
+		$treatmentTypeList = array();		
+		$database->setQuery( "SELECT id AS value,  translation AS text FROM #__easysdi_product_treatment_type " );
+		$treatmentTypeList = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
@@ -204,7 +211,10 @@ class HTML_product {
 								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
-							
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PRODUCT_TREATMENT"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$treatmentTypeList, 'treatment_type', 'size="1" class="inputbox"', 'value',  'text', $rowProduct->treatment_type ); ?></td>															
+							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_TITLE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="data_title" value="<?php echo $rowProduct->data_title; ?>" /></td>								
@@ -873,8 +883,8 @@ array(); ?>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_METADATA_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_DATA_TITLE"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_SUPPLIER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_CREATION_DATE"); ?></th>							
-				 
+				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_CREATION_DATE"); ?></th>	
+				<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_TREATMENT"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -898,9 +908,6 @@ array(); ?>
 					$link =  "index.php?option=$option&amp;task=editProductMetadata&cid[]=$row->id";
 				}
 				
-				
-				
-				
 				?>								
 				
 				<td><a href="<?php echo $link;?>"><?php echo $row->metadata_id; ?></a></td>
@@ -913,6 +920,10 @@ array(); ?>
 		 		?>
 				<td><?php echo $database->loadResult(); ?></td>								
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->creation_date)); ?></td>
+				<?php
+				
+				 ?>
+				<td><?php echo JText::_($row->translation); ?></td>
 								
 				
 			</tr>
