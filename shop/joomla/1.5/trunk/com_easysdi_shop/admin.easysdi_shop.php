@@ -39,6 +39,7 @@ if (!is_array( $cid )) {
 global $mainframe;
 
 JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi_shop/templates/css/');
+JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.html.php');
@@ -75,9 +76,10 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.ht
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.easysdi.class.php');
 
-
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'proxy.php');
 
 require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
