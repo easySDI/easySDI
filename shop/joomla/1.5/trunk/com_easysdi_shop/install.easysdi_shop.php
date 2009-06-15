@@ -1761,13 +1761,22 @@ if ($version == "0.998")
 	 if($version == "0.9995")
 	 {
 	 	//Add product treatment type
-		$query="ALTER TABLE #__easysdi_product add column `treatment_type` int(2) ";
+		$query="ALTER TABLE #__easysdi_product add column `treatment_type`  BIGINT( 20 ) ";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+	 	//Add email notification field
+		$query="ALTER TABLE #__easysdi_product add column `notification_email` varchar(500) NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Add lookup table with treatment values
 		$query = "CREATE TABLE #__easysdi_product_treatment_type (
 					`id` BIGINT( 20 ) NOT NULL ,
 					`code` TEXT NOT NULL auto_increment ,
@@ -1781,12 +1790,21 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+	 	$query="ALTER TABLE `#__easysdi_product`
+			  ADD CONSTRAINT `#__easysdi_product_ibfk_1` FOREIGN KEY (`treatment_type`) REFERENCES `#__easysdi_product_treatment_type` (`id`) 
+			  ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		$query = "INSERT INTO #__easysdi_product_treatment_type (code,translation) values ('MANU' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_MANU'),('AUTO' , 'EASYSDI_PRODUCT_TREATMENT_TYPE_AUTO')";
 	 	$db->setQuery( $query);
 		if (!$db->query()) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		
 		
 		//Update component version
 		$version = "0.9996";
