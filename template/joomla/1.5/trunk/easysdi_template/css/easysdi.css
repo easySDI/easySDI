@@ -830,3 +830,36 @@ div#printOrderRecap:hover{
 	border-style: inset;
 
 }
+
+
+/***********************/
+/*** EasySDI Caddy   ***/
+/***********************/
+.deleteProductCaddy { 
+	background-image:url(../images/trash_product.gif);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewActivableProductCaddy { 
+	background-image:url(../images/btn_visualiser_1.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewActivateProductCaddy { 
+	background-image:url(../images/btn_visualiser_2.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
+.previewDisableProductCaddy { 
+	background-image:url(../images/btn_visualiser_0.png);
+	background-position:center;
+	height:28px;
+	width:28px;
+	background-repeat:no-repeat;
+}
