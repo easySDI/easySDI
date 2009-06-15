@@ -15,8 +15,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-//foreach($_POST as $key => $val) 
-//echo '$_POST["'.$key.'"]='.$val.'<br />';
+/*foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -1438,8 +1438,6 @@ if (count($rows)>0){
 		<?php
 	}
 
-
-
 	function saveOrder($orderStatus){
 		global $mainframe;
 		$user = JFactory::getUser();
@@ -1528,8 +1526,12 @@ if (count($rows)>0){
 					$order_product_list_id = $db->insertId();
 
 
-					$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product_id." order by a.order";
+					$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
+														#__easysdi_product_properties_definition  as a ,
+														#__easysdi_product_properties_values_definition as c  
+							WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $product_id." order by a.order";
 					$db->setQuery( $query );
+					
 					$rows = $db->loadObjectList();
 					
 					foreach($rows as $row)
@@ -1814,9 +1816,14 @@ if (count($rows)>0){
 			foreach ($cid as $key =>  $id){
 				
 				
-					$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $id." order by a.order";
-					$db->setQuery( $query );
-					$rows = $db->loadObjectList();
+				//$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $id." order by a.order";
+				$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
+														#__easysdi_product_properties_definition  as a ,
+														#__easysdi_product_properties_values_definition as c  
+							WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $id." order by a.order";
+				
+				$db->setQuery( $query );
+				$rows = $db->loadObjectList();
 					
 					foreach($rows as $row){
 				
