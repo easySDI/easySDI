@@ -922,6 +922,23 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ( $version == "0.97")
+	{
+		$query="INSERT INTO `#__easysdi_community_role` ( `publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`) VALUES
+					( 0, 1, 'DIFFUSION', 'EASYSDI_DIFFUSION_RIGHT', 'Diffusion des produits', NULL)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$version="0.98";
+		$query="UPDATE #__easysdi_version SET version ='0.98' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 		/**
 		 * Menu creation
 		 */
