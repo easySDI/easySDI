@@ -189,6 +189,10 @@ class HTML_product {
 								<td><?php echo JText::_("EASYSDI_DIFFUSION_PARTNER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$diffusion_partner, 'diffusion_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->diffusion_partner_id ); ?></td>								
 							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PRODUCT_NOTIFICATION_EMAIL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $rowProduct->notification_email; ?>" /></td>								
+							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_SURFACE_MIN"); ?> : </td>

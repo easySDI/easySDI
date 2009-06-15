@@ -748,7 +748,7 @@ $i++;
 			 
 			 //Zoom to extent
 			 var wFeatures = wfs.features;
-			 map.zoomToExtent(wfs.maxExtent, false);
+			 map.zoomToMaxExtent();
 			<?php 
 		}
 		?>
