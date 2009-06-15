@@ -406,7 +406,8 @@ class displayManager{
 		$product_creation_date;
 		$product_update_date;
 		
-		$timer = fopen ('c:\\timer.txt', 'w');
+		$timerFile = 'c:\\timer.txt';
+		$timer = fopen ($timerFile, 'w');
 				
 		fwrite($timer, "Avant accès base de données : ".date("H:i:s")."\n");
 		
@@ -497,12 +498,12 @@ class displayManager{
 
 					fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
 		
-					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
+					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo, $timer);
 
 					fwrite($timer, "Après convertXML2FO : ".date("H:i:s")."\n");
 					fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
 					
-					displayManager::convertFO2PDF($fopfo, $foptmp);
+					displayManager::convertFO2PDF($fopfo, $foptmp, $timer);
 					fwrite($timer, "Après convertFO2PDF : ".date("H:i:s")."\n");
 					
 					if (file_exists($foptmp)) {
@@ -604,7 +605,7 @@ class displayManager{
 		}
 	}
 	
-	function convertXML2FO($xml, $xslt, $fo)
+	function convertXML2FO($xml, $xslt, $fo, $timer)
 	{
 	// Transform path of fo and xslt files for javax.xml.transform.stream
 	try
@@ -621,18 +622,23 @@ class displayManager{
 	
  		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
 		//Setup XSLT
+		fwrite($timer, "\tCréer factory : ".date("H:i:s")."\n");
 		$factory = new java("javax.xml.transform.TransformerFactory");
 		$factory = $factory->newInstance();
+		fwrite($timer, "\tFactory crée! : ".date("H:i:s")."\n");
 		$xsltStream = new java("javax.xml.transform.stream.StreamSource", $xslt);
 		//$xsltStream->setSystemId($xmlSystemId);
+		fwrite($timer, "\tCréer transformer : ".date("H:i:s")."\n");
 		$transformer = $factory->newTransformer($xsltStream);
-
+		fwrite($timer, "\tTransformer créé! : ".date("H:i:s")."\n");
 		//Setup input for XSLT transformation
 		$src = new java("javax.xml.transform.stream.StreamSource", $xml);
 		//Resulting SAX events (the generated FO) must be piped through to FOP
 		$res = new java("javax.xml.transform.stream.StreamResult", $out);
 		//Start XSLT transformation and FOP processing
+		fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 		$transformer->transform($src, $res);
+		fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 	}
 	catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
@@ -641,18 +647,20 @@ class displayManager{
 		$out->close();		
 	}
 		
-	function convertFO2PDF($fo, $pdf)
+	function convertFO2PDF($fo, $pdf, $timer)
 	{
 		try
 		{
 			$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
 			// configure fopFactory as desired
+			fwrite($timer, "\tCréer FOP Factory : ".date("H:i:s")."\n");
 			$fopFactory = new java("org.apache.fop.apps.FopFactory");
 			$fopFactory = $fopFactory->newInstance();
-			
+			fwrite($timer, "\tFOP Factory crée! : ".date("H:i:s")."\n");
 			// configure foUserAgent as desired
+			fwrite($timer, "\tCréer FO User Agent: ".date("H:i:s")."\n");
 			$foUserAgent = $fopFactory->newFOUserAgent();
-	
+			fwrite($timer, "\tFO User Agent créé! : ".date("H:i:s")."\n");
 			// Setup output
 			$pdf = new java("java.io.File", $pdf);
 			$pdf= $pdf->getAbsolutePath();
@@ -661,13 +669,16 @@ class displayManager{
 			$out = new java("java.io.BufferedOutputStream", $out);
 	
 			// Construct fop with desired output format
+			fwrite($timer, "\tCréer FOP: ".date("H:i:s")."\n");
 			$fop = $fopFactory->newFop($fop_mime_constants->MIME_PDF, $foUserAgent, $out);
-	
+			fwrite($timer, "\tFOP créé! : ".date("H:i:s")."\n");
 			//Setup XSLT
+			fwrite($timer, "\tCréer Transformer Factory: ".date("H:i:s")."\n");
 			$factory = new java("javax.xml.transform.TransformerFactory");
 			$factory = $factory->newInstance();
 			$transformer = $factory->newTransformer();
-	
+			fwrite($timer, "\tTransformer Factory créé! : ".date("H:i:s")."\n");
+			
 			// Set the value of a <param> in the stylesheet
 			$transformer->setParameter("versionParam", "2.0");
 
@@ -675,10 +686,13 @@ class displayManager{
 			$src = new java("javax.xml.transform.stream.StreamSource", $fo);
         
 			// Resulting SAX events (the generated FO) must be piped through to FOP
+			fwrite($timer, "\tCréer SAX: ".date("H:i:s")."\n");
 			$res = new java("javax.xml.transform.sax.SAXResult", $fop->getDefaultHandler());
-	
+			fwrite($timer, "\tSAX créé! : ".date("H:i:s")."\n");
 			//Start XSLT transformation and FOP processing
+			fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 			$transformer->transform($src, $res);
+			fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 		}
 		catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
