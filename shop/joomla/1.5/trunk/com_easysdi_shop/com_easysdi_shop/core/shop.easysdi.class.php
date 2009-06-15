@@ -1442,15 +1442,15 @@ if (count($rows)>0){
 
 	function saveOrder($orderStatus){
 		global $mainframe;
-
-
 		$user = JFactory::getUser();
-		if (!$user->guest){
+		if (!$user->guest)
+		{
 			$cid = $mainframe->getUserState('productList');
 
 			$option = JRequest::getVar('option');
 			$task = JRequest::getVar('task');
 			$order_type = $mainframe->getUserState('order_type');
+			$order_type_code = $mainframe->getUserState('order_type');
 			$order_name = $mainframe->getUserState('order_name');
 			$third_party = $mainframe->getUserState('third_party');
 			$bufferValue = $mainframe->getUserState('bufferValue');
@@ -1496,8 +1496,8 @@ if (count($rows)>0){
 			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
 
 			$i=0;
-			foreach ($selSurfaceList as $sel){
-
+			foreach ($selSurfaceList as $sel)
+			{
 				//Before the dot, it is the perimeter id, after the dot id of the data
 				$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,$perimeter_id,'$sel','$selSurfaceListName[$i]')";
 				$db->setQuery($query );
@@ -1510,15 +1510,14 @@ if (count($rows)>0){
 				$i++;
 			}
 
-			foreach ($cid as $product_id){
-
-
-				if ($product_id != "0"){					
-					
+			foreach ($cid as $product_id)
+			{
+				if ($product_id != "0")
+				{					
 					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id, status) VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
-
 					$db->setQuery($query );
-					if (!$db->query()) {
+					if (!$db->query()) 
+					{
 						echo "<div class='alert'>";
 						echo $db->getErrorMsg();
 						echo "</div>";
@@ -1532,139 +1531,138 @@ if (count($rows)>0){
 					$db->setQuery( $query );
 					$rows = $db->loadObjectList();
 					
-					foreach($rows as $row){
-
-					$productProperties  = $mainframe->getUserState($row->code."_list_property_".$product_id);
-					print_r($productProperties);
-					if (count($productProperties)>0){
-					
-					
-					
-					$mainframe->setUserState($row->code.'_list_property_'.$product_id,null);
-
-					
-					foreach ($productProperties as $property_id){
-						
-							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
-
-						$db->setQuery($query );
-						if (!$db->query()) {
-							echo "<div class='alert'>";
-							echo $db->getErrorMsg();
-							echo "</div>";
-							exit;
+					foreach($rows as $row)
+					{
+						$productProperties  = $mainframe->getUserState($row->code."_list_property_".$product_id);
+						print_r($productProperties);
+						if (count($productProperties)>0)
+						{
+							$mainframe->setUserState($row->code.'_list_property_'.$product_id,null);
+							foreach ($productProperties as $property_id)
+							{
+								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$db->setQuery($query );
+								if (!$db->query()) 
+								{
+									echo "<div class='alert'>";
+									echo $db->getErrorMsg();
+									echo "</div>";
+									exit;
+								}
+							}
+						}
+	
+						$productProperties  = $mainframe->getUserState($row->code."_mlist_property_".$product_id);
+						print_r($productProperties);
+						if (count($productProperties)>0)
+						{
+							$mainframe->setUserState($row->code.'_mlist_property_'.$product_id,null);
+							foreach ($productProperties as $property_id)
+							{
+								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$db->setQuery($query );
+								if (!$db->query()) {
+									echo "<div class='alert'>";
+									echo $db->getErrorMsg();
+									echo "</div>";
+								}
+							}
 						}
 						
 						
+						$productProperties  = $mainframe->getUserState($row->code."_cbox_property_".$product_id);
+						print_r($productProperties);
+						if (count($productProperties)>0)
+						{
+							$mainframe->setUserState($row->code.'_cbox_property_'.$product_id,null);
+	
 						
-					}
-					}
-
-					$productProperties  = $mainframe->getUserState($row->code."_mlist_property_".$product_id);
-					print_r($productProperties);
-					if (count($productProperties)>0){
-					
-					
-					
-					$mainframe->setUserState($row->code.'_mlist_property_'.$product_id,null);
-
-					
-					foreach ($productProperties as $property_id){
+							foreach ($productProperties as $property_id)
+							{
+								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$db->setQuery($query );
+								if (!$db->query()) 
+								{
+									echo "<div class='alert'>";
+									echo $db->getErrorMsg();
+									echo "</div>";
+									exit;
+								}
+							}
+						}
 						
-							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
-
-						$db->setQuery($query );
-						if (!$db->query()) {
-							echo "<div class='alert'>";
-							echo $db->getErrorMsg();
-							echo "</div>";
+						$productProperties  = $mainframe->getUserState($row->code."_text_property_".$product_id);
+						if ($productProperties != '')
+						{
+							$mainframe->setUserState($row->code.'_text_property_'.$product_id,null);
+							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
+							$db->setQuery($query );
+							if (!$db->query()) 
+							{
+								echo "<div class='alert'>";
+								echo $db->getErrorMsg();
+								echo "</div>";
+								exit;
+							}
 						}
 						
 						
+						$productProperties  = $mainframe->getUserState($row->code."_textarea_property_".$product_id);
+						print_r($productProperties);
+						if (count($productProperties)>0)
+						{
+							$mainframe->setUserState($row->code.'_textarea_property_'.$product_id,null);
 						
+							foreach ($productProperties as $property_id)
+							{
+								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$property_id\",'$row->code')";
+								$db->setQuery($query );
+								if (!$db->query()) 
+								{
+									echo "<div class='alert'>";
+									echo $db->getErrorMsg();
+									echo "</div>";
+									exit;
+								}
+							}
+						}					
 					}
-					}
-					
-					
-					$productProperties  = $mainframe->getUserState($row->code."_cbox_property_".$product_id);
-					print_r($productProperties);
-					if (count($productProperties)>0){
-					
-					
-					
-					$mainframe->setUserState($row->code.'_cbox_property_'.$product_id,null);
-
-					
-					foreach ($productProperties as $property_id){
-						
-							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
-
-						$db->setQuery($query );
-						if (!$db->query()) {
-							echo "<div class='alert'>";
-							echo $db->getErrorMsg();
-							echo "</div>";
-							exit;
-						}
-						
-						
-						
-					}
-					}
-					
-					
-					
-					$productProperties  = $mainframe->getUserState($row->code."_text_property_".$product_id);
-					
-					if ($productProperties != ''){
-					
-					$mainframe->setUserState($row->code.'_text_property_'.$product_id,null);
-
-					
-						
-						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
-						
-
-						$db->setQuery($query );
-						if (!$db->query()) {
-							echo "<div class='alert'>";
-							echo $db->getErrorMsg();
-							echo "</div>";
-							exit;
-						}
-						
-						
-						
-					}
-					
-					
-					$productProperties  = $mainframe->getUserState($row->code."_textarea_property_".$product_id);
-					print_r($productProperties);
-					if (count($productProperties)>0){
-					
-					
-					
-					$mainframe->setUserState($row->code.'_textarea_property_'.$product_id,null);
-
-					
-					foreach ($productProperties as $property_id){
-						
-						$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$property_id\",'$row->code')";
-						
-
-						$db->setQuery($query );
-						if (!$db->query()) {
-							echo "<div class='alert'>";
-							echo $db->getErrorMsg();
-							echo "</div>";
-							exit;
-						}
-						
-						
-					
-					}
-					}					
 				}
+			}
+			
+			
+			//Send a command notification to the specified email in the product definition 
+			//Only if the product treatment is manual
+			if($order_type_code == "O")
+			{
+				$productList = "";
+				foreach ($cid as $product_id )
+				{
+					$productList = $productList.$product_id.","; 
+				}
+				$productList = substr ($productList,0,strlen($productList)-1);
+				
+				$queryNotitification = "SELECT DISTINCT diffusion_partner_id ,notification_email FROM #__easysdi_product WHERE id IN ($productList)AND treatment_type = (SELECT id from #__easysdi_product_treatment_type WHERE code = 'MANU')";
+				$db->setQuery($queryNotitification);
+				$results = $db->loadObjectList();
+				if ($db->getErrorNum()) {						
+					echo "<div class='alert'>";			
+					echo 			$db->getErrorMsg();
+					echo "</div>";
+				}
+				
+				foreach ($results as $result)
+				{
+					$list = array();
+					$diffusionEmail = "";
+					if($result->diffusion_partner_id)
+					{
+						$queryDiffusionPartnerEmail = "SELECT email FROM #__users WHERE id = (SELECT user_id from #__easysdi_community_partner WHERE partner_id = $result->diffusion_partner_id)";
+						$db->setQuery($queryDiffusionPartnerEmail);
+						$diffusionEmail = $db->loadResult();
+					}
+					HTML_shop::getEmailNotificationList($result->notification_email, $list);
+					HTML_shop::sendEmailToNotificationList($diffusionEmail,$list);
 				}
 			}
 
@@ -1719,8 +1717,6 @@ if (count($rows)>0){
 					
 			}
 				
-				
-				
 			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = '".$await_type."' ";
 			$db->setQuery($query);
 			$total = $db->loadResult();
@@ -1736,8 +1732,6 @@ if (count($rows)>0){
 				$status_id = $db->loadResult();
 			}
 			
-			
-			
 			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
 
 			$db->setQuery($query);
@@ -1751,7 +1745,6 @@ if (count($rows)>0){
 				SITE_cpanel::notifyUserByEmail($order_id);
 			}
 
-
 			$mainframe->setUserState('productList',null);
 			$mainframe->setUserState('order_type',null);
 			$mainframe->setUserState('order_name',null);
@@ -1763,14 +1756,13 @@ if (count($rows)>0){
 			$mainframe->setUserState('bufferValue',null);
 
 
-		}else{
-
+		}
+		else
+		{
 			?>
-<div class="alert"><?php echo JText::_("EASYSDI_NOT_ALLOWED"); ?></div>
+			<div class="alert"><?php echo JText::_("EASYSDI_NOT_ALLOWED"); ?></div>
 			<?php
 		}
-
-
 	}
 
 	function manageSession(){
@@ -2374,5 +2366,39 @@ if (count($rows)>0){
 </span></form>
 </div>
 	<?php
-	}}
+	}
+	
+	function getEmailNotificationList($emails, &$emailArray)
+	{
+		if($emails)
+		{
+			$index = strpos($emails,',');
+			if($index)
+			{
+				$emailArray[] = substr ($emails,0,$index);
+				$em = substr($emails,$index + 1);
+				HTML_shop::getEmailNotificationList($em, &$emailArray);
+			}
+			else
+			{
+				$emailArray[] = $emails;
+			}
+		}
+	}
+	function sendEmailToNotificationList($diffusionEmail, $emailList)
+	{
+		$mailer =& JFactory::getMailer();
+		$mailer->AddRecipient($diffusionEmail);
+		foreach ($emailList as $email)
+		{		
+			$mailer->addCC($email);
+		}																				
+		$mailer->setSubject(JText::_("EASYSDI_ORDER_NOTIFICATION_SUBJECT"));
+		$mailer->setBody(JText::_("EASYSDI_ORDER_NOTIFICATION_BODY"));				
+		if ($mailer->send() !==true)
+		{
+			//	
+		}	
+	}
+}
 	?>
