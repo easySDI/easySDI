@@ -77,6 +77,8 @@ public class OgcProxyServlet extends HttpServlet {
 	}catch(Exception e){
 	    StringBuffer sb = generateOgcError(e.getMessage());
 	    e.printStackTrace();
+	    resp.setContentType("text/xml");
+	    resp.setContentLength(sb.length());
 	    OutputStream os = resp.getOutputStream();
 	    os.write(sb.toString().getBytes());
 	    os.flush();
@@ -101,7 +103,8 @@ public class OgcProxyServlet extends HttpServlet {
 		    
 	    }}catch(Exception e){
 		StringBuffer sb = generateOgcError(e.getMessage());
-
+		resp.setContentType("text/xml");
+		resp.setContentLength(sb.length());
 		OutputStream os = resp.getOutputStream();
 		os.write(sb.toString().getBytes());
 		os.flush();
