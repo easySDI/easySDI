@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
-
 /*foreach($_POST as $key => $val) 
 echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 
@@ -474,7 +473,54 @@ class HTML_shop {
 	<?php 
 	$i++;
 	
-	} ?>                    
+	} 
+	
+	//Add the preview product layer if needed
+	$previewProductId = JRequest::getVar('previewProductId');
+	if($previewProductId)
+	{
+		$queryPreviewLayer = "SELECT * FROM #__easysdi_product WHERE id = $previewProductId";
+		$db->setQuery( $queryPreviewLayer);
+		$product = $db->loadObject();
+		if ($db->getErrorNum()) {						
+			echo "<div class='alert'>";			
+			echo $db->getErrorMsg();
+			echo "</div>";
+		}
+		?>
+		
+		previewLayer = new OpenLayers.Layer.WMS('PreviewProduct',
+						<?php 
+						if ($product->previewUser != null && strlen($product->previewUser)>0){
+							//if a user and password is requested then use the joomla proxy.
+							$proxyhost = config_easysdi::getValue("PROXYHOST");
+							$proxyhost = $proxyhost."&type=wms&previewId=$previewProductId&url=";
+							echo "\"$proxyhost".urlencode (trim($product->previewWmsUrl))."\",";												
+						}else{	
+							//if no user and password then don't use any proxy.					
+							echo "\"$product->previewWmsUrl\",";	
+						}					
+						?>
+							
+		                    {layers: '<?php echo $product->previewWmsLayers ; ?>', 
+		                    format : "<?php echo $product->previewImageFormat ; ?>"  ,
+		                    transparent: "true"},                                          
+		                     {singleTile: true},                                                    
+		                     {                     
+							  minResolution: <?php echo $product->previewMinResolution ; ?>,
+		               		  maxResolution: <?php echo $product->previewMaxResolution ; ?>,                                    	     
+		                      maxExtent: map.maxExtent,
+		                      projection:"<?php echo $product->previewProjection ; ?>",
+		                      units: "<?php echo $product->previewUnit ; ?>",
+		                      transparent: "true"
+		                     }
+		                    );
+		 map.addLayer (previewLayer);
+		
+		<?php
+	}
+	
+	?>                    
 				 
 					map.events.register("zoomend", null, 
 										function() { 
@@ -1034,7 +1080,7 @@ class HTML_shop {
 		<input type='hidden' id="perimeter_id" name='perimeter_id' value='0'> 
 		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
-		
+		<input type='hidden' id='previewProductId' name='previewProductId' value="<?php echo JRequest::getVar('previewProductId'); ?>" />
 	</form>
 	</div>
 	<?php
