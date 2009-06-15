@@ -37,27 +37,69 @@ if (is_array(($cid)))
 				<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
 				<?php
 			}
+			?>
+			<table>
+			<?php
 			foreach($rows as $row )
 			{
 				
 				?>
-
-<a title="<?php echo $row->data_title; ?>" class="modal"
-	href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
-	rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20)."..."; ?></a>
-
-<button type="button"
-			onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
-			locOrderForm = document.forms['orderForm'];
-			newInput = document.createElement('input');
-			newInput.type='hidden';newInput.name='prodId';
-			newInput.value='<?php echo $row->id;?>';
-			locOrderForm.appendChild(newInput);
-			submitOrderForm();"><?php echo JText::_('EASYSDI_REMOVE_PRODUCT'); ?></button>
-<hr>
-
+				<tr>
+				<td>
+				<a title="<?php echo $row->data_title; ?>" class="modal"
+					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
+					rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20); ?></a>
+				</td>
+				<td>
+				<div id ="preview_product" 
+							<?php if ($row->previewWmsUrl)
+								  { 
+								  	$currentPreview = JRequest::getVar('previewProductId');
+								  	if($currentPreview == $row->id)
+								  	{
+								  		?> class='previewActivateProductCaddy' 
+									  	onClick="document.forms['orderForm'].elements['previewProductId'].value='';submitOrderForm();"
+									  	<?php
+								  	}
+								  	else
+								  	{
+								  		if($currentPreview)
+								  		{
+									  		echo "class='previewDisableProductCaddy'";
+										}
+										else
+										{
+											?> 
+										  	class='previewActivableProductCaddy' 
+										  	onClick="document.forms['orderForm'].elements['previewProductId'].value='<?php echo $row->id ; ?>';submitOrderForm();"
+										  	<?php
+										}
+									}
+								  }
+								  else
+								  {
+								  	echo "class='previewDisableProductCaddy'";
+								  } ;	 ?>>
+				</div>
+				</td>
+				<td>
+				<div id ="delete_product" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
+							locOrderForm = document.forms['orderForm'];
+							newInput = document.createElement('input');
+							newInput.type='hidden';newInput.name='prodId';
+							newInput.value='<?php echo $row->id;?>';
+							locOrderForm.appendChild(newInput);
+							submitOrderForm();"
+							class="deleteProductCaddy">
+				</div>
+				</td>
+				</tr>
+				
 				<?php
 			}
+			?>
+			</table>
+			<?php
 		}
 		
 	}
