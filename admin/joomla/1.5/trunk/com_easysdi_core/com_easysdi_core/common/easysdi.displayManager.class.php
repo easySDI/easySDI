@@ -20,12 +20,20 @@ class displayManager{
 	function getCSWresult ()
 	{
 		$id = JRequest::getVar('id');
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
+		
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-				
+		
+		/*
+		$id=158;
+		$catalogUrlBase = "https://geoproxy.asitvd.ch/ogc/geonetwork";
+		$catalogUrlCapabilities = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetCapabilities&service=CSW";
+		$catalogUrlGetRecordById = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=158";	
+		*/
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		
 		return $cswResults;
 	}
 	function showMetadata()
@@ -65,7 +73,8 @@ class displayManager{
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
-		$id = JRequest::getVar('id');
+		//$id = JRequest::getVar('id');
+		$id = 158;
 		$title;
 		
 		$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
@@ -308,6 +317,7 @@ class displayManager{
 	
 	function exportXml()
 	{
+		/*
 		$id = JRequest::getVar('id');
 
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
@@ -316,7 +326,9 @@ class displayManager{
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-
+		*/		
+		$cswResults = displayManager::getCSWresult();
+		
 		$xpath = new DomXPath($cswResults);
 		$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
@@ -365,7 +377,7 @@ class displayManager{
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
 
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);*/
-			
+
 		$cswResults = displayManager::getCSWresult();
 		
 		$processor = new xsltProcessor();
@@ -379,6 +391,7 @@ class displayManager{
 		}else{
 			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 		}
+		
 		$processor->importStylesheet($style);
 		$myHtml = $processor->transformToXml($cswResults);
 
@@ -392,6 +405,10 @@ class displayManager{
 		$supplier;
 		$product_creation_date;
 		$product_update_date;
+		
+		$timer = fopen ('c:\\timer.txt', 'w');
+				
+		fwrite($timer, "Avant accès base de données : ".date("H:i:s")."\n");
 		
 		$db =& JFactory::getDBO();
 		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$id."'";
@@ -425,10 +442,16 @@ class displayManager{
 		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
 		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
 
+		fwrite($timer, "Après accès base de données : ".date("H:i:s")."\n");
+		
+		fwrite($timer, "Avant application xhtml to xslfo : ".date("H:i:s")."\n");
+		
 		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
+		
+		fwrite($timer, "Après application xhtml to xslfo : ".date("H:i:s")."\n");
 		
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();   
@@ -471,10 +494,20 @@ class displayManager{
 								  $fop_url/lib/commons-logging-1.0.4.jar");
 										
 					//Create the PDF file based on the FO file
+
+					fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
+		
 					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo);
+
+					fwrite($timer, "Après convertXML2FO : ".date("H:i:s")."\n");
+					fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
+					
 					displayManager::convertFO2PDF($fopfo, $foptmp);
+					fwrite($timer, "Après convertFO2PDF : ".date("H:i:s")."\n");
 					
 					if (file_exists($foptmp)) {
+						fwrite($timer, "Avant download PDF : ".date("H:i:s")."\n");
+					
 						ob_end_clean();
 						@java_reset();
 						
@@ -490,7 +523,11 @@ class displayManager{
 					    header('Pragma: public');
 					    header('Content-Length: ' . filesize($foptmp));
 					    readfile($foptmp);
+					    
+					    fwrite($timer, "Après download PDF : ".date("H:i:s")."\n");
 					}
+					
+					fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
 					
 					// Remove temporaries files
 					unlink($fopxml);
@@ -498,6 +535,8 @@ class displayManager{
 					unlink($fopfo);
 				    unlink($foptmp);
 					
+				    fwrite($timer, "Après suppression temp files : ".date("H:i:s")."\n");
+					fclose($timer);
 					/*					
 					@java_reset();
 						
