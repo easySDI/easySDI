@@ -15,8 +15,8 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';
+//foreach($_POST as $key => $val) 
+//echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -1447,6 +1447,7 @@ if (count($rows)>0){
 		{
 			$cid = $mainframe->getUserState('productList');
 
+			$order_status_value = $orderStatus;
 			$option = JRequest::getVar('option');
 			$task = JRequest::getVar('task');
 			$order_type = $mainframe->getUserState('order_type');
@@ -1631,41 +1632,13 @@ if (count($rows)>0){
 			}
 			
 			
-			//Send a command notification to the specified email in the product definition 
-			//Only if the product treatment is manual
-			if($order_type_code == "O")
+			//If the order status is "SENT", notify the distribution manager
+			// that a new query exists 
+			if($order_status_value == "SENT")
 			{
-				$productList = "";
-				foreach ($cid as $product_id )
-				{
-					$productList = $productList.$product_id.","; 
-				}
-				$productList = substr ($productList,0,strlen($productList)-1);
-				
-				$queryNotitification = "SELECT DISTINCT diffusion_partner_id ,notification_email FROM #__easysdi_product WHERE id IN ($productList)AND treatment_type = (SELECT id from #__easysdi_product_treatment_type WHERE code = 'MANU')";
-				$db->setQuery($queryNotitification);
-				$results = $db->loadObjectList();
-				if ($db->getErrorNum()) {						
-					echo "<div class='alert'>";			
-					echo 			$db->getErrorMsg();
-					echo "</div>";
-				}
-				
-				foreach ($results as $result)
-				{
-					$list = array();
-					$diffusionEmail = "";
-					if($result->diffusion_partner_id)
-					{
-						$queryDiffusionPartnerEmail = "SELECT email FROM #__users WHERE id = (SELECT user_id from #__easysdi_community_partner WHERE partner_id = $result->diffusion_partner_id)";
-						$db->setQuery($queryDiffusionPartnerEmail);
-						$diffusionEmail = $db->loadResult();
-					}
-					HTML_shop::getEmailNotificationList($result->notification_email, $list);
-					HTML_shop::sendEmailToNotificationList($diffusionEmail,$list);
-				}
+				SITE_cpanel::notifyOrderToDiffusion($order_id);
 			}
-
+			
 			$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
 			$db->setQuery($queryStatus);
 			$sent = $db->loadResult();
@@ -2368,37 +2341,6 @@ if (count($rows)>0){
 	<?php
 	}
 	
-	function getEmailNotificationList($emails, &$emailArray)
-	{
-		if($emails)
-		{
-			$index = strpos($emails,',');
-			if($index)
-			{
-				$emailArray[] = substr ($emails,0,$index);
-				$em = substr($emails,$index + 1);
-				HTML_shop::getEmailNotificationList($em, &$emailArray);
-			}
-			else
-			{
-				$emailArray[] = $emails;
-			}
-		}
-	}
-	function sendEmailToNotificationList($diffusionEmail, $emailList)
-	{
-		$mailer =& JFactory::getMailer();
-		$mailer->AddRecipient($diffusionEmail);
-		foreach ($emailList as $email)
-		{		
-			$mailer->addCC($email);
-		}																				
-		$mailer->setSubject(JText::_("EASYSDI_ORDER_NOTIFICATION_SUBJECT"));
-		$mailer->setBody(JText::_("EASYSDI_ORDER_NOTIFICATION_BODY"));				
-		if ($mailer->send() !==true)
-		{
-			//	
-		}	
-	}
+	
 }
 	?>
