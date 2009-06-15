@@ -236,7 +236,7 @@ class HTMLadmin_cpanel {
 		
 		$db =& JFactory::getDBO();
 		
-		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
+		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
 		$db->setQuery($query );
 
 		$rows = $db->loadObjectList();
@@ -328,7 +328,7 @@ class HTMLadmin_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
 		</td>
 		<td>
-		<?php echo $rows[0]->name; ?>
+		<?php echo $rows[0]->order_name; ?>
 		</td>
 		</tr>
 		<tr>
