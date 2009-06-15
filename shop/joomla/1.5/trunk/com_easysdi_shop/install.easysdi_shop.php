@@ -1805,6 +1805,14 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+		//Add user/Pw to product preview
+	 	$query="ALTER TABLE #__easysdi_product add column `previewUser` varchar(400) NULL,
+	 										   add column `previewPassword` varchar(400) NULL ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
 		//Update component version
 		$version = "0.9996";
