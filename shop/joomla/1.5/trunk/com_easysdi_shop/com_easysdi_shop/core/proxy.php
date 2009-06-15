@@ -61,66 +61,73 @@ class SITE_proxy{
 		//fclose($fh);
 		
 		$basemapscontentid = ($_POST['basemapscontentid']) ? $_POST['basemapscontentid'] : $_GET['basemapscontentid'];
-		if ($basemapscontentid != null && strlen($basemapscontentid)>0){
+		if ($basemapscontentid != null && strlen($basemapscontentid)>0)
+		{
 			//Get the username and password for this basemapId	
-				global  $mainframe;
-				$db =& JFactory::getDBO(); 
-	
-				$query = "select * from #__easysdi_basemap_content where id = $basemapscontentid"; 
-				$db->setQuery( $query);
-				$row = $db->loadObject();
+			global  $mainframe;
+			$db =& JFactory::getDBO(); 
 
-				$user = $row->user; 
-				$password = $row->password;
-					
-		}else{
-			
-		 
-		$perimeterdefid = ($_POST['perimeterdefid']) ? $_POST['perimeterdefid'] : $_GET['perimeterdefid'];
-		if ($perimeterdefid != null && strlen($perimeterdefid)>0){
-			//Get the username and password for this basemapId	
+			$query = "select * from #__easysdi_basemap_content where id = $basemapscontentid"; 
+			$db->setQuery( $query);
+			$row = $db->loadObject();
+
+			$user = $row->user; 
+			$password = $row->password;
+		}
+		else
+		{
+			$perimeterdefid = ($_POST['perimeterdefid']) ? $_POST['perimeterdefid'] : $_GET['perimeterdefid'];
+			if ($perimeterdefid != null && strlen($perimeterdefid)>0)
+			{
+				//Get the username and password for this basemapId	
 				global  $mainframe;
 				$db =& JFactory::getDBO(); 
 	
 				$query = $query = "SELECT * FROM #__easysdi_perimeter_definition WHERE id = $perimeterdefid"; 
 				$db->setQuery( $query);
 				$row = $db->loadObject();
-
 				$user = $row->user; 
 				$password = $row->password;
-				
 					
-		}		else{
-		$locationid = ($_POST['locationid']) ? $_POST['locationid'] : $_GET['locationid'];
-		if ($locationid != null && strlen($locationid)>0){
-			//Get the username and password for this basemapId	
-				global  $mainframe;
-				$db =& JFactory::getDBO(); 
+			}		
+			else
+			{
+				$locationid = ($_POST['locationid']) ? $_POST['locationid'] : $_GET['locationid'];
+				if ($locationid != null && strlen($locationid)>0)
+				{
+					//Get the username and password for this basemapId	
+					global  $mainframe;
+					$db =& JFactory::getDBO(); 
+		
+					$query = $query = "SELECT * FROM #__easysdi_location_definition WHERE id = $locationid"; 
+					$db->setQuery( $query);
+					$row = $db->loadObject();
 	
-				$query = $query = "SELECT * FROM #__easysdi_location_definition WHERE id = $locationid"; 
-				$db->setQuery( $query);
-				$row = $db->loadObject();
-
-				$user = $row->user; 
-				$password = $row->password;
-					 
-		}	}
-		
-		
-					
+					$user = $row->user; 
+					$password = $row->password;
+							 
+				}	
+				else
+				{
+					$previewId = ($_POST['previewId']) ? $_POST['previewId'] : $_GET['previewId'];
+					if($previewId != null && strlen($previewId)>0)
+					{
+						//Get the username and password for the product preview	
+						global  $mainframe;
+						$db =& JFactory::getDBO(); 
 			
-			
+						$query = $query = "SELECT * FROM #__easysdi_product WHERE id = $previewId"; 
+						$db->setQuery( $query);
+						$row = $db->loadObject();
 		
+						$user = $row->previewUser; 
+						$password = $row->previewPassword;
+						
+					}
+				}
+			}
 			
 		}
-
-		
-		
-		
-		
-		
-		
-		
 		
 		$type = ($_POST['type']) ? $_POST['type'] : $_GET['type'];
 		if ($type == "wms"){
@@ -135,15 +142,9 @@ class SITE_proxy{
 														
 			}
 			
-			$myFile = "C://testFile.txt";
+			/*$myFile = "C://testFile.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
-			//fwrite($fh, $url );  
-			
-
-
-
-			
-			
+			fwrite($fh, $url );  */
 			
 			if (!$handle = fopen("$url", "rb")){				
 				exit ;
@@ -153,10 +154,10 @@ class SITE_proxy{
 				$stringData = fread($handle, 8192);
 				 
 				echo $stringData;
-				fwrite($fh, $stringData );  
+				//fwrite($fh, $stringData );  
 			} 
 			fclose($handle);
-			fclose($fh); 
+			//fclose($fh); 
 		}else if ( substr($url, 0, 8) == 'https://' ) {
 			
 			if ($user !=null && strlen($user)>0){
