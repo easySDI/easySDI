@@ -135,10 +135,10 @@ class SITE_proxy{
 														
 			}
 			
-			/*$myFile = "C://testFile.txt";
+			$myFile = "C://testFile.txt";
 			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $url );  
-			*/
+			//fwrite($fh, $url );  
+			
 
 
 
@@ -153,10 +153,10 @@ class SITE_proxy{
 				$stringData = fread($handle, 8192);
 				 
 				echo $stringData;
-			//	fwrite($fh, $stringData );  
+				fwrite($fh, $stringData );  
 			} 
 			fclose($handle);
-		//	fclose($fh); 
+			fclose($fh); 
 		}else if ( substr($url, 0, 8) == 'https://' ) {
 			
 			if ($user !=null && strlen($user)>0){
