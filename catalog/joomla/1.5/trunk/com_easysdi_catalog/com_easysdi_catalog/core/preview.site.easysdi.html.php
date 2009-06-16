@@ -61,6 +61,15 @@ function previewProduct($id){
 	}					  
 ?>
 <script>
+function setAlpha(imageformat)
+{
+	var filter = false;
+	if (imageformat.toLowerCase().indexOf("png") > -1) {
+		filter = OpenLayers.Util.alphaHack(); 
+	}
+	return filter;
+}
+
 function initMap(){
 	map = new OpenLayers.Map('map', {
     		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
@@ -110,6 +119,14 @@ foreach ($rows as $row){
                       transparent: "true"
                      }
                     );
+                     <?php
+                    if (strtoupper($row->url_type) =="WMS")
+                    {
+                    	?>
+                    	layer<?php echo $i; ?>.alpha = setAlpha('image/png');
+                    	<?php
+                    } 
+                    ?>
                  map.addLayer(layer<?php echo $row->i; ?>);
 <?php 
 $i++;
@@ -132,6 +149,8 @@ $i++;
                       transparent: "true"
                      }
                     );
+                 
+                 layerProduit.alpha = setAlpha('image/png');
                  map.addLayer(layerProduit);
 		
 			
