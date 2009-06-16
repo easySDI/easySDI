@@ -609,6 +609,15 @@ function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd){
 	}					  
 ?>
 <script>
+function setAlpha(imageformat)
+{
+	var filter = false;
+	if (imageformat.toLowerCase().indexOf("png") > -1) {
+		filter = OpenLayers.Util.alphaHack(); 
+	}
+	return filter;
+}
+
 var map;
 function initMap()
 {
@@ -657,6 +666,14 @@ foreach ($rows as $row){
                       transparent: "true"
                      }
                     );
+                    <?php
+                    if (strtoupper($row->url_type) =="WMS")
+                    {
+                    	?>
+                    	layer<?php echo $i; ?>.alpha = setAlpha('image/png');
+                    	<?php
+                    } 
+                    ?>
                  map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
