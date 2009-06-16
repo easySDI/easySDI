@@ -4,6 +4,7 @@ $db =& JFactory::getDBO();
 
 //	$cid = JRequest::getVar ('cid', array(0) );
 $cid = 	$mainframe->getUserState('productList');
+$curstep = JRequest::getVar('step',0);
 
 if (is_array(($cid)))
 {
@@ -51,6 +52,10 @@ if (is_array(($cid)))
 					rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20); ?></a>
 				</td>
 				<td>
+				<?php
+				if ($curstep == 2)
+				{
+				?>
 				<div id ="preview_product" 
 							<?php if ($row->previewWmsUrl)
 								  { 
@@ -82,6 +87,9 @@ if (is_array(($cid)))
 								  } ;	 ?>>
 				</div>
 				</td>
+				<?php
+				}
+				 ?>
 				<td>
 				<div id ="delete_product" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
 							locOrderForm = document.forms['orderForm'];
