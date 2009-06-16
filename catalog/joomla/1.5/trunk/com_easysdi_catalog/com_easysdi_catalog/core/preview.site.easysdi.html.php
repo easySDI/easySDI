@@ -104,7 +104,7 @@ $i=0;
 foreach ($rows as $row){				  
 ?>				
 				  
-		layer<?php echo $row->i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+		layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
                     "<?php echo $row->url; ?>",
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
@@ -127,7 +127,7 @@ foreach ($rows as $row){
                     	<?php
                     } 
                     ?>
-                 map.addLayer(layer<?php echo $row->i; ?>);
+                 map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
 } ?>                    
