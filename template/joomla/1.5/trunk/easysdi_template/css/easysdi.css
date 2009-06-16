@@ -836,8 +836,9 @@ div#printOrderRecap:hover{
 /*** EasySDI Caddy   ***/
 /***********************/
 .deleteProductCaddy { 
-	background-image:url(../images/trash_product.gif);
+	background-image:url(../icons/silk/bin.png);
 	background-position:center;
+	background-color:transparent;
 	height:28px;
 	width:28px;
 	background-repeat:no-repeat;
