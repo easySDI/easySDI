@@ -23,12 +23,6 @@ class HTML_catalog{
 
 
 	function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr){
-		/*global $mainframe;*/
-/*		foreach($_POST as $key => $val) 
-		echo '$_POST["'.$key.'"]='.$val.'<br />';*/
-		
-		
-		//$pageNav = new JPagination('100',$limitstart,$limit);
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		
@@ -261,7 +255,7 @@ class HTML_catalog{
 	  <td valign="top" rowspan=3>
 	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
 	  </td>
-	  <td colspan=3><span class="mdtitle"><a><?php echo $md->getDataIdentificationTitle();?></a></span>
+	  <td colspan="3"><span class="mdtitle"><a><?php echo $md->getDataIdentificationTitle();?></a></span>
 	  </td>
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
@@ -278,7 +272,7 @@ class HTML_catalog{
 	  </td>
 	 </tr>
 	 <tr>
-	  <td colspan=3><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
+	  <td colspan="3"><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
 	 </tr>
 	 <tr> 
 	 <!--
@@ -302,7 +296,7 @@ class HTML_catalog{
 	  <td>&nbsp;</td>
 	 </tr>
 	 <tr>
-	   <td colspan=4>&nbsp;</td>
+	   <td colspan="4">&nbsp;</td>
 	 </tr>
 	 
 
@@ -338,9 +332,9 @@ class HTML_catalog{
 		HTML_catalog::alter_array_value_with_Jtext($themes);
 		
 		?>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
+	<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
+	<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
 	<table width="100%">
 	<tr>
 		<td width="50%" valign="top" >
@@ -376,7 +370,7 @@ class HTML_catalog{
 		<table>
 			<tr>
 				<td>
-				<div id="map" class="tinymap"></div>
+				<div id="map"  class="tinymap"></div>
 				</td>
 			</tr>
 			<tr>
@@ -395,20 +389,23 @@ class HTML_catalog{
 
 <div id="docs"></div>
 <br/>
-<script  type="text/javascript">
+<script>
       
 var vectors = null;            
+var map;
+var baseLayerVector;
+
+function setAlpha(imageformat)
+{
+	var filter = false;
+	if (imageformat.toLowerCase().indexOf("png") > -1) {
+		filter = OpenLayers.Util.alphaHack(); 
+	}
+	return filter;
+}
+
 function initMap(){
- //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
-
-
-
-
-<?php
-//global  $mainframe;
-//$db =& JFactory::getDBO(); 
-	
-	
+ <?php
 $query = "select * from #__easysdi_basemap_definition where def = 1"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();		  
@@ -418,28 +415,20 @@ if ($db->getErrorNum()) {
 			echo "</div>";
 }
 ?>
-				   map = new OpenLayers.Map('map', {
-                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
-                displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
-                units: "<?php echo $rows[0]->unit; ?>",
-                minResolution: <?php echo $rows[0]->minResolution; ?>,
-               maxResolution: <?php echo $rows[0]->maxResolution; ?>,    
-                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
-				<?php
-					if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
-			    ?>
-				<?php
-					if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
-			    ?>
-				//,controls: []
-            });
+			var options = {
+	    	projection: "<?php echo $rows[0]->projection; ?>",
+            displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
+            units: "<?php echo $rows[0]->unit; ?>",
+			<?php if ($rows[0]->projection == "EPSG:4326") {}else{ ?>
+            minResolution: <?php echo $rows[0]->minResolution; ?>,
+            maxResolution: <?php echo $rows[0]->maxResolution; ?>,                
+			<?php } ?>
+            maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
+			};
+	map = new OpenLayers.Map("map", options);
 				  
-				 baseLayerVector = new OpenLayers.Layer.Vector(
-                "BackGround",
-                {isBaseLayer: true,transparent: "true"}
-            ); 
-				  map.addLayer(baseLayerVector);
-
+	baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true,transparent: "true"}); 
+	map.addLayer(baseLayerVector);
 
 <?php
 
@@ -475,13 +464,23 @@ foreach ($rows as $row){
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
-                      	minScale: <?php echo $row->minResolution; ?>,
-                        maxScale: <?php echo $row->maxResolution; ?>,                 
+                      	<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
+                      	minResolution: <?php echo $row->minResolution; ?>,
+                        maxResolution: <?php echo $row->maxResolution; ?>,
+                        <?php } ?>                     
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
                       transparent: "true"
                      }
                     );
+                  <?php
+	                    if (strtoupper($row->url_type) =="WMS")
+	                    {
+	                    	?>
+	                    	layer<?php echo $i; ?>.alpha = setAlpha('image/png');
+	                    	<?php
+	                    } 
+	                    ?>
                  map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
