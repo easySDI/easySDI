@@ -276,7 +276,14 @@ class HTML_product{
 								<td><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
 							</tr>
-																	
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_USER"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" id="previewUser" name="previewUser" value="<?php echo $rowProduct->previewUser; ?>" /></td>								
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_PREVIEW_PASSWORD"); ?> : </td>
+								<td><input class="inputbox" type="password" size="50" maxlength="400" id="previewPassword" name="previewPassword" value="<?php echo $rowProduct->previewPassword; ?>" /></td>								
+							</tr>											
 						</table>
 					</fieldset>
 				</td>
