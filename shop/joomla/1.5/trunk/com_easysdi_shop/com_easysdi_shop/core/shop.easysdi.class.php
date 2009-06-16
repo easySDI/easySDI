@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
-foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';
+/*foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -321,7 +321,7 @@ class HTML_shop {
 		                     }
 		                    );
 		                 layerPerimeter.alwaysInRange=false;  
-		                    
+		                 layerPerimeter.alpha = setAlpha('image/png');
 		                 map.addLayer(layerPerimeter);      
 		    
 		    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
@@ -371,6 +371,16 @@ class HTML_shop {
 		}
 	}
 	
+	            
+function setAlpha(imageformat)
+{
+	var filter = false;
+	if (imageformat.toLowerCase().indexOf("png") > -1) {
+		filter = OpenLayers.Util.alphaHack(); 
+	}
+	return filter;
+}
+
 	            
 	function initMap(){
 	 //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
@@ -468,6 +478,14 @@ class HTML_shop {
 	                      transparent: "true"
 	                     }
 	                    );
+	                    <?php
+	                    if (strtoupper($row->url_type) =="WMS")
+	                    {
+	                    	?>
+	                    	layer<?php echo $i; ?>.alpha = setAlpha('image/png');
+	                    	<?php
+	                    } 
+	                    ?>
 	                 map.addLayer(layer<?php echo $i; ?>);
 	                 
 	<?php 
@@ -515,6 +533,7 @@ class HTML_shop {
 		                      transparent: "true"
 		                     }
 		                    );
+		 previewLayer.alpha = setAlpha('image/png');
 		 map.addLayer (previewLayer);
 		
 		<?php
