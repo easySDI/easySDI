@@ -5,7 +5,7 @@ $db =& JFactory::getDBO();
 //	$cid = JRequest::getVar ('cid', array(0) );
 $cid = 	$mainframe->getUserState('productList');
 $curstep = JRequest::getVar('step',0);
-
+$currentPreview = JRequest::getVar('previewProductId');
 if (is_array(($cid)))
 {
 	// do something
@@ -59,7 +59,7 @@ if (is_array(($cid)))
 				<div id ="preview_product" 
 							<?php if ($row->previewWmsUrl)
 								  { 
-								  	$currentPreview = JRequest::getVar('previewProductId');
+								  	
 								  	if($currentPreview == $row->id)
 								  	{
 								  		?> class='previewActivateProductCaddy' 
@@ -92,6 +92,7 @@ if (is_array(($cid)))
 				 ?>
 				<td>
 				<div id ="delete_product" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
+							<?php if ($currentPreview == $row->id){ ?>document.forms['orderForm'].elements['previewProductId'].value='';<?php } ?>
 							locOrderForm = document.forms['orderForm'];
 							newInput = document.createElement('input');
 							newInput.type='hidden';newInput.name='prodId';
