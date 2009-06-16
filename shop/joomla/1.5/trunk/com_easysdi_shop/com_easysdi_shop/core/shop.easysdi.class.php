@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
-/*foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';*/
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -1054,13 +1054,14 @@ class HTML_shop {
 		 }
 		 else 
 		 {
-		 	if (document.getElementById('step').value == 1)
+		 	if (document.getElementById('step').value == 2 || document.getElementById('step').value == 1)
 		 	{
 		 		document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value; 
 		 		document.getElementById('orderForm').submit();
 		 		 			
 		 	}else
 		 	{
+	 			document.getElementById('step').value = 2;
 	 			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
 	 		}
 		 }
@@ -1366,16 +1367,24 @@ if (count($rows)>0){
 		?>
 <script>
  function submitOrderForm(){
- if (!document.getElementById('order_type_d').checked && !document.getElementById('order_type_o').checked){
- 
- 	alert("<?php echo JText::_("EASYSDI_ORDER_TYPE_NOT_FILL") ?>");
- 	return;
- }
- if (document.getElementById('order_name').value.length == 0){
- 
- 	alert("<?php echo JText::_("EASYSDI_ORDER_NAME_NOT_FILL") ?>");
- 	return;
- }
+	 if(document.getElementById('step').value <= document.getElementById('fromStep').value)
+	 {
+	 	//Step back in the tab, don't need to check the values filled in the form
+	 	
+	 }
+	 else
+	 {
+		 if (!document.getElementById('order_type_d').checked && !document.getElementById('order_type_o').checked){
+		 
+		 	alert("<?php echo JText::_("EASYSDI_ORDER_TYPE_NOT_FILL") ?>");
+		 	return;
+		 }
+		 if (document.getElementById('order_name').value.length == 0){
+		 
+		 	alert("<?php echo JText::_("EASYSDI_ORDER_NAME_NOT_FILL") ?>");
+		 	return;
+		 }
+	 }
  	document.getElementById('orderForm').submit();
  }
  </script>
@@ -1395,40 +1404,43 @@ if (count($rows)>0){
 	<input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
 	<?php
 
-	if ($user->guest){
+	if ($user->guest ){
 		echo "<hr>";
 		echo JText::_("EASYSDI_USER_NOT_CONNECTED");
-		?> <input type="text" name="user" value=""> <input type="password"
-	name="password" value=""> <?php
+		?> 
+		<input type="text" name="user" value=""> 
+		<input type="password" name="password" value=""> 
+		<?php
 	}
-	$query = "select a.partner_id as partner_id, j.name as name 
-				from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c, #__users as j 
-				where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id and a.user_id = j.id";
-	$db->setQuery( $query);
-	$rows = $db->loadObjectList();
-	if ($db->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$db->getErrorMsg();
-		echo "</div>";
-	}
+	
+		$query = "select a.partner_id as partner_id, j.name as name 
+					from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c, #__users as j 
+					where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id and a.user_id = j.id";
+		$db->setQuery( $query);
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo $db->getErrorMsg();
+			echo "</div>";
+		}
+	
 	?> <br>
-<hr>
-	<?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?> <select
-	name="third_party">
+	<hr>
+	<?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?> 
+	<select name="third_party">
 	<option value="0"><?php echo JText::_("EASYSDI_ORDER_FOR_NOBODY"); ?></option>
 	<?php
-
 	$third_party = $mainframe->getUserState('third_party');
 	echo $third_party;
 	foreach ($rows as $row){
 		$selected="";
 		if ($third_party == $row->partner_id) $selected="selected";
 		echo "<option ".$selected." value=\"".$row->partner_id."\">".$row->name."</option>";
-
 	}
 	?>
-</select></form>
-	<?php
+	</select>
+</form>
+<?php
 
 
 	}
