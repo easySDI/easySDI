@@ -45,6 +45,8 @@ class product extends JTable
 	var $diffusion_partner_id=0;
 	var $treatment_type=null;
 	var $notification_email=null;
+	var $previewUser = null;
+	var $previewPassword = null;
 	
 	// Class constructor
 	function __construct( &$db )
