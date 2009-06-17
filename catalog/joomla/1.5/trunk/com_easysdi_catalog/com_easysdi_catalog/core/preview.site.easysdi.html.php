@@ -69,14 +69,13 @@ function setAlpha(imageformat)
 	}
 	return filter;
 }
-
+var map;
+var baseLayerVector;
 function initMap(){
 	map = new OpenLayers.Map('map', {
     		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             units: "<?php echo $rowsBaseMap->unit; ?>",
-
-//Bug when prohection == 4326 the resolutions are not managed properly
 <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
             minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
             maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
@@ -161,15 +160,17 @@ $i++;
       
                                                             
 }
-var oldLoad = window.onload;
-window.onload=function(){
-initMap();
-if (oldLoad) oldLoad();
-}                       
+
+
+                      
 </script>   
 	
-	<div id="map" class="smallmap"></div>
+	<div id="map" class="smallmap">
 	
+</div>
+	<script>
+	initMap();
+	</script>
 	<?php
 }
 }
