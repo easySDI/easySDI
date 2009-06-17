@@ -156,22 +156,21 @@ $i++;
       map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>));
       //map.addControl(new OpenLayers.Control.LayerSwitcher());
       map.addControl(new OpenLayers.Control.Attribution());         
-      
-      
                                                             
-}
+	}
 
 
                       
-</script>   
-	
-	<div id="map" class="smallmap">
-	
-</div>
+	</script>   
+		<div id="map" class="smallmap">
+	</div>
 	<script>
-	initMap();
+		window.onload=function()
+		{	
+			initMap();
+		}
 	</script>
-	<?php
-}
+		<?php
+	}
 }
 ?>
