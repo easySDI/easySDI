@@ -62,7 +62,6 @@ else
 			
 		case "listCatalogContent":			
 			SITE_catalog::listCatalogContent();
-			///$mainframe->redirect("index.php?option=$option&task=ListCatalog&filterfreetextcriteria=$filterfreetextcriteria&limitstart=$limitstart&partner_id=$partner_id" );
 			break;
 		
 		case "previewProduct":
