@@ -1778,8 +1778,8 @@ if ($version == "0.998")
 		
 		//Add lookup table with treatment values
 		$query = "CREATE TABLE #__easysdi_product_treatment_type (
-					`id` BIGINT( 20 ) NOT NULL ,
-					`code` TEXT NOT NULL auto_increment ,
+					`id` BIGINT( 20 ) NOT NULL auto_increment ,
+					`code` TEXT NOT NULL ,
 					`translation` TEXT NULL ,
 					`description` TEXT NULL ,
 					PRIMARY KEY ( `id` )
