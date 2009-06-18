@@ -215,7 +215,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
 								<td><?php echo $rowUser->id; ?></td>
 							</tr>
 		
@@ -262,7 +262,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 						<legend><b><?php echo JText::_("EASYSDI_TEXT_EASYSDI"); ?></b></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
 								<td><?php echo $rowPartner->partner_id; ?></td>
 							</tr>
 							<tr>
@@ -750,7 +750,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
 								<td><?php echo $rowUser->id; ?></td>
 							</tr>
 							<tr>
@@ -795,7 +795,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 						<legend><b><?php echo JText::_("EASYSDI_TEXT_EASYSDI"); ?></b></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
 								<td><?php echo $rowPartner->partner_id; ?></td>
 							</tr>
 							<tr>
