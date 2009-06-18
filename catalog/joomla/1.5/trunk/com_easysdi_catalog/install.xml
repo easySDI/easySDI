@@ -15,8 +15,11 @@
 	<installfile>install.easysdi_catalog.php</installfile>
 	<uninstallfile>uninstall.easysdi_catalog.php</uninstallfile>
 	
-	<administration>			
-	<languages folder="./language/admin">
+	<administration>	
+		<files>
+			<filename>license.txt</filename>
+		</files>		
+		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_catalog.ini</language>
 			<language tag="en-GB">en-GB.com_easysdi_catalog.ini</language>
 		</languages>
@@ -27,6 +30,7 @@
 			<filename>license.txt</filename>									
 			<folder>core</folder>			
 			<folder>views</folder>
+			<folder>xsl</folder>
 	</files>
 
 	
