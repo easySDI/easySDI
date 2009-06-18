@@ -55,6 +55,32 @@ div .freeMd{
 	font-weight: bold;
 }
 
+.mdPanSelected { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0d0;
+	color: #666;
+}
+
+.mdPanSelectable { 
+	float: left;
+	padding: 4px 10px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	margin-left: 3px;
+	background: #f0f0f0;
+	color: #666;
+}
+
+.mdPanContent{
+	border: 1px solid #ccc;
+	vertical-align: top;
+}
 /***********************/
 /*** EasySDI Shop    ***/
 /***********************/
