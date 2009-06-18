@@ -1,6 +1,6 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="module">
-	<name>MOD_CADDY</name>
+	<name>Mod_Caddy</name>
 	<version>1.0</version>
 	<creationDate>July 2008</creationDate>
 	<author>Depth.ch</author>
