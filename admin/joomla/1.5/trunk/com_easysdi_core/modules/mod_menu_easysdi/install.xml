@@ -12,6 +12,7 @@
 	<files>
 		<filename module="mod_menu_easysdi">mod_menu_easysdi.php</filename>
 	</files>
+
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.mod_menu_easysdi.ini</language>
 		<language tag="en-GB">en-GB.mod_menu_easysdi.ini</language>
