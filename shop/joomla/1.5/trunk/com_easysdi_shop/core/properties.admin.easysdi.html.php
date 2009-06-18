@@ -49,7 +49,7 @@ class HTML_properties {
 						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_ID"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_ID"); ?> : </td>
 								<td><?php echo $rowProperties->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
@@ -297,7 +297,7 @@ class HTML_properties {
 						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td width="100p"><?php echo JText::_("EASYSDI_ID"); ?> : </td>
+								<td ><?php echo JText::_("EASYSDI_ID"); ?> : </td>
 								<td><?php echo $rowProperties->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
