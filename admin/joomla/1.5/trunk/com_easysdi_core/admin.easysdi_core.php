@@ -58,7 +58,6 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php'
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'resources.admin.easysdi.php');
-require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
 
 $option = JRequest::getVar('option');
 
