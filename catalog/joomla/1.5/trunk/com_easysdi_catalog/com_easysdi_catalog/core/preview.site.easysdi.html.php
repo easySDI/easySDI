@@ -25,7 +25,7 @@ function previewProduct($id){
 	
 		
 	?>
-	<link rel="stylesheet" href="/templates/easysdi/css/easysdi.css" type="text/css" />
+	
 	<script
 	type="text/javascript"
 	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
