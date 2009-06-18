@@ -6,8 +6,22 @@ class userTree
 	static function buildTreeView ($rootUser, $is_frontEnd)
 	{
 		$database =& JFactory::getDBO();		
+		
+		if ($is_frontEnd == true)
+		{
+			?>
+			<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/dtree.js"></script>
+			<?php
+		}
+		else
+		{
+			?>
+			<script type="text/javascript" src="components/com_easysdi_core/common/dtree.js"></script>
+			<?php
+		}
 		?><!--  -->
-		<script type="text/javascript" src="administrator/components/com_easysdi_core/common/dtree.js"></script>
+		
+		
 		
 
 		<div class="dtree">
@@ -24,7 +38,7 @@ class userTree
 			</td>
 			<td>
 			<script type="text/javascript">
-				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/images/dtree/';  ?>');
+				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/';  ?>');
 				
 				d.add(0,-1,'<?php echo $rootUser->name;  ?>');
 				
