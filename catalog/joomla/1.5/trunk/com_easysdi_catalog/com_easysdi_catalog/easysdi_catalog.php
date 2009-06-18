@@ -63,7 +63,6 @@ else
 		case "listCatalogContent":			
 			SITE_catalog::listCatalogContent();
 			break;
-		
 		case "previewProduct":
 			
 			HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
