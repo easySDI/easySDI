@@ -22,7 +22,8 @@ class SITE_catalog {
 
 	function listCatalogContent(){
 		global $mainframe;
-
+		$empty = true;
+		
 		$maxDescr = config_easysdi::getValue("description_length");
 		$MDPag = config_easysdi::getValue("pagination_metadata");
 		
@@ -61,6 +62,8 @@ class SITE_catalog {
 			<PropertyName>any</PropertyName>
 			<Literal>$filter_theme</Literal>
 			</PropertyIsLike> ";
+			
+			$empty = false;
 		}
 		
 		$cswPartnerFilter = "";
@@ -83,13 +86,15 @@ class SITE_catalog {
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
+			$empty = false;
 		}
+		
 
 		$cswVisibleFilter = "";
-		if($filter_visible)
+		if($filter_visible )
 		{	
 			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published = 1";
+			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE previewWmsUrl is not null AND length (previewWmsUrl)>0";
 			$db->setQuery( $query);
 			$list_id = $db->loadObjectList() ;
 			if ($db->getErrorNum())
@@ -105,6 +110,7 @@ class SITE_catalog {
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
+			$empty = false;
 		}
 		
 		$cswOrderableFilter = "";
@@ -127,27 +133,36 @@ class SITE_catalog {
 				<Literal>$md_id->metadata_id</Literal>
 				</PropertyIsLike> ";
 			}
+			$empty = false;
 		}
 		
 		$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
-						<And>
-						<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+						<Or>";
+		if ( $filterfreetextcriteria  || $empty )
+		{
+			$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 						<PropertyName>any</PropertyName>
 						<Literal>$filterfreetextcriteria%</Literal>
-						</PropertyIsLike>
-						<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+						</PropertyIsLike> ";
+		}
+		if ($simple_filterfreetextcriteria || $empty)		
+		{		
+			$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 						<PropertyName>any</PropertyName>
 						<Literal>$simple_filterfreetextcriteria%</Literal>
 						</PropertyIsLike>
-						$cswPartnerFilter
-						$cswThemeFilter
-						$cswOrderableFilter
-						$cswVisibleFilter
-						$bboxfilter
-						</And>
-						</Filter>";//.$sortBy;
+						";
+		}
+				$cswfilter = $cswfilter.$cswPartnerFilter;
+				$cswfilter = $cswfilter.$cswThemeFilter;
+				$cswfilter = $cswfilter.$cswOrderableFilter;
+				$cswfilter = $cswfilter.$cswVisibleFilter;
+				$cswfilter = $cswfilter.$bboxfilter;
+				$cswfilter = $cswfilter."</Or></Filter>";//.$sortBy;
 		
+						
 		$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".urlencode($cswfilter));
+
 
 		if ($cswResults !=null){
 			$total = 0;
