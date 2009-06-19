@@ -303,7 +303,7 @@ class HTML_catalog{
 	  	<?php if ($hasPreview > 0){ ?>
 	  <td><span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
-			rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+			rel="{handler:'iframe',size:{x:540,y:660}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
       </td>
 		<?php } ?>
 	  <td>&nbsp;</td>
@@ -620,11 +620,15 @@ class HTML_catalog{
 		$db =& JFactory::getDBO();
 		$partners = array();
 		$partners[0]='';
-		$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
+		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text FROM #__users, `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id WHERE #__users.id = #__easysdi_community_partner.user_id GROUP BY #__easysdi_community_partner.partner_id ";
 		$db->setQuery( $query);
 		$partners = array_merge( $partners, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
 		{
+			echo "<div class='alert'>";
+			echo 	$db->getErrorMsg();
+			echo "</div>";
 		}
 		$themes = array();
 		$themes[] = JHTML::_('select.option', '', '');
@@ -669,8 +673,8 @@ class HTML_catalog{
 		            displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
 		            units: "<?php echo $rows[0]->unit; ?>",
 					<?php if ($rows[0]->projection == "EPSG:4326") {}else{ ?>
-		            minResolution: <?php echo $rows[0]->minResolution; ?>,
-		            maxResolution: <?php echo $rows[0]->maxResolution; ?>,                
+		            minScale: <?php echo $rows[0]->minResolution; ?>,
+		            maxScale: <?php echo $rows[0]->maxResolution; ?>,                
 					<?php } ?>
 		            maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>)
 					};
@@ -711,8 +715,8 @@ class HTML_catalog{
 		                     {     
 		                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
 		                      	<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-		                      	minResolution: <?php echo $row->minResolution; ?>,
-		                        maxResolution: <?php echo $row->maxResolution; ?>,
+		                      	minScale: <?php echo $row->minResolution; ?>,
+		                        maxScale: <?php echo $row->maxResolution; ?>,
 		                        <?php } ?>                     
 		                     projection:"<?php echo $row->projection; ?>",
 		                      units: "<?php echo $row->unit; ?>",
@@ -733,7 +737,8 @@ class HTML_catalog{
 		} ?>                    
 		
 					 
-		
+				mapCatalog.events.register("zoomend", null, 
+							function() { document.getElementById('previousExtent').value = mapCatalog.getExtent().toBBOX();})
 		                
 		               mapCatalog.addControl(new OpenLayers.Control.LayerSwitcher());
 		                mapCatalog.addControl(new OpenLayers.Control.Attribution());                                
@@ -747,7 +752,20 @@ class HTML_catalog{
 		                       
 		                        
 		            mapCatalog.addLayer(vectorsCatalog);
-		            mapCatalog.zoomToMaxExtent();
+		           <?php
+					if ( JRequest::getVar('previousExtent') != "")
+					{
+						?>
+							mapCatalog.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
+						<?php
+					}
+					else
+					{
+						?>
+							mapCatalog.zoomToMaxExtent();
+						<?php	
+					}
+				?>
 		            
 		            var containerPanel = document.getElementById("panelDiv");
 		            var panel = new OpenLayers.Control.Panel({div: containerPanel});
@@ -835,10 +853,19 @@ class HTML_catalog{
 					</tr>
 					<tr>
 						<td>
-						<div id="panelDiv" class="olControlEditingToolbar"></div>
+						
 						</td>
 						<td>
 						<div id="mapCatalog"  class="tinymap"></div>
+						
+						</td>
+					</tr>
+					<tr>
+						<td>
+						
+						</td>
+						<td>
+						<div id="panelDiv" class="olControlEditingToolbar"></div>
 						</td>
 					</tr>
 				</table>
@@ -846,6 +873,7 @@ class HTML_catalog{
 				
 			</tr>
 		</table>
+		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 		<script>
 			window.onload=function()
 				{	
