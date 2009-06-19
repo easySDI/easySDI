@@ -81,6 +81,13 @@ div .freeMd{
 	border: 1px solid #ccc;
 	vertical-align: top;
 }
+
+.olmdControlEditingToolbar  {
+     float:left;
+     right: 0px;
+     height: 30px; 
+     width: 150px;
+}
 /***********************/
 /*** EasySDI Shop    ***/
 /***********************/
@@ -153,6 +160,8 @@ div .freeMd{
             float: right;
             text-align: right;
         }
+        
+ 
        
 /* Control container panel div */
 .olControlPanel div {
@@ -317,13 +326,6 @@ dl.tabs dt.open {
 	color: #000;
 }
 
-
- .olControlEditingToolbar  {
-            float:left;
-            right: 0px;
-            height: 30px; 
-            width: 150px;
-        }
 
 div.olMap {
 	z-index: 0;
@@ -531,19 +533,19 @@ height:16px;
 .olControlEditingToolbar div { 
   background-image: url("../images/editing_tool_bar.png");
   background-repeat: no-repeat;
-  float:right;
-  width:  24px;
+  float:left;
+  width:  25px;
   height: 24px;
   margin: 5px;
 }
 .olControlEditingToolbar .olControlNavigationItemActive { 
-  background-position: -103px -23px; 
+  background-position: -103px -24px; 
 }
 .olControlEditingToolbar .olControlNavigationItemInactive { 
   background-position: -103px -0px; 
 }
 .olControlPanel .olControlDrawFeaturePointItemActive { 
-  background-position: -77px -23px; 
+  background-position: -77px -24px; 
   background-image: url("../images/draw_point_on.png");
 }
 .olControlPanel .olControlDrawFeaturePointItemInactive { 
@@ -554,14 +556,14 @@ height:16px;
   background-position: -51px 0px; 
 }
 .olControlPanel .olControlDrawFeaturePathItemActive { 
-  background-position: -51px -23px; 
+  background-position: -51px -24px; 
 }
 .olControlPanel .olControlDrawFeaturePolygonItemInactive  { 
   background-position: -26px 0px; 
   background-image: url("../images/draw_polygon_off.png");
 }
 .olControlPanel  .olControlDrawFeaturePolygonItemActive { 
-  background-position: -26px -23px ;                        
+  background-position: -26px -24px ;                        
   background-image: url("../images/draw_polygon_on.png");                                           
 }
 
@@ -570,7 +572,7 @@ height:16px;
   background-image: url("../images/draw_rectangle_off.png");
 }
 .olControlPanel  .olControlDrawFeatureRectangleItemActive { 
-  background-position: -26px -23px ;
+  background-position: -26px -24px ;
   background-image: url("../images/draw_rectangle_on.png");                                                                   
 }
 
