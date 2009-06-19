@@ -201,7 +201,7 @@ class HTML_catalog{
 		<tr>
 			<!-- <td><?php echo $i; ?></td>  -->
 			<?php
-			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."' AND published = 1 AND orderable = 1";
 			$db->setQuery( $query);
 
 			$metadataId_count = $db->loadResult();
@@ -211,7 +211,7 @@ class HTML_catalog{
 			}
 
 
-			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."'";
+			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."' WHERE published = 1 AND orderable = 1";
 
 			$db->setQuery( $query);
 
