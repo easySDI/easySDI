@@ -626,8 +626,8 @@ function initMap()
             displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             units: "<?php echo $rowsBaseMap->unit; ?>",
 			<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
-            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
+            minScale: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
             maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>), 
             controls: [] 
@@ -658,8 +658,8 @@ foreach ($rows as $row){
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-                      	minResolution: <?php echo $row->minResolution; ?>,
-                        maxResolution: <?php echo $row->maxResolution; ?>,
+                      	minScale: <?php echo $row->minResolution; ?>,
+                        maxScale: <?php echo $row->maxResolution; ?>,
                         <?php } ?>                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
