@@ -22,10 +22,8 @@ class HTML_preview{
 
 
 function previewProduct($id){
-	
-		
 	?>
-	
+		
 	<script
 	type="text/javascript"
 	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
@@ -50,6 +48,10 @@ function previewProduct($id){
 			echo "</div>";
 	}					  
 	
+	?>
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_PRODUCT_PREVIEW"); ?></h2>
+	<h3 ><?php echo JText::_("EASYSDI_CATALOG_PRODUCT_TITLE"); ?> : <?php echo $rowProduct->data_title; ?></h3>
+	<?php
 	
 	$query = "select * from #__easysdi_basemap_definition where id = (SELECT previewBaseMapId FROM #__easysdi_product WHERE metadata_id = '$id')"; 
 	$db->setQuery( $query);
@@ -77,8 +79,8 @@ function initMap(){
             displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             units: "<?php echo $rowsBaseMap->unit; ?>",
 <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-            minResolution: <?php echo $rowsBaseMap->minResolution; ?>,
-            maxResolution: <?php echo $rowsBaseMap->maxResolution; ?>,                
+            minScale: <?php echo $rowsBaseMap->minResolution; ?>,
+            maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
             maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
             });
@@ -110,8 +112,8 @@ foreach ($rows as $row){
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-                      	minResolution: <?php echo $row->minResolution; ?>,
-                        maxResolution: <?php echo $row->maxResolution; ?>,
+                      	minScale: <?php echo $row->minResolution; ?>,
+                        maxScale: <?php echo $row->maxResolution; ?>,
                         <?php } ?>                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
@@ -140,8 +142,8 @@ $i++;
                        
                       maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>),
                       <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>                                          
-                      minResolution: <?php echo $rowProduct->previewMinResolution; ?>,
-                      maxResolution: <?php echo $rowProduct->previewMaxResolution; ?>,
+                      minScale: <?php echo $rowProduct->previewMinResolution; ?>,
+                      maxScale: <?php echo $rowProduct->previewMaxResolution; ?>,
                       <?php } ?>                 
                      projection:"<?php echo $rowProduct->previewProjection; ?>",
                       units: "<?php echo $rowProduct->previewUnit; ?>",
