@@ -1761,7 +1761,7 @@ if ($version == "0.998")
 	 if($version == "0.9995")
 	 {
 	 	//Add product treatment type
-		$query="ALTER TABLE #__easysdi_product add column `treatment_type`  BIGINT( 20 ) ";
+		$query="ALTER TABLE #__easysdi_product add column `treatment_type`  BIGINT( 20 ) NOT NULL default '1' ";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
