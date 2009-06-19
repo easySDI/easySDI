@@ -157,7 +157,7 @@ if ($curstep == "2")
 	 		}
 	 		else
 	 		{
-			 	if (map.getScale() < <?php echo $row->min_resolution; ?> || map.getScale() > <?php echo $row->max_resolution; ?>){
+			 	if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>){
 					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo $row->perimeter_name; ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
 					$("scaleStatus").innerHTML = text;
 					//document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
@@ -259,7 +259,7 @@ if ($curstep == "2")
 
 			echo JText::_("EASYSDI_SURFACE_SELECTED");?>
 <input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
-<input type="text" size="30" id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea, $decimal_precision); ?>">
+<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea, $decimal_precision); ?>">
 <br>
 <select multiple="multiple" size="10" id="selectedSurface"  	onChange="changeSelectedSurface()">
 	<?php
