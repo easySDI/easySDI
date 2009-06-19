@@ -92,7 +92,7 @@ if (is_array(($cid)))
 				 ?>
 				<td>
 				<div id ="delete_product" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
-							<?php if ($currentPreview == $row->id){ ?>document.forms['orderForm'].elements['previewProductId'].value='';<?php } ?>
+							<?php if ($currentPreview && $currentPreview == $row->id){ ?>document.forms['orderForm'].elements['previewProductId'].value='';<?php } ?>
 							locOrderForm = document.forms['orderForm'];
 							newInput = document.createElement('input');
 							newInput.type='hidden';newInput.name='prodId';
