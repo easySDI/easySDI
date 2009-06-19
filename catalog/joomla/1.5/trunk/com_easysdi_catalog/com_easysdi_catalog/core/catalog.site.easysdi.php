@@ -117,7 +117,7 @@ class SITE_catalog {
 		if($filter_orderable)
 		{
 			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1";
+			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1 AND published = 1"; 
 			$db->setQuery( $query);
 			$list_id = $db->loadObjectList() ;
 			if ($db->getErrorNum())
