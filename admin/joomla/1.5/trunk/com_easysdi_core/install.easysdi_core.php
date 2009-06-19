@@ -980,7 +980,7 @@ function com_install(){
 		}
 	
 		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-			values($id,'Ressources','','option=com_easysdi_core&task=listRessources','Ressources','com_easysdi_core','js/ThemeOffice/component.png','')";
+			values($id,'Ressources','','option=com_easysdi_core&task=listResources','Ressources','com_easysdi_core','js/ThemeOffice/component.png','')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
