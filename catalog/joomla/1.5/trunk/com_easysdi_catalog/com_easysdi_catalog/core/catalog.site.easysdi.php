@@ -94,7 +94,7 @@ class SITE_catalog {
 		if($filter_visible )
 		{	
 			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE previewWmsUrl is not null AND length (previewWmsUrl)>0";
+			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE previewWmsUrl is not null";
 			$db->setQuery( $query);
 			$list_id = $db->loadObjectList() ;
 			if ($db->getErrorNum())
