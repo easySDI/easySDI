@@ -84,10 +84,10 @@ class ADMIN_resources {
 						$row->id 		= $rowid;
 						$row->language 	= basename($dir);
 						$row->filename 	= $dir.DS.$languageFile;
-						if (strstr($dir, "\\administrator\\"))
-							$row->side	 	= "Admin";
+						if (strstr($dir, "\\administrator\\") or strstr($dir, "/administrator/"))
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_ADMIN");
 						else
-							$row->side	 	= "Site";
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_SITE");
 						$row->component	= substr($languageFile, strpos($languageFile, $easysdi), strpos($languageFile, ".ini")-strpos($languageFile, $easysdi));
 						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
 						if ($currentLanguage->_lang == basename($dir))
