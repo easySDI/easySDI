@@ -101,8 +101,7 @@ class HTML_catalog{
 				<tr>
 					<td>
 					<button type="submit" class="easysdi_search_button"
-						onclick="clearDetailsForm();
-								 document.getElementById('tabIndex').value = '0';
+						onclick="document.getElementById('tabIndex').value = '0';
 								 document.getElementById('catalog_search_form').submit();">
 								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
 					</td>
@@ -134,8 +133,7 @@ class HTML_catalog{
 				<tr>
 					<td>
 					<button type="submit" class="easysdi_search_button"
-						onclick="clearForm();
-								 document.getElementById('tabIndex').value = '1';
+						onclick="document.getElementById('tabIndex').value = '1';
 								 document.getElementById('catalog_search_form').submit();">
 								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
 					</td>
