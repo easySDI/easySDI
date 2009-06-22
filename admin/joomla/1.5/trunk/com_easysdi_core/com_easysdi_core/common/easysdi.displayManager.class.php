@@ -406,9 +406,9 @@ class displayManager{
 		$product_creation_date;
 		$product_update_date;
 		
-		$timerFile = 'c:\\timer.txt';
+		$timerFile = 'timer.txt';
 		$timer = fopen ($timerFile, 'w');
-				
+			
 		fwrite($timer, "Avant accès base de données : ".date("H:i:s")."\n");
 		
 		$db =& JFactory::getDBO();
