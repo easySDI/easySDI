@@ -505,7 +505,11 @@ class HTMLadmin_cpanel {
 				<tr>
 				<td class="ortitle4">
 				<?php
-				echo JText::_($rowPropertyCode->code);
+						$queryProperty = "SELECT translation FROM #__easysdi_product_properties_definition WHERE code = '$rowPropertyCode->code'";
+						$db->setQuery($queryProperty);
+						$rowProperty = $db->loadResult();
+						echo JText::_($rowProperty);
+				//echo JText::_($rowPropertyCode->code);
 				?>
 				</td>
 				
