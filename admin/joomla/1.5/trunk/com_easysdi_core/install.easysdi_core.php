@@ -908,7 +908,7 @@ function com_install(){
 	}
 	if ($version == "0.96")
 	{
-		$query = "insert  into #__easysdi_config (thekey, value) values('FOP_URL','http://localhost:8080/fop/build/fop.jar')";
+		$query = "insert  into #__easysdi_config (thekey, value) values('FOP_URL','http://localhost:8080/fop')";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
