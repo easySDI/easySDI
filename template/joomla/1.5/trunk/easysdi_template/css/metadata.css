@@ -66,7 +66,7 @@ div#metadata .descr{
 div#exportPdf{
 	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/fff/silk/page_white_acrobat.png);
+	background-image:url(../icons/silk/page_white_acrobat.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -80,7 +80,7 @@ div#exportPdf:hover{
 div#printMetadata{
 	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/fff/silk/printer.png);
+	background-image:url(../icons/silk/printer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -94,7 +94,7 @@ div#printMetadata:hover{
 div#exportXml{
 	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/fff/silk/script_code.png);
+	background-image:url(../icons/silk/script_code.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -108,7 +108,7 @@ div#exportXml:hover{
 div#orderProduct{
 	border: 1px outset #d4deff;
 	background-color:transparent;
-	background-image:url(../images/fff/silk/cart_go.png);
+	background-image:url(../icons/silk/cart_go.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
