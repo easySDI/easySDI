@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
@@ -307,7 +307,7 @@ class HTML_catalog{
 	  <td>&nbsp;</td>
 	 </tr>
 	 <tr>
-	   <td colspan="4">&nbsp;</td>
+	   <td colspan="4" halign="middle"><div id="mdSeparator" /></td>
 	 </tr>
 	 
 
