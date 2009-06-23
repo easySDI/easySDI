@@ -12,108 +12,47 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 
 	<!-- Encodage des résultats -->
     <xsl:output encoding="utf-8"/>
-    <xsl:output method="html"/>
+    <xsl:output method="xml"/>
 
  
 
 
 <xsl:template match="gmd:MD_Metadata">
 
-<div id="metadata" class="contentin">
-<!-- Title of the metadata -->
-<h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/>
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/>
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
 
-<table class="descr" id="metadataTitle">
- <tr>
- 	<td rowspan="2">__ref_1$s</td>
-	<td>Fournisseur: __ref_2$s</td>
- </tr>
- <tr>
- 	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
- </tr>
-</table>
-<!-- The buttons links -->
-__ref_5$s
-<br/>
-<!-- The menu links -->
-__ref_6$s
-<!-- <h3>Identification</h3> -->
-<hr/>
-
-<table class="descr"  >
-<!--<tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
-<tr valign="top"><td class="title">Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></td></tr>
--->
-<tr valign="top"><td class="title">Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/></td></tr>
-
-<tr valign="top"><td class="title">Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td class="title">Couverture spatiale:</td><td>
-	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        
-</td></tr>
-
-
-<tr valign="top"><td class="title">Synoptique:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
  	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Synoptique' ">
-				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
+			<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
       </xsl:if>
 </xsl:for-each>
-</td>
-</tr>
-<tr valign="top"><td class="title">Extrait:</td><td><xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gmd:CharacterString'/></td></tr>
 
+<xsl:value-of disable-output-escaping="yes" select='./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName/gmd:CharacterString'/>
 
-<tr valign="top"><td class="title">Sous-produits:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
       <xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Sous-produits' ">
 			<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>        
       </xsl:if>
 </xsl:for-each>
-</td>
-</tr>
 
-<tr valign="top"><td class="title">Thématique*:</td><td>
-	<table class="descr">
-	<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
-		<tr valign="top"><td class="title">
-		<xsl:call-template name="categoryCodeTemplate">
-			<xsl:with-param name="categoryCode" select="gmd:MD_TopicCategoryCode"/>
-		</xsl:call-template>
-		</td></tr>
-	</xsl:for-each>
-	</table>
-</td></tr>
-</table>
-<br/>
-<table class="descr" id="contactInfo">
-<tr valign="top"><td class="title">Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
-<tr valign="top"><td class="title">Nom:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></td></tr>
-<tr valign="top"><td class="title">Téléphone:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/></td></tr>
-<tr valign="top"><td class="title">Email:</td><td>
+<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
+	<xsl:call-template name="categoryCodeTemplate">
+		<xsl:with-param name="categoryCode" select="gmd:MD_TopicCategoryCode"/>
+	</xsl:call-template>
+</xsl:for-each>
+
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/>
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
+<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/>
+
 <xsl:element name="a">
 <xsl:attribute name="href">
-mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/>
+	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/>
 </xsl:attribute>
 <xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/>
 </xsl:element>
-</td></tr>
-</table>
-</div>
-
-<!-- Script to open all hyperlinks in a new window -->
-<script>
-
-var container = document.getElementById("metadata");
-var hlinks = container.getElementsByTagName("a");
-i=0;
-while(true){
-	if(hlinks.length == i)
-		break;
-	if(!hlinks[i].href.match("mailto:"))
-		hlinks[i].setAttribute('target', '_blank');
-	i++;
-}
-</script>
 
 </xsl:template>
 
