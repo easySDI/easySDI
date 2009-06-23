@@ -371,7 +371,8 @@ class HTML_shop {
 		}
 	}
 	
-	           
+	           
+
 function setAlpha(imageformat)
 {
 	var filter = false;
@@ -2411,7 +2412,7 @@ if (count($rows)>0){
 	  <td>&nbsp;</td>
 	 </tr>
 	 <tr>
-	   <td colspan=4>&nbsp;</td>
+	    <td colspan="4" halign="middle"><div id="mdSeparator" /></td>
 	 </tr>
 			<?php
 			$i=$i+1;
