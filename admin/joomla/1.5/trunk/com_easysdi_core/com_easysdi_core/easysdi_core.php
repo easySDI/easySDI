@@ -99,6 +99,12 @@ switch($task){
 	case "showMetadata"	:
 		displayManager::showMetadata();
 		break;
+	case "showAnyMetadata"	:
+		displayManager::showAnyMetadata();
+		break;
+	case "showAbstractMetadata" :
+		displayManager::showAbstractMetadata();
+		break;
 	case "showCompleteMetadata"	:
 		displayManager::showCompleteMetadata();
 		break;
