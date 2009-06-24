@@ -1584,6 +1584,7 @@
         </fo:page-number-citation>
       </fo:block>
     </xsl:for-each>
+    <!--  Saut de page -->
   </xsl:template>
 
   <!-- ============================================

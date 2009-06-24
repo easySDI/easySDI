@@ -52,7 +52,7 @@ __ref_6$s
 <tr valign="top"><td class="title">Synoptique:</td><td>
  <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
  	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Synoptique' ">
-				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
+			<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gmd:LocalisedCharacterString"/>
       </xsl:if>
 </xsl:for-each>
 </td>
