@@ -743,11 +743,11 @@ class displayManager{
 					//fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
 					
 					// Remove temporaries files
-					/*unlink($fopxml);
+					unlink($fopxml);
 					unlink($fopxsl);
 					unlink($fopfo);
 				    unlink($foptmp);
-					*/
+					
 				    //fwrite($timer, "Après suppression temp files : ".date("H:i:s")."\n");
 					//fclose($timer);
 					/*					
