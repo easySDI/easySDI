@@ -36,7 +36,200 @@ class displayManager{
 		
 		return $cswResults;
 	}
+	
+	function getMetadata(&$xml)
+	{	
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
+		
+		$type =  JRequest::getVar('type', 'abstract');
+		$xml = "";
+		if ($type == "abstract")
+		{
+			
+			$style = new DomDocument();
+			if (file_exists(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract.xsl');
+			}
+			
+			
+			$fullxml = displayManager::getCSWresult();
+			$xml = new DomDocument();
+			
+			$processor = new xsltProcessor();
+			$processor->importStylesheet($style);
+			$xml = $processor->transformToDoc($fullxml);
+		}
+		else if ($type == "complete")
+		{
+			$xml = displayManager::getCSWresult();
+		}
+		else if ($type == "diffusion")
+		{
+			$database =& JFactory::getDBO();
+			$id = JRequest::getVar('id');
+			$title;
+			
+			$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
+			$database->setQuery($titleQuery);
+			$title = $database->loadResult();
+			
+			$doc = '';
+			$doc .= '<?xml version="1.0"?>';
+			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
+			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
+			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
+						from #__easysdi_product_properties_definition 
+						INNER JOIN 
+						(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+								from #__easysdi_product_property 
+								INNER JOIN #__easysdi_product_properties_values_definition 
+								ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
+	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
+	 					ON #__easysdi_product_properties_definition.id=T.properties_id";
+			
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();		
+			foreach ($rows as $row)
+			{
+				
+				$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
+				
+				
+				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.text as ValueDef 
+						  from #__easysdi_product_properties_definition 
+						  INNER JOIN 
+						  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+						 	from #__easysdi_product_property 
+							INNER JOIN #__easysdi_product_properties_values_definition 
+						 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
+	 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
+	 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
+	 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
+				
+				$database->setQuery($subQuery);
+				$results = $database->loadObjectList();
+				foreach ($results as $result)
+				{
+					$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
+				}
+				
+				$doc.= "</Property>";
+			}
+		
+			$doc .= '</Diffusion></Metadata>';
+			
+			$xml = new DomDocument();
+			$xml->loadXML($doc);
+		}	
+		
+	}
+	
 	function showMetadata()
+	{	
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
+		
+		$type =  JRequest::getVar('type', 'abstract');
+		
+		if ($type == "abstract")
+		{
+			$style = new DomDocument();
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
+			}
+			//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
+			$xml = displayManager::getCSWresult();
+			displayManager::DisplayMetadata($style,$xml);
+		}
+		else if ($type == "complete")
+		{
+			$style = new DomDocument();
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+			}
+			//$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+			$xml = displayManager::getCSWresult();
+			
+			displayManager::DisplayMetadata($style,$xml);
+		}
+		else if ($type == "diffusion")
+		{
+			$database =& JFactory::getDBO();
+			$id = JRequest::getVar('id');
+			$title;
+			
+			$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
+			$database->setQuery($titleQuery);
+			$title = $database->loadResult();
+			
+			$doc = '';
+			$doc .= '<?xml version="1.0"?>';
+			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
+			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
+			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
+						from #__easysdi_product_properties_definition 
+						INNER JOIN 
+						(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+								from #__easysdi_product_property 
+								INNER JOIN #__easysdi_product_properties_values_definition 
+								ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
+	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
+	 					ON #__easysdi_product_properties_definition.id=T.properties_id";
+			
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();		
+			foreach ($rows as $row)
+			{
+				
+				$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
+				
+				
+				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.text as ValueDef 
+						  from #__easysdi_product_properties_definition 
+						  INNER JOIN 
+						  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+						 	from #__easysdi_product_property 
+							INNER JOIN #__easysdi_product_properties_values_definition 
+						 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
+	 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
+	 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
+	 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
+				
+				$database->setQuery($subQuery);
+				$results = $database->loadObjectList();
+				foreach ($results as $result)
+				{
+					$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
+				}
+				
+				$doc.= "</Property>";
+			}
+		
+			$doc .= '</Diffusion></Metadata>';
+			
+			$document = new DomDocument();
+			$document->loadXML($doc);
+			
+			$style = new DomDocument();
+			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
+			}
+			
+			displayManager::DisplayMetadata($style,$document);
+		}	
+		
+	}
+	
+	function showAbstractMetadata()
 	{	
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
@@ -51,7 +244,6 @@ class displayManager{
 		$xml = displayManager::getCSWresult();
 		displayManager::DisplayMetadata($style,$xml);
 	}
-	
 	function showCompleteMetadata ()
 	{
 		$user =& JFactory::getUser();
@@ -73,8 +265,7 @@ class displayManager{
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
-		//$id = JRequest::getVar('id');
-		$id = 158;
+		$id = JRequest::getVar('id');
 		$title;
 		
 		$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
@@ -143,6 +334,7 @@ class displayManager{
 	{
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
+		$type = JRequest::getVar('type', 'abstract');
 		$id = JRequest::getVar('id');
 		$toolbar =JRequest::getVar('toolbar',1);
 		$print =JRequest::getVar('print',0);
@@ -237,19 +429,19 @@ class displayManager{
 		$myHtml .= "window.addEvent('domready', function() {
 		
 		$('catalogPanel1').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id', '_self');
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id&type=abstract', '_self');
 		});
 		$('catalogPanel2').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showCompleteMetadata&id=$id', '_self');
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id&type=complete', '_self');
 		});
 		$('catalogPanel3').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showDiffusionMetadata&id=$id', '_self');
+			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id&type=diffusion', '_self');
 		});
 		$('exportPdf').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=$option&task=exportPdf&id=$id', '_self');
+			window.open('./index.php?tmpl=component&option=$option&task=exportPdf&id=$id&type=$type', '_self');
 		});
 		$('exportXml').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id', '_self');
+			window.open('./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id&type=$type', '_self');
 		});
 		$('printMetadata').addEvent( 'click' , function() { 
 			window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
@@ -259,16 +451,18 @@ class displayManager{
 		});
 
 		task = '$task';
+		type = '$type';
+		
 		$('catalogPanel1').className = 'closed';
 		$('catalogPanel2').className = 'closed';
 		$('catalogPanel3').className = 'closed';
-		if(task == 'showMetadata'){
+		if(task == 'showMetadata' & type == 'abstract'){
         	$('catalogPanel1').className = 'open';
 		}
-		if(task == 'showCompleteMetadata'){
+		if(task == 'showMetadata' & type == 'complete'){
         	$('catalogPanel2').className = 'open';
 		}
-		if(task == 'showDiffusionMetadata'){
+		if(task == 'showMetadata' & type == 'diffusion'){
         	$('catalogPanel3').className = 'open';
 		}
 		});\n"; 
@@ -317,22 +511,28 @@ class displayManager{
 	
 	function exportXml()
 	{
-		/*
-		$id = JRequest::getVar('id');
-
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		*/		
-		$cswResults = displayManager::getCSWresult();
+		$type = JRequest::getVar('type', 'abstract');
+		
+		//$cswResults = displayManager::getCSWresult();
+		$cswResults = new DomDocument();
+		displayManager::getMetadata($cswResults);
+		
+		$file =fopen('c:\\test.xml', 'w');
+		fwrite($file, $cswResults->saveXML());
+		fclose($file);	
 		
 		$xpath = new DomXPath($cswResults);
-		$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-		$xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
-		$nodes = $xpath->query("//gmd:MD_Metadata");
+		if ($type == 'diffusion')
+		{
+			$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+			$nodes = $xpath->query("//Metadata");
+		}
+		else
+		{
+			$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+			$xpath->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+			$nodes = $xpath->query("//gmd:MD_Metadata");
+		}
 
 		$dom = new DOMDocument();
 
@@ -366,19 +566,12 @@ class displayManager{
 	}
 	
 	function exportPdf(){
-		
-	/*	$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$id = JRequest::getVar('id');
-
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);*/
-
-		$cswResults = displayManager::getCSWresult();
+		$type = JRequest::getVar('type', 'abstract');
+		$cswResults = new DomDocument();
+		if ($type == 'abstract')
+			$cswResults = displayManager::getCSWresult();
+		else
+			displayManager::getMetadata($cswResults);
 		
 		$processor = new xsltProcessor();
 		$style = new DomDocument();
@@ -386,15 +579,34 @@ class displayManager{
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
 
-		if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
-			$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-		}else{
-			$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+		if ($type == 'abstract')
+		{
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
+			}
+		}
+		else if ($type == 'complete')
+		{
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+			}
+		}
+		else if ($type == 'diffusion')
+		{
+			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
+			}
 		}
 		
 		$processor->importStylesheet($style);
 		$myHtml = $processor->transformToXml($cswResults);
-
+	
 		displayManager::exportPDFfile($myHtml);
 	}
 	
@@ -406,10 +618,10 @@ class displayManager{
 		$product_creation_date;
 		$product_update_date;
 		
-		$timerFile = 'timer.txt';
-		$timer = fopen ($timerFile, 'w');
+		//$timerFile = 'timer.txt';
+		//$timer = fopen ($timerFile, 'w');
 			
-		fwrite($timer, "Avant accès base de données : ".date("H:i:s")."\n");
+		//fwrite($timer, "Avant accès base de données : ".date("H:i:s")."\n");
 		
 		$db =& JFactory::getDBO();
 		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$id."'";
@@ -443,16 +655,16 @@ class displayManager{
 		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
 		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
 
-		fwrite($timer, "Après accès base de données : ".date("H:i:s")."\n");
+		//fwrite($timer, "Après accès base de données : ".date("H:i:s")."\n");
 		
-		fwrite($timer, "Avant application xhtml to xslfo : ".date("H:i:s")."\n");
+		//fwrite($timer, "Avant application xhtml to xslfo : ".date("H:i:s")."\n");
 		
 		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		
-		fwrite($timer, "Après application xhtml to xslfo : ".date("H:i:s")."\n");
+		//fwrite($timer, "Après application xhtml to xslfo : ".date("H:i:s")."\n");
 		
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();   
@@ -496,18 +708,18 @@ class displayManager{
 										
 					//Create the PDF file based on the FO file
 
-					fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
+					//fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
 		
-					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo, $timer);
+					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo); //, $timer);
 
-					fwrite($timer, "Après convertXML2FO : ".date("H:i:s")."\n");
-					fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
+					//fwrite($timer, "Après convertXML2FO : ".date("H:i:s")."\n");
+					//fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
 					
-					displayManager::convertFO2PDF($fopfo, $foptmp, $timer);
-					fwrite($timer, "Après convertFO2PDF : ".date("H:i:s")."\n");
+					displayManager::convertFO2PDF($fopfo, $foptmp); //, $timer);
+					//fwrite($timer, "Après convertFO2PDF : ".date("H:i:s")."\n");
 					
 					if (file_exists($foptmp)) {
-						fwrite($timer, "Avant download PDF : ".date("H:i:s")."\n");
+						//fwrite($timer, "Avant download PDF : ".date("H:i:s")."\n");
 					
 						ob_end_clean();
 						@java_reset();
@@ -525,19 +737,19 @@ class displayManager{
 					    header('Content-Length: ' . filesize($foptmp));
 					    readfile($foptmp);
 					    
-					    fwrite($timer, "Après download PDF : ".date("H:i:s")."\n");
+					    //fwrite($timer, "Après download PDF : ".date("H:i:s")."\n");
 					}
 					
-					fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
+					//fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
 					
 					// Remove temporaries files
-					unlink($fopxml);
+					/*unlink($fopxml);
 					unlink($fopxsl);
 					unlink($fopfo);
 				    unlink($foptmp);
-					
-				    fwrite($timer, "Après suppression temp files : ".date("H:i:s")."\n");
-					fclose($timer);
+					*/
+				    //fwrite($timer, "Après suppression temp files : ".date("H:i:s")."\n");
+					//fclose($timer);
 					/*					
 					@java_reset();
 						
@@ -605,7 +817,7 @@ class displayManager{
 		}
 	}
 	
-	function convertXML2FO($xml, $xslt, $fo, $timer)
+	function convertXML2FO($xml, $xslt, $fo) //, $timer)
 	{
 	// Transform path of fo and xslt files for javax.xml.transform.stream
 	try
@@ -622,23 +834,23 @@ class displayManager{
 	
  		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
 		//Setup XSLT
-		fwrite($timer, "\tCréer factory : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCréer factory : ".date("H:i:s")."\n");
 		$factory = new java("javax.xml.transform.TransformerFactory");
 		$factory = $factory->newInstance();
-		fwrite($timer, "\tFactory crée! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tFactory crée! : ".date("H:i:s")."\n");
 		$xsltStream = new java("javax.xml.transform.stream.StreamSource", $xslt);
 		//$xsltStream->setSystemId($xmlSystemId);
-		fwrite($timer, "\tCréer transformer : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCréer transformer : ".date("H:i:s")."\n");
 		$transformer = $factory->newTransformer($xsltStream);
-		fwrite($timer, "\tTransformer créé! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformer créé! : ".date("H:i:s")."\n");
 		//Setup input for XSLT transformation
 		$src = new java("javax.xml.transform.stream.StreamSource", $xml);
 		//Resulting SAX events (the generated FO) must be piped through to FOP
 		$res = new java("javax.xml.transform.stream.StreamResult", $out);
 		//Start XSLT transformation and FOP processing
-		fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 		$transformer->transform($src, $res);
-		fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 	}
 	catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
@@ -647,20 +859,20 @@ class displayManager{
 		$out->close();		
 	}
 		
-	function convertFO2PDF($fo, $pdf, $timer)
+	function convertFO2PDF($fo, $pdf) //, $timer)
 	{
 		try
 		{
 			$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
 			// configure fopFactory as desired
-			fwrite($timer, "\tCréer FOP Factory : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FOP Factory : ".date("H:i:s")."\n");
 			$fopFactory = new java("org.apache.fop.apps.FopFactory");
 			$fopFactory = $fopFactory->newInstance();
-			fwrite($timer, "\tFOP Factory crée! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP Factory crée! : ".date("H:i:s")."\n");
 			// configure foUserAgent as desired
-			fwrite($timer, "\tCréer FO User Agent: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FO User Agent: ".date("H:i:s")."\n");
 			$foUserAgent = $fopFactory->newFOUserAgent();
-			fwrite($timer, "\tFO User Agent créé! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFO User Agent créé! : ".date("H:i:s")."\n");
 			// Setup output
 			$pdf = new java("java.io.File", $pdf);
 			$pdf= $pdf->getAbsolutePath();
@@ -669,15 +881,15 @@ class displayManager{
 			$out = new java("java.io.BufferedOutputStream", $out);
 	
 			// Construct fop with desired output format
-			fwrite($timer, "\tCréer FOP: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FOP: ".date("H:i:s")."\n");
 			$fop = $fopFactory->newFop($fop_mime_constants->MIME_PDF, $foUserAgent, $out);
-			fwrite($timer, "\tFOP créé! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP créé! : ".date("H:i:s")."\n");
 			//Setup XSLT
-			fwrite($timer, "\tCréer Transformer Factory: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer Transformer Factory: ".date("H:i:s")."\n");
 			$factory = new java("javax.xml.transform.TransformerFactory");
 			$factory = $factory->newInstance();
 			$transformer = $factory->newTransformer();
-			fwrite($timer, "\tTransformer Factory créé! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformer Factory créé! : ".date("H:i:s")."\n");
 			
 			// Set the value of a <param> in the stylesheet
 			$transformer->setParameter("versionParam", "2.0");
@@ -686,13 +898,13 @@ class displayManager{
 			$src = new java("javax.xml.transform.stream.StreamSource", $fo);
         
 			// Resulting SAX events (the generated FO) must be piped through to FOP
-			fwrite($timer, "\tCréer SAX: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer SAX: ".date("H:i:s")."\n");
 			$res = new java("javax.xml.transform.sax.SAXResult", $fop->getDefaultHandler());
-			fwrite($timer, "\tSAX créé! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tSAX créé! : ".date("H:i:s")."\n");
 			//Start XSLT transformation and FOP processing
-			fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 			$transformer->transform($src, $res);
-			fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 		}
 		catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
