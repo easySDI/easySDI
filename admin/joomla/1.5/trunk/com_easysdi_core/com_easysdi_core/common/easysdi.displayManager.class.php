@@ -568,9 +568,9 @@ class displayManager{
 	function exportPdf(){
 		$type = JRequest::getVar('type', 'abstract');
 		$cswResults = new DomDocument();
-		if ($type == 'abstract')
+		/*if ($type == 'abstract')
 			$cswResults = displayManager::getCSWresult();
-		else
+		else*/
 			displayManager::getMetadata($cswResults);
 		
 		$processor = new xsltProcessor();
