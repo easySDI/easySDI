@@ -266,7 +266,7 @@ class HTML_catalog{
 	  <td valign="top" rowspan=3>
 	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
 	  </td>
-	  <td colspan="3"><span class="mdtitle"><a><?php echo $md->getDataIdentificationTitle();?></a></span>
+	  <td colspan="3"><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></span>
 	  </td>
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
