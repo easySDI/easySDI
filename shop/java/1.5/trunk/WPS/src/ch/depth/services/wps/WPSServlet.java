@@ -312,9 +312,10 @@ public class WPSServlet extends HttpServlet {
 
 
 	    conn =  DriverManager.getConnection(getConnexionString());
-
+	    
 	    Statement stmt = conn.createStatement();
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p  where o.status = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
+	    
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p  where o.status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list WHERE code='"+statusToRead+"') AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
 	    
 	    StringBuffer res = new StringBuffer();
 	    res.append("<easysdi:orders  	xmlns:easysdi=\"http://www.easysdi.org\">");
