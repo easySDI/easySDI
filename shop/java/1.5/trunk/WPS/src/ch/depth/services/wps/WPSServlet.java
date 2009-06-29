@@ -297,13 +297,13 @@ public class WPSServlet extends HttpServlet {
 
 	    ComplexDataType cdt = of.createComplexDataType();
 
-	    dt.setComplexData(cdt );
+	    dt.setComplexData(cdt);
 	    odt.setData(dt );
 
 	    po.getOutput().add(odt);
 
 
-	    er.setProcessOutputs(po );
+	    er.setProcessOutputs(po);
 
 
 
@@ -318,7 +318,7 @@ public class WPSServlet extends HttpServlet {
 	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
 	    	    
 	    StringBuffer res = new StringBuffer();
-	    res.append("<easysdi:orders  	xmlns:easysdi=\"http://www.easysdi.org\">");
+	    res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
 	    List<String> orderIdList = new Vector<String>();
 	    while (rs.next()) {
 		String order_id = rs.getString("order_id");
@@ -328,17 +328,17 @@ public class WPSServlet extends HttpServlet {
 
 		String name = rs.getString("name");
 		String type = rs.getString("type");
-		String status = rs.getString("code");
 		String order_update = rs.getString("order_update");
 		String third_party = rs.getString("third_party");
-		String archived = rs.getString("archived");
+		//String archived = rs.getString("archived");
 		String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
 		String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
 		String user_id = rs.getString("user_id");
 		String partner_id = rs.getString("partner_id");
 		int isRebate = rs.getInt("isrebate");
 		String rebate = rs.getString("rebate");
-
+		String status = rs.getString("code");
+		
 		res.append("<easysdi:order>\n");
 		res.append("<easysdi:header>\n");
 		res.append("<easysdi:VERSION>2.0</easysdi:VERSION>\n");
@@ -548,6 +548,7 @@ public class WPSServlet extends HttpServlet {
 
 	    
 	 try{   
+		 			
 	    javax.xml.parsers.DocumentBuilderFactory factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
 	    javax.xml.parsers.DocumentBuilder db = factory.newDocumentBuilder();
 	    org.xml.sax.InputSource inStream = new org.xml.sax.InputSource();
@@ -742,7 +743,7 @@ public class WPSServlet extends HttpServlet {
 		stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
 
 
-		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = 'AVAILABLE',data=? where order_id = "+order_id +" AND product_id = "+product_id);
+		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
 
@@ -752,9 +753,9 @@ public class WPSServlet extends HttpServlet {
 
 
 
-		int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = 'FINISH'   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = 'AVAILABLE' AND order_id = "+order_id +")");
+		int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
 		if (count == 0){
-		    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = 'PROGRESS'   where order_id = "+order_id );
+		    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='PROGRESS')   where order_id = "+order_id );
 		}
 
 		pre.close();
