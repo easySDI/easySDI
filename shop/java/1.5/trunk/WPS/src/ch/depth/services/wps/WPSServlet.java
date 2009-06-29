@@ -328,7 +328,7 @@ public class WPSServlet extends HttpServlet {
 
 		String name = rs.getString("name");
 		String type = rs.getString("type");
-		String status = rs.getString("status");
+		String status = rs.getString("code");
 		String order_update = rs.getString("order_update");
 		String third_party = rs.getString("third_party");
 		String archived = rs.getString("archived");
