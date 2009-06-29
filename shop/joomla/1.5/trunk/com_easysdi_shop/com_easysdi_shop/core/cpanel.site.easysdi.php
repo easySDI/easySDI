@@ -547,6 +547,9 @@ class SITE_cpanel {
 		HTMLadmin_cpanel::orderReportRecap($id, true);
 	}
 
+	function orderReportForProvider($id){
+		HTMLadmin_cpanel::orderReportRecap($id, true, true);
+	}
 	/*function viewOrderPerimeterExtent($order_id, $perimeter_id){
 		?>
 

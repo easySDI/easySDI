@@ -268,7 +268,7 @@ class HTML_cpanel {
 			<tr>
 				<td><?php echo $i; ?></td>
 				<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>"></td>
-				<td><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></b></span><br></td>
+				<td><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></b></span><br></td>
 				<td><?php echo $row->username ;?></td>
 				<td><?php echo JText::_($row->type_translation) ;?></td>
 				<td><?php echo JText::_($row->status_translation) ;?></td>				
