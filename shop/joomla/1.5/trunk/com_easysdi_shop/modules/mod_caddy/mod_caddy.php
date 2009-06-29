@@ -63,7 +63,8 @@ if (is_array(($cid)))
 								  	if($currentPreview == $row->id)
 								  	{
 								  		?> class='previewActivateProductCaddy' 
-									  	onClick="document.forms['orderForm'].elements['previewProductId'].value='';submitOrderForm();"
+										title="<?php echo JText::_('EASYSDI_DEACTIVATE_PREVIEW');?>" 
+										onClick="document.forms['orderForm'].elements['previewProductId'].value='';submitOrderForm();"
 									  	<?php
 								  	}
 								  	else
@@ -76,6 +77,7 @@ if (is_array(($cid)))
 										{
 											?> 
 										  	class='previewActivableProductCaddy' 
+											title="<?php echo JText::_('EASYSDI_ACTIVATE_PREVIEW');?>" 
 										  	onClick="document.forms['orderForm'].elements['previewProductId'].value='<?php echo $row->id ; ?>';submitOrderForm();"
 										  	<?php
 										}
@@ -83,7 +85,8 @@ if (is_array(($cid)))
 								  }
 								  else
 								  {
-								  	echo "class='previewDisableProductCaddy'";
+								  	echo "class='previewDisableProductCaddy' ";
+									echo "title=\"".JText::_('EASYSDI_PREVIEW_DISABLED')."\"";
 								  } ;	 ?>>
 				</div>
 				</td>
@@ -91,7 +94,7 @@ if (is_array(($cid)))
 				}
 				 ?>
 				<td>
-				<div id ="delete_product" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
+				<div id ="delete_product" title="<?php echo JText::_('EASYSDI_REMOVE_FROM_CADDY');?>" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
 							<?php if ($currentPreview && $currentPreview == $row->id){ ?>document.forms['orderForm'].elements['previewProductId'].value='';<?php } ?>
 							locOrderForm = document.forms['orderForm'];
 							newInput = document.createElement('input');
