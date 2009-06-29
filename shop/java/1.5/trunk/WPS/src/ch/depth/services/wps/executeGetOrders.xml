@@ -7,7 +7,7 @@
 			<ows:Identifier>userName</ows:Identifier>
 			<ows:Title>provider userName</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>sd</wps:LiteralData>
+				<wps:LiteralData>admin</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		
