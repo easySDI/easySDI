@@ -210,27 +210,42 @@ class HTMLadmin_cpanel {
 	}
 
 	
-	function orderReportRecap ($id,$isfrontEnd)
+	function orderReportRecap ($id,$isfrontEnd, $isForProvider )
 	{
 		global $mainframe;
+		
+		if($isForProvider == '')
+		{
+			$isForProvider == false;
+		}
 		
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$print = JRequest::getVar('print');
 		
+		$database =& JFactory::getDBO();
+		
+		//Get the current logged user
+		$u = JFactory::getUser();
+		$rootPartner = new partnerByUserId($database);
+		$rootPartner->load($u->id);
 		if($isfrontEnd == true)
 		{
-			//Check the current user rights
-			$database =& JFactory::getDBO();
-			$u = JFactory::getUser();
-			$rootPartner = new partnerByUserId($database);
-			$rootPartner->load($u->id);
-			
-			if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
-				!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+			//Check if a user is logged
+			if ($u->guest)
 			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
 				return;
+			}
+			if($isForProvider == false)
+			{
+				//Check the current user rights
+				if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
+					!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+				{
+					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+					return;
+				}
 			}
 		}
 		
@@ -249,12 +264,12 @@ class HTMLadmin_cpanel {
 		//Customer name
 		$user =$rows[0]->user_id;
 		
-		if($isfrontEnd == true)
+		if($isfrontEnd == true && $isForProvider == false)
 		{
 			//Check if the current order belongs to the current logged user
 			if($user != $u->id)
 			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE") ,"INFO");
+				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
 				return;
 			}
 		}
@@ -272,7 +287,15 @@ class HTMLadmin_cpanel {
 			$third_name =  $db->loadResult();
 		}
 		
-		$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+		$query = '';
+		if($isForProvider)
+		{
+			$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id and b.partner_id = $rootPartner->partner_id";
+		}
+		else
+		{
+			$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+		}
 		
 		$db->setQuery($query );
 		$rowsProduct = $db->loadObjectList();
@@ -281,6 +304,14 @@ class HTMLadmin_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
+		if(count($rowsProduct) == 0)
+		{
+			//The connected user does not have any product to provide in this order
+			//Do not display any information and quit with error message
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+			return;
+		}
+		
 
 		if ($print ==1 ){
 			?>
