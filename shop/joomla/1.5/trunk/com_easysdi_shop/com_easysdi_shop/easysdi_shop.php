@@ -154,7 +154,9 @@ switch($task){
 	case "orderReport":
 		SITE_cpanel::orderReport($cid[0]);
 		break;
-
+	case "orderReportForProvider":
+		SITE_cpanel::orderReportForProvider($cid[0]);
+		break;
 	case "downloadProduct":
 		SITE_cpanel::downloadProduct();
 		break;
