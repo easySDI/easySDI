@@ -22,7 +22,9 @@ class ADMIN_resources {
 	
 	function listResources($option) {
 		global $mainframe;
-		$easysdi = "com_easysdi_";
+		$easysdiCom = "com_easysdi_";
+		$easysdiModMenu = "mod_menu_easysdi";
+		$easysdiModCaddy = "mod_caddy";
 		$currentLanguage = JFactory::getLanguage();
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 100 );
@@ -72,7 +74,7 @@ class ADMIN_resources {
 		{
 			foreach(scandir($dir) as $languageFile)
 			{
-				if (strstr($languageFile, $easysdi))
+				if (strstr($languageFile, $easysdiCom))
 				{
 					if ($search =="" or strstr($languageFile, $search))
 					{
@@ -88,7 +90,61 @@ class ADMIN_resources {
 							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_ADMIN");
 						else
 							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_SITE");
-						$row->component	= substr($languageFile, strpos($languageFile, $easysdi), strpos($languageFile, ".ini")-strpos($languageFile, $easysdi));
+						$row->component	= substr($languageFile, strpos($languageFile, $easysdiCom), strpos($languageFile, ".ini")-strpos($languageFile, $easysdiCom));
+						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
+						if ($currentLanguage->_lang == basename($dir))
+							$row->published	= "1";
+						else
+							$row->published	= "0";
+								
+						$rows[]=$row;
+						$rowid++;
+					}
+				}
+				else if (strstr($languageFile, $easysdiModMenu))
+				{
+					if ($search =="" or strstr($languageFile, $search))
+					{
+						//echo $languageFile."<br>";
+						$languagesFiles[$languageFile]=$dir.DS.$languageFile;
+						
+						//Créer une entrée dans $rows pour chaque fichier de langue récupéré
+						$row 			= new StdClass();
+						$row->id 		= $rowid;
+						$row->language 	= basename($dir);
+						$row->filename 	= $dir.DS.$languageFile;
+						if (strstr($dir, "\\administrator\\") or strstr($dir, "/administrator/"))
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_ADMIN");
+						else
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_SITE");
+						$row->component	= substr($languageFile, strpos($languageFile, $easysdiModMenu), strpos($languageFile, ".ini")-strpos($languageFile, $easysdiModMenu));
+						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
+						if ($currentLanguage->_lang == basename($dir))
+							$row->published	= "1";
+						else
+							$row->published	= "0";
+								
+						$rows[]=$row;
+						$rowid++;
+					}
+				}
+				else if (strstr($languageFile, $easysdiModCaddy))
+				{
+					if ($search =="" or strstr($languageFile, $search))
+					{
+						//echo $languageFile."<br>";
+						$languagesFiles[$languageFile]=$dir.DS.$languageFile;
+						
+						//Créer une entrée dans $rows pour chaque fichier de langue récupéré
+						$row 			= new StdClass();
+						$row->id 		= $rowid;
+						$row->language 	= basename($dir);
+						$row->filename 	= $dir.DS.$languageFile;
+						if (strstr($dir, "\\administrator\\") or strstr($dir, "/administrator/"))
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_ADMIN");
+						else
+							$row->side	 	= JText::_("EASYSDI_RESOURCE_SIDE_SITE");
+						$row->component	= substr($languageFile, strpos($languageFile, $easysdiModCaddy), strpos($languageFile, ".ini")-strpos($languageFile, $easysdiModCaddy));
 						$row->updatedate = date ("d.m.Y H:i:s", filemtime($dir.DS.$languageFile));
 						if ($currentLanguage->_lang == basename($dir))
 							$row->published	= "1";
