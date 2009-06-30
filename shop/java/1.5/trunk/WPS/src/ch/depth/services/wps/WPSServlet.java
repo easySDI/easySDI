@@ -482,9 +482,9 @@ public class WPSServlet extends HttpServlet {
 		}
 		
 		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
-		//if(isRebate==1){
+		if(isRebate==1){
 		res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
-		//}
+		}
 		
 		Statement stmtPerim = conn.createStatement();
 		ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
