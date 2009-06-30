@@ -1471,10 +1471,11 @@ if (count($rows)>0){
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$step = JRequest::getVar('step',5);
-
+		$db =& JFactory::getDBO();
 
 		$user = JFactory::getUser();
-
+		$partner = new partnerByUserId( $db );
+		$partner->load( $user->id );
 
 
 		?>
@@ -1499,16 +1500,209 @@ if (count($rows)>0){
 
 		<?php
 		if (!$user->guest){
-			?> <input
-	onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
-	type="button"
-	value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
-	onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
-	type="button"
-	value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
-		}else{
+			
+			//Check the user rights and the product accessibilitty
+		
+			$isProductAllowed = true;
+			$hasExternal = false;
+			$hasInternal = false;
+			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				$hasExternal = true;
+			}
+			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+			{
+				$hasInternal = true;
+			}
+			$partner = new partnerByUserId($db);
+			$partner->load($user->id);
+
+			$cid = $mainframe->getUserState('productList');
+			$listId = '';
+			foreach ($cid as $productId)
+			{
+				$listId = $listId.$productId.',';
+			}
+			$listId = substr($listId,0,strlen($listId) -1);
+			
+			$query = "SELECT * from #__easysdi_product WHERE id IN($listId) ";
+			$db->setQuery( $query);
+			$rows = $db->loadObjectList();
+			
+			foreach ($rows as $row)
+			{
+				if($row->published == '0')
+				{ ?>
+					<div class="alert">
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+					</div>
+					<?php 
+					$isProductAllowed = false;
+					break;
+				}
+				if($row->orderable == '0')
+				{
+					?>
+					<div class="alert">
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+					</div>
+					<?php
+					$isProductAllowed = false;
+					break;
+				}
+				if($row->external == '0' && $row->internal == '0')
+				{
+					?>
+					<div class="alert">
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
+						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+					</div>
+					<?php
+					$isProductAllowed = false;
+					break;
+				}
+				
+				$query = "SELECT COUNT(*) FROM #__easysdi_product p WHERE
+								p.id = $row->id
+								AND
+								 (p.partner_id =  $partner->partner_id
+								OR
+								p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+								OR 
+								p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+								OR
+								p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ))" ;
+						$db->SetQuery($query);
+						$countProduct = $db->loadResult();
+				if($row->internal == '1')
+				{	
+					if($row->external == '0' )
+					{
+						//User needs to belong to the product's partner group
+						if($countProduct == 1 && $hasInternal == true )
+						{
+							//The product belongs to the current user's group and the user has the internal right
+						}
+						else
+						{
+							//The product does not belogn to the current user's group, or the user does not have the internal right
+							?>
+							<div class="alert">
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?><br>
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
+							</div>
+							<?php 
+							$isProductAllowed = false;
+							break;
+						}		
+					}
+					else
+					{	
+						if($countProduct == 1 )
+						{
+							if($hasInternal == false)
+							{
+								//The product belongs to the current user's group and the user does not have the internal right
+								?>
+								<div class="alert">
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?><br>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
+								</div>
+								<?php
+								$isProductAllowed = false;
+								break;
+							} 
+							else
+							{	
+							}
+						}
+						else
+						{
+							if($hasExternal == false)
+							{
+								?>
+								<div class="alert">
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+								</div>
+								<?php 
+								$isProductAllowed = false;
+								break;
+							}
+							else
+							{
+								?>
+								<div class="alert"><?php echo "I = 1 && E = 1 : out group OK";?></div>
+								<?php
+							}
+
+						}
+						
+					}
+				}
+				else
+				{
+					//$row->internal == '0'
+					if($row->external = '1')
+					{
+						if($countProduct == 1)
+						{
+							//This product is not visible for the user of the partner's group
+							?>
+							<div class="alert">
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?>
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
+								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+							</div>
+							<?php 
+							$isProductAllowed = false;
+							break;
+						}
+						else
+						{
+							if($hasExternal == false)
+							{
+								//User does not have the right to order external product
+								?>
+								<div class="alert">
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
+									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
+								</div>
+								<?php 
+								$isProductAllowed = false;
+								break;
+							}
+						}
+						?>
+							<div class="alert"><?php echo "I = 0 && E = 1 ";?></div>
+							<?php
+					}
+				}
+				
+			}
+			
+			
+			if($isProductAllowed == true)
+			{
+				?> <input
+				onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
+				type="button"
+				value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
+				onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
+				type="button"
+				value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
+			}
+		}
+		else
+		{
 			?>
-<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
+			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
 			<?php
 		}
 		?></div>
@@ -2196,11 +2390,26 @@ if (count($rows)>0){
 					(p.partner_id =  $partner->partner_id
 					OR
 					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					
 					))) ";
 				}
 				else
 				{
-					$filter .= " AND (EXTERNAL=1) ";
+					$filter .= " AND (p.EXTERNAL=1 AND 
+					(p.partner_id <>  $partner->partner_id
+					AND
+					p.partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					AND 
+					p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					AND
+					p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					
+					)
+					) ";
 				}
 			}
 			else
@@ -2211,12 +2420,17 @@ if (count($rows)>0){
 					(p.partner_id =  $partner->partner_id
 					OR
 					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					)) ";
+									
 				}
 				else
 				{
 					//no command right
-					$filter .= " AND (EXTERNAL = 10) ";
+					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
 				}
 			}
 		}
@@ -2424,7 +2638,6 @@ if (count($rows)>0){
 </div>
 	<?php
 	}
-	
 	
 }
 	?>
