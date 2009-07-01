@@ -136,6 +136,16 @@ class SITE_catalog {
 			$empty = false;
 		}
 		
+		
+		$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
+		$sortBy='
+           			<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
+						<ogc:PropertyName>title</ogc:PropertyName>
+                		<ogc:SortOrder>ASC</ogc:SortOrder>
+            		</ogc:SortProperty>
+        		';
+		
+		
 		$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
 						<Or>";
 		if ( $filterfreetextcriteria  || $empty )
@@ -174,7 +184,7 @@ class SITE_catalog {
 						
 			$pageNav = new JPagination($total,$limitstart,$limit);
 			
-			// Sï¿½paration en n ï¿½lï¿½ments par page
+			// Séparation en n éléments par page
 			$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
 			$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
 
