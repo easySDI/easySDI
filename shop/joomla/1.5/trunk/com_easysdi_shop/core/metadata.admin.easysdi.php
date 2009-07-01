@@ -719,7 +719,7 @@ function deleteMetadataListContent($cid,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowMDFreetext =&	 new MDFreetext($database);
+		$rowMDFreetext =& new MDFreetext($database);
 				
 		
 		if (!$rowMDFreetext->bind( $_POST )) {			
@@ -727,7 +727,7 @@ function deleteMetadataListContent($cid,$option){
 			$mainframe->redirect("index.php?option=$option&task=listMetadataFreetext" );
 			exit();
 		}				
-	if (!$rowMDFreetext->store()) {			
+		if (!$rowMDFreetext->store()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMetadataFreetext" );
 			exit();
