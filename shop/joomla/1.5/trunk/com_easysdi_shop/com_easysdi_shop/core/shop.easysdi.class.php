@@ -2593,7 +2593,7 @@ if (count($rows)>0){
 		?>
 <tr>
 	 <td valign="top" rowspan=3>
-	    <img src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
+	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
 	  </td>
 	  <td colspan=3><span class="mdtitle"><a><?php echo $row->data_title; ?></a></span>
 	  </td>
