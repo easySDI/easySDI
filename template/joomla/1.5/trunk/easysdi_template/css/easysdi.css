@@ -100,6 +100,40 @@ div .freeMd{
 /***********************/
 /*** EasySDI Shop    ***/
 /***********************/
+div.info {
+    background: #F8FAFC url('../icons/silk/information.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #B5D4FE;
+    border-bottom: 2px solid #B5D4FE;
+}
+div.warn {
+    background: #FBEEF1 url('../icons/silk/bullet_error.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #FEABB9;
+    border-bottom: 2px solid #FEABB9;
+}
+div.alert {
+    background: #FFF7C0 url('../icons/silk/exclamation.png') center no-repeat;
+    background-position: 15px 50%; /* x-pos y-pos */
+    text-align: left;
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #F7D229;
+    border-bottom: 2px solid #F7D229;
+}
+.alertheader
+{
+	font-weight: bold; 
+}
+
+.alerthighlight
+{
+	font-weight: bold;
+	font-style:italic; 
+}
 
 .headerShop{
 
