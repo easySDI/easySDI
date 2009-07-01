@@ -315,8 +315,8 @@ public class WPSServlet extends HttpServlet {
 	    
 	    Statement stmt = conn.createStatement();
 	    
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
-	    	    
+	    ResultSet rs = stmt.executeQuery("SELECT *, osl.code as orderCode FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
+	    
 	    StringBuffer res = new StringBuffer();
 	    res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
 	    List<String> orderIdList = new Vector<String>();
@@ -327,7 +327,7 @@ public class WPSServlet extends HttpServlet {
 		String provider_id = rs.getString("provider_id");
 
 		String name = rs.getString("name");
-		String type = rs.getString("type");
+		int type = rs.getInt("type");
 		String order_update = rs.getString("order_update");
 		String third_party = rs.getString("third_party");
 		//String archived = rs.getString("archived");
@@ -337,7 +337,7 @@ public class WPSServlet extends HttpServlet {
 		String partner_id = rs.getString("partner_id");
 		int isRebate = rs.getInt("isrebate");
 		String rebate = rs.getString("rebate");
-		String status = rs.getString("code");
+		String status = rs.getString("orderCode");
 		
 		res.append("<easysdi:order>\n");
 		res.append("<easysdi:header>\n");
@@ -348,12 +348,21 @@ public class WPSServlet extends HttpServlet {
 		res.append("<easysdi:REQUEST>\n");
 		res.append("<easysdi:ID>"+order_id+"</easysdi:ID>\n");
 		
-		if(type.equalsIgnoreCase("D")){
+		Statement stmtType = conn.createStatement();
+		ResultSet rsType = stmtType.executeQuery("SELECT code FROM "+getJoomlaPrefix()+"easysdi_order_type_list where id = "+ type);
+		
+		String typeCode = "";
+		while(rsType.next()){
+			typeCode = rsType.getString("code");
+		}
+		
+		if(typeCode.equalsIgnoreCase("D")){
 		    res.append("<easysdi:TYPE>ESTIMATE</easysdi:TYPE>\n");    
 		}
-		if(type.equalsIgnoreCase("O")){
+		if(typeCode.equalsIgnoreCase("O")){
 		    res.append("<easysdi:TYPE>ORDER</easysdi:TYPE>\n");    
 		}
+		
 		res.append("<easysdi:NAME>"+name+"</easysdi:NAME>\n");
 		res.append("</easysdi:REQUEST>\n");
 		res.append("<easysdi:CLIENT>\n");
