@@ -71,7 +71,18 @@
 				      <include name="**/en-GB.com_easysdi_catalog.ini" />
 				     </fileset>
 				    </copy>
-
+		<copy		   
+				   todir="C:\www\Site\Joomla\administrator\language\fr-FR">
+				     <fileset dir="./language/admin">
+				      <include name="**/fr-FR.com_easysdi_catalog.ini" />
+				     </fileset>
+				    </copy>
+				<copy		   
+				   todir="C:\www\Site\Joomla\administrator\language\en-GB">
+				     <fileset dir="./language/admin">
+				      <include name="**/en-GB.com_easysdi_catalog.ini" />
+				     </fileset>
+				    </copy>
 	</target>
 	
 
