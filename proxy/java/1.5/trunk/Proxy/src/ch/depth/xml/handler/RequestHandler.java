@@ -31,6 +31,11 @@ public class RequestHandler extends DefaultHandler {
     private boolean isFirst= true;
     private String data ="";
     private List typeName= new Vector();
+//Debug tb 12.05.2009
+    private String elementQName = "";
+    private Boolean isElementQName = false; // To be sure to avoid "\t\t" characters 
+    private List propertyName= new Vector();
+//Fin de debug
     private boolean hasFilter= false;
     
     public boolean hasRequestFilter(){
@@ -62,32 +67,43 @@ public class RequestHandler extends DefaultHandler {
 	this.service = service;
     }
 
-    public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException  {  			  
-
-	if (isFirst){
-	    operation=localName;
-	    service=attr.getValue("service");
-	    version=attr.getValue("version");
-	    isFirst= false;
-	}
-	//Requested by the GetFeature operation	    
-	if (localName.equals("Query")){
-	    if ("GetFeature".equalsIgnoreCase(operation) && "WFS".equalsIgnoreCase(service)){
-		String typeNameTemp =attr.getValue("typeName");
-		typeName.add( typeNameTemp.substring(typeNameTemp.indexOf(":") + 1));
-	    }else{
-		if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		String typeNameTemp =attr.getValue("typeNames");
-		String a[]=typeNameTemp.split(" ");
-		for (int i = 0 ;i<a.length;i++){		   
-		typeName.add(a[i]);
-		}
-	    }
-
-	    }
-	}
-
-    }
+    public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException
+    	{
+//Debug tb 04.06.2009
+    	elementQName = qName; //Nécessaire pour utilsation dans la méthode "characters"
+    	isElementQName = false;
+//Fin de debug
+    
+		if (isFirst)
+			{
+		    operation=localName;
+		    service=attr.getValue("service");
+		    version=attr.getValue("version");
+		    isFirst= false;
+			}
+		
+		//Requested by the GetFeature operation	    
+		if (localName.equals("Query"))
+			{
+		    if ("GetFeature".equalsIgnoreCase(operation) && "WFS".equalsIgnoreCase(service))
+		    	{
+		    	String typeNameTemp =attr.getValue("typeName");
+		    	typeName.add( typeNameTemp.substring(typeNameTemp.indexOf(":") + 1));
+		    	}
+		    else
+		    	{
+				if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service))
+					{
+					String typeNameTemp =attr.getValue("typeNames");
+					String a[]=typeNameTemp.split(" ");
+					for (int i = 0 ;i<a.length;i++)
+						{		   
+						typeName.add(a[i]);
+						}
+					}
+		    	}
+			}
+    	}
 
     public void endElement(String nameSpace, String localName, 
 	    String qName) throws SAXException {
@@ -108,26 +124,41 @@ public class RequestHandler extends DefaultHandler {
 
     }
 
+    
     /**
      * Actions à réaliser lors de la fin du document XML.
      */
-    public void endDocument() {
+    public void endDocument()
+    	{
+//Debug tb 04.06.2009
+    	if(propertyName.size()==0)
+    		{
+    		propertyName.add("");
+    		}
+//Fin de debug
+    	}
 
-    }
-
+    
     /**
      * Actions à réaliser sur les données
      */
-    public void characters(char[] caracteres, int debut, 
-	    int longueur) throws SAXException {
-	String donnees = new String(caracteres, debut, longueur);
-	if (data == null)
-	    data = donnees.trim();
-	else
-	    data = data + donnees.trim();
+    public void characters(char[] caracteres, int debut, int longueur) throws SAXException
+    	{
+    	String donnees = new String(caracteres, debut, longueur);
+//Debug tb 04.06.2009
+    	if(elementQName == "wfs:PropertyName" && !isElementQName)
+			{
+			propertyName.add(donnees);
+    		isElementQName = true;
+			}
+//Fin de debug	
+    	if (data == null)
+    		data = donnees.trim();
+    	else
+    		data = data + donnees.trim();
+    	}
 
-    }
-
+    
     public List getTypeName() {	    
 	return typeName;
     }
@@ -135,6 +166,13 @@ public class RequestHandler extends DefaultHandler {
     public void setTypeName(List typeName) {
 	this.typeName = typeName;
     }
+    
+//Debug tb 04.06.2009
+    public List getPropertyName()
+    	{
+    	return propertyName;
+        }
+//Fin de debug
 }
 
 
