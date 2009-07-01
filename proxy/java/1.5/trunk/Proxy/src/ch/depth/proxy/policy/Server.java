@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{}Layers" minOccurs="0"/>
  *         &lt;element ref="{}Metadata" minOccurs="0"/>
  *         &lt;element ref="{}Filter" minOccurs="0"/>
+ *         &lt;element ref="{}Namespace" minOccurs="0"/>
+ *         &lt;element ref="{}Prefix" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -44,7 +46,9 @@ import javax.xml.bind.annotation.XmlType;
     "featureTypes",
     "layers",
     "metadata",
-    "filter"
+    "filter",
+    "namespace",
+    "prefix"
 })
 @XmlRootElement(name = "Server")
 public class Server {
@@ -59,6 +63,10 @@ public class Server {
     protected Metadata metadata;
     @XmlElement(name = "Filter")
     protected Filter filter;
+    @XmlElement(name = "Namespace")
+    protected String namespace;
+    @XmlElement(name = "Prefix")
+    protected String prefix;
 
     /**
      * Gets the value of the url property.
@@ -179,5 +187,52 @@ public class Server {
     public void setFilter(Filter value) {
         this.filter = value;
     }
+    
+    /**
+     * Gets the value of the Namspace property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Namespace }
+     *     
+     */
+    public String getNamespace() {
+        return namespace;
+    }
 
+    /**
+     * Sets the value of the Namspace property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Namspace }
+     *     
+     */
+    public void setNamspace(String value) {
+        this.namespace = value;
+    }
+    
+    /**
+     * Gets the value of the Prefix property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Prefix }
+     *     
+     */
+    public String getPrefix() {
+        return prefix;
+    }
+
+    /**
+     * Sets the value of the Prefix property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Prefix }
+     *     
+     */
+    public void setPrefix(String value) {
+        this.prefix = value;
+    }
 }
