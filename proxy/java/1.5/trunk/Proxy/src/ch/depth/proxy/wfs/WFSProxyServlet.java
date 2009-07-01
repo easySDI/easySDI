@@ -87,18 +87,28 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import ch.depth.proxy.core.ProxyServlet;
+import ch.depth.proxy.policy.Attribute;
 import ch.depth.proxy.policy.Operation;
+import ch.depth.proxy.policy.Server;
 import ch.depth.xml.handler.RequestHandler;
 import ch.depth.xml.resolver.ResourceResolver;
+
+import ch.depth.proxy.wfs.WFSProxyGeomAttributes;
 
 /**
  * @author rmi
  *
  */
 public class WFSProxyServlet extends ProxyServlet {
-    private StringBuffer WFSGetFeatureRenameFt = new StringBuffer();
+//Debug tb 12.05.2009
+	private List<Integer> serversIndex = new Vector<Integer>(); // list of server index corresponding to the response file index
+	private List<String> policyServersPrefix = new Vector<String>(); // list of prefix per server
+	private List<String> policyServersNamespace = new Vector<String>(); // list of namespace per server
+    private List<WFSProxyGeomAttributes> WFSProxyGeomAttributesList = new Vector<WFSProxyGeomAttributes>(); // list of WFSProxyGeomAttributes objects, un objet contient tout les liens Server-Prefix-Namespace-AuthorizedFeature-ifExist(GeomAttribute)
+//Fin de debug
 
-
+     
+//***************************************************************************************************************************************
     protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req,int remoteServerIndex){
 
 	try {
@@ -227,538 +237,1302 @@ public class WFSProxyServlet extends ProxyServlet {
 	return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>"); 
     }
 
+    
+//***************************************************************************************************************************************
     protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp){
 	try {
 
-	    XMLReader xr = XMLReaderFactory.createXMLReader();
+	    XMLReader xr = XMLReaderFactory.createXMLReader(); //Contient la requête utilistateur sous forme d'un xml
 	    HashMap<String,String> env = new HashMap<String,String>();
 	    RequestHandler rh = new RequestHandler();
 	    xr.setContentHandler(rh);	    
 
 	    StringBuffer paramSB = new StringBuffer();
-	    String param="";
+	    
+	    String param="";	//Contient la requête utilistateur sous forme d'une string
 	    String input;
-	    BufferedReader in = new BufferedReader(new InputStreamReader(req
-		    .getInputStream()));
-	    while ((input = in.readLine()) != null) {
-		paramSB.append(input);
-	    }
+	    BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+	    while ((input = in.readLine()) != null)
+	    	{
+	    	paramSB.append(input);
+	    	}
 	    param = paramSB.toString();
 	    dump("SYSTEM","Request",param);
 
-	    xr.parse(new InputSource(new InputStreamReader(
-		    new ByteArrayInputStream(param.toString().getBytes()))));
+	    xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
 	    String version = rh.getVersion();
 	    if (version!=null) version = version.replaceAll("\\.", "");
 
 	    String currentOperation =  rh.getOperation();
 
-
 	    String user="";
-	    if(req.getUserPrincipal() != null){
-		user= req.getUserPrincipal().getName();
-	    }
-	    if (hasPolicy){
-		if (!isOperationAllowed(currentOperation)) throw new NoPermissionException("operation is not allowed");
-	    }
+	    if(req.getUserPrincipal() != null)
+	    	{
+	    	user= req.getUserPrincipal().getName();
+	    	}
+	    if (hasPolicy)
+	    	{
+	    	if (!isOperationAllowed(currentOperation)) throw new NoPermissionException("operation is not allowed");
+	    	}
 
 	    String paramOrig = param;
-	    for (int iServer = 0 ; iServer <getRemoteServerInfoList().size();iServer++){
+	
+	//*****************************************************************************************************************************
+	//Construction des FeaturesTypes et Attributs associés authorisés -> modification de la requête utilisateur en conséquence 
+	//Passage de la requête utilisateur à plusieurs serveurs si défini dans Policy <server>!!!
+	// ATTENTION: Dans cette fonction iServer == à l'index du serveur défini dans CONFIG
+	// L'ordre des balises <server> dans POLICY doit être le même!!!
+	for (int iServer = 0 ; iServer <getRemoteServerInfoList().size();iServer++)
+		{
+		
 		param = paramOrig;
+
 		List<String> featureTypeListToKeep = new Vector<String>();
+//Debug tb 12.05.2009
+		List<String> attributeListToKeepPerFT = new Vector<String>(); //see the parent ProxyServlet class var
+		List<Integer> attributeListToKeepNbPerFT = new Vector<Integer>(); //see the parent ProxyServlet class var
+		List<String> attributeListToRemove = new Vector<String>();
+//Fin de debug
 		List<String> featureTypeListToRemove = new Vector<String>();
-
-		if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType")){		
-
+		
+		//Construcation de la liste des FeatureType autorisé ou non à partir de celles contenues dans la requête utilisateur
+		//Si le featureType est autorisé faire de même avec les attributs
+		//Attention: dans le cas où la requête utiliseur GetFeature comporte plusieurs Query (typeName), -> featureTypeListToKeep.length()>1
+		if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType"))
+			{
 		    Object [] fields = (Object [])rh.getTypeName().toArray();
-		    if (hasPolicy){
-			for (int i = 0; i<fields.length;i++){
-			    String tmpFT = fields[i].toString();
-			    if (tmpFT!=null){
-				String [] s = tmpFT.split(":");
-				tmpFT = s[s.length-1];
-			    }
+		    if (hasPolicy)
+		    	{
+		    	int ii = 0; //Authorized FeatureType counter 
+		    	attributeListToKeepNbPerFT.add(0);
+		    	
+		    	for (int i = 0; i<fields.length;i++)
+		    		{
+		    		// Proxy est non compatible avec les multi Query dans les requêtes GetFeature!
+		    		if(currentOperation.equalsIgnoreCase("GetFeature") && i>0)
+		    			{
+		    			break;
+		    			}
+		    		
+		    		String tmpFT = fields[i].toString();
+		    		if (tmpFT!=null){
+		    			String [] s = tmpFT.split(":");
+		    			tmpFT = s[s.length-1];
+		    			}
 
-			    if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0){
-				if (!tmpFT.equals("")){
-				    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
-				    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))){				    
-					featureTypeListToKeep.add(tmpFT);			    
-				    }		
-				    else{
-					featureTypeListToRemove.add(tmpFT);
-				    }
-				}
-			    }else{
-				if (tmpFT.equals("")){
-				    featureTypeListToKeep.add("");   
-				}
-			    }
+		    		if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0)
+		    			{
+		    			if (!tmpFT.equals(""))
+		    				{
+		    				tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+		    				if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer)))
+		    					{				    
+		    					featureTypeListToKeep.add(tmpFT);
+//Debug tb 04.06.2009		    
+		    					// Filtrage des attributs autorisés
+		    					if(currentOperation.equalsIgnoreCase("GetFeature"))
+		    						{
+			    					Object [] fieldsAttribute = (Object [])rh.getPropertyName().toArray();	//Si req PropertyNames non défini -> RequestHandler retourne un élément avec ""
+			    					
+			    					//Au cas: req PropertyNames défini et [Policy Attributs sur ALL ou sur sous ensemble limité]
+			    					// ou
+			    					// req PropertyNames non défini et Policy Attributs sur sous ensemble limité
+			    					// ou
+			    					// req PropertyNames non défini et Policy Attributs sur All
+									for (int k=0;k<fieldsAttribute.length;k++) //
+										{
+							    		String tmpFA = fieldsAttribute[k].toString();
+							    		if (tmpFA!=null)
+							    			{
+							    			String [] s = tmpFA.split(":");
+							    			tmpFA = s[s.length-1];
+							    			}
+							    		// Comparaison avec le contenu de la Policy
+							    		// Si attributs dans req et aussi dans Policy-> isAttributeAllowed retourne vrai pour l'attribut en cours: tmpFA = AttributFromReq
+							    		// Si pas d'attributs dans req et Policy sur All -> isAttributeAllowed edit attributeListToKeepNbPerFT=0 et retourne vrai: pour l'attribut en cours: tmpFA = ""
+							    		// Si attributs dans req mais pas dans Policy-> isAttributeAllowed retourne faux pour l'attribut en cours: tmpFA = AttributFromReq
+							    		// Si pas d'attributs dans req -> isAttributeAllowed ajoute ceux de la policy dans la globale var policyAttributeListToKeepPerFT et retourne faux pour l'attribut en cours: tmpFA = ""
+								    	if (isAttributeAllowed(getRemoteServerUrl(iServer),tmpFT,tmpFA))
+											{
+								    		if(!fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames défini et aussi dans Policy
+								    			{
+								    			attributeListToKeepPerFT.add(tmpFA); // Without namespace
+								    			attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii)+1);
+								    			}
+								    		else // au cas: req PropertyNames non défini et Policy sur All
+								    			{
+								    			attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+								    			}
+											}
+								    	else
+								    		{
+								    		if(!fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames défini mais pas dans Policy
+								    			{
+								    			attributeListToRemove.add(tmpFA); // Without namespace
+								    			}
+								    		else if(fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames non défini, ajout de ceux de la policy
+								    			{
+								    			attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+								    			attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+								    			}
+								    		}
+										}
+									//Au cas: Aucun attribut demandé dans req n'est autorisé dans Policy
+									//-> isAttributeAllowed à ajouté ceux de la policy à la globale var policyAttributeListToKeepPerFT
+									if(attributeListToKeepNbPerFT.get(ii)==0 && !fieldsAttribute[0].toString().equals("")) // ajout de ceux de la policy
+										{
+										isAttributeAllowed(getRemoteServerUrl(iServer),tmpFT,"");
+										attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+										attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+										}
+		    						}
+//Fin de Debug
+		    					}		
+		    				else
+		    					{
+		    					featureTypeListToRemove.add(tmpFT);
+		    					}
+		    				}
+//Debug tb 08.06.2009
+		    			ii += 1;
+		    			attributeListToKeepNbPerFT.add(0);
+//Fin de Debug
+		    			}
+		    		else
+		    			{
+		    			if (tmpFT.equals(""))
+		    				{
+		    				featureTypeListToKeep.add("");   
+		    				}
+		    			}
+		    		}
+		    	}
+		    // Suppression des features type non autorisés et Suppression des Attributs respectifs
+		    param = removeTypesFromPOSTUrl(featureTypeListToKeep,attributeListToKeepPerFT,attributeListToKeepNbPerFT,param,iServer,currentOperation);
 			}
-		    }
-		    param = removeTypesFromPOSTUrl(featureTypeListToKeep,param,iServer,currentOperation);
-		}
+
 		boolean send = true;
 		String filePath = "";
-		if ("GetFeature".equalsIgnoreCase(currentOperation)){
-		    if (featureTypeListToKeep.size()==0){
-			String s=
+		
+//Debug tb 23.06.2009			
+		//Vérifier que la requête avec opération DescribeFeatureType comporte encore au moins 1 TypeName sinon voici la réponse à retourner
+		if ("DescribeFeatureType".equalsIgnoreCase(currentOperation))
+			{
+		    if (featureTypeListToKeep.size()==0)
+		    	{
+		    	String s=
 			    "<?xml version='1.0' encoding='utf-8' ?>"+		   
 			    "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"+
 			    "<gml:boundedBy>"+
 			    "<gml:null>unavailable</gml:null>"+
 			    "</gml:boundedBy>"+
 			    "</ogcwfs:FeatureCollection>";
-			File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
+		    	File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
 
-			FileOutputStream tempFos = new FileOutputStream(tempFile);
-			tempFos.write(s.getBytes());
-			tempFos.flush();
-			tempFos.close();
-			in.close();
-			filePath = tempFile.toString();
-			send = false;
-
-		    }
-
-
-		    String userFilter = null;
-		    if (featureTypeListToKeep.size()>0){
-			userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
-			featureTypePathList.add(featureTypeListToKeep.get(0));
-		    }else{
-			featureTypePathList.add("");
-		    }
-
-		    if (send&&userFilter!=null){			    
-			InputStream isRequestFilter = new ByteArrayInputStream(param.getBytes());
-			InputStream isUserFilter = new ByteArrayInputStream(userFilter.getBytes());
-			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-			db.setNamespaceAware(true);
-			Document documentRequestFilter = db.newDocumentBuilder().parse(isRequestFilter);
-			Document documentUserFilter = db.newDocumentBuilder().parse(isUserFilter);
-
-			DOMImplementationLS implLS = null;
-			if(documentRequestFilter.getImplementation().hasFeature("LS", "3.0")) {
-			    implLS = (DOMImplementationLS)
-			    documentRequestFilter.getImplementation();
+		    	FileOutputStream tempFos = new FileOutputStream(tempFile);
+		    	tempFos.write(s.getBytes());
+		    	tempFos.flush();
+				tempFos.close();
+				in.close();
+				filePath = tempFile.toString();
+				send = false;
+		    	}
 			}
-			else { 
-			    DOMImplementationRegistry enregistreur = 
-				DOMImplementationRegistry.newInstance();
-			    implLS = (DOMImplementationLS)
-			    enregistreur.getDOMImplementation("LS 3.0");
-			}
-			NodeList nlRequestFilter = documentRequestFilter.getElementsByTagName("Filter");
-			if (nlRequestFilter.getLength() == 0) nlRequestFilter = documentRequestFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
-			NodeList nlUserFilter = documentUserFilter.getElementsByTagName( "Filter");
-			if (nlUserFilter.getLength() == 0) nlUserFilter = documentUserFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+//Fin de Debug
 
-			//A filter is existing 
-			//Could cause some performance issue, when query some WFs based onOracle.
-			if (nlRequestFilter.getLength()>0 ){
-			    Node nodeRequestFilter = nlRequestFilter.item(0);
-			    Node nodeUserFilter = nlUserFilter.item(0);
-			    Node andNode = documentRequestFilter.createElement("And");
+		
+		//Ajout du remote filter (BBOX) à la requête utilisateur si opération GetFeature
+		if ("GetFeature".equalsIgnoreCase(currentOperation))
+			{
+			//Si la requête modifiée ne comporte plus de TypeName voici la réponse à retourner
+		    if (featureTypeListToKeep.size()==0)
+		    	{
+		    	String s=
+			    "<?xml version='1.0' encoding='utf-8' ?>"+		   
+			    "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"+
+			    "<gml:boundedBy>"+
+			    "<gml:null>unavailable</gml:null>"+
+			    "</gml:boundedBy>"+
+			    "</ogcwfs:FeatureCollection>";
+		    	File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
 
-			    for (int i=0;i<nodeRequestFilter.getChildNodes().getLength();i++){
-				andNode.appendChild(nodeRequestFilter.getChildNodes().item(i).cloneNode(true));
-			    }
+		    	FileOutputStream tempFos = new FileOutputStream(tempFile);
+		    	tempFos.write(s.getBytes());
+		    	tempFos.flush();
+				tempFos.close();
+				in.close();
+				filePath = tempFile.toString();
+				send = false;
+		    	}
 
-			    for (int i=0;i<nodeUserFilter.getChildNodes().getLength();i++){					
-				andNode.appendChild(documentRequestFilter.adoptNode(nodeUserFilter.getChildNodes().item(i).cloneNode(true)));
-			    }
-
-
-			    while(nodeRequestFilter.hasChildNodes()){
-				nodeRequestFilter.removeChild(nodeRequestFilter.getChildNodes().item(0));					    
-			    }
-
-			    nodeRequestFilter.appendChild(andNode);
-			}
-
-			OutputStream fluxSortie = 	new ByteArrayOutputStream();
-
-			LSSerializer serialiseur = implLS.createLSSerializer();
-			LSOutput sortie = implLS.createLSOutput();
-			sortie.setEncoding("UTF-8");
-			//sortie.setSystemId();
-			sortie.setByteStream(fluxSortie);
-			serialiseur.write(documentRequestFilter, sortie);
-			fluxSortie.flush();
-			fluxSortie.close();
-			param=fluxSortie.toString();
-		    }
+		    	    
+		    //Ajouter le "remoteFilter" à la requête posée
+		    //********************************************
+		    // Attention corr: le namespace est ajouté explicitement
+		    // Concernant les filtres spatiaux de la policy: RemoteFilter s'applique à la requête, LocalFilter s'applique à la réponse
+		    // Il existe les cas possibles suivants:
+		    // Policy RemoteFilter is Not Set -> Policy Local Filter is Not Set -> L'attribut géom n'est pas obligatoire
+		    // Policy RemoteFilter is Set -> Policy Local Filter is Not Set -> L'attribut géom n'est pas obligatoire
+		    // Policy RemoteFilter is Set -> Policy Local Filter is Set -> L'attribut géom est OBLIGATOIRE
+		    // 	->Lecture de son nom dans RemoteFilter, vérification de sa présence dans attributeListToKeepPerFT
+		    //		-> Si présent: pas de modification de la requête
+		    //		-> Si absent: modification de la requête par ajout de <PropertyName>, puis suppression par filtrage du résultat!
+		    // 
 		    
-		}
-		if (send) filePath = sendData("POST", getRemoteServerUrl(iServer), param);
-		filePathList.add(filePath);		
-	    }	  	  	
-	    version=version.replaceAll("\\.", "");   
-	    transform(version, currentOperation,req,resp);	    
+		    //Recherche du remoteFilter dans la Policy et Ajout du FeatureType autorisé
+		    String userFilter = null;
+		    
+		    if (featureTypeListToKeep.size()>0)
+		    	{
+		    	userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
+		    	featureTypePathList.add(featureTypeListToKeep.get(0));
+		    	}
 
-	} catch (Exception e) {
+		    //Modification de la requête user avec le remoteFilter
+//Debug tb 21.05.2009
+		    // In case remoteFilter is activ but not Set
+		    if (send&&userFilter!=null && !userFilter.equals(""))
+//Fin de Debug
+		    	{			    
+				InputStream isRequestFilter = new ByteArrayInputStream(param.getBytes());
+				InputStream isUserFilter = new ByteArrayInputStream(userFilter.getBytes());
+				DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+				db.setNamespaceAware(true);
+				Document documentRequestFilter = db.newDocumentBuilder().parse(isRequestFilter);
+				Document documentUserFilter = db.newDocumentBuilder().parse(isUserFilter);
+
+				DOMImplementationLS implLS = null;
+				if(documentRequestFilter.getImplementation().hasFeature("LS", "3.0")) 
+					{
+					implLS = (DOMImplementationLS) documentRequestFilter.getImplementation();
+					}
+				else 
+					{ 
+					DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+					implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+					}
+				NodeList nlRequestFilter = documentRequestFilter.getElementsByTagName("Filter");
+				if (nlRequestFilter.getLength() == 0) nlRequestFilter = documentRequestFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+				NodeList nlUserFilter = documentUserFilter.getElementsByTagName( "Filter");
+				if (nlUserFilter.getLength() == 0) nlUserFilter = documentUserFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+
+				//A filter is existing 
+				//Could cause some performance issue, when query some WFs based onOracle.
+				if (nlRequestFilter.getLength()>0 )
+					{
+					Node nodeRequestFilter = nlRequestFilter.item(0);
+					Node nodeUserFilter = nlUserFilter.item(0);
+					Node andNode = documentRequestFilter.createElement("And");
+
+					for (int i=0;i<nodeRequestFilter.getChildNodes().getLength();i++)
+						{
+						andNode.appendChild(nodeRequestFilter.getChildNodes().item(i).cloneNode(true));
+						}
+
+					for (int i=0;i<nodeUserFilter.getChildNodes().getLength();i++)
+						{					
+						andNode.appendChild(documentRequestFilter.adoptNode(nodeUserFilter.getChildNodes().item(i).cloneNode(true)));
+						}
+
+					while(nodeRequestFilter.hasChildNodes())
+						{
+						nodeRequestFilter.removeChild(nodeRequestFilter.getChildNodes().item(0));					    
+						}
+
+					nodeRequestFilter.appendChild(andNode);
+					}
+
+				OutputStream fluxSortie = 	new ByteArrayOutputStream();
+	
+				LSSerializer serialiseur = implLS.createLSSerializer();
+				LSOutput sortie = implLS.createLSOutput();
+				sortie.setEncoding("UTF-8");
+				sortie.setByteStream(fluxSortie);
+				serialiseur.write(documentRequestFilter, sortie);
+				fluxSortie.flush();
+				fluxSortie.close();
+				param=fluxSortie.toString();
+			    }
+		    //Fin d'ajout du "remoteFilter"	    	    
+			}
+		
+		//Exécution de la requête utilisateur modifiée au serveur en cours ->s'il y a plusieurs serveurs, alors cet appel se fait plus d'une fois!!! 
+		if (send)
+			{
+			filePath = sendData("POST", getRemoteServerUrl(iServer), param);
+			serversIndex.add(iServer);
+			filePathList.add(filePath);
+			}
+	    }
+	//Fin de la phase de reconstruction de la requête: filePathList contient les réponses de chaque serveur (une par serveur)     
+	//*****************************************************************************************************************************
+	
+	//*****************************************************************************************************************************
+	// Lancement du post traitement
+		if(filePathList.size()>0)
+			{
+		    version=version.replaceAll("\\.", "");
+		    if(version.equalsIgnoreCase("100"))
+		    	{
+		    	transform(version, currentOperation,req,resp);
+		    	}
+		    else
+		    	{
+		    	dump("ERROR","Bad wfs version request: 1.0.0 only");
+		    	}
+			}
+		else
+			{
+			dump("ERROR","This request has no authorized results!");
+			}
+	//*****************************************************************************************************************************
+	// Fin du post traitement
+
+		}
+	catch (Exception e)
+		{
 	    e.printStackTrace();
 	    dump("ERROR",e.getMessage());
-	}
+		}
     }
 
+
+//***************************************************************************************************************************************
     protected void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp){
 
-	try{
+	try
+		{
 	    String currentOperation = null;
 	    String version = "000";
 	    String service = "";
 	    Enumeration<String> parameterNames = req.getParameterNames();
-	    String paramUrl = "";	    
+	    String requestParamUrl = "";
+	    String paramUrl = "";
 	    String filter=null;
 
 	    HashMap<String,String> env = new HashMap<String,String>();
 	    String typeName = "";
-	    // Build the request to dispatch
-	    while (parameterNames.hasMoreElements()) {
-		String key = (String) parameterNames.nextElement();
-		//String value = URLEncoder.encode(req.getParameter(key));
-		String value = req.getParameter(key);	
-		if (!key.equalsIgnoreCase("FILTER")) {
-		    paramUrl = paramUrl + key + "=" + value + "&";
-		}
-		if (key.equalsIgnoreCase("TYPENAME")){
-		    typeName= value; 
-		}else
-		    if (key.equalsIgnoreCase("Request")) {
-			// Gets the requested Operation
-			if (value.equalsIgnoreCase("capabilities")){
-			    currentOperation = "GetCapabilities";
-			}else{
-			    currentOperation = value;
-			}
+//Debug tb 24.06.2009
+	    String propertyName = "";
+//Fin de Debug
 
-		    }else
-			if (key.equalsIgnoreCase("version")) {
-			    // Gets the requested Operation
+	    
+	    // Récupération des valeurs des paramètres de la requête utilisateur
+	    while (parameterNames.hasMoreElements()) 
+	    	{
+	    	String key = (String) parameterNames.nextElement();
+	    	String value = req.getParameter(key);
+	    	
+	    	if (!key.equalsIgnoreCase("FILTER")) 
+	    		{
+	    		// Le FILTER sera ajouté par la suite s'il existe dans la requête utilisateur
+	    		paramUrl = paramUrl + key + "=" + value + "&";
+	    		}
+	    	
+	    	if (key.equalsIgnoreCase("TYPENAME"))
+	    		{
+	    		typeName= value; 
+	    		}
+//Debug tb 24.06.2009
+	    	else if (key.equalsIgnoreCase("PROPERTYNAME"))
+	    		{
+	    		propertyName= value;
+	    		}
+//Fin de Debug
+	    	else if (key.equalsIgnoreCase("Request")) 
+    			{
+    			// Gets the requested Operation
+    			if (value.equalsIgnoreCase("capabilities"))
+    				{
+    				currentOperation = "GetCapabilities";
+    				}
+    			else
+    				{
+    				currentOperation = value;
+    				}
+    			}
+	    	else if (key.equalsIgnoreCase("version")) 
+	    		{
+			    // Gets the requested version
 			    version = value;
-			}else
-			    if (key.equalsIgnoreCase("service")) {
-				// Gets the requested Operation
+	    		}
+	    	else if (key.equalsIgnoreCase("service")) 
+	    		{
+				// Gets the requested service
 				service = value;
-			    }else
-				if (key.equalsIgnoreCase("FILTER")) {
-				    // Gets the requested Operation
-				    filter = value;
+			    }
+	    	else if (key.equalsIgnoreCase("FILTER")) 
+	    		{
+			    // Gets the requested Filter
+			    filter = value;
 				}
-
-	    }
+	    	}
+//Debug tb 24.06.2009
+	    requestParamUrl = paramUrl;
+//Fin de debug
+	    
 	    String user="";
-	    if(req.getUserPrincipal() != null){
-		user= req.getUserPrincipal().getName();
-	    }	
-	    if (hasPolicy){
-		if (!isOperationAllowed(currentOperation)) throw new NoPermissionException("operation is not allowed");
-	    }
+	    if(req.getUserPrincipal() != null)
+	    	{
+	    	user= req.getUserPrincipal().getName();
+	    	}	
+	    if (hasPolicy)
+	    	{
+	    	if (!isOperationAllowed(currentOperation)) throw new NoPermissionException("operation is not allowed");
+	    	}
 
-
-
-	    for (int iServer = 0 ; iServer <getRemoteServerInfoList().size();iServer++){
-		List<String> featureTypeListToKeep = new Vector<String>();
-		List<String> featureTypeListToRemove = new Vector<String>();
-		if(currentOperation!=null){
-		    if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType")){		
-
-			String [] fields = typeName.split(",");
-			if (hasPolicy){
-			    for (int i = 0; i<fields.length;i++){
-				String tmpFT = fields[i];
-				if (tmpFT!=null){
-				    String [] s = tmpFT.split(":");
-				    tmpFT = s[s.length-1];
-				}			    
-				if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0){
-				    if (!tmpFT.equals("")){
-					tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
-					if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))){				    
-					    featureTypeListToKeep.add(tmpFT);			    
-					}		
-					else{
-					    featureTypeListToRemove.add(tmpFT);
-					}
-				    }
-				}else{
-				    if (tmpFT.equals("")){
-					featureTypeListToKeep.add("");   
-				    }
-				}
-			    }
-			    if( !currentOperation.equalsIgnoreCase("DescribeFeatureType")){
-				if (filter == null) {
-				    //If there is no filter then add the filter defined in the policy file			    
-				    String userFilter = null;
-				    if (featureTypeListToKeep.size()>0){
-					userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
-					featureTypePathList.add(featureTypeListToKeep.get(0));
-				    }else{
-					featureTypePathList.add("");
-				    }
-				    if (userFilter!=null){			    
-					if (!paramUrl.endsWith("&")){
-					    paramUrl = paramUrl +"&";
-					}
-					paramUrl = paramUrl +"FILTER=" +java.net.URLEncoder.encode(userFilter);
-				    }			    
-				}else{
-
-				    //Combine both user defined filter and request filter	
-				    String userFilter = null;
-				    if (featureTypeListToKeep.size()>0){
-					userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
-				    }else{
-					
-				    }
-				    if (userFilter!=null){			    
-					if (!paramUrl.endsWith("&")){
-					    paramUrl = paramUrl +"&";
-					}
-
-					InputStream isRequestFilter = new ByteArrayInputStream(filter.getBytes());
-					InputStream isUserFilter = new ByteArrayInputStream(userFilter.getBytes());
-					DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-					db.setNamespaceAware(true);
-					Document documentRequestFilter = db.newDocumentBuilder().parse(isRequestFilter);
-					Document documentUserFilter = db.newDocumentBuilder().parse(isUserFilter);
-
-					DOMImplementationLS implLS = null;
-					if(documentRequestFilter.getImplementation().hasFeature("LS", "3.0")) {
-					    implLS = (DOMImplementationLS)
-					    documentRequestFilter.getImplementation();
-					}
-					else { 
-					    DOMImplementationRegistry enregistreur = 
-						DOMImplementationRegistry.newInstance();
-					    implLS = (DOMImplementationLS)
-					    enregistreur.getDOMImplementation("LS 3.0");
-					}
-					NodeList nlRequestFilter = documentRequestFilter.getElementsByTagName("Filter");
-					if (nlRequestFilter.getLength() == 0) nlRequestFilter = documentRequestFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
-					NodeList nlUserFilter = documentUserFilter.getElementsByTagName( "Filter");
-					if (nlUserFilter.getLength() == 0) nlUserFilter = documentUserFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
-
-					//A filter is existing
-					//Cause some performance issue. Disable it
-					if (nlRequestFilter.getLength()>0&&false){
-					    Node nodeRequestFilter = nlRequestFilter.item(0);
-					    Node nodeUserFilter = nlUserFilter.item(0);
-					    Node andNode = documentRequestFilter.createElement("And");
-
-					    for (int i=0;i<nodeRequestFilter.getChildNodes().getLength();i++){
-						andNode.appendChild(nodeRequestFilter.getChildNodes().item(i).cloneNode(true));
-					    }
-
-					    for (int i=0;i<nodeUserFilter.getChildNodes().getLength();i++){					
-						andNode.appendChild(documentRequestFilter.adoptNode(nodeUserFilter.getChildNodes().item(i).cloneNode(true)));
-					    }
-
-
-					    while(nodeRequestFilter.hasChildNodes()){
-						nodeRequestFilter.removeChild(nodeRequestFilter.getChildNodes().item(0));					    
-					    }
-
-					    nodeRequestFilter.appendChild(andNode);
-					}
-
-					OutputStream fluxSortie = 	new ByteArrayOutputStream();
-
-					LSSerializer serialiseur = implLS.createLSSerializer();
-					LSOutput sortie = implLS.createLSOutput();
-					sortie.setEncoding("UTF-8");
-					//sortie.setSystemId();
-					sortie.setByteStream(fluxSortie);
-					serialiseur.write(documentRequestFilter, sortie);
-					fluxSortie.flush();
-					fluxSortie.close();
-
-					paramUrl = paramUrl +"FILTER=" +java.net.URLEncoder.encode(fluxSortie.toString());								
-				    }
-				}
-			    }
-			    paramUrl = removeTypesFromGetUrl(featureTypeListToKeep,paramUrl);
-			}
-
-			boolean send = true;
-			String filePath = "";
-			if ("GetFeature".equalsIgnoreCase(currentOperation)){
-			    if (featureTypeListToKeep.size()==0){
-				String s=
-				    "<?xml version='1.0' encoding='utf-8' ?>"+		   
-				    "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"+
-				    "<gml:boundedBy>"+
-				    "<gml:null>unavailable</gml:null>"+
-				    "</gml:boundedBy>"+
-				    "</ogcwfs:FeatureCollection>";
-				File tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-
-				FileOutputStream tempFos = new FileOutputStream(tempFile);
-				tempFos.write(s.getBytes());
-				tempFos.flush();
-				tempFos.close();			
-				filePath = tempFile.toString();
-				send = false;
-				featureTypeListToKeep.add("");
-			    }
-			}
-
-			if(send) filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
-			filePathList.add(filePath);
+		//*****************************************************************************************************************************
+		//Construction des FeaturesTypes et Attributs associés authorisés -> modification de la requête utilisateur en conséquence 
+		//Passage de la requête utilisateur à plusieurs serveurs si défini dans Policy <server>!!!
+		// ATTENTION: Dans cette fonction iServer == à l'index du serveur défini dans CONFIG
+	    for (int iServer = 0 ; iServer <getRemoteServerInfoList().size();iServer++)
+	    	{
+	    	//Reset the original request url
+	    	paramUrl = requestParamUrl;
+	    	
+	    	List<String> featureTypeListToKeep = new Vector<String>();
+//Debug tb 24.06.2009
+			List<String> attributeListToKeepPerFT = new Vector<String>(); //see the parent ProxyServlet class var
+			List<Integer> attributeListToKeepNbPerFT = new Vector<Integer>(); //see the parent ProxyServlet class var
+			List<String> attributeListToRemove = new Vector<String>();
+//Fin de debug
+	    	List<String> featureTypeListToRemove = new Vector<String>();
+	    	if(currentOperation!=null)
+	    		{	
+	    		if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType"))
+	    			{		
+	    			String [] fields = typeName.split(",");
+	    			
+	    			//Begin removeTypesFromGetUrl********************************************************************************
+					if (hasPolicy)
+						{
+//Debug tb 25.06.2009
+						int ii = 0; //Authorized FeatureType counter 
+				    	attributeListToKeepNbPerFT.add(0);
+//Fin de Debug
+				    	
+						// Passe en revue les typesName(=FeatureTypes) de la requête
+					    for (int i = 0; i<fields.length;i++)
+					    	{
+				    		// Proxy est non compatible avec les multi Query dans les requêtes GetFeature!
+				    		if(currentOperation.equalsIgnoreCase("GetFeature") && i>0)
+				    			{
+				    			break;
+				    			}
+					    	
+					    	String tmpFT = fields[i];
+					    	if (tmpFT!=null)
+					    		{
+					    		String [] s = tmpFT.split(":");
+					    		tmpFT = s[s.length-1];
+					    		}			    
+					    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+					    		{
+					    		if (!tmpFT.equals(""))
+					    			{
+					    			tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+					    			if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer)))
+					    				{				    
+					    				featureTypeListToKeep.add(tmpFT);
+//Debug tb 25.06.2009		    
+				    					// Filtrage des attributs autorisés
+				    					if(currentOperation.equalsIgnoreCase("GetFeature"))
+				    						{
+				    						String [] fieldsAttribute = propertyName.split(","); //Si req PropertyNames non défini -> Split retourne un élément avec ""
+					    					
+					    					//Au cas: req PropertyNames défini et [Policy Attributs sur ALL ou sur sous ensemble limité]
+					    					// ou
+					    					// req PropertyNames non défini et Policy Attributs sur sous ensemble limité
+					    					// ou
+					    					// req PropertyNames non défini et Policy Attributs sur All
+											for (int k=0;k<fieldsAttribute.length;k++) //
+												{
+									    		String tmpFA = fieldsAttribute[k].toString();
+									    		if (tmpFA!=null)
+									    			{
+									    			String [] s = tmpFA.split(":");
+									    			tmpFA = s[s.length-1];
+									    			}
+									    		// Comparaison avec le contenu de la Policy
+									    		// Si attributs dans req et aussi dans Policy-> isAttributeAllowed retourne vrai pour l'attribut en cours: tmpFA = AttributFromReq
+									    		// Si pas d'attributs dans req et Policy sur All -> isAttributeAllowed edit attributeListToKeepNbPerFT=0 et retourne vrai: pour l'attribut en cours: tmpFA = ""
+									    		// Si attributs dans req mais pas dans Policy-> isAttributeAllowed retourne faux pour l'attribut en cours: tmpFA = AttributFromReq
+									    		// Si pas d'attributs dans req -> isAttributeAllowed ajoute ceux de la policy dans la globale var policyAttributeListToKeepPerFT et retourne faux pour l'attribut en cours: tmpFA = ""
+										    	if (isAttributeAllowed(getRemoteServerUrl(iServer),tmpFT,tmpFA))
+													{
+										    		if(!fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames défini et aussi dans Policy
+										    			{
+										    			attributeListToKeepPerFT.add(tmpFA); // Without namespace
+										    			attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii)+1);
+										    			}
+										    		else // au cas: req PropertyNames non défini et Policy sur All (policyAttributeListNb == 0)
+										    			{
+										    			attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+										    			}
+													}
+										    	else
+										    		{
+										    		if(!fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames défini mais pas dans Policy
+										    			{
+										    			attributeListToRemove.add(tmpFA); // Without namespace
+										    			}
+										    		else if(fieldsAttribute[k].toString().equals("")) // au cas: req PropertyNames non défini, ajout de ceux de la policy
+										    			{
+										    			//policyAttributeListNb est éditer par isAttributeAllowed dans ce cas
+										    			attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+										    			attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+										    			}
+										    		}
+												}
+											//Au cas: Aucun attribut demandé dans req n'est autorisé dans Policy
+											//-> isAttributeAllowed à ajouté ceux de la policy à la globale var policyAttributeListToKeepPerFT
+											if(attributeListToKeepNbPerFT.get(ii)==0 && !fieldsAttribute[0].toString().equals("")) // ajout de ceux de la policy
+												{
+												isAttributeAllowed(getRemoteServerUrl(iServer),tmpFT,"");
+												attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+												attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+												}
+				    						}
+//Fin de Debug
+					    				}		
+					    			else
+					    				{
+					    				featureTypeListToRemove.add(tmpFT);
+					    				}
+					    			}
+//Debug tb 25.06.2009
+				    			ii += 1;
+				    			attributeListToKeepNbPerFT.add(0);
+//Fin de Debug
+					    		}
+					    	else
+					    		{
+					    		if (tmpFT.equals(""))
+					    			{
+					    			featureTypeListToKeep.add("");   
+					    			}
+					    		}
+					    	}
+					    if( !currentOperation.equalsIgnoreCase("DescribeFeatureType"))
+					    	{
+					    	//Recherche du remoteFilter dans la Policy et Modification de la requête user en conséquence **************
+					    	
+					    	//S'il n'y a pas de filtre dans la requête utilisateur -> ajouter celui de la policy si défini
+							if (filter == null)
+								{		    
+							    String userFilter = null;
+							    if (featureTypeListToKeep.size()>0)
+							    	{
+							    	userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
+							    	featureTypePathList.add(featureTypeListToKeep.get(0));
+							    	}
+//Debug tb 21.05.2009
+							    // In case remoteFilter is activ but not Set
+							    if (userFilter!=null && !userFilter.equals(""))
+//Fin de Debug
+							    	{			    
+							    	if (!paramUrl.endsWith("&"))
+							    		{
+							    		paramUrl = paramUrl +"&";
+							    		}
+							    	paramUrl = paramUrl +"FILTER=" +java.net.URLEncoder.encode(userFilter);
+							    	}			    
+								}
+							//S'il y a un filtre dans la requête utilisateur -> ajouter ce dernier et ajouter celui de la policy si définie
+							else
+								{	
+							    String userFilter = null;
+							    if (featureTypeListToKeep.size()>0)
+							    	{
+							    	userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer),featureTypeListToKeep.get(0));
+//Debug tb 24.06.2009
+							    	featureTypePathList.add(featureTypeListToKeep.get(0));
+//Fin de Debug	
+							    	}
+					    
+//Debug tb 21.05.2009
+							    // True if remoteFilter is activ but not Set
+							    if (userFilter!=null && userFilter.equals(""))
+							    	{
+							    	if (!paramUrl.endsWith("&"))
+										{
+							    		paramUrl = paramUrl +"&";
+										}
+							    	paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(filter);
+							    	}
+							    // True if remoteFilter is activ and Set
+							    else if (userFilter!=null && !userFilter.equals(""))
+//Fin de Debug	    			    
+							    	{			    
+							    	if (!paramUrl.endsWith("&"))
+										{
+							    		paramUrl = paramUrl +"&";
+										}
 			
-		    }else{
-			String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
-			filePathList.add(filePath);			
-		    }
-		}
-		version=version.replaceAll("\\.", "");   
+									InputStream isRequestFilter = new ByteArrayInputStream(filter.getBytes());
+									InputStream isUserFilter = new ByteArrayInputStream(userFilter.getBytes());
+									DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+									db.setNamespaceAware(true);
+									Document documentRequestFilter = db.newDocumentBuilder().parse(isRequestFilter);
+									Document documentUserFilter = db.newDocumentBuilder().parse(isUserFilter);
+				
+									DOMImplementationLS implLS = null;
+									if(documentRequestFilter.getImplementation().hasFeature("LS", "3.0")) 
+										{
+									    implLS = (DOMImplementationLS) documentRequestFilter.getImplementation();
+										}
+									else
+										{ 
+									    DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+									    implLS = (DOMImplementationLS)enregistreur.getDOMImplementation("LS 3.0");
+										}
+									NodeList nlRequestFilter = documentRequestFilter.getElementsByTagName("Filter");
+									if (nlRequestFilter.getLength() == 0) nlRequestFilter = documentRequestFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+									NodeList nlUserFilter = documentUserFilter.getElementsByTagName( "Filter");
+									if (nlUserFilter.getLength() == 0) nlUserFilter = documentUserFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","Filter");
+				
+									//A filter is existing
+									//Cause some performance issue. Disable it
+									    Node nodeRequestFilter = nlRequestFilter.item(0);
+									    Node nodeUserFilter = nlUserFilter.item(0);
+									    Node andNode = documentRequestFilter.createElement("And");
+				
+									    for (int i=0;i<nodeRequestFilter.getChildNodes().getLength();i++)
+									    	{
+									    	andNode.appendChild(nodeRequestFilter.getChildNodes().item(i).cloneNode(true));
+									    	}
+				
+									    for (int i=0;i<nodeUserFilter.getChildNodes().getLength();i++)
+									    	{					
+									    	andNode.appendChild(documentRequestFilter.adoptNode(nodeUserFilter.getChildNodes().item(i).cloneNode(true)));
+									    	}
+				
+				
+									    while(nodeRequestFilter.hasChildNodes())
+									    	{
+									    	nodeRequestFilter.removeChild(nodeRequestFilter.getChildNodes().item(0));					    
+									    	}
+				
+									    nodeRequestFilter.appendChild(andNode);
+				
+									OutputStream fluxSortie = 	new ByteArrayOutputStream();
+				
+									LSSerializer serialiseur = implLS.createLSSerializer();
+									LSOutput sortie = implLS.createLSOutput();
+									sortie.setEncoding("UTF-8");
+									sortie.setByteStream(fluxSortie);
+									serialiseur.write(documentRequestFilter, sortie);
+									fluxSortie.flush();
+									fluxSortie.close();
+									
+				
+									paramUrl = paramUrl +"FILTER=" +java.net.URLEncoder.encode(fluxSortie.toString());								
+								    }
+								}
+							//Fin de modification de la requête user avec RemoteFilter ***************************************
+						    }
+					    // Suppression des features type non autorisés et Suppression des Attributs respectifs
+//Debug tb 25.06.2009
+					    paramUrl = removeTypesFromGetUrl(featureTypeListToKeep,attributeListToKeepPerFT,attributeListToKeepNbPerFT,paramUrl,iServer,currentOperation);
+//Fin de Debug
+						}
+					//End removeTypesFromGetUrl********************************************************************************
+					
+					boolean send = true;
+					String filePath = "";
+					
+//Debug tb 23.06.2009			
+					//Vérifier que la requête avec opération DescribeFeatureType comporte encore au moins 1 TypeName sinon voici la réponse à retourner
+					if ("DescribeFeatureType".equalsIgnoreCase(currentOperation))
+						{
+					    if (featureTypeListToKeep.size()==0)
+					    	{
+					    	String s=
+						    "<?xml version='1.0' encoding='utf-8' ?>"+		   
+						    "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"+
+						    "<gml:boundedBy>"+
+						    "<gml:null>unavailable</gml:null>"+
+						    "</gml:boundedBy>"+
+						    "</ogcwfs:FeatureCollection>";
+					    	File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
 
-		transform(version,currentOperation,req, resp);
-	    }
-	}
-	catch(Exception e){
+					    	FileOutputStream tempFos = new FileOutputStream(tempFile);
+					    	tempFos.write(s.getBytes());
+					    	tempFos.flush();
+							tempFos.close();
+							filePath = tempFile.toString();
+							send = false;
+					    	}
+						}
+//Fin de Debug
+					
+					if ("GetFeature".equalsIgnoreCase(currentOperation))
+						{
+						//Si la requête modifiée ne comporte plus de TypeName voici la réponse à retourner
+					    if (featureTypeListToKeep.size()==0)
+					    	{
+							String s=
+							    "<?xml version='1.0' encoding='utf-8' ?>"+		   
+							    "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"+
+							    "<gml:boundedBy>"+
+							    "<gml:null>unavailable</gml:null>"+
+							    "</gml:boundedBy>"+
+							    "</ogcwfs:FeatureCollection>";
+							File tempFile = createTempFile("requestPreTreatmentPOST"+UUID.randomUUID().toString(), ".xml");
+			
+							FileOutputStream tempFos = new FileOutputStream(tempFile);
+							tempFos.write(s.getBytes());
+							tempFos.flush();
+							tempFos.close();			
+							filePath = tempFile.toString();
+							send = false;
+						    }
+						}
+					//Exécution de la requête utilisateur modifiée au serveur en cours ->s'il y a plusieurs serveurs, alors cet appel se fait plus d'une fois!!! 
+					if(send)
+//Debug tb 24.06.2009
+						{
+//Fin de Debug
+						filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+//Debug tb 24.06.2009
+						serversIndex.add(iServer);
+//Fin de Debug
+						filePathList.add(filePath);
+//Debug tb 24.06.2009
+						}
+//Fin de Debug
+	    			}
+	    		
+	    		// Si l'opération courante est différente de DescribeFeature ou GetFeature
+	    		else
+			    	{
+			    	String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+//Debug tb 24.06.2009
+			    	serversIndex.add(iServer);
+//Fin de Debug
+					filePathList.add(filePath);			
+			    	}
+	    		}
+//Debug tb 24.06.2009
+	    	}
+//Fin de Debug
+	    	//Fin de la phase de reconstruction de la requête: filePathList contient les réponses de chaque serveur (une par serveur)     
+	    	//*****************************************************************************************************************************
+	    	
+			//*****************************************************************************************************************************
+			// Lancement du post traitement
+//Debug tb 24.06.2009
+			if(filePathList.size()>0)
+				{
+//Fin de Debug
+			    version=version.replaceAll("\\.", "");  
+			    if(version.equalsIgnoreCase("100"))
+			    	{
+				    transform(version, currentOperation,req,resp);
+			    	}
+			    else
+			    	{
+			    	dump("ERROR","Bad wfs version request: 1.0.0 only");
+			    	}
+//Debug tb 24.06.2009
+				}
+			else
+				{
+				dump("ERROR","This request has no authorized results!");
+				}
+//Fin de Debug
+			//*****************************************************************************************************************************
+			// Fin du post traitement
+//Debug tb 24.06.2009
+//		    }
+//Fin de Debug
+		}
+	catch(Exception e)
+		{
 	    e.printStackTrace();
 	    dump("ERROR",e.getMessage());
-	}
-
+		}
     }
 
+    
+//***************************************************************************************************************************************
+//Debug tb 10.06.2009
+    //Retourne l'attribut géométrique de localFilter
+    private String getLocalFilterGeomAttribut(int iServer, String featureTypeToKeep)
+		{
+    	String geomAttributName = "";
+		try
+			{
+			//Recherche du LocalFilter dans la Policy 
+		    String localFilter = null;
+	    
 
-    private String removeTypesFromPOSTUrl(List<String> featureTypeListToKeep,String paramUrl,int iServer,String operation) {
-	try{
-	    List<Node> nodeListToRemove = new Vector<Node>();
-	    InputStream is = new ByteArrayInputStream(paramUrl.getBytes());
-	    DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-	    db.setNamespaceAware(true);
-	    Document documentMaster = db.newDocumentBuilder().parse(is);
+		    localFilter = getFeatureTypeLocalFilter(getRemoteServerUrl(iServer),featureTypeToKeep);
 
-	    DOMImplementationLS implLS = null;
-	    if(documentMaster.getImplementation().hasFeature("LS", "3.0")) {
-		implLS = (DOMImplementationLS)
-		documentMaster.getImplementation();
-	    }
-	    else { 
-		DOMImplementationRegistry enregistreur = 
-		    DOMImplementationRegistry.newInstance();
-		implLS = (DOMImplementationLS)
-		enregistreur.getDOMImplementation("LS 3.0");
-	    }
-
-	    if ("GetFeature".equalsIgnoreCase(operation)){
-		NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "Query");
-
-		for (int i=0;i<nl.getLength();i++){	    
-		    boolean isInList = false;
-		    for (int j=0;j<featureTypeListToKeep.size();j++){
-			String tmpFT = nl.item(i).getAttributes().getNamedItem("typeName").getTextContent();
-			if (tmpFT!=null){
-			    String [] s = tmpFT.split(":");
-			    tmpFT = s[s.length-1];
+	
+		    //Récupération de l'attribut geom du localFilter
+		    // In case localFilter is activ but not Set
+		    if (localFilter!=null && !localFilter.equals(""))
+		    	{			    
+				InputStream isLocalFilter = new ByteArrayInputStream(localFilter.getBytes());
+				DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+				db.setNamespaceAware(true);
+				Document documentLocalFilter = db.newDocumentBuilder().parse(isLocalFilter);
+				
+				NodeList nlLocalFilter = documentLocalFilter.getElementsByTagName("PropertyName");
+				if (nlLocalFilter.getLength() == 0) nlLocalFilter = documentLocalFilter.getElementsByTagNameNS("http://www.opengis.net/ogc","PropertyName");
+	
+				//A filter is existing 
+				//Could cause some performance issue, when query some WFs based onOracle.
+				if (nlLocalFilter.getLength()>0 )
+					{
+					String tmpFTA = nlLocalFilter.item(0).getTextContent();
+		    		String [] s = tmpFTA.split(":");
+		    		tmpFTA = s[s.length-1];
+					geomAttributName = tmpFTA;
+					}
+			    }   	    
+			}    
+		catch(Exception e)
+			{
+		    e.printStackTrace();	    
 			}
-			if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())){			
-			    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+	    return geomAttributName;
+		}
+//Fin de Debug
+
+    
+//***************************************************************************************************************************************
+    //private String removeTypesFromPOSTUrl(List<String> featureTypeListToKeep,String paramUrl,int iServer,String operation)
+    private String removeTypesFromPOSTUrl(List<String> featureTypeListToKeep,List<String> attributeListToKeepPerFT,List<Integer> attributeListToKeepNbPerFT,String paramUrl,int iServer,String operation)	
+    	{
+		try
+			{
+		    List<Node> nodeListToRemove = new Vector<Node>();
+		    List<Node> nodeAttributeListToRemove = new Vector<Node>();
+
+		    // lecture du contenu de la requête utilisateur (paramUrl) dans un document
+		    InputStream is = new ByteArrayInputStream(paramUrl.getBytes());
+		    DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+		    db.setNamespaceAware(true);
+		    Document documentMaster = db.newDocumentBuilder().parse(is);
+		    
+	
+		    DOMImplementationLS implLS = null;
+		    if(documentMaster.getImplementation().hasFeature("LS", "3.0"))
+		    	{
+		    	implLS = (DOMImplementationLS) documentMaster.getImplementation();
+		    	}
+		    else 
+		    	{ 
+		    	DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+		    	implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+		    	}
+
+		    
+		    // Dans le cas d'un requête portant sur une opération GetFeature
+		    if ("GetFeature".equalsIgnoreCase(operation))
+		    	{
+				NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "Query");
+
+//Debug tb 11.06.2009
+				// Sauvegarde du prefix et namespace pour le iServer
+				String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+				policyServersPrefix.add(policyServerPrefix);
+			    String policyServerNamespace = getServerNamespace(getRemoteServerUrl(iServer));
+			    policyServersNamespace.add(policyServerNamespace);
+//Fin de Debug
+				
+				//A) Recherche des FeaturesTypes autorisés
+				for (int i=0;i<nl.getLength();i++)
+					{
+				    boolean isInList = false;
+				    for (int j=0;j<featureTypeListToKeep.size();j++)
+				    	{
+		    			//Recherche le nom de l'authorized featureType courant
+						String tmpFT = nl.item(i).getAttributes().getNamedItem("typeName").getTextContent();
+						if (tmpFT!=null)
+							{
+						    String [] s = tmpFT.split(":");
+						    tmpFT = s[s.length-1];
+							}
+						if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()))
+							{			
+						    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+							}
+			
+						if (tmpFT.equals(featureTypeListToKeep.get(j)))
+							{
+//Debug tb 05.06.2009
+							// Edit l'attribut typeName de <wfs:Query typeName="tmpFT"> avec tmpFT
+							//nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT); // Non nécessaire de réécrire ce qui est déjà présent
+						    NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "PropertyName");
+						    
+
+						    // Au cas: PropertyNames dans req utilisateur, et restriction dans Policy Attributes
+						    //A') Recherche des attibuts autorisés pour le FeatureType courant
+						    if(atnl.getLength()!=0)
+						    	{
+							    for (int k=0;k<atnl.getLength();k++)
+							    	{
+							    	boolean isAtInList = false;
+							    	for(int l=0;l<attributeListToKeepNbPerFT.get(j);l++)
+							    		{
+							    		String tmpFTA = atnl.item(k).getTextContent();
+								    	if (tmpFTA!=null)
+								    		{
+								    		String [] s = tmpFTA.split(":");
+								    		tmpFTA = s[s.length-1];
+								    		}
+								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+								    		{			
+								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+								    		}
+								    	if (tmpFTA.equals(attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+l)))
+								    		{
+								    		//atnl.item(k).setTextContent(tmpFTA); // Non nécessaire de réécrire ce qui est déjà présent
+								    		isAtInList = true;
+								    		}
+							    		}
+								    if (!isAtInList)
+							    		{
+								    	// Attribut présent dans la requête, mais non-autorisés
+								    	nodeAttributeListToRemove.add(atnl.item(k));
+							    		}
+							    	}
+							    
+								//B') Supressions des Attribut non-autorisés présents dans la requête
+								for (int m=0;m<nodeAttributeListToRemove.size();m++)
+									{
+									nodeAttributeListToRemove.get(m).getParentNode().removeChild(nodeAttributeListToRemove.get(m));
+									}
+						    	}
+						    
+						    // Traitement des cas de l'attribut géométrique de localFilter
+						    String  geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
+						    Boolean hasGeomAttribut = false;
+						    
+						    // Au cas: pas de PropertyName dans req utilisateur ou tous retirés par le if() précédent, mais restriction dans Policy Attributes
+						    //A') Ajoute des attibuts autorisés de Policy pour le FeatureType courant
+						    // ou ne fait rien dans le cas ou Attributs autorisée de Policy sur All (attributeListToKeepNbPerFT.get(j)=0)
+						    if(atnl.getLength()==0)
+						    	{
+						    	for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
+						    		{
+						    		Element docElem = documentMaster.createElement("wfs:PropertyName");
+						    		docElem.setTextContent(policyServerPrefix+":"+attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k));
+						    		nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
+						    		if(geomAttribut.equalsIgnoreCase(attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k)))
+						    			{
+						    			hasGeomAttribut = true;
+						    			}
+						    		}
+						    	}
+						    
+						    // Au cas: localFilter is Set et geom Attribut absent de attributeListToKeepPerFT
+						    //A') Ajoute l'attribut geom pour le FeatureType courant,
+						    //-> ce dernier devra ensuite être retiré par XSLT au moment de transform()!!!
+						    // ou ne s'applique pas dans le cas ou Attributs autorisée de Policy sur All (attributeListToKeepNbPerFT.get(j)=0)
+						    if(!geomAttribut.equals("") && attributeListToKeepNbPerFT.get(j)!= 0)
+						    	{
+						    	if (atnl.getLength()!=0)
+						    		{
+							    	for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
+							    		{
+							    		String tmpFTA = atnl.item(k).getTextContent();
+								    	if (tmpFTA!=null)
+								    		{
+								    		String [] s = tmpFTA.split(":");
+								    		tmpFTA = s[s.length-1];
+								    		}
+								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+								    		{			
+								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+								    		}
+								    	if (tmpFTA.equals(geomAttribut))
+								    		{
+								    		hasGeomAttribut = true;
+								    		}
+							    		}
+						    		}
+					    		if(!hasGeomAttribut)
+					    			{
+								    // Contient tout les liens Server-Prefix-Namespace-AuthorizedFeature-GeomAttribute
+								    WFSProxyGeomAttributes geomAttributesObj  = new WFSProxyGeomAttributes(iServer, policyServerPrefix, policyServerNamespace);
+								    geomAttributesObj.setFeatureTypeName(featureTypeListToKeep.get(j));
+					    			geomAttributesObj.setGeomAttributName(geomAttribut);
+					      			WFSProxyGeomAttributesList.add(geomAttributesObj);
+					      			
+					      			// Ajoute l'attribut géométrique à la requête utilisateur
+					    			Element docElem = documentMaster.createElement("wfs:PropertyName");
+					    			docElem.setTextContent(policyServerPrefix+":"+geomAttribut);
+					    			nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
+					    			}
+						    	}
+//Fin de Debug
+						    isInList = true;
+							}				
+				    	}
+				    if (!isInList)
+				    	{
+				    	// FeatureType présent dans la requête, mais non-autorisés
+				    	nodeListToRemove.add(nl.item(i));
+				    	}
+					}
+				
+				//B) Supressions des FeaturesTypes non-autorisés présents dans la requête
+				for (int i=0;i<nodeListToRemove.size();i++)
+					{
+				    nodeListToRemove.get(i).getParentNode().removeChild(nodeListToRemove.get(i));		
+					}
+		    	}
+		    
+		    
+		    // Dans le cas d'un requête portant sur une opération DescribeFeatureType
+		    if ("DescribeFeatureType".equalsIgnoreCase(operation))
+		    	{
+				NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "TypeName");
+				for (int i=0;i<nl.getLength();i++)
+					{	    
+				    boolean isInList = false;
+				    for (int j=0;j<featureTypeListToKeep.size();j++)
+				    	{
+				    	String tmpFT = nl.item(i).getTextContent();
+				    	if (tmpFT!=null)
+				    		{
+				    		String [] s = tmpFT.split(":");
+				    		tmpFT = s[s.length-1];
+				    		}
+				    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+				    		{			
+				    		tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+				    		}
+		
+				    	if (tmpFT.equals(featureTypeListToKeep.get(j)))
+				    		{
+							String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+							policyServersPrefix.add(policyServerPrefix);
+				    		nl.item(i).setTextContent(policyServerPrefix+":"+tmpFT);
+				    		isInList = true;
+				    		}				
+				    	}
+				    if (!isInList)
+				    	{
+				    	nodeListToRemove.add(nl.item(i));
+				    	}
+					}
+				for (int i=0;i<nodeListToRemove.size();i++)
+					{
+				    nodeListToRemove.get(i).getParentNode().removeChild(nodeListToRemove.get(i));		
+					}
+		    	}
+		    
+		    
+		    // Ecriture de la requête utilisateur suite aux modifications
+		    OutputStream fluxSortie = 	new ByteArrayOutputStream();
+		    LSSerializer serialiseur = implLS.createLSSerializer();
+		    LSOutput sortie = implLS.createLSOutput();
+		    sortie.setEncoding("UTF-8");
+		    sortie.setByteStream(fluxSortie);
+		    serialiseur.write(documentMaster, sortie);
+		    fluxSortie.flush();
+		    fluxSortie.close();
+		    return fluxSortie.toString();
 			}
-
-			if (tmpFT.equals(featureTypeListToKeep.get(j))){
-			    nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT);
-			    isInList = true;
-			}				
-		    }
-		    if (!isInList){
-			nodeListToRemove.add(nl.item(i));
-		    }
+		catch(Exception e)
+			{
+		    e.printStackTrace();	    
+			}
+		return paramUrl;
+    	}
+    
+    
+//***************************************************************************************************************************************    
+    private String removeTypesFromGetUrl(List<String> featureTypeListToKeep,List<String> attributeListToKeepPerFT,List<Integer> attributeListToKeepNbPerFT,String paramUrl,int iServer,String operation)
+	    {
+    	
+//Debug tb 25.06.2009
+		// Sauvegarde du prefix et namespace pour le iServer
+		String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
+		policyServersPrefix.add(policyServerPrefix);
+	    String policyServerNamespace = getServerNamespace(getRemoteServerUrl(iServer));
+	    policyServersNamespace.add(policyServerNamespace);
+	    Boolean hasPropertyName = false;
+	    Boolean isPolicyAll = false;
+		if(attributeListToKeepNbPerFT.get(0) == 0) 
+		{
+		// Indique le fait que Policy est sur ALL pour la featureType courant et que tout les attributs sont demandés
+		isPolicyAll = true;
 		}
-		for (int i=0;i<nodeListToRemove.size();i++){
-		    nodeListToRemove.get(i).getParentNode().removeChild(nodeListToRemove.get(i));		
-		}
+//Fin de Debug
+	    
+	    //A) Recherche des paramètres de la requête: TYPENAME->FeatureType et PROPERTYNAME->Attributes
+		String [] paramFields = paramUrl.split("&");
+		for (int i=0;i<paramFields.length;i++)
+			{
+		    String []keyValue = paramFields[i].split("=");
+		    //B) Ajout des FeaturesTypes autorisés
+		    if ("TYPENAME".equalsIgnoreCase(keyValue[0]))
+		    	{
+		    	paramFields[i]=keyValue[0]+"=";
+		    	for(int j = 0;j<featureTypeListToKeep.size();j++)
+		    		{
+		    		paramFields[i]=paramFields[i]+policyServerPrefix+":"+featureTypeListToKeep.get(j)+","; 
+		    		}
+		    	if (paramFields[i].endsWith(","))
+		    		{
+		    		paramFields[i]= paramFields[i].substring(0,paramFields[i].length()-1);
+		    		}
+		    	//break;
+		    	}
+//Debug tb 25.06.2009
+		    //C) Ajout des Attributs autorisés
+		    if ("PROPERTYNAME".equalsIgnoreCase(keyValue[0])) //N'est vrai que si opération==GetFeature
+	    		{
+		    	paramFields[i]=keyValue[0]+"=";
+		    	for(int j = 0;j<attributeListToKeepPerFT.size();j++)
+		    		{
+		    		paramFields[i]=paramFields[i]+policyServerPrefix+":"+attributeListToKeepPerFT.get(j)+","; 
+		    		}
+		    	
+		    	// Au cas: localFilter is Set et geom Attribut absent de attributeListToKeepPerFT
+			    //D) Ajoute l'attribut geom pour le FeatureType courant,
+			    //-> ce dernier devra ensuite être retiré par XSLT au moment de transform()!!!
+		    	int attributeIndex = 0;
+	    		for(int j = 0;j<featureTypeListToKeep.size();j++)
+    				{
+	    			String  geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
+	    			if(!geomAttribut.equals(""))
+			    		{
+	    				Boolean hasGeomAttribut = false;
 
+					    for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
+					    	{
+					    	String tmpFTA = attributeListToKeepPerFT.get(attributeIndex+k);
+					    	if (tmpFTA!=null)
+					    		{
+					    		String [] s = tmpFTA.split(":");
+					    		tmpFTA = s[s.length-1];
+					    		}
+					    	if (tmpFTA.equals(geomAttribut))
+					    		{
+					    		hasGeomAttribut = true;
+					    		break;
+					    		}
+				    		}
+			    		if(!hasGeomAttribut)
+			    			{
+						    // Contient tout les liens Server-Prefix-Namespace-AuthorizedFeature-GeomAttribute
+						    WFSProxyGeomAttributes geomAttributesObj  = new WFSProxyGeomAttributes(iServer, policyServerPrefix, policyServerNamespace);
+						    geomAttributesObj.setFeatureTypeName(featureTypeListToKeep.get(j));
+			    			geomAttributesObj.setGeomAttributName(geomAttribut);
+			      			WFSProxyGeomAttributesList.add(geomAttributesObj);
+			      			
+			      			// Ajoute l'attribut géométrique à la requête utilisateur
+			      			paramFields[i]=paramFields[i]+policyServerPrefix+":"+geomAttribut+",";
+			    			}
+			    		
+			    		attributeIndex += attributeListToKeepNbPerFT.get(j);
+				    	}
+    				}
 
-
+	    		//Supression de la virgule finale
+		    	if (paramFields[i].endsWith(","))
+		    		{
+		    		paramFields[i]= paramFields[i].substring(0,paramFields[i].length()-1);
+		    		}
+		    	
+		    	hasPropertyName = true;
+	    		}
+//Fin de Debug
+			}
+//Debug tb 25.06.2009
+	    //C') Ajout des Attributs autorisés si pas de demande explicite dans la requête (absence de PROPERTYNAME)
+		// et si Policy Attributes != de  ALL
+		String propertyNameParam = "propertyName=";
+	    if(!hasPropertyName && "GetFeature".equalsIgnoreCase(operation) && !isPolicyAll)
+	    	{
+	    	for(int j = 0;j<attributeListToKeepPerFT.size();j++)
+	    		{
+	    		propertyNameParam=propertyNameParam+policyServerPrefix+":"+attributeListToKeepPerFT.get(j)+","; 
+	    		}
+	    	
+	    	// Au cas: localFilter is Set et geom Attribut absent de attributeListToKeepPerFT
+		    //D') Ajoute l'attribut geom pour le FeatureType courant,
+		    //-> ce dernier devra ensuite être retiré par XSLT au moment de transform()!!!
+	    	int attributeIndex = 0;
+			for(int j = 0;j<featureTypeListToKeep.size();j++)
+				{
+				String  geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
+				if(!geomAttribut.equals(""))
+		    		{
+					Boolean hasGeomAttribut = false;
+	
+				    for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
+				    	{
+				    	String tmpFTA = attributeListToKeepPerFT.get(attributeIndex+k);
+				    	if (tmpFTA!=null)
+				    		{
+				    		String [] s = tmpFTA.split(":");
+				    		tmpFTA = s[s.length-1];
+				    		}
+				    	if (tmpFTA.equals(geomAttribut))
+				    		{
+				    		hasGeomAttribut = true;
+				    		break;
+				    		}
+			    		}
+		    		if(!hasGeomAttribut)
+		    			{
+					    // Contient tout les liens Server-Prefix-Namespace-AuthorizedFeature-GeomAttribute
+					    WFSProxyGeomAttributes geomAttributesObj  = new WFSProxyGeomAttributes(iServer, policyServerPrefix, policyServerNamespace);
+					    geomAttributesObj.setFeatureTypeName(featureTypeListToKeep.get(j));
+		    			geomAttributesObj.setGeomAttributName(geomAttribut);
+		      			WFSProxyGeomAttributesList.add(geomAttributesObj);
+		      			
+		      			// Ajoute l'attribut géométrique à la requête utilisateur
+		      			propertyNameParam=propertyNameParam+ policyServerPrefix+":"+geomAttribut+",";
+		    			}
+		    		
+		    		attributeIndex += attributeListToKeepNbPerFT.get(j);
+			    	}
+				}
+	
+			//Supression de la virgule finale
+	    	if (propertyNameParam.endsWith(","))
+	    		{
+	    		propertyNameParam= propertyNameParam.substring(0,propertyNameParam.length()-1);
+	    		}
+	    	}
+//Fin de Debug
+		
+		//Réécriture de la requête après modification
+		paramUrl="";
+		for (int i=0;i<paramFields.length;i++)
+			{
+		    paramUrl=paramUrl+paramFields[i]+"&";	        	    
+			}
+		if(!"propertyName=".equalsIgnoreCase(propertyNameParam))
+			{
+			paramUrl = paramUrl+propertyNameParam;
+			}
+		else
+			{
+			paramUrl= paramUrl.substring(0,paramUrl.length()-1);
+			}
+	
+		return paramUrl;
 	    }
-	    if ("DescribeFeatureType".equalsIgnoreCase(operation)){
-		NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "TypeName");
-		for (int i=0;i<nl.getLength();i++){	    
-		    boolean isInList = false;
-		    for (int j=0;j<featureTypeListToKeep.size();j++){
-			String tmpFT = nl.item(i).getTextContent();
-			if (tmpFT!=null){
-			    String [] s = tmpFT.split(":");
-			    tmpFT = s[s.length-1];
-			}
-			if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0){			
-			    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
-			}
 
-			if (tmpFT.equals(featureTypeListToKeep.get(j))){
-			    nl.item(i).setTextContent(tmpFT);
-			    isInList = true;
-			}				
-		    }
-		    if (!isInList){
-			nodeListToRemove.add(nl.item(i));
-
-		    }
-
-
-		}
-		for (int i=0;i<nodeListToRemove.size();i++){
-		    nodeListToRemove.get(i).getParentNode().removeChild(nodeListToRemove.get(i));		
-		}
-	    }
-	    OutputStream fluxSortie = 	new ByteArrayOutputStream();
-
-	    LSSerializer serialiseur = implLS.createLSSerializer();
-	    LSOutput sortie = implLS.createLSOutput();
-	    sortie.setEncoding("UTF-8");
-	    //sortie.setSystemId();
-	    sortie.setByteStream(fluxSortie);
-	    serialiseur.write(documentMaster, sortie);
-	    fluxSortie.flush();
-	    fluxSortie.close();
-	    return fluxSortie.toString();
-	}catch(Exception e){
-	    e.printStackTrace();	    
-	}
-	return paramUrl;
-    }
-    /**
-     * @param featureTypeListToKeep
-     * @return
-     */
-    private String removeTypesFromGetUrl(List<String> featureTypeListToKeep,String paramUrl) {
-	String [] fields = paramUrl.split("&");
-	for (int i=0;i<fields.length;i++){
-	    String []keyValue = fields[i].split("=");
-	    if ("TYPENAME".equalsIgnoreCase(keyValue[0])){
-		fields[i]=keyValue[0]+"=";
-		for(int j = 0;j<featureTypeListToKeep.size();j++){
-		    fields[i]=fields[i]+ featureTypeListToKeep.get(j)+","; 
-		}
-		if (fields[i].endsWith(",")){
-		    fields[i]= fields[i].substring(0,fields[i].length()-1);
-		}
-		break;
-	    } 	    	    
-	}	
-	paramUrl="";
-	for (int i=0;i<fields.length;i++){
-	    paramUrl=paramUrl+fields[i]+"&";	        	    
-	}
-	paramUrl= paramUrl.substring(0,paramUrl.length()-1);
-
-	return paramUrl;
-    }
-
-//************************************************************************************************************************************************************************************************************
+    
 //************************************************************************************************************************************************************************************************************	
     public void transform(String version,String currentOperation,  HttpServletRequest req, HttpServletResponse resp) 
 		{
 		try 
 			{
+			//******************************************************************************************
+			//Création d'un fichier XSLT correspondant à celui possiblement spécifié par l'utilisateur
 		    String userXsltPath = getConfiguration().getXsltPath();
 
 		    if(req.getUserPrincipal() != null)
@@ -770,7 +1544,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		    String globalXsltPath = getConfiguration().getXsltPath()+"/"+version+"/"+currentOperation+".xsl";;
 
 		    File xsltFile = new File(userXsltPath);
-		    boolean isPostTreat = false;	    
+		    boolean isPostTreat = false;	// Devient vrai si un xslt user est défini! -> voir fin de la fct transform	    
 		    if(!xsltFile.exists())
 				{	
 				dump("User postreatment file "+xsltFile.toString()+" does not exist");
@@ -789,10 +1563,8 @@ public class WFSProxyServlet extends ProxyServlet {
 				isPostTreat=true;
 				}
 			
-//***********************************************************************************************************************!!!!********************************************************************************************
-
-		    // Transforms the results using a xslt before sending the response
-		    // back	    
+		    //******************************************************************************************************
+		    // Transforms the results using a xslt before sending the response back	    
 
 		    InputStream xml = null;//new FileInputStream(filePathList.get(0));
 		    TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -803,20 +1575,22 @@ public class WFSProxyServlet extends ProxyServlet {
 		    Transformer transformer = null;
 
 
+		    // Selon le choix de l'opération exécutée ***************************************************************
 		    if (currentOperation != null)
 				{
-				if (currentOperation.equals("GetCapabilities"))
+				if (currentOperation.equalsIgnoreCase("GetCapabilities"))
 					{			    
 				    List<File> tempFileCapaList = new Vector<File>();
 
-				    for (int i = 0;i<getRemoteServerInfoList().size();i++)
+				    // Posttraitement par Server intérrogé -> filePathList.get(i) contient le fichier réponse *******
+				    for (int i = 0;i<filePathList.size();i++)
 						{
 
 						tempFile = createTempFile("transform_GetCapabilities"+UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 						ByteArrayInputStream xslt = null;
 
-						xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req,i).toString().getBytes());
+						xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req,serversIndex.get(i)).toString().getBytes());
 
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
 						//Write the result in a temporary file
@@ -828,104 +1602,179 @@ public class WFSProxyServlet extends ProxyServlet {
 				    tempFile = mergeCapabilities(tempFileCapaList);
 
 					}
-				else if(currentOperation.equals("DescribeFeatureType"))
+				else if(currentOperation.equalsIgnoreCase("DescribeFeatureType"))
 					{
 					if (hasPolicy)
 						{
-					    List<File> tempFileDescribeType = new Vector<File>();
-					    for (int j = 0;j<getRemoteServerInfoList().size();j++)
+					    List<File> tempFileDescribeType = new Vector<File>(); 	//Utile si filePathList.size()>1
+					    
+					    // Posttraitement par Server intérrogé -> filePathList.get(i) contient le fichier réponse ********************
+					    for (int j = 0;j<filePathList.size();j++)
 							{
+// Debug tb	12.05.2009
+					    	Boolean isWFSDescribeFeatureTypeEdit = false;
+// Fin de Debug
 							StringBuffer WFSDescribeFeatureType = new StringBuffer ();
 							WFSDescribeFeatureType.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 							//On récupère le gml
-							InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));			
+							InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));
+							// PBM à la Ligne suivante: attention en mode debug schema n'est pas cleaner entre chaque appel de debug!
 							Schema schema = org.geotools.xml.SchemaFactory.getInstance(null, dataSourceInputStream);
 
 							ComplexType[] ct = schema.getComplexTypes();
-
+// Debug tb	09.06.2009					
+							org.geotools.xml.schema.Element[] el = schema.getElements();
+							dump("transform_DescribeFeature_ComplexType: "+ct.length);
+// Fin de Debug
+							
 							for (int i =0;i<ct.length;i++)
 								{
-							    String tmpFT = ct[i].getName();
-							    if (tmpFT!=null)
-									{
-									String [] s = tmpFT.split(":");
-									tmpFT = s[s.length-1];
+// Debug tb	09.06.2009
+								String tmpFT = "";
+								//Préparation de tmpFT, recherche du nom du featureType: ComplexType.name correspondant au Element.name
+								for(int n =0;n<el.length;n++)
+					    			{
+									tmpFT = el[n].getName();
+									if (tmpFT!=null)
+										{					    	
+							    		String [] s = tmpFT.split(":");
+							    		tmpFT = s[s.length-1];
+							    		
+							    		String [] ss = ct[i].getName().split(tmpFT);   		
+							    		if(ss.length > 1 || ct[i].getName().equals(tmpFT))
+							    			{
+							    			break;
+							    			}		
+								    	}
 									}
-
-							    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(j)))
+// Fin de Debug
+							    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(serversIndex.get(j))))
 									{
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
 									for (int k=0;k<elem.length;k++)
 										{				    
-									    if (!isAttributeAllowed(getRemoteServerUrl(j),tmpFT,elem[k].getName()))
+									    if (!isAttributeAllowed(getRemoteServerUrl(serversIndex.get(j)),tmpFT,elem[k].getName()))
 											{
+									    	//Cela supprime, de la réponse, les Attributs non autorisés du FeatureType courant qui est autorisé
 											WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']//xsd:element[@name='"+elem[k].getName()+"']\">"); 
 											WFSDescribeFeatureType.append("</xsl:template>");
+// Debug tb	12.05.2009
+											isWFSDescribeFeatureTypeEdit = true;
+// Fin de Debug
 											}			       
 										}					
 									}
 								else
 									{
+									//Cela supprime, de la réponse, le FeatureType courant qui est non autorisé
 									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='"+ct[i].getName()+"']\">"); 
 									WFSDescribeFeatureType.append("</xsl:template>");
 									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:element[@name ='"+ct[i].getName()+"']\">"); 
 									WFSDescribeFeatureType.append("</xsl:template>");
-								    }    
-								}			
-							WFSDescribeFeatureType.append("  <!-- Whenever you match any node or any attribute -->");
-							WFSDescribeFeatureType.append("<xsl:template match=\"node()|@*\">");
-							WFSDescribeFeatureType.append("<!-- Copy the current node -->");
-							WFSDescribeFeatureType.append("<xsl:copy>");
-							WFSDescribeFeatureType.append("<!-- Including any attributes it has and any child nodes -->");
-							WFSDescribeFeatureType.append("<xsl:apply-templates select=\"@*|node()\"/>");
-							WFSDescribeFeatureType.append("</xsl:copy>");
-							WFSDescribeFeatureType.append("</xsl:template>");
+// Debug tb	12.05.2009
+									isWFSDescribeFeatureTypeEdit = true;
+// Fin de Debug
+								    }
+								}
+// Debug tb	12.05.2009
+							//Si une transformation XSLT doit être éxecutée
+							if (isWFSDescribeFeatureTypeEdit)
+								{
+// Fin de Debug
+								// Cela applique une copie du contenu de la réponse
+								WFSDescribeFeatureType.append("  <!-- Whenever you match any node or any attribute -->");
+								WFSDescribeFeatureType.append("<xsl:template match=\"node()|@*\">");
+								WFSDescribeFeatureType.append("<!-- Copy the current node -->");
+								WFSDescribeFeatureType.append("<xsl:copy>");
+								WFSDescribeFeatureType.append("<!-- Including any attributes it has and any child nodes -->");
+								WFSDescribeFeatureType.append("<xsl:apply-templates select=\"@*|node()\"/>");
+								WFSDescribeFeatureType.append("</xsl:copy>");
+								WFSDescribeFeatureType.append("</xsl:template>");
+								WFSDescribeFeatureType.append("</xsl:stylesheet>");
+	
+//Debug de 15.06.2009
+						    	//Log le timing avant transformation
+								DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+								Date d = new Date();	
+								dump("SYSTEM","DescribeFeatureTypeBeginTransfoDateTime",dateFormat.format(d));
+//Fin de debug
+								xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
+								tempFile = createTempFile("transform_DescribeFeatureType"+UUID.randomUUID().toString(), ".xml");
+								tempFos = new FileOutputStream(tempFile);
+								ByteArrayInputStream xslt = null;
+								xslt = new ByteArrayInputStream(WFSDescribeFeatureType.toString().getBytes());
+								transformer = tFactory.newTransformer(new StreamSource(xslt));
+								//Write the result in a temporary file
+								transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
+								tempFos.close();
+								tempFileDescribeType.add(tempFile);
+//Debug de 15.06.2009
+						    	//Log le timing après transformation
+								d = new Date();	
+								dump("SYSTEM","DescribeFeatureTypeEndTransfoDateTime",dateFormat.format(d));
+//Fin de debug
+// Debug tb	12.05.2009
+								}
+							else
+								{
+								xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
+								tempFile = createTempFile("transform_DescribeFeatureType"+UUID.randomUUID().toString(), ".xml");
+								tempFos = new FileOutputStream(tempFile);
+								BufferedOutputStream BufTempFos = new BufferedOutputStream(tempFos);
 
-							WFSDescribeFeatureType.append("</xsl:stylesheet>");
-							
-							File tempFileXslt = createTempFile("transform_DescribeFeatureType_xslt"+UUID.randomUUID().toString(), ".xml");
-							PrintWriter bwrite = new PrintWriter(new BufferedWriter(new FileWriter(tempFileXslt)));
-							bwrite.write(WFSDescribeFeatureType.toString());
-							bwrite.flush();
-							bwrite.close();
-							xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
-							tempFile = createTempFile("transform_DescribeFeatureType"+UUID.randomUUID().toString(), ".xml");
-							tempFos = new FileOutputStream(tempFile);
-							ByteArrayInputStream xslt = null;
-							xslt = new ByteArrayInputStream(WFSDescribeFeatureType.toString().getBytes());
-							transformer = tFactory.newTransformer(new StreamSource(xslt));
-							//Write the result in a temporary file
-							transformer.transform(new StreamSource(xml), new StreamResult(tempFos));		     
-							tempFos.close();
-							tempFileDescribeType.add(tempFile);
+								//Write the result in a temporary file		      	     
+							    byte byteRead[] = new byte[ 32768 ];
+							    int index = xml.read( byteRead, 0, 32768 );
+							    try 
+									{		
+									while(index != -1) 
+										{			    
+										BufTempFos.write( byteRead, 0, index );
+									    index = xml.read( byteRead, 0, 32768 );		
+										}		
+									BufTempFos.flush();
+									xml.close();
+									tempFileDescribeType.add(tempFile);
+									} 
+								catch(Exception e)
+									{
+									e.printStackTrace();
+									dump("transform_DescribeFeatureType_BufferedOutputStream ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
+									dump("transform_DescribeFeatureType_BufferedOutputStream ERROR",e.toString());
+									}
+								}
+// Fin de Debug
 						    }
+					    //Colle les "tempFile" en un résultat: Util si filePathList.size()>1
 					    tempFile = mergeDescribeFeatureType(tempFileDescribeType);
 						}
 					}
-				else if (currentOperation.equals("GetFeature"))
+				else if (currentOperation.equalsIgnoreCase("GetFeature"))
 					{
-					dump("CurrentOperation GetFeature");
-					
-				    //On récupère le srs
 				    if (hasPolicy)
-						{
-						dump("GetFeature hasPolicy");
-						
+						{	
 						List<File> tempGetFeatureFile = new Vector();
-						WFSGetFeatureRenameFt.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
-						for (int iServer = 0;iServer<getRemoteServerInfoList().size();iServer++)
+
+						// Posttraitement par Server intérrogé -> filePathList.get(i) contient le fichier réponse ***********************
+						// Voir dans la Policy <server>
+						for (int iFileServer = 0;iFileServer<filePathList.size();iFileServer++)
 							{
-							dump("GetFeature begin for loop");
-//**************************************************************************************************************************************************************************
-							
-					   	 	//DataInputStream dis = new DataInputStream(new FileInputStream(filePathList.get(iServer)));
-							BufferedReader  dis = new BufferedReader(new FileReader(filePathList.get(iServer)));
+
+// Debug tb	07.05.2009
+						    //On récupère le srs de la réponse -> srsSource
+							// ATTENTION: Cela ne retourne que le srsSource du premier featureType venu dans la réponse du serveur courant
+							// DataInputStream est trop lent pour les réponses avec bcp d'entrées (>1000), cette lecture plante Tomcat
+							// lors de l'instruction readLine() -> pas de retour à la ligne trouvé
+							// La fonction de remplacement lit progressivement le fichier (buffer de 512 caractères) afin de retourner la valeur du "srsName"
+							BufferedReader  dis = new BufferedReader(new FileReader(filePathList.get(iFileServer)));
 							boolean breakOut = false;
 							int bufSize = 512;
 							int srsIndex = 1;
 							char[] cbuf = new char[bufSize];
 							String s=null;
+							
 							String srsSource = null;
+							
 							dump("GetFeature begin srsName extract");
 							if(dis.ready() && dis.markSupported())
 								{
@@ -1010,177 +1859,205 @@ public class WFSProxyServlet extends ProxyServlet {
 										}
 									}
 								}
-							System.out.println(srsSource);
 							dis.close();
 							dump("GetFeature end srsName extract");
-//**************************************************************************************************************************************************************************
+
+// fin de Debug
 							
+				//Remplissage de tempFile avec la réponse*******************************************
+							dump("GetFeature begin to fill tempFile");
 							String tempFileName = "transform_GetFeature"+UUID.randomUUID().toString();
-						    tempFile = createTempFile(tempFileName, ".xml");			    
-							
-							dump("GetFeature tempFile created");
-							
+						    tempFile = createTempFile(tempFileName, ".xml");			    							
 						    tempFos = new FileOutputStream(tempFile);
-							
-					//*******************************************************************************************************************************************
-							dump("GetFeature tempFos created");
-							
-						    ByteArrayInputStream xslt = null;
-						    List<String> featureTypeListToRemove = null;
-						    List<String> featureTypeListToKeep = null;
-
-						    xslt = new ByteArrayInputStream(buildGetFeatureXSLT(iServer).toString().getBytes());
-
+			    
 						    XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-						    String user =(String)getUsername(getRemoteServerUrl(iServer));
-						    String password = (String)getPassword(getRemoteServerUrl(iServer));
+						    String user =(String)getUsername(getRemoteServerUrl(serversIndex.get(iFileServer)));
+						    String password = (String)getPassword(getRemoteServerUrl(serversIndex.get(iFileServer)));
 						    ResourceResolver rr = null;
 						    if (user!=null && user.length()>0)
 								{			
 								rr = new ResourceResolver(user,password);
 								xmlReader.setEntityResolver(rr);
-								
-								dump("GetFeature xmlReader set");
 								}
-						    // END Added to hook in my EntityResolver					  
-						    xml = new BufferedInputStream(new FileInputStream(filePathList.get(iServer)));
-						    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
-						    transformer = tFactory.newTransformer(new StreamSource(xslt));
-						    //write the tempFile via tempFos
-							transformer.transform(saxSource, new StreamResult(tempFos));
-							
-							tempFos.close();
-							
-							dump("GetFeature tempFos closed");
-					//*******************************************************************************************************************************************
-/*
-							BufferedReader  dis = new BufferedReader(new FileReader(tempFileName+".xml"));
-							String s = null;
-							String srsSource = null;
-							
-							//Extract the srsName GML attribute value. Example of searched value: http://www.opengis.net/gml/srs/epsg.xml#4181
-							while ((s = dis.readLine()) != null)
-								{
-								dump("GetFeature begin while loop");
-								
-								if (s.indexOf("srsName")>0)
+
+						    xml = new BufferedInputStream(new FileInputStream(filePathList.get(iFileServer)));
+								BufferedOutputStream BufTempFos = new BufferedOutputStream(tempFos);
+	
+								//Write the result in a temporary file		      	     
+							    byte byteRead[] = new byte[ 32768 ];
+							    int index = xml.read( byteRead, 0, 32768 );
+							    try 
+									{		
+									while(index != -1) 
+										{			    
+										BufTempFos.write( byteRead, 0, index );
+									    index = xml.read( byteRead, 0, 32768 );		
+										}		
+									BufTempFos.flush();
+									xml.close();
+									tempFos.close();
+									} 
+								catch(Exception e)
 									{
-									dump("GetFeature if index of srsName");
-								    srsSource= s.substring(s.indexOf("srsName"));
-									dump("GetFeature substring at index");
-								    if (srsSource.indexOf("\"")>0)
+									e.printStackTrace();
+									dump("transform_GetFeature_BufferedOutputStream ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
+									dump("transform_GetFeature_BufferedOutputStream ERROR",e.toString());
+									}
+								dump("GetFeature end to fill tempFile");
+				// Fin de remplissage de tempFile avec la réponse
+			
+							
+				//Application du filtrage LocalFilter géométrique: polygon de droits*******************************************		
+							
+							// Récupération de localFilter
+							dump("GetFeature begin to apply localFilter");
+							String filter= null;			
+							if (featureTypePathList.size()>0)
+								{
+								// Si localFilter est actif mais not Set -> filter = ""
+								filter =getFeatureTypeLocalFilter(getRemoteServerUrl(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
+								}
+// Debug tb	15.06.2009
+							//Si un localFilter est défini
+							if(filter != null)
+								{
+								if(!filter.equals(""))
+									{
+//Fin de Debug
+									// Création de "doc" -> un tempFile formaté en GMLFeatureCollection
+								    Map hints = new HashMap();		
+								    hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+	
+								    GMLFeatureCollection  doc =null; //Réutilise le résultat TempFile
+								    if (user!=null && user.length()>0)
 										{
-										dump("GetFeature if index of bkslash 1");
-									    srsSource = srsSource.substring(srsSource.indexOf("\"")+1);
-										dump("GetFeature substring at index bkslash 1");
-									    srsSource = srsSource.substring(0,srsSource.indexOf("\""));
-										dump("GetFeature substring at index bkslash 2");
+										doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
 										}
 									else
+										doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+								    
+								    // Création du fichier résultat de la proachaine transformation
+								    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");
+								    tempFos = new FileOutputStream(tempFile2);
+								    if (filter !=null)
 										{
-										dump("GetFeature else index of bkslash 1");
-										if (srsSource.indexOf("\'")>0)
-											{
-											dump("GetFeature if index of bkslash 2");
-											srsSource = srsSource.substring(srsSource.indexOf("\'")+1);
-											dump("GetFeature substring at index bkslash 1");
-											srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
-											dump("GetFeature substring at index bkslash 2");
-											}
+										dump(filter);
 										}
-									dump("GetFeature break while loop");									
-									break;
-									}									
-								dump("GetFeature end while loop");
+								    
+								    //Application du filtrage LocalFilter géométrique, il s'agit d'une transformation
+									filterFC( tempFos, filter,doc,getServletUrl(req),srsSource, serversIndex.get(iFileServer)); // l'entrée "TempFile" a été 'copié' dans "doc" et la sortie "tempFos" édite "TempFile2" 
+									
+									//Copy du contenu transformé dans tempFile
+									if (filter!=null)
+										{
+										tempFos.close();
+	
+										if (tempFile!=null) tempFile.delete();
+											tempFile = tempFile2; // Copy du fichier suite à la transformation géométrique   
+										}
+// Debug tb	15.06.2009			
+									}
 								}
-							dis.close();
-*/
-								
-							String filter= null;			
-							if (featureTypePathList.get(iServer).length()>0)
-								{
-								filter =getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypePathList.get(iServer));
-								dump("GetFeature filter get");
-								}
-							// filter =getFeatureTypeFilter(getRemoteServerUrl(iServer));
-
-
-						    Map hints = new HashMap();		
-						    hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-
-						    GMLFeatureCollection  doc =null;
-						    if (user!=null && user.length()>0)
-								{
-								doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
-								}
-							else
-								doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
-
-						    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");
-
-						    tempFos = new FileOutputStream(tempFile2);
+							dump("GetFeature end to apply localFilter");
+//Fin de Debug
 							
-							dump("GetFeature tempFos created");
-						    
-						    if (filter !=null)
-								{
-								dump(filter);
-								}
-//***********************************************************************************************************************!!!!********************************************************************************************				    
-							filterFC( tempFos, filter,doc,getServletUrl(req),srsSource);
-							if (filter!=null)
-								{
-								tempFos.close();
-								
-								dump("GetFeature tempFos closed");
-								
-								if (tempFile!=null) tempFile.delete();
-									tempFile = tempFile2;    
-								}
+				// Fin de l'application du filtrage LocalFilter géométrique: "TempFile" a été filtré une première fois
+				// et est stocké dans "TempFile"
 
-							tempGetFeatureFile.add(tempFile);
-							
-							dump("GetFeature end for loops");
+					
+// Debug tb	10.06.2009
+				//Application du filtrage de l'attribut géom s'il existe et qu'a la base il n'est pas autorisé*******************************************
+						    // Filtrage de l'attribut geom si ajouté uniquement pour les besoins de localFilter
+						    for(int a=0;a<WFSProxyGeomAttributesList.size();a++)
+						    	{
+						    	dump("GetFeature begin to apply geomRemover");
+						    	if(WFSProxyGeomAttributesList.get(a).getRequestServerIndex() == serversIndex.get(iFileServer))
+						    		{
+						    		// Le test qui suit n'a aucune utilité car le proxy actuel ne prend pas en charge les multi featureType avec géométrie non-autorisée
+						    		// -> on parle en effet d'un LocalFilter par Server à l'étape précédente et l'algo de recherche srsName ne retourne que celui du premier featureType venu!
+						    		// Donc pour un serveur déterminé, il ne peut correspondre que un featureType dans ca cas
+						    		// Donc le test if Serveur n'est valable que lorsque a == serversIndex.get(iFileServer)
+						    		if(WFSProxyGeomAttributesList.get(a).getFeatureTypeName() == WFSProxyGeomAttributesList.get(a).getFeatureTypeName())
+						    			{
+								    	//Log le timing avant transformation
+										DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+										Date d = new Date();	
+										dump("SYSTEM","GetFeatureTypeGeomBeginTransfoDateTime",dateFormat.format(d));
+
+									    // Création du fichier résultat de la prochaine transformation
+								    	File tempFile2 = createTempFile("transform_GetFeature_3_"+UUID.randomUUID().toString(), ".xml");
+									    tempFos = new FileOutputStream(tempFile2);
+									    ByteArrayInputStream xslt = null;
+
+									    //Construction du fichier xslt: traitement intermédiaire indépendant
+									    xslt = new ByteArrayInputStream(buildGetFeatureXSLT(a, a).toString().getBytes());
+								    	
+									    xml = new BufferedInputStream(new FileInputStream(tempFile));
+									    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
+									    transformer = tFactory.newTransformer(new StreamSource(xslt));
+									    //write the tempFile via tempFos
+										transformer.transform(saxSource, new StreamResult(tempFos));
+										
+										tempFos.close();
+										
+										if (tempFile!=null) tempFile.delete();
+										tempFile = tempFile2; // Copy du fichier suite à la suppression de l'attribut geom
+								    	//Log le timing après transformation
+										d = new Date();	
+										dump("SYSTEM","GetFeatureTypeGeomEndTransfoDateTime",dateFormat.format(d));
+						    			}
+						    		}
+						    	dump("GetFeature end to apply geomRemover");
+						    	}
+				//	Fin de l'application du filtrage de l'attribut géom: la réponse à la requête a été filtrée
+				// une deuxiême fois et est stocké dans "TempFile"
+						    tempGetFeatureFile.add(tempFile);
 							}
+//Fin de Debug
+										
 						
-						dump("GetFeature begin of append");
-						WFSGetFeatureRenameFt.append("  <!-- Whenever you match any node or any attribute -->");
-						WFSGetFeatureRenameFt.append("<xsl:template match=\"node()|@*\">\n");
-						WFSGetFeatureRenameFt.append("<!-- Copy the current node -->\n");
-						WFSGetFeatureRenameFt.append("<xsl:copy>\n");
-						WFSGetFeatureRenameFt.append("<!-- Including any attributes it has and any child nodes -->\n");
-						WFSGetFeatureRenameFt.append("<xsl:apply-templates select=\"@*|node()\"/>\n");
-						WFSGetFeatureRenameFt.append("</xsl:copy>\n");
-						WFSGetFeatureRenameFt.append("</xsl:template>\n");
-						WFSGetFeatureRenameFt.append("</xsl:stylesheet>");
-						
-						File tempFileXslt = createTempFile("transform_GetFeature_xslt"+UUID.randomUUID().toString(), ".xml");
-						PrintWriter bwrite = new PrintWriter(new BufferedWriter(new FileWriter(tempFileXslt)));
-						bwrite.write(WFSGetFeatureRenameFt.toString());
-						bwrite.flush();
-						bwrite.close();
-						
-						dump("GetFeature begin of merge");
-						tempFile = mergeGetFeatures(tempGetFeatureFile);
-						dump("GetFeature end of merge");
+				//Construction du fichier xslt: phase 2, jointure des résultats des différents serveurs
+//Debug tb 13.05.2009
+						// Au cas où il exite plus d'un serveur qui donne réponse: isWFSGetFeatureRenameFtEdit = true
+						if (filePathList.size()>1)
+							{
+//Fin de Debug
+							dump("GetFeature begin to merge servers Results");
+							// Appel à la fonction d'application de la transformation XSLT finale (contenu de "WFSGetFeatureRenameFt")
+							// "tempGetFeatureFile" contient entre autre "TempFile" (en fait ici uniquement "TempFile"
+							// si seulement un serveur est appelé)
+							// Attention: filtrage LocalFilter rend impossible l'application de la nouvelle transformation xslt ci-après
+							// Le fichier "tempFile" est devenu non utilisable!!! -> "internal serveur error" lorsque trop de résultats
+							tempFile = mergeGetFeatures(tempGetFeatureFile, tFactory, transformer);
+							dump("GetFeature end to merge servers Results");
+//Debug tb 13.05.2009
+							}
+//Fin de Debug
 						}
 					}
+				
+				
+				
+				
+			//Envoie du résultat des traitements "TempFile" sur la réponse à la requête	*******************************************
+				
 				/*
-				 * if a xslt file exists then 
-				 * post-treat the response
+				 * if a user xslt file exists then 
+				 * post-treat again "TempFile" and write the response
 				 */				
 				if (isPostTreat)
 					{
-					dump("GetFeature begin is PostTreat");
+					dump("GetFeature begin to apply user xslt");
 				    PrintWriter out = resp.getWriter();
-				    transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				    transformer = tFactory.newTransformer(new StreamSource(xsltFile)); // Voir definition en haut de fct transform
 				    if (tempFile !=null) transformer.transform(new StreamSource(tempFile), new StreamResult(out));
+// Pourquoi le fichier du premier serveur??? -> filePathList.get(0) et pas le résultat joint des transformations sur les serveur: TempFile
 				    else transformer.transform(new StreamSource(filePathList.get(0)), new StreamResult(out)); 
 				    //delete the temporary file
 				    tempFile.delete();
 				    out.close();
 				    //the job is done. we can go out
-				    dump("GetFeature the job is done. we can go out");
+				    dump("GetFeature end to apply user xslt");
 				    return;
 					}
 				}
@@ -1191,28 +2068,23 @@ public class WFSProxyServlet extends ProxyServlet {
 		    resp.setContentType("text/xml");
 		    
 		    InputStream is = null;
-		    dump("GetFeature 1");
 		    if (tempFile == null )
 				{
-		    	dump("GetFeature if 1");
 				is  = new FileInputStream(filePathList.get(0));
 				resp.setContentLength((int)new File(filePathList.get(0)).length());
 				}
 		    else
 				{
-		    	dump("GetFeature else 1");
 				is = new FileInputStream(tempFile);
 				resp.setContentLength((int)tempFile.length());
 				}
 		    
-		    
-		    //OutputStream os = resp.getOutputStream();	    
-		    dump("GetFeature 2");	    
+		    //Ecriture du fichier dans le flux de sortie
+		    //OutputStream os = resp.getOutputStream();	    	    
 		    BufferedOutputStream os = new BufferedOutputStream( resp.getOutputStream() );
 		      	     
 		    byte byteRead[] = new byte[ 32768 ];
 		    int index = is.read( byteRead, 0, 32768 );
-		    dump("GetFeature 2b");
 		    try 
 				{		
 				while(index != -1) 
@@ -1241,25 +2113,22 @@ public class WFSProxyServlet extends ProxyServlet {
 					tempFile.delete();	
 					}
 				}
-			dump("GetFeature 3");
 			}
 		catch (Exception e)
 			{
 		    e.printStackTrace();
-		    dump("Transform ERROR",e.getMessage()+" "+e.getLocalizedMessage()+" "+e.getCause());
 		    dump("Transform ERROR",e.toString());
 			}
 	}
 
-//************************************************************************************************************************************************************************************************************
-//************************************************************************************************************************************************************************************************************
-    private File mergeGetFeatures(List<File> tempGetFeaturesList){
+    
+//***************************************************************************************************************************************
+    private File mergeGetFeatures(List<File> tempGetFeaturesList, TransformerFactory tFactory, Transformer  transformer){
 	if (tempGetFeaturesList.size() == 0) return null;
 
 
 
 	try{
-		dump("mergeGetFeatures enter try");
 	    File fMaster = tempGetFeaturesList.get(0);
 	    DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
 	    db.setNamespaceAware(true);
@@ -1305,47 +2174,19 @@ public class WFSProxyServlet extends ProxyServlet {
 	    serialiseur.write(documentMaster, sortie);
 	    fluxSortie.flush();
 	    fluxSortie.close();
-	    
-	    dump("mergeGetFeatures before XML reader");
-	    XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-	    String user =(String)getUsername(getRemoteServerUrl(0));
-	    String password = (String)getPassword(getRemoteServerUrl(0));
-	    ResourceResolver rr = null;
-	    if (user!=null && user.length()>0)
-			{
-			dump("mergeGetFeatures before resolver");
-			rr = new ResourceResolver(user,password);
-			xmlReader.setEntityResolver(rr);
-			}
-	    
-	    dump("mergeGetFeatures before InputStream");
-	    InputStream xslt = new ByteArrayInputStream(WFSGetFeatureRenameFt.toString().getBytes());
-	    InputStream xml = new BufferedInputStream(new FileInputStream(f));
-		//xmlReader has detect user and password!
-	    SAXSource saxSource = new SAXSource(xmlReader,new InputSource(xml));
-	    File f2 = createTempFile("mergeGetFeatures_f2_"+UUID.randomUUID().toString(),".xml");
-	    FileOutputStream tempFos = new FileOutputStream(f2);
-	    TransformerFactory tFactory = TransformerFactory.newInstance();
-		//InputStream xslt = new ByteArrayInputStream(WFSGetFeatureRenameFt.toString().getBytes());
-	    Transformer  transformer = tFactory.newTransformer(new StreamSource(xslt));
-	    dump("mergeGetFeatures before transformer.transform test4");
-		//this line is the problem!!!
-	    transformer.transform(saxSource, new StreamResult(tempFos));
-		//transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
-	    dump("mergeGetFeatures after transformer.transform");
-		
-	    tempFos.close();
-	    
-	    return f2;
+
+	    return f;
 		}
 		catch(Exception e)
 		{
 	    e.printStackTrace();
-	    dump("ERROR on mergeGetFeatures",e.getMessage());
+	    dump("mergeGetFeatures ERROR",e.getMessage());
 	    return null;
 		}
     }
+
     
+//***************************************************************************************************************************************    
     private File mergeDescribeFeatureType(List<File> tempFileDescribeType){
 	if (tempFileDescribeType.size() == 0) return null;
 	try{
@@ -1426,6 +2267,9 @@ public class WFSProxyServlet extends ProxyServlet {
 	    return null;
 	}
     }
+    
+
+//***************************************************************************************************************************************
     private File mergeCapabilities(List<File> tempFileCapa) {
 
 	if (tempFileCapa.size() == 0) return null;
@@ -1482,6 +2326,8 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
     }
 
+    
+//***************************************************************************************************************************************    
     private FeatureType parseDescribeFeatureTypeResponse( String typeName, Schema schema ) throws SAXException {
 	org.geotools.xml.schema.Element[] elements = schema.getElements();
 
@@ -1511,88 +2357,29 @@ public class WFSProxyServlet extends ProxyServlet {
 	return ft;
     }
 
-
-
-
+//***************************************************************************************************************************************
     /**
-     * @param req
-     * @return
+     * Construit le xslt du filtrage de l'attribut géométrique servant au LocalFilter
+     * @param int listIndex : index pointant l'item de la liste WFSProxyGeomAttributesList comportant l'attribut géom à retirer
+     * @param int iServer : index pointant le serveur courant
+     * @return list<String> : code de la transformation XSLT 
      */
-    private StringBuffer buildGetFeatureXSLT(int remoteServerIndex) {
-
+private StringBuffer buildGetFeatureXSLT(int listIndex, int iServer) 
+    {
 	StringBuffer WFSGetFeature = new StringBuffer ();		
-	StringBuffer header = new StringBuffer();
 
-	WFSGetFeature.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
-
-
-	try{
-
-
-	    int nsI = 0;
-	    int nsI2 = 0;
-
-	    URL url = new URL(getRemoteServerUrl(remoteServerIndex)+"?VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS");
-	    boolean isAuthenticated=false;	
-	    URLConnection hpcon = url.openConnection();		    
-	    String encoding =null;
-	    if (getUsername(getRemoteServerUrl(remoteServerIndex)) != null && getPassword(getRemoteServerUrl(remoteServerIndex)) != null) {
-		String userPassword = getUsername(getRemoteServerUrl(remoteServerIndex)) + ":" + getPassword(getRemoteServerUrl(remoteServerIndex));
-		encoding = new sun.misc.BASE64Encoder()
-		.encode(userPassword.getBytes());
-		isAuthenticated=true;
-	    }		    
-	    if (isAuthenticated==true){
-		hpcon.setRequestProperty("Authorization", "Basic " + encoding);
-	    }
-
-	    Schema schema = org.geotools.xml.SchemaFactory.getInstance(null,hpcon.getInputStream() );		    		    
-	    ComplexType[] ct = schema.getComplexTypes();
-
-	    for (int i =0;i<ct.length;i++){
-		if (isFeatureTypeAllowed(ct[i].getName(), getRemoteServerUrl(remoteServerIndex))){
-		    String tmpFT = ct[i].getName();
-		    if (tmpFT!=null){
-			String [] s = tmpFT.split(":");
-			tmpFT = s[s.length-1];
-		    }
-
-		    org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
-		    for (int j=0;j<elem.length;j++){				
-
-			if (!isAttributeAllowed(getRemoteServerUrl(remoteServerIndex), tmpFT, elem[j].getName())){
-
-			    WFSGetFeature.append("<xsl:template xmlns:"+"au"+nsI+"=\""+ct[i].getNamespace()+"\" match=\"//"+"au"+nsI+":"+ct[i].getName()+"/"+"au"+nsI+":"+elem[j].getName()+"\">\n"); 
-			    WFSGetFeature.append("</xsl:template>\n");
-			    nsI++;
-			}			       
-		    }			    		    
-
-		    if (getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0){
-			WFSGetFeatureRenameFt.append("<xsl:template xmlns:"+"au"+nsI2+"=\""+ct[i].getNamespace()+"\" match=\"//gml:featureMember/au"+nsI2+":"+ct[i].getName()+"\">\n");
-			WFSGetFeatureRenameFt.append("<au"+nsI2+":"+getRemoteServerInfo(remoteServerIndex).getPrefix()+ct[i].getName()+" xmlns:au"+nsI2+"=\""+ct[i].getNamespace()+"\">");
-			WFSGetFeatureRenameFt.append("<xsl:apply-templates/>");
-			WFSGetFeatureRenameFt.append(" </au"+nsI2+":"+getRemoteServerInfo(remoteServerIndex).getPrefix()+ct[i].getName()+">\n");
-			WFSGetFeatureRenameFt.append("</xsl:template>\n");
-		    }
-		    nsI2++;
-		}
-		else{
-		    WFSGetFeature.append("<xsl:template xmlns:"+"au"+nsI2+"=\""+ct[i].getNamespace()+"\" match=\"//gml:featureMember\">\n");
-		    WFSGetFeature.append("<xsl:if test = \"count(./au"+nsI2+":"+ct[i].getName()+")=0\" >\n");     
-		    WFSGetFeature.append("<xsl:copy>\n");
-		    WFSGetFeature.append("<xsl:apply-templates select=\"@*|node()\"/>\n");
-		    WFSGetFeature.append("</xsl:copy>\n");
-		    WFSGetFeature.append("</xsl:if>\n"); 
-		    WFSGetFeature.append("</xsl:template>\n");
-		    nsI2++;
-		}
-
-	    }	
-	}catch(Exception e){
-	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
-	}    
+//Debug tb 15.06.2009
+	String prefix = WFSProxyGeomAttributesList.get(iServer).getpolicyServerPrefix();
+	String featureType = WFSProxyGeomAttributesList.get(listIndex).getFeatureTypeName();
+	String geomAttribut = WFSProxyGeomAttributesList.get(listIndex).getGeomAttributName();
+	
+	String nameSpace = WFSProxyGeomAttributesList.get(iServer).getpolicyServerNamespace();
+	//On le considère ici indépendant de la requête utilisateur, à la seul fin de satisfaire la contrainte xsl!!!
+	//Faux la transformation ne s'applique correctement que si nameSpace est défini en fonction de la requête d'origine...
+	
+	WFSGetFeature.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");	
+	WFSGetFeature.append("<xsl:template xmlns:"+prefix+"=\""+nameSpace+"\" match=\"//"+prefix+":"+featureType+"/"+prefix+":"+geomAttribut+"\">\n");
+	WFSGetFeature.append("</xsl:template>\n");
 	WFSGetFeature.append("  <!-- Whenever you match any node or any attribute -->");
 	WFSGetFeature.append("<xsl:template match=\"node()|@*\">\n");
 	WFSGetFeature.append("<!-- Copy the current node -->\n");
@@ -1601,28 +2388,27 @@ public class WFSProxyServlet extends ProxyServlet {
 	WFSGetFeature.append("<xsl:apply-templates select=\"@*|node()\"/>\n");
 	WFSGetFeature.append("</xsl:copy>\n");
 	WFSGetFeature.append("</xsl:template>\n");
-
-
-
-
-
-
-	WFSGetFeature.append("</xsl:stylesheet>\n");		
+	WFSGetFeature.append("</xsl:stylesheet>\n");
 	return WFSGetFeature;
+//Fin de debug
     }
 
+//***************************************************************************************************************************************
 
-    public void filterFC( OutputStream os ,String customFilter,GMLFeatureCollection doc,String urlServlet,String srsDest) {
+	//Applique le filtrage LocalFilter géométrique, il s'agit d'une transformation
+	public void filterFC( OutputStream os ,String customFilter,GMLFeatureCollection doc,String urlServlet,String srsDest, int iServer) {
 
 	try{
-	    //File file = new File(filePath);	        
 
-	    //GMLFeatureCollection  doc = (GMLFeatureCollection)DocumentFactory.getInstance(file.toURI(),null,Level.FINE);	     
-
-
-
-
+//Debug de 15.06.2009
+    	//Log le timing avant transformation
+		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+		Date d = new Date();	
+		dump("SYSTEM","LocalFilterBeginTransfoDateTime",dateFormat.format(d));
+//Fin de debug
+		
 	    Filter filter = null;
+	    //Lecture du contenu de localFilter(ici le param customFilter)**********************************
 	    if (customFilter!=null)
 	    	{
 			InputStream is = new ByteArrayInputStream(customFilter.getBytes());		 
@@ -1654,7 +2440,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				}		
 		    }
 
-
+	    //Application de filter************************************************************
 	    FeatureTransformer ft = new FeatureTransformer();
 	    ft.setNamespaceDeclarationEnabled(true);		
 
@@ -1662,83 +2448,99 @@ public class WFSProxyServlet extends ProxyServlet {
 	    ft.setGmlPrefixing(true);	    
 	    ft.setIndentation(2);
 	    FeatureCollection fc = null;
-	    if (filter!=null){
-		System.setProperty("org.geotools.referencing.forceXY", "true");
-		//Transform the srs of the filter if needed. 
-		String srsSource= customFilter.substring(customFilter.indexOf("srsName"));
-		if (srsSource.indexOf("\"")>0){
-		srsSource = srsSource.substring(srsSource.indexOf("\"")+1);			
-		srsSource = srsSource.substring(0,srsSource.indexOf("\""));	
-		}else{
-		    srsSource = srsSource.substring(srsSource.indexOf("\'")+1);			
-			srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
-		}
-		if (srsDest==null) srsDest = srsSource;
+	    if (filter!=null)
+	    	{
+	    	System.setProperty("org.geotools.referencing.forceXY", "true");
+	    	//Transform the srs of the filter if needed. 
+	    	String srsSource= customFilter.substring(customFilter.indexOf("srsName"));
+	    	if (srsSource.indexOf("\"")>0)
+	    		{
+	    		srsSource = srsSource.substring(srsSource.indexOf("\"")+1);			
+	    		srsSource = srsSource.substring(0,srsSource.indexOf("\""));	
+	    		}
+	    	else
+	    		{
+	    		srsSource = srsSource.substring(srsSource.indexOf("\'")+1);			
+	    		srsSource = srsSource.substring(0,srsSource.indexOf("\'"));
+	    		}
+	    	if (srsDest==null) srsDest = srsSource;
 
-		CoordinateReferenceSystem sourceCRS = CRS.decode(srsSource);
-		CoordinateReferenceSystem targetCRS = CRS.decode(srsDest);	    		
-		if (!srsSource.equals(srsDest)){
+	    	CoordinateReferenceSystem sourceCRS = CRS.decode(srsSource);
+	    	CoordinateReferenceSystem targetCRS = CRS.decode(srsDest);	    		
+	    	if (!srsSource.equals(srsDest))
+	    		{
 
-		    /*AffineTransform t=AffineTransform.getTranslateInstance(0,0);
-		    DefaultMathTransformFactory fac=new DefaultMathTransformFactory();
-		    MathTransform mt = fac.createAffineTransform(new GeneralMatrix(t));
-		     */
+			    /*AffineTransform t=AffineTransform.getTranslateInstance(0,0);
+			    DefaultMathTransformFactory fac=new DefaultMathTransformFactory();
+			    MathTransform mt = fac.createAffineTransform(new GeneralMatrix(t));
+			     */
 
-		    FilterTransformer filterTransformer = new FilterTransformer(CRS.findMathTransform(sourceCRS, targetCRS));
-		    //Due to an issue in GeoTools
-		    //MinX MinY MaxX and MaxY are not set for the BBOXImpl.
-		    //Do it ourself
-		    if (filter instanceof org.geotools.filter.spatial.BBOXImpl){
-			Object obj = null;
-			if (((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry() instanceof org.geotools.filter.LiteralExpressionImpl){
-			    obj = (((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry()).getValue());
-
-
-			}
-			if (((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry() instanceof org.geotools.filter.LiteralExpressionImpl){
-			    obj =(((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry()).getValue().getClass());	    
-			}
-			if (obj!=null && obj instanceof com.vividsolutions.jts.geom.Polygon){
-
-			    ((org.geotools.filter.spatial.BBOXImpl)filter).setMinX(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMinX());
-			    ((org.geotools.filter.spatial.BBOXImpl)filter).setMinY(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMinY());
-			    ((org.geotools.filter.spatial.BBOXImpl)filter).setMaxY(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMaxY());
-			    ((org.geotools.filter.spatial.BBOXImpl)filter).setMaxX(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMaxX());
-			}
-		    }
-		    Filter filter2 = (Filter)filter.accept(filterTransformer, null);
-
-		    fc = doc.subCollection(filter2);
-
-
-		}else{
-		    fc = doc.subCollection(filter);
-		}
-
-	    }
+	    		FilterTransformer filterTransformer = new FilterTransformer(CRS.findMathTransform(sourceCRS, targetCRS));
+			    //Due to an issue in GeoTools
+			    //MinX MinY MaxX and MaxY are not set for the BBOXImpl.
+			    //Do it ourself
+	    		if (filter instanceof org.geotools.filter.spatial.BBOXImpl)
+	    			{
+	    			Object obj = null;
+	    			if (((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry() instanceof org.geotools.filter.LiteralExpressionImpl)
+	    				{
+	    				obj = (((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getRightGeometry()).getValue());
+	    				}
+	    			if (((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry() instanceof org.geotools.filter.LiteralExpressionImpl)
+	    				{
+	    				obj =(((org.geotools.filter.LiteralExpressionImpl)((org.geotools.filter.spatial.BBOXImpl)filter).getLeftGeometry()).getValue().getClass());	    
+	    				}
+	    			if (obj!=null && obj instanceof com.vividsolutions.jts.geom.Polygon)
+	    				{
+	    				((org.geotools.filter.spatial.BBOXImpl)filter).setMinX(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMinX());
+	    				((org.geotools.filter.spatial.BBOXImpl)filter).setMinY(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMinY());
+	    				((org.geotools.filter.spatial.BBOXImpl)filter).setMaxY(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMaxY());
+	    				((org.geotools.filter.spatial.BBOXImpl)filter).setMaxX(((com.vividsolutions.jts.geom.Polygon)obj).getEnvelopeInternal().getMaxX());
+	    				}
+	    			}
+	    		Filter filter2 = (Filter)filter.accept(filterTransformer, null);
+	    		//Si filter à srsSource (de LocalFilter) != srsDest (de TempFile, la réponse du serveur courant) le contenu de doc est modfié selon filter2
+	    		fc = doc.subCollection(filter2);
+	    		}
+	    	//Si filter à srsSource (de LocalFilter) == srsDest (de TempFile, la réponse du serveur courant) le contenu de doc est modfié selon filter
+	    	else
+	    		{
+	    		fc = doc.subCollection(filter);
+	    		}
+	    	}
+	    //filter est null, aucun changement n'est effectué sur le contenu de doc (-> TempFile)
 	    else fc = doc;
-
+	    
+//Debug de 15.06.2009	    
+	    //Construction des pramètres de ft afin de préparer la sortie du résultat filtré
+	    //-> option désactivée: renomage du prefix
 	    FeatureIterator it = fc.features();
 	    int i=0;
 	    String lastTypeName="";
-	    while(it.hasNext()){
-		Feature feature = it.next();
+	    while(it.hasNext())
+	    	{
+			Feature feature = it.next();
 
-		if (!feature.getFeatureType().getTypeName().equals(lastTypeName)){
-		    String prefix = "au"+i;
-		    ft.getFeatureTypeNamespaces().declareNamespace(feature.getFeatureType(), prefix, feature.getFeatureType().getNamespace().toString());		
-		    ft.setSrsName((String)feature.getDefaultGeometry().getUserData());
-		    lastTypeName=feature.getFeatureType().getTypeName();
-		}
-		i++;
-
-	    }
-
+			if (!feature.getFeatureType().getTypeName().equals(lastTypeName))
+	    		{
+				String prefix = policyServersPrefix.get(iServer);
+				ft.getFeatureTypeNamespaces().declareNamespace(feature.getFeatureType(), prefix, feature.getFeatureType().getNamespace().toString());		
+		    	ft.setSrsName((String)feature.getDefaultGeometry().getUserData());
+		    	lastTypeName=feature.getFeatureType().getTypeName();
+				}
+			i++;
+	    	}
+	    //Ecriture du résultat dans le fichier pointé par os
 	    ft.transform(fc, os);
+
+    	//Log le timing après transformation
+		d = new Date();
+		dump("SYSTEM","LocalFilterEndTransfoDateTime",dateFormat.format(d));
+//Fin de debug
 
 	}catch(Exception e){
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    dump("FilterFC ERROR",e.getMessage());
 	}
 
     }
