@@ -1531,35 +1531,9 @@ if (count($rows)>0){
 			
 			foreach ($rows as $row)
 			{
-				if($row->published == '0')
-				{ ?>
-					<div class="alert">
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-					</div>
-					<?php 
-					$isProductAllowed = false;
-					break;
-				}
-				if($row->orderable == '0')
+				if($row->published == '0' || $row->orderable == '0' || ($row->external == '0' && $row->internal == '0'))
 				{
-					?>
-					<div class="alert">
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-					</div>
-					<?php
-					$isProductAllowed = false;
-					break;
-				}
-				if($row->external == '0' && $row->internal == '0')
-				{
-					?>
-					<div class="alert">
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE");?>
-						<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-					</div>
-					<?php
+					HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE", $row->data_title );
 					$isProductAllowed = false;
 					break;
 				}
@@ -1588,13 +1562,7 @@ if (count($rows)>0){
 						else
 						{
 							//The product does not belogn to the current user's group, or the user does not have the internal right
-							?>
-							<div class="alert">
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?><br>
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
-							</div>
-							<?php 
+							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 							$isProductAllowed = false;
 							break;
 						}		
@@ -1606,41 +1574,19 @@ if (count($rows)>0){
 							if($hasInternal == false)
 							{
 								//The product belongs to the current user's group and the user does not have the internal right
-								?>
-								<div class="alert">
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?><br>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
-								</div>
-								<?php
+								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 								$isProductAllowed = false;
 								break;
 							} 
-							else
-							{	
-							}
 						}
 						else
 						{
 							if($hasExternal == false)
 							{
-								?>
-								<div class="alert">
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-								</div>
-								<?php 
+								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 								$isProductAllowed = false;
 								break;
 							}
-							else
-							{
-								?>
-								<div class="alert"><?php echo "I = 1 && E = 1 : out group OK";?></div>
-								<?php
-							}
-
 						}
 						
 					}
@@ -1653,13 +1599,7 @@ if (count($rows)>0){
 						if($countProduct == 1)
 						{
 							//This product is not visible for the user of the partner's group
-							?>
-							<div class="alert">
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?>
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
-								<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-							</div>
-							<?php 
+							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 							$isProductAllowed = false;
 							break;
 						}
@@ -1668,20 +1608,11 @@ if (count($rows)>0){
 							if($hasExternal == false)
 							{
 								//User does not have the right to order external product
-								?>
-								<div class="alert">
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_USER_RIGHT");?>
-									<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?>
-								</div>
-								<?php 
+								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 								$isProductAllowed = false;
 								break;
 							}
 						}
-						?>
-							<div class="alert"><?php echo "I = 0 && E = 1 ";?></div>
-							<?php
 					}
 				}
 				
@@ -1701,6 +1632,7 @@ if (count($rows)>0){
 		}
 		else
 		{
+			//User not connected
 			?>
 			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
 			<?php
@@ -1709,6 +1641,18 @@ if (count($rows)>0){
 		<?php
 	}
 
+	function displayErrorMessage ($error, $product)
+	{
+		?>
+		<div class="alert">
+			<span class="alertheader"><?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br></span>
+			<?php echo JText::_($error);?>
+			<span class="alerthighlight"><?php echo $product;?><br></span>
+			<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
+		</div>
+		<?php 
+	}
+	
 	function saveOrder($orderStatus){
 		global $mainframe;
 		$user = JFactory::getUser();
@@ -2399,17 +2343,34 @@ if (count($rows)>0){
 				}
 				else
 				{
-					$filter .= " AND (p.EXTERNAL=1 AND 
-					(p.partner_id <>  $partner->partner_id
-					AND
-					p.partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					AND 
-					p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					AND
-					p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					$queryRoot = "SELECT root_id from #__easysdi_community_partner where partner_id = $partner->partner_id";
+					$db->setQuery( $queryRoot);
+					$result = $db->loadResult();
 					
-					)
-					) ";
+					if($result)
+					{
+						$filter .= " AND (p.EXTERNAL=1 AND 
+						(p.partner_id <>  $partner->partner_id
+						AND
+						p.partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						AND 
+						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						AND
+						p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						
+						)
+						) ";
+					}
+					else
+					{
+						$filter .= " AND (p.EXTERNAL=1 AND 
+						(p.partner_id <>  $partner->partner_id
+						AND
+						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						AND
+						p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						)) ";
+					}
 				}
 			}
 			else
@@ -2462,8 +2423,6 @@ if (count($rows)>0){
 
 		$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;
 		$query  = $query .$filter ;
-
-
 
 		if ($simpleSearchCriteria == "moreConsultedMD"){
 			$query  = $query." order by weight";
