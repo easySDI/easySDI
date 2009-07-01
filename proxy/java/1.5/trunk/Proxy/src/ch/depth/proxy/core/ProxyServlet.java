@@ -79,9 +79,13 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String responseContentType=null; 
     protected String bbox = null;
     protected String srsName = null;
-    protected Vector<String> filePathList = new Vector<String>();
+    protected Vector<String> filePathList = new Vector<String>(); // Contient une liste des fichiers (sendData) réponse de chaque serveur WFS.
     protected Vector<String> layerFilePathList = new Vector<String>();
-    protected Vector<String> featureTypePathList = new Vector<String>();
+    protected Vector<String> featureTypePathList = new Vector<String>(); //Contient le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
+//Debug tb 04.06.2009
+    protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
+    protected int policyAttributeListNb = 0;
+//Fin de debug
 
 
     private List<String> lLogs = new Vector<String>();
@@ -147,7 +151,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    requestPreTreatmentPOST(req, resp);
 	}
 	finally{
-	    //deleteTempFileList();
+	    deleteTempFileList();
 	    writeInLog(dateFormat.format(d),req);
 	}
 	
@@ -163,7 +167,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	try{	
 	    requestPreTreatmentGET(req,  resp);
 	}finally{
-	    //deleteTempFileList();
+	    deleteTempFileList();
 	    writeInLog(dateFormat.format(d),req);
 	}
 	
@@ -980,56 +984,92 @@ public abstract class ProxyServlet extends HttpServlet {
      * Detects if the attribute of a feature type is allowed or not against the rule. 
      * @param ft The feature Type to test
      * @param url the url of the remote server.
+     * @param isAllAttributes if the user request need all attributes.
      * @return true if the feature type is allowed, false if not
      */
-    protected boolean isAttributeAllowed (String url,String ft,String attribute){
-
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
-	}
-
-	boolean isServerFound = false;
-	boolean isFeatureTypeFound = false;
-	boolean FeatureTypeAllowed = false;
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound=true;		
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
-		for (int j=0;j<ftList.size();j++){
-		    //Is a specific feature type allowed ? 
-		    if (ft.equals(ftList.get(j).getName())) {
-			isFeatureTypeFound=true;			
-			//If all the attribute are authorized, then return true;
-			if (ftList.get(j).getAttributes().isAll()) return true;
-			List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();			
-			for (int k=0;k<attributeList.size();k++){
-			    if (attribute.equals(attributeList.get(k).getContent())) return true;
+    protected boolean isAttributeAllowed (String url,String ft,String attribute)
+    	{
+		if (policy == null) return false;
+		if (policy.getAvailabilityPeriod() !=null) 
+			{
+		    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 			}
-		    } 
-		}
+	
+		boolean isServerFound = false;
+		boolean isFeatureTypeFound = false;
+		boolean FeatureTypeAllowed = false;
+	
+		List<Server> serverList = policy.getServers().getServer();
+	
+		for (int i=0;i<serverList.size();i++)
+			{
+		    //Is the server overloaded?  
+		    if (url.equalsIgnoreCase(serverList.get(i).getUrl()))
+		    	{
+		    	isServerFound=true;		
+		    	List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		    	FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
+		    	for (int j=0;j<ftList.size();j++)
+		    		{
+				    //Is a specific feature type allowed ? 
+				    if (ft.equals(ftList.get(j).getName()))
+				    	{
+				    	isFeatureTypeFound=true;			
+				    	//If all the attribute are authorized, then return true;
+				    	if (ftList.get(j).getAttributes().isAll())
+				    	{
+//Debug tb 08.06.2009
+				    	policyAttributeListNb = 0;
+//Fin de debug
+				    	return true;
+				    	}
+				    	
+				    	//List d'attributs de Policy pour le featureType courant
+				    	List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
+				    	//Supprime les résultats, contenu dans la globale var, issus du précédent appel de la fonction courante
+				    	policyAttributeListToKeepPerFT.clear();
+				    	for (int k=0;k<attributeList.size();k++)
+				    		{
+				    		//If attributes are listed in user req 
+				    		if (attribute.equals(attributeList.get(k).getContent())) return true;
+//Debug tb 04.06.2009
+				    		//If no attributes are listed in user req -> all the Policy Attributes will be returned
+				    		else if (attribute.equals(""))
+				    			{
+				    			String tmpFA = attributeList.get(k).getContent();
+					    		if (tmpFA!=null)
+					    			{
+					    			String [] s = tmpFA.split(":");
+					    			tmpFA = s[s.length-1];
+					    			}
+					    		policyAttributeListToKeepPerFT.add(tmpFA);
+				    			//then at the end of function -> return false, "" is effectively not a valid attribute
+				    			}
+//Fin de debug
+				    		}
+//Debug tb 08.06.2009
+				    	// Pour que attributeListToKeepNbPerFT du featureType courant puisse enregistrer le nombre d'attributs de la Policy
+				    	policyAttributeListNb = attributeList.size();
+//Fin de debug
+				    	} 
+		    		}
+		    	}
+			}	
+	
+	
+		//if the server is not overloaded and if all the servers are allowed then 
+		//We can say that's ok
+		if (!isServerFound && policy.getServers().isAll()) return true;
+	
+		//if the server is overloaded and if the specific featureType was not overloaded and All the featuetypes are allowed 
+		//We can say that's ok
+		if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed) return true;
+	
+		//in any other case the feature type is not allowed
+		return false;
+    	}
 
-	    }
-	}	
-
-
-	//if the server is not overloaded and if all the servers are allowed then 
-	//We can say that's ok
-	if (!isServerFound && policy.getServers().isAll()) return true;
-
-	//if the server is overloaded and if the specific featureType was not overloaded and All the featuetypes are allowed 
-	//We can say that's ok
-	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed) return true;
-
-	//in any other case the feature type is not allowed
-	return false;
-    }
-
+    
     protected String getLayerFilter(String layer){
 
 	if (policy == null) return null;
@@ -1077,6 +1117,41 @@ public abstract class ProxyServlet extends HttpServlet {
 	return null;
     }
 
+    
+    protected String getServerNamespace(String url)
+    	{
+    	if (policy == null) return null;
+    	List<Server> serverList = policy.getServers().getServer();
+
+    	for(int i=0;i<serverList.size();i++)
+    		{
+    	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
+    	    	{
+    	    	if (serverList.get(i).getNamespace() == null) return null;
+    	    	return serverList.get(i).getNamespace();
+    	    	}
+    		}	
+    	return null;
+        }
+    
+    
+	protected String getServerPrefix(String url)
+		{
+		if (policy == null) return null;
+		List<Server> serverList = policy.getServers().getServer();
+	
+		for(int i=0;i<serverList.size();i++)
+			{
+		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
+		    	{
+		    	if (serverList.get(i).getPrefix() == null) return null;
+		    	return serverList.get(i).getPrefix();
+		    	}
+			}	
+		return null;
+	    }
+    
+    
     protected String getFeatureTypeLocalFilter(String url,String ft){
 
 	if (policy == null) return null;
