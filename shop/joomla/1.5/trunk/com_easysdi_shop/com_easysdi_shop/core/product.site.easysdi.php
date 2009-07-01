@@ -34,6 +34,7 @@ class SITE_product {
 		$metadata_standard_id = JRequest::getVar("standard_id");
 		$metadata_id = JRequest::getVar("metadata_id");
 		
+		/* Liste des onglets à traiter */
 		$query = "SELECT b.text as text,a.tab_id as tab_id 
 				  FROM #__easysdi_metadata_standard_classes a, 
 				  	   #__easysdi_metadata_tabs b 
@@ -57,6 +58,7 @@ class SITE_product {
 		}
 		$doc="<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\" xmlns:ext=\"http://www.depth.ch/2008/ext\">";
 		foreach ($rows as $row){
+			/* Pour chaque onglets, liste des classes à traiter */
 			$query = "SELECT * 
 					  FROM #__easysdi_metadata_standard_classes a, 
 					  	   #__easysdi_metadata_classes b 
@@ -76,14 +78,16 @@ class SITE_product {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 				
+			/* Traitement de chaque classe */
 			foreach ($rowsClasses as $rowClasses){
 				$doc=$doc."<$rowClasses->iso_key>";
 				$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
-				
+				echo "<hr>SearchForLastEntry: ".$count."<br>";
 				for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
+					echo "rowClasses ".$rowClasses->id." : ".$rowClasses->iso_key."<br>";
 					helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
 				}
-				
+				echo "<hr>";
 				//helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc);
 				$doc=$doc."</$rowClasses->iso_key>";
 			}
@@ -92,6 +96,10 @@ class SITE_product {
 		}
 		$doc=$doc."</gmd:MD_Metadata>";
 
+		$f = fopen('c:\\doc.xml', 'w');
+		fwrite($f, $doc);
+		fclose($f);
+		
 		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 		<csw:Transaction service=\"CSW\"
 		version=\"2.0.0\"
