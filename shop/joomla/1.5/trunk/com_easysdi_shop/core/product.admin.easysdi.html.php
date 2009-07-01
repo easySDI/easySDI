@@ -234,6 +234,14 @@ class HTML_product {
 								<td><input name="external" value="1" type="checkbox" <?php if ($rowProduct->external) {echo "checked";};?> > </td>								
 							</tr>
 							<tr>
+								<td><?php echo JText::_("EASYSDI_METADATA_INTERNAL"); ?> : </td>
+								<td><input name="metadata_internal" value="1" type="checkbox" <?php if ($rowProduct->metadata_internal) {echo "checked";};?> > </td>								
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_METADATA_EXTERNAL"); ?> : </td>
+								<td><input name="metadata_external" value="1" type="checkbox" <?php if ($rowProduct->metadata_external) {echo "checked";};?> > </td>								
+							</tr>
+							<tr>
 								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>
 								<td><input name="is_free" value="1" type="checkbox" <?php if ($rowProduct->is_free) {echo "checked";};?> > </td>								
 							</tr>

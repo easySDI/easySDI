@@ -1822,6 +1822,33 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	
+	 if($version == "0.9996")
+	 {
+	 	//Add field for internal metadata
+		$query="ALTER TABLE #__easysdi_product add column `metadata_internal`  TINYINT( 1 ) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	    //Add field for external metadata
+		$query="ALTER TABLE #__easysdi_product add column `metadata_external`  TINYINT( 1 ) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Update component version
+		$version = "0.9997";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
