@@ -12,13 +12,13 @@ if (is_array(($cid)))
 
 	if (count($cid)>0)
 	{		
-		$query = "select * from #__easysdi_product where id in (";
+		$query = "select p.*, u.name from #__easysdi_product p, #__easysdi_community_partner cp, #__users u where p.id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query.")";
+		$query = $query.") AND p.partner_id = cp.partner_id AND cp.user_id = u.id		";
 
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
@@ -41,15 +41,16 @@ if (is_array(($cid)))
 			?>
 			<table>
 			<?php
+			$descriptionLength =  config_easysdi::getValue("CADDY_DESCRIPTION_LENGTH");
 			foreach($rows as $row )
 			{
-				
 				?>
 				<tr>
 				<td>
-				<a title="<?php echo $row->data_title; ?>" class="modal"
+				<a class="modal"
+					title="<?php echo $row->name;  ?>"
 					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
-					rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title,0,20); ?></a>
+					rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo substr($row->data_title, 0, $descriptionLength);  ?>[...]</a>
 				</td>
 				<td>
 				<?php
