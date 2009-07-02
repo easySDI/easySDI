@@ -752,7 +752,7 @@ public class WPSServlet extends HttpServlet {
 		stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
 
 
-		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
+		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
 		
 		ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
 
@@ -762,7 +762,7 @@ public class WPSServlet extends HttpServlet {
 
 
 
-		int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
+		int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
 		if (count == 0){
 		    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='PROGRESS')   where order_id = "+order_id );
 		}
