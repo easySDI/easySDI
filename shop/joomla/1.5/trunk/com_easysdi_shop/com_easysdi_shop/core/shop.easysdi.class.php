@@ -1380,7 +1380,7 @@ if (count($rows)>0){
 		$user = JFactory::getUser();
 		if (!$user->guest){
 			?>
-<div class="info"><?php echo JText::_("EASYSDI_CONNECTED_WITH_USER").$user->name;  ?></div>
+			<div class="info"><?php echo JText::_("EASYSDI_CONNECTED_WITH_USER").$user->name;  ?></div>
 			<?php
 		}
 		?>
