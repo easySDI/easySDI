@@ -623,7 +623,8 @@ function checkBufferValue()
 		<div>
 		<h5>
 		<?php
-		echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".round($totalArea,$decimal_precision)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL") ;
+		//Convert m2 to km2 before display
+		echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".round($totalArea/1000000,$decimal_precision)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL") ;
 		?></h5>
 		</div>
 		<div>
