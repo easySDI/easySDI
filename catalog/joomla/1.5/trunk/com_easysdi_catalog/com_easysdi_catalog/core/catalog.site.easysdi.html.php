@@ -209,7 +209,7 @@ class HTML_catalog{
 			}
 
 
-			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."' WHERE published = 1 AND orderable = 1";
+			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."' AND published = 1 AND orderable = 1";
 
 			$db->setQuery( $query);
 
@@ -251,7 +251,7 @@ class HTML_catalog{
 				}
 				
 				//Define if the md is public or not
-				$queryPartnerID = "select external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+				$queryPartnerID = "select metadata_external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 				$db->setQuery($queryPartnerID);
 				$external = $db->loadResult();
 				if($external == 1)
