@@ -101,10 +101,18 @@ class helper_easysdi{
 	}
 
 	function generateMetadataHtml2($classId,$geoMD,$parentkey,$metadata_id,$root=0){
-
+		/*
+		echo "<hr>Passage dans generateMetadataHTML2. Etat:<br>";
+		echo "classID: $classId<br>";
+		//echo "geoMD: ".$geoMD->."<br>";
+		echo "Parentkey: $parentkey<br>";
+		echo "Metadata id: $metadata_id<br>";
+		echo "Root: $root<hr>";
+		*/		
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
+		/* Récupérer les classes enfant de cette classe */
 		$query = "SELECT a.type as type ,a.id,a.name as name,a.description as description,a.iso_key as iso_key  FROM #__easysdi_metadata_classes a,#__easysdi_metadata_classes_classes b WHERE a.id =b.classes_to_id  and $classId=b.classes_from_id";
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -113,17 +121,21 @@ class helper_easysdi{
 		}
 
 		$directinroot=0;
-		//Si il n'y a pas de rÃ©sultat c'est que la sous classe n'est pas une classe mais un type
-		if (count ($rows)==0 && $root == 1){
-
+		//Si il n'y a pas de résultat c'est que la sous classe n'est pas une classe mais un type
+		if (count ($rows)==0 && $root == 1)
+		{
 			$query = "SELECT a.type as type ,a.id,a.name as name,a.description as description,a.iso_key as iso_key  FROM #__easysdi_metadata_classes a WHERE a.id = $classId";
 			$database->setQuery($query);
 			$rows = $database->loadObjectList();
 			$directinroot=1;
 		}
-		foreach($rows as $row){
-			
-			switch($row->type){
+		//echo "Nombre de lignes: ".count($rows)."<br>";
+		
+		foreach($rows as $row)
+		{
+			//echo "$classId : $row->type<br>";
+			switch($row->type)
+			{
 				case "class":
 					if ($directinroot == 0){
 						$key = $parentkey."/".$row->iso_key;
@@ -131,18 +143,28 @@ class helper_easysdi{
 						$key = $parentkey;
 					}
 
+					/* Trouver le nombre d'occurences de cet élément dans la métadonnée */
 					$count  = $geoMD->isXPathResultCount("//".$key);
 					
-					
-					if ($count == 0 ){
+					//echo "Nombre d'occurences dans la métadonnée: ".$count."<br>";
+		
+					/* S'il n'y en a pas c'est que l'élément n'est pas au premier niveau. Reboucler pour chercher un niveau plus bas */
+					if ($count == 0) // and $directinroot == 1)
+					{
+						//echo "Bouclage 1<br>";
 						helper_easysdi::generateMetadataHtml2($row->id,$geoMD,$key."[1]",$metadata_id,0);
 					}
-					
-					for ($i=0 ;$i<$count;$i++){
-						//echo "<table><tr><td><fieldset><legend>".JText::_($row->description)."looking for //$key  ==> ".($i+1)." of  $count<br>"."</legend>";
-						helper_easysdi::generateMetadataHtml2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0);
-							
-						//echo "</fieldset></td></tr></table>";
+					else
+					{
+						/* S'il y en a (des enfants), analyser chaque enfant. Reboucler pour chercher un niveau plus bas */
+						for ($i=0 ;$i<$count;$i++)
+						{
+							//echo "Bouclage 2<br>";
+							//echo "<table><tr><td><fieldset><legend>".JText::_($row->description)."looking for //$key  ==> ".($i+1)." of  $count<br>"."</legend>";
+							helper_easysdi::generateMetadataHtml2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0);
+								
+							//echo "</fieldset></td></tr></table>";
+						}
 					}
 					break;
 				case  "freetext" :
@@ -160,34 +182,44 @@ class helper_easysdi{
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					}
 
-					foreach($rowsFreetext as $rowFreetext){
-							
-						?>
-						<?php if ($rowFreetext->is_constant != 1) { ?>
-						<tr>
-							<td><?php echo JText::_($row->description) ?></td>
-							<td><?php } ?> <?php if( $rowFreetext->is_id == 1) { ?> <input
-								size="20" type="text"
-								<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'"; ?>
-								name="<?php echo "PARAM$row->id[]"?>" value="<?php echo $metadata_id;?>" /> <?php 
-							}else{
-								if( $rowFreetext->is_constant == 1) {
-									?> <input size="50" type="text"
-									<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
-								name="<?php echo "PARAM$row->id[]"?>"
-								value="<?php echo htmlentities($rowFreetext->trans);?>" /> <?php 
-								}else{
-									?> <input size="50" type="text"
-									<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
-								name="<?php echo "PARAM$row->id[]"?>"
-								value="<?php echo htmlentities($geoMD->getXPathResult("//".$key."/gco:CharacterString"))?>" />
-								<?php
-								}
+					foreach($rowsFreetext as $rowFreetext)
+					{
+						if ($rowFreetext->is_constant != 1) 
+						{ ?>
+							<tr>
+								<td><?php echo JText::_($row->description) ?></td>
+								<td><?php 
+						} ?> <?php 
+						if( $rowFreetext->is_id == 1) 
+						{ ?> <input size="20" type="text"
+									<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'"; ?>
+									name="<?php echo "PARAM$row->id[]"?>" value="<?php echo $metadata_id;?>" /> <?php 
+						}
+						else
+						{
+							if( $rowFreetext->is_constant == 1) 
+							{
+								?> <input size="50" type="text"
+								<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
+									name="<?php echo "PARAM$row->id[]"?>"
+									value="<?php echo htmlentities($rowFreetext->trans);?>" /> <?php 
 							}
-							?> <?php if ($rowFreetext->is_constant != 1) { ?></td>
-						</tr>
+							else
+							{
+								?> <input size="50" type="text"
+								<?php if ($rowFreetext->is_constant == 1) echo "READONLY='TRUE'";   ?>
+									name="<?php echo "PARAM$row->id[]"?>"
+									value="<?php echo htmlentities($geoMD->getXPathResult("//".$key."/gco:CharacterString"))?>" />
+									<?php
+							}
+						}
+						?> <?php 
+						if ($rowFreetext->is_constant != 1) 
+						{
+							?></td>
+							</tr>
 							<?php
-							}
+						}
 					}
 					break;
 				case "locfreetext":
@@ -197,20 +229,30 @@ class helper_easysdi{
 						$key = $parentkey;
 					}
 				
+					/* Récupérer toutes les langues pour les locfreetext */
+					$query = "SELECT * FROM #__easysdi_metadata_loc_freetext";
+					$database->setQuery($query);
+					$LangLocfreetext = $database->loadObjectList();
+					
+					/* Récupérer toutes les entrées de langues de ce champ */
+					/*
 					$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->id and a.loc_freetext_id = b.id";
 					$database->setQuery($query);
 					$rowsFreetext = $database->loadObjectList();
+					*/
 					if ($database->getErrorNum()) {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					}
-					foreach($rowsFreetext as $rowFreetext){
+					foreach($LangLocfreetext as $langLoc)
+					{
 						?>
-				<tr>
-					<td><?php echo JText::_($row->description)."[$rowFreetext->trans]"?></td>
-					<td><textarea name="<?php echo "PARAM$row->id[]"?>"
-						rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$rowFreetext->lang']"))?></textarea>
-					</td>
-				</tr>
+						<tr>
+							<td><?php echo JText::_($row->description)."[".JText::_($langLoc->translation)."]"?></td>
+							<!-- <td><?php //echo "//$key/gmd:LocalisedCharacterString[@locale='$langLoc->lang']" ?></td> -->
+							<td><textarea name="<?php echo "PARAM$row->id[]"?>"
+								rows="5" cols="40"><?php echo  ($geoMD->getXPathResult("//$key/gmd:LocalisedCharacterString[@locale='$langLoc->lang']"))?></textarea>
+							</td>
+						</tr>
 						<?php
 					}
 					break;
@@ -242,13 +284,13 @@ class helper_easysdi{
 								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 							}
 					
-							foreach ($rowsListContent as $rowListContent){
+							foreach ($rowsListContent as $rowListContent)
+							{
 								?>
-							<option value="<?php echo $rowListContent->key ;?>"
-							<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo  JText::_($rowListContent->translation) ;?></option>
-							<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
-							<?php
-				
+								<option value="<?php echo $rowListContent->key ;?>"
+								<?php if ($geoMD->isXPathResultCount("//".$key."[MD_TopicCategoryCode='$rowListContent->key']")>0){echo "selected";}?>><?php echo  JText::_($rowListContent->translation) ;?></option>
+								<!-- <?php //echo "//".$key."[MD_TopicCategoryCode='$rowListContent->key']". "===>".$geoMD->getXPathResult("//".$key."/MD_TopicCategoryCode") ; ?></option>-->
+								<?php
 							} ?>
 						</select></td>
 					</tr>
@@ -525,6 +567,7 @@ default:
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
 				foreach($rowsList as $rowList){
+					/* Lister les contenus de chaque liste */
 					$query = "SELECT * FROM #__easysdi_metadata_list_content where list_id = $rowList->list_id";
 					$database->setQuery($query);
 					$rowsListContent = $database->loadObjectList();
@@ -534,11 +577,12 @@ default:
 
 					foreach ($rowsListContent as $rowListContent){
 						// $value = array_pop  ( $_POST["PARAM$row->class_id"] );
+						/* Récupérer les valeurs entrées par l'utilisateur */
 						$array  = JRequest::getVar("PARAM$row->id");
 						$value = $array [$n];
 						print_r ($array);
 						echo "<br><b>Value ".$n."</b>: ".$value."<br>";
-
+						/* Créer chaque élément de la valeur */
 						if (strlen  ($value)>0){
 							$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
 						}
@@ -567,6 +611,12 @@ default:
 				break;
 			
 			case "locfreetext":
+				/* Récupérer toutes les langues pour les locfreetext */
+					$query = "SELECT * FROM #__easysdi_metadata_loc_freetext";
+					$database->setQuery($query);
+					$LangLocfreetext = $database->loadObjectList();
+					
+				/* Récupérer les textes localisés associés à cette métadonnée */
 				$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
 				$database->setQuery($query);
 				$rowsFreetext = $database->loadObjectList();
@@ -574,7 +624,7 @@ default:
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
 				//$doc=$doc."<gmd:PT_FreeText><gmd:textGroup>";
-				foreach($rowsFreetext as $rowFreetext){
+				foreach($LangLocfreetext as $LangLoc){
 					//$mainframe->enqueueMessage($_POST[$iso_key."{lang=$rowFreetext->lang}"],"ERROR");
 					
 					//$value = array_pop  ( $_POST["PARAM$row->class_id"] );
@@ -583,7 +633,7 @@ default:
 					print_r ($array);
 					echo "<br><b>Value ".$n."</b>: ".$value."<br>";
 					
-					$doc=$doc."<gmd:LocalisedCharacterString locale=\"$rowFreetext->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
+					$doc=$doc."<gmd:LocalisedCharacterString locale=\"$LangLoc->lang\">".htmlspecialchars    (stripslashes($value) )."</gmd:LocalisedCharacterString>";
 				}
 				//$doc=$doc."</gmd:textGroup></gmd:PT_FreeText>";
 				break;
@@ -646,7 +696,7 @@ default:
 		switch($row->type){
 		
 			case "class":
-
+				/* Récupérer les classes enfants */
 				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
 				$database->setQuery($query);
 				$rowsClasses = $database->loadObjectList();
@@ -654,14 +704,15 @@ default:
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
 				foreach ($rowsClasses as $rowClasses){
-
+						/* Récupérer les données de chaque classe enfant */
 						$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
 						$database->setQuery($query);
 						$rowsClassesClasses = $database->loadObjectList();
 						if ($database->getErrorNum()) {
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 							}
-							
+						
+						/* Parcourir chaque enfant */
 						foreach ($rowsClassesClasses  as $rowClassesClasses ){
 							$a = helper_easysdi::searchForLastEntry($rowClassesClasses,$metadata_standard_id);																				
 							return $a;																																		
