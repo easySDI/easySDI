@@ -1822,6 +1822,7 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+
 	
 	 if($version == "0.9996")
 	 {
@@ -1849,29 +1850,25 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
-	/**
-	 * Copy View files in Core component to allow  Menu Item Manger to find entries
-	 */
-	/*mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop', 0700);
-	mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl', 0700);
-	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml';
-	if (!copy($file, $newfile)) {
-		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-		return false;
-	}
-	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml';
-	if (!copy($file, $newfile)) {
-		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-		return false;
-	}
-	$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-	$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php';
-	if (!copy($file, $newfile)) {
-		$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-		return false;
-	}*/
+	 if($version == "0.9997")
+	 {
+		//Insert key config for caddy description length
+	 	$query = "insert  into #__easysdi_config (thekey, value) values('CADDY_DESCRIPTION_LENGTH','10')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	//Update component version
+		$version = "0.9998";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
+
 	/**
 	 * Menu creation
 	 */
