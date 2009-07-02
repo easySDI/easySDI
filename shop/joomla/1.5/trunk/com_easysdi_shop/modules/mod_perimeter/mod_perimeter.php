@@ -591,10 +591,25 @@ function checkBufferValue()
 		if (!$totalArea) $totalArea=0;
 		?>
 <div>
-<fieldset><legend><?php echo round($totalArea,$decimal_precision)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT") ;?></legend>
+
 
 		<?php
-			
+		$perimeter_id = $mainframe->getUserState('perimeter_id');
+		$queryPerimeter = "SELECT perimeter_name FROM #__easysdi_perimeter_definition WHERE id =$perimeter_id";
+		$db->setQuery($queryPerimeter);
+		$perimeter_name = $db->loadResult();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+		}
+		?>
+		<div>
+		<h4><?php 
+		echo $perimeter_name;
+		?></h4>
+		</div>
+		<?php
 		$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
 		if ($selSurfaceListName!=null){
 			foreach ($selSurfaceListName as $sel){
@@ -603,12 +618,23 @@ function checkBufferValue()
 
 			}
 		}
-		?></fieldset>
+		?>
+		</div>
+		<div>
+		<h5>
+		<?php
+		echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".round($totalArea,$decimal_precision)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL") ;
+		?></h5>
+		</div>
+		<div>
+		<h5>
 		<?php
 		if ($bufferValue>0){
-			echo JText::_("EASYSDI_BUFFER_VALUE")." ".$bufferValue." ".JText::_("EASYSDI_BUFFER_UNIT") ;
+			echo JText::_("EASYSDI_BUFFER_VALUE_LABEL")." ".$bufferValue." ".JText::_("EASYSDI_BUFFER_UNIT_LABEL") ;
 		}
-		?></div>
+		?>
+		</h5>
+		</div>
 		<?php
 	}
 }
