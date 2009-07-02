@@ -64,6 +64,7 @@ class displayManager{
 		}
 		else if ($type == "complete")
 		{
+			$xml = new DomDocument();
 			$xml = displayManager::getCSWresult();
 		}
 		else if ($type == "diffusion")
