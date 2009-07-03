@@ -138,7 +138,7 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-		document.getElementById('totalSurfaceDisplayed').value =  parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?> ); 		
+		document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> ); 		
 		removeSelection();
 	}
 	
@@ -769,7 +769,7 @@ function setAlpha(imageformat)
 	    	}
 	    	
 			document.getElementById('totalSurface').value =  parseFloat(featureArea );
-			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
+			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(parseFloat(featureArea )/1000000).toFixed(<?php echo $decimal_precision; ?> );    		
 	     
 	     	if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
 	     	{
@@ -787,7 +787,8 @@ function setAlpha(imageformat)
 			if (feature.geometry instanceof OpenLayers.Geometry.Point)
 			{
 	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
-			   	document.getElementById('totalSurfaceDisplayed').value =  parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?> );    		
+			   	document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+			   	    		
 			   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 				new Option(feature.geometry,feature.geometry);
 			}      
@@ -850,7 +851,7 @@ function setAlpha(imageformat)
 									//Remove the value							
 									document.getElementById("selectedSurface").remove(k);								
 									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-									document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
+									document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
 																									
 									found=k;																			
 								}            				
@@ -899,7 +900,7 @@ function setAlpha(imageformat)
 			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 			   		    		//Add the new value
 		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
+		            			document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
 		   		    
 			   		    	}
 			   		    }
@@ -910,7 +911,7 @@ function setAlpha(imageformat)
 			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 		   		    	//Add the new value
 		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            	document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value).toFixed(<?php echo $decimal_precision; ?>);
+		            	document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
 		   		    
 		   		    }
 		   		    
