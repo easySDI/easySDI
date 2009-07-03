@@ -518,10 +518,6 @@ class displayManager{
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
-		$file =fopen('c:\\test.xml', 'w');
-		fwrite($file, $cswResults->saveXML());
-		fclose($file);	
-		
 		$xpath = new DomXPath($cswResults);
 		if ($type == 'diffusion')
 		{
@@ -569,10 +565,8 @@ class displayManager{
 	function exportPdf(){
 		$type = JRequest::getVar('type', 'abstract');
 		$cswResults = new DomDocument();
-		/*if ($type == 'abstract')
-			$cswResults = displayManager::getCSWresult();
-		else*/
-			displayManager::getMetadata($cswResults);
+		
+		displayManager::getMetadata($cswResults);
 		
 		$processor = new xsltProcessor();
 		$style = new DomDocument();
@@ -582,25 +576,31 @@ class displayManager{
 
 		if ($type == 'abstract')
 		{
-			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl")){
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl"))
+			{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl");
-			}else{
+			}else
+			{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 			}
 		}
 		else if ($type == 'complete')
 		{
-			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
+			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl"))
+			{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
-			}else{
+			}else
+			{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 			}
 		}
 		else if ($type == 'diffusion')
 		{
-			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl")){
+			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl"))
+			{
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl");
-			}else{
+			}else
+			{
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
 			}
 		}
@@ -679,7 +679,6 @@ class displayManager{
 			require_once($bridge_url);
 			if ($fop_url )
 			{ 
-
 				$tmp = uniqid();
 				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
 				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
@@ -736,7 +735,8 @@ class displayManager{
 					    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 					    header('Pragma: public');
 					    header('Content-Length: ' . filesize($foptmp));
-					    readfile($foptmp);
+					    
+					    @readfile($foptmp);
 					    
 					    //fwrite($timer, "Après download PDF : ".date("H:i:s")."\n");
 					}
