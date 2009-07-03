@@ -499,6 +499,7 @@ class HTML_product {
 									
 								case "text":
 									if ($curProperty->mandatory == 0 ){
+										
 									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
 									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
 										
@@ -510,6 +511,7 @@ class HTML_product {
 									
 								case "textarea":
 									if ($curProperty->mandatory == 0 ){
+										
 									$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
 									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList2  );
 										
@@ -521,6 +523,7 @@ class HTML_product {
 								case "message":
 									if ($curProperty->mandatory == 0 )
 									{
+										
 										$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
 										$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList3  );
 										
