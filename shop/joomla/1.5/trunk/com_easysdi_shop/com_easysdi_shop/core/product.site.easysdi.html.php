@@ -68,6 +68,7 @@ class HTML_product{
 								    ORDER BY b.name");
 		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
 		
+		//List of partner with DIFFUSION right
 		$database->setQuery("SELECT a.partner_id AS value, 
 								   b.name AS text 
 								   FROM 
@@ -577,7 +578,7 @@ class HTML_product{
 		<?php
 		echo $tabs->endPanel();
 	
-		/* Faire autant d'onglets qu'il y a de tab associés à la métadonnée */
+		/* Faire autant d'onglets qu'il y a de tab associï¿½s ï¿½ la mï¿½tadonnï¿½e */
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id AND (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and  id = $rowProduct->metadata_standard_id)) group by a.tab_id " ;
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
@@ -594,7 +595,7 @@ class HTML_product{
 				<tr>
 					<td>
 						<?php
-							/* Afficher toutes les classes associées aux onglets */
+							/* Afficher toutes les classes associï¿½es aux onglets */
 							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where  is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) order by position" ;
 							
 							$database->setQuery($query);				 
@@ -682,7 +683,7 @@ class HTML_product{
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
 		$geoMD = new geoMetadata($cswResults);				 
 
-		// Compter les occurences de la balise gmd:fileIndentifier dans la métadonnée
+		// Compter les occurences de la balise gmd:fileIndentifier dans la mï¿½tadonnï¿½e
 		$count  = $geoMD->isXPathResultCount("//gmd:fileIdentifier");
 		if ($count == 0)
 		{
@@ -765,7 +766,7 @@ class HTML_product{
 		<?php
 		echo $tabs->endPanel();
 	
-		/* Faire autant d'onglets qu'il y a de tab associés à la métadonnée */
+		/* Faire autant d'onglets qu'il y a de tab associï¿½s ï¿½ la mï¿½tadonnï¿½e */
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id AND (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and  id = $rowProduct->metadata_standard_id)) group by a.tab_id " ;
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
@@ -788,7 +789,7 @@ class HTML_product{
 						<legend><?php echo JText::_($row->text); ?></legend>
 						
 					<?php 
-					/* Afficher toutes les classes associées aux onglets */
+					/* Afficher toutes les classes associï¿½es aux onglets */
 					$query = "SELECT c.id,c.name as name,c.description as description,c.iso_key as iso_key, c.type as type FROM #__easysdi_metadata_classes c,#__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) and c.id = a.class_id and a.tab_id = $row->tab_id" ;		
 					$database->setQuery($query);				 
 					$rowstab = $database->loadObjectList();		
@@ -798,7 +799,7 @@ class HTML_product{
 					//print_r($rowstab);
 					foreach ($rowstab as $rowtab)
 					{
-						/* Retrouver dans la métadonnée la balise correspondant à la classe qu'on veut éditer */
+						/* Retrouver dans la mï¿½tadonnï¿½e la balise correspondant ï¿½ la classe qu'on veut ï¿½diter */
 						$count  = $geoMD->isXPathResultCount("//".$rowtab->iso_key);
 						
 						for ($i=0 ;$i<$count;$i++)
@@ -808,7 +809,7 @@ class HTML_product{
 								<fieldset>
 									<legend><?php echo JText::_($rowtab->description); ?>
 										<?php 
-										/* Afficher la possibilité d'insérer un nouvel élément de ce type ou pas */
+										/* Afficher la possibilitï¿½ d'insï¿½rer un nouvel ï¿½lï¿½ment de ce type ou pas */
 										if ($rowtab->type == "class")
 										{ 
 										?>
