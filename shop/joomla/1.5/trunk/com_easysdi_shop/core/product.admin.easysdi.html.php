@@ -509,9 +509,20 @@ class HTML_product {
 									break;
 									
 								case "textarea":
-								if ($curProperty->mandatory == 0 ){
-									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
+									if ($curProperty->mandatory == 0 ){
+									$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList2  );
+										
+									}
+									?>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<?php
+									break;
+								case "message":
+									if ($curProperty->mandatory == 0 )
+									{
+										$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+										$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList3  );
 										
 									}
 									?>
