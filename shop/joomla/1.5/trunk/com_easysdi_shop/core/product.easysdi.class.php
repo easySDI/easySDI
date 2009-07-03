@@ -49,6 +49,7 @@ class product extends JTable
 	var $previewPassword = null;
 	var $metadata_internal=0;
 	var $metadata_external=0;
+	var $admin_partner_id=0;
 	
 	// Class constructor
 	function __construct( &$db )
