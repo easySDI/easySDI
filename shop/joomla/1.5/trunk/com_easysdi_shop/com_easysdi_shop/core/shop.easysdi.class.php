@@ -1294,14 +1294,14 @@ if (count($rows)>0){
 				$rowsValue = $db->loadObjectList();
 					
 				foreach ($rowsValue as $rowValue){
-					$selProduct = $mainframe->getUserState($row->code.'_text_property_'.$product->id);
+					$valueText = $mainframe->getUserState($row->code.'_text_property_'.$product->id);
 
-					if (count($selProduct)>0){
-						$selected = $selProduct[0];
+					if ($valueText){
+						$selected = $valueText;
 					}else{
 						$selected = $rowValue->val_trans;
 					}
-					echo "<input type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' >";
+					echo "<input  type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' value='".JText::_($selected)."' />";
 					break;
 				}
 
@@ -1326,15 +1326,46 @@ if (count($rows)>0){
 						$selected = $rowValue->val_trans;
 					}
 
-					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>$selected</textarea>";
+					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
+					break;
+				}
+
+				break;
+			case "message":
+				echo 	JText::_($row->translation);
+
+				$query="SELECT pvd.order as value_order, 
+							   pvd.text as value_text, 
+							   pvd.id as value, 
+							   pvd.translation as val_trans 
+					    FROM #__easysdi_product_property p 
+						    inner join #__easysdi_product_properties_values_definition pvd 
+						    on p.property_value_id=pvd.id 
+						    inner join #__easysdi_product_properties_definition pd 
+						    on pvd.properties_id=pd.id 
+					    where p.product_id=".$product->id." 
+						    and pd.published=1 
+						    and pd.id=".$row->id." 
+						order by value_order";
+				
+				$db->setQuery( $query );
+				$rowsValue = $db->loadObjectList();
+					
+				foreach ($rowsValue as $rowValue){
+					$selected = $rowValue->val_trans;
+					?>
+					<div>
+					<?php 
+					echo JText::_($selected);
+					?>
+					</div>
+					<?php 
 					break;
 				}
 
 				break;
 		}
 		echo "</li>";
-
-
 	}
 
 	//echo "</select>";
