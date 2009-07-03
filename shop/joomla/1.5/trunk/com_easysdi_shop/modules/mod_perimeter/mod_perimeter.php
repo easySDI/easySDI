@@ -214,7 +214,7 @@ if ($curstep == "2")
 	</tr>
 	<tr>
 		<td><?php echo JText::_("EASYSDI_BUFFER"); ?>
-		<input type="text" id="bufferValue"  value="<?php echo $mainframe->getUserState('bufferValue') ;?>" onchange="checkBufferValue()"></td>
+		<input type="text" id="bufferValue" size="10" value="<?php echo $mainframe->getUserState('bufferValue') ;?>" onchange="checkBufferValue()"><?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?></td>
 	</tr>
 </table>
 <br>
@@ -233,10 +233,9 @@ if ($curstep == "2")
 			$rowsSurfaceMin = $db->loadObjectList();
 			foreach( $rowsSurfaceMin as $surfaceMin )
 			{
-				echo JText::_("EASYSDI_SURFACE_MIN")." ".$surfaceMin->surface_min." ".JText::_("EASYSDI_SURFACE_MIN_UNIT")."<br>";
+				echo JText::_("EASYSDI_SURFACE_MIN")." ".($surfaceMin->surface_min/1000000)." ".JText::_("EASYSDI_SURFACE_MIN_UNIT_LABEL")."<br>";
 				?>
-<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled"
-	value="<?php echo $surfaceMin->surface_min; ?>">
+				<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
 				<?php
 
 			}
@@ -245,10 +244,9 @@ if ($curstep == "2")
 			$rowsSurfaceMax = $db->loadObjectList();
 			foreach( $rowsSurfaceMax as $surfaceMax )
 			{
-				echo JText::_("EASYSDI_SURFACE_MAX")." ".$surfaceMax->surface_max." ".JText::_("EASYSDI_SURFACE_MAX_UNIT")."<br>";
+				echo JText::_("EASYSDI_SURFACE_MAX")." ".($surfaceMax->surface_max/1000000)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL")."<br>";
 				?>
-<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled"
-	value="<?php echo $surfaceMax->surface_max; ?>">
+				<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
 				<?php
 			}
 
@@ -259,7 +257,7 @@ if ($curstep == "2")
 
 			echo JText::_("EASYSDI_SURFACE_SELECTED");?>
 <input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
-<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea, $decimal_precision); ?>">
+<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea/1000000, $decimal_precision); ?>">
 <br>
 <select multiple="multiple" size="10" id="selectedSurface"  	onChange="changeSelectedSurface()">
 	<?php
@@ -377,7 +375,7 @@ function checkBufferValue()
     			featureArea = 0;
     		}
 			document.getElementById('totalSurface').value =  parseFloat(featureArea );   
-			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(featureArea ).toFixed(<?php echo $decimal_precision; ?> );    		
+			document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(featureArea )/1000000).toFixed(<?php echo $decimal_precision; ?> );    		
 		}
 		
 	}
