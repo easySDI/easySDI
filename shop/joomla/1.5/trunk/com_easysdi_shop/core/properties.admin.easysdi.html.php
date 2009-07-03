@@ -101,6 +101,7 @@ class HTML_properties {
 								<option value="cbox" <?php if( $rowProperties->type_code == 'cbox' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_CBOX"); ?></option>
 								<option value="text" <?php if( $rowProperties->type_code == 'text' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT"); ?></option>
 								<option value="textarea" <?php if( $rowProperties->type_code == 'textarea' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT_AREA"); ?></option>
+								<option value="message" <?php if( $rowProperties->type_code == 'message' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_MESSAGE"); ?></option>
 								</select>
 								</td>
 							</tr>
