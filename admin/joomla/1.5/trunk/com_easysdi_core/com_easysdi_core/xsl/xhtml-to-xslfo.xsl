@@ -176,8 +176,8 @@
           <xsl:when test="$page-size='ltr'">
             <fo:simple-page-master master-name="first"
               page-height="11in" page-width="8.5in"
-              margin-right="72pt" margin-left="72pt"
-              margin-bottom="36pt" margin-top="72pt">
+              margin-right="36pt" margin-left="36pt"
+              margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-bottom="50pt"/>
               <fo:region-after region-name="ra-right" 
                 extent="25pt"/>
@@ -185,7 +185,7 @@
             
             <fo:simple-page-master master-name="left"
               page-height="11in" page-width="8.5in"
-              margin-right="72pt" margin-left="72pt" 
+              margin-right="36pt" margin-left="36pt" 
               margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-top="50pt" 
                 margin-bottom="50pt"/>
@@ -197,7 +197,7 @@
             
             <fo:simple-page-master master-name="right"
               page-height="11in" page-width="8.5in"
-              margin-right="72pt" margin-left="72pt" 
+              margin-right="36pt" margin-left="36pt" 
               margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-top="50pt" 
                 margin-bottom="50pt"/>
@@ -215,8 +215,8 @@
           <xsl:otherwise>
             <fo:simple-page-master master-name="first"
               page-height="29.7cm" page-width="21cm"
-              margin-right="72pt" margin-left="72pt"
-              margin-bottom="36pt" margin-top="72pt">
+              margin-right="36pt" margin-left="36pt"
+              margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-top="1.5cm" 
                 margin-bottom="1.5cm"/>
               <fo:region-after region-name="ra-right" 
@@ -225,7 +225,7 @@
             
             <fo:simple-page-master master-name="left"
               page-height="29.7cm" page-width="21cm"
-              margin-right="72pt" margin-left="72pt" 
+              margin-right="36pt" margin-left="36pt" 
               margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-top="1.5cm" 
                 margin-bottom="1.5cm"/>
@@ -237,7 +237,7 @@
             
             <fo:simple-page-master master-name="right"
               page-height="29.7cm" page-width="21cm"
-              margin-right="72pt" margin-left="72pt" 
+              margin-right="36pt" margin-left="36pt" 
               margin-bottom="36pt" margin-top="36pt">
               <fo:region-body margin-top="1.5cm" 
                 margin-bottom="1.5cm"/>
@@ -298,14 +298,11 @@
               <fo:table-body>
                 <fo:table-row>
                   <fo:table-cell>
-                    <fo:block text-align="start">
-                      Easysdi!
-                    </fo:block>
+                    <fo:block text-align="start"></fo:block>
                   </fo:table-cell>
                   <fo:table-cell>
                     <fo:block text-align="end" font-weight="bold" 
-                      font-family="monospace">
-                      Easysdi!
+                      font-family="helvetica">
                     </fo:block>
                   </fo:table-cell>
                 </fo:table-row>
@@ -346,13 +343,11 @@
                 <fo:table-row>
                   <fo:table-cell>
                     <fo:block text-align="start" font-weight="bold" 
-                      font-family="monospace">
-                      Easysdi!
+                      font-family="helvetica">
                     </fo:block>
                   </fo:table-cell>
                   <fo:table-cell>
                     <fo:block text-align="end">
-                      Easysdi!
                     </fo:block>
                   </fo:table-cell>
                 </fo:table-row>
@@ -444,7 +439,7 @@
     =============================================== -->
 
   <xsl:template match="address">
-    <fo:block font-style="italic" space-after="12pt">
+    <fo:block font-style="italic" space-after="10pt">
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
   </xsl:template>
@@ -478,7 +473,7 @@
 
   <xsl:template match="blockquote">
     <fo:block start-indent="1.5cm" end-indent="1.5cm"
-      space-after="12pt">
+      space-after="10pt">
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
   </xsl:template>
@@ -497,18 +492,18 @@
     area (xsl-region-body).
     =============================================== -->
         
-    <fo:flow flow-name="xsl-region-body">
+    <fo:flow flow-name="xsl-region-body">    
       <xsl:apply-templates select="/html/head/title"/>
-      <fo:block space-after="12pt" line-height="17pt" 
-        font-size="14pt" text-align="center">
-        Easysdi!
+      <!-- <fo:block space-after="12pt" line-height="17pt" 
+        font-size="10pt" text-align="center">
+        __ref_title$s
       </fo:block>
       <fo:block space-after="24pt" line-height="17pt" 
-        font-size="14pt" text-align="center" font-weight="bold" 
-        font-family="monospace">
-        Easysdi!
+        font-size="10pt" text-align="center" font-weight="bold" 
+        font-family="helvetica">
+        __ref_supplier$s
       </fo:block>
-          
+      -->
   <!-- ============================================
     Now we call the template to build the table
     of contents.
@@ -522,9 +517,9 @@
     processes the <body> element in turn processes
     everything that's inside it.
     =============================================== -->
-
+    
       <xsl:apply-templates select="*|text()"/>
-
+      
   <!-- ============================================
     We put an ID at the end of the document so we 
     can do "Page x of y" numbering.
@@ -578,11 +573,11 @@
   </xsl:template>
 
   <!-- ============================================
-    We render <code> inline in a monospaced font.
+    We render <code> inline in a helvetica font.
     =============================================== -->
 
   <xsl:template match="code">
-    <fo:inline font-family="monospace">
+    <fo:inline font-family="helvetica">
       <xsl:apply-templates select="*|text()"/>
     </fo:inline>
   </xsl:template>
@@ -629,7 +624,7 @@
             <xsl:text>3pt</xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>12pt</xsl:text>
+            <xsl:text>10pt</xsl:text>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
@@ -732,33 +727,33 @@
               <xsl:text>30%</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '1'">
-              <xsl:text>8pt</xsl:text>
+              <xsl:text>7pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '2'">
-              <xsl:text>10pt</xsl:text>
+              <xsl:text>9pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '3'">
-              <xsl:text>12pt</xsl:text>
+              <xsl:text>10pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '4'">
-              <xsl:text>14pt</xsl:text>
+              <xsl:text>12pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '5'">
-              <xsl:text>18pt</xsl:text>
+              <xsl:text>16pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '6'">
-              <xsl:text>24pt</xsl:text>
+              <xsl:text>20pt</xsl:text>
             </xsl:when>
             <xsl:when test="@size = '7'">
-              <xsl:text>36pt</xsl:text>
+              <xsl:text>30pt</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>12pt</xsl:text>
+              <xsl:text>10pt</xsl:text>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise> 
-          <xsl:text>12pt</xsl:text>
+          <xsl:text>10pt</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -782,9 +777,9 @@
     <fo:block break-before="page">
       <fo:leader leader-pattern="rule"/>
     </fo:block>
-    <fo:block font-size="28pt" line-height="32pt"
+    <fo:block font-size="20pt" line-height="25pt"
       keep-with-next="always"
-      space-after="22pt" font-family="serif">
+      space-after="15pt" font-family="helvetica">
       <xsl:attribute name="id">
         <xsl:choose>
           <xsl:when test="@id">
@@ -809,9 +804,9 @@
     =============================================== -->
 
   <xsl:template match="h2">
-    <fo:block font-size="24pt" line-height="28pt"
-      keep-with-next="always" space-after="18pt"
-      font-family="serif">
+    <fo:block font-size="17pt" line-height="23pt"
+      keep-with-next="always" space-after="13pt"
+      font-family="helvetica">
       <xsl:attribute name="id">
         <xsl:choose>
           <xsl:when test="@id">
@@ -831,9 +826,9 @@
     =============================================== -->
 
   <xsl:template match="h3">
-    <fo:block font-size="21pt" line-height="24pt"
-      keep-with-next="always" space-after="14pt"
-      font-family="serif">
+    <fo:block font-size="15pt" line-height="20pt"
+      keep-with-next="always" space-after="10pt"
+      font-family="helvetica">
       <xsl:attribute name="id">
         <xsl:choose>
           <xsl:when test="@id">
@@ -855,9 +850,9 @@
     =============================================== -->
 
   <xsl:template match="h4">
-    <fo:block font-size="18pt" line-height="21pt"
-      keep-with-next="always" space-after="12pt"
-      font-family="serif">
+    <fo:block font-size="12pt" line-height="18pt"
+      keep-with-next="always" space-after="9pt"
+      font-family="helvetica">
       <xsl:attribute name="id">
         <xsl:choose>
           <xsl:when test="@id">
@@ -878,9 +873,9 @@
     =============================================== -->
 
   <xsl:template match="h5">
-    <fo:block font-size="16pt" line-height="19pt"
-      keep-with-next="always" space-after="12pt"
-      font-family="serif" text-decoration="underline">
+    <fo:block font-size="10pt" line-height="16pt"
+      keep-with-next="always" space-after="5pt"
+      font-family="helvetica" text-decoration="underline">
       <xsl:attribute name="id">
         <xsl:choose>
           <xsl:when test="@id">
@@ -901,9 +896,9 @@
     =============================================== -->
 
   <xsl:template match="h6">
-    <fo:block font-size="14pt" line-height="17pt"
-      keep-with-next="always" space-after="12pt"
-      font-family="serif" font-style="italic"
+    <fo:block font-size="10pt" line-height="14pt"
+      keep-with-next="always" space-after="9pt"
+      font-family="helvetica" font-style="italic"
       text-decoration="underline">
       <xsl:attribute name="id">
         <xsl:choose>
@@ -951,7 +946,7 @@
     =============================================== -->
 
   <xsl:template match="img">
-    <fo:block space-after="12pt">
+    <fo:block space-after="10pt">
       <fo:external-graphic src="{@src}">
         <xsl:if test="@width">
           <xsl:attribute name="width">
@@ -987,7 +982,7 @@
     =============================================== -->
 
   <xsl:template match="kbd">
-    <fo:inline font-family="monospace" font-size="110%">
+    <fo:inline font-family="helvetica" font-size="110%">
       <xsl:apply-templates select="*|text()"/>
     </fo:inline>
   </xsl:template>
@@ -1104,8 +1099,8 @@
     =============================================== -->
 
   <xsl:template match="p">
-    <fo:block font-size="12pt" line-height="15pt"
-      space-after="12pt">
+    <fo:block font-size="10pt" line-height="14pt"
+      space-after="5pt">
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
   </xsl:template>
@@ -1117,7 +1112,7 @@
     =============================================== -->
 
   <xsl:template match="pre">
-    <fo:block font-family="monospace"
+    <fo:block font-family="helvetica"
       white-space-collapse="false" wrap-option="no-wrap">
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
@@ -1129,7 +1124,7 @@
     =============================================== -->
 
   <xsl:template match="samp">
-    <fo:inline font-family="monospace" font-size="110%">
+    <fo:inline font-family="helvetica" font-size="110%">
       <xsl:apply-templates select="*|text()"/>
     </fo:inline>
   </xsl:template>
@@ -1211,8 +1206,8 @@
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
-          <fo:table-column column-width="200pt"/>
-          <fo:table-column column-width="200pt"/>
+          <fo:table-column column-width="150pt"/>
+          <fo:table-column column-width="350pt"/>
         </xsl:otherwise>
       </xsl:choose>
       <fo:table-body>
@@ -1321,7 +1316,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
-      <fo:block text-align="{$align}">
+      <fo:block font-size="10pt" text-align="{$align}">
         <xsl:apply-templates select="*|text()"/>
       </fo:block>
     </fo:table-cell>
@@ -1383,8 +1378,8 @@
     =============================================== -->
 
   <xsl:template match="title">
-    <fo:block space-after="18pt" line-height="27pt" 
-      font-size="24pt" font-weight="bold" text-align="center">
+    <fo:block space-after="18pt" line-height="22pt" 
+      font-size="21pt" font-weight="bold" text-align="center">
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
   </xsl:template>
@@ -1406,7 +1401,7 @@
     =============================================== -->
 
   <xsl:template match="tt">
-    <fo:inline font-family="monospace">
+    <fo:inline font-family="helvetica">
       <xsl:apply-templates select="*|text()"/>
     </fo:inline>
   </xsl:template>
@@ -1512,24 +1507,24 @@
 
   <xsl:template name="toc">
     <fo:block>
-      <fo:leader leader-pattern="rule" space-after="18pt"/>
+      <fo:leader leader-pattern="rule" space-after="16pt"/>
     </fo:block>
     <fo:block space-after="12pt" id="TableOfContents" 
-      line-height="21pt" font-size="18pt" text-align="start">
+      line-height="19pt" font-size="15pt" text-align="start">
       Table of Contents
     </fo:block>
-    <fo:block line-height="11pt" font-size="8pt" 
+    <!-- <fo:block line-height="11pt" font-size="8pt" 
       space-after="6pt">
       If you're viewing this document online, you can 
       click any of the topics below to link directly to 
       that section.
-    </fo:block>
+    </fo:block> -->
     <xsl:for-each select="/html/body//h1 |
                           /html/body//h2 | 
                           /html/body//h3 |
                           /html/body//h4">
       <fo:block text-align-last="justify" line-height="17pt"
-        font-size="14pt" space-after="3pt" text-align="start"
+        font-size="10pt" space-after="3pt" text-align="start"
         text-indent="-1cm">
         <xsl:attribute name="start-indent">
           <xsl:choose>
@@ -1585,6 +1580,7 @@
       </fo:block>
     </xsl:for-each>
     <!--  Saut de page -->
+    <fo:block break-after='page'/>
   </xsl:template>
 
   <!-- ============================================

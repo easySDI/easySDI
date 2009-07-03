@@ -81,6 +81,10 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 		<xsl:copy-of select="." />
 	</xsl:template>
 	
+	<xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation">
+		<xsl:copy-of select="." />
+	</xsl:template>
+	
 	
 	<!-- Enlever toutes les balises de haut niveau qui ne contiennent pas des données qui nous intéressent -->
 	<xsl:template match="gmd:fileIdentifier">
@@ -101,8 +105,6 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	</xsl:template>
 	
 	<!-- Enlever toutes les balises de "gmd:identificationInfo" qui ne contiennent pas des données qui nous intéressent -->
-	<xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation">
-	</xsl:template>
 	<xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance">
 	</xsl:template>
 	<xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints">
