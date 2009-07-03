@@ -139,27 +139,7 @@ class ADMIN_product {
 		{
 			$rowProduct->load( $id );
 		}
-		/*$product = JRequest::getVar('product_id', 0 );
 
-		if($id == '0' && $product != '0')
-		{
-		$rowProduct->load( $product );
-		}
-		else if ($id == '0' && $product == '0'){
-		$rowProduct->creation_date =date('d.m.Y H:i:s');
-		$rowProduct->metadata_id = helper_easysdi::getUniqueId();
-		$partner = new partnerByUserId($database);
-		$partner->load($user->id);
-		$rowProduct->partner_id = $partner->partner_id;
-		if(userManager::hasRight($partner->partner_id,"METADATA"))
-		{
-		$rowProduct->metadata_partner_id = $partner->partner_id;
-		}
-		}
-		else
-		{
-		$rowProduct->load( $id );
-		}*/
 
 		$rowProduct->update_date = date('d.m.Y H:i:s');
 
