@@ -536,10 +536,10 @@ class HTMLadmin_cpanel {
 				<tr>
 				<td class="ortitle4">
 				<?php
-						$queryProperty = "SELECT translation FROM #__easysdi_product_properties_definition WHERE code = '$rowPropertyCode->code'";
+						$queryProperty = "SELECT translation, type_code FROM #__easysdi_product_properties_definition WHERE code = '$rowPropertyCode->code'";
 						$db->setQuery($queryProperty);
-						$rowProperty = $db->loadResult();
-						echo JText::_($rowProperty);
+						$rowProperty = $db->loadObject();
+						echo JText::_($rowProperty->translation);
 				//echo JText::_($rowPropertyCode->code);
 				?>
 				</td>
@@ -555,7 +555,14 @@ class HTMLadmin_cpanel {
 					<?php 
 					if($rowProductProperties->property_id == 0)
 					{	
-						echo $rowProductProperties->property_value;
+						if($rowProperty->type_code == 'message')
+						{
+							echo JText::_($rowProductProperties->property_value);
+						}
+						else
+						{
+							echo $rowProductProperties->property_value;
+						}
 					}
 					else
 					{
