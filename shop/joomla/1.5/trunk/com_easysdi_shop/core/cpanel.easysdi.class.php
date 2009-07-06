@@ -30,11 +30,65 @@ class order extends JTable
 	var $response_send=null;
 	var $user_id=null;
 	var $buffer=null;
+	var $order_date=null;
 
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_order', 'order_id', $db ) ;    		
+	}
+
+}
+
+class orderProductListByOrder extends JTable
+{	
+	var $id=null;	
+	var $product_id=null;
+	var $order_id=null;
+	var $status=null;
+	var $data=null;
+	var $filename= null;
+	var $remark=null;
+	var $price=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_order_product_list', 'order_id', $db ) ;    		
+	}
+
+}
+
+
+class orderProductPerimeterByOrder extends JTable
+{	
+	var $id=null;	
+	var $perimeter_id=null;
+	var $order_id=null;
+	var $value = null;
+	var $text=null;
+	
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_order_product_perimeters', 'order_id', $db ) ;    		
+	}
+
+}
+
+class orderProductPropertiesByOrderList extends JTable
+{	
+	var $id=null;	
+	var $order_product_list_id=null;
+	var $property_id = null;
+	var $property_value=null;
+	var $code=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__easysdi_order_product_properties', 'order_product_list_id', $db ) ;    		
 	}
 
 }
