@@ -212,6 +212,7 @@ class ADMIN_cpanel {
 				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";*/
 				
 		$query .= $filter;
+		$query .= "order by responseDate";
 
 		$queryCount = "select count(*) 
 						from #__easysdi_order o 
@@ -228,6 +229,7 @@ class ADMIN_cpanel {
 						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
 						";*/
 		$queryCount .= $filter;
+
 		
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
