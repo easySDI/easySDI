@@ -104,7 +104,7 @@ case "proxy":
 		break;*/
 	case "deleteOrder":
 		ADMIN_cpanel::deleteOrder($cid,$option);
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		//$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
 	case "saveOrder":
 		ADMIN_cpanel::saveOrder($option);
