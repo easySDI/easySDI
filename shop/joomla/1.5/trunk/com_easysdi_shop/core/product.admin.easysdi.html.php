@@ -462,7 +462,7 @@ class HTML_product {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
 
-				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code,mandatory FROM #__easysdi_product_properties_definition b order by b.order";
+				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code,mandatory FROM #__easysdi_product_properties_definition b where published =1 order by b.order";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) {						
