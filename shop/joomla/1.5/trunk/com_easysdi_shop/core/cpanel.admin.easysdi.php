@@ -138,20 +138,66 @@ class ADMIN_cpanel {
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
 		
-		$queryPartner = "select p.partner_id as partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id=a.partner_id where a.type_id=1 order by name";
+		//$queryPartner = "select p.partner_id as partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id=a.partner_id where a.type_id=1 order by name";
+		$queryPartner = "select p.partner_id as partner_id, u.name AS name 
+						 from #__users u, #__easysdi_community_partner p 
+						 inner join #__easysdi_community_address a on p.partner_id=a.partner_id ,
+						 #__easysdi_order o
+						 where a.type_id=1 
+						 AND u.id = p.user_id
+						 AND o.user_id = u.id
+						 group by name order by name ";
 		$database->setQuery($queryPartner);
 		$partnerFilter = $database->loadObjectList();
 		
-		$querySupplier = "SELECT p.partner_id AS partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name FROM #__easysdi_community_partner p INNER JOIN	#__easysdi_community_address a ON p.partner_id = a.partner_id INNER JOIN	#__users u ON p.user_id = u.id where a.type_id=1 AND p.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT')) ORDER BY u.name";
+		//$querySupplier = "SELECT p.partner_id AS partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name FROM #__easysdi_community_partner p INNER JOIN	#__easysdi_community_address a ON p.partner_id = a.partner_id INNER JOIN	#__users u ON p.user_id = u.id where a.type_id=1 AND p.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT')) ORDER BY u.name";
+		$querySupplier = "SELECT p.partner_id AS partner_id, u.name AS name 
+							FROM #__easysdi_community_partner p 
+							INNER JOIN	#__easysdi_community_address a ON p.partner_id = a.partner_id 
+							INNER JOIN	#__users u ON p.user_id = u.id,
+							#__easysdi_product prd 
+							where a.type_id=1 AND p.partner_id 
+							IN (SELECT partner_id FROM #__easysdi_community_actor 
+								WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT'))
+							AND prd.partner_id = p.partner_id
+							AND prd.orderable = 1
+							AND prd.published = 1
+							group by name ORDER BY u.name";
+		$database->setQuery($querySupplier);
 		$database->setQuery($querySupplier);
 		$supplierFilter = $database->loadObjectList();
 		
-		$queryProduct = "select * from #__easysdi_product ";
+		$queryProduct = "select * from #__easysdi_product WHERE orderable = 1 and published = 1 order by data_title";
 		$database->setQuery($queryProduct);
 		$productFilter = $database->loadObjectList();
 		
-		//$query = "select o.*, sl.code, sl.translation, p.partner_id as partner_id, p.partner_acronym as partner_acronym, tp.partner_id as thirdparty_id, tp.partner_acronym as thirdparty_acronym from #__easysdi_order o inner join #__easysdi_order_status_list sl on o.status=sl.id inner join #__easysdi_community_partner p on o.provider_id=p.partner_id inner join #__easysdi_community_partner tp on o.third_party=tp.partner_id";
+//		$query = "select o.*, 
+//						 sl.code, 
+//						 sl.translation, 
+//						 p.partner_id as partner_id, 
+//						 p.partner_acronym as partner_acronym, 
+//						 tp.partner_id as thirdparty_id, 
+//						 tp.partner_acronym as thirdparty_acronym 
+//						 from #__easysdi_order o 
+//						 inner join #__easysdi_order_status_list sl on o.status=sl.id 
+//						 inner join #__easysdi_community_partner p on o.provider_id=p.partner_id 
+//						 inner join #__easysdi_community_partner tp on o.third_party=tp.partner_id";
 		$query = "select distinct(o.order_id), 
+							prod.partner_id as supplier, 
+							o.*, 
+							o.order_date as orderDate, 
+							o.response_date as responseDate, 
+							sl.code, 
+							sl.translation as status_translation, 
+							tl.translation as type_translation 
+				 from #__easysdi_order o 
+				 inner join #__easysdi_order_status_list sl on o.status=sl.id 
+				 inner join #__easysdi_order_type_list tl on o.type=tl.id 
+				 left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
+				 left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
+				 left outer join #__easysdi_product prod on opl.product_id=prod.id
+				 ";
+		/*$query = "select distinct(o.order_id), 
 						 
 						 o.*, 
 						 o.order_date as orderDate, 
@@ -163,7 +209,7 @@ class ADMIN_cpanel {
 				inner join #__easysdi_order_status_list sl on o.status=sl.id 
 				inner join #__easysdi_order_type_list tl on o.type=tl.id 
 				 
-				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";
+				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";*/
 				
 		$query .= $filter;
 		
@@ -171,9 +217,16 @@ class ADMIN_cpanel {
 						from #__easysdi_order o 
 						inner join #__easysdi_order_status_list sl on o.status=sl.id 
 						inner join #__easysdi_order_type_list tl on o.type=tl.id 
+						left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
+						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
+						left outer join #__easysdi_product prod on opl.product_id=prod.id";
+		/*$queryCount = "select count(*) 
+						from #__easysdi_order o 
+						inner join #__easysdi_order_status_list sl on o.status=sl.id 
+						inner join #__easysdi_order_type_list tl on o.type=tl.id 
 						 
 						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
-						";
+						";*/
 		$queryCount .= $filter;
 		
 		$database->setQuery($queryCount);
