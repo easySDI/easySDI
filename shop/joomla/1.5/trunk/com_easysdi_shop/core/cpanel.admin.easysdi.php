@@ -183,7 +183,7 @@ class ADMIN_cpanel {
 //						 inner join #__easysdi_community_partner p on o.provider_id=p.partner_id 
 //						 inner join #__easysdi_community_partner tp on o.third_party=tp.partner_id";
 		$query = "select distinct(o.order_id), 
-							prod.partner_id as supplier, 
+						 
 							o.*, 
 							o.order_date as orderDate, 
 							o.response_date as responseDate, 
@@ -212,7 +212,7 @@ class ADMIN_cpanel {
 				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";*/
 				
 		$query .= $filter;
-		
+
 		$queryCount = "select count(*) 
 						from #__easysdi_order o 
 						inner join #__easysdi_order_status_list sl on o.status=sl.id 
@@ -305,21 +305,47 @@ function sendOrder(){
 		}
 		foreach( $cid as $id )
 		{
-			$Order = new Order( $database );
+			$Order = new order( $database );
 			$Order->load( $id );
 
-			if ($order_id == 0){
+			if ($Order->order_id == 0)
+			{
 				echo "<div class='alert'>";			
 				echo JText::_("EASYSDI_DELETE_ORDER_MSG").$Order->id;
 				echo "</div>";
-			}else {
-				if (!$Order->delete()) {
+			}
+			else 
+			{
+				if (!$Order->delete()) 
+				{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listOrders" );
+				}
+				
+				$OrderProductList = new orderProductListByOrder($database);
+				$OrderProductList->load($id);
+				foreach($OrderProductList as $OrderProduct)
+				{
+					$orderProductProperties = new orderProductPropertiesByOrderList($database);
+					$orderProductProperties->load($OrderProduct->id);
+					if(!$orderProductProperties->delete())
+					{
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+				}
+				if(!$OrderProductList->delete())
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				
+				$OrderProductPerimeters = new orderProductPerimeterByOrder($database);
+				$OrderProductPerimeters->load($id);
+				if(!$OrderProductPerimeters->delete())
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
 			}												
 		}
-
+		
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 	}
 	
