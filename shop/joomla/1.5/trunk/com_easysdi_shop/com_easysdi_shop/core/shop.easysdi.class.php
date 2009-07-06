@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
-/*foreach($_POST as $key => $val) 
-echo '$_POST["'.$key.'"]='.$val.'<br />';*/
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -1354,10 +1354,11 @@ if (count($rows)>0){
 				foreach ($rowsValue as $rowValue){
 					$selected = $rowValue->val_trans;
 					?>
-					<div>
+					<div  >
 					<?php 
 					echo JText::_($selected);
 					?>
+					<input type='hidden'  name='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' id='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' value='<?php echo $selected;?>'></input>
 					</div>
 					<?php 
 					break;
@@ -1856,6 +1857,20 @@ if (count($rows)>0){
 							}
 						}
 						
+						$productProperties  = $mainframe->getUserState($row->code."_message_property_".$product_id);
+						if ($productProperties != '')
+						{
+							$mainframe->setUserState($row->code.'_message_property_'.$product_id,null);
+							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
+							$db->setQuery($query );
+							if (!$db->query()) 
+							{
+								echo "<div class='alert'>";
+								echo $db->getErrorMsg();
+								echo "</div>";
+								exit;
+							}
+						}
 						
 						$productProperties  = $mainframe->getUserState($row->code."_textarea_property_".$product_id);
 						print_r($productProperties);
@@ -2072,26 +2087,26 @@ if (count($rows)>0){
 				$db->setQuery( $query );
 				$rows = $db->loadObjectList();
 					
-					foreach($rows as $row){
-				
-				
-				$property=	JRequest::getVar($row->code."_text_property_$id", '' );
-				$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
-
-				
-				$property=	JRequest::getVar($row->code."_textarea_property_$id", array() );
-				$mainframe->setUserState($row->code.'_textarea_property_'.$id,$property);
-
-				$property=	JRequest::getVar($row->code."_list_property_$id", array() );
-				$mainframe->setUserState($row->code.'_list_property_'.$id,$property);
-
-
-				$property=	JRequest::getVar($row->code."_cbox_property_$id", array() );
-				$mainframe->setUserState($row->code.'_cbox_property_'.$id,$property);
-
-				$property=	JRequest::getVar($row->code."_mlist_property_$id", array() );
-				$mainframe->setUserState($row->code.'_mlist_property_'.$id,$property);
-					}				 
+				foreach($rows as $row)
+				{
+					$property=	JRequest::getVar($row->code."_text_property_$id", '' );
+					$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
+					
+					$property=	JRequest::getVar($row->code."_message_property_$id", '' );
+					$mainframe->setUserState($row->code.'_message_property_'.$id,$property);
+					
+					$property=	JRequest::getVar($row->code."_textarea_property_$id", array() );
+					$mainframe->setUserState($row->code.'_textarea_property_'.$id,$property);
+	
+					$property=	JRequest::getVar($row->code."_list_property_$id", array() );
+					$mainframe->setUserState($row->code.'_list_property_'.$id,$property);
+	
+					$property=	JRequest::getVar($row->code."_cbox_property_$id", array() );
+					$mainframe->setUserState($row->code.'_cbox_property_'.$id,$property);
+	
+					$property=	JRequest::getVar($row->code."_mlist_property_$id", array() );
+					$mainframe->setUserState($row->code.'_mlist_property_'.$id,$property);
+				}				 
 				 
 			}
 
@@ -2111,8 +2126,8 @@ if (count($rows)>0){
 			$mainframe->setUserState('order_type',$order_type );
 
 			$user = JFactory::getUser();
-			if ($user->guest){
-
+			if ($user->guest && JRequest::getVar('step') > 4)
+			{
 				$options=array();
 				$credentials = array();
 				$credentials['username'] = JRequest::getVar('user');
@@ -2126,7 +2141,6 @@ if (count($rows)>0){
 					echo $error->getMessage();
 					echo "</div>";
 			 }
-
 			}
 		}
 		
