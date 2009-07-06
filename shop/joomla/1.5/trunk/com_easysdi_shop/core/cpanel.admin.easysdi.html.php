@@ -130,7 +130,7 @@ class HTMLadmin_cpanel {
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_DATE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_RESPONSE_DATE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_PARTNER'); ?></th>
-	<th class='title'><?php echo JText::_('EASYSDI_ORDER_PROVIDER'); ?></th>
+	<!-- <th class='title'><?php echo JText::_('EASYSDI_ORDER_PROVIDER'); ?></th>-->
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_PRODUCT'); ?></th>
 	<!-- <th><?php echo JText::_('EASYSDI_ORDER_ARCHIVED'); ?></th> -->
 	</tr>
@@ -154,10 +154,14 @@ class HTMLadmin_cpanel {
 			<td><?php if ($row->responseDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->responseDate));?></td>
 			<?php 
 		
-				$query = "select CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id = a.partner_id WHERE p.user_id = ".$row->user_id ." and a.type_id=1" ;
+				$query = "select u.name AS name 
+				from #__users u , #__easysdi_community_partner p 
+				inner join #__easysdi_community_address a on p.partner_id = a.partner_id 
+				WHERE p.user_id = ".$row->user_id ." and a.type_id=1 and u.id = p.user_id" ;
 				$database->setQuery($query);				 
 		 	?>
 		 	<td><?php echo $database->loadResult(); ?></td>
+		 	<!--
 			<?php 
 		
 				$query = "select CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_address a inner join #__easysdi_product p on a.partner_id = p.partner_id inner join #__easysdi_order_product_list pl on p.id=pl.product_id WHERE pl.order_id = ".$row->order_id." and a.type_id=1" ;
@@ -172,6 +176,7 @@ class HTMLadmin_cpanel {
 					$partners="";
 		 	?>
 		 	<td><?php echo $partners; ?></td>
+			-->
 			<?php 
 		
 		
