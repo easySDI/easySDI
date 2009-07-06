@@ -174,28 +174,33 @@ class displayManager{
 			$doc .= '<?xml version="1.0"?>';
 			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
-			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
+			
+			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef ,
+						#__easysdi_product_properties_definition.translation as PropTranslation
 						from #__easysdi_product_properties_definition 
 						INNER JOIN 
-						(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+						(select property_value_id, #__easysdi_product_properties_values_definition.text,
+								properties_id 
 								from #__easysdi_product_property 
 								INNER JOIN #__easysdi_product_properties_values_definition 
 								ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
 	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
-	 					ON #__easysdi_product_properties_definition.id=T.properties_id";
+	 					ON #__easysdi_product_properties_definition.id=T.properties_id
+	 					WHERE #__easysdi_product_properties_definition.published = 1 ";
 			
 			$database->setQuery($query);
 			$rows = $database->loadObjectList();		
 			foreach ($rows as $row)
 			{
+				$valueProp = JText::_($row->PropTranslation);
+				$doc .= "<Property><PropertyName>$valueProp</PropertyName>";
 				
-				$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
 				
-				
-				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.text as ValueDef 
+				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
 						  from #__easysdi_product_properties_definition 
 						  INNER JOIN 
-						  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
+						  (select property_value_id, #__easysdi_product_properties_values_definition.text,
+						  #__easysdi_product_properties_values_definition.translation,properties_id 
 						 	from #__easysdi_product_property 
 							INNER JOIN #__easysdi_product_properties_values_definition 
 						 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
@@ -207,7 +212,8 @@ class displayManager{
 				$results = $database->loadObjectList();
 				foreach ($results as $result)
 				{
-					$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
+					$value = JText::_($result->ValueDef);
+					$doc.="<PropertyValue><value>$value</value></PropertyValue>";
 				}
 				
 				$doc.= "</Property>";
@@ -295,7 +301,7 @@ class displayManager{
 			$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
 			
 			
-			$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.text as ValueDef 
+			$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
 					  from #__easysdi_product_properties_definition 
 					  INNER JOIN 
 					  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
