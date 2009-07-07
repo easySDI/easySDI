@@ -233,7 +233,7 @@ if ($curstep == "2")
 			$rowsSurfaceMin = $db->loadObjectList();
 			foreach( $rowsSurfaceMin as $surfaceMin )
 			{
-				echo JText::_("EASYSDI_SURFACE_MIN")." ".($surfaceMin->surface_min/1000000)." ".JText::_("EASYSDI_SURFACE_MIN_UNIT_LABEL")."<br>";
+				echo JText::_("EASYSDI_SURFACE_MIN")." ".($surfaceMin->surface_min/1000000)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL")."<br>";
 				?>
 				<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
 				<?php
