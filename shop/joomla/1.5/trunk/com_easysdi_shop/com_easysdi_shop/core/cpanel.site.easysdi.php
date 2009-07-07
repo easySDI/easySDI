@@ -517,7 +517,8 @@ class SITE_cpanel {
 		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id AND  o.user_id = ".$user->id;
 		$query .= $filter;
 		$query .= " and o.status <> ".$archive." and o.status <> ".$history;
-
+		$query .= " order by o.RESPONSE_DATE";
+		
 		$queryCount = "select count(*) from #__easysdi_order o where o.status <> ".$archive." and o.status <> ".$history." AND  o.user_id = ".$user->id;
 		$queryCount .= $filter;
 
@@ -539,7 +540,14 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter);
+		//Get the url for the "order" entry of the menu
+		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
+		$database->setQuery($queryURL);
+		$redirectURL = $database->loadResult();
+		
+		//$redirectURL = "index.php?option=com_easysdi_shop&view=shop&ItemId=".$ItemId;
+		
+		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter,$redirectURL);
 
 	}
 

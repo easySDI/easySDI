@@ -21,8 +21,8 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_cpanel {
 
 	
-	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter=""){
-	
+	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $redirectURL){
+		global $mainframe;
 		$db =& JFactory::getDBO();
 	
 		$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
@@ -50,6 +50,7 @@ class HTML_cpanel {
 		 document.getElementById('buttonSent').disabled=true;
 		}
 	}
+	
 	
 	</script>
 		<div class="contentin">
@@ -99,14 +100,16 @@ class HTML_cpanel {
 	<?php
 	$param=JRequest::getVar("param");
 	JHTML::_("behavior.modal","a.modal",$param); ?>
-	<table>
+	<table id="orderList" >
 	<thead>
 	<tr>
 	<th><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
-	<th></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_DATE_SEND'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_DATE_RECEIVE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
+	<th></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -117,26 +120,65 @@ class HTML_cpanel {
 			?>		
 			<tr>
 			<td><?php echo $row->order_id; ?></td>
-			<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>', '<?php echo $saved ;?>', '<?php echo $finish ;?>')" ></td>
+			<!--<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>', '<?php echo $saved ;?>', '<?php echo $finish ;?>')" ></td>-->
 			
-			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></span><br></td>
-			
+			<td><span class="mdtitle" >
+				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?>
+				</a>
+				</span><br></td>
 			<!-- <td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td> -->
-			 <td><?php echo JText::_($row->type_translation) ;?></td>
+			<td><div class="orderSendDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?>" > </div></td>  
+			<td>
+			<?php
+			if($row->RESPONSE_SEND)
+			{
+				?>
+				<div class="orderReceiveDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_SEND;?>" > </div>
+				<?php 
+			}
+			else
+			{
+				?>
+				<div class="orderNoReceiveDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_NO_DATE_RECEIVE");?>" > </div>
+				<?php
+			}
+			?>
+			</td>
+			<td><?php echo JText::_($row->type_translation) ;?></td>
 			<td><?php echo JText::_($row->status_translation) ;?></td>
+			<td>
+			<?php
+				if($saved == $row->status)
+				{	?>
+					<table >
+					<tr><td>
+					<div class="savedOrderDelete" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DELETE") ?>"
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();"></div>
+					</td>
+					<td>
+					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();"></div>
+					</td></tr>
+					</table>
+					<?php 
+				}
+			?>
+			</td>
 			</tr>
 			
 				<?php		
 		}
-		
 	?>
 	</tbody>
 	</table>
-	
+			<input type="hidden" name="order_id" id="order_id" value="">
+			<input type="hidden" name="Itemid" id="Itemid" value="">
+			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
-			<button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
-			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>
+			<button id="newQuery" type="button" onClick="document.getElementById('Itemid').value='<?php echo $redirectURL; ?>';document.getElementById('view').value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ORDER_NEW_QUERY"); ?></button>
+			<!--  <button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
+			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>-->
 		</form>
 		</div>
 	<?php	
