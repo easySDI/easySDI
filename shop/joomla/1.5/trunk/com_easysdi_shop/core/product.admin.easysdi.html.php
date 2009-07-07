@@ -37,6 +37,8 @@ class HTML_product {
 								#__users b 
 								where  
 									a.user_id = b.id 
+								AND
+									a.root_id IS NULL
 								AND 
 									a.partner_id IN 
 										(SELECT partner_id FROM #__easysdi_community_actor
