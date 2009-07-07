@@ -19,7 +19,7 @@
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi.zip"
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_template.zip"
 			basedir="." excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project" />
 	</target>
 
