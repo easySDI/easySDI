@@ -538,7 +538,7 @@ class SITE_product {
 											) ";*/
 		
 		//List only the products belonging to the current user
-		$queryCount = " SELECT COUNT(*) FROM #__easysdi_product where partner_id = $partner->partner_id " ;
+		$queryCount = " SELECT COUNT(*) FROM #__easysdi_product where admin_partner_id = $partner->partner_id " ;
 		$queryCount .= $filter;
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
@@ -564,7 +564,7 @@ class SITE_product {
 						   							partner_id = $partner->partner_id
 						   							)) ";*/
 		//List only the products belonging to the current user
-		$query = " SELECT * FROM #__easysdi_product where partner_id = $partner->partner_id " ;
+		$query = " SELECT * FROM #__easysdi_product where admin_partner_id = $partner->partner_id " ;
 		$query .= $filter;
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
