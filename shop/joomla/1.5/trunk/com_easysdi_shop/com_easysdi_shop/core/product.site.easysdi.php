@@ -268,7 +268,14 @@ class SITE_product {
 		}
 				
 		$rowProduct->admin_partner_id = $rowPartner->partner_id;
-		$rowProduct->partner_id = $rowPartner->root_id;
+		if($rowPartner->root_id)
+		{
+			$rowProduct->partner_id = $rowPartner->root_id;
+		}
+		else
+		{
+			$rowProduct->partner_id = $rowPartner->partner_id;
+		}
 		
 		if (!$rowProduct->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

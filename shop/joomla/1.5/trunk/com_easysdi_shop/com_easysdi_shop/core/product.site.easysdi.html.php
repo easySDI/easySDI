@@ -381,23 +381,36 @@ class HTML_product{
 				}		
 
 				
-				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code, b.translation as trans FROM #__easysdi_product_properties_definition b  where published =1 order by b.order";
+				$queryProperties = "SELECT b.id as property_id, 
+										   b.translation as text,
+										   type_code
+									FROM #__easysdi_product_properties_definition b  
+									where published =1 
+									AND (partner_id = 0 OR partner_id = $rowProduct->partner_id )
+									order by b.order";
+									
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-					}		
-					foreach ($propertiesList as $curProperty){
-						?><tr><?php echo JText::_($curProperty->trans); ?></tr>
-						<?php
+				if ($database->getErrorNum()) 
+				{						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+				}		
+				HTML_product::alter_array_value_with_JTEXT_($propertiesList);
+				
+				foreach ($propertiesList as $curProperty)
+				{
+					?><tr><?php echo $curProperty->text; ?></tr>
+					<?php
 					
 				$propertiesValueList = array();
-				$query = "SELECT a.id as value, a.text as text, a.translation as trans FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+				$query = "SELECT a.id as value, a.translation as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
 				$database->setQuery( $query );
 				$propertiesValueList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-					}												
+				if ($database->getErrorNum()) 
+				{						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+				}							
+				HTML_product::alter_array_value_with_JTEXT_($propertiesValueList);					
 					switch($curProperty->type_code){
 
 					case "list":
@@ -1038,5 +1051,15 @@ class HTML_product{
 		
 	}
 	
+	function alter_array_value_with_JTEXT_(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
 }
 ?>
