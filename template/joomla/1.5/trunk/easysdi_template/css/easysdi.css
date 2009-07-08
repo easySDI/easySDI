@@ -1,9 +1,9 @@
 ﻿@CHARSET "ISO-8859-1";
 
 
-/********************/
-/*** EasySDI Metadata ***/
-/********************/
+/********************************************************/
+/*** EasySDI Metadata                                 ***/
+/********************************************************/
 /* metadata separator in result view */
 div#mdSeparator{
 	background-color:transparent;
@@ -41,9 +41,9 @@ div .freeMd{
 }
 
 
-/***********************/
-/*** EasySDI Catalog ***/
-/***********************/
+/********************************************************/
+/***           EasySDI Catalog                        ***/
+/********************************************************/
 .mdsearchresult .mdtitle{
 	font-weight: bold;
 }
@@ -97,9 +97,9 @@ div .freeMd{
      height: 30px; 
      width: 150px;
 }
-/***********************/
-/*** EasySDI Shop    ***/
-/***********************/
+/********************************************************/
+/***     EasySDI Shop                                 ***/
+/********************************************************/
 div.info {
     background: #F8FAFC url('../icons/silk/information.png') center no-repeat;
     background-position: 15px 50%; /* x-pos y-pos */
@@ -847,9 +847,41 @@ background-image: url(none);
 	overflow: hidden;
 }
 
-/***********************/
-/*** EasySDI Order Recap ***/
-/***********************/
+/********************************************************/
+/***     EasySDI Order                                ***/
+/********************************************************/
+table#orderList div{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	
+}
+div .orderDate{
+	background-image:url(../icons/silk/calendar.png);
+	}
+div .savedOrderDelete{
+	background-image:url(../icons/silk/bin.png);
+	border: 1px outset #d4deff;
+}
+div .savedOrderOrder{
+	background-image:url(../icons/silk/basket_put.png);
+	border: 1px outset #d4deff;
+}
+
+.savedOrderOrder:hover{ 
+	border-style: inset;
+}
+.savedOrderDelete:hover{
+	border-style: inset;
+}
+
+
+
+/********************************************************/
+/***      EasySDI Order Recap                         ***/
+/********************************************************/
 .orderRecap
 {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
@@ -903,9 +935,9 @@ div#printOrderRecap:hover{
 }
 
 
-/***********************/
-/*** EasySDI Caddy   ***/
-/***********************/
+/********************************************************/
+/***              EasySDI Caddy                       ***/
+/********************************************************/
 .deleteProductCaddy { 
 	background-image:url(../icons/silk/bin.png);
 	background-position:center;
