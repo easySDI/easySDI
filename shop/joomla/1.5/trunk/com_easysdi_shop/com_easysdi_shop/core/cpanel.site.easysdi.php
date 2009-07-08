@@ -552,11 +552,11 @@ class SITE_cpanel {
 	}
 
 	function orderReport($id){
-		HTMLadmin_cpanel::orderReportRecap($id, true);
+		ADMIN_cpanel::orderReport($id, true, false);
 	}
 
 	function orderReportForProvider($id){
-		HTMLadmin_cpanel::orderReportRecap($id, true, true);
+		ADMIN_cpanel::orderReport($id, true, true);
 	}
 	/*function viewOrderPerimeterExtent($order_id, $perimeter_id){
 		?>
