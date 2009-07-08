@@ -356,11 +356,24 @@ class HTMLadmin_cpanel {
 		foreach ($rows as $row){?>
 			<tr>
 				<td width="10%" class="ornum"><?php echo ++$i; ?> - </td>
-				<td width="90%"><?php echo $row->text; ?><br> [<?php echo $row->value;?>]</td>
+				<td width="90%"><?php echo $row->text; ?><!--<br> [<?php echo $row->value;?>]</td>
 				
-			</tr>
+			--></tr>
 			<?php }?>
 		</table>
+		</td>
+		</tr>
+		<tr>
+		<td class="ortitle3">
+		<?php echo JText::_("EASYSDI_RECAP_ORDER_SURFACE"); ?>
+		</td>
+		<td>
+		<?php if($rows[0]->surface != 0)
+		{
+			echo $rows[0]->surface; 
+			echo JText::_("EASYSDI_RECAP_ORDER_KM2") ; 
+		}
+		?>
 		</td>
 		</tr>
 		<tr>
