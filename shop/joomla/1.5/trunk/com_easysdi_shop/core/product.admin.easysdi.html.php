@@ -464,19 +464,31 @@ class HTML_product {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
 
-				$queryProperties = "SELECT b.id as property_id, b.text as text,type_code,mandatory FROM #__easysdi_product_properties_definition b where published =1 order by b.order";
+				$queryProperties = "SELECT b.id as property_id, 
+										   b.translation as text,
+										   type_code,
+										   mandatory 
+									FROM #__easysdi_product_properties_definition b 
+									where published =1 
+									AND (partner_id = 0 OR partner_id = $rowProduct->partner_id )
+									order by b.order";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-					}		
-					foreach ($propertiesList as $curProperty){
-						?><tr><?php echo JText::_($curProperty->text); ?></tr>
+				if ($database->getErrorNum()) 
+				{						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+				}		
+				HTML_product::alter_array_value_with_JTEXT_($propertiesList);
+				
+				foreach ($propertiesList as $curProperty){
+						?><tr><?php echo $curProperty->text; ?></tr>
 						<?php			
 							$propertiesValueList = array();
-							$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+							$query = "SELECT a.id as value, a.translation as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
 							$database->setQuery( $query );
 							$propertiesValueList = $database->loadObjectList() ;
+							HTML_product::alter_array_value_with_JTEXT_($propertiesValueList);
+							
 							if ($database->getErrorNum()) {						
 									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 								}
