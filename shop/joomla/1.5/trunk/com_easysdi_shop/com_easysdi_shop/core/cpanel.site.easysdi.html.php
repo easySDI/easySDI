@@ -105,8 +105,7 @@ class HTML_cpanel {
 	<tr>
 	<th><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
-	<th><?php echo JText::_('EASYSDI_ORDER_DATE_SEND'); ?></th>
-	<th><?php echo JText::_('EASYSDI_ORDER_DATE_RECEIVE'); ?></th>
+	<th><?php echo JText::_('EASYSDI_ORDER_DATE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
 	<th></th>
@@ -126,20 +125,18 @@ class HTML_cpanel {
 				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?>
 				</a>
 				</span><br></td>
-			<!-- <td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td> -->
-			<td><div class="orderSendDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?>" > </div></td>  
 			<td>
 			<?php
 			if($row->RESPONSE_SEND)
 			{
 				?>
-				<div class="orderReceiveDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_SEND;?>" > </div>
+				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?> ; <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_SEND;?>" > </div>
 				<?php 
 			}
 			else
 			{
 				?>
-				<div class="orderNoReceiveDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_NO_DATE_RECEIVE");?>" > </div>
+				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?> " > </div>
 				<?php
 			}
 			?>
