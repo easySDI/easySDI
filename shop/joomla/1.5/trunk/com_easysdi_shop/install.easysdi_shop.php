@@ -1886,7 +1886,32 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
-	 
+ 	if($version == "0.9999")
+	 {
+		 //Add total area field to order 
+		$query="ALTER TABLE #__easysdi_order add column `surface` bigint(20) default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	  	//Add send date to order 
+		$query="ALTER TABLE #__easysdi_order add column `order_send_date` datetime NOT NULL default '0000-00-00 00:00:00' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	//Update component version
+		$version = "0.99991";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 
 	/**
 	 * Menu creation
