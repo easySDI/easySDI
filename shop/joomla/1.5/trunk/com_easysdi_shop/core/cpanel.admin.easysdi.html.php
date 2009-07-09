@@ -127,6 +127,7 @@ class HTMLadmin_cpanel {
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
+	<th class='title'><?php echo JText::_('EASYSDI_ORDER_CREATION_DATE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_DATE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_RESPONSE_DATE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_PARTNER'); ?></th>
@@ -151,6 +152,7 @@ class HTMLadmin_cpanel {
 			 <td><?php echo JText::_($row->type_translation) ;?></td>
 			<td><?php echo JText::_($row->status_translation) ;?></td>
 			<td><?php if ($row->orderDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->orderDate));?></td>
+			<td><?php if ($row->orderSendDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->orderSendDate));?></td>
 			<td><?php if ($row->responseDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->responseDate));?></td>
 			<?php 
 		
@@ -370,7 +372,7 @@ class HTMLadmin_cpanel {
 		<td>
 		<?php if($rows[0]->surface != 0)
 		{
-			echo $rows[0]->surface; 
+			echo ($rows[0]->surface)/1000000; 
 			echo JText::_("EASYSDI_RECAP_ORDER_KM2") ; 
 		}
 		?>
