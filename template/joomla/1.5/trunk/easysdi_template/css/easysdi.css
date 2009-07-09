@@ -863,19 +863,11 @@ div .orderDate{
 	}
 div .savedOrderDelete{
 	background-image:url(../icons/silk/bin.png);
-	border: 1px outset #d4deff;
 }
 div .savedOrderOrder{
 	background-image:url(../icons/silk/basket_put.png);
-	border: 1px outset #d4deff;
 }
 
-.savedOrderOrder:hover{ 
-	border-style: inset;
-}
-.savedOrderDelete:hover{
-	border-style: inset;
-}
 
 
 
