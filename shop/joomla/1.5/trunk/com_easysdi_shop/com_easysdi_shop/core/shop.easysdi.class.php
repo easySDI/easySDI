@@ -1716,7 +1716,8 @@ if (count($rows)>0){
 			$order_name = $mainframe->getUserState('order_name');
 			$third_party = $mainframe->getUserState('third_party');
 			$bufferValue = $mainframe->getUserState('bufferValue');
-				
+			$totalArea = $mainframe->getUserState('totalArea');
+			
 			$db =& JFactory::getDBO();
 
 			jimport("joomla.utilities.date");
@@ -1741,9 +1742,14 @@ if (count($rows)>0){
 			{
 				$bufferValue = 0;
 			}
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,order_update,user_id,buffer) VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','$date->toMySQL()','$date->toMySQL()',$user->id,$bufferValue)";
+			if( $totalArea == '')
+			{
+				$totalArea = 0;
+			}
+			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
+						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','".$date->toMySQL()."',$user->id,$bufferValue,$totalArea)";
 			$db->setQuery($query );
-
+			
 			if (!$db->query()) {
 				echo "<div class='alert'>";
 				echo $db->getErrorMsg();
@@ -1751,7 +1757,20 @@ if (count($rows)>0){
 			}
 
 			$order_id	= $db->insertId();
-			$totalArea = $mainframe->getUserState('totalArea');
+			
+			//If the order is "SENT" update the order_send_date value
+			if($order_status_value == "SENT")
+			{
+				$query = "UPDATE   #__easysdi_order set order_send_date = '".$date->toMySQL()."' WHERE order_id= $order_id ";
+				$db->setQuery( $query );
+				if (!$db->query()) {
+					echo "<div class='alert'>";
+					echo $db->getErrorMsg();
+					echo "</div>";
+					exit;
+				}
+			}
+			
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
 
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
@@ -1761,7 +1780,8 @@ if (count($rows)>0){
 			foreach ($selSurfaceList as $sel)
 			{
 				//Before the dot, it is the perimeter id, after the dot id of the data
-				$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) VALUES (0,$order_id,$perimeter_id,'$sel','$selSurfaceListName[$i]')";
+				$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) 
+							VALUES (0,$order_id,$perimeter_id,'$sel','$selSurfaceListName[$i]')";
 				$db->setQuery($query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";
@@ -1776,7 +1796,8 @@ if (count($rows)>0){
 			{
 				if ($product_id != "0")
 				{					
-					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id, status) VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
+					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id, status) 
+								VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
 					$db->setQuery($query );
 					if (!$db->query()) 
 					{
@@ -1968,23 +1989,41 @@ if (count($rows)>0){
 				SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
 					
 			}
+			
+			SITE_cpanel::setOrderStatus($order_id,$response_send);
 				
-			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = '".$await_type."' ";
+			/*$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = '".$await_type."' ";
 			$db->setQuery($query);
 			$total = $db->loadResult();
+			
+			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id  ";
+			$db->setQuery($query);
+			$totalProduct = $db->loadResult();
+		
 			jimport("joomla.utilities.date");
 			$date = new JDate();
-			if ( $total == 0){
+			if ( $total == 0)
+			{
 				$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
 				$db->setQuery($queryStatus);
 				$status_id = $db->loadResult();
-			}else{
+				$response_send = 1;
+			}
+			else if ($total == $totalProduct)
+			{
+				$queryStatus = "select id from #__easysdi_order_status_list where code ='AWAIT'";
+				$db->setQuery($queryStatus);
+				$status_id = $db->loadResult();
+				$response_send = 0;
+			}else
+			{
 				$queryStatus = "select id from #__easysdi_order_status_list where code ='PROGRESS'";
 				$db->setQuery($queryStatus);
 				$status_id = $db->loadResult();
+				$response_send = 1;
 			}
 			
-			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
+			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."', response_send =".$response_send.", order_update ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
 
 			$db->setQuery($query);
 			if (!$db->query()) {
@@ -1995,7 +2034,7 @@ if (count($rows)>0){
 			}
 			if ($total == 0){
 				SITE_cpanel::notifyUserByEmail($order_id);
-			}
+			}*/
 
 			$mainframe->setUserState('productList',null);
 			$mainframe->setUserState('order_type',null);
