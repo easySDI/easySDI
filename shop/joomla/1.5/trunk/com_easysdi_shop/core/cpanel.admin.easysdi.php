@@ -186,6 +186,7 @@ class ADMIN_cpanel {
 						 
 							o.*, 
 							o.order_date as orderDate, 
+							o.order_send_date as orderSendDate,
 							o.response_date as responseDate, 
 							sl.code, 
 							sl.translation as status_translation, 
