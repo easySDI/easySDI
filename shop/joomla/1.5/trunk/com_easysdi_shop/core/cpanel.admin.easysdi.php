@@ -423,15 +423,11 @@ function sendOrder(){
 				
 				$OrderProductList = new orderProductListByOrder($database);
 				$OrderProductList->load($id);
-				foreach($OrderProductList as $OrderProduct)
-				{
-					$orderProductProperties = new orderProductPropertiesByOrderList($database);
-					$orderProductProperties->load($OrderProduct->id);
-					if(!$orderProductProperties->delete())
-					{
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					}
-				}
+				
+				$query = "DELETE FROM #__easysdi_order_product_properties  WHERE order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $id)";
+				$database->setQuery($query);
+				$database->query();
+				
 				if(!$OrderProductList->delete())
 				{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
