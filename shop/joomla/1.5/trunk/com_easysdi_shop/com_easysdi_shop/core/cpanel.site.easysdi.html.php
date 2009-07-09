@@ -127,18 +127,28 @@ class HTML_cpanel {
 				</span><br></td>
 			<td>
 			<?php
-			if($row->RESPONSE_SEND)
+			if($row->order_send_date == "0000-00-00 00:00:00" && $row->RESPONSE_SEND == 0)
 			{
 				?>
-				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?> ; <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_SEND;?>" > </div>
-				<?php 
+				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : &#10;".$row->order_date;?>"> </div>
+				<?php
 			}
 			else
 			{
-				?>
-				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->RESPONSE_DATE;?> " > </div>
-				<?php
+				if($row->RESPONSE_SEND)
+				{
+					?>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->order_send_date;?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_DATE;?>" > </div>
+					<?php 
+				}
+				else
+				{
+					?>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->order_send_date;?> " > </div>
+					<?php
+				}
 			}
+			
 			?>
 			</td>
 			<td><?php echo JText::_($row->type_translation) ;?></td>
@@ -156,6 +166,18 @@ class HTML_cpanel {
 					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
 					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();"></div>
 					</td></tr>
+					</table>
+					<?php 
+				}
+				if($finish == $row->status)
+				{
+					?>
+					<table >
+					<tr><td>
+					<div class="savedOrderDelete" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DELETE") ?>"
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();"></div>
+					</td>
+					</tr>
 					</table>
 					<?php 
 				}
