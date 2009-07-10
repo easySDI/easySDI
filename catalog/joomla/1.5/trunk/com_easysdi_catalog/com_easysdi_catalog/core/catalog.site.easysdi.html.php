@@ -295,7 +295,7 @@ class HTML_catalog{
 	  	<a class="modal"
 				title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-				rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
+				rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 			</a></span>
 	  </td>
 	  	<?php if ($hasPreview > 0){ ?>
