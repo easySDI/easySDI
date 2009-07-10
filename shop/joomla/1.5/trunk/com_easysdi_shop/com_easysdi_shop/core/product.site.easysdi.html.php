@@ -945,7 +945,7 @@ class HTML_product{
 			<tr>
 			<td><?php echo $i; ?></td>
 			<td><input type="radio"  name="id" value="<?php echo $row->id ;?>"></td>						
-			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:550}}"> <?php echo $row->data_title ;?></a></td>
+			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->data_title ;?></a></td>
 			
 			<td><input type="checkbox" <?php if ($row->internal) {echo "checked";};?> disabled> </td>
 			<td><input type="checkbox" <?php if ($row->external) {echo "checked";};?> disabled> </td>
@@ -1024,7 +1024,7 @@ class HTML_product{
 			<tr>
 			<td><?php echo $i; ?></td>
 			<td><input type="radio"  name="id" value="<?php echo $row->id ;?>" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>'"></td>						
-			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title ;?></a></td>
+			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->data_title ;?></a></td>
 			
 			<td><input type="checkbox" <?php if ($row->internal) {echo "checked";};?> disabled> </td>
 			<td><input type="checkbox" <?php if ($row->external) {echo "checked";};?> disabled> </td>

@@ -122,7 +122,7 @@ class HTML_cpanel {
 			<!--<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>" onClick="showAllowedButton ('<?php echo $row->status ;?>', '<?php echo $saved ;?>', '<?php echo $finish ;?>')" ></td>-->
 			
 			<td><span class="mdtitle" >
-				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?>
+				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?>
 				</a>
 				</span><br></td>
 			<td>
@@ -225,7 +225,7 @@ class HTML_cpanel {
 			<table>
 			<thead>
 			<tr>
-			<th colspan="2"><?php echo JText::_("EASYSDI_DATA")." ".$i?> : <a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"><?php echo $row->data_title ;?></a><br></th>
+			<th colspan="2"><?php echo JText::_("EASYSDI_DATA")." ".$i?> : <a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:600,y:600}}"><?php echo $row->data_title ;?></a><br></th>
 			</tr>
 			<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
 			<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
@@ -329,7 +329,7 @@ class HTML_cpanel {
 			<tr>
 				<td><?php echo $i; ?></td>
 				<td><input type="radio" name="order_id" value="<?php echo $row->order_id ;?>"></td>
-				<td><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></b></span><br></td>
+				<td><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?></a></b></span><br></td>
 				<td><?php echo $row->username ;?></td>
 				<td><?php echo JText::_($row->type_translation) ;?></td>
 				<td><?php echo JText::_($row->status_translation) ;?></td>				

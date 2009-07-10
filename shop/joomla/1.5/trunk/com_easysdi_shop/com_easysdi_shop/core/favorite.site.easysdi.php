@@ -569,7 +569,7 @@ if ($user->guest){
 	<table width="100%">		
 		<tr>		
 			<td><img src="./img.gif" width="40" height="40"> </td>
-				<td><span class="mdtitle" ><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->data_title; ?></a>
+				<td><span class="mdtitle" ><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->data_title; ?></a>
 					</span>
 					<br>
 					<span class="mdsupplier" ><?php echo $row->supplier_name;?>
