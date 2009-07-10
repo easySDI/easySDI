@@ -552,6 +552,10 @@ class HTMLadmin_cpanel {
 			if ($row->status == $status_id)
 			{?>
 				<tr>
+				<td colspan=2>
+				<fieldset class="orderRecapTreatment"><legend class="orderRecapTreatmentLegend"><?php echo "Traitement";?></legend>
+				<table width="100%">
+				<tr>
 				<td class="ortitle4">
 				<?php echo JText::_("EASYSDI_RECAP_ORDER_PRICE"); ?>			
 				</td>
@@ -575,7 +579,11 @@ class HTMLadmin_cpanel {
 						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
 						<?php echo $row->filename; ?></a>
 				</td>
+				</tr></table>
+				</fieldset>
+				</td>
 				</tr>
+				
 				<?php 
 			}
 		}?>
