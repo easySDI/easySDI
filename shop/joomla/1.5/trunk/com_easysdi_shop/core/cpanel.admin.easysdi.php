@@ -395,7 +395,11 @@ function sendOrder(){
 	*/
 	function deleteOrder($cid,$option){
 		global  $mainframe;
-		
+		?>
+		<script>
+		alert("<?php echo JText::_("EASYSDI_CONFIRM_ORDER_DELETE"); ?>");
+		</script>	   
+		<?php
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {

@@ -146,7 +146,7 @@ class HTMLadmin_cpanel {
 			<td><?php echo $i; ?></td>
 			<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->order_id; ?>" onclick="isChecked(this.checked);" /></td>
 			<td><?php echo $row->order_id; ?></td>
-			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:500,y:500}}"> <?php echo $row->name; ?></a></span><br>
+			<td><span class="mdtitle" ><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?></a></span><br>
 			
 			<!-- <td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td> -->
 			 <td><?php echo JText::_($row->type_translation) ;?></td>
@@ -281,14 +281,56 @@ class HTMLadmin_cpanel {
 		<?php echo JText::_($rows[0]->tlT); ?>
 		</td>
 		</tr>
-		<tr>
-		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
-		</td>
-		<td>
-		<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
-		</td>
-		</tr>
+		
+		<?php 
+		if($rows[0]->order_send_date == "0000-00-00 00:00:00")
+		{
+			?>
+			<tr>
+			<td class="ortitle3">
+			<?php 
+			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
+			</td>
+			<td>
+			<?php echo JText::_($rows[0]->order_date); ?>
+			</td>
+			</tr>
+			<?php 
+		}
+		else
+		{
+			?>
+			<tr>
+			<td class="ortitle3">
+			<?php 
+			echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
+			</td>
+			<td>
+			<?php echo JText::_($rows[0]->order_send_date); ?>
+			</td>
+			</tr>
+			<tr>
+			<td class="ortitle3">
+			<?php
+			echo JText::_("EASYSDI_RECAP_ORDER_RESPONSEDATE"); 
+			?>
+			</td>
+			<?php 
+			if($rows[0]->RESPONSE_DATE != "0000-00-00 00:00:00")
+			{
+				?>
+				<td>
+				<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
+				</td>
+				<?php 
+			}
+			?>
+			</tr>
+			<?php 
+			
+		}
+		?>
+		
 		<tr>
 		<td class="ortitle3">
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>
@@ -395,6 +437,7 @@ class HTMLadmin_cpanel {
 		?>
 		</td>
 		</tr>
+		
 		<tr>
 		<td class="ortitle3">
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?>
@@ -424,7 +467,7 @@ class HTMLadmin_cpanel {
 					<td class="ornum"><?php echo ++$i; ?> - </td>
 					<td class="ortitle3"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
 							<?php
-					if ($row->status == $status_id){
+				/*	if ($row->status == $status_id){
 						$queryType = "select id from #__easysdi_order_type_list where code='O'";
 						$db->setQuery($queryType);
 						$type = $db->loadResult();
@@ -437,7 +480,7 @@ class HTMLadmin_cpanel {
 						<?php
 						}
 						
-					}
+					}*/
 					?>
 				</tr>
 			</table>
@@ -506,9 +549,36 @@ class HTMLadmin_cpanel {
 				</tr>
 				<?php
 			}
-			?>
-
-		<?php }?>
+			if ($row->status == $status_id)
+			{?>
+				<tr>
+				<td class="ortitle4">
+				<?php echo JText::_("EASYSDI_RECAP_ORDER_PRICE"); ?>			
+				</td>
+				<td>
+				<?php echo $row->price.JText::_("EASYSDI_RECAP_ORDER_MONEY"); ?>
+				</td>
+				</tr>
+				<tr>
+				<td class="ortitle4">
+				<?php echo JText::_("EASYSDI_RECAP_ORDER_REM"); ?>			
+				</td>
+				<td>
+				<?php echo $row->remark; ?>
+				</td>
+				</tr>
+				<tr>
+				<td class="ortitle4">
+				<?php echo JText::_("EASYSDI_RECAP_ORDER_FILE"); ?>			
+				</td>
+				<td><a target="RAW"
+						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
+						<?php echo $row->filename; ?></a>
+				</td>
+				</tr>
+				<?php 
+			}
+		}?>
 		
 		
 		</table>
@@ -595,7 +665,7 @@ function initMap()
             minScale: <?php echo $rowsBaseMap->minResolution; ?>,
             maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
-            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>), 
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>),
             controls: [] 
 	};
 	map = new OpenLayers.Map("map", options);
@@ -726,12 +796,12 @@ $i++;
                         url: wfsUrlWithFilter,
                         format: new OpenLayers.Format.GML()
                     })
-                });		    	            
-			 map.addLayer(wfs);	
-			 
-			 //Zoom to extent
-			 var wFeatures = wfs.features;
-			 map.zoomToMaxExtent();
+                });		   	    	   
+                    
+				
+			  wfs.events.register("featureadded", wfs, function() { map.zoomToExtent(OpenLayers.Layer.Vector.prototype.getDataExtent.apply(this));});
+			  map.addLayer(wfs);
+			
 			<?php 
 		}
 		?>
