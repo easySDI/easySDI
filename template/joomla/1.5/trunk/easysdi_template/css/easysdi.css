@@ -926,6 +926,14 @@ div#printOrderRecap:hover{
 
 }
 
+.orderRecapTreatment
+	{
+		margin: 0px 25px 25px 25px;
+	}
+.orderRecapTreatmentLegend
+	{
+		
+	}
 
 /********************************************************/
 /***              EasySDI Caddy                       ***/
