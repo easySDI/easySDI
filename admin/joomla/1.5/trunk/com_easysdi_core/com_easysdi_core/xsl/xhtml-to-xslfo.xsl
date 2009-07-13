@@ -748,12 +748,12 @@
               <xsl:text>30pt</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:text>10pt</xsl:text>
+              <xsl:text>9pt</xsl:text>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise> 
-          <xsl:text>10pt</xsl:text>
+          <xsl:text>9pt</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
