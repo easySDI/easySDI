@@ -15,6 +15,10 @@
  */
 package ch.depth.services.wps;
 
+import java.io.FileWriter;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -696,10 +700,14 @@ public class WPSServlet extends HttpServlet {
 	    String rebate ="0";
 	    String price="0";
 	    String remark="";
-	    while(it.hasNext()){
+	    
+	    File fi = new File("response.txt");
+        FileWriter fwr = new FileWriter(fi,true);
+        
+        while(it.hasNext())
+        {
 		net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)it.next();
-		File f = new File(application.getRealPath("file" + inputType.getIdentifier().getValue().equalsIgnoreCase("REQUEST_ID") + inputType.getIdentifier().getValue().equalsIgnoreCase("PRODUCT_ID") + ".txt"));
-	    FileWriter fw = new FileWriter(f,true);
+				
 	    if (inputType.getIdentifier().getValue().equalsIgnoreCase("DATE")){
 		    responseDate  = inputType.getData().getLiteralData().getValue();
 
@@ -709,7 +717,7 @@ public class WPSServlet extends HttpServlet {
 
 		    }else
 			if (inputType.getIdentifier().getValue().equalsIgnoreCase("PRODUCT_ID")){
-			    product_id  = .getIdentifier().getValue().equalsIgnoreCase("REQUEST_ID");
+			    product_id  = inputType.getData().getLiteralData().getValue();
 
 			}else
 			    if (inputType.getIdentifier().getValue().equalsIgnoreCase("FILENAME")){
@@ -736,14 +744,14 @@ public class WPSServlet extends HttpServlet {
 		    data = inputType.getData().getComplexData().getContent().get(0).toString();		
 		}
 
+		fwr.write(responseDate);
+		fwr.write(filename);
+		fwr.write(data);
+        
 	    }
 
-
-	    fw.write(responseDate);
-	    fw.write(filename);
-	    fw.write(data);
-	    fw.close();
-		
+        fwr.close();
+        	    
 	    if (data == null) data ="";
 	    if (filename == null) filename ="";
 	    
@@ -825,14 +833,20 @@ public class WPSServlet extends HttpServlet {
 	}catch (Exception e){
 	    e.printStackTrace();
 	    
-	    StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        File f = new File(application.getRealPath("errorStream.txt"));
-        FileWriter fw = new FileWriter(f,true);
-        fw.write(sw.toString());
-        fw.close();
-        pw.close();
+	    try
+	    {
+		    StringWriter sw = new StringWriter();
+	        PrintWriter pw = new PrintWriter(sw);
+	        e.printStackTrace(pw);
+	        File f = new File("errorStream.txt");
+	        FileWriter fw = new FileWriter(f,true);
+	        fw.write(sw.toString());
+	        fw.close();
+	        pw.close();
+	    }
+	    catch (Exception ex){
+		    ex.printStackTrace();
+	    }
 	}
 
 	return error ("ERROR","An error just occured");
