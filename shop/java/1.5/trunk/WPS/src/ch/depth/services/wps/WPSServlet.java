@@ -220,8 +220,6 @@ public class WPSServlet extends HttpServlet {
 	    e.printStackTrace();
 	}
 	return sb.toString().replaceAll("xlink:href=\"IP\"", "xlink:href=\""+getServletUrl(req)+"\"").toString();
-
-
     }
 
 
