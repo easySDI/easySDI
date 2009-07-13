@@ -16,6 +16,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
     
 
 
+
 <xsl:template match="gmd:MD_Metadata">
 <div id="metadata" class="contentin">
 <h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
