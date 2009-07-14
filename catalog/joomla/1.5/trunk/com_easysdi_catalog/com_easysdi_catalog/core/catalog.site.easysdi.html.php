@@ -307,7 +307,7 @@ class HTML_catalog{
 	  <td>&nbsp;</td>
 	 </tr>
 	 <tr>
-	   <td colspan="4" halign="middle"><div id="mdSeparator" /></td>
+	   <td colspan="5" halign="middle"><div class="separator" /></td>
 	 </tr>
 	 
 
