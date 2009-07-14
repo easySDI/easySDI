@@ -5,11 +5,12 @@
 /*** EasySDI Metadata                                 ***/
 /********************************************************/
 /* metadata separator in result view */
-div#mdSeparator{
+.separator{
 	background-color:transparent;
 	background-image:url(../images/dashed.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
+	margin-top: 5px;
 	height:1px;
 	width:100%;
 }
@@ -807,7 +808,58 @@ background-image: url(none);
           background-color: red;
 }
 
+.product_propreties
+{
+  border: 2px solid #9f9f9f;
+}
 
+.product_propreties legend {
+  padding: 0.2em 0.5em;
+  border: 1px solid #9f9f9f;
+  background-color: #9f9f9f;
+  color:white;
+}
+
+.product_proprety_row
+{
+	border:1px solid #9f9f9f;
+}
+
+.product_proprety_row legend {
+  background-color: transparent;
+  border:0px;
+  color:#9f9f9f;
+}
+ 
+/* Width of the lists */
+.product_proprety_row_list{
+  width: 250px;
+  	 padding-left: 10px;
+}
+
+.product_proprety_row_list li{
+	 list-style-type: decimal;
+	 margin-left:1.5em;
+	 margin-bottom: 5px;
+	 font-weight:bold;
+}
+
+
+.product_proprety_message_title{
+	font-weight:normal;
+	width:500px;
+}
+
+.ordersteps{
+	width:100%;	
+}
+.orderstepsTitle{
+	width:25%;
+}
+
+.thirdPartySelect{
+	width: 400px;
+}
 /*--------------------------------------------------|
 | dTree 2.05 | www.destroydrop.com/javascript/tree/ |
 |---------------------------------------------------|
