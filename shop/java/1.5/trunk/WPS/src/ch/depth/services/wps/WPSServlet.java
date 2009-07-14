@@ -701,93 +701,84 @@ public class WPSServlet extends HttpServlet {
 	    String price="0";
 	    String remark="";
 	    
-	    File fi = new File("response.txt");
-        FileWriter fwr = new FileWriter(fi,true);
-        
-        while(it.hasNext())
+	    while(it.hasNext())
         {
-		net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)it.next();
-				
-	    if (inputType.getIdentifier().getValue().equalsIgnoreCase("DATE")){
-		    responseDate  = inputType.getData().getLiteralData().getValue();
-
-		}else
-		    if (inputType.getIdentifier().getValue().equalsIgnoreCase("REQUEST_ID")){
+			net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)it.next();
+					
+		    if (inputType.getIdentifier().getValue().equalsIgnoreCase("DATE")){
+			    responseDate  = inputType.getData().getLiteralData().getValue();
+	
+			}
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("REQUEST_ID")){
 			order_id  = inputType.getData().getLiteralData().getValue();
 
-		    }else
-			if (inputType.getIdentifier().getValue().equalsIgnoreCase("PRODUCT_ID")){
+		    }
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("PRODUCT_ID")){
 			    product_id  = inputType.getData().getLiteralData().getValue();
 
-			}else
-			    if (inputType.getIdentifier().getValue().equalsIgnoreCase("FILENAME")){
+			}
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("FILENAME")){
 				filename  = inputType.getData().getLiteralData().getValue();
 
-			    }else
-				    if (inputType.getIdentifier().getValue().equalsIgnoreCase("REBATE")){
-					rebate  = inputType.getData().getLiteralData().getValue();
+		    }
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("REBATE")){
+			rebate  = inputType.getData().getLiteralData().getValue();
 
-				    }else
-					    if (inputType.getIdentifier().getValue().equalsIgnoreCase("BILL")){
-						price  = inputType.getData().getLiteralData().getValue();
+		    }
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("BILL")){
+			price  = inputType.getData().getLiteralData().getValue();
 
-					    }else
-						    if (inputType.getIdentifier().getValue().equalsIgnoreCase("REMARK")){
-							remark  = inputType.getData().getLiteralData().getValue();
+		    }
+		    else if (inputType.getIdentifier().getValue().equalsIgnoreCase("REMARK")){
+			remark  = inputType.getData().getLiteralData().getValue();
 
-						    }
-
-
-
-
-		if (inputType.getData().getComplexData() !=null){
-		    data = inputType.getData().getComplexData().getContent().get(0).toString();		
-		}
-
-		fwr.write(responseDate);
-		fwr.write(filename);
-		fwr.write(data);
-        
+		    }
+	
+			if (inputType.getData().getComplexData() != null)
+			{
+				if(inputType.getData().getComplexData().getContent() != null && inputType.getData().getComplexData().getContent().size() != 0)
+					data = inputType.getData().getComplexData().getContent().get(0).toString();		
+			}
+	
 	    }
 
-        fwr.close();
-        	    
-	    if (data == null) data ="";
+		if (data == null) data ="";
 	    if (filename == null) filename ="";
 	    
-	    if (responseDate!=null && order_id!=null && product_id!=null && filename !=null && data !=null){
-		Connection conn = null;
-		Class.forName(jdbcDriver).newInstance();
-
-
-		conn =  DriverManager.getConnection(connexionString);
-
-		Statement stmt = conn.createStatement();
-		stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
-
-
-		PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
-		
-		ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
-
-		pre.setBinaryStream(1,bais,data.length());
-
-		pre.executeUpdate();
-
-
-
-		int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
-		if (count == 0){
-		    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='PROGRESS')   where order_id = "+order_id );
-		}
-
-		pre.close();
-		stmt.close();
-		conn.close();
-
-
-		
-		net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
+	    if (responseDate!=null && order_id!=null && product_id!=null && filename !=null && data !=null)
+	    {
+			Connection conn = null;
+			Class.forName(jdbcDriver).newInstance();
+	
+	
+			conn =  DriverManager.getConnection(connexionString);
+	
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
+	
+	
+			PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
+			
+			ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
+	
+			pre.setBinaryStream(1,bais,data.length());
+	
+			pre.executeUpdate();
+	
+	
+	
+			int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
+			if (count == 0){
+			    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='PROGRESS')   where order_id = "+order_id );
+			}
+	
+			pre.close();
+			stmt.close();
+			conn.close();
+	
+	
+			
+			net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
 		    ExecuteResponse er = of.createExecuteResponse();
 		    StatusType st = of.createStatusType();
 		    st.setProcessSucceeded("processSucceeded");
@@ -828,19 +819,23 @@ public class WPSServlet extends HttpServlet {
 		    m.marshal(er, baos);
 
 		    
-		return baos.toString();
+		    return baos.toString();
 	    }
-	}catch (Exception e){
+	}catch (Exception e)
+	{
 	    e.printStackTrace();
 	    
+	    // Ecriture d'un log texte sur le serveur en cas de problème
 	    try
 	    {
 		    StringWriter sw = new StringWriter();
 	        PrintWriter pw = new PrintWriter(sw);
 	        e.printStackTrace(pw);
+	        //File f = new File("/home/users/asitvd/tomcat/errorStream.txt");
 	        File f = new File("errorStream.txt");
 	        FileWriter fw = new FileWriter(f,true);
 	        fw.write(sw.toString());
+	        fw.write(e.getMessage());
 	        fw.close();
 	        pw.close();
 	    }
