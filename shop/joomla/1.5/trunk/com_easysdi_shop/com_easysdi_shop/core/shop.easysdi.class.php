@@ -1220,12 +1220,12 @@ function setAlpha(imageformat)
 ?>
 
 
-<fieldset><legend><?php echo JText::_($product->data_title);?></legend> <?php
+<fieldset class="product_propreties"><legend><?php echo JText::_($product->data_title);?></legend> <?php
 $db->setQuery( $query );
 $rows = $db->loadObjectList();
 		
 ?>
-<ol>
+<ol class="product_proprety_row_list">
 
 <?php
 
@@ -1234,18 +1234,16 @@ if (count($rows)>0){
 		echo "<li>";
 		switch($row->type_code){
 			case "list":
-				echo 	JText::_($row->translation);
-
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
-				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				
-								echo "<select name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
+				echo "<select class=\"product_proprety_row_list\" name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
+				//add a default option that replaces the text before the list, value = -1 to be sure to not interfer with pvd.id.
+				echo "<option value='-1'>-". JText::_($row->translation)."-</option>";
+				echo "<option></option>";
 				foreach ($rowsValue as $rowValue){
-					
-
 					$selProduct = $mainframe->getUserState($row->code.'_list_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
@@ -1256,7 +1254,7 @@ if (count($rows)>0){
 				echo "</select>";
 				break;
 			case "mlist":
-				echo 	JText::_($row->translation);
+				echo JText::_($row->translation)."<br/>";
 
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
@@ -1264,8 +1262,7 @@ if (count($rows)>0){
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 
-
-				echo "<select multiple size='10' name='".$row->code."_mlist_property_".$product->id."[]' id='".$row->code."_mlist_property_".$product->id."[]'>";
+				echo "<select class=\"product_proprety_row_list\" multiple size='5' name='".$row->code."_mlist_property_".$product->id."[]' id='".$row->code."_mlist_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_mlist_property_'.$product->id);
 					$selected = "";
@@ -1277,15 +1274,13 @@ if (count($rows)>0){
 				echo "</select>";
 				break;
 			case "cbox":
-				echo 	JText::_($row->translation);
-
+				echo 	JText::_($row->translation).":&nbsp;&nbsp;";
+				
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-
-
 
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_cbox_property_'.$product->id);
@@ -1293,21 +1288,15 @@ if (count($rows)>0){
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="checked";
 					}
-
-
-					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."<br>";
+					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'> ". JText::_($rowValue->val_trans)."&nbsp;&nbsp;";
 				}
-
 				break;
 			case "text":
-				echo 	JText::_($row->translation);
-
+				echo JText::_($row->translation).":<br/>";
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
-				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-					
 				foreach ($rowsValue as $rowValue){
 					$valueText = $mainframe->getUserState($row->code.'_text_property_'.$product->id);
 
@@ -1319,20 +1308,18 @@ if (count($rows)>0){
 					echo "<input  type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' value='".JText::_($selected)."' />";
 					break;
 				}
-
 				break;
 				
 				
 			case "textarea":
-				echo 	JText::_($row->translation);
-
+				echo JText::_($row->translation)."<br/>";
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-					
-				foreach ($rowsValue as $rowValue){
+				
+			foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_textarea_property_'.$product->id);
 									
 					if (count($selProduct)>0){
@@ -1341,14 +1328,12 @@ if (count($rows)>0){
 						$selected = $rowValue->val_trans;
 					}
 
-					echo "<TEXTAREA  rows=10 COLS=40 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
+					echo "<TEXTAREA  rows=3 COLS=62 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
 					break;
 				}
-
 				break;
 			case "message":
-				echo 	JText::_($row->translation);
-
+				echo JText::_($row->translation);
 				$query="SELECT pvd.order as value_order, 
 							   pvd.text as value_text, 
 							   pvd.id as value, 
@@ -1365,11 +1350,10 @@ if (count($rows)>0){
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-					
 				foreach ($rowsValue as $rowValue){
 					$selected = $rowValue->val_trans;
 					?>
-					<div  >
+					<div class="product_proprety_message_title">
 					<?php 
 					echo JText::_($selected);
 					?>
@@ -1391,7 +1375,6 @@ if (count($rows)>0){
 ?>
 </ol>
 </fieldset>
-<hr>
 <?php
 
 	}
@@ -1461,24 +1444,45 @@ if (count($rows)>0){
 	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
 	<input type='hidden' id="task" name='task' value='order'> 
 	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
-	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> <?php echo JText::_("EASYSDI_ORDER_NAME"); ?>
-	<input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"> 
-	<br>
-	<?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?>
-	<input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
-	<br>
-	<?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?>
-	<input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>>
+	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+	<table class="ordersteps">
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_NAME"); ?>:</td>
+			<td><input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"></td>
+		</tr>
+		<tr>
+			<td colspan="2"><div class="separator" /></td>
+		</tr>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?>:</td>
+			<td><input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
+		</tr>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?>:</td>
+			<td><input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
+		</tr>
+		<tr>
+			<td colspan="2"><div class="separator" /></td>
+		</tr>
+	
 	<?php
 
 	if ($user->guest ){
-		echo "<hr>";
-		echo JText::_("EASYSDI_USER_NOT_CONNECTED");
-		?> 
-		<input type="text" name="user" value=""> 
-		<input type="password" name="password" value=""> 
+		?>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_USER_NOT_CONNECTED"); ?>:</td>
+		</tr>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_USER"); ?>:</td>
+			<td><input type="text" name="user" value=""></td>
+		</tr>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?>:</td>
+			<td><input type="password" name="password" value=""></td>
+		</tr>
 		<?php
 	}
+	
 	
 		$query = "select a.partner_id as partner_id, j.name as name 
 					from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c, #__users as j 
@@ -1491,21 +1495,28 @@ if (count($rows)>0){
 			echo "</div>";
 		}
 	
-	?> <br>
-	<hr>
-	<?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?> 
-	<select name="third_party">
-	<option value="0"><?php echo JText::_("EASYSDI_ORDER_FOR_NOBODY"); ?></option>
-	<?php
-	$third_party = $mainframe->getUserState('third_party');
-	echo $third_party;
-	foreach ($rows as $row){
-		$selected="";
-		if ($third_party == $row->partner_id) $selected="selected";
-		echo "<option ".$selected." value=\"".$row->partner_id."\">".$row->name."</option>";
-	}
-	?>
-	</select>
+?>	
+		<tr>
+			<td colspan="2"><div class="separator" /></td>
+		</tr>
+		<tr>
+			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?>:</td>
+			<td>
+				<select class="thirdPartySelect" name="third_party">
+					<option value="0"><?php echo JText::_("EASYSDI_ORDER_FOR_NOBODY"); ?></option>
+					<?php
+					$third_party = $mainframe->getUserState('third_party');
+					echo $third_party;
+					foreach ($rows as $row){
+						$selected="";
+						if ($third_party == $row->partner_id) $selected="selected";
+						echo "<option ".$selected." value=\"".$row->partner_id."\">".$row->name."</option>";
+					}
+					?>
+				</select>
+			</td>
+		</tr>
+	</table>
 </form>
 <?php
 
@@ -1669,12 +1680,23 @@ if (count($rows)>0){
 			
 			if($isProductAllowed == true)
 			{
-				?> <input
+				
+			//Call here the include content item plugin, or a specific article.
+			//$dispatcher =& JDispatcher::getInstance();
+			//JPluginHelper::importPlugin( 'content' );
+			//$results = $dispatcher->trigger('onPrepareContent', array (& $article, 
+			//	array(), 0));
+			
+			?>
+		        
+				<input
 				onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
 				type="button"
+				class="button"
 				value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
 				onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
 				type="button"
+				class="button"
 				value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
 			}
 		}
@@ -2568,8 +2590,9 @@ if (count($rows)>0){
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 <br>
+<b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
 <span class="searchCriteria"> <input name="freetextcriteria" type="text" value="<?php echo JRequest::getVar('freetextcriteria'); ?>">
-<br>
+<br><br>
 <input type="radio" name="simpleSearchCriteria" value="lastAddedMD" <?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?>> 
 	<?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?>
 <br>
