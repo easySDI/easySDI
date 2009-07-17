@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
@@ -41,6 +41,7 @@ class SITE_cpanel {
 		header('Pragma: public');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Content-Transfer-Encoding: none');
+		header("Content-Length: ".strlen($row->data));
 		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
 		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
 
