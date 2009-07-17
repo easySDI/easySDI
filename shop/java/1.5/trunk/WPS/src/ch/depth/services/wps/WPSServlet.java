@@ -322,120 +322,70 @@ public class WPSServlet extends HttpServlet {
 	    StringBuffer res = new StringBuffer();
 	    res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
 	    List<String> orderIdList = new Vector<String>();
-	    while (rs.next()) {
-		String order_id = rs.getString("order_id");
-		orderIdList.add(order_id);
-		String remark = rs.getString("remark");
-		String provider_id = rs.getString("provider_id");
-
-		String name = rs.getString("name");
-		int type = rs.getInt("type");
-		String order_update = rs.getString("order_update");
-		String third_party = rs.getString("third_party");
-		//String archived = rs.getString("archived");
-		String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
-		String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
-		String user_id = rs.getString("user_id");
-		String partner_id = rs.getString("partner_id");
-		int isRebate = rs.getInt("isrebate");
-		String rebate = rs.getString("rebate");
-		String status = rs.getString("orderCode");
+	    while (rs.next()) 
+	    {
+			String order_id = rs.getString("order_id");
+			orderIdList.add(order_id);
+			String remark = rs.getString("remark");
+			String provider_id = rs.getString("provider_id");
 		
-		res.append("<easysdi:order>\n");
-		res.append("<easysdi:header>\n");
-		res.append("<easysdi:VERSION>2.0</easysdi:VERSION>\n");
-		res.append("<easysdi:PLATFORM>"+getPlatformName()+"</easysdi:PLATFORM>\n");
-		res.append("<easysdi:SERVER>36</easysdi:SERVER>\n");
-		res.append("</easysdi:header>\n");
-		res.append("<easysdi:REQUEST>\n");
-		res.append("<easysdi:ID>"+order_id+"</easysdi:ID>\n");
-		
-		Statement stmtType = conn.createStatement();
-		ResultSet rsType = stmtType.executeQuery("SELECT code FROM "+getJoomlaPrefix()+"easysdi_order_type_list where id = "+ type);
-		
-		String typeCode = "";
-		while(rsType.next()){
-			typeCode = rsType.getString("code");
-		}
-		
-		if(typeCode.equalsIgnoreCase("D")){
-		    res.append("<easysdi:TYPE>ESTIMATE</easysdi:TYPE>\n");    
-		}
-		if(typeCode.equalsIgnoreCase("O")){
-		    res.append("<easysdi:TYPE>ORDER</easysdi:TYPE>\n");    
-		}
-		
-		res.append("<easysdi:NAME>"+name+"</easysdi:NAME>\n");
-		res.append("</easysdi:REQUEST>\n");
-		res.append("<easysdi:CLIENT>\n");
-		res.append("<easysdi:ID>"+partner_id+"</easysdi:ID>\n");
-		Statement stmtAdd = conn.createStatement();
-		ResultSet rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+partner_id);
-
-		while(rsAddContact.next()){
-
-		    res.append("<easysdi:CONTACTADDRESS>\n");
-		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
-		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
-		    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
-		    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
-		    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
-		    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
-		    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
-		    res.append("</easysdi:CONTACTADDRESS>\n");																
-		}
-		rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+partner_id);
-		while(rsAddContact.next()){		     
-		    res.append("<easysdi:INVOICEADDRESS>\n");
-		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
-		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
-		    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
-		    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
-		    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
-		    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
-		    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
-		    res.append("</easysdi:INVOICEADDRESS>\n");																
-		}
-
-		rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+partner_id);
-		while(rsAddContact.next()){		     
-		    res.append("<easysdi:DELIVERYADDRESS>\n");
-		    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-		    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-		    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-		    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-		    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-		    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
-		    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
-		    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
-		    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
-		    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
-		    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
-		    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
-		    res.append("</easysdi:DELIVERYADDRESS>\n");																
-		}		
-		res.append("</easysdi:CLIENT>\n");
-		
-		
-		if (!third_party.equalsIgnoreCase("0")){
-			res.append("<easysdi:TIERCE>\n");
-			res.append("<easysdi:ID>"+third_party+"</easysdi:ID>\n");
-			Statement stmtTierce = conn.createStatement();
-		    
-			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
+			String name = rs.getString("name");
+			int type = rs.getInt("type");
+			String order_update = rs.getString("order_update");
+			String third_party = rs.getString("third_party");
+			//String archived = rs.getString("archived");
+			String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
+			String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
+			String user_id = rs.getString("user_id");
+			String partner_id = rs.getString("partner_id");
+			String status = rs.getString("orderCode");
 			
+			// Récupération du rabais pour le fournisseur
+			int isRebate = 0;
+			String rebate = "0";
+			Statement stmtRebate = conn.createStatement();
+		    ResultSet rsRebate = stmtRebate.executeQuery("SELECT isrebate, rebate FROM "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE u.id=part.user_id AND u.username='"+userName+"'");
+	    
+		    while(rsRebate.next()){
+		    	isRebate = rs.getInt("isrebate");
+				rebate = rs.getString("rebate");
+			}
+		    
+		    // Début de la construction du fichier
+			res.append("<easysdi:order>\n");
+			res.append("<easysdi:header>\n");
+			res.append("<easysdi:VERSION>2.0</easysdi:VERSION>\n");
+			res.append("<easysdi:PLATFORM>"+getPlatformName()+"</easysdi:PLATFORM>\n");
+			res.append("<easysdi:SERVER>36</easysdi:SERVER>\n");
+			res.append("</easysdi:header>\n");
+			res.append("<easysdi:REQUEST>\n");
+			res.append("<easysdi:ID>"+order_id+"</easysdi:ID>\n");
+			
+			Statement stmtType = conn.createStatement();
+			ResultSet rsType = stmtType.executeQuery("SELECT code FROM "+getJoomlaPrefix()+"easysdi_order_type_list where id = "+ type);
+			
+			String typeCode = "";
+			while(rsType.next())
+			{
+				typeCode = rsType.getString("code");
+			}
+			
+			if(typeCode.equalsIgnoreCase("D")){
+			    res.append("<easysdi:TYPE>ESTIMATE</easysdi:TYPE>\n");    
+			}
+			if(typeCode.equalsIgnoreCase("O")){
+			    res.append("<easysdi:TYPE>ORDER</easysdi:TYPE>\n");    
+			}
+			
+			res.append("<easysdi:NAME>"+name+"</easysdi:NAME>\n");
+			res.append("</easysdi:REQUEST>\n");
+			res.append("<easysdi:CLIENT>\n");
+			res.append("<easysdi:ID>"+partner_id+"</easysdi:ID>\n");
+			Statement stmtAdd = conn.createStatement();
+			ResultSet rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+partner_id);
+	
 			while(rsAddContact.next()){
-
+	
 			    res.append("<easysdi:CONTACTADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
 			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
@@ -451,7 +401,7 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
 			    res.append("</easysdi:CONTACTADDRESS>\n");																
 			}
-			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+third_party);
+			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+partner_id);
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:INVOICEADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
@@ -468,8 +418,8 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
 			    res.append("</easysdi:INVOICEADDRESS>\n");																
 			}
-
-			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+third_party);
+	
+			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+partner_id);
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:DELIVERYADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
@@ -485,76 +435,143 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
 			    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
 			    res.append("</easysdi:DELIVERYADDRESS>\n");																
-			}	
-			res.append("</easysdi:TIERCE>\n");
-		
-		}else{
-		    res.append("<easysdi:TIERCE></easysdi:TIERCE>\n");  
-		}
-		
-		//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
-		//if(isRebate==1){
-		res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
-		//}
-		
-		Statement stmtPerim = conn.createStatement();
-		ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
-
-
-
-		res.append("<easysdi:PERIMETER>\n");
-		if (rsPerim.next()){
-		    if (rsPerim.getString("id_field_name")==null || rsPerim.getString("id_field_name").length() ==0){
-			res.append("<easysdi:TYPE>COORDINATES</easysdi:TYPE>\n");
-		    }else{
-			res.append("<easysdi:TYPE>VALUES</easysdi:TYPE>\n");
-		    }		 
-		    res.append("<easysdi:CODE>"+rsPerim.getString("perimeter_code")+"</easysdi:CODE>\n");
-		    do{							   		
-			res.append("<easysdi:CONTENT>"+rsPerim.getString("value")+"</easysdi:CONTENT>\n");
-		    }
-		    while(rsPerim.next());
-		}
-		res.append("</easysdi:PERIMETER>\n");
-		
-		res.append("<easysdi:PRODUCTS>\n");
-
-		
-		Statement stmtProducts = conn.createStatement();
-		ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE p.id=pl.product_id AND pl.order_id = "+order_id + " AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"'");
-
-		while(rsProducts.next()){
-		    res.append("<easysdi:PRODUCT>\n");		
-		    res.append("<easysdi:METADATA_ID>"+rsProducts.getString("metadata_id")+"</easysdi:METADATA_ID>\n");
-		    res.append("<easysdi:ID>"+rsProducts.getString("product_id")+"</easysdi:ID>\n");
-		    res.append("<easysdi:NAME>"+rsProducts.getString("data_title")+"</easysdi:NAME>\n");
+			}		
+			res.append("</easysdi:CLIENT>\n");
 			
-			res.append("<easysdi:PROPERTIES>\n");
-
-			Statement stmtProp = conn.createStatement();
-			ResultSet rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_product_properties_values_definition pd, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id and op.property_id = pd.id and opl.product_id = " + rsProducts.getString("product_id"));
-
-			while(rsProp.next()){
+			
+			if (!third_party.equalsIgnoreCase("0")){
+				res.append("<easysdi:TIERCE>\n");
+				res.append("<easysdi:ID>"+third_party+"</easysdi:ID>\n");
+				Statement stmtTierce = conn.createStatement();
 			    
-			    res.append("<easysdi:PROPERTY>\n");
-				    	 
-			    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
-			    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
-			    
-			    res.append("</easysdi:PROPERTY>\n");
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
+				
+				while(rsAddContact.next()){
+	
+				    res.append("<easysdi:CONTACTADDRESS>\n");
+				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
+				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
+				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
+				    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
+				    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
+				    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
+				    res.append("</easysdi:CONTACTADDRESS>\n");																
+				}
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+third_party);
+				while(rsAddContact.next()){		     
+				    res.append("<easysdi:INVOICEADDRESS>\n");
+				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
+				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
+				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
+				    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
+				    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
+				    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
+				    res.append("</easysdi:INVOICEADDRESS>\n");																
+				}
+	
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+third_party);
+				while(rsAddContact.next()){		     
+				    res.append("<easysdi:DELIVERYADDRESS>\n");
+				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
+				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
+				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
+				    res.append("<easysdi:EMAIL>"+rsAddContact.getString("address_email")+"</easysdi:EMAIL>\n");
+				    res.append("<easysdi:PHONE>"+rsAddContact.getString("address_phone")+"</easysdi:PHONE>\n");
+				    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
+				    res.append("</easysdi:DELIVERYADDRESS>\n");																
+				}	
+				res.append("</easysdi:TIERCE>\n");
+			
+			}else{
+			    res.append("<easysdi:TIERCE></easysdi:TIERCE>\n");  
 			}
 			
-			res.append("</easysdi:PROPERTIES>\n");
-			res.append("</easysdi:PRODUCT>\n");		
-		}
-		res.append("</easysdi:PRODUCTS>\n");
-
-		res.append("</easysdi:order>\n");
-
-		stmtProducts.close();
-		stmtProducts.close();
-		rsAddContact.close();
-		stmtAdd.close();
+			//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
+			// Insertion du rabais s'il y en a un, sinon 0
+			if(isRebate==1){
+			res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
+			}
+			else if(isRebate==0)
+			{
+				res.append("<easysdi:REBATE>0</easysdi:REBATE>\n");		    
+			}
+			
+			Statement stmtPerim = conn.createStatement();
+			ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
+	
+	
+	
+			res.append("<easysdi:PERIMETER>\n");
+			if (rsPerim.next()){
+			    if (rsPerim.getString("id_field_name")==null || rsPerim.getString("id_field_name").length() ==0){
+				res.append("<easysdi:TYPE>COORDINATES</easysdi:TYPE>\n");
+			    }else{
+				res.append("<easysdi:TYPE>VALUES</easysdi:TYPE>\n");
+			    }		 
+			    res.append("<easysdi:CODE>"+rsPerim.getString("perimeter_code")+"</easysdi:CODE>\n");
+			    do{							   		
+				res.append("<easysdi:CONTENT>"+rsPerim.getString("value")+"</easysdi:CONTENT>\n");
+			    }
+			    while(rsPerim.next());
+			}
+			res.append("</easysdi:PERIMETER>\n");
+			
+			res.append("<easysdi:PRODUCTS>\n");
+	
+			
+			Statement stmtProducts = conn.createStatement();
+			ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE p.id=pl.product_id AND pl.order_id = "+order_id + " AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"'");
+	
+			while(rsProducts.next()){
+			    res.append("<easysdi:PRODUCT>\n");		
+			    res.append("<easysdi:METADATA_ID>"+rsProducts.getString("metadata_id")+"</easysdi:METADATA_ID>\n");
+			    res.append("<easysdi:ID>"+rsProducts.getString("product_id")+"</easysdi:ID>\n");
+			    res.append("<easysdi:NAME>"+rsProducts.getString("data_title")+"</easysdi:NAME>\n");
+				
+				res.append("<easysdi:PROPERTIES>\n");
+	
+				Statement stmtProp = conn.createStatement();
+				ResultSet rsProp = stmtProp.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_properties op, "+getJoomlaPrefix()+"easysdi_product_properties_values_definition pd, "+getJoomlaPrefix()+"easysdi_order_product_list opl  where  opl.order_id = "+order_id+" and opl.id = op.order_product_list_id and op.property_id = pd.id and opl.product_id = " + rsProducts.getString("product_id"));
+	
+				while(rsProp.next()){
+				    
+				    res.append("<easysdi:PROPERTY>\n");
+					    	 
+				    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
+				    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
+				    
+				    res.append("</easysdi:PROPERTY>\n");
+				}
+				
+				res.append("</easysdi:PROPERTIES>\n");
+				res.append("</easysdi:PRODUCT>\n");		
+			}
+			res.append("</easysdi:PRODUCTS>\n");
+	
+			res.append("</easysdi:order>\n");
+	
+			stmtProducts.close();
+			stmtProducts.close();
+			rsAddContact.close();
+			stmtAdd.close();
 	    }
 	    res.append("</easysdi:orders>\n");
 
@@ -756,17 +773,20 @@ public class WPSServlet extends HttpServlet {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
 	
-	
-			PreparedStatement pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
+			PreparedStatement pre;
+			if (data != "")
+			{	
+				pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE'),data=? where order_id = "+order_id +" AND product_id = "+product_id);
+				ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
+				
+				pre.setBinaryStream(1,bais,data.length());
+			}
+			else
+				pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
 			
-			ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
-	
-			pre.setBinaryStream(1,bais,data.length());
-	
+			// Mise à jour de la requête
 			pre.executeUpdate();
-	
-	
-	
+		
 			int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
 			if (count == 0){
 			    stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='PROGRESS')   where order_id = "+order_id );
