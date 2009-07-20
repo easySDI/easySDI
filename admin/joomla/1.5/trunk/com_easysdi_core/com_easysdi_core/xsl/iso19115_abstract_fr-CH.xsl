@@ -19,24 +19,12 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <xsl:template match="gmd:MD_Metadata">
 
 <!-- Title of the metadata -->
-<title></title>
 <title><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></title>
-<title>
-<table align="left">
- <tr>
- 	<td rowspan="2">__ref_1$s</td>
-	<td>Fournisseur: __ref_2$s</td>
- </tr>
- <tr>
- 	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
- </tr>
-</table>
-</title>
 
 <div id="metadata" class="contentin">
 <!-- Title of the metadata -->
 <h2 class="contentheading"><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString"/></h2>
-<desc>
+
 <table class="descr" id="metadataTitle">
  <tr>
  	<td rowspan="2">__ref_1$s</td>
@@ -46,7 +34,6 @@ xmlns:ext="http://www.depth.ch/2008/ext"
  	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
  </tr>
 </table>
-</desc>
 <!-- The buttons links -->
 __ref_5$s
 <!-- The menu links -->
