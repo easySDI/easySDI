@@ -28,7 +28,6 @@ if (!$user->guest)
 	<div>
 	<div>
 	<div>
-	<h3><?php echo JText::_("EASYSDI_MENU_TITLE"); ?></h3>
 	
 	<?php 
 	if(userManagerRight::isEasySDIUser($user))
@@ -145,10 +144,15 @@ if (!$user->guest)
 			}
 			
 			?>
-		<li>
-			<a href ="./index.php?option=com_user&view=login"><span><?php echo JText::_("EASYSDI_MENU_ITEM_LOGIN"); ?></span></a>
-		</li>
 		</ul>
+		<table class="easysdi_disconnect_table" width="100%">
+			<tr>
+			   <td>
+			    <button onclick="window.open('./index.php?option=com_user&task=logout&return=aW5kZXgucGhw', '_self');"
+				class="easysdi_disconnect_button" type="submit"><?php echo JText::_("EASYSDI_MENU_ITEM_LOGIN"); ?></button>
+			   </td>
+			 </tr>
+		</table>
 		<?php
 		}
 		
