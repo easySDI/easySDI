@@ -1019,3 +1019,14 @@ div#printOrderRecap:hover{
 	width:28px;
 	background-repeat:no-repeat;
 }
+
+/***********************/
+/*** EasySDI Mod-menu */
+/***********************/
+.easysdi_disconnect_button{
+	margin-top:0px;
+	margin-right:10px;
+}
+.easysdi_disconnect_table td{
+	text-align: right
+}
