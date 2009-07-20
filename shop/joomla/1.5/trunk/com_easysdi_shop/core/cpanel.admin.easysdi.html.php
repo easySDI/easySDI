@@ -240,18 +240,9 @@ class HTMLadmin_cpanel {
 			});
 		});
 		</script>
-		
-		<table class="orderRecap" width="100%">
-		<tr>
-		<td colspan="2" width=100% >
 		<div title ="Print" id="printOrderRecap"></div>
-		</td>
-		</tr>
-		<tr>
-		<td colspan="2" class="ortitle1" >
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?>
-		</td>
-		</tr>
+		<h2 class="orderRecapTitle"><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h2>
+		<table class="orderRecap" width="100%">
 		<tr>
 		<td colspan="2" class="ortitle2">
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?>
