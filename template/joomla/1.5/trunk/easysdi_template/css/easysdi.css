@@ -932,19 +932,19 @@ div .savedOrderOrder{
 	
 }
 .orderRecapTitle{
-	font-weight: bold;
-	font-size : 18px;
-	padding: 8px;
+	font-size:22px;
+	font-weight:bold;
+	padding:5px 5px 12px 10px;
 	background-color:#d4deff;
+	color:#FFFFFF;
 }
 .orderRecap .ortitle2{
 	font-weight: bold;
-	font-size : 14px;
+	font-size : 15px;
 	background-color:  rgb( 240, 240, 240);
-	padding: 5px;
+	padding:3px 3px 3px 5px;
 	margin: 5px 0px 0px 0px;
-	border-left: 1px solid #ccc;
-	border-top: 1px solid #ccc;
+	border-top:15px solid #FFFFFF;
 }
 .orderRecap .ortitle3{
 	font-weight: bold;
@@ -955,13 +955,13 @@ div .savedOrderOrder{
 .orderRecap .ortitle4{
 	vertical-align: top;
 	font-weight: bold;
-	color: grey;
+	padding-left:5px;
 }
 .orderRecap .ornum{
 	font-style: italic ;
 	vertical-align: top;
 }
- div#printOrderRecap{
+div#printOrderRecap{
 	border: 1px outset #d4deff;
 	background-color:transparent;
 	background-image:url(../icons/silk/printer.png);
@@ -975,18 +975,35 @@ div .savedOrderOrder{
 }
 div#printOrderRecap:hover{ 
 	border-style: inset;
-
 }
 
 .orderRecapTreatment
-	{
-		margin: 0px 25px 25px 25px;
-	}
-.orderRecapTreatmentLegend
-	{
-		
-	}
+{
+  border: 2px solid #CCCCCC;
+  margin-bottom: 15px;
+}
 
+.orderRecapTreatment legend {
+  padding: 0.2em 0.5em;
+  color:black;
+}
+
+.orderRecapResultTable{
+  margin-top: 10px;
+}
+
+.orderRecapResult{
+  background-color:#993300;
+  width:2px;
+}
+
+.orderRecap a{
+  font-weight:bold;
+}
+
+.orderRecap td, th {
+padding:0;
+}
 /********************************************************/
 /***              EasySDI Caddy                       ***/
 /********************************************************/
