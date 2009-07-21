@@ -151,11 +151,10 @@ class HTMLadmin_cpanel {
 			<!-- <td><?php echo JText::_("EASYSDI_ORDER_TYPE_".$row->type) ;?></td> -->
 			 <td><?php echo JText::_($row->type_translation) ;?></td>
 			<td><?php echo JText::_($row->status_translation) ;?></td>
-			<td><?php if ($row->orderDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->orderDate));?></td>
-			<td><?php if ($row->orderSendDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->orderSendDate));?></td>
-			<td><?php if ($row->responseDate == "0000-00-00 00:00:00") echo ""; else echo date("d-m-Y", strtotime($row->responseDate));?></td>
+			<td><?php if ($row->orderDate == "0000-00-00 00:00:00") echo ""; else echo date( JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR"), strtotime($row->orderDate));?></td>
+			<td><?php if ($row->orderSendDate == "0000-00-00 00:00:00") echo ""; else echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR"), strtotime($row->orderSendDate));?></td>
+			<td><?php if ($row->responseDate == "0000-00-00 00:00:00") echo ""; else echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR"), strtotime($row->responseDate));?></td>
 			<?php 
-		
 				$query = "select u.name AS name 
 				from #__users u , #__easysdi_community_partner p 
 				inner join #__easysdi_community_address a on p.partner_id = a.partner_id 
@@ -283,7 +282,7 @@ class HTMLadmin_cpanel {
 			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
 			</td>
 			<td>
-			<?php echo JText::_($rows[0]->order_date); ?>
+			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->order_date)); ?>
 			</td>
 			</tr>
 			<?php 
@@ -297,7 +296,7 @@ class HTMLadmin_cpanel {
 			echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
 			</td>
 			<td>
-			<?php echo JText::_($rows[0]->order_send_date); ?>
+			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->order_send_date)); ?>
 			</td>
 			</tr>
 			<tr>
@@ -311,7 +310,7 @@ class HTMLadmin_cpanel {
 			{
 				?>
 				<td>
-				<?php echo JText::_($rows[0]->RESPONSE_DATE); ?>
+				<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->RESPONSE_DATE)); ?>
 				</td>
 				<?php 
 			}
@@ -451,13 +450,15 @@ class HTMLadmin_cpanel {
 		$status_id = $db->loadResult();
 				
 		foreach ($rowsProduct as $row){ ?>
+		<tr>
+		   <td colspan="2" >
+		     <fieldset class="orderRecapTreatment"><legend class="orderRecapTreatmentLegend"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></legend>
+			<table width="100%">
 			<tr>
 			<td colspan="2" >
 			<table >
 				<tr>
-					<td class="ornum"><?php echo ++$i; ?> - </td>
-					<td class="ortitle3"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></td>
-							<?php
+  				  <?php
 				/*	if ($row->status == $status_id){
 						$queryType = "select id from #__easysdi_order_type_list where code='O'";
 						$db->setQuery($queryType);
@@ -543,10 +544,11 @@ class HTMLadmin_cpanel {
 			if ($row->status == $status_id)
 			{?>
 				<tr>
-				<td colspan=2>
-				<fieldset class="orderRecapTreatment"><legend class="orderRecapTreatmentLegend"><?php echo "Traitement";?></legend>
-				<table width="100%">
+				<td colspan=2>				
+				<table class="orderRecapResultTable" width="100%">
 				<tr>
+				<td rowspan="3" class="orderRecapResult">
+				</td>
 				<td class="ortitle4">
 				<?php echo JText::_("EASYSDI_RECAP_ORDER_PRICE"); ?>			
 				</td>
@@ -554,6 +556,7 @@ class HTMLadmin_cpanel {
 				<?php echo $row->price.JText::_("EASYSDI_RECAP_ORDER_MONEY"); ?>
 				</td>
 				</tr>
+				
 				<tr>
 				<td class="ortitle4">
 				<?php echo JText::_("EASYSDI_RECAP_ORDER_REM"); ?>			
@@ -562,6 +565,7 @@ class HTMLadmin_cpanel {
 				<?php echo $row->remark; ?>
 				</td>
 				</tr>
+				
 				<tr>
 				<td class="ortitle4">
 				<?php echo JText::_("EASYSDI_RECAP_ORDER_FILE"); ?>			
@@ -570,13 +574,20 @@ class HTMLadmin_cpanel {
 						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
 						<?php echo $row->filename; ?></a>
 				</td>
-				</tr></table>
-				</fieldset>
+				</tr>
+				</table>
+				
 				</td>
 				</tr>
-				
 				<?php 
 			}
+			?>
+		   </table>
+		   </fieldset>
+		   </td>
+		   </tr>
+
+		<?php
 		}?>
 		
 		
