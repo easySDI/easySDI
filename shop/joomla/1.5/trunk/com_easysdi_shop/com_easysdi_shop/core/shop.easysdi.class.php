@@ -1742,8 +1742,8 @@ if (count($rows)>0){
 			
 			$db =& JFactory::getDBO();
 
-			jimport("joomla.utilities.date");
-			$date = new JDate();
+			//jimport("joomla.utilities.date");
+			//$date = new JDate();
 
 			$queryStatus = "SELECT id from #__easysdi_order_status_list where code = '".$orderStatus."'";
 			$db->setQuery($queryStatus );
@@ -1769,7 +1769,7 @@ if (count($rows)>0){
 				$totalArea = 0;
 			}
 			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
-						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus','".$date->toMySQL()."',$user->id,$bufferValue,$totalArea)";
+						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
 			$db->setQuery($query );
 			
 			if (!$db->query()) {
@@ -1783,7 +1783,7 @@ if (count($rows)>0){
 			//If the order is "SENT" update the order_send_date value
 			if($order_status_value == "SENT")
 			{
-				$query = "UPDATE   #__easysdi_order set order_send_date = '".$date->toMySQL()."' WHERE order_id= $order_id ";
+				$query = "UPDATE   #__easysdi_order set order_send_date = Now() WHERE order_id= $order_id ";
 				$db->setQuery( $query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";
