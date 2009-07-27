@@ -239,7 +239,9 @@ class HTMLadmin_cpanel {
 			});
 		});
 		</script>
+		
 		<div title ="Print" id="printOrderRecap"></div>
+		<div id="divOrderRecap">
 		<h2 class="orderRecapTitle"><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h2>
 		<table class="orderRecap" width="100%">
 		<tr>
@@ -329,6 +331,7 @@ class HTMLadmin_cpanel {
 		<?php echo JText::_($rows[0]->slT); ?>
 		</td>
 		</tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?>
@@ -350,6 +353,7 @@ class HTMLadmin_cpanel {
 		<?php echo $third_name; ?>
 		</td>
 		</tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?>
@@ -436,6 +440,7 @@ class HTMLadmin_cpanel {
 		<?php HTMLadmin_cpanel::viewOrderRecapPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id , $isfrontEnd); ?>
 		</td>
 		</tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
 		<?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?>
@@ -592,7 +597,7 @@ class HTMLadmin_cpanel {
 		
 		
 		</table>
-
+		</div>
 		<?php
 	}
 	
