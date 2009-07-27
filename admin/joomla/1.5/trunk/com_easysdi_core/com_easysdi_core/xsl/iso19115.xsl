@@ -96,7 +96,6 @@ __ref_6$s
 	</table>
 </td></tr>
 </table>
-<hr></hr>
 
 <h3>Diffusion</h3>
 <table class="descr"  >
@@ -104,7 +103,7 @@ __ref_6$s
 <tr valign="top"><td class="title">Restriction d'utilisation:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/gmd:LocalisedCharacterString"/></td></tr>
 <tr valign="top"><td class="title">Principes et mode de tarification:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributionOrderProcess/gmd:MD_StandardOrderProcess/gmd:fees/gmd:LocalisedCharacterString"/></td></tr>
 </table>
-<hr></hr>
+
 <h3>Statut juridique</h3>
 <table class="descr"  >
 <tr valign="top"><td class="title">Statut:</td><td>
@@ -116,7 +115,6 @@ __ref_6$s
 </td></tr>
 <tr valign="top"><td class="title">Référence du document légal:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints[@xlink:title='Référence du document légal']/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:LocalisedCharacterString"/></td></tr>
 </table>
-<hr></hr> 
 
       
 <h3>Gestion</h3>
@@ -144,7 +142,6 @@ __ref_6$s
 			<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gmd:LocalisedCharacterString"/>
 		</td></tr>
 	</table>
-<hr></hr>
  
  
 <h3>Représentation</h3>
@@ -231,7 +228,6 @@ __ref_6$s
 		</td></tr>
 	</table>
 	</xsl:if>
-	<hr></hr>
 	
 <h3>Attribut</h3>
  <xsl:for-each select="./gmd:metadataExtensionInfo">
@@ -266,7 +262,6 @@ __ref_6$s
 
 
 
-<hr></hr>
 <h3>Gestionnaire</h3>
 <table class="descr"   >	 	 	  	 	
 <tr valign="top"><td class="title">Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
@@ -288,7 +283,6 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:contact/gmd:CI_
 </table>
 
 
-<hr></hr>
 <h3>Responsable de diffusion</h3>
 <table class="descr"   >
 <tr valign="top"><td class="title">Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
@@ -311,7 +305,6 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:distributionInf
 </table>
 
 
-<hr></hr>
 <h3>Point de contact</h3>
 <table class="descr"   >
 <tr valign="top"><td class="title">Organisme*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gmd:LocalisedCharacterString"/></td></tr>
