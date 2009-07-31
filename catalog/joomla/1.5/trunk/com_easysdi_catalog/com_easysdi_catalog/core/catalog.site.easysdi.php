@@ -247,11 +247,10 @@ class SITE_catalog {
 			}
 			foreach ($list_id as $md_id)
 			{
-				//echo $md_id->metadata_id."<br>";
-				$cswPartnerFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+				$cswPartnerFilter .= "<PropertyIsEqualTo>
 				<PropertyName>fileId</PropertyName>
 				<Literal>$md_id->metadata_id</Literal>
-				</PropertyIsLike> ";
+				</PropertyIsEqualTo> ";
 			}
 			$empty = false;
 		}
