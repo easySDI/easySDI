@@ -339,6 +339,8 @@ public class WPSServlet extends HttpServlet {
 			String user_id = rs.getString("user_id");
 			String partner_id = rs.getString("partner_id");
 			String status = rs.getString("orderCode");
+			int buffer = 0;
+			buffer = rs.getInt("buffer");
 			
 			// Récupération du rabais pour le fournisseur
 			int isRebate = 0;
@@ -347,8 +349,8 @@ public class WPSServlet extends HttpServlet {
 		    ResultSet rsRebate = stmtRebate.executeQuery("SELECT isrebate, rebate FROM "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE u.id=part.user_id AND u.username='"+userName+"'");
 	    
 		    while(rsRebate.next()){
-		    	isRebate = rs.getInt("isrebate");
-				rebate = rs.getString("rebate");
+		    	isRebate = rsRebate.getInt("isrebate");
+				rebate = rsRebate.getString("rebate");
 			}
 		    
 		    // Début de la construction du fichier
@@ -514,10 +516,17 @@ public class WPSServlet extends HttpServlet {
 				res.append("<easysdi:REBATE>0</easysdi:REBATE>\n");		    
 			}
 			
+			// Insertion du buffer de la commande
+			if(buffer==0){
+				res.append("<easysdi:BUFFER>0</easysdi:BUFFER>\n");		    
+			}
+			else
+			{
+				res.append("<easysdi:BUFFER>"+ buffer+"</easysdi:BUFFER>\n");		    
+			}
+			
 			Statement stmtPerim = conn.createStatement();
 			ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
-	
-	
 	
 			res.append("<easysdi:PERIMETER>\n");
 			if (rsPerim.next()){
