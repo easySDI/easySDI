@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
@@ -100,7 +100,7 @@ class HTML_catalog{
 			<table>
 				<tr>
 					<td>
-					<button type="submit" class="easysdi_search_button"
+					<button id="simple_search_button" type="submit" class="easysdi_search_button"
 						onclick="document.getElementById('tabIndex').value = '0';
 								 document.getElementById('catalog_search_form').submit();">
 								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
@@ -132,7 +132,7 @@ class HTML_catalog{
 			<table>
 				<tr>
 					<td>
-					<button type="submit" class="easysdi_search_button"
+					<button id="advanced_search_button" type="submit" class="easysdi_search_button"
 						onclick="document.getElementById('tabIndex').value = '1';
 								 document.getElementById('catalog_search_form').submit();">
 								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>

@@ -61,261 +61,268 @@ class SITE_catalog {
 			$partner->partner_id = 0;
 		}
 		
-		$filter = "";
-		if($partner->partner_id == 0)
-		{
-			//No user logged, display only external products
-			$filter .= " AND (metadata_external=1) ";
-		}
-		else
-		{
-			//User logged, display products according to users's rights
-			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+		//do not display result if no request is done
+		//(simple_filterfreetextcriteria or filterfreetextcriteria have not been hit once)
+		if(isset($_GET['simple_search_button'])||isset($_GET['advanced_search_button'])){
+			$filter = "";
+			if($partner->partner_id == 0)
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
-				{
-					$filter .= " AND (metadata_external=1
-					OR
-					(metadata_internal =1 AND
-					(partner_id =  $partner->partner_id
-					OR
-					partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					
-					))) ";
-				}
-				else
-				{
-					$filter .= " AND (metadata_external=1 AND 
-					(partner_id <>  $partner->partner_id
-					AND
-					partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					AND 
-					partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					AND
-					partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					)
-					) ";
-				}
+				//No user logged, display only external products
+				$filter .= " AND (metadata_external=1) ";
 			}
 			else
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				//User logged, display products according to users's rights
+				if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
 				{
-					$filter .= " AND (metadata_internal =1 AND
-					(partner_id =  $partner->partner_id
-					OR
-					partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					)) ";
-									
+					if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+					{
+						$filter .= " AND (metadata_external=1
+						OR
+						(metadata_internal =1 AND
+						(partner_id =  $partner->partner_id
+						OR
+						partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						OR 
+						partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						OR
+						partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						
+						))) ";
+					}
+					else
+					{
+						$filter .= " AND (metadata_external=1 AND 
+						(partner_id <>  $partner->partner_id
+						AND
+						partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						AND 
+						partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						AND
+						partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						)
+						) ";
+					}
 				}
 				else
 				{
-					//no command right
-					$filter .= " AND (metadata_external = 10 AND metadata_internal = 10) ";
+					if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+					{
+						$filter .= " AND (metadata_internal =1 AND
+						(partner_id =  $partner->partner_id
+						OR
+						partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						OR 
+						partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						OR
+						partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						)) ";
+										
+					}
+					else
+					{
+						//no command right
+						$filter .= " AND (metadata_external = 10 AND metadata_internal = 10) ";
+					}
 				}
-			}
-		} 
-		
-		// Pour chaque requête qui récupère des id de métadonnées selon certains critères sur le produit, il faut tester que le produit est publié
-		
-		if ($minX == "-180" && $minY == "-90" && $maxX == "180" && $maxY == "90"){
-			$bboxfilter ="";
-		}
-		else{
-			$bboxfilter ="<BBOX>
-			<PropertyName>ows:BoundingBox</PropertyName>
-			<gml:Envelope><gml:lowerCorner>$minY $minX</gml:lowerCorner><gml:upperCorner>$maxY $maxX</gml:upperCorner></gml:Envelope>
-			</BBOX>";
-		}
-		
-		$cswThemeFilter="";
-		// Filtre sur la thématique (Critères de recherche avancés)
-		if($filter_theme)
-		{
-			$cswThemeFilter = "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-			<PropertyName>any</PropertyName>
-			<Literal>$filter_theme</Literal>
-			</PropertyIsLike> ";
+			} 
 			
-			$empty = false;
-		}
-		
-		// Filtre sur l'id du fournisseur (Critères de recherche avancés)
-		$cswPartnerFilter = "";
-		if( $partner_id )
-		{
-			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and partner_id = ".$partner_id.$filter;
-			$db->setQuery( $query);
-			$list_id = $db->loadObjectList() ;
-			if ($db->getErrorNum())
-			{
-				echo "<div class='alert'>";
-				echo 	$db->getErrorMsg();
-				echo "</div>";
+			// Pour chaque requête qui récupère des id de métadonnées selon certains critères sur le produit, il faut tester que le produit est publié
+			
+			if ($minX == "-180" && $minY == "-90" && $maxX == "180" && $maxY == "90"){
+				$bboxfilter ="";
 			}
-			foreach ($list_id as $md_id)
+			else{
+				$bboxfilter ="<BBOX>
+				<PropertyName>ows:BoundingBox</PropertyName>
+				<gml:Envelope><gml:lowerCorner>$minY $minX</gml:lowerCorner><gml:upperCorner>$maxY $maxX</gml:upperCorner></gml:Envelope>
+				</BBOX>";
+			}
+			
+			$cswThemeFilter="";
+			// Filtre sur la thématique (Critères de recherche avancés)
+			if($filter_theme)
 			{
-				$cswPartnerFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>fileId</PropertyName>
-				<Literal>$md_id->metadata_id</Literal>
+				$cswThemeFilter = "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+				<PropertyName>any</PropertyName>
+				<Literal>$filter_theme</Literal>
 				</PropertyIsLike> ";
+				
+				$empty = false;
 			}
-			$empty = false;
-		}
-		
-
-		$cswVisibleFilter = "";
-		// Filtre sur la visibilité du produit (Critères de recherche avancés)
-		if($filter_visible )
-		{	
-			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and previewWmsUrl is not null".$filter;
-			$db->setQuery( $query);
-			$list_id = $db->loadObjectList() ;
-			if ($db->getErrorNum())
+			
+			// Filtre sur l'id du fournisseur (Critères de recherche avancés)
+			$cswPartnerFilter = "";
+			if( $partner_id )
 			{
-				echo "<div class='alert'>";
-				echo 	$db->getErrorMsg();
-				echo "</div>";
-			}
-			foreach ($list_id as $md_id)
-			{
-				$cswVisibleFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>fileId</PropertyName>
-				<Literal>$md_id->metadata_id</Literal>
-				</PropertyIsLike> ";
-			}
-			$empty = false;
-		}
-		
-		$cswOrderableFilter = "";
-		// Filtre sur la possibilité de commander le produit (Critères de recherche avancés)
-		if($filter_orderable)
-		{
-			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1 AND published = 1".$filter; 
-			$db->setQuery( $query);
-			$list_id = $db->loadObjectList() ;
-			if ($db->getErrorNum())
-			{
-				echo "<div class='alert'>";
-				echo 	$db->getErrorMsg();
-				echo "</div>";
-			}
-			foreach ($list_id as $md_id)
-			{
-				$cswOrderableFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-				<PropertyName>fileId</PropertyName>
-				<Literal>$md_id->metadata_id</Literal>
-				</PropertyIsLike> ";
-			}
-			$empty = false;
-		}
-		
-		
-		$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
-		/*$sortBy='
-           			<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
-						<ogc:PropertyName>title</ogc:PropertyName>
-                		<ogc:SortOrder>ASC</ogc:SortOrder>
-            		</ogc:SortProperty>
-        		';
-		*/
-		
-	// Filtre minimum: Produits publiés
-		$cswMinimumFilter = "";
-		if( $cswPartnerFilter == "" and $cswThemeFilter == "" and $cswOrderableFilter == ""  and $cswVisibleFilter == "" )
-		{
-			$db =& JFactory::getDBO();
-			$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1".$filter;
-			$db->setQuery( $query);
-			$list_id = $db->loadObjectList() ;
-			if ($db->getErrorNum())
-			{
-				echo "<div class='alert'>";
-				echo 	$db->getErrorMsg();
-				echo "</div>";
-			}
-			foreach ($list_id as $md_id)
-			{
-				$cswPartnerFilter .= "<PropertyIsEqualTo>
-				<PropertyName>fileId</PropertyName>
-				<Literal>$md_id->metadata_id</Literal>
-				</PropertyIsEqualTo> ";
-			}
-			$empty = false;
-		}
-		
-		$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
-						<Or>";
-		// Filtre sur le texte (Critères de recherche avancés)
-		if ( $filterfreetextcriteria  || $empty )
-		{
-			$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-						<PropertyName>any</PropertyName>
-						<Literal>$filterfreetextcriteria%</Literal>
-						</PropertyIsLike> ";
-		}
-		// Filtre sur le texte (Critères de recherche simple)
-		if ($simple_filterfreetextcriteria || $empty)		
-		{		
-			$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-						<PropertyName>any</PropertyName>
-						<Literal>$simple_filterfreetextcriteria%</Literal>
-						</PropertyIsLike>
-						";
-		}
-		
-		
-
-		$cswfilter = $cswfilter.$cswPartnerFilter;
-		$cswfilter = $cswfilter.$cswThemeFilter;
-		$cswfilter = $cswfilter.$cswOrderableFilter;
-		$cswfilter = $cswfilter.$cswVisibleFilter;
-		$cswfilter = $cswfilter.$cswMinimumFilter;
-		$cswfilter = $cswfilter.$bboxfilter;
-		$cswfilter = $cswfilter."</Or></Filter>";//.$sortBy;
-		
-		$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".urlencode($cswfilter));
-
-
-		if ($cswResults !=null){
-			$total = 0;
-			foreach($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->attributes() as $a => $b) {
-				if ($a=='numberOfRecordsMatched'){
-					$total = $b;
+				$db =& JFactory::getDBO();
+				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and partner_id = ".$partner_id.$filter;
+				$db->setQuery( $query);
+				$list_id = $db->loadObjectList() ;
+				if ($db->getErrorNum())
+				{
+					echo "<div class='alert'>";
+					echo 	$db->getErrorMsg();
+					echo "</div>";
 				}
+				foreach ($list_id as $md_id)
+				{
+					$cswPartnerFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+					<PropertyName>fileId</PropertyName>
+					<Literal>$md_id->metadata_id</Literal>
+					</PropertyIsLike> ";
+				}
+				$empty = false;
 			}
-						
-			$pageNav = new JPagination($total,$limitstart,$limit);
 			
-			// Séparation en n éléments par page
-			$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
-			//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
-								
-			$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
-
-			// Tri avec XSLT
-			// Chargement du fichier XSL
-			/*$xsl = new DOMDocument();
-			$xsl->load(dirname(__FILE__)."\..\xsl\sortMetadata.xsl");
-			// Import de la feuille XSL
-			$xslt = new XSLTProcessor();
-			$xslt->importStylesheet($xsl);
+                	
+			$cswVisibleFilter = "";
+			// Filtre sur la visibilité du produit (Critères de recherche avancés)
+			if($filter_visible )
+			{	
+				$db =& JFactory::getDBO();
+				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and previewWmsUrl is not null".$filter;
+				$db->setQuery( $query);
+				$list_id = $db->loadObjectList() ;
+				if ($db->getErrorNum())
+				{
+					echo "<div class='alert'>";
+					echo 	$db->getErrorMsg();
+					echo "</div>";
+				}
+				foreach ($list_id as $md_id)
+				{
+					$cswVisibleFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+					<PropertyName>fileId</PropertyName>
+					<Literal>$md_id->metadata_id</Literal>
+					</PropertyIsLike> ";
+				}
+				$empty = false;
+			}
 			
-			$cswResults = DOMDocument::loadXML($xslt->transformToXml($cswResults));*/
-			// Fin du tri
+			$cswOrderableFilter = "";
+			// Filtre sur la possibilité de commander le produit (Critères de recherche avancés)
+			if($filter_orderable)
+			{
+				$db =& JFactory::getDBO();
+				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1 AND published = 1".$filter; 
+				$db->setQuery( $query);
+				$list_id = $db->loadObjectList() ;
+				if ($db->getErrorNum())
+				{
+					echo "<div class='alert'>";
+					echo 	$db->getErrorMsg();
+					echo "</div>";
+				}
+				foreach ($list_id as $md_id)
+				{
+					$cswOrderableFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+					<PropertyName>fileId</PropertyName>
+					<Literal>$md_id->metadata_id</Literal>
+					</PropertyIsLike> ";
+				}
+				$empty = false;
+			}
+			
+			
+			$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
+			/*$sortBy='
+           				<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
+							<ogc:PropertyName>title</ogc:PropertyName>
+                			<ogc:SortOrder>ASC</ogc:SortOrder>
+            			</ogc:SortProperty>
+        			';
+			*/
+			
+			// Filtre minimum: Produits publiés
+			$cswMinimumFilter = "";
+			if( $cswPartnerFilter == "" and $cswThemeFilter == "" and $cswOrderableFilter == ""  and $cswVisibleFilter == "" )
+			{
+				$db =& JFactory::getDBO();
+				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1".$filter;
+				$db->setQuery( $query);
+				$list_id = $db->loadObjectList() ;
+				if ($db->getErrorNum())
+				{
+					echo "<div class='alert'>";
+					echo 	$db->getErrorMsg();
+					echo "</div>";
+				}
+				foreach ($list_id as $md_id)
+				{
+					$cswPartnerFilter .= "<PropertyIsEqualTo>
+					<PropertyName>fileId</PropertyName>
+					<Literal>$md_id->metadata_id</Literal>
+					</PropertyIsEqualTo> ";
+				}
+				$empty = false;
+			}
+			
+			$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
+							<Or>";
+			// Filtre sur le texte (Critères de recherche avancés)
+			if ( $filterfreetextcriteria  || $empty )
+			{
+				$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+							<PropertyName>any</PropertyName>
+							<Literal>$filterfreetextcriteria%</Literal>
+							</PropertyIsLike> ";
+			}
+			// Filtre sur le texte (Critères de recherche simple)
+			if ($simple_filterfreetextcriteria || $empty)		
+			{		
+				$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+							<PropertyName>any</PropertyName>
+							<Literal>$simple_filterfreetextcriteria%</Literal>
+							</PropertyIsLike>
+							";
+			}
+			
+			
+                	
+			$cswfilter = $cswfilter.$cswPartnerFilter;
+			$cswfilter = $cswfilter.$cswThemeFilter;
+			$cswfilter = $cswfilter.$cswOrderableFilter;
+			$cswfilter = $cswfilter.$cswVisibleFilter;
+			$cswfilter = $cswfilter.$cswMinimumFilter;
+			$cswfilter = $cswfilter.$bboxfilter;
+			$cswfilter = $cswfilter."</Or></Filter>";//.$sortBy;
+			echo "<!--";
+			echo $catalogUrlGetRecordsCount."&constraint=".$cswfilter;
+			echo "-->";
+			$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".urlencode($cswfilter));
+                	
+                	
+			if ($cswResults !=null){
+				$total = 0;
+				foreach($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->attributes() as $a => $b) {
+					if ($a=='numberOfRecordsMatched'){
+						$total = $b;
+					}
+				}
+                	
+				$pageNav = new JPagination($total,$limitstart,$limit);
+				
+				// Séparation en n éléments par page
+				$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
+				//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
+									
+				$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
+                	
+				// Tri avec XSLT
+				// Chargement du fichier XSL
+				/*$xsl = new DOMDocument();
+				$xsl->load(dirname(__FILE__)."\..\xsl\sortMetadata.xsl");
+				// Import de la feuille XSL
+				$xslt = new XSLTProcessor();
+				$xslt->importStylesheet($xsl);
+				
+				$cswResults = DOMDocument::loadXML($xslt->transformToXml($cswResults));*/
+				// Fin du tri
+			}
 		}
 		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$filterfreetextcriteria,$maxDescr);
+		
 	}
 	
 	function Post($url,$array){
