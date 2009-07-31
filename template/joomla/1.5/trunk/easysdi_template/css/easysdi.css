@@ -88,7 +88,6 @@ div .freeMd{
 }
 
 .mdPanContent{
-	border: 1px solid #ccc;
 	vertical-align: top;
 }
 
@@ -1001,7 +1000,7 @@ div#printOrderRecap:hover{
   font-weight:bold;
 }
 
-.orderRecap td, th {
+.orderRecap td, .orderRecap th {
 padding:0;
 }
 /********************************************************/
