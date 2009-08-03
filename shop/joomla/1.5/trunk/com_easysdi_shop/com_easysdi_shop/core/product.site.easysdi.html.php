@@ -962,7 +962,6 @@ class HTML_product{
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
 			
 			<?php if (userManager::hasRight($rootPartner->partner_id,"INTERNAL")){?> 
-			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='deleteProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='editProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_PRODUCT"); ?></button>			
 			<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
 			<?php }  ?>
