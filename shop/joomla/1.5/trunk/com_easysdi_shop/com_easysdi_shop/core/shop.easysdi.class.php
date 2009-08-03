@@ -1486,7 +1486,7 @@ if (count($rows)>0){
 	
 		$query = "select a.partner_id as partner_id, j.name as name 
 					from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c, #__users as j 
-					where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id and a.user_id = j.id ORDER BY name";
+					where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id and a.user_id = j.id and a.root_id is null ORDER BY name";
 		$db->setQuery( $query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
