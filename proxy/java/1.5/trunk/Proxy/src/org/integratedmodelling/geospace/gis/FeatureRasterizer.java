@@ -453,13 +453,16 @@ public class FeatureRasterizer {
         yInterval = bounds.height / (double) height;
 
 
-
-        if (xInterval > yInterval) {
-            yInterval = xInterval;
-        }
-        if (yInterval > xInterval) {
-            xInterval = yInterval;
-        }
+// Debug tb 03.08.2009
+// Crée des erreurs de masquage lorsqu'utilisé par le proxy si les proportions hauteur/largeurs diffèrent entre bbox et image
+// Ne vois d'aileurs pas une utilité quelconque même dans un autre contexte!
+//        if (xInterval > yInterval) {
+//            yInterval = xInterval;
+//        }
+//        if (yInterval > xInterval) {
+//            xInterval = yInterval;
+//        }
+// Fin de Debug
 
         cellsize = yInterval;
 
