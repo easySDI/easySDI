@@ -473,7 +473,8 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	    tempFos.flush();
 	    tempFos.close();
-	    in.close();	 
+	    in.close();
+	    dump("SYSTEM","RemoteResponseToRequestUrl",urlstr);
 	    dump("SYSTEM","RemoteResponseLength",tempFile.length());
 
 	    dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
@@ -1070,52 +1071,54 @@ public abstract class ProxyServlet extends HttpServlet {
     	}
 
     
-    protected String getLayerFilter(String layer){
+    protected String getLayerFilter(String layer)
+    	{
+    	if (policy == null) return null;
+    	if (layer == null) return null;
+    	
+    	List<Server> serverList = policy.getServers().getServer();
 
-	if (policy == null) return null;
-	if (layer == null) return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-
-	    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-	    for (int j=0;j<layerList.size();j++){
-		//Is a specific feature type allowed ? 
-		if (layer.equals(layerList.get(j).getName())) {
-		    if (layerList.get(j).getFilter() == null) return null;
-		    return layerList.get(j).getFilter().getContent();
-		} 
-	    }
-
-
-	}	
-	return null;
-    }
-
-
-    protected String getLayerFilter(String url,String layer){
-
-	if (policy == null) return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		for (int i=0;i<serverList.size();i++)
+			{
+		    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		    for (int j=0;j<layerList.size();j++)
+		    	{
+		    	//Is a specific feature type allowed ? 
+		    	if (layer.equals(layerList.get(j).getName())) 
+		    		{
+		    		if (layerList.get(j).getFilter() == null) return null;
+		    		return layerList.get(j).getFilter().getContent();
+		    		} 
+		    	}
+			}	
+		return null;
+    	}
 
 
-		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j=0;j<layerList.size();j++){
-		    //Is a specific feature type allowed ? 
-		    if (layer.equals(layerList.get(j).getName())) {
-			if (layerList.get(j).getFilter() == null) return null;
-			return layerList.get(j).getFilter().getContent();
-		    } 
-		}
+    protected String getLayerFilter(String url,String layer)
+    	{
+    	if (policy == null) return null;
+    	
+    	List<Server> serverList = policy.getServers().getServer();
 
-	    }
-	}	
-	return null;
-    }
+		for (int i=0;i<serverList.size();i++)
+			{
+		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
+		    	{
+		    	List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+				for (int j=0;j<layerList.size();j++)
+					{
+				    //Is a specific feature type allowed ? 
+				    if (layer.equals(layerList.get(j).getName())) 
+				    	{
+				    	if (layerList.get(j).getFilter() == null) return null;
+				    	return layerList.get(j).getFilter().getContent();
+				    	} 
+					}
+		    	}
+			}	
+		return null;
+    	}
 
     
     protected String getServerNamespace(String url)
