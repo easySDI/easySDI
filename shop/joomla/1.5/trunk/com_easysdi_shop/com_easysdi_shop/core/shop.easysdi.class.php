@@ -1680,15 +1680,28 @@ if (count($rows)>0){
 			
 			if($isProductAllowed == true)
 			{
-				
+			//	
 			//Call here the include content item plugin, or a specific article.
-			//$dispatcher =& JDispatcher::getInstance();
-			//JPluginHelper::importPlugin( 'content' );
-			//$results = $dispatcher->trigger('onPrepareContent', array (& $article, 
-			//	array(), 0));
+			//Insert into the EasySDI config a key SHOP_ARTICLE_GENERAL_COND with
+			//the value like {include_content_item 148} refering to the plugin and
+			//article you would like to call.
+			//
+			?>
+			<table id="generalConditions">
+			<?php
+			$row->text = config_easysdi::getValue("SHOP_ARTICLE_GENERAL_COND");
+			$args = array( 1,&$row,&$params);
+			JPluginHelper::importPlugin( 'content' );
+			$dispatcher =& JDispatcher::getInstance();
+			//$params = & new JParameter('');
+			$results = $dispatcher->trigger('onPrepareContent', 
+			array(&$row,&$params,0));
+			
+			echo $row->text;
+			
 			
 			?>
-		        
+		        </table>
 				<input
 				onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
 				type="button"
