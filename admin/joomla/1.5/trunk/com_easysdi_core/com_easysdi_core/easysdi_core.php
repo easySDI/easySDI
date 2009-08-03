@@ -40,6 +40,8 @@ $language->load('com_easysdi_partner');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
 $db =& JFactory::getDBO();
+$affiliate_id = JRequest::getVar('affiliate_id');
+
 
 /* Handle Menu Item Manager entries */
 if ($view)
@@ -74,6 +76,10 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		$affiliate_id = JRequest::getVar('affiliate_id');
 		SITE_partner::editAffiliatePartner($affiliate_id);
+		break;
+	case "deleteAffiliate":
+		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
+		SITE_partner::deleteAffiliate($affiliate_id);
 		break;
 	case "listAffiliatePartner":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
