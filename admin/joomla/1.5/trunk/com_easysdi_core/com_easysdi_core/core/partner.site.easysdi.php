@@ -595,16 +595,75 @@ class SITE_partner {
 
 		$user =&	 new JTableUser($database);
 		$user->load( $partner->user_id );
-		if (!$partner->delete()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		
+		//Check if the user is referenced by product, metadata, order, affiliate before deleting it
+		$deletable = true;
+		$query ="SELECT * FROM #__easysdi_product WHERE partner_id=$partner->partner_id OR metadata_partner_id=$partner->partner_id OR diffusion_partner_id=$partner->partner_id OR admin_partner_id=$partner->partner_id";
+		$database->setQuery( $query );
+		$products = $database->loadObjectList();
+		if($products)
+		{
+			$deletable = false;
+			$list = "";
+			foreach ($products as $product)
+			{
+				$list .= "<br> - ".$product->data_title; 
+			}	
+			$list .= "<br>";
+			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
 		}
-		if (!$user->delete()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		
+		$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR third_party=$partner->partner_id";
+		$database->setQuery( $query );
+		$orders = $database->loadObjectList();
+		if($orders)
+		{
+			$deletable = false;
+			$list = "";
+			foreach ($orders as $order)
+			{
+				$list .= "<br> - ".$order->name; 
+			}	
+			$list .= "<br>";
+			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
 		}
-
-		//ADMIN_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner_id);
+		
+		$query ="SELECT p.*, u.username FROM #__easysdi_community_partner p, #__users u WHERE (p.root_id=$partner->partner_id OR p.parent_id=$partner->partner_id) AND ( p.user_id=u.id)";
+		$database->setQuery( $query );
+		$partners = $database->loadObjectList();
+		if($partners)
+		{
+			$deletable = false;
+			$list = "";
+			foreach ($partners as $partner)
+			{
+				$list .= "<br> - ".$partner->username; 
+			}	
+			$list .= "<br>";
+			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PARTNER",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		}
+		
+		if($deletable == true)
+		{
+			if (!$partner->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			}
+			if (!$user->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			}
+	
+			SITE_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner->partner_id);
+		}
+		else
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+		}
+		
 		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
 	}
 
@@ -1114,7 +1173,9 @@ class SITE_partner {
 			echo "</div>";
 			exit;
 		}
-			
+		
+		SITE_partner::includePartnerExtension(0,'BOTTOM','savePartner',$rowPartner->partner_id);
+		
 		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
 	}
 
