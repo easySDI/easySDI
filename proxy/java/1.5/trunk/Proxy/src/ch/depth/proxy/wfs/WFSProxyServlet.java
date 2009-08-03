@@ -207,21 +207,22 @@ public class WFSProxyServlet extends ProxyServlet {
 			}					
 		    }
 		}
-
-		//Add the prefix before the feature type
-		if(getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0){
-		    WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType/wfs:Name\">");
-		    WFSCapabilities100.append("<Name>");
-		    WFSCapabilities100.append("<xsl:if test=\"contains(.,':')\">");		
-		    WFSCapabilities100.append("<xsl:value-of select=\"substring-before(.,':')\"/>"+":"+getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\"substring-after(., ':')\"/>");
-		    WFSCapabilities100.append("</xsl:if>");
-		    WFSCapabilities100.append("<xsl:if test=\"not(contains(.,':'))\">");		
-		    WFSCapabilities100.append(getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\".\"/>");
-		    WFSCapabilities100.append("</xsl:if>");
-
-		    WFSCapabilities100.append("</Name>");
-		    WFSCapabilities100.append("</xsl:template>");
-		}
+//Debug tb 03.07.2009
+		//Add the prefix before the feature type: devenu inutile, FeatureType>Name contient déjà le préfix du serveur concerné
+//		if(getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0){
+//		    WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType/wfs:Name\">");
+//		    WFSCapabilities100.append("<Name>");
+//		    WFSCapabilities100.append("<xsl:if test=\"contains(.,':')\">");		
+//		    WFSCapabilities100.append("<xsl:value-of select=\"substring-before(.,':')\"/>"+":"+getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\"substring-after(., ':')\"/>");
+//		    WFSCapabilities100.append("</xsl:if>");
+//		    WFSCapabilities100.append("<xsl:if test=\"not(contains(.,':'))\">");		
+//		    WFSCapabilities100.append(getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\".\"/>");
+//		    WFSCapabilities100.append("</xsl:if>");
+//
+//		    WFSCapabilities100.append("</Name>");
+//		    WFSCapabilities100.append("</xsl:template>");
+//			}
+//Fin de Debug
 	    }
 	    WFSCapabilities100.append("</xsl:stylesheet>");	
 
@@ -319,13 +320,15 @@ public class WFSProxyServlet extends ProxyServlet {
 		    		if (tmpFT!=null){
 		    			String [] s = tmpFT.split(":");
 		    			tmpFT = s[s.length-1];
-		    			}
-
-		    		if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0)
-		    			{
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//		    			}
+//		    		if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0)
+//		    			{
 		    			if (!tmpFT.equals(""))
 		    				{
-		    				tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+//		    				tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+// Fin de Debug
 		    				if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer)))
 		    					{				    
 		    					featureTypeListToKeep.add(tmpFT);
@@ -345,8 +348,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							    		String tmpFA = fieldsAttribute[k].toString();
 							    		if (tmpFA!=null)
 							    			{
-							    			String [] s = tmpFA.split(":");
-							    			tmpFA = s[s.length-1];
+							    			String [] ss = tmpFA.split(":");
+							    			tmpFA = ss[ss.length-1];
 							    			}
 							    		// Comparaison avec le contenu de la Policy
 							    		// Si attributs dans req et aussi dans Policy-> isAttributeAllowed retourne vrai pour l'attribut en cours: tmpFA = AttributFromReq
@@ -726,12 +729,15 @@ public class WFSProxyServlet extends ProxyServlet {
 					    		{
 					    		String [] s = tmpFT.split(":");
 					    		tmpFT = s[s.length-1];
-					    		}			    
-					    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
-					    		{
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//					    		}			    
+//					    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+//					    		{
 					    		if (!tmpFT.equals(""))
 					    			{
-					    			tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+//					    			tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+//Fin de Debug
 					    			if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer)))
 					    				{				    
 					    				featureTypeListToKeep.add(tmpFT);
@@ -751,8 +757,8 @@ public class WFSProxyServlet extends ProxyServlet {
 									    		String tmpFA = fieldsAttribute[k].toString();
 									    		if (tmpFA!=null)
 									    			{
-									    			String [] s = tmpFA.split(":");
-									    			tmpFA = s[s.length-1];
+									    			String [] ss = tmpFA.split(":");
+									    			tmpFA = ss[ss.length-1];
 									    			}
 									    		// Comparaison avec le contenu de la Policy
 									    		// Si attributs dans req et aussi dans Policy-> isAttributeAllowed retourne vrai pour l'attribut en cours: tmpFA = AttributFromReq
@@ -1157,10 +1163,13 @@ public class WFSProxyServlet extends ProxyServlet {
 						    String [] s = tmpFT.split(":");
 						    tmpFT = s[s.length-1];
 							}
-						if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()))
-							{			
-						    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
-							}
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//						if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()))
+//							{			
+//						    tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+//							}
+//Fin de Debug
 			
 						if (tmpFT.equals(featureTypeListToKeep.get(j)))
 							{
@@ -1185,10 +1194,13 @@ public class WFSProxyServlet extends ProxyServlet {
 								    		String [] s = tmpFTA.split(":");
 								    		tmpFTA = s[s.length-1];
 								    		}
-								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
-								    		{			
-								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
-								    		}
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+//								    		{			
+//								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+//								    		}
+//Fin de Debug
 								    	if (tmpFTA.equals(attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+l)))
 								    		{
 								    		//atnl.item(k).setTextContent(tmpFTA); // Non nécessaire de réécrire ce qui est déjà présent
@@ -1246,10 +1258,13 @@ public class WFSProxyServlet extends ProxyServlet {
 								    		String [] s = tmpFTA.split(":");
 								    		tmpFTA = s[s.length-1];
 								    		}
-								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
-								    		{			
-								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
-								    		}
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//								    	if (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+//								    		{			
+//								    		tmpFTA = tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+//								    		}
+//Fin de Debug
 								    	if (tmpFTA.equals(geomAttribut))
 								    		{
 								    		hasGeomAttribut = true;
@@ -1304,10 +1319,13 @@ public class WFSProxyServlet extends ProxyServlet {
 				    		String [] s = tmpFT.split(":");
 				    		tmpFT = s[s.length-1];
 				    		}
-				    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
-				    		{			
-				    		tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
-				    		}
+//Debug tb 03.07.2009
+//Fait doublon avec split":"
+//				    	if (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()) || getRemoteServerInfo(iServer).getPrefix().length()==0)
+//				    		{			
+//				    		tmpFT = tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());			
+//				    		}
+//Fin de Debug
 		
 				    	if (tmpFT.equals(featureTypeListToKeep.get(j)))
 				    		{
@@ -2217,7 +2235,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		if (nlElements.item(i).getAttributes().getNamedItem("substitutionGroup")!=null){
 		    if("gml:_Feature".equals(nlElements.item(i).getAttributes().getNamedItem("substitutionGroup").getTextContent())){
 			String origName = nlElements.item(i).getAttributes().getNamedItem("name").getTextContent();
-			nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(0).getPrefix()+origName);
+			nlElements.item(i).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(0).getPrefix()+":"+origName);
 		    }
 		}
 
@@ -2234,7 +2252,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		    if (nlElements.item(j).getAttributes().getNamedItem("substitutionGroup")!=null){
 			if("gml:_Feature".equals(nlElements.item(j).getAttributes().getNamedItem("substitutionGroup").getTextContent())){
 			    String origName = nlElements.item(j).getAttributes().getNamedItem("name").getTextContent();
-			    nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(i).getPrefix()+origName);
+			    nlElements.item(j).getAttributes().getNamedItem("name").setTextContent(getRemoteServerInfo(i).getPrefix()+":"+origName);
 			}
 		    }
 
