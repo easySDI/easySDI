@@ -75,7 +75,12 @@ public class RemoteServerInfo {
 	    this.password = password;
 	    this.maxRecords = maxRecords;
 	    this.loginService = loginService;
-	    this.prefix = prefix;
+//Debug tb 02.07.2009
+	    // Le problème avec cette ligne, c'est que WFSProxyServlet a été corrigé sur la base du bug existant
+	    //-> getPrefix ne retournais rien, donc c'est un splite sur ":" qui s'en charge maintenant.
+	    //Sauf les méthodes de postraitement builtCapabilitiesXSLT et mergeDescribeFeatureTypes
+	    this.prefix = preifx;
+//Fin de Debug
 	    this.transaction = transaction;
 	}
 	
