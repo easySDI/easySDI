@@ -322,7 +322,7 @@ function orderReport($id,$isfrontEnd, $isForProvider){
 		$third = $rows[0]->third_party; 
 		if( $third != 0)
 		{
-			$queryUser = "SELECT name FROM #__users WHERE id = $third";
+			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__easysdi_community_partner where partner_id= $third)";
 			$db->setQuery($queryUser );
 			$third_name =  $db->loadResult();
 		}
