@@ -1309,7 +1309,7 @@ class HTML_partner
 		$tabs =& JPANE::getInstance('Tabs');		
 	?>
 	<div class="contentin">
-	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_ACCOUNT_TITLE"); ?></h2>
+	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_REGISTER_ACCOUNT_TITLE"); ?></h2>
 	
 	<?php
 		$profiles = array();
