@@ -572,8 +572,10 @@ class SITE_partner {
 		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option );
 	}
 
-	function removePartner( $cid, $option ) {
+	
+	function deleteAffiliate( $affiliate_id) {
 		global $mainframe;
+		$option = JRequest::getVar("option");
 		$database =& JFactory::getDBO();
 
 		$user = JFactory::getUser();
@@ -582,36 +584,28 @@ class SITE_partner {
 			return;
 		}
 
-		if (!is_array( $cid ) || count( $cid ) < 1) {
+		if (!$affiliate_id) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
-			exit;
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			return;
 		}
-		foreach( $cid as $partner_id )
-		{
-			$partner = new partnerByUserId( $database );
-			$partner->load( $partner_id );
+		
+		$partner = new partnerByUserId( $database );
+		$partner->load( $affiliate_id );
 
-			$user =&	 new JTableUser($database);
-			$user->load( $partner->user_id );
-			//$user = new mosUser( $database );
-			//$user->load( $partner->user_id );
-			if (!$partner->delete()) {
-				//echo "<script> alert('".$partner->getError()."'); window.history.go(-1); </script>\n";
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPartner" );
-			}
-			if (!$user->delete()) {
-				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPartner" );
-			}
-
-			ADMIN_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner_id);
-
-
+		$user =&	 new JTableUser($database);
+		$user->load( $partner->user_id );
+		if (!$partner->delete()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		}
+		if (!$user->delete()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listPartner" );
+		//ADMIN_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner_id);
+		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
 	}
 
 

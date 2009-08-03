@@ -108,6 +108,7 @@ class HTML_partner
 	  	<input type="hidden" id="task" name="task" value="listAffiliatePartner" />	  	 	 
 	  </form>	  
 	  <button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
+	  <button type="button" onclick="document.getElementById('task').value='deleteAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_DELETE_AFFILIATE"); ?></button>
 	  </div>
 <?php
 	}
