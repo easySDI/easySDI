@@ -500,8 +500,7 @@ class HTML_partner
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');		
 	?>
-	<div class="contentin">
-	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_ACCOUNT_TITLE"); ?></h2>
+	
 	
 	<?php
 		$profiles = array();
@@ -520,6 +519,8 @@ class HTML_partner
 		$activities = array();
 	
 ?>				
+	<div class="contentin">
+	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_ACCOUNT_TITLE"); ?></h2>
 	<form action="index.php?option=<?php echo $option ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
 <?php
 		echo $tabs->startPane("partnerPane");
@@ -1043,7 +1044,18 @@ class HTML_partner
 		
 ?>
 	
-	
+	<div class="contentin">
+	<?php
+	if ($rowUser->id)
+	{ ?>
+	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_EDIT_AFFILIATE_TITLE"); ?></h2>
+	<?php
+	}
+	else
+	{ ?>
+	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_CREATE_AFFILIATE_TITLE"); ?></h2>
+	<?php
+	} ?>
 	<form action="index.php?option=<?php echo $option; ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
 <?php
 		echo $tabs->startPane("affiliatePane");
@@ -1298,6 +1310,7 @@ class HTML_partner
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='<?php echo JRequest::getVar('return','showPartner'); ?>';form.submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PARTNER"); ?></button>
 		
 	</form>
+	</div>
 <?php
 	}
 	
