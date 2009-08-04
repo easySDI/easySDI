@@ -109,8 +109,19 @@ class HTML_product{
 		$tabs =& JPANE::getInstance('Tabs');
 		
 			
-		?>				
+		?>			
+	<div class="contentin">	
 	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
+	<?php if($id)
+	{ ?>
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_EDIT_PRODUCT"); ?></h2>
+	<?php
+	}
+	else
+	{ ?>
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_NEW_PRODUCT"); ?></h2>
+	<?php
+	} ?>
 <?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productPane");
@@ -483,7 +494,7 @@ class HTML_product{
 		</form>
 		<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>		
 		<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
-		
+		</div>
 	<?php
 	}
 	
