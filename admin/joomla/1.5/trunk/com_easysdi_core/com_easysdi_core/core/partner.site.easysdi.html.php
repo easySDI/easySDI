@@ -520,7 +520,7 @@ class HTML_partner
 	
 ?>				
 	<div class="contentin">
-	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_ACCOUNT_TITLE"); ?></h2>
+	<h2 class="contentheading"> <?php echo JText::_("EASYSDI_EDIT_ACCOUNT_TITLE"); ?></h2>
 	<form action="index.php?option=<?php echo $option ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
 <?php
 		echo $tabs->startPane("partnerPane");
