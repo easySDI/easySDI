@@ -61,6 +61,7 @@ $language->load('com_easysdi_shop');
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
+$order_id = JRequest::getVar('order_id');
 
 $myFavoritesFirst = JRequest::getVar('myFavoritesFirst');
 $simpleSearchCriteria = JRequest::getVar('simpleSearchCriteria');
@@ -166,7 +167,15 @@ switch($task){
 		SITE_cpanel::sendOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
-		
+	case "orderDraft":
+		HTML_shop::orderDraft($order_id);
+		//Get the url for the "order" entry of the menu
+		$database =& JFactory::getDBO();
+		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
+		$database->setQuery($queryURL);
+		$redirectURL = $database->loadResult();
+		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL" );
+		break;	
 	case "archiveOrder":
 		SITE_cpanel::archiveOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
