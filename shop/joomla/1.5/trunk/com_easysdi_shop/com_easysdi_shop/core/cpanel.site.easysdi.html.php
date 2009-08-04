@@ -164,7 +164,7 @@ class HTML_cpanel {
 					</td>
 					<td>
 					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderDraft';document.getElementById('ordersListForm').submit();"></div>
 					</td></tr>
 					</table>
 					<?php 
