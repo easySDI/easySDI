@@ -596,7 +596,7 @@ class SITE_partner {
 		$user =&	 new JTableUser($database);
 		$user->load( $partner->user_id );
 		
-		//Check if the user is referenced by product, metadata, order, affiliate before deleting it
+		//Check if the user is referenced by product, order, affiliate before deleting it
 		$deletable = true;
 		$query ="SELECT * FROM #__easysdi_product WHERE partner_id=$partner->partner_id OR metadata_partner_id=$partner->partner_id OR diffusion_partner_id=$partner->partner_id OR admin_partner_id=$partner->partner_id";
 		$database->setQuery( $query );
