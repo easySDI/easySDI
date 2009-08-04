@@ -2246,7 +2246,6 @@ if (count($rows)>0){
 
 		global $mainframe;
 
-
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$cid = JRequest::getVar ('cid', array() );
@@ -2734,5 +2733,63 @@ if (count($rows)>0){
 	<?php
 	}
 	
+	function orderDraft ($order_id)
+	{
+		global $mainframe;
+		$database =& JFactory::getDBO();
+		
+		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
+		$database->setQuery($query);
+		$order = $database->loadObject();
+		
+		$mainframe->setUserState('order_name',$order->name);
+		$mainframe->setUserState('order_type',$order->type );
+		$mainframe->setUserState('third_party',$order->third_party);
+		$mainframe->setUserState('bufferValue',$order->buffer);
+		$mainframe->setUserState('totalArea',$order->surface);
+		
+		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
+		$database->setQuery($queryProducts);
+		$productList = $database->loadObjectList();
+		
+		$productArray = array ();
+		foreach($productList as $product)
+		{
+			$productArray[]=$product->product_id;
+		}
+		//$mainframe->setUserState('productList',$productArray);
+		
+		
+		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id";
+		$database->setQuery($queryPerimeters);
+		$perimeterList = $database->loadObjectList();
+		
+		/*
+	
+		$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
+		
+		$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
+			
+		
+			
+		$mainframe->setUserState('totalArea',$totalArea);
+
+		$mainframe->setUserState('perimeter_id',$perimeter_id);
+			
+		$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
+		
+		$mainframe->setUserState($row->code.'_message_property_'.$id,$property);
+		
+		$mainframe->setUserState($row->code.'_textarea_property_'.$id,$property);
+
+		$mainframe->setUserState($row->code.'_list_property_'.$id,$property);
+
+		$mainframe->setUserState($row->code.'_cbox_property_'.$id,$property);
+
+		$mainframe->setUserState($row->code.'_mlist_property_'.$id,$property);
+		;
+		
+		*/
+	}
 }
 	?>
