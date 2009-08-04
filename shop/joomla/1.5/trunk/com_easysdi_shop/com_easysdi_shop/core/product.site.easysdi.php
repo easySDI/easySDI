@@ -383,6 +383,20 @@ class SITE_product {
 		}
 		
 		$option = JRequest::getVar('option');
+		
+		//Allows Pathway with mod_menu_easysdi
+		if($isNew)
+		{
+			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PRODUCT_CREATE",
+										   "EASYSDI_MENU_ITEM_PRODUCTS",
+										   "index.php?option=$option&task=listProduct");
+		}
+		else
+		{
+			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PRODUCT_EDIT",
+										   "EASYSDI_MENU_ITEM_PRODUCTS",
+										   "index.php?option=$option&task=listProduct");
+		}
 
 		$database =& JFactory::getDBO(); 
 		$rowProduct = new product( $database );
@@ -429,7 +443,11 @@ class SITE_product {
 		}
 		
 		$option = JRequest::getVar('option');
-		  
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_METADATA_EDIT",
+										   "EASYSDI_MENU_ITEM_METADATA",
+										   "index.php?option=$option&task=listProductMetadata"); 
+		
 		$database =& JFactory::getDBO(); 
 		$rowProduct = new product( $database );
 		$rowProduct->load( $id );					
@@ -490,24 +508,9 @@ class SITE_product {
 	
 	function listProduct(){
 		global  $mainframe;
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		 // Get the menu item object
-	     $menus = &JSite::getMenu();
-        $menu  = $menus->getActive();
-        $params = &$mainframe->getParams();
- 		 //Handle the breadcrumbs
-        if(!$menu)
-        {
-        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_PRODUCTS"));
-			//Add item in pathway		
-			$breadcrumbs = & $mainframe->getPathWay();
-		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_PRODUCTS"), '' );
-		    $document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-        }
-		/**/
+
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_PRODUCTS");
         
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
@@ -594,24 +597,9 @@ class SITE_product {
 	
 	function listProductMetadata(){
 		global  $mainframe;
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		 // Get the menu item object
-	     $menus = &JSite::getMenu();
-        $menu  = $menus->getActive();
-        $params = &$mainframe->getParams();
- 		 //Handle the breadcrumbs
-        if(!$menu)
-        {
-        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_METADATA"));
-			//Add item in pathway		
-			$breadcrumbs = & $mainframe->getPathWay();
-		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_METADATA"), '' );
-		    $document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-        }
-		/**/
+		
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_METADATA");
+		
 		
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );

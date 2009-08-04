@@ -532,7 +532,10 @@ class HTML_product{
 		
 			
 		?>				
+		<div class="contentin">	
+
 	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_EDIT_METADATA"); ?></h2>
 <?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productPane");
@@ -989,7 +992,7 @@ class HTML_product{
 		?>	
 		<div class="contentin">
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_PRODUCT"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_LIST_METADATA"); ?></h2>
 	
 		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 	

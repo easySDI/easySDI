@@ -89,29 +89,9 @@ class SITE_cpanel {
 
 		$option=JRequest::getVar("option");
 
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		// Get the menu item object
-		$menus = &JSite::getMenu();
-		$menu  = $menus->getActive();
-		$params = &$mainframe->getParams();
-		//Handle the breadcrumbs
-		if(!$menu)
-		{
-			$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"));
-			//Add item in pathway
-			$breadcrumbs = & $mainframe->getPathWay();
-			$breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"), '' );
-			$document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-		}
-		/**/
-
-		/*
-			$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
-			$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0);
-			*/
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
+		
 		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
 		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
 
@@ -347,6 +327,11 @@ class SITE_cpanel {
 		$database =& JFactory::getDBO();
 			
 		$option=JRequest::getVar("option");
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PROCESS_TREATMENT",
+											"EASYSDI_MENU_ITEM_MYTREATMENT",  
+											"index.php?option=$option&task=listOrdersForProvider");
+		
 		$order_id=JRequest::getVar("order_id","0");
 		$user = JFactory::getUser();
 
@@ -388,25 +373,10 @@ class SITE_cpanel {
 	function listOrders(){
 
 		global  $mainframe;
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		// Get the menu item object
-		$menus = &JSite::getMenu();
-		$menu  = $menus->getActive();
-		$params = &$mainframe->getParams();
-		//Handle the breadcrumbs
-		if(!$menu)
-		{
-			$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYORDERS"));
-			//Add item in pathway
-			$breadcrumbs = & $mainframe->getPathWay();
-			$breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYORDERS"), '' );
-			$document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-		}
-		/**/
-
+		
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYORDERS");
+		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$rootPartner = new partnerByUserId($database);

@@ -22,25 +22,9 @@ class SITE_favorite {
 function manageFavoriteProduct ( $orderable = 1)
 {
 	global $mainframe;
-	/**
-	 * Allow Pathway with mod_menu_easysdi
-	 */
-	 // Get the menu item object
-        $menus = &JSite::getMenu();
-        $menu  = $menus->getActive();
-         $params = &$mainframe->getParams();
- 	 	//Handle the breadcrumbs
-        if(!$menu)
-        {
-        	$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_FAVORITES"));
-			//Add item in pathway		
-			$breadcrumbs = & $mainframe->getPathWay();
-		    $breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_FAVORITES"), '' );
-		    $document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-        }
-		/**/
-        
+	//Allows Pathway with mod_menu_easysdi
+	breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_FAVORITES");
+
 	$user = JFactory::getUser();		
 	
 	if(!userManager::isUserAllowed($user,"FAVORITE"))
