@@ -39,41 +39,15 @@ class SITE_partner {
 	function listPartner() {
 		global  $mainframe;
 
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		// Get the menu item object
-		$menus = &JSite::getMenu();
-		$menu  = $menus->getActive();
-		$params = &$mainframe->getParams();
-		//Handle the breadcrumbs
-		if(!$menu)
-		{
-			$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"));
-			//Add item in pathway
-			$breadcrumbs = & $mainframe->getPathWay();
-			$breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"), '' );
-			$document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-		}
-		/**/
-
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES");
+		
 		$user = JFactory::getUser();
 		if(!userManager::isUserAllowed($user,"ACCOUNT"))
 		{
 			return;
 		}
-		/*if ($user->guest){
-			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
-			return;
-			}
-			if(!usermanager::isEasySDIUser($user))
-			{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
-			return;
-			}*/
 
-			
 		$option=JRequest::getVar("option");
 
 		$db =& JFactory::getDBO();
@@ -172,30 +146,16 @@ class SITE_partner {
 		{
 			return;
 		}
-		/*if ($user->guest){
-			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
-			return;
-			}
-			if(!usermanager::isEasySDIUser($user))
-			{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
-			return;
-			}*/
+
+		//Allows Pathway with mod_menu_easysdi
+		$option = JRequest::getVar('option');
+		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYACCOUNT_EDIT",
+										   "EASYSDI_MENU_ITEM_MYACCOUNT",
+										   "index.php?option=$option&task=showPartner");
 
 		$database =& JFactory::getDBO();
 		$rowPartner = new partnerByUserId( $database );
 		$rowPartner->load( $user->id );
-
-		/*if ($rowPartner->partner_entry != null && $rowPartner->partner_entry != '0000-00-00') {
-			$rowPartner->partner_entry = date('d.m.Y H:i:s',strtotime($rowPartner->partner_entry));
-			} else {
-			$rowPartner->partner_entry = null;
-			}
-			if ($rowPartner->partner_exit != null && $rowPartner->partner_exit != '0000-00-00')	{
-			$rowPartner->partner_exit = date('d.m.Y H:i:s',strtotime($rowPartner->partner_exit));
-			} else {
-			$rowPartner->partner_exit = null;
-			}*/
 
 		$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=1" );
 		$contact_id = $database->loadResult();
@@ -252,24 +212,9 @@ class SITE_partner {
 		global  $mainframe;
 		$user = JFactory::getUser();
 
-		/**
-		 * Allow Pathway with mod_menu_easysdi
-		 */
-		// Get the menu item object
-		$menus = &JSite::getMenu();
-		$menu  = $menus->getActive();
-		$params = &$mainframe->getParams();
-		//Handle the breadcrumbs
-		if(!$menu)
-		{
-			$params->set('page_title',	JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"));
-			//Add item in pathway
-			$breadcrumbs = & $mainframe->getPathWay();
-			$breadcrumbs->addItem( JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"), '' );
-			$document	= &JFactory::getDocument();
-			$document->setTitle( $params->get( 'page_title' ) );
-		}
-		/**/
+		//Allows Pathway with mod_menu_easysdi
+		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYACCOUNT");
+
 			
 		if ($user->guest){
 			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
@@ -500,8 +445,6 @@ class SITE_partner {
 	// Cr�ation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editAffiliatePartner($affiliate_id = null ) {
-
-
 		$user = JFactory::getUser();
 
 		if(!usermanager::isUserAllowed($user, "ACCOUNT"))
@@ -509,6 +452,23 @@ class SITE_partner {
 			return;
 		}
 
+		
+		//Allows Pathway with mod_menu_easysdi
+		$option = JRequest::getVar('option');
+		if($affiliate_id)
+		{
+			//Edit affiliate
+			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_EDIT",
+											   "EASYSDI_MENU_ITEM_MYAFFILIATES",
+											   "index.php?option=$option&task=listAffiliatePartner");
+		}
+		else
+		{
+			//Create affiliate
+			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_CREATE",
+											   "EASYSDI_MENU_ITEM_MYAFFILIATES",
+											   "index.php?option=$option&task=listAffiliatePartner");
+		}
 		$option = JRequest::getVar("option");
 		$database =& JFactory::getDBO();
 			

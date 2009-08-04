@@ -18,8 +18,24 @@
 class breadcrumbsBuilder
 {
 
-	function addFirstCrumb ()
+	function addFirstCrumb ($page_title)
 	{
+		// Get the menu item object
+		global  $mainframe;
+		$menus = &JSite::getMenu();
+		$menu  = $menus->getActive();
+		$params = &$mainframe->getParams();
+		//Handle the breadcrumbs
+		if(!$menu)
+		{
+			$params->set('page_title',	JText::_($page_title));
+			//Add item in pathway
+			$breadcrumbs = & $mainframe->getPathWay();
+			$breadcrumbs->addItem( JText::_($page_title), '' );
+			$document	= &JFactory::getDocument();
+			$document->setTitle( $params->get( 'page_title' ) );
+		}
+		
 		
 	}
 	
