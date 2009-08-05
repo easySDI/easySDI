@@ -1912,6 +1912,26 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	if($version == "0.99991")
+	 {
+		 //Add total area field to order 
+		$query="ALTER TABLE #__easysdi_order add column `perimeter_id` bigint(20) NOT NULL default '0'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	  	
+		
+	 	//Update component version
+		$version = "0.99992";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 
 	/**
 	 * Menu creation
