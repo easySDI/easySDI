@@ -304,7 +304,7 @@ class HTML_shop {
 		else
 		{
 			isFreeSelectionPerimeter = false;
-	
+
 			if (wmsUrl.length > 0)
 			{
 				layerPerimeter = new OpenLayers.Layer.WMS(perimName,
@@ -2733,48 +2733,82 @@ if (count($rows)>0){
 	<?php
 	}
 	
-	function orderDraft ($order_id)
+	/*function orderDraft ($order_id)
 	{
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		
+		//Order
 		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
 		$database->setQuery($query);
 		$order = $database->loadObject();
-		
 		$mainframe->setUserState('order_name',$order->name);
-		$mainframe->setUserState('order_type',$order->type );
 		$mainframe->setUserState('third_party',$order->third_party);
 		$mainframe->setUserState('bufferValue',$order->buffer);
 		$mainframe->setUserState('totalArea',$order->surface);
 		
+		//Order type
+		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
+		$database->setQuery($queryType);
+		$type = $database->loadObject();
+		$mainframe->setUserState('order_type',$type->code );
+		
+		//Products
 		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
 		$database->setQuery($queryProducts);
 		$productList = $database->loadObjectList();
-		
 		$productArray = array ();
 		foreach($productList as $product)
 		{
 			$productArray[]=$product->product_id;
 		}
-		//$mainframe->setUserState('productList',$productArray);
+		$mainframe->setUserState('productList',$productArray);
 		
-		
+		//Selected surfaces
 		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id";
 		$database->setQuery($queryPerimeters);
 		$perimeterList = $database->loadObjectList();
+		$selectedSurfaces = array ();
+		$selectedSurfacesName = array();
+		foreach ($perimeterList as $perimeter)
+		{
+			$selectedSurfaces[]=$perimeter->value;
+			$selectedSurfacesName[]=$perimeter->text;	
+		}
+		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);
+		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
+		
+		//Perimeter type
+		$mainframe->setUserState('perimeter_id',3);
+		
+		//Properties
+		foreach($productList as $product)
+		{
+			$queryPropertyCode = "SELECT * FROM #__easysdi_order_product_properties WHERE order_product_list_id = $product->id";
+			$database->setQuery($queryPropertyCode);
+			$orderProperties = $database->loadObjectList();
+			
+			foreach($orderProperties as $orderProperty)
+			{
+				$queryPropertyDefintion = "SELECT * FROM #__easysdi_product_properties_definition WHERE code=$orderProperty->code";
+				$database->setQuery($queryPropertyDefintion);
+				$propertyDefinition = $database->loadObject();
+				switch($propertyDefinion->type_code)
+				{
+					case "message":
+						break;
+					case "list":
+						$mainframe->setUserState($orderProperty->code."_list_property_".$product->product_id,$orderProperty->property_id );
+						break;
+					case "text":
+						break;
+				}
+			}
+		
+		}
+					
 		
 		/*
-	
-		$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
-		
-		$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
-			
-		
-			
-		$mainframe->setUserState('totalArea',$totalArea);
-
-		$mainframe->setUserState('perimeter_id',$perimeter_id);
 			
 		$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
 		
@@ -2790,6 +2824,6 @@ if (count($rows)>0){
 		;
 		
 		*/
-	}
+	/*}*/
 }
 	?>
