@@ -1764,6 +1764,7 @@ if (count($rows)>0){
 			$third_party = $mainframe->getUserState('third_party');
 			$bufferValue = $mainframe->getUserState('bufferValue');
 			$totalArea = $mainframe->getUserState('totalArea');
+			$perimeter_id = $mainframe->getUserState('perimeter_id');
 			
 			$db =& JFactory::getDBO();
 
@@ -1793,8 +1794,8 @@ if (count($rows)>0){
 			{
 				$totalArea = 0;
 			}
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
-						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
+			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface,perimeter_id) 
+						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea,$perimeter_id)";
 			$db->setQuery($query );
 			
 			if (!$db->query()) {
@@ -2717,6 +2718,7 @@ if (count($rows)>0){
 		$mainframe->setUserState('third_party',$order->third_party);
 		$mainframe->setUserState('bufferValue',$order->buffer);
 		$mainframe->setUserState('totalArea',$order->surface);
+		$mainframe->setUserState('perimeter_id',$order->perimeter_id);
 		
 		//Order type
 		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
@@ -2748,9 +2750,6 @@ if (count($rows)>0){
 		}
 		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);
 		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
-		
-		//Perimeter type
-		$mainframe->setUserState('perimeter_id',1);
 		
 		//Properties
 		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
