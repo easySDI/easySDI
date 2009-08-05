@@ -42,9 +42,7 @@ class HTML_shop {
 				}
 				if ($value == $id)
 				{
-					$mainframe->enqueueMessage("product removed :  ".$id,'info');	
-				
-					$query = "SELECT  pd.code as code 
+						$query = "SELECT  pd.code as code 
 							  FROM #__easysdi_product_property p, 
 							  	   #__easysdi_product_properties_definition  as pd,
 							  	   #__easysdi_product_properties_values_definition as pv   
@@ -1399,7 +1397,6 @@ if (count($rows)>0){
 	<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'>
 	<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
-	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 	
 	
 </form>
@@ -1455,7 +1452,6 @@ if (count($rows)>0){
 	<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
 	<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
 	<input type='hidden' id="task" name='task' value='order'> 
-	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 	<table class="ordersteps">
 		<tr>
@@ -1564,7 +1560,6 @@ if (count($rows)>0){
 	name="task" id="taskOrderForm" value="order"> <input type="hidden"
 	name="option" value="<?php echo JRequest::getVar('option'); ?>"> <input
 	type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
-	<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 	<input
 	type='hidden' name='Itemid'
 	value="<?php echo  JRequest::getVar ('Itemid' );?>"></form>
@@ -1750,9 +1745,53 @@ if (count($rows)>0){
 	
 	function saveOrder($orderStatus){
 		global $mainframe;
+		$db =& JFactory::getDBO();
 		$user = JFactory::getUser();
+		
 		if (!$user->guest)
 		{
+			$order_id = $mainframe->getUserState('order_id');
+			if($order_id)
+			{
+				//If order_id exists, this is an update of an existing draft order
+				//Delete existing order and then insert the new one
+				$Order = new order( $db );
+				$Order->load( $order_id);
+	
+				if ($Order->order_id == 0)
+				{
+					echo "<div class='alert'>";			
+					echo JText::_("EASYSDI_DELETE_ORDER_MSG").$Order->id;
+					echo "</div>";
+				}
+				else 
+				{
+					if (!$Order->delete()) 
+					{
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+					
+					$OrderProductList = new orderProductListByOrder($db);
+					$OrderProductList->load($order_id);
+					
+					$query = "DELETE FROM #__easysdi_order_product_properties  WHERE order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $order_id)";
+					$db->setQuery($query);
+					$db->query();
+					
+					if(!$OrderProductList->delete())
+					{
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+					
+					$OrderProductPerimeters = new orderProductPerimeterByOrder($db);
+					$OrderProductPerimeters->load($order_id);
+					if(!$OrderProductPerimeters->delete())
+					{
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+				}									
+			}
+			
 			$cid = $mainframe->getUserState('productList');
 
 			$order_status_value = $orderStatus;
@@ -1766,7 +1805,7 @@ if (count($rows)>0){
 			$totalArea = $mainframe->getUserState('totalArea');
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
 			
-			$db =& JFactory::getDBO();
+			
 
 			//jimport("joomla.utilities.date");
 			//$date = new JDate();
@@ -2049,6 +2088,8 @@ if (count($rows)>0){
 			$mainframe->setUserState('totalArea',null);
 			$mainframe->setUserState('perimeter_id',null);
 			$mainframe->setUserState('bufferValue',null);
+			$mainframe->setUserState('previousExtent',null);
+			$mainframe->setUserState('order_id',null);
 
 
 		}
@@ -2602,7 +2643,7 @@ if (count($rows)>0){
 <input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
 <input type='hidden' id="fromStep" name='fromStep' value='1'> 
 <input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
-<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
+
 <input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> 
 	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <span class="searchCriteria">
@@ -2719,6 +2760,9 @@ if (count($rows)>0){
 		$mainframe->setUserState('bufferValue',$order->buffer);
 		$mainframe->setUserState('totalArea',$order->surface);
 		$mainframe->setUserState('perimeter_id',$order->perimeter_id);
+		
+		//Order ID
+		$mainframe->setUserState('order_id',$order->order_id);
 		
 		//Order type
 		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
