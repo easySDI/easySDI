@@ -42,30 +42,38 @@ class HTML_shop {
 				}
 				if ($value == $id)
 				{
-					$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $id." order by a.order";
+					$mainframe->enqueueMessage("product removed :  ".$id,'info');	
+				
+					$query = "SELECT  pd.code as code 
+							  FROM #__easysdi_product_property p, 
+							  	   #__easysdi_product_properties_definition  as pd,
+							  	   #__easysdi_product_properties_values_definition as pv   
+							  WHERE pv.id = p.property_value_id
+							  and   pv.properties_id = pd.id
+							  and p.product_id = ".$id." group by pd.code order by pd.order";
 					$db->setQuery( $query );
 					$rows = $db->loadObjectList();
 					
 					foreach($rows as $row){
 					$property = $mainframe->getUserState($row->code.'_text_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState($row->code.'_text_property_'.$id);
+					$mainframe->setUserState($row->code.'_text_property_'.$id, '');
 					
 					$property = $mainframe->getUserState($row->code.'_textarea_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState($row->code.'_textarea_property_'.$id);
+					$mainframe->setUserState($row->code.'_textarea_property_'.$id,'');
 					
 					$property = $mainframe->getUserState($row->code.'_list_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState($row->code.'_list_property_'.$id);
+					$mainframe->setUserState($row->code.'_list_property_'.$id,'');
 					
 					$property = $mainframe->getUserState($row->code.'_mlist_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState($row->code.'_mlist_property_'.$id);
+					$mainframe->setUserState($row->code.'_mlist_property_'.$id,'');
 					
 					$property = $mainframe->getUserState($row->code.'_cbox_property_'.$id);
 					unset ($property);
-					$mainframe->setUserState($row->code.'_cbox_property_'.$id);
+					$mainframe->setUserState($row->code.'_cbox_property_'.$id,'');
 					}
 				}
 			}
@@ -76,8 +84,10 @@ class HTML_shop {
 			$mainframe->setUserState('bufferValue',0);
 			$mainframe->setUserState('totalArea',0);
 			$mainframe->setUserState('perimeter_id','');
-			$previousExtent = '';
-			//$totalArea = 0;
+			$mainframe->setUserState('order_name','');
+			$mainframe->setUserState('third_party','');
+			$mainframe->setUserState('order_type','');
+			$mainframe->setUserState('previousExtent','');
 		}
 		$mainframe->setUserState('productList',$newProductList);
 
@@ -602,10 +612,12 @@ function setAlpha(imageformat)
 					
 					
 				<?php
-					if ( JRequest::getVar('previousExtent') != "")
+					if($mainframe->getUserState('previousExtent') != "")
+					//if ( JRequest::getVar('previousExtent') != "")
 					{
 						?>
-							map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
+							//map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
+							map.zoomToExtent(new OpenLayers.Bounds(<?php echo $mainframe->getUserState('previousExtent'); ?>) );
 						<?php
 					}
 					else
@@ -2107,6 +2119,9 @@ if (count($rows)>0){
 
 			$perimeter_id = JRequest::getVar ('perimeter_id', 0 );
 			$mainframe->setUserState('perimeter_id',$perimeter_id);
+			
+			$previousExtent = JRequest::getVar ('previousExtent', '' );
+			$mainframe->setUserState('previousExtent',$previousExtent);
 			
 
 
