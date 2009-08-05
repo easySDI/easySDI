@@ -1247,6 +1247,7 @@ if (count($rows)>0){
 					$selProduct = $mainframe->getUserState($row->code.'_list_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
+					//if ($selProduct){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
 					}
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
@@ -1393,7 +1394,6 @@ if (count($rows)>0){
 	<?php
 
 	}
-
 
 	function orderDefinition($cid){
 
@@ -2026,50 +2026,6 @@ if (count($rows)>0){
 			}
 			
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
-				
-			/*$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list WHERE order_id=$order_id AND STATUS = '".$await_type."' ";
-			$db->setQuery($query);
-			$total = $db->loadResult();
-			
-			$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id  ";
-			$db->setQuery($query);
-			$totalProduct = $db->loadResult();
-		
-			jimport("joomla.utilities.date");
-			$date = new JDate();
-			if ( $total == 0)
-			{
-				$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
-				$db->setQuery($queryStatus);
-				$status_id = $db->loadResult();
-				$response_send = 1;
-			}
-			else if ($total == $totalProduct)
-			{
-				$queryStatus = "select id from #__easysdi_order_status_list where code ='AWAIT'";
-				$db->setQuery($queryStatus);
-				$status_id = $db->loadResult();
-				$response_send = 0;
-			}else
-			{
-				$queryStatus = "select id from #__easysdi_order_status_list where code ='PROGRESS'";
-				$db->setQuery($queryStatus);
-				$status_id = $db->loadResult();
-				$response_send = 1;
-			}
-			
-			$query = "UPDATE   #__easysdi_order  SET status =".$status_id." ,response_date ='". $date->toMySQL()."', response_send =".$response_send.", order_update ='". $date->toMySQL()."'  WHERE order_id=$order_id and status=".$sent;
-
-			$db->setQuery($query);
-			if (!$db->query()) {
-				echo "<div class='alert'>";
-				echo $db->getErrorMsg();
-				echo "</div>";
-				exit;
-			}
-			if ($total == 0){
-				SITE_cpanel::notifyUserByEmail($order_id);
-			}*/
 
 			$mainframe->setUserState('productList',null);
 			$mainframe->setUserState('order_type',null);
@@ -2733,7 +2689,7 @@ if (count($rows)>0){
 	<?php
 	}
 	
-	/*function orderDraft ($order_id)
+	function orderDraft ($order_id)
 	{
 		global $mainframe;
 		$database =& JFactory::getDBO();
@@ -2779,51 +2735,56 @@ if (count($rows)>0){
 		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
 		
 		//Perimeter type
-		$mainframe->setUserState('perimeter_id',3);
+		$mainframe->setUserState('perimeter_id',1);
 		
 		//Properties
-		foreach($productList as $product)
+		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
+		$database->setQuery($queryProducts);
+		$productsList = $database->loadObjectList();
+		foreach($productsList as $productItem)
 		{
-			$queryPropertyCode = "SELECT * FROM #__easysdi_order_product_properties WHERE order_product_list_id = $product->id";
+			$queryPropertyCode = "SELECT * FROM #__easysdi_order_product_properties WHERE order_product_list_id = $productItem->id";
 			$database->setQuery($queryPropertyCode);
 			$orderProperties = $database->loadObjectList();
-			
+			$mlistArray = array();
+			$cboxArray = array();
 			foreach($orderProperties as $orderProperty)
 			{
-				$queryPropertyDefintion = "SELECT * FROM #__easysdi_product_properties_definition WHERE code=$orderProperty->code";
+				$queryPropertyDefintion = "SELECT * FROM #__easysdi_product_properties_definition WHERE code='$orderProperty->code'";
 				$database->setQuery($queryPropertyDefintion);
 				$propertyDefinition = $database->loadObject();
-				switch($propertyDefinion->type_code)
+				switch($propertyDefinition->type_code)
 				{
 					case "message":
+						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_id);
 						break;
 					case "list":
-						$mainframe->setUserState($orderProperty->code."_list_property_".$product->product_id,$orderProperty->property_id );
+						$a = array();
+						$a[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_list_property_".$productItem->product_id,$a);
 						break;
 					case "text":
+						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_value);
 						break;
+					case "textarea":
+						$a = array();
+						$a[] = $orderProperty->property_value;
+						$mainframe->setUserState($orderProperty->code."_textarea_property_".$productItem->product_id,$a);
+						break;
+					case "cbox":
+						$cboxArray[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_cbox_property_".$productItem->product_id,$cboxArray);
+						break;
+					case "mlist":
+						$mlistArray[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_mlist_property_".$productItem->product_id,$mlistArray);
+						break;
+						
 				}
 			}
 		
 		}
-					
 		
-		/*
-			
-		$mainframe->setUserState($row->code.'_text_property_'.$id,$property);
-		
-		$mainframe->setUserState($row->code.'_message_property_'.$id,$property);
-		
-		$mainframe->setUserState($row->code.'_textarea_property_'.$id,$property);
-
-		$mainframe->setUserState($row->code.'_list_property_'.$id,$property);
-
-		$mainframe->setUserState($row->code.'_cbox_property_'.$id,$property);
-
-		$mainframe->setUserState($row->code.'_mlist_property_'.$id,$property);
-		;
-		
-		*/
-	/*}*/
+	}
 }
 	?>
