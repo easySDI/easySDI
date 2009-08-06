@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
- 
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -249,8 +248,6 @@ class HTML_cpanel {
 		
 	}
 	
-	
-	
 	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="",$productorderstatus="", $productStatusFilter="", $productTypeFilter=""){
 	
 	?>	
@@ -269,10 +266,10 @@ class HTML_cpanel {
 				</td>
 				
 				<td>
-					<select name="ordertype" >
+					<select name="ordertype" id="ordertype" >
 						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
 						 <?php  foreach($productTypeFilter as $type){ ?>
-			              <option value="<?php echo $type->id;?>" <?php if (ordertype==$type->id){?>selected="selected"<?php }?>>
+			              <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($type->translation); ?>
 						  </option>
 						 <?php } ?>
@@ -280,10 +277,10 @@ class HTML_cpanel {
 				</td>
 				
 				<td>
-					<select name="productorderstatus" >
+					<select name="productorderstatus" id="productorderstatus" >
 						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
 						 <?php  foreach($productStatusFilter as $stat){ ?>
-			              <option value="<?php echo $stat->id;?>" <?php if (productorderstatus==$stat->id){?>selected="selected"<?php }?>>
+			              <option value="<?php echo $stat->id;?>" <?php if ($productorderstatus==$stat->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($stat->translation); ?>
 						  </option>
 						 <?php } ?>
