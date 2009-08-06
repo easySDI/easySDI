@@ -35,10 +35,11 @@ class SITE_proxy{
 		}
 		
 		$found = false;
-		/*$myFile = "C://testFile2.txt";
-		$fh = fopen($myFile, 'w') or die("can't open file");
-		  
-			fwrite($fh, count($_GET)."\n");*/	
+		
+		//$myFile = "C://testFile2.txt";
+		//$fh = fopen($myFile, 'w') or die("can't open file");
+		//fwrite($fh, count($_GET)."\n");
+		
 		foreach($_GET AS $cle => $valeur)     
 		{     	     	
 			if ($found){
@@ -142,20 +143,31 @@ class SITE_proxy{
 														
 			}
 			
-			/*$myFile = "C://testFile.txt";
-			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $url );  */
+			//$myFile = "C://testFile.txt";
+			//$fh = fopen($myFile, 'w') or die("can't open file");
+			//fwrite($fh, $url );  
 			
 			if (!$handle = fopen("$url", "rb")){				
 				exit ;
 			}; 
+			$stringData = stream_get_contents($handle);
 			
-			while ( !feof($handle) ) {
+			if(mb_check_encoding($stringData,"UTF-8") )
+			{
+				$stringUTF8 = $stringData;
+			}
+			else
+			{
+				$stringUTF8 = utf8_encode($stringData);
+			}
+			echo $stringUTF8;
+			//fwrite($fh, $stringUTF8 );
+			/*while ( !feof($handle) ) {
 				$stringData = fread($handle, 8192);
 				 
 				echo $stringData;
-				//fwrite($fh, $stringData );  
-			} 
+				fwrite($fh, $stringData );  
+			} */
 			fclose($handle);
 			//fclose($fh); 
 		}else if ( substr($url, 0, 8) == 'https://' ) {
@@ -163,15 +175,31 @@ class SITE_proxy{
 			if ($user !=null && strlen($user)>0){
 				$url = "https://$user:$password@".substr($url, 8);				
 			}
-			
+			//$myFile = "C://testFile.txt";
+			//$fh = fopen($myFile, 'w') or die("can't open file");
+			//fwrite($fh, $url ); 
 			
 			if (!$handle = fopen("$url", "rb")){
-				
 				exit ;
 			}; 
-			while ( !feof($handle) ) { 
+			$stringData = stream_get_contents($handle);
+			
+			if(mb_check_encoding($stringData,"UTF-8") )
+			{
+				$stringUTF8 = $stringData;
+			}
+			else
+			{
+				$stringUTF8 = utf8_encode($stringData);
+			}
+			
+			echo $stringUTF8;
+			//fwrite($fh, $stringUTF8 );
+			
+			/*while ( !feof($handle) ) { 
 				echo fread($handle, 8192); 
-			} 
+			} */
+			//fclose($fh); 
 			fclose($handle); 
 		}
 	}
