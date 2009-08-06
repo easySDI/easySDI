@@ -1033,11 +1033,11 @@ if ($use_pagination) {
 		$where="";
 		if ($search)
 		{
-			$where = ' and LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where = ' and LOWER(c.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(type) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(iso_key) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			//$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$where .= ' or LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(c.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
 		$query = "select count(*) from  #__easysdi_metadata_classes ";								
@@ -1061,7 +1061,7 @@ if ($use_pagination) {
 		$query = "select c.*, c.name as class_name, u.name AS user_name from  #__easysdi_metadata_classes c left outer join #__easysdi_community_partner p on p.partner_id=c.partner_id left outer join #__users u on u.id=p.user_id ";
 		$query .= $where;
 		$query .= $orderby;
-		
+		$mainframe->enqueueMessage($query,'error');	
 		if ($use_pagination) {
 		$db->setQuery( $query ,$limitstart,$limit);	
 		}else{
@@ -1236,7 +1236,7 @@ if ($use_pagination) {
 		$use_pagination = JRequest::getVar('use_pagination',0);		
 		$type = $mainframe->getUserStateFromRequest( "type{$option}", 'type', '' );
 		
-		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= $mainframe->getUserStateFromRequest( "$option.searchStd",'searchStd','','string' );
 		$search				= JString::strtolower( $search );
 		
 		$where="";
