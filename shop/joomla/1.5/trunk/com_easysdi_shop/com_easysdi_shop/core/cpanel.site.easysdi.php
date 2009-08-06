@@ -106,34 +106,33 @@ class SITE_cpanel {
 
 		$filter = "";
 
+		//Build the query on Order status
 		$orderStatusQuery = "";
-		$orderStatus = JRequest::getVar("productorderstatus","");
+		$orderStatus = JRequest::getVar("orderStatus","");
 		if($orderStatus != "")
 		{
 			$orderStatusQuery = " AND o.status='$orderStatus' ";
 		}
 		else
 		{
-			//All except ARCHIVED and HISTORIZED
-			$orderStatusQuery = " AND o.status='$orderStatus' ";
+			//All except SAVED, FINISH, ARCHIVED and HISTORIZED
+			$queryOrderStatus = "select id from #__easysdi_order_status_list where code IN ('SAVED','FINISH','ARCHIVED','HISTORIZED')";
+			$database->setQuery($queryOrderStatus);
+			$orderStatusList = $database->loadObjectList();
+			$orderStatusQuery = " AND o.status NOT IN (";
+			foreach ($orderStatusList as $status)
+			{
+				$orderStatusQuery .= " '".$status->id."' ,";
+			}
+			$orderStatusQuery = substr ($orderStatusQuery,0,-1);
+			$orderStatusQuery .= ")";
 		}
-		//$productorderstatus = JRequest::getVar("productorderstatus","");
-		//$orderStatus=" (osl.code='SENT' or osl.code='PROGRESS' or osl.code='AWAIT') ";
-		/*if ($productorderstatus == ""){
-			$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
-			$database->setQuery($queryStatus);
-			$productorderstatus = $database->loadResult();
-		}*/
-
-		// Ne montre que les commandes traitées ou partiellement traitées.
-		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
+		
+		//Get the id of product status AWAIT to get only order with product not already AVAILAIBLE to costumer
+		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
 		$database->setQuery($queryStatus);
-		$status_id = $database->loadObjectList();
-
-		/*if ($productorderstatus == $status_id){
-			$orderStatus=" (osl.code='FINISH' OR osl.code='PROGRESS' ) ";
-		}*/
-
+		$productOrderStatus = $database->loadResult();
+		
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
 			$filterList[] = "(o.type ='$ordertype')";
@@ -148,7 +147,7 @@ class SITE_cpanel {
 		if (count($filterList)==1)
 		$filter = " AND ".$filterList[0];
 			
-		$queryStatus = "select * from #__easysdi_order_status_list ";
+		$queryStatus = "select * from #__easysdi_order_status_list where code NOT IN ('SAVED','FINISH','ARCHIVED','HISTORIZED')";
 		$database->setQuery($queryStatus);
 		$productStatusFilter = $database->loadObjectList();
 
@@ -182,7 +181,7 @@ class SITE_cpanel {
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
-				  
+				  and opl.status = $productOrderStatus 
 				  $orderStatusQuery 
 				  AND o.order_id 
 				  NOT IN (SELECT o.order_id 
@@ -211,7 +210,7 @@ class SITE_cpanel {
 
 		$query .= $filter;
 		$query .= " order by o.order_id";
-
+	
 		$queryCount = "SELECT count(*) 
 					   FROM  #__easysdi_order o, 
 					         #__easysdi_order_product_list opl,
@@ -225,7 +224,7 @@ class SITE_cpanel {
 					   AND  opl.product_id = p.id 
 					   AND  p.diffusion_partner_id = pa.partner_id 
 					   AND  pa.user_id =".$user->id." 
-					  
+		 			   and opl.status = $productOrderStatus 
 					   $orderStatusQuery  
 					   AND  o.order_id 
 					   NOT IN (SELECT o.order_id 
@@ -248,9 +247,9 @@ class SITE_cpanel {
 					   		   AND tl.code ='D' 
 					   		   AND p.is_free = 1) 
 					 ";
-		//$and p.diffusion_partner_id = $rootPartner->partner_id
+		
 		$queryCount .= $filter;
-
+	
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
 
@@ -270,7 +269,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus, $productStatusFilter, $productTypeFilter);
+		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter);
 
 	}
 
@@ -398,6 +397,12 @@ class SITE_cpanel {
 											"index.php?option=$option&task=listOrdersForProvider");
 		
 		$order_id=JRequest::getVar("order_id","0");
+		if($order_id == 0)
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_PROCESS_ORDER_ERROR_NO_SELECTION"),'info');						
+			$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+			exit();
+		}
 		$user = JFactory::getUser();
 
 
