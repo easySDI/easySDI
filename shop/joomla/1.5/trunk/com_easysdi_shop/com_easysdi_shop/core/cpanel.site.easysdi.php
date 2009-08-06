@@ -50,6 +50,7 @@ class SITE_cpanel {
 
 
 	}
+	
 	function archiveOrder(){
 		global  $mainframe;
 		$option=JRequest::getVar("option");
@@ -105,24 +106,33 @@ class SITE_cpanel {
 
 		$filter = "";
 
-		$productorderstatus = JRequest::getVar("productorderstatus","");
-		$orderStatus=" (osl.code='SENT' or osl.code='PROGRESS' or osl.code='AWAIT') ";
-		if ($productorderstatus == ""){
+		$orderStatusQuery = "";
+		$orderStatus = JRequest::getVar("productorderstatus","");
+		if($orderStatus != "")
+		{
+			$orderStatusQuery = " AND o.status='$orderStatus' ";
+		}
+		else
+		{
+			//All except ARCHIVED and HISTORIZED
+			$orderStatusQuery = " AND o.status='$orderStatus' ";
+		}
+		//$productorderstatus = JRequest::getVar("productorderstatus","");
+		//$orderStatus=" (osl.code='SENT' or osl.code='PROGRESS' or osl.code='AWAIT') ";
+		/*if ($productorderstatus == ""){
 			$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
 			$database->setQuery($queryStatus);
 			$productorderstatus = $database->loadResult();
-
-		}
+		}*/
 
 		// Ne montre que les commandes traitées ou partiellement traitées.
 		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
 		$database->setQuery($queryStatus);
 		$status_id = $database->loadObjectList();
 
-		if ($productorderstatus == $status_id){
+		/*if ($productorderstatus == $status_id){
 			$orderStatus=" (osl.code='FINISH' OR osl.code='PROGRESS' ) ";
-
-		}
+		}*/
 
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
@@ -172,8 +182,8 @@ class SITE_cpanel {
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
-				  and opl.status='$productorderstatus' 
-				  and $orderStatus 
+				  
+				  $orderStatusQuery 
 				  AND o.order_id 
 				  NOT IN (SELECT o.order_id 
 				  		  FROM  #__easysdi_order o, 
@@ -193,7 +203,7 @@ class SITE_cpanel {
 				  		  AND pa.user_id =".$user->id." 
 				  		  AND opl.status=osl.id 
 				  		  AND psl.code='AWAIT' 
-				  		  AND $orderStatus 
+				  		  $orderStatusQuery 
 				  		  AND o.type = tl.id 
 				  		  AND tl.code ='D' 
 				  		  AND p.is_free = 1) 
@@ -215,8 +225,8 @@ class SITE_cpanel {
 					   AND  opl.product_id = p.id 
 					   AND  p.diffusion_partner_id = pa.partner_id 
 					   AND  pa.user_id =".$user->id." 
-					   AND  opl.status='$productorderstatus' 
-					   AND  $orderStatus  
+					  
+					   $orderStatusQuery  
 					   AND  o.order_id 
 					   NOT IN (SELECT o.order_id 
 					   		   FROM  #__easysdi_order o, 
@@ -233,7 +243,7 @@ class SITE_cpanel {
 					   		   AND p.partner_id = pa.partner_id 
 					   		   AND pa.user_id =".$user->id." 
 					   		   AND psl.code='AWAIT' 
-					   		   AND $orderStatus 
+					   		   $orderStatusQuery
 					   		   AND  o.type = tl.id 
 					   		   AND tl.code ='D' 
 					   		   AND p.is_free = 1) 
@@ -260,11 +270,9 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$productorderstatus, $productStatusFilter, $productTypeFilter);
+		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus, $productStatusFilter, $productTypeFilter);
 
 	}
-
-
 
 	/*
 	 * Statuts de la commande
@@ -276,7 +284,6 @@ class SITE_cpanel {
 	 * ARCHIVED => Archivée
 	 * HISTORIZED => Archivée et BLOB de donn�es vid�
 	 */
-
 	function saveOrdersForProvider()
 	{
 
@@ -617,7 +624,6 @@ class SITE_cpanel {
 	function orderReportForProvider($id){
 		ADMIN_cpanel::orderReport($id, true, true);
 	}
-
 
 	function sendOrder(){
 		global $mainframe;
