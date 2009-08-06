@@ -248,12 +248,12 @@ class HTML_cpanel {
 		
 	}
 	
-	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="",$productorderstatus="", $productStatusFilter="", $productTypeFilter=""){
+	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="", $orderStatus="", $productorderstatus="", $productStatusFilter="", $productTypeFilter=""){
 	
 	?>	
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS_FOR_PROVIDER"); ?></h2>
 	
 		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
@@ -264,7 +264,6 @@ class HTML_cpanel {
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
 				</td>
-				
 				<td>
 					<select name="ordertype" id="ordertype" >
 						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
@@ -277,10 +276,10 @@ class HTML_cpanel {
 				</td>
 				
 				<td>
-					<select name="productorderstatus" id="productorderstatus" >
+					<select name="orderStatus" id="orderStatus" >
 						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
 						 <?php  foreach($productStatusFilter as $stat){ ?>
-			              <option value="<?php echo $stat->id;?>" <?php if ($productorderstatus==$stat->id){?>selected="selected"<?php }?>>
+			              <option value="<?php echo $stat->id;?>" <?php if ($orderStatus==$stat->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($stat->translation); ?>
 						  </option>
 						 <?php } ?>
