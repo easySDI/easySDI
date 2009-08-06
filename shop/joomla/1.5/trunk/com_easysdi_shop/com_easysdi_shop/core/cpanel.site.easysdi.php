@@ -168,21 +168,79 @@ class SITE_cpanel {
 				  and pa.user_id = u.id 
 				  and o.order_id = opl.order_id 
 				  and opl.product_id = p.id 
-				  and p.partner_id = pa.partner_id 
+				  and p.diffusion_partner_id = pa.partner_id 
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
 				  and opl.status='$productorderstatus' 
 				  and $orderStatus 
-				  AND o.order_id NOT IN 
-				  (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl, #__easysdi_product p,#__easysdi_community_partner pa, #__users u, #__easysdi_order_status_list osl , #__easysdi_order_product_status_list psl, #__easysdi_order_type_list tl WHERE o.type=tl.id and o.status=osl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status=osl.id and psl.code='AWAIT' and $orderStatus and o.type = tl.id and tl.code ='D' and p.is_free = 1) and p.diffusion_partner_id = $rootPartner->partner_id";
+				  AND o.order_id 
+				  NOT IN (SELECT o.order_id 
+				  		  FROM  #__easysdi_order o, 
+				  		  		#__easysdi_order_product_list opl, 
+				  		  		#__easysdi_product p,
+				  		  		#__easysdi_community_partner pa, 
+				  		  		#__users u, 
+				  		  		#__easysdi_order_status_list osl , 
+				  		  		#__easysdi_order_product_status_list psl, 
+				  		  		#__easysdi_order_type_list tl 
+				  		  WHERE o.type=tl.id 
+				  		  AND o.status=osl.id 
+				  		  AND pa.user_id = u.id 
+				  		  AND o.order_id = opl.order_id 
+				  		  AND opl.product_id = p.id 
+				  		  AND p.partner_id = pa.partner_id 
+				  		  AND pa.user_id =".$user->id." 
+				  		  AND opl.status=osl.id 
+				  		  AND psl.code='AWAIT' 
+				  		  AND $orderStatus 
+				  		  AND o.type = tl.id 
+				  		  AND tl.code ='D' 
+				  		  AND p.is_free = 1) 
+				  ";
 
 		$query .= $filter;
 		$query .= " order by o.order_id";
 
-		$queryCount = "SELECT count(*) FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa , #__users u, #__easysdi_order_status_list osl WHERE pa.user_id = u.id and  o.status=osl.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and opl.status='$productorderstatus' and $orderStatus  AND o.order_id NOT IN (SELECT o.order_id FROM  #__easysdi_order o, #__easysdi_order_product_list opl,#__easysdi_product p,#__easysdi_community_partner pa, #__users u, #__easysdi_order_product_status_list psl , #__easysdi_order_type_list tl WHERE opl.status=psl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and psl.code='AWAIT' and $orderStatus and  o.type = tl.id and tl.code ='D' and p.is_free = 1) and p.diffusion_partner_id = $rootPartner->partner_id";
+		$queryCount = "SELECT count(*) 
+					   FROM  #__easysdi_order o, 
+					         #__easysdi_order_product_list opl,
+					         #__easysdi_product p,
+					         #__easysdi_community_partner pa , 
+					         #__users u, 
+					         #__easysdi_order_status_list osl 
+					   WHERE pa.user_id = u.id 
+					   AND  o.status=osl.id 
+					   AND  o.order_id = opl.order_id 
+					   AND  opl.product_id = p.id 
+					   AND  p.diffusion_partner_id = pa.partner_id 
+					   AND  pa.user_id =".$user->id." 
+					   AND  opl.status='$productorderstatus' 
+					   AND  $orderStatus  
+					   AND  o.order_id 
+					   NOT IN (SELECT o.order_id 
+					   		   FROM  #__easysdi_order o, 
+					   		   		 #__easysdi_order_product_list opl,
+					   		   		 #__easysdi_product p,
+					   		   		 #__easysdi_community_partner pa, 
+					   		   		 #__users u, 
+					   		   		 #__easysdi_order_product_status_list psl , 
+					   		   		 #__easysdi_order_type_list tl 
+					   		   WHERE opl.status=psl.id 
+					   		   AND pa.user_id = u.id 
+					   		   AND o.order_id = opl.order_id 
+					   		   AND opl.product_id = p.id 
+					   		   AND p.partner_id = pa.partner_id 
+					   		   AND pa.user_id =".$user->id." 
+					   		   AND psl.code='AWAIT' 
+					   		   AND $orderStatus 
+					   		   AND  o.type = tl.id 
+					   		   AND tl.code ='D' 
+					   		   AND p.is_free = 1) 
+					 ";
 		//$and p.diffusion_partner_id = $rootPartner->partner_id
 		$queryCount .= $filter;
+
 		$database->setQuery($queryCount);
 		$total = $database->loadResult();
 
@@ -336,7 +394,31 @@ class SITE_cpanel {
 		$user = JFactory::getUser();
 
 
-		$query = "SELECT p.id as product_id, o.order_id as order_id, u.name as username,p.metadata_id as metadata_id, p.data_title as data_title,o.name as name,o.type as type, opl.status as status FROM  #__easysdi_order o, #__easysdi_order_status_list osl, #__easysdi_order_product_list opl, #__easysdi_order_product_status_list psl, #__easysdi_product p,#__easysdi_community_partner pa, #__users u WHERE o.status=osl.id and opl.status=psl.id and pa.user_id = u.id and o.order_id = opl.order_id and opl.product_id = p.id and p.partner_id = pa.partner_id and pa.user_id =".$user->id." and psl.code='AWAIT' and osl.code <> 'ARCHIVED'  and o.order_id=".$order_id;
+		$query = "SELECT p.id as product_id, 
+						 o.order_id as order_id, 
+						 u.name as username,
+						 p.metadata_id as metadata_id, 
+						 p.data_title as data_title,
+						 o.name as name,
+						 o.type as type, 
+						 opl.status as status 
+				  FROM  #__easysdi_order o, 
+				  		#__easysdi_order_status_list osl, 
+				  		#__easysdi_order_product_list opl, 
+				  		#__easysdi_order_product_status_list psl, 
+				  		#__easysdi_product p,
+				  		#__easysdi_community_partner pa, 
+				  		#__users u 
+				  WHERE o.status=osl.id 
+				  AND opl.status=psl.id 
+				  AND pa.user_id = u.id 
+				  AND o.order_id = opl.order_id 
+				  AND opl.product_id = p.id 
+				  AND p.diffusion_partner_id = pa.partner_id 
+				  AND pa.user_id =".$user->id." 
+				  AND psl.code='AWAIT' 
+				  AND osl.code <> 'ARCHIVED'  
+				  AND o.order_id=".$order_id;
 		$query .= " order by o.order_id";
 
 		$database->setQuery($query);
