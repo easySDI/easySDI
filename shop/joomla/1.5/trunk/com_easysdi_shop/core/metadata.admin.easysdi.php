@@ -1033,7 +1033,7 @@ if ($use_pagination) {
 		$where="";
 		if ($search)
 		{
-			$where = ' and LOWER(c.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where = ' WHERE LOWER(c.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(type) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(iso_key) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			//$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
@@ -1057,11 +1057,9 @@ if ($use_pagination) {
 		}
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
-		
-		$query = "select c.*, c.name as class_name, u.name AS user_name from  #__easysdi_metadata_classes c left outer join #__easysdi_community_partner p on p.partner_id=c.partner_id left outer join #__users u on u.id=p.user_id ";
+		$query = "select c.*, c.name as class_name, u.name AS user_name from  #__easysdi_metadata_classes c left outer join #__easysdi_community_partner p on c.partner_id=p.partner_id left outer join #__users u on p.user_id=u.id ";
 		$query .= $where;
 		$query .= $orderby;
-		$mainframe->enqueueMessage($query,'error');	
 		if ($use_pagination) {
 		$db->setQuery( $query ,$limitstart,$limit);	
 		}else{
