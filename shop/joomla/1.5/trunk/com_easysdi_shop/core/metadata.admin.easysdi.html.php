@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-
+foreach($_POST as $key => $val) 
+echo '$_POST["'.$key.'"]='.$val.'<br />';
 defined('_JEXEC') or die('Restricted access');
 
 
@@ -192,9 +193,9 @@ function listStandardClasses($use_pagination, $rows, $pageNav,$option,$type, $fi
 			<tr>
 				<td align="left" width="100%">
 					<?php echo JText::_( 'Filter' ); ?>:
-					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<input type="text" name="searchStd" id="searchStd" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( 'Go' ); ?></button>
-					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'Reset' ); ?></button>
+					<button onclick="document.getElementById('searchStd').value='';this.form.submit();"><?php echo JText::_( 'Reset' ); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -789,6 +790,7 @@ function listClass($use_pagination, $rows, $pageNav,$option, $filter_order, $fil
 		$ordering = ($filter_order == 'ordering');
 		?>
 	<form action="index.php" method="post" name="adminForm">
+	
 		<table>
 			<tr>
 				
