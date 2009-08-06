@@ -330,11 +330,20 @@ function orderReport($id,$isfrontEnd, $isForProvider){
 		$query = '';
 		if($isForProvider)
 		{
-			$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id and b.partner_id = $rootPartner->partner_id";
+			$query = "SELECT *, a.id as plId 
+					  FROM #__easysdi_order_product_list  a, 
+					  	   #__easysdi_product b 
+					  WHERE a.product_id  = b.id 
+					  AND order_id = $id 
+					  AND b.diffusion_partner_id = $rootPartner->partner_id";
 		}
 		else
 		{
-			$query = "SELECT *, a.id as plId FROM #__easysdi_order_product_list  a, #__easysdi_product b where a.product_id  = b.id and order_id = $id";
+			$query = "SELECT *, a.id as plId 
+					  FROM #__easysdi_order_product_list  a, 
+					       #__easysdi_product b 
+					  WHERE a.product_id  = b.id 
+					  AND order_id = $id";
 		}
 		
 		$db->setQuery($query );
