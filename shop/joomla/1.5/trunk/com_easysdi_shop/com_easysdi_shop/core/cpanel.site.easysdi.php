@@ -750,6 +750,10 @@ class SITE_cpanel {
 		jimport("joomla.utilities.date");
 		$date = new JDate();
 		
+		$query = "SELECT status FROM #__easysdi_order WHERE order_id=$order_id";
+		$db->setQuery($query);
+		$status_id = $db->loadResult();
+		
 		$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id AND sl.code = 'AWAIT' ";
 		$db->setQuery($query);
 		$total = $db->loadResult();
@@ -769,6 +773,7 @@ class SITE_cpanel {
 		else if ($total == $totalProduct)
 		{
 			//Do nothing, keep the current status
+			
 		}
 		else
 		{
@@ -777,12 +782,23 @@ class SITE_cpanel {
 			$status_id = $db->loadResult();
 		}
 
-		$query = "UPDATE   #__easysdi_order  SET 
+		if($response_send)
+		{
+			$query = "UPDATE   #__easysdi_order  SET 
 							status =".$status_id." , 
 							order_update ='".$date->toMySQL()."' ,
 							response_date ='".$date->toMySQL()."' ,
 							response_send =".$response_send."  
 					WHERE order_id=$order_id ";
+		}
+		else
+		{
+			$query = "UPDATE   #__easysdi_order  SET 
+							status =".$status_id." , 
+							order_update ='".$date->toMySQL()."' ,
+							response_date ='".$date->toMySQL()."' 
+					WHERE order_id=$order_id ";
+		}
 			
 		$db->setQuery($query);
 		if (!$db->query()) {
