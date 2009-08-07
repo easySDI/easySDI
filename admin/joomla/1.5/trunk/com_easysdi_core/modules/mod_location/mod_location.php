@@ -241,6 +241,7 @@ if ($curstep == "2")
 				$proxyhost = config_easysdi::getValue("PROXYHOST");
 				$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 				$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+				
 	 		 	 ?>
 	 		 	
 	 			fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
@@ -374,9 +375,7 @@ if ($curstep == "2")
 							var perim = document.getElementById(locationsListLocationId);
 							var id = feat2.attributes[location_id_field_name];
 							var name = feat2.attributes[location_name_field_name];	
-							
-							var n = utf8_encode(name);	
-							perim.options[perim.options.length] =  new Option(n,id);
+							perim.options[perim.options.length] =  new Option(name,id);
 							if (isSort == 1) 
 							{
 								sortList(locationsListLocationId);
