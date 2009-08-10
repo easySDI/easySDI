@@ -40,7 +40,7 @@ class SITE_partner {
 		global  $mainframe;
 
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES");
 		
 		$user = JFactory::getUser();
 		if(!userManager::isUserAllowed($user,"ACCOUNT"))
@@ -149,7 +149,7 @@ class SITE_partner {
 
 		//Allows Pathway with mod_menu_easysdi
 		$option = JRequest::getVar('option');
-		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYACCOUNT_EDIT",
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYACCOUNT_EDIT",
 										   "EASYSDI_MENU_ITEM_MYACCOUNT",
 										   "index.php?option=$option&task=showPartner");
 
@@ -213,7 +213,7 @@ class SITE_partner {
 		$user = JFactory::getUser();
 
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYACCOUNT");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYACCOUNT");
 
 			
 		if ($user->guest){
@@ -458,14 +458,14 @@ class SITE_partner {
 		if($affiliate_id)
 		{
 			//Edit affiliate
-			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_EDIT",
+			breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_EDIT",
 											   "EASYSDI_MENU_ITEM_MYAFFILIATES",
 											   "index.php?option=$option&task=listAffiliatePartner");
 		}
 		else
 		{
 			//Create affiliate
-			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_CREATE",
+			breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYAFFILIATES_CREATE",
 											   "EASYSDI_MENU_ITEM_MYAFFILIATES",
 											   "index.php?option=$option&task=listAffiliatePartner");
 		}
