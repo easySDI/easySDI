@@ -18,6 +18,7 @@
 class breadcrumbsBuilder
 {
 
+	/*
 	function addFirstCrumb ($page_title)
 	{
 		// Get the menu item object
@@ -38,8 +39,8 @@ class breadcrumbsBuilder
 		
 		
 	}
-	
-	function addSecondCrumb ($page_title, $previousCrumb_title, $previousCrumb_link)
+	*/
+	function addBreadCrumb ($page_title, $previousCrumb_title = '', $previousCrumb_link = '')
 	{
 	// Get the menu item object
 		global  $mainframe;
@@ -52,7 +53,10 @@ class breadcrumbsBuilder
 			$params->set('page_title',	JText::_($page_title));
 			//Add item in pathway
 			$breadcrumbs = & $mainframe->getPathWay();
-			$breadcrumbs->addItem( JText::_($previousCrumb_title), $previousCrumb_link );
+			if($previousCrumb_title)
+			{
+				$breadcrumbs->addItem( JText::_($previousCrumb_title), $previousCrumb_link );
+			}
 			$breadcrumbs->addItem( JText::_($page_title), '' );
 			$document	= &JFactory::getDocument();
 			$document->setTitle( $params->get( 'page_title' ) );
