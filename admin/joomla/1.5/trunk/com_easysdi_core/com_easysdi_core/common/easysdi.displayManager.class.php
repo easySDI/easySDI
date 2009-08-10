@@ -782,15 +782,15 @@ class displayManager{
 				}
 			}
 			else {
-				$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
+				//$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
 				
 				// FOP 0.93 - à tester
-				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
 				
 				$tmp = uniqid();
-				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
-				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
+				$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'config'.DS.'fop.xml';
+				$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'tmp'.DS.$tmp.'.pdf';
 				
 				@java_reset();		
 				
@@ -799,7 +799,7 @@ class displayManager{
 				$version = $j_fw->FOPVersion();
 				//Génération du document PDF sous forme de fichier
 				$j_fw->convert($fopcfg,$result,$foptmp);
-				
+				/*
 				@java_reset();
 						
 			 	ob_end_clean();
@@ -818,6 +818,28 @@ class displayManager{
 			    readfile($foptmp);
 				
 			    //echo $result;
+			    */
+			    @java_reset();
+						
+				$fp = fopen ($foptmp, 'r');
+				$result = fread($fp, filesize($foptmp));
+				fclose ($fp);
+			 	//ob_end_clean();
+			    error_reporting(0);
+				ini_set('zlib.output_compression', 0);
+				
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Content-Transfer-Encoding: binary');
+				header('Content-type: application/pdf');
+				header('Content-Disposition: attachement; filename="metadata.pdf"');
+				header("Expires: 0"); 
+				//header("Content-Length: ".filesize($foptmp));
+				
+				//flush();
+			    //readfile($foptmp);
+				
+			    echo $result;
 			}
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
