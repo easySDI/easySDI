@@ -387,13 +387,13 @@ class SITE_product {
 		//Allows Pathway with mod_menu_easysdi
 		if($isNew)
 		{
-			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PRODUCT_CREATE",
+			breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PRODUCT_CREATE",
 										   "EASYSDI_MENU_ITEM_PRODUCTS",
 										   "index.php?option=$option&task=listProduct");
 		}
 		else
 		{
-			breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PRODUCT_EDIT",
+			breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PRODUCT_EDIT",
 										   "EASYSDI_MENU_ITEM_PRODUCTS",
 										   "index.php?option=$option&task=listProduct");
 		}
@@ -444,7 +444,7 @@ class SITE_product {
 		
 		$option = JRequest::getVar('option');
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_METADATA_EDIT",
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_METADATA_EDIT",
 										   "EASYSDI_MENU_ITEM_METADATA",
 										   "index.php?option=$option&task=listProductMetadata"); 
 		
@@ -510,7 +510,7 @@ class SITE_product {
 		global  $mainframe;
 
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_PRODUCTS");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PRODUCTS");
         
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 5 );
@@ -598,7 +598,7 @@ class SITE_product {
 	function listProductMetadata(){
 		global  $mainframe;
 		
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_METADATA");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_METADATA");
 		
 		
 		$option=JRequest::getVar("option");

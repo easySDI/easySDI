@@ -91,7 +91,7 @@ class SITE_cpanel {
 		$option=JRequest::getVar("option");
 
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
 		
 		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
 		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
@@ -392,7 +392,7 @@ class SITE_cpanel {
 			
 		$option=JRequest::getVar("option");
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addSecondCrumb("EASYSDI_MENU_ITEM_PROCESS_TREATMENT",
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PROCESS_TREATMENT",
 											"EASYSDI_MENU_ITEM_MYTREATMENT",  
 											"index.php?option=$option&task=listOrdersForProvider");
 		
@@ -469,7 +469,7 @@ class SITE_cpanel {
 		global  $mainframe;
 		
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_MYORDERS");
+		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYORDERS");
 		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();

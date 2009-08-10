@@ -23,7 +23,7 @@ function manageFavoriteProduct ( $orderable = 1)
 {
 	global $mainframe;
 	//Allows Pathway with mod_menu_easysdi
-	breadcrumbsBuilder::addFirstCrumb("EASYSDI_MENU_ITEM_FAVORITES");
+	breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_FAVORITES");
 
 	$user = JFactory::getUser();		
 	
