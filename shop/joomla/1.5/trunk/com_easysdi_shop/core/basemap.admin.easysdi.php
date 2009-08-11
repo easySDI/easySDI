@@ -221,19 +221,6 @@ class ADMIN_basemap {
 		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );		
 	}
 		
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	function listBasemap($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -276,7 +263,6 @@ class ADMIN_basemap {
 
 	}
 	
-
 	function editBasemap( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowBasemap = new basemap( $database );
@@ -344,12 +330,3 @@ class ADMIN_basemap {
 }
 	
 ?>
-<script>
-	function tableOrder(task, orderField)
-	{
-		document.forms['adminForm'].elements['order_field'].value=orderField;
-		document.forms['adminForm'].submit();
-		return;
-	
-	}
-</script>
