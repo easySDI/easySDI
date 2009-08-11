@@ -15,11 +15,11 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-
 defined('_JEXEC') or die('Restricted access');
 jimport("joomla.html.pagination");
 jimport("joomla.html.pane");
 jimport("joomla.database.table");
+
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'category.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'component.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'content.php');
@@ -29,15 +29,6 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'module.php
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
-
-$task = JRequest::getVar('task');
-$cid = JRequest::getVar ('cid', array(0) );
-if (!is_array( $cid )) {
-	$cid = array(0);
-}
-
-global $mainframe;
-
 JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi_shop/templates/css/');
 JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
@@ -45,6 +36,7 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.easysdi.class.php');
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'perimeter.admin.easysdi.php');
@@ -76,12 +68,24 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.ht
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.easysdi.class.php');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'proxy.php');
-
-require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+//Core BackEnd
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+
+//Shop FrontEnd 
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'proxy.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'cpanel.site.easysdi.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'cpanel.site.easysdi.html.php');
+
+//Core FrontEnd
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+
+global $mainframe;
+$task = JRequest::getVar('task');
+$cid = JRequest::getVar ('cid', array(0) );
+if (!is_array( $cid )) {
+	$cid = array(0);
+}
 
 switch($task){
 
@@ -90,10 +94,8 @@ case "proxy":
 		break;
 	
 	case "orderReport":
-		ADMIN_cpanel::orderReport($cid[0]);
+		SITE_cpanel::orderReport($cid[0], false,false);
 		break;
-	
-		
 	case "listOrders":
 		TOOLBAR_cpanel::_LISTORDERS();
 		ADMIN_cpanel::listOrders();
