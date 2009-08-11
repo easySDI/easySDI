@@ -2267,7 +2267,7 @@ if (count($rows)>0){
 		$task = JRequest::getVar('task');
 		$cid = JRequest::getVar ('cid', array() );
 		$step = JRequest::getVar('step',1);
-
+		
 		HTML_shop::manageSession();
 		$productList = $mainframe->getUserState('productList');
 		if ( !is_array($productList) || count($productList) == 0)
@@ -2764,8 +2764,6 @@ if (count($rows)>0){
 		$mainframe->setUserState('bufferValue',$order->buffer);
 		$mainframe->setUserState('totalArea',$order->surface);
 		
-		
-		
 		//Order ID
 		$mainframe->setUserState('order_id',$order->order_id);
 		
@@ -2852,7 +2850,7 @@ if (count($rows)>0){
 		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
 		$database->setQuery($queryURL);
 		$redirectURL = $database->loadResult();
-		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL" );
+		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL&step=5" );
 	}
 }
 	?>
