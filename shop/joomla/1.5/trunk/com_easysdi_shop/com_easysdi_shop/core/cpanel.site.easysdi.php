@@ -622,14 +622,125 @@ class SITE_cpanel {
 
 	}
 
-	function orderReport($id){
-		ADMIN_cpanel::orderReport($id, true, false);
+	/*function orderReport($id){
+		ADMIN_cpanel::orderReport($id, false, false);
+	}*/
+	
+	function orderReport($id,$isfrontEnd, $isForProvider){
+	
+		global $mainframe;
+		
+		if($isForProvider == '')
+		{
+			$isForProvider == false;
+		}
+			$database =& JFactory::getDBO();
+		
+		//Get the current logged user
+		$u = JFactory::getUser();
+		$rootPartner = new partnerByUserId($database);
+		$rootPartner->load($u->id);
+		if($isfrontEnd == true)
+		{
+			//Check if a user is logged
+			if ($u->guest)
+			{
+				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
+				return;
+			}
+			if($isForProvider == false)
+			{
+				//Check the current user rights
+				if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
+					!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
+				{
+					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+					return;
+				}
+			}
+		}
+		
+		$db =& JFactory::getDBO();
+		
+		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
+		$db->setQuery($query );
+
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+
+		//Customer name
+		$user =$rows[0]->user_id;
+		
+		if($isfrontEnd == true && $isForProvider == false)
+		{
+			//Check if the current order belongs to the current logged user
+			if($user != $u->id)
+			{
+				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+				return;
+			}
+		}
+		$queryUser = "SELECT name FROM #__users WHERE id = $user";
+		$db->setQuery($queryUser );
+		$user_name =  $db->loadResult();
+		
+		$third_name ='';
+		//Third name
+		$third = $rows[0]->third_party; 
+		if( $third != 0)
+		{
+			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__easysdi_community_partner where partner_id= $third)";
+			$db->setQuery($queryUser );
+			$third_name =  $db->loadResult();
+		}
+		
+		$query = '';
+		if($isForProvider)
+		{
+			$query = "SELECT *, a.id as plId 
+					  FROM #__easysdi_order_product_list  a, 
+					  	   #__easysdi_product b 
+					  WHERE a.product_id  = b.id 
+					  AND order_id = $id 
+					  AND b.diffusion_partner_id = $rootPartner->partner_id";
+		}
+		else
+		{
+			$query = "SELECT *, a.id as plId 
+					  FROM #__easysdi_order_product_list  a, 
+					       #__easysdi_product b 
+					  WHERE a.product_id  = b.id 
+					  AND order_id = $id";
+		}
+		
+		$db->setQuery($query );
+		$rowsProduct = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+		if(count($rowsProduct) == 0)
+		{
+			//The connected user does not have any product to provide in this order
+			//Do not display any information and quit with error message
+			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+			return;
+		}
+		
+	
+		HTML_cpanel::orderReportRecap($id,$isfrontEnd, $isForProvider, $rows, $user_name, $third_name,$rowsProduct);
 	}
 
+	/*
 	function orderReportForProvider($id){
-		ADMIN_cpanel::orderReport($id, true, true);
+		SITE_cpanel::orderReport($id, true, true);
 	}
-
+*/
 	function sendOrder(){
 		global $mainframe;
 		$db =& JFactory::getDBO();
