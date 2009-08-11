@@ -161,6 +161,15 @@ class HTML_basemap {
 		$order_field = JRequest::getVar ('order_field');
 		
 		?>
+		<script>
+	function tableOrder(task, orderField)
+	{
+		document.forms['adminForm'].elements['order_field'].value=orderField;
+		document.forms['adminForm'].submit();
+		return;
+	
+	}
+</script>
 	<form action="index.php" method="post" name="adminForm">
 		
 		<table width="100%">
