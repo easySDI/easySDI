@@ -159,10 +159,11 @@ switch($task){
 		HTML_shop::order();
 		break;
 	case "orderReport":
-		SITE_cpanel::orderReport($cid[0]);
+		SITE_cpanel::orderReport($cid[0], true, false);
 		break;
 	case "orderReportForProvider":
-		SITE_cpanel::orderReportForProvider($cid[0]);
+		//SITE_cpanel::orderReportForProvider($cid[0]);
+		SITE_cpanel::orderReport($cid[0], true, true);
 		break;
 	case "downloadProduct":
 		SITE_cpanel::downloadProduct();
