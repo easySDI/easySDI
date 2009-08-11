@@ -47,6 +47,7 @@ class ADMIN_cpanel {
 		
 		
 	}
+	
 	function listOrders(){
 		
 		global  $mainframe;
@@ -254,8 +255,14 @@ class ADMIN_cpanel {
 		
 	}
 	
-
-function orderReport($id,$isfrontEnd, $isForProvider){
+	/*
+	function orderReport($id,$isfrontEnd, $isForProvider)
+	{
+		SITE_cpanel::orderReport($id,$isfrontEnd,$isForProvider);
+	}
+*/
+	/*
+	function orderReport($id,$isfrontEnd, $isForProvider){
 	
 		global $mainframe;
 		
@@ -364,7 +371,7 @@ function orderReport($id,$isfrontEnd, $isForProvider){
 	
 	HTMLadmin_cpanel::orderReportRecap($id,$isfrontEnd, $isForProvider, $rows, $user_name, $third_name,$rowsProduct);
 }
-
+*/
 function sendOrder(){
 	global $mainframe;
 	
