@@ -1833,8 +1833,8 @@ if (count($rows)>0){
 			{
 				$totalArea = 0;
 			}
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface,perimeter_id) 
-						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea,$perimeter_id)";
+			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
+						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
 			$db->setQuery($query );
 			
 			if (!$db->query()) {
@@ -2754,7 +2754,7 @@ if (count($rows)>0){
 	{
 		global $mainframe;
 		$database =& JFactory::getDBO();
-		
+		$option = JRequest::getVar('option');
 		//Order
 		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
 		$database->setQuery($query);
@@ -2763,7 +2763,8 @@ if (count($rows)>0){
 		$mainframe->setUserState('third_party',$order->third_party);
 		$mainframe->setUserState('bufferValue',$order->buffer);
 		$mainframe->setUserState('totalArea',$order->surface);
-		$mainframe->setUserState('perimeter_id',$order->perimeter_id);
+		
+		
 		
 		//Order ID
 		$mainframe->setUserState('order_id',$order->order_id);
@@ -2798,7 +2799,7 @@ if (count($rows)>0){
 		}
 		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);
 		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
-		
+		$mainframe->setUserState('perimeter_id',$perimeterList[0]->perimeter_id);
 		//Properties
 		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
 		$database->setQuery($queryProducts);
@@ -2846,7 +2847,12 @@ if (count($rows)>0){
 			}
 		
 		}
-		
+		//Get the url for the "order" entry of the menu
+		$database =& JFactory::getDBO();
+		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
+		$database->setQuery($queryURL);
+		$redirectURL = $database->loadResult();
+		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL" );
 	}
 }
 	?>
