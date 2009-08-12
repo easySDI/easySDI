@@ -27,15 +27,18 @@ class SITE_catalog {
 		$maxDescr = config_easysdi::getValue("description_length");
 		$MDPag = config_easysdi::getValue("pagination_metadata");
 		
+		//Address where we do the post request (catalog url)
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw:http://www.opengis.net/cat/csw&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0"; //&sortby=".$sortString;
+		$xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		
 		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', $MDPag );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$filterfreetextcriteria = JRequest::getVar('filterfreetextcriteria', '' );
-		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria', '');
+	//	$filterfreetextcriteria = JRequest::getVar('filterfreetextcriteria');
+		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 		$minX = JRequest::getVar('bboxMinX', "-180" );
 		$minY = JRequest::getVar('bboxMinY', "-90" );
 		$maxX = JRequest::getVar('bboxMaxX', "180" );
@@ -44,8 +47,15 @@ class SITE_catalog {
 		$filter_theme = JRequest::getVar('filter_theme');
 		$filter_visible = JRequest::getVar('filter_visible');
 		$filter_orderable = JRequest::getVar('filter_orderable');
+		$filter_date = JRequest::getVar('update_cal');
+		$filter_date_comparator = JRequest::getVar('update_select');
+		/* Todo, push the date format in EasySDI config and
+		set it here accordingly */
+		if($filter_date){
+			$temp = explode(".", $filter_date);
+			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
+		}
 		
-				
 		// Conditions pour la visibilité publique/privée de la métadonnée
 		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
@@ -63,7 +73,9 @@ class SITE_catalog {
 		
 		//do not display result if no request is done
 		//(simple_filterfreetextcriteria or filterfreetextcriteria have not been hit once)
-		if(isset($_GET['simple_search_button'])||isset($_GET['advanced_search_button'])){
+		//print_r($_GET);
+		//echo "<br><br>";
+		if(isset($_GET['simple_search_button']) || isset($_GET['limitstart'])){
 			$filter = "";
 			if($partner->partner_id == 0)
 			{
@@ -128,21 +140,26 @@ class SITE_catalog {
 			} 
 			
 			// Pour chaque requête qui récupère des id de métadonnées selon certains critères sur le produit, il faut tester que le produit est publié
+			// On rempli un tableau avec les métadonnées recherchable, on traverse les filtres et on ajoute ou retire du tableau les id nécessaires
+			//$searchableMetadata = array();
+			
 			
 			if ($minX == "-180" && $minY == "-90" && $maxX == "180" && $maxY == "90"){
 				$bboxfilter ="";
 			}
 			else{
+				echo "bbox";
 				$bboxfilter ="<BBOX>
 				<PropertyName>ows:BoundingBox</PropertyName>
 				<gml:Envelope><gml:lowerCorner>$minY $minX</gml:lowerCorner><gml:upperCorner>$maxY $maxX</gml:upperCorner></gml:Envelope>
 				</BBOX>";
 			}
 			
-			$cswThemeFilter="";
+			$cswThemeFilter;
 			// Filtre sur la thématique (Critères de recherche avancés)
 			if($filter_theme)
 			{
+				echo ", theme";
 				$cswThemeFilter = "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 				<PropertyName>any</PropertyName>
 				<Literal>$filter_theme</Literal>
@@ -152,11 +169,13 @@ class SITE_catalog {
 			}
 			
 			// Filtre sur l'id du fournisseur (Critères de recherche avancés)
-			$cswPartnerFilter = "";
+			$arrFilterMd =array();
+			$arrPartnerMd;
 			if( $partner_id )
 			{
+				echo ", partner";
 				$db =& JFactory::getDBO();
-				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and partner_id = ".$partner_id.$filter;
+				$query = "SELECT metadata_id FROM #__easysdi_product WHERE published=1 and partner_id = ".$partner_id.$filter;
 				$db->setQuery( $query);
 				$list_id = $db->loadObjectList() ;
 				if ($db->getErrorNum())
@@ -165,21 +184,23 @@ class SITE_catalog {
 					echo 	$db->getErrorMsg();
 					echo "</div>";
 				}
+				if(count($list_id) > 0){
+					$arrPartnerMd = array();
+				}
 				foreach ($list_id as $md_id)
 				{
-					$cswPartnerFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-					<PropertyName>fileId</PropertyName>
-					<Literal>$md_id->metadata_id</Literal>
-					</PropertyIsLike> ";
+					$arrPartnerMd[] = $md_id->metadata_id;
 				}
 				$empty = false;
 			}
+			if($arrPartnerMd != null)
+				$arrFilterMd[] = $arrPartnerMd;
 			
-                	
-			$cswVisibleFilter = "";
+			$arrCswVisibleMd;
 			// Filtre sur la visibilité du produit (Critères de recherche avancés)
 			if($filter_visible )
 			{	
+				echo ", prod visibily";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and previewWmsUrl is not null".$filter;
 				$db->setQuery( $query);
@@ -190,20 +211,23 @@ class SITE_catalog {
 					echo 	$db->getErrorMsg();
 					echo "</div>";
 				}
+				if(count($list_id) > 0){
+					$arrCswVisibleMd = array();
+				}
 				foreach ($list_id as $md_id)
 				{
-					$cswVisibleFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-					<PropertyName>fileId</PropertyName>
-					<Literal>$md_id->metadata_id</Literal>
-					</PropertyIsLike> ";
+					$arrCswVisibleMd[] = $md_id->metadata_id;
 				}
 				$empty = false;
 			}
+			if($arrCswVisibleMd != null)
+				$arrFilterMd[] = $arrCswVisibleMd;
 			
-			$cswOrderableFilter = "";
+			$arrCswOrderableFilterMd;
 			// Filtre sur la possibilité de commander le produit (Critères de recherche avancés)
 			if($filter_orderable)
 			{
+				echo ", orderable";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1 AND published = 1".$filter; 
 				$db->setQuery( $query);
@@ -214,15 +238,53 @@ class SITE_catalog {
 					echo 	$db->getErrorMsg();
 					echo "</div>";
 				}
+				if(count($list_id) > 0){
+					$arrCswOrderableFilterMd = array();
+				}
 				foreach ($list_id as $md_id)
 				{
-					$cswOrderableFilter .= "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-					<PropertyName>fileId</PropertyName>
-					<Literal>$md_id->metadata_id</Literal>
-					</PropertyIsLike> ";
+					$arrCswOrderableFilterMd[] = $md_id->metadata_id;
 				}
 				$empty = false;
 			}
+			if($arrCswOrderableFilterMd != null)
+				$arrFilterMd[] = $arrCswOrderableFilterMd;
+			
+			// Filtre sur la date
+			$arrCswDateFilter;
+			if($filter_date)
+			{
+				echo ", date";
+				$db =& JFactory::getDBO();
+				$query = "";
+				if($filter_date_comparator == "equal")
+					$query = "SELECT metadata_id FROM #__easysdi_product WHERE update_date like '".$filter_date."%' AND published = 1".$filter; 
+				if($filter_date_comparator == "different")
+					$query = "SELECT metadata_id FROM #__easysdi_product WHERE update_date not like '".$filter_date."%' AND published = 1".$filter; 
+				if($filter_date_comparator == "greaterorequal")
+					$query = "SELECT metadata_id FROM #__easysdi_product WHERE (update_date >= '".$filter_date."' OR update_date like '".$filter_date."%') AND published = 1".$filter; 
+				if($filter_date_comparator == "smallerorequal")
+					$query = "SELECT metadata_id FROM #__easysdi_product WHERE (update_date <= '".$filter_date."' OR update_date like '".$filter_date."%') AND published = 1".$filter; 
+				echo "date query: ".$query." with comparator:".$filter_date_comparator;
+				$db->setQuery( $query);
+				$list_id = $db->loadObjectList() ;
+				if ($db->getErrorNum())
+				{
+					echo "<div class='alert'>";
+					echo 	$db->getErrorMsg();
+					echo "</div>";
+				}
+				if(count($list_id) > 0){
+					$arrCswDateFilter = array();
+				}
+				foreach ($list_id as $md_id)
+				{
+					$arrCswDateFilter[] = $md_id->metadata_id;
+				}
+				$empty = false;
+			}
+			if($arrCswDateFilter != null)
+				$arrFilterMd[] = $arrCswDateFilter;
 			
 			
 			$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
@@ -234,12 +296,17 @@ class SITE_catalog {
         			';
 			*/
 			
+			
 			// Filtre minimum: Produits publiés
-			$cswMinimumFilter = "";
-			if( $cswPartnerFilter == "" and $cswThemeFilter == "" and $cswOrderableFilter == ""  and $cswVisibleFilter == "" )
+			// Si aucun filtre n'a renvoyé de résultat ou si aucun filtre n'a été demandé.
+			$arrCswMinMd;
+			
+			if( !is_Array($arrPartnerMd) and $cswThemeFilter==null and !is_Array($arrCswDateFilter) and !is_Array($arrCswVisibleMd) and !is_Array($arrCswOrderableFilterMd))
 			{
+				echo ", minimum";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1".$filter;
+				//echo "filtre minimum: ".$query;
 				$db->setQuery( $query);
 				$list_id = $db->loadObjectList() ;
 				if ($db->getErrorNum())
@@ -248,51 +315,104 @@ class SITE_catalog {
 					echo 	$db->getErrorMsg();
 					echo "</div>";
 				}
+				if(count($list_id > 0)){
+					$cswPartnerFilter .= "<Or>";
+					$arrCswMinMd = array();
+				}
 				foreach ($list_id as $md_id)
 				{
+					$arrCswMinMd[] = $md_id->metadata_id;
 					$cswPartnerFilter .= "<PropertyIsEqualTo>
 					<PropertyName>fileId</PropertyName>
 					<Literal>$md_id->metadata_id</Literal>
 					</PropertyIsEqualTo> ";
 				}
+				if(count($list_id > 0))
+					$cswPartnerFilter .= "</Or>";
 				$empty = false;
+				
+				//reinitialize the filters (this was a hack because php doesn't make any difference for:
+				//s=null <=> s=""
+				$cswPartnerFilter == "";
+				$cswThemeFilter == "";
+				$cswOrderableFilter == "";
+				$cswVisibleFilter == "";
+				$cswDateFilter == "";
 			}
+			if($arrCswMinMd != null)
+				$arrFilterMd[] = $arrCswMinMd;
 			
-			$cswfilter = "<Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">
-							<Or>";
-			// Filtre sur le texte (Critères de recherche avancés)
-			if ( $filterfreetextcriteria  || $empty )
-			{
-				$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<PropertyName>any</PropertyName>
-							<Literal>$filterfreetextcriteria%</Literal>
-							</PropertyIsLike> ";
-			}
 			// Filtre sur le texte (Critères de recherche simple)
+			$cswSimpleTextFilter;
 			if ($simple_filterfreetextcriteria || $empty)		
 			{		
-				$cswfilter = $cswfilter."<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<PropertyName>any</PropertyName>
-							<Literal>$simple_filterfreetextcriteria%</Literal>
-							</PropertyIsLike>
-							";
+				echo ", recherche simple";
+				//<ogc:PropertyName>any</ogc:PropertyName>
+				
+				$cswSimpleTextFilter = "
+				  <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+				  <ogc:PropertyName>any</ogc:PropertyName>
+				    <ogc:Literal>$simple_filterfreetextcriteria%</ogc:Literal>
+				  </ogc:PropertyIsLike>\r\n";	  
 			}
 			
+			//Appending conditions to filter 2
+			//Filter array are divided, conquer them
+			$arrSearchableMd = Array();
+			$cswfilterCond = "";
 			
-                	
-			$cswfilter = $cswfilter.$cswPartnerFilter;
-			$cswfilter = $cswfilter.$cswThemeFilter;
-			$cswfilter = $cswfilter.$cswOrderableFilter;
-			$cswfilter = $cswfilter.$cswVisibleFilter;
-			$cswfilter = $cswfilter.$cswMinimumFilter;
-			$cswfilter = $cswfilter.$bboxfilter;
-			$cswfilter = $cswfilter."</Or></Filter>";//.$sortBy;
-			echo "<!--";
-			echo $catalogUrlGetRecordsCount."&constraint=".$cswfilter;
-			echo "-->";
-			$cswResults= simplexml_load_file($catalogUrlGetRecordsCount."&constraint=".urlencode($cswfilter));
-                	
-                	
+			//echo "<br>filtermd";
+			//print_r($arrFilterMd);
+			//echo "<br>";
+
+			for ($i=0; $i < count($arrFilterMd); $i++)
+			{
+				if($i == 0){
+					$arrSearchableMd = $arrFilterMd[$i];
+					continue;
+				}
+				$arrSearchableMd = array_intersect($arrSearchableMd, $arrFilterMd[$i]);
+			}
+						
+			//Build the filter
+			
+			$cswfilterCond = "<ogc:Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
+			$cswfilterCond .= "<ogc:And>\r\n";
+			$cswfilterCond .= $cswSimpleTextFilter;
+			$cswfilterCond .= $cswThemeFilter;
+			$cswfilterCond .= $bboxfilter;
+			
+			if(count($arrSearchableMd) > 1)
+				$cswfilterCond .= "<ogc:Or>\r\n";
+			foreach ($arrSearchableMd as $md_id)
+			{
+				//keep it so to keep the request "small"
+				$cswfilterCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>FileIdentifier</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+			}
+			if(count($arrSearchableMd) > 1)
+				$cswfilterCond .= "</ogc:Or>\r\n";
+			
+			
+			//Finalize the filter
+			$cswfilterCond .= "</ogc:And>\r\n";
+			$cswfilterCond .= "</ogc:Filter>\r\n";
+			
+			$cswfilter .= $cswfilterCond;
+			//.$sortBy;
+			
+			//		BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
+			$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, "", "");
+			$postResult;
+			
+			//Get the result from the server, only for count
+			$xmlResponse = SITE_catalog::PostXMLRequest($catalogUrlBase,$xmlBody);
+
+			$cswResults= simplexml_load_string($xmlResponse);
+			
+			//echo "dump the file: <br/><br/><br/>";
+			//echo $cswResults->asXML();
+			//echo "<br/> end dump the file";
+			
 			if ($cswResults !=null){
 				$total = 0;
 				foreach($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->attributes() as $a => $b) {
@@ -304,10 +424,13 @@ class SITE_catalog {
 				$pageNav = new JPagination($total,$limitstart,$limit);
 				
 				// Séparation en n éléments par page
-				$catalogUrlGetRecordsMD = $catalogUrlGetRecords ."&startPosition=".($limitstart+1)."&maxRecords=".$limit."&constraint=".urlencode($cswfilter);
+				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, "", "");
+				
+				//Get the result from the server
+				$xmlResponse = SITE_catalog::PostXMLRequest($catalogUrlBase,$xmlBody);
+
 				//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
-									
-				$cswResults = DOMDocument::load($catalogUrlGetRecordsMD);
+				$cswResults = DOMDocument::loadXML($xmlResponse);
                 	
 				// Tri avec XSLT
 				// Chargement du fichier XSL
@@ -321,32 +444,104 @@ class SITE_catalog {
 				// Fin du tri
 			}
 		}
-		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$filterfreetextcriteria,$maxDescr);
+		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr);
 		
 	}
 	
-	function Post($url,$array){
-		$args = http_build_query($array);
+	//$maxRecords == 0 => no limit
+	//$typeNames ex: gmd:MD_Metadata
+	//$elementSetName ex: full
+	//$constraintVersion ex. 1.1.0
+	//$filter = a valid filter string
+	//$startPosition: integer
+	//$sortBy: [dc:title|dct:abstract|ows:BoundingBox]
+	//$sortOrder: ASC
+	
+	
+	function BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder){
+		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
+		$req .= "\r\n";
+		
+		//Get Records section
+		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw\" service=\"CSW\" version=\"2.0.1\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" ";
+		
+		// add max records if not 0
+		if($maxRecords != 0)
+			$req .= "maxRecords=\"".$maxRecords."\" ";
+		
+		//add start position
+		if($startPosition != 0)
+			$req .= "startPosition=\"".$startPosition."\" ";
+		
+		$req .= "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd\">\r\n";
+	
+		//Query section
+		//Types name
+		$req .= "<csw:Query typeNames=\"".$typeNames."\">\r\n";
+		//ElementSetName
+		$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
+		//ConstraintVersion
+		$req .="<csw:Constraint version=\"".$constraintVersion."\">\r\n";
+		//filter
+		$req .= $filter."\r\n";
+		
+		$req .= "</csw:Constraint>\r\n";
+		
+		//Sort by
+		if($sortBy != "" && $sortOrder != ""){
+			$req .= "<ogc:SortBy>";
+			$req .= "<ogc:SortProperty>";
+			$req .= "<ogc:PropertyName>".$sortBy."</ogc:PropertyName>";
+			$req .= "<ogc:SortOrder>".$sortOrder."</ogc:SortOrder>";
+			$req .= "</ogc:SortProperty>";
+			$req .= "</ogc:SortBy>";
+		}
+		
+		
+		$req .= "</csw:Query>\r\n";
+		$req .= "</csw:GetRecords>\r\n";
+		
+		return $req;
+	}
+	
+	function PostXMLRequest($url,$xmlBody){
+		//$args = http_build_query($array);
 		$url = parse_url($url);
 		if(isset($url['port'])){
 			$port = $url['port'];
 		}else{
 			$port = 80;
 		}
-
+		//could not open socket
 		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			$out = false;
-		}else{
-			$size = strlen($args);
+			//$out = false;
+		}
+		//socket ok
+		else{
+			//$size = strlen($args);
+			$size = strlen($xmlBody);
 			$request = "POST ".$url['path']." HTTP/1.1\n";
 			$request .= "Host: ".$url['host']."\n";
+			//add auth header if necessary
+			if(isset($url['user']) && isset($url['pass'])){
+			   $user = $url['user'];
+			   $pass = $url['pass'];
+			   $request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
+			}
 			$request .= "Connection: Close\r\n";
 			$request .= "Content-type: application/x-www-form-urlencoded\n";
 			$request .= "Content-length: ".$size."\n\n";
-			$request .= $args."\n";
+			$request .= $xmlBody."\n";
+			//send req
 			$fput = fputs($fp, $request);
+			//read response, do only send back the xml part, not the headers
+			$strResponse = "";
+			while (!feof($fp)) {
+			   $strResponse .= fgets($fp, 128);
+			}
+			$out = strstr($strResponse, '<?xml');
+			
 			fclose ($fp);
-			$out = true;
 		}
 		return $out;
 	}

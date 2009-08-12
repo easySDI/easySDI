@@ -27,6 +27,20 @@ class HTML_catalog{
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$simulatedTabIndex = JRequest::getVar('simulatedTabIndex');
+		$advancedSrch = JRequest::getVar('advancedSrch',0);
+		$partners = array();
+		$partners[0]='';
+		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text FROM #__users, `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id WHERE #__users.id = #__easysdi_community_partner.user_id GROUP BY #__easysdi_community_partner.partner_id ";
+		$db->setQuery( $query);
+		$partners = array_merge( $partners, $db->loadObjectList() );
+		if ($db->getErrorNum()) 
+		{
+			echo "<div class='alert'>";
+			echo 	$db->getErrorMsg();
+			echo "</div>";
+		}
+		
 		?>
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
@@ -43,28 +57,98 @@ class HTML_catalog{
 			<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>" />
 			<input type="hidden" name="tabIndex" id="tabIndex" value="" />
 			<input type="hidden" name="simulatedTabIndex" id ="simulatedTabIndex" value ="<?php echo JRequest::getVar('simulatedTabIndex');?>" />
+			<input type="hidden" name="advancedSrch" id ="advancedSrch" value ="<?php echo JRequest::getVar('advancedSrch', 0);?>" />
+			
 			
 			<script  type="text/javascript">
-				function clearDetailsForm ()
+			
+				window.addEvent('domready', function() {
+				/*
+				* Register event handlers
+				*/
+					//initialize the page
+					init();
+					
+					//Toggle the state of the advanced search
+					$('advSearchRadio').addEvent('click', function() {
+						toggleAdvancedSearch($('advSearchRadio').checked);
+					});
+					
+					//Handler for the clear button
+					$('easysdi_clear_button').addEvent('click', function() {
+						easysdiClearButton_click();
+					});
+					
+					//Handler for the search button
+					$('simple_search_button').addEvent('click', function() {
+						easysdiSearchButton_click();
+					});
+					
+				});
+				
+				function init(){
+					//hide advanced search
+					toggleAdvancedSearch($('advancedSrch').value);
+				}
+				
+				function easysdiClearButton_click(){
+					clearBasicSearch();
+					clearAdvancedSearch();
+					document.getElementById('tabIndex').value = '0';
+					document.getElementById('catalog_search_form').submit();
+				}
+				
+				function easysdiSearchButton_click(){
+					document.getElementById('tabIndex').value = '0';
+					document.getElementById('catalog_search_form').submit();
+				}
+				
+				function toggleAdvancedSearch(isVisible){
+					if(isVisible == true){
+						$('divAdvancedSearch').style.visibility = 'visible';
+						$('divAdvancedSearch').style.display = 'block';
+						$('advSearchRadio').checked = true;
+						$('advancedSrch').value=1;
+					}else{
+						$('divAdvancedSearch').style.visibility = 'hidden';
+						$('divAdvancedSearch').style.display = 'none';
+						$('advSearchRadio').checked = false;
+						$('advancedSrch').value=0;
+						//Do not keep data in a hidden table
+						clearAdvancedSearch();
+					}
+				}
+				
+				function clearBasicSearch ()
 				{
-					document.getElementById('filterfreetextcriteria').value = '';
-					 document.getElementById('filter_visible').value = '';
+					 document.getElementById('simple_filterfreetextcriteria').value = '';
 					 document.getElementById('partner_id').value = '';
+				}
+				
+				function clearAdvancedSearch ()
+				{
+					 document.getElementById('filter_visible').value = '';
 					 document.getElementById('filter_orderable').value = '';
-					 document.getElementById('filter_theme').value = '';	
+					 document.getElementById('filter_theme').value = '';
+					 document.getElementById('update_select').value = 'equal';
+					 document.getElementById('update_cal').value = '';
 					 document.getElementById("bboxMinX").value = "-180"; 	
 					 document.getElementById("bboxMinY").value ="-90";
 					 document.getElementById("bboxMaxX").value ="180"; 	
 					 document.getElementById("bboxMaxY").value ="90";
 				}
-				function clearForm()
-				{
-					document.getElementById('simple_filterfreetextcriteria').value = '';
-				}
+				
 			</script>
 			
 			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 			
+			
+			
+			
+			
+			
+			
+			<!--
 			<div onClick ="document.getElementById('simulatedTabIndex').value = '1';
 							clearDetailsForm();
 						  document.getElementById('catalog_search_form').submit();" 
@@ -81,22 +165,51 @@ class HTML_catalog{
 						  		else
 						  		{echo "class='mdPanSelectable'" ;} ?>>
 						  <?php echo JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA");?></div>
-			<?php
-				if ($simulatedTabIndex == '' || $simulatedTabIndex == 1)
-				{
-			?>
+			-->			  
+						  
+						  
+			
+						  
+						  
+						  
+						  
+						  
+			<!--
+				This is the simple search
+			-->
+
 			<table width="100%" class="mdPanContent">
 				<tr>
 					<td>
 						<table width="100%">
 							<tr>
 								<td align="left"><b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
-								<input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
+								<!-- this was the old advanced critera: filterfreetextcriteria -->
+								<td align="left"><input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
+								<td class="catalog_controls">
+									<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
+										<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+									<button type="submit" id="easysdi_clear_button" class="easysdi_clear_button">
+										<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
+								</td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_PARTNER");?></td>
+								<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
+								<td>&nbsp;</td>		
+							</tr>
+							<tr>
+								<td class="catalog_controls" colspan="3">
+									<input id="advSearchRadio" name="advSearchRadio" type="checkBox" value=""/>
+									<span><?php echo JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"); ?></span>
+								</td>
 							</tr>
 						</table>
 					</td>
 				</tr>
 			</table>
+			
+			<!--
 			<table>
 				<tr>
 					<td>
@@ -114,21 +227,55 @@ class HTML_catalog{
 					</td>
 				</tr>
 			</table>
-				<?php
-				}
-				 else
-				 {
-		//		echo $tabs->endPanel();
-		//		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"),"catalogPanel2");
-				?><br/>
-			<table width="100%" class="mdPanContent">
-				<tr>
-					<td><?php
-					HTML_catalog::generateMap();
-					?></td>
+			-->
+			<!--
+				This is the advanced search
+			-->
+<?php
+			global  $mainframe;
+			$option= JRequest::getVar('option');
+			$db =& JFactory::getDBO();
+			
+			$themes = array();
+			$themes[] = JHTML::_('select.option', '', '');
+			$query = "SELECT #__easysdi_metadata_topic_category.code as value, #__easysdi_metadata_topic_category.value as text FROM `#__easysdi_metadata_topic_category`";
+			$db->setQuery( $query);
+			$themes = array_merge( $themes, $db->loadObjectList() );		
+			HTML_catalog::alter_array_value_with_Jtext($themes);
+		
+?>
+			<div id="divAdvancedSearch">
+				<table width="100%" class="mdPanContent">
+					<tr>
+						<td ><?php echo JText::_("EASYSDI_CATALOG_FILTER_THEME");?></td>
+						<td><?php echo JHTML::_("select.genericlist", $themes, 'filter_theme', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_theme')); ?></td>
+					</tr>
 					
-				</tr>
-			</table>
+					<tr>
+						<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_VISIBLE");?></td>
+						<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
+					</tr>
+					<tr>
+						<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_ORDERABLE");?></td>
+						<td><input type="checkbox" id="filter_orderable" name="filter_orderable" <?php if (JRequest::getVar('filter_orderable')) echo " checked"; ?> class="inputbox" /></td>
+					</tr>
+					<tr>
+						<td><?php echo JText::_("EASYSDI_CATALOG_UPDATE");?></td>
+						<td>
+							<select id="update_select" size="1" name="update_select">
+								<option value="equal" <?php if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_CATALOG_DATE_EQUAL");?></option>
+								<option value="smallerorequal" <?php if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_CATALOG_DATE_BEFORE");?></option>
+								<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_CATALOG_DATE_AFTER");?></option>
+								<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_CATALOG_DATE_NOTEQUAL");?></option>
+							</select>
+							<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
+						</td>
+					</tr>
+				</table>
+				
+				<?php HTML_catalog::generateMap(); ?>
+			</div>
+			<!--
 			<table>
 				<tr>
 					<td>
@@ -146,16 +293,28 @@ class HTML_catalog{
 					</td>
 				</tr>
 			</table>
-		
-			<?php
-				 }
-	//		echo $tabs->endPanel();
-	//		echo $tabs->endPane();
-			?>
+			-->
 		</form>
 		
 		
-		 <?php if($cswResults){ ?> <br/>
+
+		 <?php if($cswResults){
+			 
+			 //
+			 //
+			 //
+			 // Nothing to do out there...
+			 //
+			 //
+			 //
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 ?> <br/>
 <table width="100%">
 	<tr>
 		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
@@ -613,27 +772,6 @@ class HTML_catalog{
 	*/
 	function generateMap()
 	{
-		global  $mainframe;
-		$option= JRequest::getVar('option');
-		$db =& JFactory::getDBO();
-		$partners = array();
-		$partners[0]='';
-		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
-		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text FROM #__users, `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id WHERE #__users.id = #__easysdi_community_partner.user_id GROUP BY #__easysdi_community_partner.partner_id ";
-		$db->setQuery( $query);
-		$partners = array_merge( $partners, $db->loadObjectList() );
-		if ($db->getErrorNum()) 
-		{
-			echo "<div class='alert'>";
-			echo 	$db->getErrorMsg();
-			echo "</div>";
-		}
-		$themes = array();
-		$themes[] = JHTML::_('select.option', '', '');
-		$query = "SELECT #__easysdi_metadata_topic_category.code as value, #__easysdi_metadata_topic_category.value as text FROM `#__easysdi_metadata_topic_category`";
-		$db->setQuery( $query);
-		$themes = array_merge( $themes, $db->loadObjectList() );		
-		HTML_catalog::alter_array_value_with_Jtext($themes);
 		
 		?>
 		<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
@@ -641,6 +779,7 @@ class HTML_catalog{
 		<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
 	
 		<script type="text/javascript" >
+		
 		var vectorsCatalog;            
 		var mapCatalog;
 		var baseLayerVectorCatalog;
@@ -657,6 +796,8 @@ class HTML_catalog{
 		function initMapCatalog(){
 			
 		 <?php
+		global  $mainframe;
+		$db =& JFactory::getDBO();
 		$query = "select * from #__easysdi_basemap_definition where def = 1"; 
 		$db->setQuery( $query);
 		$rows = $db->loadObjectList();		  
@@ -736,7 +877,9 @@ class HTML_catalog{
 		
 					 
 				mapCatalog.events.register("zoomend", null, 
-							function() { document.getElementById('previousExtent').value = mapCatalog.getExtent().toBBOX();})
+							function() { 
+								document.getElementById('previousExtent').value = mapCatalog.getExtent().toBBOX();
+							})
 		                
 		               mapCatalog.addControl(new OpenLayers.Control.LayerSwitcher());
 		                mapCatalog.addControl(new OpenLayers.Control.Attribution());                                
@@ -819,56 +962,33 @@ class HTML_catalog{
 		  
 		}
 		</script>
-			<table >
+		
+		<table >
 			<tr>
 				<td >
-				<table>
-					<tr>
-						<td>&nbsp;</td>
-					</tr>
-					<tr>
-						<td ><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></td>
-						<td><input type="text" name="filterfreetextcriteria" id="filterfreetextcriteria"
-							value="<?php echo JRequest::getVar('filterfreetextcriteria');?>" class="inputbox" /></td>
-					</tr>
-					<tr>
-						<td ><?php echo JText::_("EASYSDI_CATALOG_FILTER_THEME");?></td>
-						<td><?php echo JHTML::_("select.genericlist", $themes, 'filter_theme', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_theme')); ?></td>
-					</tr>
-					
-					<tr>
-						<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_PARTNER");?></td>
-						<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?>
-						</td>
-					</tr>
-					<tr>
-						<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_VISIBLE");?></td>
-						<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
-					</tr>
-					<tr>
-						<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_ORDERABLE");?></td>
-						<td><input type="checkbox" id="filter_orderable" name="filter_orderable" <?php if (JRequest::getVar('filter_orderable')) echo " checked"; ?> class="inputbox" /></td>
-					</tr>
-					<tr>
-						<td>
+				<fieldset>
+				<legend><?php echo JText::_("EASYSDI_PUBLISH_CARTO_FILTER"); ?></legend>
+					<table>
+						<tr>
+							<td>
 						
-						</td>
-						<td>
-						<div id="mapCatalog"  class="tinymap"></div>
+							</td>
+							<td>
+								<div id="mapCatalog"  class="tinymap"></div>
 						
-						</td>
-					</tr>
-					<tr>
-						<td>
+							</td>
+							</tr>
+							<tr>
+							<td>
 						
-						</td>
-						<td>
-						<div id="panelDiv" class="olControlEditingToolbar"></div>
-						</td>
-					</tr>
-				</table>
+							</td>
+							<td>
+								<div id="panelDiv" class="olControlEditingToolbar"></div>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
 				</td>
-				
 			</tr>
 		</table>
 		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
