@@ -1207,7 +1207,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	if (policy.getAvailabilityPeriod() !=null) {
 	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
-
+	
 	int minWidth = 0;
 	int minHeight = 0;
 	int maxWidth = Integer.MAX_VALUE;
