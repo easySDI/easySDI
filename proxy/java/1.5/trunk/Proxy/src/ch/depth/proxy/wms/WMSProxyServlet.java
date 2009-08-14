@@ -423,25 +423,37 @@ public class WMSProxyServlet extends ProxyServlet {
 						
 						dump("transform begin filterImage to layer "+0);
 //Debug tb 08.07.2009
-						BufferedImage imageSource = filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),layerFilePathList.get(0)),filePathList.get(0),isTransparent);
+						BufferedImage imageSource;
+						//Si les threads ont renvoyés une réponse
+						if(serverUrlPerfilePathList.size()>0)
+							{
+							imageSource = filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),layerFilePathList.get(0)),filePathList.get(0),isTransparent);
 //Fin de Debug
-						Graphics2D g = imageSource.createGraphics();
-						dump("transform end filterImage to layer "+0);
-						
-						 //Boucle sur les fichiers réponses
-						for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++)
-							{			
-						    //dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
-						    if(layerFilePathList.get(iFilePath)!=null)
-						    	{
-						    	dump("transform begin filterImage to layer "+iFilePath);
+							Graphics2D g = imageSource.createGraphics();
+							dump("transform end filterImage to layer "+0);
+							
+							 //Boucle sur les fichiers réponses
+							for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++)
+								{			
+							    //dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
+							    if(layerFilePathList.get(iFilePath)!=null)
+							    	{
+							    	dump("transform begin filterImage to layer "+iFilePath);
 //Debug tb 08.07.2009
-						    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
+							    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
 //Fin de Debug
-						    	if (image !=null) g.drawImage(image, null, 0, 0);
-						    	dump("transform end filterImage to layer "+iFilePath);
-						    	}
+							    	if (image !=null) g.drawImage(image, null, 0, 0);
+							    	dump("transform end filterImage to layer "+iFilePath);
+							    	}
+								}
+//Debug tb 11.08.2009
 							}
+						//Si aucune requête n'a été envoyé au serveur, retourne: empty image
+						else
+							{
+							imageSource = ImageIO.read(new File(filePathList.get(0)));
+							}
+//Fin de Debug
 			
 						Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 			
@@ -1070,7 +1082,8 @@ public class WMSProxyServlet extends ProxyServlet {
 					{
 				    // Vérfication de la taille image req VS policy -> si vrai: la requête n'est pas envoyée 
 				    if (("GetMap".equalsIgnoreCase(operation)||"map".equalsIgnoreCase(operation) )&& !isSizeInTheRightRange(Integer.parseInt(width),Integer.parseInt(height)))
-				    	{			
+				    	{
+				    	dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
 				    	sendRequest=false;
 				    	}		    
 	
