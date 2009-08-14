@@ -547,7 +547,7 @@ public class WPSServlet extends HttpServlet {
 	
 			
 			Statement stmtProducts = conn.createStatement();
-			ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE p.id=pl.product_id AND pl.order_id = "+order_id + " AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"'");
+			ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_product_treatment_type treatment, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE p.id=pl.product_id AND treatment.id=p.treatment_type AND pl.order_id = "+order_id + " AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"' AND treatment.code='AUTO'");
 	
 			while(rsProducts.next()){
 			    res.append("<easysdi:PRODUCT>\n");		
