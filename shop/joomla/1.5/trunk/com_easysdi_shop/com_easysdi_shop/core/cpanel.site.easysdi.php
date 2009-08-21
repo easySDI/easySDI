@@ -361,7 +361,7 @@ class SITE_cpanel {
 		 SITE_cpanel::setOrderStatus($order_id,1);
 	}
 
-	function notifyUserByEmail($order_id){
+	function notifyUserByEmail($order_id, $subject, $body){
 		/*
 		 * Envois un mail à l'utilisateur pour le prévenir que la commande est traitée.
 		 */
@@ -379,11 +379,12 @@ class SITE_cpanel {
 
 		if ($partner->notify_order_ready == 1) {
 
-
-			SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
+			SITE_product::sendMailByEmail($row->email,JText::_($subject),JText::sprintf($body,$row->data_title));
+			//SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
 
 		}
 	}
+	
 
 	function processOrder(){
 
@@ -920,7 +921,11 @@ class SITE_cpanel {
 
 		if ($total ==0)
 		{
-			SITE_cpanel::notifyUserByEmail($order_id);
+			SITE_cpanel::notifyUserByEmail($order_id, "EASYSDI_CMD_READY_MAIL_SUBJECT","EASYSDI_CMD_READY_MAIL_BODY");
+		}
+		else if ($total == $totalProduct -1)
+		{
+			SITE_cpanel::notifyUserByEmail($order_id, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_SUBJECT","EASYSDI_CMD_FIRST_PROD_READY_MAIL_BODY");
 		}
 	}
 	
