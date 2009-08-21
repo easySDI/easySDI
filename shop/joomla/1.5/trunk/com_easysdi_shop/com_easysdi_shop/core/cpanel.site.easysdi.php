@@ -89,6 +89,7 @@ class SITE_cpanel {
 		global  $mainframe;
 
 		$option=JRequest::getVar("option");
+		
 
 		//Allows Pathway with mod_menu_easysdi
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
@@ -106,6 +107,14 @@ class SITE_cpanel {
 
 		$filter = "";
 
+		//Build the query on product treatment type
+		$treatmentTypeQuery = "";
+		$treatmentType = JRequest::getVar("treatmentType","");
+		if($treatmentType != "")
+		{
+			$treatmentTypeQuery = " AND p.treatment_type = $treatmentType ";
+		}
+		
 		//Build the query on Order status
 		$orderStatusQuery = "";
 		$orderStatus = JRequest::getVar("orderStatus","");
@@ -155,8 +164,15 @@ class SITE_cpanel {
 		$database->setQuery($queryType);
 		$productTypeFilter = $database->loadObjectList();
 
+		$queryTreatment = "SELECT * FROM #__easysdi_product_treatment_type";
+		$database->setQuery($queryTreatment);
+		$treatmentList = $database->loadObjectList();
+		
+		
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
 		$query = "SELECT o.order_id as order_id, 
+						 p.data_title as productName,
+						 opl.id as product_list_id,
 					     uClient.name as username,
 					     p.data_title as data_title,
 					     o.name as name,
@@ -183,6 +199,7 @@ class SITE_cpanel {
 				  and tl.id = o.type
 				  and opl.status = $productOrderStatus 
 				  $orderStatusQuery 
+				  $treatmentTypeQuery
 				  AND o.order_id 
 				  NOT IN (SELECT o.order_id 
 				  		  FROM  #__easysdi_order o, 
@@ -211,7 +228,7 @@ class SITE_cpanel {
 		$query .= $filter;
 		$query .= " order by o.order_id";
 	
-		$queryCount = "SELECT count(*) 
+		$queryCount = "SELECT count(opl.product_id) 
 					   FROM  #__easysdi_order o, 
 					         #__easysdi_order_product_list opl,
 					         #__easysdi_product p,
@@ -226,6 +243,7 @@ class SITE_cpanel {
 					   AND  pa.user_id =".$user->id." 
 		 			   and opl.status = $productOrderStatus 
 					   $orderStatusQuery  
+					   $treatmentTypeQuery
 					   AND  o.order_id 
 					   NOT IN (SELECT o.order_id 
 					   		   FROM  #__easysdi_order o, 
@@ -269,7 +287,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter);
+		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter, $treatmentList, $treatmentType);
 
 	}
 
@@ -397,15 +415,39 @@ class SITE_cpanel {
 											"EASYSDI_MENU_ITEM_MYTREATMENT",  
 											"index.php?option=$option&task=listOrdersForProvider");
 		
-		$order_id=JRequest::getVar("order_id","0");
-		if($order_id == 0)
+		$product_list_id=JRequest::getVar("product_list_id","0");
+		if($product_list_id == 0)
 		{
 			$mainframe->enqueueMessage(JText::_("EASYSDI_PROCESS_ORDER_ERROR_NO_SELECTION"),'info');						
 			$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
 			exit();
 		}
+		$queryOrder = "SELECT * FROM #__easysdi_order_product_list WHERE id = $product_list_id";
+		$database->setQuery($queryOrder);
+		$result = $database->loadObject() ;
+		$order_id = $result->order_id;
+		$product_id = $result->product_id;
+		
+		/*$order_id=JRequest::getVar("order_id","0");
+		if($order_id == 0)
+		{
+			$mainframe->enqueueMessage(JText::_("EASYSDI_PROCESS_ORDER_ERROR_NO_SELECTION"),'info');						
+			$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+			exit();
+		}*/
 		$user = JFactory::getUser();
 
+		//Build the query on product treatment type
+		$treatmentTypeQuery = "";
+		$treatmentType = JRequest::getVar("treatmentType","");
+		$treatmentTranslation = "";
+		if($treatmentType != "")
+		{
+			$treatmentTypeQuery = " AND p.treatment_type = $treatmentType ";
+			$queryTreatment = "SELECT translation FROM #__easysdi_product_treatment_type WHERE id = $treatmentType";
+			$database->setQuery($queryTreatment);
+			$treatmentTranslation = $database->loadResult();
+		}
 
 		$query = "SELECT p.id as product_id, 
 						 o.order_id as order_id, 
@@ -414,15 +456,18 @@ class SITE_cpanel {
 						 p.data_title as data_title,
 						 o.name as name,
 						 o.type as type, 
-						 opl.status as status 
+						 opl.status as status,
+						 otl.translation as type_translation 
 				  FROM  #__easysdi_order o, 
 				  		#__easysdi_order_status_list osl, 
 				  		#__easysdi_order_product_list opl, 
 				  		#__easysdi_order_product_status_list psl, 
 				  		#__easysdi_product p,
 				  		#__easysdi_community_partner pa, 
+				  		#__easysdi_order_type_list otl,
 				  		#__users u 
 				  WHERE o.status=osl.id 
+				  AND o.type = otl.id  
 				  AND opl.status=psl.id 
 				  AND pa.user_id = u.id 
 				  AND o.order_id = opl.order_id 
@@ -430,8 +475,10 @@ class SITE_cpanel {
 				  AND p.diffusion_partner_id = pa.partner_id 
 				  AND pa.user_id =".$user->id." 
 				  AND psl.code='AWAIT' 
-				  AND osl.code <> 'ARCHIVED'  
+				  AND osl.code <> 'ARCHIVED' 
+				  $treatmentTypeQuery
 				  AND o.order_id=".$order_id;
+					
 		$query .= " order by o.order_id";
 
 		$database->setQuery($query);
@@ -461,7 +508,7 @@ class SITE_cpanel {
 		}
 
 
-		HTML_cpanel::processOrder($rows,$option,$rowOrder,$partner);
+		HTML_cpanel::processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation);
 
 	}
 
