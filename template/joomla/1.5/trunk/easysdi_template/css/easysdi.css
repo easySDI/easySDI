@@ -921,7 +921,20 @@ div .savedOrderOrder{
 
 
 
-
+/********************************************************/
+/***      EasySDI Process Order                       ***/
+/********************************************************/
+.orderInfo
+	{
+		font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size:11px;
+		margin: 0px 0px 0px 15px;
+		width: 530px;
+	}
+.orderInfo .orderInfoDetail
+	{
+		font-weight:bold;
+	}
 /********************************************************/
 /***      EasySDI Order Recap                         ***/
 /********************************************************/
