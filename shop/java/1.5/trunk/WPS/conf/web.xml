@@ -41,6 +41,10 @@
 		<param-value>C:\www\Site\Joomla\language\fr-FR\fr-FR.com_easysdi_shop.ini</param-value>
 	</init-param>
 	<init-param> 
+    	<param-name>sender</param-name>
+		<param-value>stephanie.dondainaz@depth.ch</param-value>
+	</init-param>
+	<init-param> 
     	<param-name>configFile</param-name>
 		<param-value>/home/users/depthch/easysdi/proxy/config.xml</param-value>
 	</init-param>    

@@ -4,3 +4,4 @@
 <joomlaPrefix>jos_</joomlaPrefix>
 <jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
 <platformName>EASYSDI</platformName>
+<sender>stephanie.dondainaz@depth.ch</sender>
