@@ -929,7 +929,9 @@ div .savedOrderOrder{
 		font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 		font-size:11px;
 		margin: 0px 0px 0px 15px;
-		width: 530px;
+		width: 500px;
+		border: 1px solid #CCCCCC;
+  		margin-bottom: 15px;
 	}
 .orderInfo .orderInfoDetail
 	{
