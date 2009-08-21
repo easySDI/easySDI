@@ -35,6 +35,14 @@
 	<init-param> 
     	<param-name>platformName</param-name>
 		<param-value>EASYSDI</param-value>
+	</init-param>
+	<init-param> 
+    	<param-name>languageFile</param-name>
+		<param-value>C:\www\Site\Joomla\language\fr-FR\fr-FR.com_easysdi_shop.ini</param-value>
+	</init-param>
+	<init-param> 
+    	<param-name>configFile</param-name>
+		<param-value>/home/users/depthch/easysdi/proxy/config.xml</param-value>
 	</init-param>    
   </servlet>
 

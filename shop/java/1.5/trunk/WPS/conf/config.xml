@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<languageFile>c:\dsfsdkfésd</languageFile>
+<connexionString>jdbc:mysql://localhost/joomla?user=root&password=root&noDatetimeStringSync=true</connexionString>
+<joomlaPrefix>jos_</joomlaPrefix>
+<jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
+<platformName>EASYSDI</platformName>
