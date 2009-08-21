@@ -208,8 +208,8 @@ class HTML_cpanel {
 		<?php JHTML::_("behavior.modal","a.modal",$param); ?>
 		<div class="contentin">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_PROCESS_ORDER_TITLE")." : ".$rowOrder->name; ?></h2>
-		<div class="orderInfo">
-		<fieldset>
+		
+		<fieldset class="orderInfo" >
 		<table>
 			<tr>
 				<td  class="orderInfoDetail">
@@ -239,7 +239,7 @@ class HTML_cpanel {
 			<?php } ?>
 			</table>
 		</fieldset>
-		</div>	
+		
 		<h3><?php echo JText::_("EASYSDI_PROCESS_ORDER_SELECTED_PRODUCT") ; ?></h3>	
 		<form enctype="multipart/form-data" action="index.php?option=<?php echo $option; ?>" method="POST" id="processOrderForm" name="processOrderForm">
 		<?php
