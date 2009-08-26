@@ -385,7 +385,7 @@ if ($curstep == "2")
          map.removeLayer(wfs4);                  
 	}
             
-    function utf8_encode ( argString ) {
+//    function utf8_encode ( argString ) {
     // http://kevin.vanzonneveld.net
     // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
     // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -397,9 +397,9 @@ if ($curstep == "2")
     // *     example 1: utf8_encode('Kevin van Zonneveld');
     // *     returns 1: 'Kevin van Zonneveld'
  
-    var string = (argString+'').replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  /*  var string = (argString+'').replace(/\r\n/g, "\n").replace(/\r/g, "\n");
  
-    var utftext = "";
+    /*var utftext = "";
     var start, end;
     var stringl = 0;
  
@@ -430,7 +430,7 @@ if ($curstep == "2")
     }
  
     return utftext;
-}
+}*/
     /** 
     recenterOnLocationLocation
     */
