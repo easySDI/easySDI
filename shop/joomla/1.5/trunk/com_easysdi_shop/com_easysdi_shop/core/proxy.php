@@ -143,23 +143,32 @@ class SITE_proxy{
 														
 			}
 			
-			$myFile = "C://http.txt";
+			$myFile = "C://http.png";
 			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $url );  
+			//fwrite($fh, $url );  
 			
 			if (!$handle = fopen("$url", "rb")){				
 				exit ;
 			}; 
 			$stringData = stream_get_contents($handle);
 			$stringUTF8 ='';
-			if(mb_check_encoding($stringData,"UTF-8") )
+			if ($type == "wms")
 			{
 				$stringUTF8 = $stringData;
 			}
 			else
 			{
-				$stringUTF8 = utf8_encode($stringData);
+				if(mb_check_encoding($stringData,"UTF-8") )
+				{
+					$stringUTF8 = $stringData;
+				}
+				else
+				{
+					$stringUTF8 = utf8_encode($stringData);
+				}
 			}
+			
+			
 			fwrite($fh, $stringUTF8 );
 			echo $stringUTF8;
 			
@@ -176,22 +185,29 @@ class SITE_proxy{
 			if ($user !=null && strlen($user)>0){
 				$url = "https://$user:$password@".substr($url, 8);				
 			}
-			$myFile = "C://https.txt";
+			$myFile = "C://https.png";
 			$fh = fopen($myFile, 'w') or die("can't open file");
-			fwrite($fh, $url ); 
+			//fwrite($fh, $url ); 
 			
 			if (!$handle = fopen("$url", "rb")){
 				exit ;
 			}; 
 			$stringData = stream_get_contents($handle);
 			$stringUTF8='';
-			if(mb_check_encoding($stringData,"UTF-8") )
+			if ($type == "wms")
 			{
 				$stringUTF8 = $stringData;
 			}
 			else
 			{
-				$stringUTF8 = utf8_encode($stringData);
+				if(mb_check_encoding($stringData,"UTF-8") )
+				{
+					$stringUTF8 = $stringData;
+				}
+				else
+				{
+					$stringUTF8 = utf8_encode($stringData);
+				}
 			}
 			fwrite($fh, $stringUTF8 );
 			echo $stringUTF8;
