@@ -933,6 +933,24 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ( $version == "0.98")
+	{
+		//Remove FOP_URL key configuration
+		$query="DELETE FROM #__easysdi_config WHERE thekey='FOP_URL'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$version="0.99";
+		$query="UPDATE #__easysdi_version SET version ='0.99' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 		/**
 		 * Menu creation
 		 */
