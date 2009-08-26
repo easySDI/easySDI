@@ -679,12 +679,13 @@ class displayManager{
     	@$pageDom->loadHTML($searchPage);
     	$result = $processor->transformToXml($pageDom);    	
 		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
-		$fop_url = config_easysdi::getValue("FOP_URL");
+		//$fop_url = config_easysdi::getValue("FOP_URL");
 	 
 		if ($bridge_url ){ 
 			require_once($bridge_url);
-			if ($fop_url )
+			/*if ($fop_url )
 			{ 
+				//version FOP 0.95
 				$tmp = uniqid();
 				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
 				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
@@ -776,21 +777,21 @@ class displayManager{
 				    @readfile($foptmp);
 					*/
 					
-				}
+				/*}
 				catch (JavaException $ex) {
 					echo "An exception occured: "; echo $ex; echo "<br>\n";
 				}
 			}
-			else {
+			else {*/
 				//$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
 				
-				// FOP 0.93 - à tester
-				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+				// version FOP 0.93 
+				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
 				
 				$tmp = uniqid();
-				$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'config'.DS.'fop.xml';
-				$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_asitvd'.DS.'tmp'.DS.$tmp.'.pdf';
+				$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
+				$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
 				
 				@java_reset();		
 				
@@ -840,7 +841,7 @@ class displayManager{
 			    //readfile($foptmp);
 				
 			    echo $result;
-			}
+		/*	}*/
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
 		}
