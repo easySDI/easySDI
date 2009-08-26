@@ -143,15 +143,15 @@ class SITE_proxy{
 														
 			}
 			
-			//$myFile = "C://testFile.txt";
-			//$fh = fopen($myFile, 'w') or die("can't open file");
-			//fwrite($fh, $url );  
+			$myFile = "C://http.txt";
+			$fh = fopen($myFile, 'w') or die("can't open file");
+			fwrite($fh, $url );  
 			
 			if (!$handle = fopen("$url", "rb")){				
 				exit ;
 			}; 
 			$stringData = stream_get_contents($handle);
-			
+			$stringUTF8 ='';
 			if(mb_check_encoding($stringData,"UTF-8") )
 			{
 				$stringUTF8 = $stringData;
@@ -160,8 +160,9 @@ class SITE_proxy{
 			{
 				$stringUTF8 = utf8_encode($stringData);
 			}
+			fwrite($fh, $stringUTF8 );
 			echo $stringUTF8;
-			//fwrite($fh, $stringUTF8 );
+			
 			/*while ( !feof($handle) ) {
 				$stringData = fread($handle, 8192);
 				 
@@ -169,21 +170,21 @@ class SITE_proxy{
 				fwrite($fh, $stringData );  
 			} */
 			fclose($handle);
-			//fclose($fh); 
+			fclose($fh); 
 		}else if ( substr($url, 0, 8) == 'https://' ) {
 			
 			if ($user !=null && strlen($user)>0){
 				$url = "https://$user:$password@".substr($url, 8);				
 			}
-			//$myFile = "C://testFile.txt";
-			//$fh = fopen($myFile, 'w') or die("can't open file");
-			//fwrite($fh, $url ); 
+			$myFile = "C://https.txt";
+			$fh = fopen($myFile, 'w') or die("can't open file");
+			fwrite($fh, $url ); 
 			
 			if (!$handle = fopen("$url", "rb")){
 				exit ;
 			}; 
 			$stringData = stream_get_contents($handle);
-			
+			$stringUTF8='';
 			if(mb_check_encoding($stringData,"UTF-8") )
 			{
 				$stringUTF8 = $stringData;
@@ -192,14 +193,14 @@ class SITE_proxy{
 			{
 				$stringUTF8 = utf8_encode($stringData);
 			}
-			
+			fwrite($fh, $stringUTF8 );
 			echo $stringUTF8;
-			//fwrite($fh, $stringUTF8 );
+			
 			
 			/*while ( !feof($handle) ) { 
 				echo fread($handle, 8192); 
 			} */
-			//fclose($fh); 
+			fclose($fh); 
 			fclose($handle); 
 		}
 	}
