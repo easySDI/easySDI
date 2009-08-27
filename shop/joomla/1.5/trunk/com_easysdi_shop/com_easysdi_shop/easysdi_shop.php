@@ -41,7 +41,7 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.clas
 
 //Shop FrontEnd
 require_once(JPATH_COMPONENT.DS.'core'.DS.'shop.easysdi.class.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
+
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
@@ -159,16 +159,20 @@ switch($task){
 		HTML_shop::order();
 		break;
 	case "orderReport":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::orderReport($cid[0], true, false);
 		break;
 	case "orderReportForProvider":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		//SITE_cpanel::orderReportForProvider($cid[0]);
 		SITE_cpanel::orderReport($cid[0], true, true);
 		break;
 	case "downloadProduct":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::downloadProduct();
 		break;
 	case "changeOrderToSend":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::sendOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
@@ -176,23 +180,28 @@ switch($task){
 		HTML_shop::orderDraft($order_id);
 		break;	
 	case "archiveOrder":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::archiveOrder();
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 		break;
 	case "saveOrdersForProvider":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::saveOrdersForProvider();
 		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
 		break;	
 	case "processOrder":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::processOrder();
 		break;
 		
 	case "listOrdersForProvider":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::listOrdersForProvider();
 		break;
 
 		
 	case "listOrders":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::listOrders();
 		break;
 	case "sendOrder":
