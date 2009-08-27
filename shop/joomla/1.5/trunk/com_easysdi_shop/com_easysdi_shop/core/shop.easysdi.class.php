@@ -2023,6 +2023,7 @@ if (count($rows)>0){
 			// that a new query exists 
 			if($order_status_value == "SENT")
 			{
+				require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 				SITE_cpanel::notifyOrderToDiffusion($order_id);
 			}
 			
@@ -2080,7 +2081,7 @@ if (count($rows)>0){
 			//Send an email to the customer to inform that his order has been received
 			SITE_product::sendMailByEmail($user->email,JText::_("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT"),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name));
 			
-			
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
 
 			$mainframe->setUserState('productList',null);
