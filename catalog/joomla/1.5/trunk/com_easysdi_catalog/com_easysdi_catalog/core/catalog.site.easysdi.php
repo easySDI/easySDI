@@ -56,7 +56,7 @@ class SITE_catalog {
 			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
 		}
 		
-		// Conditions pour la visibilité publique/privée de la métadonnée
+		// Conditions pour la visibilitï¿½ publique/privï¿½e de la mï¿½tadonnï¿½e
 		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 				
@@ -139,8 +139,8 @@ class SITE_catalog {
 				}
 			} 
 			
-			// Pour chaque requête qui récupère des id de métadonnées selon certains critères sur le produit, il faut tester que le produit est publié
-			// On rempli un tableau avec les métadonnées recherchable, on traverse les filtres et on ajoute ou retire du tableau les id nécessaires
+			// Pour chaque requï¿½te qui rï¿½cupï¿½re des id de mï¿½tadonnï¿½es selon certains critï¿½res sur le produit, il faut tester que le produit est publiï¿½
+			// On rempli un tableau avec les mï¿½tadonnï¿½es recherchable, on traverse les filtres et on ajoute ou retire du tableau les id nï¿½cessaires
 			//$searchableMetadata = array();
 			
 			
@@ -148,7 +148,7 @@ class SITE_catalog {
 				$bboxfilter ="";
 			}
 			else{
-				echo "bbox";
+				//echo "bbox";
 				$bboxfilter ="<BBOX>
 				<PropertyName>ows:BoundingBox</PropertyName>
 				<gml:Envelope><gml:lowerCorner>$minY $minX</gml:lowerCorner><gml:upperCorner>$maxY $maxX</gml:upperCorner></gml:Envelope>
@@ -156,10 +156,10 @@ class SITE_catalog {
 			}
 			
 			$cswThemeFilter;
-			// Filtre sur la thématique (Critères de recherche avancés)
+			// Filtre sur la thï¿½matique (Critï¿½res de recherche avancï¿½s)
 			if($filter_theme)
 			{
-				echo ", theme";
+				//echo ", theme";
 				$cswThemeFilter = "<PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 				<PropertyName>any</PropertyName>
 				<Literal>$filter_theme</Literal>
@@ -168,12 +168,12 @@ class SITE_catalog {
 				$empty = false;
 			}
 			
-			// Filtre sur l'id du fournisseur (Critères de recherche avancés)
+			// Filtre sur l'id du fournisseur (Critï¿½res de recherche avancï¿½s)
 			$arrFilterMd =array();
 			$arrPartnerMd;
 			if( $partner_id )
 			{
-				echo ", partner";
+				//echo ", partner";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM #__easysdi_product WHERE published=1 and partner_id = ".$partner_id.$filter;
 				$db->setQuery( $query);
@@ -197,10 +197,10 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrPartnerMd;
 			
 			$arrCswVisibleMd;
-			// Filtre sur la visibilité du produit (Critères de recherche avancés)
+			// Filtre sur la visibilitï¿½ du produit (Critï¿½res de recherche avancï¿½s)
 			if($filter_visible )
 			{	
-				echo ", prod visibily";
+				//echo ", prod visibily";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1 and previewWmsUrl is not null".$filter;
 				$db->setQuery( $query);
@@ -224,10 +224,10 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrCswVisibleMd;
 			
 			$arrCswOrderableFilterMd;
-			// Filtre sur la possibilité de commander le produit (Critères de recherche avancés)
+			// Filtre sur la possibilitï¿½ de commander le produit (Critï¿½res de recherche avancï¿½s)
 			if($filter_orderable)
 			{
-				echo ", orderable";
+				//echo ", orderable";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE orderable = 1 AND published = 1".$filter; 
 				$db->setQuery( $query);
@@ -254,7 +254,7 @@ class SITE_catalog {
 			$arrCswDateFilter;
 			if($filter_date)
 			{
-				echo ", date";
+				//echo ", date";
 				$db =& JFactory::getDBO();
 				$query = "";
 				if($filter_date_comparator == "equal")
@@ -297,13 +297,13 @@ class SITE_catalog {
 			*/
 			
 			
-			// Filtre minimum: Produits publiés
-			// Si aucun filtre n'a renvoyé de résultat ou si aucun filtre n'a été demandé.
+			// Filtre minimum: Produits publiï¿½s
+			// Si aucun filtre n'a renvoyï¿½ de rï¿½sultat ou si aucun filtre n'a ï¿½tï¿½ demandï¿½.
 			$arrCswMinMd;
 			
 			if( !is_Array($arrPartnerMd) and $cswThemeFilter==null and !is_Array($arrCswDateFilter) and !is_Array($arrCswVisibleMd) and !is_Array($arrCswOrderableFilterMd))
 			{
-				echo ", minimum";
+				//echo ", minimum";
 				$db =& JFactory::getDBO();
 				$query = "SELECT metadata_id FROM `#__easysdi_product` WHERE published=1".$filter;
 				//echo "filtre minimum: ".$query;
@@ -342,11 +342,11 @@ class SITE_catalog {
 			if($arrCswMinMd != null)
 				$arrFilterMd[] = $arrCswMinMd;
 			
-			// Filtre sur le texte (Critères de recherche simple)
+			// Filtre sur le texte (Critï¿½res de recherche simple)
 			$cswSimpleTextFilter;
 			if ($simple_filterfreetextcriteria || $empty)		
 			{		
-				echo ", recherche simple";
+				//echo ", recherche simple";
 				//<ogc:PropertyName>any</ogc:PropertyName>
 				
 				$cswSimpleTextFilter = "
@@ -403,7 +403,7 @@ class SITE_catalog {
 			//		BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, "", "");
 			$postResult;
-			
+
 			//Get the result from the server, only for count
 			$xmlResponse = SITE_catalog::PostXMLRequest($catalogUrlBase,$xmlBody);
 
@@ -423,7 +423,7 @@ class SITE_catalog {
                 	
 				$pageNav = new JPagination($total,$limitstart,$limit);
 				
-				// Séparation en n éléments par page
+				// Sï¿½paration en n ï¿½lï¿½ments par page
 				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, "", "");
 				
 				//Get the result from the server
@@ -529,7 +529,7 @@ class SITE_catalog {
 			   $request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
 			}
 			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/x-www-form-urlencoded\n";
+			$request .= "Content-type: application/xml\n";
 			$request .= "Content-length: ".$size."\n\n";
 			$request .= $xmlBody."\n";
 			//send req
