@@ -41,7 +41,9 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.clas
 
 //Shop FrontEnd
 require_once(JPATH_COMPONENT.DS.'core'.DS.'shop.easysdi.class.php');
-
+/*Déplacé au niveau de chaque case qui le requiert réellement
+car provoque un bug au niveau de l'affichage des périmètres WMS dans openlayers*/
+//require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
