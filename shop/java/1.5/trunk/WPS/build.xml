@@ -15,9 +15,7 @@
 	    </fileset>
     	<fileset dir="${projet.tomcat.lib.dir}">
 	      <include name="*.jar"/>
-	    </fileset>   	   
-   	
-   	
+	    </fileset>
    </path>
 	
 <target name="syncJar" depends="create-structure,copy-resources,compilation,compression,Sync-jar" description="Main target">
@@ -76,6 +74,7 @@
   		<copy todir="${projet.work.dir}/conf/" >
   	  	  	      <fileset dir="${projet.conf.dir}" >
   	  	  	        <include name="config.xml"/>  	  	        
+  	  	  	  		<include name="mailer.conf"/>
   	  	  	  		<include name="NewPolicy.xml"/>  	  	  	      	
   	  	  	      </fileset>
   	  	  	</copy>  	
