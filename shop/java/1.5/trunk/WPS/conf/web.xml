@@ -38,11 +38,15 @@
 	</init-param>
 	<init-param> 
     	<param-name>languageFile</param-name>
-		<param-value>C:\www\Site\Joomla\language\fr-FR\fr-FR.com_easysdi_shop.ini</param-value>
+		<param-value>/home/sites/demo.easysdi.org/web/language/fr-FR/fr-FR.com_easysdi_shop.ini</param-value>
 	</init-param>
 	<init-param> 
     	<param-name>sender</param-name>
 		<param-value>stephanie.dondainaz@depth.ch</param-value>
+	</init-param>
+	<init-param> 
+    	<param-name>mailConfig</param-name>
+		<param-value>/var/lib/tomcat5/webapps/wps/conf/mailer.conf</param-value>
 	</init-param>
 	<init-param> 
     	<param-name>configFile</param-name>
