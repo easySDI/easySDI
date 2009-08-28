@@ -24,8 +24,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -62,7 +64,7 @@ import org.w3c.dom.NodeList;
 public class WPSServlet extends HttpServlet {
 
 
-    //Connexion sttring to the joomla database
+    //Connexion string to the joomla database
     private String connexionString ="jdbc:mysql://localhost/joomla?user=root&password=root&noDatetimeStringSync=true";
     //Joomla table prefix
     private String joomlaPrefix = "jos_";
@@ -71,14 +73,18 @@ public class WPSServlet extends HttpServlet {
     //Name of the platform
     private String platformName = "EASYSDI";
 
-
-
+    private String languageFile = "C:\\www\\Site\\Joomla\\language\\fr-FR\\fr-FR.com_easysdi_shop.ini";
+    
+    private String senderEmail = "webmaster@depth.ch";
+    
     public void init(ServletConfig config) throws ServletException {
 	String conn = config.getInitParameter("connexionString");
 	String prefix = config.getInitParameter("joomlaPrefix");
 	String driver = config.getInitParameter("jdbcDriver");
 	String platform = config.getInitParameter("platformName");
-
+	String language = config.getInitParameter("languageFile");
+	String sender = config.getInitParameter("sender");
+	
 	if (conn !=null && conn.length()>0){
 	    connexionString= conn;
 	}
@@ -94,7 +100,16 @@ public class WPSServlet extends HttpServlet {
 	if (platform !=null && platform.length()>0){
 	    platformName = platform;
 	}	
-    }
+	
+	if (language !=null && language.length()>0){
+		languageFile = language;
+	}	
+	
+	if (sender !=null && sender.length()>0){
+		senderEmail = sender;
+	}	
+	
+	}
 
 
 
@@ -253,7 +268,7 @@ public class WPSServlet extends HttpServlet {
 
     private String executeGetOrders (net.opengis.wps._1_0.Execute execute){
 	Connection conn = null;
-
+	
 	try {
 
 
@@ -342,7 +357,7 @@ public class WPSServlet extends HttpServlet {
 			int buffer = 0;
 			buffer = rs.getInt("buffer");
 			
-			// Récupération du rabais pour le fournisseur
+			// Recuperation du rabais pour le fournisseur
 			int isRebate = 0;
 			String rebate = "0";
 			Statement stmtRebate = conn.createStatement();
@@ -353,7 +368,10 @@ public class WPSServlet extends HttpServlet {
 				rebate = rsRebate.getString("rebate");
 			}
 		    
-		    // Début de la construction du fichier
+		    rsRebate.close();
+		    stmtRebate.close();
+		    
+		    // Debut de la construction du fichier
 			res.append("<easysdi:order>\n");
 			res.append("<easysdi:header>\n");
 			res.append("<easysdi:VERSION>2.0</easysdi:VERSION>\n");
@@ -371,6 +389,9 @@ public class WPSServlet extends HttpServlet {
 			{
 				typeCode = rsType.getString("code");
 			}
+			
+			rsType.close();
+			stmtType.close();
 			
 			if(typeCode.equalsIgnoreCase("D")){
 			    res.append("<easysdi:TYPE>ESTIMATE</easysdi:TYPE>\n");    
@@ -545,6 +566,8 @@ public class WPSServlet extends HttpServlet {
 			
 			res.append("<easysdi:PRODUCTS>\n");
 	
+			rsPerim.close();
+			stmtPerim.close();
 			
 			Statement stmtProducts = conn.createStatement();
 			ResultSet rsProducts = stmtProducts.executeQuery("SELECT *,p.id as product_id FROM "+getJoomlaPrefix()+"easysdi_order_product_list pl ,"+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_product_treatment_type treatment, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u WHERE p.id=pl.product_id AND treatment.id=p.treatment_type AND pl.order_id = "+order_id + " AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"' AND treatment.code='AUTO'");
@@ -577,7 +600,7 @@ public class WPSServlet extends HttpServlet {
 	
 			res.append("</easysdi:order>\n");
 	
-			stmtProducts.close();
+			rsProducts.close();
 			stmtProducts.close();
 			rsAddContact.close();
 			stmtAdd.close();
@@ -605,7 +628,6 @@ public class WPSServlet extends HttpServlet {
 
 	    JAXBContext jc = JAXBContext.newInstance(net.opengis.wps._1_0.Execute.class);
 
-
 	    Marshaller m = jc.createMarshaller();
 
 	    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -615,8 +637,6 @@ public class WPSServlet extends HttpServlet {
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 	    m.marshal(er, baos);
-
-
 
 	    if (orderIdList.size()>0){
 
@@ -635,10 +655,6 @@ public class WPSServlet extends HttpServlet {
 	    stmt.close();
 
 	    conn.close();    
-
-
-
-
 
 	    return (baos.toString());
 
@@ -679,7 +695,8 @@ public class WPSServlet extends HttpServlet {
 	this.platformName = platformName;
     }
 
-
+   
+    
     public static void main(String args[]) throws Exception{
 
 	try{
@@ -793,7 +810,7 @@ public class WPSServlet extends HttpServlet {
 			else
 				pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
 			
-			// Mise à jour de la requête
+			// Mise a jour de la requete
 			pre.executeUpdate();
 		
 			int count = stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set status =(SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_status_list where code='FINISH')   where order_id = "+order_id +" AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE order_id = "+order_id +")=(SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list WHERE status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') AND order_id = "+order_id +")");
@@ -803,9 +820,40 @@ public class WPSServlet extends HttpServlet {
 	
 			pre.close();
 			stmt.close();
+			
+			// Mail de notification
+			Statement stmtTotal = conn.createStatement();
+			ResultSet rsTotal = stmtTotal.executeQuery("SELECT COUNT(*) as total FROM "+getJoomlaPrefix()+"easysdi_order_product_list p,"+getJoomlaPrefix()+"easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id="+order_id+" AND sl.code = 'AWAIT'");
+			
+			int total = 0;
+			while(rsTotal.next()){
+				total = rsTotal.getInt("total");
+			}
+			
+			rsTotal.close();
+			stmtTotal.close();
+	
+			Statement stmtTotalProduct = conn.createStatement();
+			ResultSet rsTotalProduct = stmtTotalProduct.executeQuery("SELECT COUNT(*) as total FROM "+getJoomlaPrefix()+"easysdi_order_product_list p,"+getJoomlaPrefix()+"easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id="+order_id);
+			
+			int totalProduct = 0;
+			while(rsTotalProduct.next()){
+				totalProduct = rsTotalProduct.getInt("total");
+			}
+			
+			rsTotalProduct.close();
+			stmtTotalProduct.close();
 			conn.close();
-	
-	
+			
+			if (total == 0)
+			{
+				notifyUserByEmail(Integer.decode(order_id), getLanguageValue(languageFile, "EASYSDI_CMD_READY_MAIL_SUBJECT"),getLanguageValue(languageFile, "EASYSDI_CMD_READY_MAIL_BODY"));
+			}
+			else if (total == totalProduct -1)
+			{
+				notifyUserByEmail(Integer.decode(order_id), getLanguageValue(languageFile, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_SUBJECT"), getLanguageValue(languageFile, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_BODY"));
+			}
+			
 			
 			net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
 		    ExecuteResponse er = of.createExecuteResponse();
@@ -854,14 +902,14 @@ public class WPSServlet extends HttpServlet {
 	{
 	    e.printStackTrace();
 	    
-	    // Ecriture d'un log texte sur le serveur en cas de problème
+	    // Ecriture d'un log texte sur le serveur en cas de probleme
 	    try
 	    {
 		    StringWriter sw = new StringWriter();
 	        PrintWriter pw = new PrintWriter(sw);
 	        e.printStackTrace(pw);
-	        //File f = new File("/home/users/asitvd/tomcat/errorStream.txt");
-	        File f = new File("errorStream.txt");
+	        File f = new File("/var/log/tomcat5/errorStream.txt");
+	        //File f = new File("errorStream.txt");
 	        FileWriter fw = new FileWriter(f,true);
 	        fw.write(sw.toString());
 	        fw.write(e.getMessage());
@@ -895,4 +943,82 @@ public class WPSServlet extends HttpServlet {
 	}
 	return "";
     } 
+    
+    private void notifyUserByEmail(int order_id, String subject, String body){
+		/*
+		 * Envoi un mail a l'utilisateur pour le prevenir que la commande est traitee.
+		 */
+    	try
+    	{
+	    	Connection conn = null;
+	    	conn =  DriverManager.getConnection(getConnexionString());
+		    
+	    	Statement stmtRow = conn.createStatement();
+	    	ResultSet rsRow = stmtRow.executeQuery("SELECT o.user_id as user_id,u.email as email,o.name as data_title FROM "+getJoomlaPrefix()+"easysdi_order o,"+getJoomlaPrefix()+"users u WHERE o.user_id = u.id AND order_id="+order_id);
+			
+			String email = "";
+			String data_title = "";
+			int user_id = 0;
+			while(rsRow.next()){
+				email = rsRow.getString("email");
+				data_title = rsRow.getString("data_title");
+				user_id = rsRow.getInt("user_id");
+			}
+			
+			rsRow.close();
+			stmtRow.close();
+			
+			Statement stmtPartner = conn.createStatement();
+			ResultSet rsPartner = stmtPartner.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_partner WHERE user_id="+user_id);
+			
+			int notify_order_ready = 0;
+			while(rsPartner.next()){
+				notify_order_ready = rsPartner.getInt("notify_order_ready");
+			}
+			
+			rsPartner.close();
+			stmtPartner.close();
+			
+			if (notify_order_ready == 1) 
+			{
+				Mailer mailer = new Mailer();
+			    //the domains of these email addresses should be valid,
+			    //or the example will fail:
+				mailer.sendEmail(senderEmail, email, subject, new PrintfFormat(body).sprintf(data_title));
+			}
+    	}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+	}
+    
+    public static String getLanguageValue(String fileName, String searched)  
+    {
+        String line = null;
+        String body = null;
+
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader (new FileReader(fileName));
+            
+            while ((line=in.readLine())!=null)
+			{
+				if (line.contains(searched))
+				{
+					body =  line.substring(line.indexOf("=")+1);
+				}
+			}			
+        } 
+        catch (IOException ex) 
+        {
+            System.out.println("Problem reading file.\n" + ex.getMessage());
+        } 
+        finally 
+        {
+            try { if (in!=null) in.close(); } catch(IOException ignore) {}
+        }
+        
+        return body;
+    }
 }

@@ -2,8 +2,13 @@ package ch.depth.services.wps;
 
 import java.util.*;
 import java.io.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import org.apache.commons.mail.*;
+import org.apache.commons.mail.SimpleEmail;
+import org.apache.commons.mail.EmailException;
 
 /**
 * Simple demonstration of using the javax.mail API.
@@ -17,6 +22,9 @@ public class Mailer
   /**
   * Send a single email.
   */
+	
+  private static String mail="";
+  
   public void sendEmail(
     String aFromEmailAddr, String aToEmailAddr,
     String aSubject, String aBody
@@ -24,22 +32,19 @@ public class Mailer
     //Here, no Authenticator argument is used (it is null).
     //Authenticators are used to prompt the user for user
     //name and password.
-    Session session = Session.getDefaultInstance( fMailServerConfig, null );
-    MimeMessage message = new MimeMessage( session );
-    try {
-      //the "from" address may be set in code, or set in the
-      //config file under "mail.from" ; here, the latter style is used
-      //message.setFrom( new InternetAddress(aFromEmailAddr) );
-      message.addRecipient(
-        Message.RecipientType.TO, new InternetAddress(aToEmailAddr)
-      );
-      message.setSubject( aSubject );
-      message.setText( aBody );
-      Transport.send( message );
-    }
-    catch (MessagingException ex){
-      System.err.println("Cannot send email. " + ex);
-    }
+	try{
+	SimpleEmail email = new SimpleEmail();
+	email.setHostName("localhost");
+	email.setCharset(Email.ISO_8859_1);
+	email.addTo(aToEmailAddr, aToEmailAddr);
+	email.setFrom(aFromEmailAddr, aFromEmailAddr);
+	email.setSubject(aSubject);
+	email.setMsg(aBody);
+	email.send();
+	}
+	catch (EmailException ex){
+        System.err.println("EmailException. " + ex);
+      }
   }
 
   /**
@@ -71,8 +76,12 @@ public class Mailer
       //WEB-INF, and access it using ServletContext.getResourceAsStream.
       //Another alternative is Class.getResourceAsStream.
       //This file contains the javax.mail config properties mentioned above.
-      input = new FileInputStream( "C:\\Temp\\MyMailServer.txt" );
-      fMailServerConfig.load( input );
+
+      if (mail != "")
+      {
+	      input = new FileInputStream( mail );
+	      fMailServerConfig.load( input );
+      }
     }
     catch ( IOException ex ){
       System.err.println("Cannot open and load mail server properties file.");
@@ -87,3 +96,4 @@ public class Mailer
     }
   }
 } 
+
