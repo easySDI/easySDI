@@ -24,13 +24,13 @@ class displayManager{
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&id=".$id;
 		
 		/*
 		$id=158;
 		$catalogUrlBase = "https://geoproxy.asitvd.ch/ogc/geonetwork";
 		$catalogUrlCapabilities = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=158";	
+		$catalogUrlGetRecordById = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=158";	
 		*/
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		
@@ -377,7 +377,7 @@ class displayManager{
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=".$id;
 
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);*/
 			
