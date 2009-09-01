@@ -31,7 +31,24 @@ class HTML_catalog{
 		$partners = array();
 		$partners[0]='';
 		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
-		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text FROM #__users, `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id WHERE #__users.id = #__easysdi_community_partner.user_id GROUP BY #__easysdi_community_partner.partner_id ";
+		//Do not display a furnisher without product
+		
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
+		          FROM #__users, `#__easysdi_community_partner` 
+			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
+			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
+			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+			  GROUP BY #__easysdi_community_partner.partner_id 
+			  ORDER BY #__users.name";
+		
+		/*
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
+		          FROM #__users, `#__easysdi_community_partner` 
+			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
+			  WHERE #__users.id = #__easysdi_community_partner.user_id 
+			  GROUP BY #__easysdi_community_partner.partner_id 
+			  ORDER BY #__users.name";
+	        */
 		$db->setQuery( $query);
 		$partners = array_merge( $partners, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
@@ -273,7 +290,11 @@ class HTML_catalog{
 					</tr>
 				</table>
 				
-				<?php HTML_catalog::generateMap(); ?>
+				<?php 
+				//Feature deactivated for now...
+				//HTML_catalog::generateMap(); 
+				
+				?>
 			</div>
 			<!--
 			<table>
@@ -358,18 +379,26 @@ class HTML_catalog{
 		<tr>
 			<!-- <td><?php echo $i; ?></td>  -->
 			<?php
-			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."' AND published = 1 AND orderable = 1";
+			$md_orderable=0;
+			$pOrderableExt = 0;
+			$pOrderableInt = 0;
+			
+			$query = "select external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 			$db->setQuery( $query);
-
-			$metadataId_count = $db->loadResult();
-
-			if ($db->getErrorNum()) {
-				$metadataId_count = '0';
+			$pOrderableExt = $db->loadResult();
+			
+			$query = "select internal from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+			$db->setQuery( $query);
+			$pOrderableInt = $db->loadResult();
+			
+			if($pOrderableExt == 1 || $pOrderableInt == 1)
+			{
+				$md_orderable=1;
 			}
+			//echo $md->getFileIdentifier()." Ext:".$pOrderableExt." Int:".$pOrderableInt."__".$query ."<br>";
 
-
-			$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."' AND published = 1 AND orderable = 1";
-
+			$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$md->getFileIdentifier()."'";
+			
 			$db->setQuery( $query);
 
 			$hasPreview = $db->loadResult();
@@ -398,26 +427,25 @@ class HTML_catalog{
 		
 			$isMdPublic = false;
 			$isMdFree = true;
-			if( $metadataId_count != 0)
+
+			//Define if the md is free or not
+			$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+			$db->setQuery($queryPartnerID);
+			$is_free = $db->loadResult();
+			if($is_free == 0)
 			{
-				//Define if the md is free or not
-				$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-				$db->setQuery($queryPartnerID);
-				$is_free = $db->loadResult();
-				if($is_free == 0)
-				{
-					$isMdFree = false;
-				}
-				
-				//Define if the md is public or not
-				$queryPartnerID = "select metadata_external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-				$db->setQuery($queryPartnerID);
-				$external = $db->loadResult();
-				if($external == 1)
-				{
-					$isMdPublic = true;
-				}
+				$isMdFree = false;
 			}
+				
+			//Define if the md is public or not
+			$queryPartnerID = "select metadata_external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
+			$db->setQuery($queryPartnerID);
+			$external = $db->loadResult();
+			if($external == 1)
+			{
+				$isMdPublic = true;
+			}
+			//}
 			
 			
 			?>
@@ -433,7 +461,7 @@ class HTML_catalog{
 		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
 		  </tr>
 		  <tr>
-		     <td><div <?php if($metadataId_count>0) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
+		     <td><div <?php if($md_orderable == 1) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
 		  </tr>
 		  <tr>
 		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
@@ -446,7 +474,7 @@ class HTML_catalog{
 	 </tr>
 	 <tr> 
 	 <!--
-	 <a	class="<?php if ($metadataId_count>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
+	 <a	class="<?php if ($md_orderable>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
 		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 		 </a>
 	 --> 
@@ -647,10 +675,10 @@ class HTML_catalog{
 			$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 			$db->setQuery( $query);
 
-			$metadataId_count = $db->loadResult();
+			$md_orderable = $db->loadResult();
 
 			if ($db->getErrorNum()) {
-				$metadataId_count = '0';
+				$md_orderable = '0';
 			}
 
 
@@ -684,7 +712,7 @@ class HTML_catalog{
 		
 			$isMdPublic = false;
 			$isMdFree = true;
-			if( $metadataId_count != 0)
+			if( $md_orderable != 0)
 			{
 				//Define if the md is free or not
 				$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
@@ -719,7 +747,7 @@ class HTML_catalog{
 		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
 		  </tr>
 		  <tr>
-		     <td><div <?php if($metadataId_count>0) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
+		     <td><div <?php if($md_orderable>0) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
 		  </tr>
 		  <tr>
 		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
@@ -732,7 +760,7 @@ class HTML_catalog{
 	 </tr>
 	 <tr> 
 	 <!--
-	 <a	class="<?php if ($metadataId_count>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
+	 <a	class="<?php if ($md_orderable>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>" 
 		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 		 </a>
 	 --> 
@@ -963,6 +991,7 @@ class HTML_catalog{
 		}
 		</script>
 		
+		<!-- Geographic filter deactivated for now...
 		<table >
 			<tr>
 				<td >
@@ -991,12 +1020,17 @@ class HTML_catalog{
 				</td>
 			</tr>
 		</table>
+		 -->
+		 
 		<input type='hidden' id='previousExtent' name='previousExtent' value="<?php echo JRequest::getVar('previousExtent'); ?>" />
 		<script>
+		
+		/* Geographic filter deactivated for now...
 			window.onload=function()
 				{	
 					initMapCatalog();
 				}
+		*/
 			</script>
 		<br/>
 		<div id="docs"></div>
