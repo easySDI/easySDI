@@ -143,7 +143,7 @@ class SITE_proxy{
 														
 			}
 			
-			//$myFile = "C://http.png";
+			//$myFile = "/home/users/asitvd/http";
 			//$fh = fopen($myFile, 'w') or die("can't open file");
 			//fwrite($fh, $url );  
 			
@@ -158,6 +158,23 @@ class SITE_proxy{
 			}
 			else
 			{
+				$xmlEncodingHeader = SITE_proxy::getEncodingHeaderFromXmlContent($stringData);
+				//fwrite($fh, "xmlEncodingHeader:".$xmlEncodingHeader );	
+				
+				//try first to read the encoding from the xml file header, if it is not utf-8
+				if(strpos(strtoupper($xmlEncodingHeader), "UTF-8") == false){
+					$stringUTF8 = utf8_encode($stringData);
+				}
+				//Check by guessing if it is utf-8
+				else if(mb_check_encoding("UTF-8") )
+				{
+					$stringUTF8 = $stringData;
+				}
+				else
+				{
+					$stringUTF8 = utf8_encode($stringData);
+				}
+				/*
 				if(mb_check_encoding($stringData,"UTF-8") )
 				{
 					$stringUTF8 = $stringData;
@@ -166,6 +183,7 @@ class SITE_proxy{
 				{
 					$stringUTF8 = utf8_encode($stringData);
 				}
+				*/
 			}
 			
 			
@@ -185,7 +203,7 @@ class SITE_proxy{
 			if ($user !=null && strlen($user)>0){
 				$url = "https://$user:$password@".substr($url, 8);				
 			}
-			//$myFile = "C://https.png";
+			//$myFile = "/home/users/asitvd/http";
 			//$fh = fopen($myFile, 'w') or die("can't open file");
 			//fwrite($fh, $url ); 
 			
@@ -200,7 +218,15 @@ class SITE_proxy{
 			}
 			else
 			{
-				if(mb_check_encoding($stringData,"UTF-8") )
+				$xmlEncodingHeader = SITE_proxy::getEncodingHeaderFromXmlContent($stringData);
+				//fwrite($fh, "xmlEncodingHeader:".$xmlEncodingHeader );	
+				
+				//try first to read the encoding from the xml file header, if it is not utf-8
+				if(strpos(strtoupper($xmlEncodingHeader), "UTF-8") == false){
+					$stringUTF8 = utf8_encode($stringData);
+				}
+				//Check by guessing if it was utf-8
+				else if(mb_check_encoding("UTF-8") )
 				{
 					$stringUTF8 = $stringData;
 				}
@@ -231,7 +257,20 @@ class SITE_proxy{
 		return strpos($content,$str) ? true : false;
 	}
 	
-	
+	function getEncodingHeaderFromXmlContent($stringData){
+		$xmlEncodingHeader = "";
+		$posStartTag = strpos($stringData, "<?xml"); 
+		$posEndTag = strpos($stringData, "?>");
+		if ($posStartTag !== false && $posEndTag) {
+			$strXmlHeader =  substr($stringData, $posStartTag, $posEndTag-$posStartTag);
+			//xmlheader<?xml version='1.0' encoding="ISO-8859-1"
+			$pos = strpos($strXmlHeader, "encoding=");
+			if($pos !== false){
+				$xmlEncodingHeader = substr($strXmlHeader, ($pos + 9), strlen($strXmlHeader)-$pos - 9);
+			}
+		}
+		return $xmlEncodingHeader;
+	}
 	
 }
 ?>
