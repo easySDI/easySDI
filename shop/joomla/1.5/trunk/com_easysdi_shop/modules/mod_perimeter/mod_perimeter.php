@@ -112,7 +112,8 @@ if ($curstep == "2")
 	}
 	
 			
-	function selectPerimeter(perimListName){
+function selectPerimeter(perimListName, fromZoomEnd)
+{
 	
 	
 	selIndex = document.getElementById(perimListName).selectedIndex;
@@ -148,6 +149,7 @@ if ($curstep == "2")
 			?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
 	 	{	
+	 		isOutOfRange = false;
 	 		$("scaleStatus").innerHTML = "";
 	 		if(<?php echo $row->min_resolution;?> == 0 && <?php echo $row->max_resolution; ?> == 0 )
 	 		{
@@ -161,7 +163,8 @@ if ($curstep == "2")
 					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->perimeter_name); ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
 					$("scaleStatus").innerHTML = text;
 					//document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
-					return;
+					//return;
+					isOutOfRange = true;
 					
 				}
 				//Display the button for manual perimeter
@@ -176,21 +179,21 @@ if ($curstep == "2")
 			} 
 			
 			//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
-	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>);
+	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>,isOutOfRange, fromZoomEnd);
 	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
 	 		
 	 	
 	 	}
 	 
 	 <?php } ?>
-      }
-    --></script>
+}
+    </script>
 
 
 <input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
 <table>
 	<tr>
-		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList')"  >
+		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList', false)"  >
 			<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 			<?php
 			foreach ($rows as $row)
