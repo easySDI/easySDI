@@ -109,6 +109,7 @@ class HTML_shop {
 	var wfsUrl ;
 	var isFreeSelectionPerimeter = false;
 	var wfsSelection;
+	var fromZoomEnd = false;
 	
 	function onFeatureSelect(feature) 
 	{
@@ -260,14 +261,22 @@ class HTML_shop {
 	Init the map with layers corresponding to the selected WFS perimeter.
 	Add layers correponding to user selection if exists.
 	*/
-	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution){
+	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution, isOutOfRange, fromZoomEnd)
+	{
 	
 		//If the modifyFeatureControl has been activated, it needs to be deactivate to avoid "ghost" features to be displayed
-		modifyFeatureControl.deactivate();
+		try
+		{
+			modifyFeatureControl.deactivate();
+		}
+		catch (err)
+		{
+		}
 		if($("toolsStatus").innerHTML == "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>")
 		{
 			$("toolsStatus").innerHTML = "";
 		}
+				
 		
 		document.getElementById('perimeter_id').value = perimId;
 		//freeSelectPerimeter();
@@ -277,11 +286,15 @@ class HTML_shop {
 			
 		//Delete the current selection
 		//only if the perimeter is different from the one register in the user session
-		if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>' )
+		//And if the call is not resulting of a zoom end event
+		if(fromZoomEnd == false)
 		{
-			initSelectedSurface();
+			if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>' )
+			{
+				initSelectedSurface();
+			}
 		}
-		        						 
+		 						 
 		nameField = name;
 		idField = id;
 		areaField =area;
@@ -291,6 +304,7 @@ class HTML_shop {
 			wfs.destroy();				
 			wfs=null;		
 		}
+		
 		if (wfs3) {	
 			wfs3.destroy();				
 			wfs3=null;		
@@ -308,75 +322,73 @@ class HTML_shop {
 		if (perimUrl.length ==0 && wmsUrl.length ==0){
 			//Free selection permiter.
 			isFreeSelectionPerimeter = true;
-		}
-		else
-		{
-			isFreeSelectionPerimeter = false;
-
-			if (wmsUrl.length > 0)
-			{
-				layerPerimeter = new OpenLayers.Layer.WMS(perimName,
-		                    wmsUrl,
-		                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-		                     {singleTile: true},                                                    
-		                     {                     
-							  minScale: pMinResolution,
-		               		  maxScale: pMaxResolution,                                    	     
-		                      maxExtent: map.maxExtent,
-		                      projection: map.projection,
-		                      units: map.units,
-		                      transparent: "true"
-		                     }
-		                    );
-		                 layerPerimeter.alwaysInRange=false;  
-		                 layerPerimeter.alpha = setAlpha('image/png');
-		                 map.addLayer(layerPerimeter);      
-		    
-		    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
-		  
-			}
-			else
-			{
-				var myStyles = new OpenLayers.StyleMap({
-			                "default": new OpenLayers.Style({                 
-			                    fillColor: "#ffcc66",
-			                    strokeColor: "#ff9933",
-			                    strokeWidth: 2
-			                }),
-			                "select": new OpenLayers.Style({
-			                    fillColor: "#66ccff",
-			                    strokeColor: "#3399ff"
-			                })
-			            });
-				
-				
-				wfs = new OpenLayers.Layer.WFS( perimName,
-				                perimUrl,
-				                {typename: featureTypeName}, {
-				                    typename: featureTypeName,                                    
-				                    extractAttributes: false
-				                       
-				                },
-			                { featureClass: OpenLayers.Feature.WFS}
-				                 );
-				
-				wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-				wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
-				
-				map.addLayer(wfs);
-		 	}
-		}
-		
-		if(isFreeSelectionPerimeter)
-		{
 			//draw selection polygon
 			drawSelectedSurface();
 		}
 		else
 		{
-			//call WFS to add selected surfaces
-			getWFSOfSelectedSurface();
-		}
+			isFreeSelectionPerimeter = false;
+
+			if(!isOutOfRange)
+			{
+					if (wmsUrl.length > 0)
+					{
+						layerPerimeter = new OpenLayers.Layer.WMS(perimName,
+				                    wmsUrl,
+				                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
+				                     {singleTile: true},                                                    
+				                     {                     
+									  minScale: pMinResolution,
+				               		  maxScale: pMaxResolution,                                    	     
+				                      maxExtent: map.maxExtent,
+				                      projection: map.projection,
+				                      units: map.units,
+				                      transparent: "true"
+				                     }
+				                    );
+				                 layerPerimeter.alwaysInRange=false;  
+				                 layerPerimeter.alpha = setAlpha('image/png');
+				                 map.addLayer(layerPerimeter);      
+				    
+				    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
+				  
+					}
+					else
+					{
+						var myStyles = new OpenLayers.StyleMap({
+					                "default": new OpenLayers.Style({                 
+					                    fillColor: "#ffcc66",
+					                    strokeColor: "#ff9933",
+					                    strokeWidth: 2
+					                }),
+					                "select": new OpenLayers.Style({
+					                    fillColor: "#66ccff",
+					                    strokeColor: "#3399ff"
+					                })
+					            });
+						
+						
+						wfs = new OpenLayers.Layer.WFS( perimName,
+						                perimUrl,
+						                {typename: featureTypeName}, {
+						                    typename: featureTypeName,                                    
+						                    extractAttributes: false
+						                       
+						                },
+					                { featureClass: OpenLayers.Feature.WFS}
+						                 );
+						
+						wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+						wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
+						
+						map.addLayer(wfs);
+				 	}
+				 	
+				}
+				//call WFS to add selected surfaces
+				getWFSOfSelectedSurface();
+			}	
+		fromZoomEnd = false;
 	}
 	
 	           
@@ -551,6 +563,7 @@ function setAlpha(imageformat)
 				 
 					map.events.register("zoomend", null, 
 										function() { 
+													fromZoomEnd = true;
 													document.getElementById('previousExtent').value = map.getExtent().toBBOX();
 													$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 													//$("scale").innerHTML = document.getElementById('previousExtent').value ;
@@ -563,6 +576,8 @@ function setAlpha(imageformat)
 															} 
 														}
 														$("scaleStatus").innerHTML = text;
+														
+														selectPerimeter("perimeterList",fromZoomEnd);
 													}
 										)
 	                
@@ -659,7 +674,6 @@ function setAlpha(imageformat)
 				oZoomMxExtCtrl = new OpenLayers.Control.ZoomToMaxExtent({
         	    map: map, title: '<?php echo JText::_("EASYSDI_TOOL_MAXEXTENT_HINT") ?>'
 				});
-				
 				/*
 					OpenLayers Edition controls
 				*/
@@ -668,25 +682,25 @@ function setAlpha(imageformat)
 				rectControl.title = '<?php echo JText::_("EASYSDI_TOOL_RECTCTRL_HINT") ?>';
 				rectControl.featureAdded = function() { intersect();};												
 				rectControl.handler.setOptions({irregular: true});                                  
-	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; })
+	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; fromZoomEnd =false; })
 	            
 	            
 	            //Polygonal  bounding box selection
 	            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
 				polyControl.title = '<?php echo JText::_("EASYSDI_TOOL_POLYCTRL_HINT") ?>';
 	            polyControl.featureAdded = function() { intersect();};
-				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; })
+				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; fromZoomEnd =false;})
 			
 				//Point selection
 	            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
                 pointControl.title = '<?php echo JText::_("EASYSDI_TOOL_POINTCTRL_HINT") ?>';
 				pointControl.featureAdded = function() { intersect();};
-				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; })            
+				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
 	         
 				//Modify feature shape  
 	            modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
 				modifyFeatureControl.title = '<?php echo JText::_("EASYSDI_TOOL_MODFEATURE_HINT") ?>';
-				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; })
+				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				vectors.events.on({
 	                "afterfeaturemodified": intersect                
@@ -839,8 +853,11 @@ function setAlpha(imageformat)
 	 //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
 	//	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
 		  
-	 			wfs.events.register("featureremoved",null,function(event){
-				
+	 			wfs.events.register("featureremoved",null,function(event)
+	 			{
+					//If the call results from a zoom on the map, do not remove selected features
+					if(fromZoomEnd == false)
+					{
 				        feat2 = event.feature;
 	                    var name = feat2.attributes[nameField];
 	                    //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
@@ -865,7 +882,8 @@ function setAlpha(imageformat)
 																									
 									found=k;																			
 								}            				
-							}						                
+							}			
+					}		                
 	            }
 	            
 				
@@ -933,7 +951,8 @@ function setAlpha(imageformat)
 	window.onload=function()
 	{
 		initMap();
-		selectPerimeter('perimeterList');	
+		fromZoomeEnd = false;
+		selectPerimeter('perimeterList', false);	
 		if (oldLoad) oldLoad();
 	}
 	
@@ -2079,8 +2098,11 @@ if (count($rows)>0){
 			}
 			
 			//Send an email to the customer to inform that his order has been received
-			SITE_product::sendMailByEmail($user->email,JText::_("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT"),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name));
-			
+			//only if status is SENT
+			if($order_status_value == "SENT")
+			{
+				SITE_product::sendMailByEmail($user->email,JText::_("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT"),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name));
+			}
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
 
