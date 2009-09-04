@@ -636,7 +636,7 @@ class SITE_cpanel {
 		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id AND  o.user_id = ".$user->id;
 		$query .= $filter;
 		$query .= " and o.status <> ".$archive." and o.status <> ".$history;
-		$query .= " order by o.order_send_date";
+		$query .= " order by o.order_date";
 		
 		$queryCount = "select count(*) from #__easysdi_order o where o.status <> ".$archive." and o.status <> ".$history." AND  o.user_id = ".$user->id;
 		$queryCount .= $filter;
