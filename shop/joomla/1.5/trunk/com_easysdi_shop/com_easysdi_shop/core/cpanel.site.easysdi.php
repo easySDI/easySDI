@@ -1055,7 +1055,7 @@ class SITE_cpanel {
 		$mailer->AddRecipient($diffusionEmail);
 		foreach ($emailList as $email)
 		{
-			$mailer->addCC($email);
+			$mailer->AddAddress($email);
 		}
 		$mailer->setSubject(JText::_("EASYSDI_ORDER_NOTIFICATION_SUBJECT"));
 		$mailer->setBody(JText::sprintf("EASYSDI_ORDER_NOTIFICATION_BODY",$order_id,$order_name));
