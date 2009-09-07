@@ -95,7 +95,6 @@ class displayManager{
 			$rows = $database->loadObjectList();		
 			foreach ($rows as $row)
 			{
-				
 				$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
 				
 				
@@ -119,9 +118,15 @@ class displayManager{
 				
 				$doc.= "</Property>";
 			}
-		
-			$doc .= '</Diffusion></Metadata>';
 			
+			if(count($rows) == 0){
+				$doc .= "<Property><PropertyName></PropertyName>";
+				if(count($results) == 0){
+					$doc.="<PropertyValue><value></value></PropertyValue>";
+				}
+				$doc.= "</Property>";
+			}
+			$doc .= '</Diffusion></Metadata>';
 			$xml = new DomDocument();
 			$xml->loadXML($doc);
 		}	
@@ -613,7 +618,6 @@ class displayManager{
 		
 		$processor->importStylesheet($style);
 		$myHtml = $processor->transformToXml($cswResults);
-	
 		displayManager::exportPDFfile($myHtml);
 	}
 	
@@ -674,10 +678,10 @@ class displayManager{
 		//fwrite($timer, "Après application xhtml to xslfo : ".date("H:i:s")."\n");
 		
 		//Problem with loadHTML() and encoding : work around method
-		$pageDom = new DomDocument();   
+		$pageDom = new DomDocument();
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
-    	@$pageDom->loadHTML($searchPage);
-    	$result = $processor->transformToXml($pageDom);    	
+		@$pageDom->loadHTML($searchPage);
+		$result = $processor->transformToXml($pageDom);    	
 		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 		//$fop_url = config_easysdi::getValue("FOP_URL");
 	 
@@ -826,21 +830,21 @@ class displayManager{
 				$result = fread($fp, filesize($foptmp));
 				fclose ($fp);
 			 	//ob_end_clean();
-			    error_reporting(0);
+				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
-				
-				header('Pragma: public');
-				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-				header('Content-Transfer-Encoding: binary');
+
 				header('Content-type: application/pdf');
 				header('Content-Disposition: attachement; filename="metadata.pdf"');
+				header('Content-Transfer-Encoding: binary');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Pragma: public');
 				header("Expires: 0"); 
 				//header("Content-Length: ".filesize($foptmp));
 				
-				//flush();
-			    //readfile($foptmp);
 				
-			    echo $result;
+				//flush();
+				//readfile($foptmp);
+				echo $result;
 		/*	}*/
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
