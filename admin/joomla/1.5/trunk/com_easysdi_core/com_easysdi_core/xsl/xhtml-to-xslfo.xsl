@@ -494,7 +494,6 @@
         
     <fo:flow flow-name="xsl-region-body">    
       <xsl:apply-templates select="/html/head/title"/>
-      
       <!-- <fo:block space-after="12pt" line-height="17pt" 
         font-size="10pt" text-align="center">
         __ref_title$s
@@ -1384,8 +1383,8 @@
       <xsl:apply-templates select="*|text()"/>
     </fo:block>
   </xsl:template>
-  
-    <!-- ============================================
+
+  <!-- ============================================
     For an HTML table row, we create an XSL-FO table
     row, then invoke the templates for everything 
     inside it. 
@@ -1507,7 +1506,7 @@
     =============================================== -->
 
   <xsl:template name="toc">
-  	<fo:block>
+    <fo:block>
       <fo:leader leader-pattern="rule" space-after="16pt"/>
     </fo:block>
     <fo:block space-after="12pt" id="TableOfContents" 
@@ -1724,12 +1723,4 @@
     </xsl:if>
   </xsl:template>
 
-
- 	<!-- ============================================
-    The <desc> element doesn't have to appear in the 
-    body of the document.  
-    =============================================== -->
-	<xsl:template match="desc">
-	</xsl:template>
-    
 </xsl:stylesheet>

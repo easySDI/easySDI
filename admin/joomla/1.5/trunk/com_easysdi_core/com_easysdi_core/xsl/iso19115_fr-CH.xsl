@@ -40,7 +40,6 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-<hr/>
 
 <table class="descr"  >
 <tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>

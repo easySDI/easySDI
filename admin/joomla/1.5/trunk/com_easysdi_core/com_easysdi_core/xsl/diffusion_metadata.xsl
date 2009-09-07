@@ -34,7 +34,6 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-<hr/>
 
 <table class="descr">
 <xsl:for-each select="./Property">
