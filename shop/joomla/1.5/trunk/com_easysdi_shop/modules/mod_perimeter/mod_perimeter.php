@@ -91,62 +91,70 @@ if ($curstep == "2")
 
 		?>
 
-<script><!--
+<script>
 	
 	
-	function enableBufferByPerimeter(perimId){
-	//document.getElementById('bufferValue').value=0;
+	function enableBufferByPerimeter(perimId)
+	{
+		//document.getElementById('bufferValue').value=0;
 		<?php	
-	foreach ($bufferRows as $bufferRow)
+		foreach ($bufferRows as $bufferRow)
 		{		
 			?>
-		if (perimId == '<?php echo $bufferRow->perimeter_id ?>'){
-			document.getElementById('bufferValue').disabled=false;
-			return ;
-		}
-		
+			if (perimId == '<?php echo $bufferRow->perimeter_id ?>')
+			{
+				document.getElementById('bufferValue').disabled=false;
+				return ;
+			}
 		<?php 
 		}
 		?>
 		document.getElementById('bufferValue').disabled=true;
 	}
 	
+	
+		
 			
-function selectPerimeter(perimListName, fromZoomEnd)
+function selectPerimeter(perimListName, bFromZoomEnd)
 {
 	
-	
+	var isOutOfRange = false;
 	selIndex = document.getElementById(perimListName).selectedIndex;
 
 
 	<?php	
 	foreach ($rows as $row)
+	{
+		if (1==1 || ($row->user !=null && strlen($row->user)>0))
 		{
+			//if a user and password is requested then use the joomla proxy.
+			$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+			$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
 			
-			if (1==1 || ($row->user !=null && strlen($row->user)>0)){
-						
-						//if a user and password is requested then use the joomla proxy.
-						$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
-						$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
-						
-						if ($row->wfs_url!=null && strlen($row->wfs_url)>0){
-							$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
-						}else{
-							$wfs_url ="";
-						}
-						
-						$proxyhost = $proxyhostOrig."&type=wms&perimeterdefid=$row->id&url=";
-						if ( $row->wms_url!=null && strlen($row->wms_url)>0){
-							$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
-						}else{
-							$wms_url ="";
-						}
-					}else{
-						$wfs_url = $row->wfs_url;
-						
-						$wms_url=	$row->wms_url;					
-					}
-			?>
+			if ($row->wfs_url!=null && strlen($row->wfs_url)>0)
+			{
+				$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+			}
+			else
+			{
+				$wfs_url ="";
+			}
+			
+			$proxyhost = $proxyhostOrig."&type=wms&perimeterdefid=$row->id&url=";
+			if ( $row->wms_url!=null && strlen($row->wms_url)>0)
+			{
+				$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
+			}else{
+				$wms_url ="";
+			}
+		}
+		else
+		{
+			$wfs_url = $row->wfs_url;
+			
+			$wms_url=	$row->wms_url;					
+		}
+		?>
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
 	 	{	
 	 		isOutOfRange = false;
@@ -159,13 +167,11 @@ function selectPerimeter(perimListName, fromZoomEnd)
 	 		}
 	 		else
 	 		{
-			 	if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>){
+			 	if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>)
+			 	{
 					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->perimeter_name); ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
 					$("scaleStatus").innerHTML = text;
-					//document.getElementById(perimListName).selectedIndex = document.getElementById('lastSelectedPerimeterIndex').value;
-					//return;
 					isOutOfRange = true;
-					
 				}
 				//Display the button for manual perimeter
 				if(<?php echo $row->is_localisation;?> == 0)
@@ -179,15 +185,29 @@ function selectPerimeter(perimListName, fromZoomEnd)
 			} 
 			
 			//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
-	 		selectWFSPerimeter(document.getElementById(perimListName)[selIndex].value,"<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","<?php echo $row->area_field_name; ?>","<?php echo $wms_url; ?>","<?php echo $row->layer_name; ?>","<?php echo $row->img_format; ?>",<?php echo $row->min_resolution; ?>,<?php echo $row->max_resolution; ?>,isOutOfRange, fromZoomEnd);
-	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
+	 		selectWFSPerimeter( document.getElementById(perimListName)[selIndex].value,
+	 							"<?php echo $row->perimeter_name; ?>",
+	 							"<?php echo $wfs_url; ?>",
+	 							"<?php echo $row->feature_type_name; ?>",
+	 							"<?php echo $row->name_field_name; ?>",
+	 							"<?php echo $row->id_field_name; ?>",
+	 							"<?php echo $row->area_field_name; ?>",
+	 							"<?php echo $wms_url; ?>",
+	 							"<?php echo $row->layer_name; ?>",
+	 							"<?php echo $row->img_format; ?>",
+	 							<?php echo $row->min_resolution; ?>,
+	 							<?php echo $row->max_resolution; ?>,
+	 							isOutOfRange,
+	 							bFromZoomEnd);
 	 		
-	 	
+	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
 	 	}
 	 
-	 <?php } ?>
+	 <?php 
+	 } 
+	 ?>
 }
-    </script>
+</script>
 
 
 <input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
