@@ -272,13 +272,11 @@ class HTML_shop {
 								layerName, 
 								imgFormat, 
 								pMinResolution , 
-								pMaxResolution
-								,
+								pMaxResolution,
 								isOutOfRange, 
 								bFromZoomEnd
 								)
 	{
-	
 		//If the modifyFeatureControl has been activated, it needs to be deactivate to avoid "ghost" features to be displayed
 		try
 		{
@@ -301,7 +299,7 @@ class HTML_shop {
 			
 		//Delete the current selection
 		//only if the perimeter is different from the one register in the user session
-		//And if the call is not resulting of a zoom end event
+		//And if the call is not resulting from a zoom end event
 		if(bFromZoomEnd == false)
 		{
 			if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>' )
@@ -314,28 +312,33 @@ class HTML_shop {
 		idField = id;
 		areaField =area;
 	
-		if (wfs) {
+		if (wfs) 
+		{
 			map.removeLayer(wfs);
 			wfs.destroy();				
 			wfs=null;		
 		}
 		
-		if (wfs3) {	
+		if (wfs3) 
+		{	
 			wfs3.destroy();				
 			wfs3=null;		
 		}
 	
-		if (layerPerimeter){
-					map.removeLayer(layerPerimeter);
-					layerPerimeter=null;
-			}
-		if (vectors){
+		if (layerPerimeter)
+		{
+			map.removeLayer(layerPerimeter);
+			layerPerimeter=null;
+		}
+		if (vectors)
+		{
 			var features = vectors.features;
 			vectors.removeFeatures(features);
 		}
 	
-		if (perimUrl.length ==0 && wmsUrl.length ==0){
-			//Free selection permiter.
+		if (perimUrl.length ==0 && wmsUrl.length ==0)
+		{
+			//Free selection perimeter.
 			isFreeSelectionPerimeter = true;
 			//draw selection polygon
 			drawSelectedSurface();
@@ -346,63 +349,70 @@ class HTML_shop {
 
 			if(isOutOfRange == false)
 			{
-					if (wmsUrl.length > 0)
-					{
-						layerPerimeter = new OpenLayers.Layer.WMS(perimName,
-				                    wmsUrl,
-				                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-				                     {singleTile: true},                                                    
-				                     {                     
-									  minScale: pMinResolution,
-				               		  maxScale: pMaxResolution,                                    	     
-				                      maxExtent: map.maxExtent,
-				                      projection: map.projection,
-				                      units: map.units,
-				                      transparent: "true"
-				                     }
-				                    );
-				                 layerPerimeter.alwaysInRange=false;  
-				                 layerPerimeter.alpha = setAlpha('image/png');
-				                 map.addLayer(layerPerimeter);      
-				    
-				    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
-				  
-					}
-					else
-					{
-						var myStyles = new OpenLayers.StyleMap({
-					                "default": new OpenLayers.Style({                 
-					                    fillColor: "#ffcc66",
-					                    strokeColor: "#ff9933",
-					                    strokeWidth: 2
-					                }),
-					                "select": new OpenLayers.Style({
-					                    fillColor: "#66ccff",
-					                    strokeColor: "#3399ff"
-					                })
-					            });
-						
-						
-						wfs = new OpenLayers.Layer.WFS( perimName,
-						                perimUrl,
-						                {typename: featureTypeName}, {
-						                    typename: featureTypeName,                                    
-						                    extractAttributes: false
-						                       
-						                },
-					                { featureClass: OpenLayers.Feature.WFS}
-						                 );
-						
-						wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-						wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
-						
-						map.addLayer(wfs);
-				 	}
-				 	
+				if (wmsUrl.length > 0)
+				{
+					layerPerimeter = new OpenLayers.Layer.WMS(perimName,
+			                    wmsUrl,
+			                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
+			                     {singleTile: true},                                                    
+			                     {                     
+								  minScale: pMinResolution,
+			               		  maxScale: pMaxResolution,                                    	     
+			                      maxExtent: map.maxExtent,
+			                      projection: map.projection,
+			                      units: map.units,
+			                      transparent: "true"
+			                     }
+			                    );
+			                 layerPerimeter.alwaysInRange=false;  
+			                 layerPerimeter.alpha = setAlpha('image/png');
+			                 map.addLayer(layerPerimeter);      
+			    
+			    wfsUrl = perimUrl+'?request=GetFeature&SERVICE=WFS&TYPENAME='+featureTypeName+'&VERSION=1.0.0';
+			  
 				}
-				//call WFS to add selected surfaces
-				getWFSOfSelectedSurface();
-			}	
+				else
+				{
+					var myStyles = new OpenLayers.StyleMap({
+				                "default": new OpenLayers.Style({                 
+				                    fillColor: "#ffcc66",
+				                    strokeColor: "#ff9933",
+				                    strokeWidth: 2
+				                }),
+				                "select": new OpenLayers.Style({
+				                    fillColor: "#66ccff",
+				                    strokeColor: "#3399ff"
+				                })
+				            });
+					
+					
+					wfs = new OpenLayers.Layer.WFS( perimName,
+					                perimUrl,
+					                {typename: featureTypeName}, {
+					                    typename: featureTypeName,                                    
+					                    extractAttributes: false
+					                       
+					                },
+				                { featureClass: OpenLayers.Feature.WFS}
+					                 );
+					
+					wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+					wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
+					
+					map.addLayer(wfs);
+			 	}	
+			}
+			else
+			{
+				if(bFromZoomEnd == false)
+				{
+					wfsUrl = "";
+					
+				}		
+			}
+			//call WFS to add selected surfaces
+			getWFSOfSelectedSurface();
+		}	
 		fromZoomEnd = false;
 	}
 	
@@ -831,7 +841,7 @@ function setAlpha(imageformat)
 	 	else
 	 	{
 			$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
-			
+			//$("status").innerHTML = "wfsUrl : " + wfsUrl;
 	   		var features = vectors.features;
 	        var gmlOptions = {featureType: "feature",featureNS: "http://example.com/feature"};
 	
