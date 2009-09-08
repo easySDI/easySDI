@@ -1678,13 +1678,12 @@ if (count($rows)>0){
 					{	
 						if($countProduct == 1 )
 						{
-							if($hasInternal == false)
+							if($hasExternal == false && $hasInternal == false)
 							{
-								//The product belongs to the current user's group and the user does not have the internal right
 								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
 								$isProductAllowed = false;
 								break;
-							} 
+							}
 						}
 						else
 						{
@@ -1695,7 +1694,27 @@ if (count($rows)>0){
 								break;
 							}
 						}
-						
+						/*
+						if($countProduct == 1 )
+						{
+							if($hasInternal == false)
+							{
+								//The product belongs to the current user's group and the user does not have the internal right
+								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+								$isProductAllowed = false;
+								break;
+							}
+						}
+						else
+						{
+							if($hasExternal == false)
+							{
+								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+								$isProductAllowed = false;
+								break;
+							}
+						}
+						*/
 					}
 				}
 				else
@@ -1703,6 +1722,14 @@ if (count($rows)>0){
 					//$row->internal == '0'
 					if($row->external = '1')
 					{
+						if($hasExternal == false)
+						{
+							//User does not have the right to order external product
+							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+							$isProductAllowed = false;
+							break;
+						}
+						/*
 						if($countProduct == 1)
 						{
 							//This product is not visible for the user of the partner's group
@@ -1720,6 +1747,14 @@ if (count($rows)>0){
 								break;
 							}
 						}
+						*/
+					}
+					else
+					{
+						//Product is not orderable
+						HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+						$isProductAllowed = false;
+						break;
 					}
 				}
 				
@@ -2539,6 +2574,9 @@ if (count($rows)>0){
 				}
 				else
 				{
+					$filter .= " AND (p.EXTERNAL=1) ";
+					
+					/*
 					$queryRoot = "SELECT root_id from #__easysdi_community_partner where partner_id = $partner->partner_id";
 					$db->setQuery( $queryRoot);
 					$result = $db->loadResult();
@@ -2567,6 +2605,7 @@ if (count($rows)>0){
 						p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 						)) ";
 					}
+					*/
 				}
 			}
 			else
