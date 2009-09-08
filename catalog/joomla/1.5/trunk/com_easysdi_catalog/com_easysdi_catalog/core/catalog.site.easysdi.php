@@ -293,7 +293,7 @@ class SITE_catalog {
 					$query = "SELECT metadata_id FROM #__easysdi_product WHERE (update_date >= '".$filter_date."' OR update_date like '".$filter_date."%') AND published = 1".$filter; 
 				if($filter_date_comparator == "smallerorequal")
 					$query = "SELECT metadata_id FROM #__easysdi_product WHERE (update_date <= '".$filter_date."' OR update_date like '".$filter_date."%') AND published = 1".$filter; 
-				echo "date query: ".$query." with comparator:".$filter_date_comparator;
+				//echo "date query: ".$query." with comparator:".$filter_date_comparator;
 				$db->setQuery( $query);
 				$list_id = $db->loadObjectList() ;
 				if ($db->getErrorNum())
@@ -328,7 +328,7 @@ class SITE_catalog {
 			// Filtre minimum: Produits publiés
 			// Si aucun filtre n'a renvoyé de résultat ou si aucun filtre n'a été demandé.
 			$arrCswMinMd;
-			if( !is_Array($arrPartnerMd) and $cswThemeFilter==null and !is_Array($arrCswDateFilter) and !is_Array($arrCswVisibleMd) and !is_Array($arrCswOrderableFilterMd))
+			if( !is_Array($arrPartnerMd) and !is_Array($arrCswDateFilter) and !is_Array($arrCswVisibleMd) and !is_Array($arrCswOrderableFilterMd))
 			{
 				//echo ", minimum";
 				$db =& JFactory::getDBO();
