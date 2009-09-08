@@ -111,6 +111,7 @@ class HTML_shop {
 	var wfsSelection;
 	var fromZoomEnd = false;
 	
+	
 	function onFeatureSelect(feature) 
 	{
             selectedFeature = feature;
@@ -261,7 +262,21 @@ class HTML_shop {
 	Init the map with layers corresponding to the selected WFS perimeter.
 	Add layers correponding to user selection if exists.
 	*/
-	function selectWFSPerimeter(perimId,perimName,perimUrl,featureTypeName,name,id,area,wmsUrl,layerName, imgFormat, pMinResolution , pMaxResolution, isOutOfRange, fromZoomEnd)
+	function selectWFSPerimeter(perimId,
+								perimName,
+								perimUrl,
+								featureTypeName,
+								name,id,
+								area,
+								wmsUrl,
+								layerName, 
+								imgFormat, 
+								pMinResolution , 
+								pMaxResolution
+								,
+								isOutOfRange, 
+								bFromZoomEnd
+								)
 	{
 	
 		//If the modifyFeatureControl has been activated, it needs to be deactivate to avoid "ghost" features to be displayed
@@ -287,7 +302,7 @@ class HTML_shop {
 		//Delete the current selection
 		//only if the perimeter is different from the one register in the user session
 		//And if the call is not resulting of a zoom end event
-		if(fromZoomEnd == false)
+		if(bFromZoomEnd == false)
 		{
 			if(perimId != '<?php echo $mainframe->getUserState('perimeter_id'); ?>' )
 			{
@@ -329,7 +344,7 @@ class HTML_shop {
 		{
 			isFreeSelectionPerimeter = false;
 
-			if(!isOutOfRange)
+			if(isOutOfRange == false)
 			{
 					if (wmsUrl.length > 0)
 					{
@@ -572,18 +587,13 @@ function setAlpha(imageformat)
 													for (i=0; i<map.layers.length ;i++){
 															//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 															if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
-															 text =text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+															 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 															} 
 														}
 														$("scaleStatus").innerHTML = text;
-														
-														selectPerimeter("perimeterList",fromZoomEnd);
+														selectPerimeter('perimeterList', true);
 													}
 										)
-	                
-	               	//map.addControl(new OpenLayers.Control.LayerSwitcher());
-	                //map.addControl(new OpenLayers.Control.Attribution());       
-	                
 	                                         
 	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
 	                map.addLayer(vectors);
@@ -864,29 +874,31 @@ function setAlpha(imageformat)
 	                    var id = feat2.attributes[idField];   
 	            		var area = feat2.attributes[areaField];
 	            		var featArea = 0;	
-	            		if (areaField.length > 0 && area){
-	            					featArea = area; 
-	            			}else {
-	            					featArea = feat2.geometry.getArea();
-	            			}
+	            		if (areaField.length > 0 && area)
+	            		{
+	            			featArea = area; 
+	            		}
+	            		else 
+	            		{
+	            			featArea = feat2.geometry.getArea();
+	            		}
 				
-							var found = -1;
-													
-							for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--){
-															
-								if (document.getElementById("selectedSurface").options[k].value ==  id){
-									//Remove the value							
-									document.getElementById("selectedSurface").remove(k);								
-									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-									document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
-																									
-									found=k;																			
-								}            				
-							}			
+						var found = -1;
+												
+						for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--)
+						{
+							if (document.getElementById("selectedSurface").options[k].value ==  id)
+							{
+								//Remove the value							
+								document.getElementById("selectedSurface").remove(k);								
+								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
+								document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+																								
+								found=k;																			
+							}            				
+						}			
 					}		                
 	            }
-	            
-				
 				);
 				 
 			wfs.events.register("featureadded", null, function(event) 
@@ -951,7 +963,7 @@ function setAlpha(imageformat)
 	window.onload=function()
 	{
 		initMap();
-		fromZoomeEnd = false;
+		fromZoomEnd= false;
 		selectPerimeter('perimeterList', false);	
 		if (oldLoad) oldLoad();
 	}
