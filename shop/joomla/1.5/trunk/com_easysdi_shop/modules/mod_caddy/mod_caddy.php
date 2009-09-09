@@ -51,7 +51,7 @@ if (is_array(($cid)))
 					title="<?php echo $row->data_title." (". $row->name.")";  ?>"
 					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
 
-					rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo substr($row->data_title, 0, $descriptionLength);  ?>[...]</a>
+					rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo mb_substr($row->data_title, 0, $descriptionLength, 'UTF-8');  ?>[...]</a>
 
 				</td>
 				<td>
