@@ -1587,7 +1587,8 @@ if (count($rows)>0){
 
 
 		?>
-<div class="contentin"><br>
+<div class="contentin">
+<br>
 <br>
 <script>
  function submitOrderForm(){
@@ -2357,6 +2358,7 @@ if (count($rows)>0){
 			$fromStep = '';
 		}
 		?>
+<h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
 <table>
 	<tr>
 		<td>
@@ -2437,6 +2439,7 @@ if (count($rows)>0){
 	<tr>
 		<td>
 		<div class="bodyShop">
+		<br/>
 		<?php if ($step ==1) HTML_shop::searchProducts();?>
 		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?> 
 		<?php if ($step ==3) HTML_shop::orderProperties($cid,$option);?>
@@ -2514,11 +2517,41 @@ if (count($rows)>0){
 		$view = JRequest::getVar('view');
 		$step = JRequest::getVar('step',"1");
 		$countMD = JRequest::getVar('countMD');
-		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','lastAddedMD');
+		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','');
 		$freetextcriteria = JRequest::getVar('freetextcriteria','');
 		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
-
-
+		$partner_id = JRequest::getVar('partner_id');
+		$filter_visible=JRequest::getVar('filter_visible');
+		$filter_date = JRequest::getVar('update_cal');
+		$filter_date_comparator = JRequest::getVar('update_select');
+		/* Todo, push the date format in EasySDI config and
+		set it here accordingly */
+		if($filter_date){
+			$temp = explode(".", $filter_date);
+			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
+		}
+		
+		//partner select box
+		$partners = array();
+		$partners[0]='';
+		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
+		//Do not display a furnisher without product	
+		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
+		          FROM #__users, `#__easysdi_community_partner` 
+			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
+			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
+			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+			  GROUP BY #__easysdi_community_partner.partner_id 
+			  ORDER BY #__users.name";
+		$db->setQuery( $query);
+		$partners = array_merge( $partners, $db->loadObjectList() );
+		if ($db->getErrorNum()) 
+		{
+			echo "<div class='alert'>";
+			echo 	$db->getErrorMsg();
+			echo "</div>";
+		}
+		
 		$cid = JRequest::getVar ('cid', array() );
 
 		$filter = "";
@@ -2533,11 +2566,25 @@ if (count($rows)>0){
 			$filter = $filter.")";
 		}
 
-		if ($freetextcriteria){
-			$filter = $filter." AND (DATA_TITLE like '%".$freetextcriteria."%' ";
-			$filter = $filter." OR METADATA_ID = '$freetextcriteria')";
+		if ($partner_id){
+			$filter = $filter." and partner_id = ".$partner_id;
 		}
-
+		
+		if ($filter_visible){
+			$filter = $filter."  and previewWmsUrl != ''";
+		}
+		
+		if ($filter_date && $filter_date_comparator){
+			if($filter_date_comparator == "equal")
+				$filter = $filter." AND update_date like '".$filter_date."%' "; 
+			if($filter_date_comparator == "different")
+				$filter = $filter." AND update_date not like '".$filter_date."%' "; 
+			if($filter_date_comparator == "greaterorequal")
+				$filter = $filter." AND (update_date >= '".$filter_date."' OR update_date like '".$filter_date."%') "; 
+			if($filter_date_comparator == "smallerorequal")
+				$filter = $filter." AND (update_date <= '".$filter_date."' OR update_date like '".$filter_date."%') "; 
+		}
+		
 		$user = JFactory::getUser();
 
 		$partner = new partnerByUserId($db);
@@ -2652,7 +2699,7 @@ if (count($rows)>0){
 
 
 		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
-		$query  = $query .$filter ;
+		$query  = $query .$filter;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
@@ -2662,13 +2709,16 @@ if (count($rows)>0){
 		if ($simpleSearchCriteria == "moreConsultedMD"){
 			$query  = $query." order by weight";
 		}
-		if ($simpleSearchCriteria == "lastAddedMD"){
+		else if ($simpleSearchCriteria == "lastAddedMD"){
 			$query  = $query." order by creation_date";
 		}
-		if ($simpleSearchCriteria == "lastUpdatedMD"){
+		else if ($simpleSearchCriteria == "lastUpdatedMD"){
 			$query  = $query." order by update_date";
 		}
-
+		else
+		{
+			$query  = $query ." order by data_title";
+		}
 		$db->setQuery( $query,$limitstart,$limit);
 		$rows = $db->loadObjectList();
 			
@@ -2679,7 +2729,8 @@ if (count($rows)>0){
 		}
 		?>
 
-<div class="contentin"><script>
+<div class="contentin">
+<script>
  function submitOrderForm(){
  	document.getElementById('orderForm').submit();
  }
@@ -2702,6 +2753,49 @@ if (count($rows)>0){
 
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+
+<table width="100%" class="mdPanContent">
+	<tr>
+		<td>
+			<table width="100%">
+				<tr>
+					<td align="left"><b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+					<td align="left"><input type="text" id="freetextcriteria"  name="freetextcriteria" value="<?php echo JRequest::getVar('freetextcriteria'); ?>" class="inputbox" /></td>
+	
+					<td class="catalog_controls">
+						<button type="submit" class="easysdi_search_button">
+							<?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+					</td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_PARTNER");?></td>
+					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
+					<td>&nbsp;</td>		
+				</tr>
+			</table>
+			<table width="100%">
+				<tr>
+					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_VISIBLE");?></td>
+					<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("EASYSDI_SHOP_UPDATE");?></td>
+					<td>
+						<select id="update_select" size="1" name="update_select">
+							<option value="equal" <?php if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_EQUAL");?></option>
+							<option value="smallerorequal" <?php if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_BEFORE");?></option>
+							<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_AFTER");?></option>
+							<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_NOTEQUAL");?></option>
+						</select>
+						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<!--
 <br>
 <b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
 <span class="searchCriteria"> <input name="freetextcriteria" type="text" value="<?php echo JRequest::getVar('freetextcriteria'); ?>">
@@ -2724,6 +2818,10 @@ if (count($rows)>0){
 <button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 <br>
 <br>
+-->
+
+
+
 <h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 
 <input type='hidden' name='option' value='<?php echo $option;?>'> 
@@ -2735,11 +2833,16 @@ if (count($rows)>0){
 <input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> 
 	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <span class="searchCriteria">
+
 <table width="100%">
-	<tr>
-		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-	</tr>
+   <tr>
+   	<td colspan="3" align="left"><?php echo JText::_("EASYSDI_SHOP_NUMBER_OF_PRODUCT_FOUND");?><?php echo $total ?></td>
+   </tr>
+   <tr>
+	<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+	<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
+	<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+   </tr>
 </table>
 <table class="mdsearchresult" width="100%">
 	<?php
