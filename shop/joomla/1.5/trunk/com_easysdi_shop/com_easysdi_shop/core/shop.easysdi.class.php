@@ -1542,12 +1542,14 @@ if (count($rows)>0){
 			echo "<div class='alert'>";
 			echo $db->getErrorMsg();
 			echo "</div>";
-		}
-	
-?>	
+     ?>  
 		<tr>
 			<td colspan="2"><div class="separator" /></td>
 		</tr>
+    <?php
+		}
+    ?>	
+
 		<tr>
 			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?>:</td>
 			<td>
@@ -1567,6 +1569,33 @@ if (count($rows)>0){
 		</tr>
 	</table>
 </form>
+
+			<!--
+      //Call here the include content item plugin, or a specific article.
+			//Insert into the EasySDI config a key SHOP_ARTICLE_STEP4 with
+			//the value like {include_content_item 148} refering to the plugin and
+			//article you would like to call.
+			//-->       
+		
+			<table id="infoStep4">
+			<?php
+
+			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP4");
+			$args = array( 1,&$row,&$params);
+			JPluginHelper::importPlugin( 'content' );
+			$dispatcher =& JDispatcher::getInstance();
+			//$params = & new JParameter('');
+			$results = $dispatcher->trigger('onPrepareContent', 
+			array(&$row,&$params,0));
+			
+			echo $row->text;
+			
+			
+			?>
+		        </table>
+
+
+
 <?php
 
 
@@ -1766,14 +1795,14 @@ if (count($rows)>0){
 			{
 			//	
 			//Call here the include content item plugin, or a specific article.
-			//Insert into the EasySDI config a key SHOP_ARTICLE_GENERAL_COND with
+			//Insert into the EasySDI config a key SHOP_ARTICLE_STEP5 with
 			//the value like {include_content_item 148} refering to the plugin and
 			//article you would like to call.
 			//
 			?>
 			<table id="generalConditions">
 			<?php
-			$row->text = config_easysdi::getValue("SHOP_ARTICLE_GENERAL_COND");
+			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
 			$args = array( 1,&$row,&$params);
 			JPluginHelper::importPlugin( 'content' );
 			$dispatcher =& JDispatcher::getInstance();
