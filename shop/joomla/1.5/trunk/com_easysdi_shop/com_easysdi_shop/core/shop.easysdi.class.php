@@ -2553,6 +2553,9 @@ if (count($rows)>0){
 		$filter_visible=JRequest::getVar('filter_visible');
 		$filter_date = JRequest::getVar('update_cal');
 		$filter_date_comparator = JRequest::getVar('update_select');
+		
+		
+		
 		/* Todo, push the date format in EasySDI config and
 		set it here accordingly */
 		if($filter_date){
@@ -2595,6 +2598,11 @@ if (count($rows)>0){
 			$filter = $filter.")";
 		}
 
+		if ($freetextcriteria){
+			$filter = $filter." AND (DATA_TITLE like '%".$freetextcriteria."%' ";
+			$filter = $filter." OR METADATA_ID = '$freetextcriteria')";
+		}
+		
 		if ($partner_id){
 			$filter = $filter." and partner_id = ".$partner_id;
 		}
