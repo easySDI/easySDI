@@ -967,7 +967,7 @@ function activateLayer(layerName){
 	</tr>
 </table>
 </fieldset>
-
+<?php JHTML::_( 'behavior.modal' ); ?>
 <?php JHTML::_('behavior.calendar'); ?>
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_AVAILIBILITY'); ?></legend>
 <table class="admintable">
@@ -1237,15 +1237,34 @@ function generateWMSHTML($config,$thePolicy){
 			}
 			
 			?>
+
 <input type="hidden"
 	name="remoteServer<?php echo $iServer; ?>"
 	value="<?php echo $remoteServer->url; ?>">
+	
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
-		<th><b><?php echo JText::_( 'EASYSDI_LOCAL FILTER'); ?></b></th>
-		<th><b><?php echo JText::_( 'EASYSDI_REMOTE FILTER'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b>
+				</th>
+		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpTemplate" rel="{handler:'iframe',size:{x:600,y:600}}"> 	
+			<img class="helpTemplate" 
+			     src="../templates/easysdi/icons/silk/help.png" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				
+				  />	
+		</a>
+		</th>
+		
+		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpTemplate" rel="{handler:'iframe',size:{x:600,y:600}}"> 
+			<img class="helpTemplate" 
+				 src="../templates/easysdi/icons/silk/help.png" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				 />
+		</a>
+		</th>
 	</tr>
 
 	<?php
@@ -1349,26 +1368,31 @@ function generateWMSHTML($config,$thePolicy){
 			name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
 			<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?></td>
-		<td><textarea rows="3" cols="70"
-		<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+		
+		<td>
+		   <textarea rows="3" cols="70"
+			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
+			</textarea>
+		</td>
+
+		<td>
+		 	<textarea rows="3" cols="70" 
+			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="LocalFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> <?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); if (strcmp($localFilter,"")==0){?><Filter
+			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
+			<!-- <?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); if (strcmp($localFilter,"")==0){?><Filter
 			xmlns:gml='http://www.opengis.net/gml'><Within><PropertyName><?php echo $geometryName ?></PropertyName><gml:Polygon
 			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
 			<gml:outerBoundaryIs>
 				<gml:LinearRing>
 					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>    </gml:LinearRing>
 			</gml:outerBoundaryIs>
-		</gml:Polygon></Within></Filter><?php } else {echo $localFilter;} ?></textarea></td>
-		<td><textarea rows="3" cols="70"
-		<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> <?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType); if (strcmp($remoteFilter,"")==0){?><Filter
-			xmlns:gml='http://www.opengis.net/gml'><BBOX><PropertyName><?php echo $geometryName ?></PropertyName><Box
-			srsName="EPSG:4326" gml="http://www.opengis.net/gml"> <coordinates>-180,-90 180,90</coordinates> </Box></BBOX></Filter><?php } else {echo $remoteFilter;} ?></textarea>
+			</gml:Polygon></Within></Filter><?php } else {echo $localFilter;} ?>
+			 -->
+			</textarea>		
 		</td>
-
-		
 	</tr>
 	<?php }
 	?>

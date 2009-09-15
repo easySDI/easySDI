@@ -28,9 +28,11 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'menu.php')
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'module.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
+include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 JHTML::_('stylesheet', 'com_easysdi_proxy.css', 'administrator/components/com_easysdi_proxy/templates/css/');
+//JHTML::_('stylesheet', 'modal.css', 'media/system/css/');
 
 $task = JRequest::getVar('task');
 $cid = JRequest::getVar ('cid', array(0) );
@@ -39,6 +41,7 @@ if (!is_array( $cid )) {
 }
 
 global $mainframe;
+
 
 /*Replaced by storage of the configFilePath into table easysdi_config
  */
@@ -165,7 +168,9 @@ switch($task){
 	case 'cpanel':
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
+	case 'helpTemplate' :
 		
+		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:
