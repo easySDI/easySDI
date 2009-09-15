@@ -839,12 +839,13 @@ class displayManager{
 				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 				header('Pragma: public');
 				header("Expires: 0"); 
-				//header("Content-Length: ".filesize($foptmp));
+				header("Content-Length: ".filesize($foptmp));
 				
 				
 				//flush();
 				//readfile($foptmp);
 				echo $result;
+			    die();
 		/*	}*/
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
