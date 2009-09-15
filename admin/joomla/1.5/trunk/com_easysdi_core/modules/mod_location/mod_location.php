@@ -126,7 +126,10 @@ if ($curstep == "2")
  	  function hideLocationParent(curId)
       {
       	//$("status").innerHTML = 'start'; 
-      	<?php
+      	
+      	//Disable the display of the filter and search element corresponding to the unselected combobox
+      	
+		<?php
       	
 		$queryAll = "SELECT * FROM #__easysdi_location_definition";
 		$db->setQuery( $queryAll );
@@ -138,6 +141,14 @@ if ($curstep == "2")
 			
 			if(curId == '<?php echo $rowall->id_location_filter;?>')
 			{
+				if (document.getElementById('filter<?php echo $rowall->id_location_filter;?>')!=null )
+			 	{
+			 		document.getElementById('filter<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 	}
+			 	if (document.getElementById('search<?php echo $rowall->id_location_filter;?>')!=null )
+			 	{
+			 		document.getElementById('search<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 	}
 				if(document.getElementById('locationsListLocation<?php echo $rowall->id; ?>') != null)
 				{
 					document.getElementById('locationsListLocation<?php echo $rowall->id; ?>').style.display = 'none';
@@ -176,11 +187,11 @@ if ($curstep == "2")
       	document.getElementById(parId).style.display = 'block';
       	if (document.getElementById('filter'+parentId)!=null )
 	 	{
-	 		document.getElementById('filter'+parentId).style.display = 'block';
+	 		document.getElementById('filter'+parentId).style.display = 'none';
 	 	}
 	 	if (document.getElementById('search'+parentId)!=null )
 	 	{
-	 		document.getElementById('search'+parentId).style.display = 'block';
+	 		document.getElementById('search'+parentId).style.display = 'none';
 	 	}
 	 	
 		<?php
