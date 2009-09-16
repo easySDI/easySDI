@@ -871,11 +871,17 @@ function activateFeatureType(featureType){
 	if (document.getElementById('featuretype@'+featureType).checked==true){
 		document.getElementById('LocalFilter@'+featureType).disabled=false;
 		document.getElementById('RemoteFilter@'+featureType).disabled=false;		
+		document.getElementById('AttributeList@'+featureType).disabled=false;
 		
-	}else{
-	
+		
+	}else{	
 		document.getElementById('LocalFilter@'+featureType).disabled=true;
+		document.getElementById('LocalFilter@'+featureType).value = "";
 		document.getElementById('RemoteFilter@'+featureType).disabled=true;		
+		document.getElementById('RemoteFilter@'+featureType).value = "";
+		document.getElementById('AttributeList@'+featureType).disabled=true;
+		document.getElementById('AttributeList@'+featureType).value="";
+		
 	}
 }
 
@@ -1248,20 +1254,20 @@ function generateWMSHTML($config,$thePolicy){
 		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b>
 				</th>
 		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
-		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpTemplate" rel="{handler:'iframe',size:{x:600,y:600}}"> 	
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
 			<img class="helpTemplate" 
 			     src="../templates/easysdi/icons/silk/help.png" 
-				 alt="<?php echo JText::_("EASYSDI_GEOGRPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 				
 				  />	
 		</a>
 		</th>
 		
 		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
-		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpTemplate" rel="{handler:'iframe',size:{x:600,y:600}}"> 
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:270}}"> 
 			<img class="helpTemplate" 
 				 src="../templates/easysdi/icons/silk/help.png" 
-				 alt="<?php echo JText::_("EASYSDI_GEOGRPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 				 />
 		</a>
 		</th>
@@ -1360,7 +1366,7 @@ function generateWMSHTML($config,$thePolicy){
 	   	 	 	
 	 ?>	 
 	<tr>
-		<td><input
+		<td class="key" rowspan="2"><input  align="left"
 			onClick="activateFeatureType('<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
 			type="checkbox"
@@ -1374,6 +1380,16 @@ function generateWMSHTML($config,$thePolicy){
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
+			<?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType); 
+			if (strcmp($remoteFilter,"")==0)
+			{
+			
+			} 
+			else 
+			{
+				echo $remoteFilter;
+			} 
+			?>
 			</textarea>
 		</td>
 
@@ -1382,17 +1398,26 @@ function generateWMSHTML($config,$thePolicy){
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="LocalFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
-			<!-- <?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); if (strcmp($localFilter,"")==0){?><Filter
-			xmlns:gml='http://www.opengis.net/gml'><Within><PropertyName><?php echo $geometryName ?></PropertyName><gml:Polygon
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
-			<gml:outerBoundaryIs>
-				<gml:LinearRing>
-					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>    </gml:LinearRing>
-			</gml:outerBoundaryIs>
-			</gml:Polygon></Within></Filter><?php } else {echo $localFilter;} ?>
-			 -->
+			<?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
+			if (strcmp($localFilter,"")==0)
+			{	
+			} 
+			else 
+			{
+				echo $localFilter;
+			} ?>
 			</textarea>		
 		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center">
+			<?php echo JText::_("EASYSDI_FILTERED_ATTRIBUTES_LABEL") ?>
+			<input  type="text" style="width:500px;"
+			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			id="AttributeList@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>" />
+		</td> 
+		
 	</tr>
 	<?php }
 	?>
@@ -1481,6 +1506,56 @@ function generateWMSHTML($config,$thePolicy){
 </form>
 	<?php
 	
+	}
+	
+	function helpQueryTemplate ($filter_type)
+	{
+		?>
+		<h2>
+		<?php echo JText::_(  'EASYSDI_HELP_TEMPLATE_TITLE' ); ?>
+		</h2>
+		<h3>
+		<?php if($filter_type == "filterQuery")
+		{
+			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY' ); 
+		}
+		else
+		{
+			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_ANSWER' ); 
+		}
+		?>
+		</h3>
+		
+		<?php if($filter_type == "filterQuery")
+		{
+		?>
+		<textarea ROWS="5" COLS="75">
+		<Filter
+			xmlns:gml='http://www.opengis.net/gml'><BBOX><PropertyName><?php echo $geometryName ?></PropertyName><Box
+			srsName="EPSG:4326" gml="http://www.opengis.net/gml"> <coordinates>-180,-90 180,90</coordinates> </Box></BBOX></Filter>
+		</textarea>
+		<?php
+		}
+		else
+		{ 
+		?>
+		<textarea ROWS="11" COLS="75">
+		<Filter
+			xmlns:gml='http://www.opengis.net/gml'><Within><PropertyName><?php echo $geometryName ?></PropertyName><gml:Polygon
+			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
+			<gml:outerBoundaryIs>
+				<gml:LinearRing>
+					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>    </gml:LinearRing>
+			</gml:outerBoundaryIs>
+			</gml:Polygon></Within></Filter>
+		</textarea>
+		<?php
+		} 
+		?>
+		
+		
+		<?php
+		
 	}
 }
 ?>

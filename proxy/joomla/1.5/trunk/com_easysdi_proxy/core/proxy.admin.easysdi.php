@@ -465,9 +465,24 @@ function savePolicy($xml){
 
 					$theServer->FeatureTypes[All]='false';
 					$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
-					$theFeatureType->Attributes[All]="true";
 					$theFeatureType->Name=$val;
 
+					$attributeList = JRequest::getVar("AttributeList@$i@$val","");
+					if(strlen($attributeList)>0)
+					{
+						$theFeatureType->Attributes[All]="false";
+						$attributeList = str_replace(" ","",$attributeList);
+						$attributesArray =  array();
+						ADMIN_proxy::getAttributesList($attributeList, $attributesArray);
+						foreach($attributesArray as $attribute)
+						{
+							$theAttribute = $theFeatureType->Attributes->addChild('Attribute',$attribute);
+						}
+					}
+					else
+					{
+						$theFeatureType->Attributes[All]="true";
+					}
 					$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
 					if(strlen($remoteFilter)>0){
 						$theFeatureType->RemoteFilter =$remoteFilter ;
@@ -520,6 +535,25 @@ function savePolicy($xml){
 	}
 
 	$xmlConfigFile->asXML($policyFile);
+}
+
+function getAttributesList($attributes, &$attributesArray)
+{
+	if($attributes)
+	{
+		$index = strpos($attributes,',');
+		if($index)
+		{
+			$attributesArray[] = substr ($attributes,0,$index);
+			$em = substr($attributes,$index + 1);
+			ADMIN_proxy::getAttributesList($em, &$attributesArray);
+		}
+		else
+		{
+			$attributesArray[] = $attributes;
+		}
+	}
+	
 }
 function saveConfig($xml,$configFilePath){
 	$configId = JRequest::getVar("configId","New Config");

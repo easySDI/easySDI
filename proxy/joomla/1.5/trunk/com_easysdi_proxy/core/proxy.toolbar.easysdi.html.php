@@ -40,7 +40,8 @@ function editPolicy(){
 		JToolBarHelper::custom('addPolicy','new.png','new.png',JText::_( 'EASYSDI_CREATE A POLICY' ),false);
 		JToolBarHelper::custom('copyPolicy','copy.png','copy.png',JText::_( 'EASYSDI_COPY A POLICY' ),false);
 		JToolBarHelper::custom('deletePolicy','delete.png','delete.png',JText::_( 'EASYSDI_DELETE POLICY' ),false);		
-		JToolBarHelper::cancel();
+		//JToolBarHelper::cancel();
+		JToolBarHelper::custom( 'cancel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
 	}
 	
 	
