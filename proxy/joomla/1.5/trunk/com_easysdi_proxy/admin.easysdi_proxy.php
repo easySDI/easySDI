@@ -168,8 +168,9 @@ switch($task){
 	case 'cpanel':
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
-	case 'helpTemplate' :
-		
+	case 'helpQueryTemplate' :
+		$filter_type = JRequest::getVar('filter_type');
+		HTML_proxy::helpQueryTemplate($filter_type);
 		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
