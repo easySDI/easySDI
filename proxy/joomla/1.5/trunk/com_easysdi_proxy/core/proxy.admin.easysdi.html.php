@@ -119,24 +119,62 @@ echo $pane->endPanel();
 	
 		
 		
-		
-		
-	function getFeatureTypeRemoteFilter($theServer,$featureType){
+	function getFeatureTypeAttributesList($theServer,$featureType){
 
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
+		
+		foreach ($theServer->FeatureTypes->FeatureType as $ft )
+		{
+			if (! (strrpos($featureType->{'Name'}, ":") ===False))
+			{			 
+				if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0)
+				{
+					return HTML_proxy::buildAttributesListString($ft->Attributes);
+				}
+			}
+			else 
+			{
+				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0)
+				{
+					return HTML_proxy::buildAttributesListString($ft->Attributes);
+				}
+			}
+		}
+		return "";
+	}
+	
+	function buildAttributesListString ($Attributes)
+	{
+		$attString ="";
+		foreach($Attributes->{'Attribute'} as $att)
+		{
+			$attString .= $att;
+			$attString .= ",";
+		}
+		$attString = substr  ($attString, 0, strlen ($attString)-1 );
+		return $attString;
+	}
+	
+		
+	function getFeatureTypeRemoteFilter($theServer,$featureType)
+	{
+		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
+
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
 
-			if (! (strrpos($featureType->{'Name'}, ":") ===False)){			 
-			if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0){
-
-				return $ft->{'RemoteFilter'};
+			if (! (strrpos($featureType->{'Name'}, ":") ===False))
+			{			 
+				if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0)
+				{
+					return $ft->{'RemoteFilter'};
+				}
 			}
-			}else {
-				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0){
-				return $ft->{'RemoteFilter'};
-			}
-				
-				
+			else 
+			{
+				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0)
+				{
+					return $ft->{'RemoteFilter'};
+				}
 			}
 		}
 
@@ -800,18 +838,18 @@ function addNewServer(){
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY IDENTIFICATION'); ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
-		<th><b><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></b></th>
-		<th><b><?php echo JText::_( 'EASYSDI_SERVLET'); ?></b></th>
+		<td class="key"><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></td>
+		<td><input type="text" size="60" value="<?php echo $configId ?>" disabled="disabled"></td>
 	</tr>
 	<tr>
-		<td><input type="text" value="<?php echo $configId ?>"
-			disabled="disabled"></td>
-		<td><input type="text" name="newPolicyId"
-			value="<?php echo $policyId ?>"></td>
-		<td><input type="text" value="<?php echo $servletClass;?>"
-			disabled="disabled" size=50></td>
+		<td class="key"><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></td>
+		<td><input type="text" size="60" name="newPolicyId" value="<?php echo $policyId ?>"></td>
 	</tr>
+	<tr>
+		<td class="key"><?php echo JText::_( 'EASYSDI_SERVLET'); ?></td>
+		<td><input type="text" size="60" value="<?php echo $servletClass;?>" disabled="disabled" size=50></td>
+	</tr>
+
 </table>
 </fieldset>
 <script>
@@ -1244,15 +1282,34 @@ function generateWMSHTML($config,$thePolicy){
 			
 			?>
 
-<input type="hidden"
-	name="remoteServer<?php echo $iServer; ?>"
-	value="<?php echo $remoteServer->url; ?>">
-	
+<input type="hidden" name="remoteServer<?php echo $iServer; ?>" value="<?php echo $remoteServer->url; ?>">
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
-		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b>
-				</th>
+		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
+		<td>
+		<input type="text" size ="60"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+		</td>
+	</tr>
+	<tr>
+		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?></td>
+		<td>
+		<input type="text" size ="60"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+		</td>
+	</tr>
+</table>
+<br>
+<table class="admintable">
+	<tr>
+		<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_FILTERED_ATTRIBUTES_LABEL'); ?></b>
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpAttributeFilter" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
+			<img class="helpTemplate" 
+			     src="../templates/easysdi/icons/silk/help.png" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				
+				  />	
+		</a></th>
 		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
 		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
 			<img class="helpTemplate" 
@@ -1270,7 +1327,7 @@ function generateWMSHTML($config,$thePolicy){
 				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 				 />
 		</a>
-		</th>
+		</th>		
 	</tr>
 
 	<?php
@@ -1366,17 +1423,37 @@ function generateWMSHTML($config,$thePolicy){
 	   	 	 	
 	 ?>	 
 	<tr>
-		<td class="key" rowspan="2"><input  align="left"
+		
+		<td class="key" >
+			<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>
+			<input  align="left"
 			onClick="activateFeatureType('<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
 			type="checkbox"
 			id="featuretype@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
-			<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?></td>
-		
+			</td>
+		<td  align="center">
+			
+						 <textarea rows="3" cols="20" style="vertical-align:text-top;"
+						<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+						id="AttributeList@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+						name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
+						<?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;
+						if (strcmp($attributes,"")==0)
+						{
+						}
+						else
+						{
+							echo preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n",$attributes);   
+						}
+						?>
+						</textarea>
+					
+		</td> 
 		<td>
-		   <textarea rows="3" cols="70"
+		   <textarea rows="3" cols="60" style="vertical-align:text-top;"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
@@ -1392,9 +1469,8 @@ function generateWMSHTML($config,$thePolicy){
 			?>
 			</textarea>
 		</td>
-
 		<td>
-		 	<textarea rows="3" cols="70" 
+		 	<textarea rows="3" cols="60"  style="vertical-align:text-top;"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="LocalFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
@@ -1409,16 +1485,7 @@ function generateWMSHTML($config,$thePolicy){
 			</textarea>		
 		</td>
 	</tr>
-	<tr>
-		<td colspan="2" align="center">
-			<?php echo JText::_("EASYSDI_FILTERED_ATTRIBUTES_LABEL") ?>
-			<input  type="text" style="width:500px;"
-			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="AttributeList@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>" />
-		</td> 
-		
-	</tr>
+	
 	<?php }
 	?>
 </table>
@@ -1508,6 +1575,26 @@ function generateWMSHTML($config,$thePolicy){
 	
 	}
 	
+	function helpAttributeFilter ()
+	{
+		?>
+		<h2>
+		<?php echo JText::_(  'EASYSDI_HELP_ATTRIBUTE_FILTER_TITLE' ); ?>
+		</h2>
+		<h3>
+		<?php echo JText::_(  'EASYSDI_HELP_ATTRIBUTE_FILTER_ALL' ); ?>
+		</h3>
+		<p>
+		<?php echo JText::_(  'EASYSDI_HELP_ATTRIBUTE_FILTER_ALL_CONTENT' ); ?>
+		</p>
+		<h3>
+		<?php echo JText::_(  'EASYSDI_HELP_ATTRIBUTE_FILTER_SELECT' ); ?>
+		</h3>
+		<p>
+		<?php echo JText::_(  'EASYSDI_HELP_ATTRIBUTE_FILTER_SELECT_CONTENT' ); ?>
+		</p>
+		<?php 
+	}
 	function helpQueryTemplate ($filter_type)
 	{
 		?>

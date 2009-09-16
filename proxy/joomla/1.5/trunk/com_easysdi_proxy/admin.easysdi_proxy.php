@@ -172,6 +172,9 @@ switch($task){
 		$filter_type = JRequest::getVar('filter_type');
 		HTML_proxy::helpQueryTemplate($filter_type);
 		break;
+	case 'helpAttributeFilter' :
+		HTML_proxy::helpAttributeFilter();
+		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:

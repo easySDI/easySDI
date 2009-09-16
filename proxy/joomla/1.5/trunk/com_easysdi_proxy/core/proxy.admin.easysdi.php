@@ -18,8 +18,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_proxy{
-
-	
 	
 function addPolicy($xml){
 	$configId = JRequest::getVar("configId");
@@ -86,7 +84,6 @@ function addConfig($xml){
 	return $xml;
 }
 
-
 function orderupPolicy($xml){
 	$configId = JRequest::getVar("configId");
 	$policyId = JRequest::getVar("policyId");
@@ -128,8 +125,6 @@ function orderupPolicy($xml){
 		}
 	}
 }
-
-
 
 function orderdownPolicy($xml){
 	$configId = JRequest::getVar("configId");
@@ -319,6 +314,7 @@ function saveComponentConfig($xmlConfig,$componentConfigFilePath){
 	}
 
 }
+
 function savePolicy($xml){
 	$params = JRequest::get();
 	$servletClass = JRequest::getVar("servletClass");
@@ -445,6 +441,11 @@ function savePolicy($xml){
 
 			$theServer = $thePolicy->Servers->addChild(Server);
 			$theServer->url=$remoteServer;
+			$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+			$theServer->Prefix =$serverPrefixe;
+			$serverNamespace = JRequest::getVar("serverNamespace$i","");
+			$theServer->Namespace = $serverNamespace;
+			
 			$theServer->Metadata ="";
 			$foundParamToExclude=false;
 			while (list($key, $val) = each($params )) {
@@ -467,6 +468,7 @@ function savePolicy($xml){
 					$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
 					$theFeatureType->Name=$val;
 
+					//Attribute to keep
 					$attributeList = JRequest::getVar("AttributeList@$i@$val","");
 					if(strlen($attributeList)>0)
 					{
@@ -483,10 +485,14 @@ function savePolicy($xml){
 					{
 						$theFeatureType->Attributes[All]="true";
 					}
+					
+					//remote filter
 					$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
 					if(strlen($remoteFilter)>0){
 						$theFeatureType->RemoteFilter =$remoteFilter ;
 					}
+					
+					//local filter
 					$localFilter = JRequest::getVar("LocalFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
 					if(strlen($remoteFilter)>0){
 						$theFeatureType->LocalFilter =$localFilter ;
@@ -555,6 +561,7 @@ function getAttributesList($attributes, &$attributesArray)
 	}
 	
 }
+
 function saveConfig($xml,$configFilePath){
 	$configId = JRequest::getVar("configId","New Config");
 	$newConfigId = JRequest::getVar("newConfigId",$configId);
