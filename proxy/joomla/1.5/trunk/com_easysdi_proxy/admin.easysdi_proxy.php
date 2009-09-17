@@ -32,7 +32,6 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 JHTML::_('stylesheet', 'com_easysdi_proxy.css', 'administrator/components/com_easysdi_proxy/templates/css/');
-//JHTML::_('stylesheet', 'modal.css', 'media/system/css/');
 
 $task = JRequest::getVar('task');
 $cid = JRequest::getVar ('cid', array(0) );
@@ -67,61 +66,46 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.toolbar.easysdi.h
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.admin.easysdi.php');
 
-
 switch($task){
-		
-		
 	case 'componentConfig':
 		TOOLBAR_proxy::editComponentConfig();
 		HTML_proxy::configComponent($xmlConfig);
 		break;
-			
 	case 'saveComponentConfig':
 		ADMIN_PROXY::saveComponentConfig($xmlConfig,$componentConfigFilePath);
 		HTML_proxy::ctrlPanel();
 		break;
-			
 	case 'copyPolicy':
 		ADMIN_PROXY::copyPolicy ($xml);
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
-
 		break;
-
 	case 'addPolicy':
 		TOOLBAR_proxy::editPolicy();
 		HTML_proxy::editPolicy($xml,true);
 		break;
-
-
 	case 'orderuppolicy':
 		ADMIN_PROXY::orderupPolicy($xml);
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
-
 	case 'orderdownpolicy':
 		ADMIN_PROXY::orderdownPolicy($xml);
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
-
-
 	case 'editPolicyList':
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
-
 	case 'editConfig':
 		TOOLBAR_proxy::editConfig();
 		HTML_proxy::editConfig($xml);
 		break;
-
 	case 'editPolicy':
 		TOOLBAR_proxy::editPolicy();
 		HTML_proxy::editPolicy($xml);
 		break;
-
 	case 'deletePolicy':
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");		
@@ -129,12 +113,9 @@ switch($task){
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
-
 	case 'addConfig':
-
 		TOOLBAR_proxy::editConfig();
 		HTML_proxy::editConfig($xml,true);
-
 		break;
 	case 'deleteConfig':
 		$configId = JRequest::getVar("configId");
@@ -143,7 +124,6 @@ switch($task){
 		HTML_proxy::showConfigList($xml);
 		break;
 	case 'savePolicy':
-
 		ADMIN_PROXY::savePolicy($xml);
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
@@ -152,9 +132,7 @@ switch($task){
 		TOOLBAR_proxy::editPolicyList();
 		HTML_proxy::showPoliciesList($xml);
 		break;
-
 	case 'saveConfig':
-
 		ADMIN_PROXY::saveConfig($xml,$configFilePath);
 		TOOLBAR_proxy::configList();
 		HTML_proxy::showConfigList($xml);
@@ -164,7 +142,6 @@ switch($task){
 		TOOLBAR_proxy::configList();
 		HTML_proxy::showConfigList($xml);
 		break;
-
 	case 'cpanel':
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
@@ -178,7 +155,6 @@ switch($task){
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:
-
 		HTML_proxy::ctrlPanel();
 		break;
 }

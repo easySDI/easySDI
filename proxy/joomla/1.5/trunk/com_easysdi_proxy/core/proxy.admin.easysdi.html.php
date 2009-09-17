@@ -903,24 +903,46 @@ document.getElementById(button).disabled=false;
 }
 }
 
-function activateFeatureType(featureType){
+function activateFeatureType(server,featureType){
 
 
-	if (document.getElementById('featuretype@'+featureType).checked==true){
-		document.getElementById('LocalFilter@'+featureType).disabled=false;
-		document.getElementById('RemoteFilter@'+featureType).disabled=false;		
-		document.getElementById('AttributeList@'+featureType).disabled=false;
-		
-		
-	}else{	
-		document.getElementById('LocalFilter@'+featureType).disabled=true;
-		document.getElementById('LocalFilter@'+featureType).value = "";
-		document.getElementById('RemoteFilter@'+featureType).disabled=true;		
-		document.getElementById('RemoteFilter@'+featureType).value = "";
-		document.getElementById('AttributeList@'+featureType).disabled=true;
-		document.getElementById('AttributeList@'+featureType).value="";
-		
+	if (document.getElementById('featuretype@'+server+'@'+featureType).checked==true){
+		document.getElementById('LocalFilter@'+server+'@'+featureType).disabled=false;
+		document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
+		document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=false;		
+		document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
+		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=false;
+		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
 	}
+	else
+	{	
+		document.getElementById('LocalFilter@'+server+'@'+featureType).disabled=true;
+		document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
+		document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=true;		
+		document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
+		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
+		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+	}
+}
+
+function CheckQuery(server,featureType)
+{
+		var remote = document.getElementById('RemoteFilter@'+server+'@'+featureType).value;
+		var local = document.getElementById('LocalFilter@'+server+'@'+featureType).value;
+		if (remote.length == 0 && local.length >0)
+		{
+			document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = "#E2A09B";
+		}
+		else
+		{
+			document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = document.getElementById('LocalFilter@'+server+'@'+featureType).style.backgroundColor;
+		}
+}
+
+function fillTextArea (elementId, text)
+{
+	document.getElementById(elementId).value = "";
+	document.getElementById(elementId).value = text;
 }
 
 function activateLayer(layerName){
@@ -1311,7 +1333,7 @@ function generateWMSHTML($config,$thePolicy){
 				  />	
 		</a></th>
 		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
-		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:290}}"> 	
 			<img class="helpTemplate" 
 			     src="../templates/easysdi/icons/silk/help.png" 
 				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
@@ -1321,7 +1343,7 @@ function generateWMSHTML($config,$thePolicy){
 		</th>
 		
 		<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
-		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:270}}"> 
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:320}}"> 
 			<img class="helpTemplate" 
 				 src="../templates/easysdi/icons/silk/help.png" 
 				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
@@ -1427,62 +1449,43 @@ function generateWMSHTML($config,$thePolicy){
 		<td class="key" >
 			<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>
 			<input  align="left"
-			onClick="activateFeatureType('<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
+			onClick="activateFeatureType('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
 			type="checkbox"
-			id="featuretype@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			id="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
 			</td>
 		<td  align="center">
-			
-						 <textarea rows="3" cols="20" style="vertical-align:text-top;"
-						<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-						id="AttributeList@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-						name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
-						<?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;
-						if (strcmp($attributes,"")==0)
-						{
-						}
-						else
-						{
-							echo preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n",$attributes);   
-						}
-						?>
-						</textarea>
+			<textarea rows="3" cols="22"  
+			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			id="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"><?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?></textarea>
 					
 		</td> 
 		<td>
-		   <textarea rows="3" cols="60" style="vertical-align:text-top;"
+		   <textarea rows="3" cols="57"  
+		   onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="RemoteFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
-			<?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType); 
-			if (strcmp($remoteFilter,"")==0)
-			{
-			
-			} 
-			else 
-			{
-				echo $remoteFilter;
-			} 
-			?>
-			</textarea>
+			id="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			><?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType);
+			if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea>
 		</td>
 		<td>
-		 	<textarea rows="3" cols="60"  style="vertical-align:text-top;"
+		 	<textarea rows="3" cols="57" 
+		 	onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="LocalFilter@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"> 
-			<?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
+			id="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			><?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
 			if (strcmp($localFilter,"")==0)
 			{	
 			} 
 			else 
 			{
 				echo $localFilter;
-			} ?>
-			</textarea>		
+			} ?></textarea>		
 		</td>
 	</tr>
 	
@@ -1616,32 +1619,44 @@ function generateWMSHTML($config,$thePolicy){
 		<?php if($filter_type == "filterQuery")
 		{
 		?>
-		<textarea ROWS="5" COLS="75">
-		<Filter
-			xmlns:gml='http://www.opengis.net/gml'><BBOX><PropertyName><?php echo $geometryName ?></PropertyName><Box
-			srsName="EPSG:4326" gml="http://www.opengis.net/gml"> <coordinates>-180,-90 180,90</coordinates> </Box></BBOX></Filter>
-		</textarea>
+		<textarea ROWS="8" COLS="75"><Filter xmlns:gml='http://www.opengis.net/gml'>
+  <BBOX>
+    <PropertyName>geometryName</PropertyName>
+      <Box srsName=\"EPSG:4326\" gml=\"http://www.opengis.net/gml\">
+        <coordinates>-180,-90 180,90</coordinates>
+      </Box>
+  </BBOX>
+</Filter></textarea>
 		<?php
 		}
 		else
 		{ 
 		?>
-		<textarea ROWS="11" COLS="75">
-		<Filter
-			xmlns:gml='http://www.opengis.net/gml'><Within><PropertyName><?php echo $geometryName ?></PropertyName><gml:Polygon
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
-			<gml:outerBoundaryIs>
-				<gml:LinearRing>
-					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>    </gml:LinearRing>
-			</gml:outerBoundaryIs>
-			</gml:Polygon></Within></Filter>
-		</textarea>
+		<textarea ROWS="13" COLS="75"><Filter xmlns:gml='http://www.opengis.net/gml'>
+  <Within>
+    <PropertyName>geometryName</PropertyName>
+      <gml:Polygon xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'>
+      <gml:outerBoundaryIs>
+        <gml:LinearRing>
+          <gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90
+          </gml:coordinates>
+        </gml:LinearRing>
+      </gml:outerBoundaryIs>
+    </gml:Polygon>
+  </Within>
+</Filter></textarea>
 		<?php
 		} 
-		?>
-		
-		
-		<?php
+		if($filter_type == "filterQuery")
+		{
+			?>
+			<p>
+			<?php 
+			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY_REM' );
+			?>
+			</p>
+			<?php
+		}
 		
 	}
 }

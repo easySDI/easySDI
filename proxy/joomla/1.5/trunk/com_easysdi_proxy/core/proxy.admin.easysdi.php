@@ -316,61 +316,97 @@ function saveComponentConfig($xmlConfig,$componentConfigFilePath){
 }
 
 function savePolicy($xml){
+	global $mainframe;
+	
 	$params = JRequest::get();
 	$servletClass = JRequest::getVar("servletClass");
 	$allUsers = JRequest::getVar("AllUsers","");
 	$newPolicyId = JRequest::getVar("newPolicyId","");
 	$isNewPolicy =  JRequest::getBool("isNewPolicy",false);
-
-
 	$dateFrom = JRequest::getVar("dateFrom","");
 	$dateTo = JRequest::getVar("dateTo","");
 	$configId = JRequest::getVar("configId","");
 	$policyId = JRequest::getVar("policyId","");
 
+	//Check the geographic filters validity
+/*	for ($i=0;;$i++)
+	{
+		$remoteServer = JRequest::getVar("remoteServer$i","");
+		
+		if (strlen($remoteServer)>0)
+		{
+			while (list($key, $val) = each($params )) 
+			{
+				if (!(strpos($key,"featuretype@$i")===false))
+				{
+					//remote filter
+					$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val","");
+					//local filter
+					$localFilter = JRequest::getVar("LocalFilter@$i@$val","");
+					
+					//Do not allowed an empty "geographic filter on query" associated with a filled "geographic filter on answer"
+					if(strlen($remoteFilter) == 0 && strlen($localFilter)>0)
+					{	
+						$mainframe->redirect("index.php?option=com_easysdi_proxy&task=editPolicy&configId=$configId&policyId=$policyId&new=$isNewPolicy");
+						return;
+					}
+				}
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
 
-
-
-	foreach ($xml->config as $config) {
-		if (strcmp($config[id],$configId)==0){
-
+	$remoteServer ="";
+	$remoteFilter = "";
+	$localFilter = "";
+	$i= 0;
+	$key = "";
+	$val ="";
+	$params = JRequest::get();*/
+	
+	foreach ($xml->config as $config) 
+	{
+		if (strcmp($config[id],$configId)==0)
+		{
 			$policyFile = $config->{'authorization'}->{'policy-file'};
 			$servletClass =  $config->{'servlet-class'};
 
-			if (file_exists($policyFile)) {
+			if (file_exists($policyFile)) 
+			{
 				$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
 
-				if ($isNewPolicy){
-
+				if ($isNewPolicy)
+				{
 					$found=false;
-
-					foreach ($xmlConfigFile->Policy as $policy){
-							
-						if (strcmp($policy['Id'],$newPolicyId)==0){
-
+					foreach ($xmlConfigFile->Policy as $policy)
+					{
+						if (strcmp($policy['Id'],$newPolicyId)==0)
+						{
 							$found=true;
 							break;
 						}
 					}
 					$i=0;
-					while($found){
+					while($found)
+					{
 						$found=false;
-						foreach ($xmlConfigFile->Policy as $policy){
-								
-							if (strcmp($policy['Id'],$newPolicyId)==0){
-
+						foreach ($xmlConfigFile->Policy as $policy)
+						{
+							if (strcmp($policy['Id'],$newPolicyId)==0)
+							{
 								$found=true;
 								break;
 							}
 						}
-						if ($found == true){
+						if ($found == true)
+						{
 							$newPolicyId = $newPolicyId.$i;
-
 						}
 						$i++;
-							
 					}
-
 
 					$thePolicy = $xmlConfigFile->addChild('Policy');
 					$thePolicy[Id]=$newPolicyId;
@@ -382,20 +418,18 @@ function savePolicy($xml){
 					$thePolicy->AvailabilityPeriod->Mask="d-mm-yyyy";
 					$thePolicy->AvailabilityPeriod->From->Date="28-01-2008";
 					$thePolicy->AvailabilityPeriod->To->Date="28-01-2108";
-
-
-				}else{
-
-					foreach ($xmlConfigFile->Policy as $policy){
-							
-						if (strcmp($policy['Id'],$policyId)==0){
+				}
+				else
+				{
+					foreach ($xmlConfigFile->Policy as $policy)
+					{
+						if (strcmp($policy['Id'],$policyId)==0)
+						{
 							$configId = $policy['ConfigId'];
 							$thePolicy = $policy;
 							$thePolicy['Id']=$newPolicyId;
 						}
 					}
-
-
 				}
 			}
 		}
@@ -404,41 +438,49 @@ function savePolicy($xml){
 	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
 
-
 	{
-		if (strlen($allUsers)>0){
+		if (strlen($allUsers)>0)
+		{
 			$thePolicy->Subjects="";
-		$thePolicy->Subjects[All]="true";
-	}else{
-		$thePolicy->Subjects="";
-		$thePolicy->Subjects[All]="false";
-	}
+			$thePolicy->Subjects[All]="true";
+		}
+		else
+		{
+			$thePolicy->Subjects="";
+			$thePolicy->Subjects[All]="false";
+		}
+		
 		$userNameList = JRequest::getVar("userNameList");
 
-		if (sizeof($userNameList )>0){
-			foreach ($userNameList as $user){
+		if (sizeof($userNameList )>0)
+		{
+			foreach ($userNameList as $user)
+			{
 				$node = $thePolicy->Subjects->addChild(User,$user);
-
-
 			}
 		}
+
 		$roleNameList = JRequest::getVar("roleNameList");
 
-		if (sizeof($roleNameList)>0){
-			foreach ($roleNameList as $role){
+		if (sizeof($roleNameList)>0)
+		{
+			foreach ($roleNameList as $role)
+			{
 				$node = $thePolicy->Subjects->addChild(Role,$role);
-
 			}
 		}
 	}
 
 	$thePolicy->Servers[All]="false";
 	$thePolicy->Servers="";
-	for ($i=0;;$i++){
+	
+	for ($i=0;;$i++)
+	{
 		$remoteServer = JRequest::getVar("remoteServer$i","");
 		$remoteServerPolicy="";
-		if (strlen($remoteServer)>0){
 
+		if (strlen($remoteServer)>0)
+		{
 			$theServer = $thePolicy->Servers->addChild(Server);
 			$theServer->url=$remoteServer;
 			$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
@@ -448,22 +490,26 @@ function savePolicy($xml){
 			
 			$theServer->Metadata ="";
 			$foundParamToExclude=false;
-			while (list($key, $val) = each($params )) {
-
-				if (!(strpos($key,"param_$i")===false)){
+			
+			while (list($key, $val) = each($params )) 
+			{
+				if (!(strpos($key,"param_$i")===false))
+				{
 					//Parameter to exclude of the metadata
 					$theServer->Metadata->Attributes[All]='false';
-					if (count($theServer->Metadata->Attributes->Exclude)==0){
+					if (count($theServer->Metadata->Attributes->Exclude)==0)
+					{
 						$theServer->Metadata->Attributes->Exclude= "";
 					}
-					if (strlen($val)>0){
+					if (strlen($val)>0)
+					{
 						$theServer->Metadata->Attributes->Exclude->addChild(Attribute,$val);
 					}
 				 	$foundParamToExclude=true;
 				}
 
-				if (!(strpos($key,"featuretype@$i")===false)){
-
+				if (!(strpos($key,"featuretype@$i")===false))
+				{
 					$theServer->FeatureTypes[All]='false';
 					$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
 					$theFeatureType->Name=$val;
@@ -488,56 +534,60 @@ function savePolicy($xml){
 					
 					//remote filter
 					$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
-					if(strlen($remoteFilter)>0){
+					if(strlen($remoteFilter)>0)
+					{
 						$theFeatureType->RemoteFilter =$remoteFilter ;
 					}
 					
 					//local filter
 					$localFilter = JRequest::getVar("LocalFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
-					if(strlen($remoteFilter)>0){
+					if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
+					{
+						 
 						$theFeatureType->LocalFilter =$localFilter ;
+					}					
+					if(strlen($remoteFilter)<= 0 && strlen($localFilter)>0)
+					{
+						$mainframe->enqueueMessage(JText::sprintf("EASYSDI_GEOGRAPHIC_FILTER_REMOTE_EMPTY", $remoteServer,$val) ,'error');						
 					}
 				}
 
-
-				if (!(strpos($key,"layer@$i")===false)){
-
+				if (!(strpos($key,"layer@$i")===false))
+				{
 					$theServer->Layers[All]='False';
 					$theLayer = $theServer->Layers->addChild('Layer');
 					$theLayer->Name =$val;
 					$scaleMin = JRequest::getVar("scaleMin@$i@$val");
-					if (strlen($scaleMin)>0){
+					if (strlen($scaleMin)>0)
+					{
 						$theLayer->ScaleMin = $scaleMin;
 					}
 					$scaleMax = JRequest::getVar("scaleMax@$i@$val");
-					if (strlen($scaleMax)>0){
+					if (strlen($scaleMax)>0)
+					{
 						$theLayer->ScaleMax = $scaleMax;
 					}
 
-
-
 					$localFilter = JRequest::getVar("LocalFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
 
-					if (strlen($localFilter)>0){
+					if (strlen($localFilter)>0)
+					{
 						$theLayer->Filter = $localFilter;
 					}
-
-
-
 				}
-
 			}
-			if ($foundParamToExclude==false){			  
+			if ($foundParamToExclude==false)
+			{			  
 				$theServer->Metadata[All]='true';
 				$theServer->Metadata->Attributes[All]='true';								
 			}
 			
 			reset($params);
 		}
-		else{
+		else
+		{
 			break;
 		}
-
 	}
 
 	$xmlConfigFile->asXML($policyFile);
