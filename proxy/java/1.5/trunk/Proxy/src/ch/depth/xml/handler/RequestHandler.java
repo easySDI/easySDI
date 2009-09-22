@@ -31,7 +31,8 @@ public class RequestHandler extends DefaultHandler {
     private boolean isFirst= true;
     private String data ="";
     private List typeName= new Vector();
-//Debug tb 12.05.2009
+//Debug tb 11.09.2009
+    private Boolean isInFilterElement = false; // Pour être sur que le propertyName lu n'est pas celui de l'élément <Filter>, mais bien un attribut à renvoyer
     private String elementQName = "";
     private Boolean isElementQName = false; // To be sure to avoid "\t\t" characters 
     private List propertyName= new Vector();
@@ -103,19 +104,31 @@ public class RequestHandler extends DefaultHandler {
 					}
 		    	}
 			}
+		
+//Debug tb 11.09.2009
+		if (localName.equalsIgnoreCase("Filter"))
+			{
+			isInFilterElement = true;
+			}
+//Fin de debug
     	}
 
-    public void endElement(String nameSpace, String localName, 
-	    String qName) throws SAXException {
-	//Requested by the DescribeFeatureType
-	if (localName.equals("TypeName")){		
-	    typeName.add(data.substring(data.indexOf(":") + 1));
-	}
-	if (localName.equals("Filter")){		
-	 hasFilter=true;
-	}
-	data = "";
-    }
+    public void endElement(String nameSpace, String localName, String qName) throws SAXException
+    	{
+    	//Requested by the DescribeFeatureType
+    	if (localName.equals("TypeName"))
+    		{		
+    		typeName.add(data.substring(data.indexOf(":") + 1));
+    		}
+    	if (localName.equalsIgnoreCase("Filter"))
+    		{		
+    		hasFilter=true;
+//Debug tb 11.09.2009
+    		isInFilterElement = false;
+//Fin de debug
+    		}
+    	data = "";
+    	}
 
     /**
      * Actions à réaliser au début du document.
@@ -145,8 +158,10 @@ public class RequestHandler extends DefaultHandler {
     public void characters(char[] caracteres, int debut, int longueur) throws SAXException
     	{
     	String donnees = new String(caracteres, debut, longueur);
-//Debug tb 04.06.2009
-    	if(elementQName == "wfs:PropertyName" && !isElementQName)
+//Debug tb 11.09.2009
+		String [] s = elementQName.split(":");
+		String tmpFT = s[s.length-1];
+    	if(tmpFT.equals("PropertyName") && !isElementQName &&  !isInFilterElement)
 			{
 			propertyName.add(donnees);
     		isElementQName = true;
