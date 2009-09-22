@@ -327,6 +327,10 @@ function savePolicy($xml){
 	$dateTo = JRequest::getVar("dateTo","");
 	$configId = JRequest::getVar("configId","");
 	$policyId = JRequest::getVar("policyId","");
+	$maxWidth= JRequest::getVar("maxWidth","");
+	$minWidth= JRequest::getVar("minWidth","");
+	$maxHeight= JRequest::getVar("maxHeight","");
+	$minHeight= JRequest::getVar("minHeight","");
 
 	//Check the geographic filters validity
 /*	for ($i=0;;$i++)
@@ -437,7 +441,20 @@ function savePolicy($xml){
 
 	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
-
+	
+	//Image size
+	$thePolicy->ImageSize="";
+	if(strlen($minHeight)>0 && strlen($minWidth>0) )
+	{
+		$thePolicy->ImageSize->Minimum->Width = $minWidth;
+		$thePolicy->ImageSize->Minimum->Height = $minHeight;
+	}
+	if(strlen($maxHeight)>0 && strlen($maxWidth>0) )
+	{
+		$thePolicy->ImageSize->Maximum->Width = $maxWidth;
+		$thePolicy->ImageSize->Maximum->Height = $maxHeight;
+	}
+	
 	{
 		if (strlen($allUsers)>0)
 		{

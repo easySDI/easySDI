@@ -222,36 +222,27 @@ echo $pane->endPanel();
 
 
 	function getLayerMinScale($theServer,$layer){
-
-
 		if (count($theServer->Layers->Layer)==0) return "";
-
-
-		foreach ($theServer->Layers->Layer as $layer ){
-
-
-			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0){
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+			{
 				return $theLayer->ScaleMin;
 			}
 		}
-
 		return "";
-
-
 	}
 
 	function getLayerMaxScale($theServer,$layer){
-
 		if (count($theServer->Layers->Layer)==0) return "";
-		foreach ($theServer->Layers->Layer as $theLayer ){
-
-			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0){
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+			{
 				return $theLayer->ScaleMax;
 			}
 		}
-
 		return "";
-
 	}
 
 
@@ -839,40 +830,75 @@ function addNewServer(){
 <table class="admintable">
 	<tr>
 		<td class="key"><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></td>
-		<td><input type="text" size="60" value="<?php echo $configId ?>" disabled="disabled"></td>
+		<td><input type="text" size="100" value="<?php echo $configId ?>" disabled="disabled"></td>
 	</tr>
 	<tr>
 		<td class="key"><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></td>
-		<td><input type="text" size="60" name="newPolicyId" value="<?php echo $policyId ?>"></td>
+		<td><input type="text" size="100" name="newPolicyId" value="<?php echo $policyId ?>"></td>
 	</tr>
 	<tr>
 		<td class="key"><?php echo JText::_( 'EASYSDI_SERVLET'); ?></td>
-		<td><input type="text" size="60" value="<?php echo $servletClass;?>" disabled="disabled" size=50></td>
+		<td><input type="text" size="100" value="<?php echo $servletClass;?>" disabled="disabled" size=50></td>
 	</tr>
 
 </table>
 </fieldset>
 <script>
-function submitbutton(pressbutton){
+var geoQueryValid = new Array();
 
-for(i=0;i<=document.getElementById('userNameList').length-1;i++) { 
-document.getElementById('userNameList').options[i].selected = true; 
-} 
-for(i=0;i<=document.getElementById('roleNameList').length-1;i++) { 
-document.getElementById('roleNameList').options[i].selected = true; 
-}
-document.getElementById('userNameList').disabled=false;
-document.getElementById('roleNameList').disabled=false;
-submitform(pressbutton);
+function submitbutton(pressbutton)
+{
+	for(i=0;i<=document.getElementById('userNameList').length-1;i++) 
+	{ 
+		document.getElementById('userNameList').options[i].selected = true; 
+	} 
+	for(i=0;i<=document.getElementById('roleNameList').length-1;i++) 
+	{ 
+		document.getElementById('roleNameList').options[i].selected = true; 
+	}
+	document.getElementById('userNameList').disabled=false;
+	document.getElementById('roleNameList').disabled=false;
+	
+	if(document.getElementById('minWidth') != null)//Just for WMS policy
+	{
+		if( (document.getElementById('minWidth').value != "" && document.getElementById('minHeight').value == "")
+		  ||(document.getElementById('minWidth').value == "" && document.getElementById('minHeight').value != "")
+		  ||(document.getElementById('maxWidth').value != "" && document.getElementById('maxHeight').value == "")
+		  ||(document.getElementById('maxWidth').value == "" && document.getElementById('maxHeight').value != "")
+		)
+		{
+			alert ('<?php echo  JText::_( 'EASYSDI_IMAGE_SIZE_VALIDATION_ERROR');?>');		
+		}
+		else
+		{
+			submitform(pressbutton);
+		}
+	}
+	else if (document.getElementById('remoteServer0') != null) //Just for WFS policy
+	{
+		if(geoQueryValid.length != 0)
+		{
+			alert ('<?php echo  JText::_( 'EASYSDI_QUERY_VALIDATION_ERROR');?>');
+		}
+		else
+		{
+			submitform(pressbutton);
+		}
+	}
+	else
+	{
+		submitform(pressbutton);
+	}
 }
 
-function addOption(selectList,myText){
-var elOptNew = document.createElement('option'); 
-elOptNew.text = document.getElementById(myText).value ; 
-elOptNew.value = document.getElementById(myText).value ;
-var elSel = document.getElementById(selectList);
-try { elSel.add(elOptNew, null);  } 
-catch(ex) {elSel.add(elOptNew); }
+function addOption(selectList,myText)
+{
+	var elOptNew = document.createElement('option'); 
+	elOptNew.text = document.getElementById(myText).value ; 
+	elOptNew.value = document.getElementById(myText).value ;
+	var elSel = document.getElementById(selectList);
+	try { elSel.add(elOptNew, null);  } 
+	catch(ex) {elSel.add(elOptNew); }
 
 }
 function removeOptionSelected(selectX)
@@ -903,6 +929,18 @@ document.getElementById(button).disabled=false;
 }
 }
 
+function activateAttributeList(server,featureType)
+{
+	if (document.getElementById('selectAttribute@'+server+'@'+featureType).checked==true){
+		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=false;
+		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+	}
+	else
+	{
+		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
+		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+	}
+}
 function activateFeatureType(server,featureType){
 
 
@@ -911,8 +949,11 @@ function activateFeatureType(server,featureType){
 		document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
 		document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=false;		
 		document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
-		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=false;
+		document.getElementById('selectAttribute@'+server+'@'+featureType).checked = false;
+		document.getElementById('selectAttribute@'+server+'@'+featureType).disabled = false;
+		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
 		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+
 	}
 	else
 	{	
@@ -920,8 +961,11 @@ function activateFeatureType(server,featureType){
 		document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
 		document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=true;		
 		document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
+		document.getElementById('selectAttribute@'+server+'@'+featureType).checked = false;
+		document.getElementById('selectAttribute@'+server+'@'+featureType).disabled = true;
 		document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
 		document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+		
 	}
 }
 
@@ -931,33 +975,49 @@ function CheckQuery(server,featureType)
 		var local = document.getElementById('LocalFilter@'+server+'@'+featureType).value;
 		if (remote.length == 0 && local.length >0)
 		{
+			geoQueryValid[geoQueryValid.length] = 'RemoteFilter@'+server+'@'+featureType;
 			document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = "#E2A09B";
 		}
 		else
 		{
+			geoQueryValid.remove('RemoteFilter@'+server+'@'+featureType);
+			
 			document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = document.getElementById('LocalFilter@'+server+'@'+featureType).style.backgroundColor;
 		}
 }
 
+Array.prototype.remove=function(s){
+	for(i=0; i < this.length ; i++)
+	{
+		if(s==this[i])
+		{
+			this.splice(i, 1);
+			return;
+		}
+	}
+}
 function fillTextArea (elementId, text)
 {
 	document.getElementById(elementId).value = "";
 	document.getElementById(elementId).value = text;
 }
 
-function activateLayer(layerName){
+function activateLayer(server,layerName){
 
 
-	if (document.getElementById('layer@'+layerName).checked==true){
-		document.getElementById('scaleMin@'+layerName).disabled=false;
-		document.getElementById('scaleMax@'+layerName).disabled=false;
-		document.getElementById('LocalFilter@'+layerName).disabled=false;
+	if (document.getElementById('layer@'+server+'@'+layerName).checked==true){
+		document.getElementById('scaleMin@'+server+'@'+layerName).disabled=false;
+		document.getElementById('scaleMax@'+server+'@'+layerName).disabled=false;
+		document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=false;
 		
 	}else{
 	
-		document.getElementById('scaleMin@'+layerName).disabled=true;
-		document.getElementById('scaleMax@'+layerName).disabled=true;
-		document.getElementById('LocalFilter@'+layerName).disabled=true;	
+		document.getElementById('scaleMin@'+server+'@'+layerName).disabled=true;
+		document.getElementById('scaleMin@'+server+'@'+layerName).value ="";
+		document.getElementById('scaleMax@'+server+'@'+layerName).disabled=true;
+		document.getElementById('scaleMax@'+server+'@'+layerName).value ="";
+		document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=true;
+		document.getElementById('LocalFilter@'+server+'@'+layerName).value ="";	
 	}
 }
 </script>
@@ -1151,7 +1211,48 @@ $remoteServerList = $config->{'remote-server-list'};
 }
 
 function generateWMSHTML($config,$thePolicy){
+?>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?></legend>
+		<table class="admintable">
+			
+			<tr>
+				<td class="key">
+				<?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MIN'); ?>
+				</td>
+				<td>
+					<table>
+					<tr>
+					<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
+					<td><input id="minWidth" name="minWidth" type="text" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Minimum->Width)>0)echo $thePolicy->ImageSize->Minimum->Width ; ?>" /></td>
+					</tr>
+					<tr>
+					<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
+					<td><input type="text" id="minHeight" name="minHeight" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Minimum->Height)> 0 ) echo $thePolicy->ImageSize->Minimum->Height ; ?>" /></td>
+					</tr>
+					</table>
+				</td>	
+			</tr>
+			<tr>
+				<td class="key"> 
+				<?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MAX'); ?>
+				</td>
+				<td>
+					<table>
+					<tr>
+					<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
+					<td><input type="text" id="maxWidth" name="maxWidth" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Maximum->Width)> 0 ) echo $thePolicy->ImageSize->Maximum->Width ; ?>" /></td>
+					</tr>
+					<tr>
+					<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
+					<td><input type="text" id="maxHeight" name="maxHeight" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Maximum->Height)> 0 )  echo $thePolicy->ImageSize->Maximum->Height ; ?>" /></td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
 
+<?php 
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
 
@@ -1199,10 +1300,31 @@ function generateWMSHTML($config,$thePolicy){
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
+		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
+		<td>
+		<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+		</td>
+	</tr>
+	<tr>
+		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?></td>
+		<td>
+		<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+		</td>
+	</tr>
+</table>
+<br>
+<table class="admintable">
+	<tr>
 		<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
 		<th><b><?php echo JText::_( 'EASYSDI_SCALE MIN'); ?></b></th>
 		<th><b><?php echo JText::_( 'EASYSDI_SCALE MAX'); ?></b></th>
-		<th><b><?php echo JText::_( 'EASYSDI_LOCAL FILTER'); ?></b></th>
+		<th><b><?php echo JText::_( 'EASYSDI_LOCAL FILTER'); ?></b>
+		<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryWMSTemplate" rel="{handler:'iframe',size:{x:600,y:280}}"> 
+			<img class="helpTemplate" 
+				 src="../templates/easysdi/icons/silk/help.png" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				 />
+		</a></th>
 	</tr>
 
 	<?php
@@ -1211,39 +1333,33 @@ function generateWMSHTML($config,$thePolicy){
 			if (strlen($layer->{'Name'})>0 ){
 				?>
 	<tr>
-		<td><input
-			onClick="activateLayer('<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
+		<td class="key" >
+		<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>
+		<input
+			onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
 			<?php if( HTML_proxy ::isLayerChecked($theServer,$layer)) echo 'checked';?>
 			type="checkbox"
-			id="layer@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			value="<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>">
-			<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?></td>
-		<td><input
+			</td>
+		<td align = "center"><input 
 		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
-			id="scaleMin@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			id="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			value="<?php echo HTML_proxy ::getLayerMinScale($theServer,$layer); ?>"></td>
-		<td><input
+			value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
+		<td  align = "center"><input
 		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
-			id="scaleMax@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			id="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			value="<?php echo HTML_proxy ::getLayerMaxScale($theServer,$layer); ?>"></td>
+			value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
 		<td><textarea
 		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			rows="3" cols="70"
-			id="LocalFilter@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){?><gml:Polygon
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326">
-            <gml:outerBoundaryIs>
-                <gml:LinearRing>                    
-					<gml:coordinates>-180,-90 -180,90 180,90 180,-90 -180,-90</gml:coordinates>
-                </gml:LinearRing>
-            </gml:outerBoundaryIs>
-        </gml:Polygon>        		
-        <?php } else {echo $localFilter;} ?></textarea></td>
+			id="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 	</tr>
 	<?php }}}?>
 </table>
@@ -1304,19 +1420,19 @@ function generateWMSHTML($config,$thePolicy){
 			
 			?>
 
-<input type="hidden" name="remoteServer<?php echo $iServer; ?>" value="<?php echo $remoteServer->url; ?>">
+<input type="hidden" id ="remoteServer<?php echo $iServer; ?>" name="remoteServer<?php echo $iServer; ?>" value="<?php echo $remoteServer->url; ?>">
 <fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 <table class="admintable">
 	<tr>
 		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
 		<td>
-		<input type="text" size ="60"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+		<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
 		</td>
 	</tr>
 	<tr>
 		<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?></td>
 		<td>
-		<input type="text" size ="60"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+		<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
 		</td>
 	</tr>
 </table>
@@ -1457,14 +1573,33 @@ function generateWMSHTML($config,$thePolicy){
 			value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
 			</td>
 		<td  align="center">
-			<textarea rows="3" cols="22"  
-			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			<table>
+				<tr>
+				<td>
+				<?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?>
+				<input  align="left"
+				<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled ';?>
+				<?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>
+			onClick="activateAttributeList('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
+			type="checkbox"
+			id="selectAttribute@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			name="selectAttribute@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+			value="" />
+				</td>
+				</tr>
+				<tr>
+				<td>
+				<textarea rows="2" cols="22" <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){echo 'disabled';}?>
 			id="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
 			name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"><?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?></textarea>
+			
+				</td>
+				</tr>
+			</table>
 					
 		</td> 
 		<td>
-		   <textarea rows="3" cols="57"  
+		   <textarea rows="4" cols="57"  
 		   onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
@@ -1473,7 +1608,7 @@ function generateWMSHTML($config,$thePolicy){
 			if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea>
 		</td>
 		<td>
-		 	<textarea rows="3" cols="57" 
+		 	<textarea rows="4" cols="57" 
 		 	onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
@@ -1598,6 +1733,7 @@ function generateWMSHTML($config,$thePolicy){
 		</p>
 		<?php 
 	}
+	
 	function helpQueryTemplate ($filter_type)
 	{
 		?>
@@ -1657,6 +1793,35 @@ function generateWMSHTML($config,$thePolicy){
 			</p>
 			<?php
 		}
+		
+	}
+	
+function helpQueryWMSTemplate ()
+	{
+		?>
+		<h2>
+		<?php echo JText::_(  'EASYSDI_HELP_TEMPLATE_TITLE' ); ?>
+		</h2>
+		<h3>
+		<?php echo JText::_(  'EASYSDI_HELP_WMS_QUERY' ); ?>
+		</h3>
+		
+		
+		<textarea ROWS="8" COLS="75"><gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:21781">
+  <gml:outerBoundaryIs>
+    <gml:LinearRing>                    
+      <gml:coordinates>470000,50000 470000,210000 600000,210000 600000,50000 470000,50000
+      </gml:coordinates>
+    </gml:LinearRing>
+  </gml:outerBoundaryIs>
+</gml:Polygon></textarea>
+		
+			<p>
+			<?php 
+			//echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY_REM' );
+			?>
+			</p>
+			<?php
 		
 	}
 }

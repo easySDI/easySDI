@@ -149,6 +149,9 @@ switch($task){
 		$filter_type = JRequest::getVar('filter_type');
 		HTML_proxy::helpQueryTemplate($filter_type);
 		break;
+	case 'helpQueryWMSTemplate' :
+		HTML_proxy::helpQueryWMSTemplate();
+		break;
 	case 'helpAttributeFilter' :
 		HTML_proxy::helpAttributeFilter();
 		break;
