@@ -768,7 +768,7 @@ function addNewServer(){
 
 	}
 
-	function editPolicy($xml,$new=false){
+	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser){
 
 		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT POLICY' ), 'edit.png' );
 
@@ -848,17 +848,6 @@ var geoQueryValid = new Array();
 
 function submitbutton(pressbutton)
 {
-	for(i=0;i<=document.getElementById('userNameList').length-1;i++) 
-	{ 
-		document.getElementById('userNameList').options[i].selected = true; 
-	} 
-	for(i=0;i<=document.getElementById('roleNameList').length-1;i++) 
-	{ 
-		document.getElementById('roleNameList').options[i].selected = true; 
-	}
-	document.getElementById('userNameList').disabled=false;
-	document.getElementById('roleNameList').disabled=false;
-	
 	var server = 0;
 	while (document.getElementById('serverPrefixe'+server) != null)
 	{
@@ -922,13 +911,21 @@ function removeOptionSelected(selectX)
     }
   }
 }
-function disableList(chkBox,list){
 
-if (document.getElementById(chkBox).checked==true){
-document.getElementById(list).disabled=true;
-}else{
-document.getElementById(list).disabled=false;
-}
+function disableList(chkBox,list)
+{
+	if (document.getElementById(chkBox).checked==true)
+	{
+		document.getElementById(list).disabled=true;
+		for (i = document.getElementById(list).length - 1; i>=0; i--) 
+		{
+		    document.getElementById(list).options[i].selected = false;
+		}
+	}
+	else
+	{
+		document.getElementById(list).disabled=false;
+	}
 }
 
 function disableButton(chkBox,button){
@@ -1049,59 +1046,38 @@ function activateLayer(server,layerName){
 		<td><input
 		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo 'checked';} ?>
 			type="checkBox" name="AllUsers[]" id="AllUsers" 
-			onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');disableButton('AllUsers','addUser'),disableButton('AllUsers','removeUser'),disableButton('AllUsers','addRole'),disableButton('AllUsers','removeRole')">
+			onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');">
 		All</td>
 		<td></td>
 		<td></td>
 	</tr>
 	<tr>
-		<td><select
-		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-			name="userNameList[]" id="userNameList" size="10" multiple="multiple"  >
-			<?php
-			foreach ($thePolicy->Subjects->User as $user){
-				echo "<option value='".$user."'>".$user."</option>";
+<?php
+			$userSelected = array();
+			foreach ($thePolicy->Subjects->User as $user)
+			{
+				$ou->value = $user;
+				$userSelected[] =$ou;
+				$ou = null;				
 			}
-			?>
-
-		</select></td>
-		<td>
-		<table>
-			<tr>
-
-				<td><input type="button" value="<=="  id="addUser" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-					onclick="addOption('userNameList','textUserRole');"></td>
-			</tr>
-			<tr>
-				<td><input type="button" value="X" id="removeUser" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-					onclick="removeOptionSelected('userNameList');"></td>
-			</tr>
-		</table>
-		</td>
-		<td><input type="text" id="textUserRole"></td>
-
-		<td>
-		<table>
-			<tr>
-				<td><input type="button" value="==>" id ="addRole" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-					onclick="addOption('roleNameList','textUserRole');"></td>
-			</tr>
-			<tr>
-				<td><input type="button" value="X" id="removeRole" <?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-					onclick="removeOptionSelected('roleNameList');"></td>
-			</tr>
-		</table>
-		</td>
-		<td><select
-		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo "disabled='true'";} ?>
-			name="roleNameList[]" id="roleNameList" size="10" multiple="multiple"  >
-			<?php
-			foreach ($thePolicy->Subjects->Role as $role){
-				echo "<option value='".$role."'>".$role."</option>";
+			
+			$profileSelected = array();
+			foreach ($thePolicy->Subjects->Role as $role)
+			{
+				$or->value = $role;
+				$profileSelected[] = $or;
+				$or = null;
 			}
-			?>
-		</select></td>
+			$disabled ="";
+			if (strcasecmp($thePolicy->Subjects[All],'True')==0)
+			{
+				$disabled = "disabled ";
+			}
+?>
+	<td><?php echo JHTML::_("select.genericlist",$rowsUser, 'userNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userSelected ); ?></td>
+	<td><?php echo JHTML::_("select.genericlist", $rowsProfile, 'roleNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $profileSelected ); ?></td>
 	</tr>
+
 </table>
 </fieldset>
 <?php JHTML::_( 'behavior.modal' ); ?>

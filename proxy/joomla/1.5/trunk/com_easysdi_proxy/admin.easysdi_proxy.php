@@ -82,7 +82,7 @@ switch($task){
 		break;
 	case 'addPolicy':
 		TOOLBAR_proxy::editPolicy();
-		HTML_proxy::editPolicy($xml,true);
+		ADMIN_proxy::editPolicy($xml,true);
 		break;
 	case 'orderuppolicy':
 		ADMIN_PROXY::orderupPolicy($xml);
@@ -104,7 +104,7 @@ switch($task){
 		break;
 	case 'editPolicy':
 		TOOLBAR_proxy::editPolicy();
-		HTML_proxy::editPolicy($xml);
+		ADMIN_proxy::editPolicy($xml);
 		break;
 	case 'deletePolicy':
 		$configId = JRequest::getVar("configId");

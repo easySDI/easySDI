@@ -17,7 +17,25 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_proxy{
+class ADMIN_proxy
+{
+	function editPolicy ($xml, $new=false)
+	{
+		$database =& JFactory::getDBO(); 
+		
+		//Get  profiles
+		$database->setQuery( "SELECT profile_code as value, profile_code as text FROM #__easysdi_community_profile" );
+		$rowsProfile = $database->loadObjectList();
+		echo $database->getErrorMsg();
+		
+		//Get users
+		$database->setQuery( "SELECT username as value, username as text FROM #__users" );
+		$rowsUser = $database->loadObjectList();
+		echo $database->getErrorMsg();
+		
+		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser);
+	}
+	
 	
 function addPolicy($xml){
 	$configId = JRequest::getVar("configId");
