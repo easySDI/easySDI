@@ -1033,16 +1033,6 @@ function activateLayer(server,layerName){
 <fieldset class="adminform"><legend>Users and Groups</legend>
 <table class="admintable">
 	<tr>
-		<th  ><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
-		<th></th>
-		<th ><b><?php echo JText::_( 'EASYSDI_USER OR ROLE NAME'); ?></b></th>
-		<th></th>
-		<th  ><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
-	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-
 		<td><input
 		<?php if (strcasecmp($thePolicy->Subjects[All],'True')==0){echo 'checked';} ?>
 			type="checkBox" name="AllUsers[]" id="AllUsers" 
@@ -1051,6 +1041,12 @@ function activateLayer(server,layerName){
 		<td></td>
 		<td></td>
 	</tr>
+	<tr>
+		<th><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
+		<th></th>		
+		<th><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
+	</tr>
+	
 	<tr>
 <?php
 			$userSelected = array();
@@ -1075,6 +1071,7 @@ function activateLayer(server,layerName){
 			}
 ?>
 	<td><?php echo JHTML::_("select.genericlist",$rowsUser, 'userNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userSelected ); ?></td>
+	<td></td>
 	<td><?php echo JHTML::_("select.genericlist", $rowsProfile, 'roleNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $profileSelected ); ?></td>
 	</tr>
 
