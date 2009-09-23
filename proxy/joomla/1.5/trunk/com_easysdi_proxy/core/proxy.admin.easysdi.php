@@ -24,12 +24,12 @@ class ADMIN_proxy
 		$database =& JFactory::getDBO(); 
 		
 		//Get  profiles
-		$database->setQuery( "SELECT profile_code as value, profile_code as text FROM #__easysdi_community_profile" );
+		$database->setQuery( "SELECT profile_code as value, profile_description as text FROM #__easysdi_community_profile ORDER BY text" );
 		$rowsProfile = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
 		//Get users
-		$database->setQuery( "SELECT username as value, username as text FROM #__users" );
+		$database->setQuery( "SELECT #__users.username as value, #__users.name as text FROM #__users INNER JOIN #__easysdi_community_partner ON  #__users.id = #__easysdi_community_partner.user_id ORDER BY text" );
 		$rowsUser = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
