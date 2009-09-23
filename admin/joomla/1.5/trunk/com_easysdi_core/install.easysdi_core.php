@@ -970,11 +970,22 @@ function com_install(){
 		}
 		$query="CREATE TABLE IF NOT EXISTS `#__easysdi_community_partner_profile` (
 					  `id` bigint(20) NOT NULL auto_increment,
-					  `user_id` int(11) NOT NULL,
+					  `partner_id` bigint(20) NOT NULL,
 					  `profile_id` bigint(20)  NOT NULL,
 					  PRIMARY KEY  (`id`), 
-					  UNIQUE `user_profile_id` (`user_id`,`profile_id`)			  
+					  UNIQUE `user_profile_id` (`partner_id`,`profile_id`),
+					  FOREIGN KEY (partner_id) REFERENCES	#__easysdi_community_partner(partner_id) ON DELETE CASCADE ON UPDATE CASCADE,
+					FOREIGN KEY (profile_id) REFERENCES	#__easysdi_community_profile(profile_id)ON DELETE CASCADE ON UPDATE CASCADE						  		  
 					)";
+
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Update the value of the unique right type used in this version of easysdi
+		$query="UPDATE #__easysdi_community_role_type SET type_name='EASYSDI_ROLE_TYPE_FCT' WHERE type_name='GEoportail'";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{

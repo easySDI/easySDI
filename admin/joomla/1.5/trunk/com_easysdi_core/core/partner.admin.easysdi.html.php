@@ -148,7 +148,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 	}
 		
 	
-	function editRootPartner( &$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option )
+	function editRootPartner( &$rowUser, &$rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option, $rowsProfile, $rowsPartnerProfile )
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -557,6 +557,25 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		ADMIN_partner::includePartnerExtension(4,'TOP','editPartner',$rowPartner->partner_id);						
 		?>
 		<table border="0" cellpadding="0" cellspacing="0">		
+		<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_('EASYSDI_PROFILE_TITLE'); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+<?php
+			$profiles = array();
+			$profiles = array_merge( $profiles, $rowsProfile );
+			HTML_partner::alter_array_value_with_Jtext($rowsProfile);
+			$selected = array();
+			$selected = $rowsPartnerProfile;
+?>
+								<td><?php echo JHTML::_("select.genericlist",$profiles, 'profile_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
 <?php
 		$database->setQuery( "SELECT * FROM #__easysdi_community_role_type ORDER BY type_name" );
 		$rows = $database->loadObjectList();
@@ -567,7 +586,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
+						<legend><?php echo JText::_($row->type_name); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php
@@ -631,7 +650,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 				
 
 						
-	function editAffiliatePartner( &$rowUser, &$rowPartner, $rowContact, $option )
+	function editAffiliatePartner( &$rowUser, &$rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile  )
 	{
 		global  $mainframe;
 
@@ -915,6 +934,25 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_RIGHTS"),"affiliatePane");
 ?>
 		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_('EASYSDI_PROFILE_TITLE'); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+<?php
+			$profiles = array();
+			$profiles = array_merge( $profiles, $rowsProfile );
+			HTML_partner::alter_array_value_with_Jtext($rowsProfile);
+			$selected = array();
+			$selected = $rowsPartnerProfile;
+?>
+								<td><?php echo JHTML::_("select.genericlist",$profiles, 'profile_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
 <?php
 		$database->setQuery( "SELECT * FROM #__easysdi_community_role_type ORDER BY type_name" );
 		$rows = $database->loadObjectList();
@@ -925,7 +963,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
+						<legend><?php echo JText::_($row->type_name); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php

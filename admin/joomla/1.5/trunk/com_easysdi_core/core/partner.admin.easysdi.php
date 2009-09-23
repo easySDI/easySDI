@@ -97,7 +97,8 @@ class ADMIN_partner {
 
 	// Cr�ation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
-	function editRootPartner($id, $option) {
+	function editRootPartner($id, $option) 
+	{
 		if($id=='')
 		{
 			$id = JRequest::getVar('partner_id');
@@ -139,6 +140,16 @@ class ADMIN_partner {
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
 		
+		//Get availaible profile
+		$database->setQuery( "SELECT profile_id as value, profile_translation as text FROM #__easysdi_community_profile" );
+		$rowsProfile = $database->loadObjectList();
+		echo $database->getErrorMsg();
+		
+		//Get user profile
+		$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
+		$rowsPartnerProfile = $database->loadObjectList();
+		echo $database->getErrorMsg();
+		
 		$rowUser =&	 new JTableUser($database);
 		$JId = JRequest::getVar('JId');
 		if($JId=='')
@@ -152,7 +163,7 @@ class ADMIN_partner {
 			$rowUser->gid=18;
 		}
 
-		HTML_partner::editRootPartner( $rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option );
+		HTML_partner::editRootPartner( $rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option, $rowsProfile, $rowsPartnerProfile );
 	}
 
 	// Cr�ation d'enregistrement (id = 0)
@@ -212,8 +223,18 @@ class ADMIN_partner {
 				$rowUser->gid=18;
 			}
 		}
+		
+		//Get user root profiles to get availaible profiles
+		$database->setQuery( "SELECT profile_id as value, profile_translation as text FROM #__easysdi_community_profile WHERE profile_id IN(SELECT profile_id FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->root_id.")" );
+		$rowsProfile = $database->loadObjectList();
+		echo $database->getErrorMsg();
+		
+		//Get user profile
+		$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
+		$rowsPartnerProfile = $database->loadObjectList();
+		echo $database->getErrorMsg();
 
-		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option );
+		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile  );
 	}
 	
 	function removePartner( $cid, $option ) {
@@ -473,7 +494,6 @@ class ADMIN_partner {
 			{
 				$database->setQuery( "INSERT INTO #__easysdi_community_actor (role_id, partner_id, actor_update) VALUES (".$role_id.",".$rowPartner->partner_id.",now())" );
 				if (!$database->query()) {
-					//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listPartner" );
 					exit();
@@ -482,6 +502,49 @@ class ADMIN_partner {
 			}
 			}
 		}
+		
+		//Save profile selection
+		$database->setQuery( "DELETE FROM #__easysdi_community_partner_profile WHERE partner_id IN (".$rowPartner->partner_id.")");
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listPartner" );
+			exit();
+		}
+		$profile_id_list ="";
+		if(isset($_POST['profile_id']))
+		{
+			if (count ($_POST['profile_id'] )>0)
+			{
+				foreach( $_POST['profile_id'] as $profile_id )
+				{
+					$database->setQuery( "INSERT INTO #__easysdi_community_partner_profile (profile_id, partner_id) VALUES (".$profile_id.",".$rowPartner->partner_id.")" );
+					if (!$database->query()) 
+					{
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						$mainframe->redirect("index.php?option=$option&task=listPartner" );
+						exit();
+					}
+					$profile_id_list .= $profile_id;
+					$profile_id_list .= ",";
+				}
+			}
+		}
+		if($profile_id_list )
+		{
+			$profile_id_list = substr($profile_id_list, 0, strlen ($profile_id_list)-1 );
+		}
+		//Update affiliate user profile
+		$database->setQuery( "DELETE FROM #__easysdi_community_partner_profile 
+				   WHERE partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id=".$rowPartner->partner_id.") 
+				   AND 
+				   profile_id NOT IN (".$profile_id_list.")");
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listPartner" );
+			exit();
+		}
+		
+		//Set partner update date
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
 		$query .= " WHERE partner_id IN (".$rowPartner->partner_id.")";
 		$database->setQuery( $query );
