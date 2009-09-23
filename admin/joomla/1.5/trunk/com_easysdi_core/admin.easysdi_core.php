@@ -163,6 +163,44 @@ switch($task){
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
 		
+	case 'saveProfile' :
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.php');
+		$profile_id = JRequest::getVar('profile_id');
+		TOOLBAR_profile::_DEFAULT();
+		ADMIN_profile::saveProfile($profile_id, $option);
+		ADMIN_profile::listProfile($option);
+		break;
+	case 'cancelProfile' :
+	case 'listProfile':
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.php');
+		TOOLBAR_profile::_DEFAULT();
+		ADMIN_profile::listProfile($option);
+		break;
+	case 'newProfile' :		
+	case 'editProfile' :
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.php');
+		TOOLBAR_profile::_EDIT();
+		ADMIN_profile::editProfile($cid[0], $option);
+		break;
+	case 'deleteProfile' :
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'profile.admin.easysdi.php');
+		TOOLBAR_profile::_DEFAULT();
+		ADMIN_profile::deleteProfile($cid, $option);
+		ADMIN_profile::listProfile($option);
+		break;
+			
 }
 
 ?>

@@ -951,6 +951,44 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ( $version == "0.99")
+	{
+		//Create tables for user profile (role) managment
+		$query="CREATE TABLE IF NOT EXISTS `#__easysdi_community_profile` (
+					  `profile_id` bigint(20) NOT NULL auto_increment,
+					  `profile_code` varchar(20) NOT NULL,
+					  `profile_translation` varchar(50) NOT NULL,
+					  `profile_description` varchar(100) default NULL,
+					  `profile_update` datetime default NULL,
+					  PRIMARY KEY  (`profile_id`),
+					  UNIQUE KEY `profile_code` (`profile_code`)					  
+					)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="CREATE TABLE IF NOT EXISTS `#__easysdi_community_partner_profile` (
+					  `id` bigint(20) NOT NULL auto_increment,
+					  `user_id` int(11) NOT NULL,
+					  `profile_id` bigint(20)  NOT NULL,
+					  PRIMARY KEY  (`id`), 
+					  UNIQUE `user_profile_id` (`user_id`,`profile_id`)			  
+					)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$version="0.991";
+		$query="UPDATE #__easysdi_version SET version ='0.991' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 		/**
 		 * Menu creation
 		 */
