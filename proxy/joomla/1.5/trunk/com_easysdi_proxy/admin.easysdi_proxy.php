@@ -155,6 +155,9 @@ switch($task){
 	case 'helpAttributeFilter' :
 		HTML_proxy::helpAttributeFilter();
 		break;
+	case 'helpImageSize' :
+		HTML_proxy::helpImageSize();
+		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:

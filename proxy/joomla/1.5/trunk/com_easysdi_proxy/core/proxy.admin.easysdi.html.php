@@ -859,6 +859,17 @@ function submitbutton(pressbutton)
 	document.getElementById('userNameList').disabled=false;
 	document.getElementById('roleNameList').disabled=false;
 	
+	var server = 0;
+	while (document.getElementById('serverPrefixe'+server) != null)
+	{
+		if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
+		{
+			alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
+			return;
+		}
+		server ++;
+	}
+	
 	if(document.getElementById('minWidth') != null)//Just for WMS policy
 	{
 		if( (document.getElementById('minWidth').value != "" && document.getElementById('minHeight').value == "")
@@ -1212,7 +1223,13 @@ $remoteServerList = $config->{'remote-server-list'};
 
 function generateWMSHTML($config,$thePolicy){
 ?>
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?></legend>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?>
+	<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
+			<img class="helpTemplate" 
+				 src="../templates/easysdi/icons/silk/help.png" 
+				 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+				 />
+		</a></legend>
 		<table class="admintable">
 			
 			<tr>
@@ -1733,6 +1750,21 @@ function generateWMSHTML($config,$thePolicy){
 		</p>
 		<?php 
 	}
+	function helpImageSize ()
+	{
+		?>
+		<h2>
+		<?php echo JText::_(  'EASYSDI_HELP_IMAGE_SIZE_TITLE' ); ?>
+		</h2>
+		<h3>
+		<?php echo JText::_(  'EASYSDI_HELP_IMAGE_SIZE' ); ?>
+		</h3>
+		<p>
+		<?php echo JText::_(  'EASYSDI_HELP_IMAGE_SIZE_CONTENT' ); ?>
+		</p>
+		
+		<?php 
+	}
 	
 	function helpQueryTemplate ($filter_type)
 	{
@@ -1796,7 +1828,7 @@ function generateWMSHTML($config,$thePolicy){
 		
 	}
 	
-function helpQueryWMSTemplate ()
+	function helpQueryWMSTemplate ()
 	{
 		?>
 		<h2>
@@ -1824,5 +1856,7 @@ function helpQueryWMSTemplate ()
 			<?php
 		
 	}
+
+
 }
 ?>
