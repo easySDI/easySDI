@@ -1,7 +1,8 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +57,7 @@ class SITE_catalog {
 			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
 		}
 		
-		// Conditions pour la visibilité publique/privée de la métadonnée
+		// Conditions pour la visibilitï¿½ publique/privï¿½e de la mï¿½tadonnï¿½e
 		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 				
@@ -160,8 +161,8 @@ class SITE_catalog {
 			}
 			*/
 			
-			// Pour chaque requête qui récupère des id de métadonnées selon certains critères sur le produit, il faut tester que le produit est publié
-			// On rempli un tableau avec les métadonnées recherchable, on traverse les filtres et on ajoute ou retire du tableau les id nécessaires
+			// Pour chaque requï¿½te qui rï¿½cupï¿½re des id de mï¿½tadonnï¿½es selon certains critï¿½res sur le produit, il faut tester que le produit est publiï¿½
+			// On rempli un tableau avec les mï¿½tadonnï¿½es recherchable, on traverse les filtres et on ajoute ou retire du tableau les id nï¿½cessaires
 			//$searchableMetadata = array();
 			
 			
@@ -177,7 +178,7 @@ class SITE_catalog {
 			}
 			
 			$cswThemeFilter;
-			// Filtre sur la thématique (Critères de recherche avancés)
+			// Filtre sur la thï¿½matique (Critï¿½res de recherche avancï¿½s)
 			if($filter_theme)
 			{
 				//echo ", theme";
@@ -189,7 +190,7 @@ class SITE_catalog {
 				$empty = false;
 			}
 			
-			// Filtre sur l'id du fournisseur (Critères de recherche avancés)
+			// Filtre sur l'id du fournisseur (Critï¿½res de recherche avancï¿½s)
 			$arrFilterMd =array();
 			$arrPartnerMd;
 			if( $partner_id )
@@ -219,7 +220,7 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrPartnerMd;
 			
 			$arrCswVisibleMd;
-			// Filtre sur la visibilité du produit (Critères de recherche avancés)
+			// Filtre sur la visibilitï¿½ du produit (Critï¿½res de recherche avancï¿½s)
 			if($filter_visible )
 			{	
 				//echo ", prod visibily";
@@ -247,7 +248,7 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrCswVisibleMd;
 			
 			$arrCswOrderableFilterMd;
-			// Filtre sur la possibilité de commander le produit (Critères de recherche avancés)
+			// Filtre sur la possibilitï¿½ de commander le produit (Critï¿½res de recherche avancï¿½s)
 			if($filter_orderable)
 			{
 				//echo ", orderable";
@@ -325,8 +326,8 @@ class SITE_catalog {
 			*/
 			
 			
-			// Filtre minimum: Produits publiés
-			// Si aucun filtre n'a renvoyé de résultat ou si aucun filtre n'a été demandé.
+			// Filtre minimum: Produits publiï¿½s
+			// Si aucun filtre n'a renvoyï¿½ de rï¿½sultat ou si aucun filtre n'a ï¿½tï¿½ demandï¿½.
 			$arrCswMinMd;
 			if( !is_Array($arrPartnerMd) and !is_Array($arrCswDateFilter) and !is_Array($arrCswVisibleMd) and !is_Array($arrCswOrderableFilterMd))
 			{
@@ -371,7 +372,7 @@ class SITE_catalog {
 			if($arrCswMinMd != null)
 				$arrFilterMd[] = $arrCswMinMd;
 			
-			// Filtre sur le texte (Critères de recherche simple)
+			// Filtre sur le texte (Critï¿½res de recherche simple)
 			$cswSimpleTextFilter;
 			if ($simple_filterfreetextcriteria || $empty)		
 			{		
@@ -473,7 +474,7 @@ class SITE_catalog {
                 	
 				$pageNav = new JPagination($total,$limitstart,$limit);
 				
-				// Séparation en n éléments par page
+				// Sï¿½paration en n ï¿½lï¿½ments par page
 				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "", "");
 				
 				//Get the result from the server
