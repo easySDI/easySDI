@@ -36,6 +36,7 @@ class HTML_profile
 				<th width="20" class='title'><?php echo JText::_("EASYSDI_PROFILE_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PROFILE_DESCRIPTION"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_PROFILE_CODE"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_PROFILE_TRANSLATION"); ?></th>
 			</tr>
 		</thead>
@@ -50,7 +51,8 @@ class HTML_profile
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->profile_id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editProfile')"><?php echo $row->profile_description; ?></a></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editProfile')"><?php echo $row->profile_translation; ?></a></td>
+				<td><?php echo $row->profile_code; ?></td>
+				<td><?php echo $row->profile_translation; ?></td>
 			</tr>
 <?php
 			$k = 1 - $k;

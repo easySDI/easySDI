@@ -103,7 +103,7 @@ class ADMIN_profile
 			$mainframe->redirect("index.php?option=$option&task=listProfile" );
 			exit();
 		}		
-				
+		$profile->profile_code = str_replace(" ","",$profile->profile_code);		
 		if (!$profile->store(false)) 
 		{			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
