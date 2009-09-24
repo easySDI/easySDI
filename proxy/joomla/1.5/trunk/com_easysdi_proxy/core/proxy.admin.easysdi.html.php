@@ -1324,15 +1324,28 @@ function generateWMSHTML($config,$thePolicy){
 				?>
 	<tr>
 		<td class="key" >
-		<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>
-		<input
-			onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
-			<?php if( HTML_proxy ::isLayerChecked($theServer,$layer)) echo 'checked';?>
-			type="checkbox"
-			id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			value="<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>">
-			</td>
+			<table width ="100%" height="100%" >
+				<tr valign="top" >
+					<td width="15">
+						<input
+						onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
+						<?php if( HTML_proxy ::isLayerChecked($theServer,$layer)) echo 'checked';?>
+						type="checkbox"
+						id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+						name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+						value="<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>">
+					</td>
+					<td align="left">
+					 <?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>
+					</td>			
+				</tr>
+				<tr >
+					<td colspan="2" align="left">
+					"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1);}else{echo $layer->Title;}?>"
+					</td>
+				</tr>
+			</table>		
+		</td>
 		<td align = "center"><input 
 		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
@@ -1551,17 +1564,29 @@ function generateWMSHTML($config,$thePolicy){
 	   	 	 	
 	 ?>	 
 	<tr>
-		
 		<td class="key" >
-			<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>
-			<input  align="left"
-			onClick="activateFeatureType('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
-			<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
-			type="checkbox"
-			id="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
-			</td>
+			<table width ="100%" height="100%" >
+				<tr valign="top" >
+					<td width="15">
+						<input  align="left"
+							onClick="activateFeatureType('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
+							<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
+							type="checkbox"
+							id="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+							name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
+							value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
+					</td>
+					<td align="left">
+					 <?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>
+					</td>			
+				</tr>
+				<tr >
+					<td colspan="2" align="left">
+					"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
+					</td>
+				</tr>
+			</table>		
+		</td>
 		<td  align="center">
 			<table>
 				<tr>
@@ -1625,6 +1650,7 @@ function generateWMSHTML($config,$thePolicy){
 		}
 
 	}
+	
 	function showConfigList($xml){
 		global $mainframe;
 		JToolBarHelper::title( JText::_(  'EASYSDI_SHOW CONFIGURATIONS LIST' ), 'generic.png' );
@@ -1723,6 +1749,7 @@ function generateWMSHTML($config,$thePolicy){
 		</p>
 		<?php 
 	}
+	
 	function helpImageSize ()
 	{
 		?>
