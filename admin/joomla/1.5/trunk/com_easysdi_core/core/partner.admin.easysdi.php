@@ -533,17 +533,18 @@ class ADMIN_partner {
 		if($profile_id_list )
 		{
 			$profile_id_list = substr($profile_id_list, 0, strlen ($profile_id_list)-1 );
+			//Update affiliate user profile
+			$database->setQuery( "DELETE FROM #__easysdi_community_partner_profile 
+					   WHERE partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id=".$rowPartner->partner_id.") 
+					   AND 
+					   profile_id NOT IN (".$profile_id_list.")");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listPartner" );
+				exit();
+			}
 		}
-		//Update affiliate user profile
-		$database->setQuery( "DELETE FROM #__easysdi_community_partner_profile 
-				   WHERE partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id=".$rowPartner->partner_id.") 
-				   AND 
-				   profile_id NOT IN (".$profile_id_list.")");
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPartner" );
-			exit();
-		}
+		
 		
 		//Set partner update date
 		$query = "UPDATE #__easysdi_community_partner SET partner_update=now()";
