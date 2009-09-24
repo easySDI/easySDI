@@ -1686,7 +1686,8 @@ function generateWMSHTML($config,$thePolicy){
 			<th width="2%" class='title'><?php echo JText::_( 'EASYSDI_NUM' ); ?></th>
 			<th width="2%" class='title'></th>
 			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
-
+			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_TYPE'); ?></b></th>
+			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_URL'); ?></b></th>
 
 		</tr>
 	</thead>
@@ -1705,7 +1706,31 @@ function generateWMSHTML($config,$thePolicy){
 			<td><input
 			<?php if (strlen($id)>0){if (strcmp($id,$config['id'])==0){echo 'checked';}} ?>
 				type="radio" name="configId" value="<?php echo $config['id'] ?>"></td>
-			<td><b><?php echo $config['id']?></b> <?php echo "{", $config->{'servlet-class'},"}";  ?></td>
+			<td><b><?php echo $config['id']?></b> </td>
+			<td><?php 
+			if($config->{'servlet-class'} == "ch.depth.proxy.wms.WMSProxyServlet")
+			{
+				echo "<b>".WMS."  </b>";
+			}
+			else if($config->{'servlet-class'} == "ch.depth.proxy.csw.CSWProxyServlet")
+			{
+				echo "<b>".CSW."  </b>";  
+			}
+			else if($config->{'servlet-class'} == "ch.depth.proxy.wfs.SimpleWFSProxyServlet")
+			{
+				echo "<b>".WFS."  </b>";
+			}
+			else if($config->{'servlet-class'} == "ch.depth.proxy.wfs.WFSProxyServlet")
+			{
+				echo "<b>".WFS."  </b>";
+			}
+			else if($config->{'servlet-class'} == "ch.depth.proxy.cgp.GGPProxyServlet")
+			{
+				echo "<b>".CGP."  </b>";
+			}
+			echo  "{".$config->{'servlet-class'}."}";  ?>
+			</td>
+			<td><?php	echo $config->{'host-translator'};?></td>
 		</tr>
 		
 
