@@ -719,7 +719,7 @@ function saveConfig($xml,$configFilePath){
 				$remoteServer->user=$user;
 				$remoteServer->url=$url;
 				$remoteServer->password=$pwd;
-				if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){
 				
 				$remoteServer->{'max-records'}=JRequest::getVar("max-records_".$i,"-1");
 				$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");

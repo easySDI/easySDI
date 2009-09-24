@@ -339,7 +339,7 @@ echo $pane->endPanel();
 		?>
 <script>
 function changeValues(){
-if(document.getElementById('servletClass').value == 'ch.depth.proxy.csw.CSWProxyServlet'){
+if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet'){
 document.getElementById('specificGeonetowrk').style.display="block";
 }else{
 document.getElementById('specificGeonetowrk').style.display="none";
@@ -386,25 +386,25 @@ if (pressbutton=="addNewServer"){
 	<tr>
 		<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
 			<option
-			<?php if (strcmp($servletClass,"ch.depth.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>
-				value="ch.depth.proxy.wfs.SimpleWFSProxyServlet">
-			ch.depth.proxy.wfs.SimpleWFSProxyServlet</option>
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>
+				value="org.easysdi.proxy.wfs.SimpleWFSProxyServlet">
+			org.easysdi.proxy.wfs.SimpleWFSProxyServlet</option>
 			<option
-			<?php if (strcmp($servletClass,"ch.depth.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
-				value="ch.depth.proxy.wfs.WFSProxyServlet">
-			ch.depth.proxy.wfs.WFSProxyServlet</option>
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
+				value="org.easysdi.proxy.wfs.WFSProxyServlet">
+			org.easysdi.proxy.wfs.WFSProxyServlet</option>
 			<option
-			<?php if (strcmp($servletClass,"ch.depth.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
-				value="ch.depth.proxy.wms.WMSProxyServlet">
-			ch.depth.proxy.wms.WMSProxyServlet</option>
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
+				value="org.easysdi.proxy.wms.WMSProxyServlet">
+			org.easysdi.proxy.wms.WMSProxyServlet</option>
 			<option
-			<?php if (strcmp($servletClass,"ch.depth.proxy.cgp.CGPProxyServlet")==0 ){echo "selected";}?>
-				value="ch.depth.proxy.cgp.CGPProxyServlet">
-			ch.depth.proxy.cgp.CGPProxyServlet</option>
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.cgp.CGPProxyServlet")==0 ){echo "selected";}?>
+				value="org.easysdi.proxy.cgp.CGPProxyServlet">
+			org.easysdi.proxy.cgp.CGPProxyServlet</option>
 			<option
-			<?php if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){echo "selected";}?>
-				value="ch.depth.proxy.csw.CSWProxyServlet">
-			ch.depth.proxy.csw.CSWProxyServlet</option>
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "selected";}?>
+				value="org.easysdi.proxy.csw.CSWProxyServlet">
+			org.easysdi.proxy.csw.CSWProxyServlet</option>
 		</select></td>
 	</tr>
 </table>
@@ -442,7 +442,7 @@ if (pressbutton=="addNewServer"){
 			</tr>
 			<tr>						
 			<td colspan="3">
-			<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
+			<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
 			<table>	
 			<tr>									
 			<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
@@ -1101,13 +1101,13 @@ function activateLayer(server,layerName){
 </table>
 </fieldset>
 
-			<?php if (strcmp($servletClass,"ch.depth.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"ch.depth.proxy.wfs.WFSProxyServlet")==0){
+			<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
 				HTML_proxy::generateWFSHTML($config,$thePolicy);
 			}
-			?> <?php if (strcmp($servletClass,"ch.depth.proxy.wms.WMSProxyServlet")==0 ){
+			?> <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
 				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 				
-				if (strcmp($servletClass,"ch.depth.proxy.csw.CSWProxyServlet")==0 ){					
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
 				HTML_proxy::generateCSWHTML($config,$thePolicy);  
 				}
 				
@@ -1708,23 +1708,23 @@ function generateWMSHTML($config,$thePolicy){
 				type="radio" name="configId" value="<?php echo $config['id'] ?>"></td>
 			<td><b><?php echo $config['id']?></b> </td>
 			<td><?php 
-			if($config->{'servlet-class'} == "ch.depth.proxy.wms.WMSProxyServlet")
+			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 			{
 				echo "<b>".WMS."  </b>";
 			}
-			else if($config->{'servlet-class'} == "ch.depth.proxy.csw.CSWProxyServlet")
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
 			{
 				echo "<b>".CSW."  </b>";  
 			}
-			else if($config->{'servlet-class'} == "ch.depth.proxy.wfs.SimpleWFSProxyServlet")
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.SimpleWFSProxyServlet")
 			{
 				echo "<b>".WFS."  </b>";
 			}
-			else if($config->{'servlet-class'} == "ch.depth.proxy.wfs.WFSProxyServlet")
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
 			{
 				echo "<b>".WFS."  </b>";
 			}
-			else if($config->{'servlet-class'} == "ch.depth.proxy.cgp.GGPProxyServlet")
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.cgp.GGPProxyServlet")
 			{
 				echo "<b>".CGP."  </b>";
 			}
