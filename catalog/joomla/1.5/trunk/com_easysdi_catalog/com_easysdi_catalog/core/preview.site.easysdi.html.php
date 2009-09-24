@@ -2,7 +2,7 @@
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community 
- * For more information : www.easysdi.orghey, easysdi@depth.ch 
+ * For more information : www.easysdi.org 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
