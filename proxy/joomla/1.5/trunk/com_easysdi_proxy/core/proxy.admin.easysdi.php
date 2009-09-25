@@ -25,7 +25,7 @@ class ADMIN_proxy
 		$database =& JFactory::getDBO(); 
 		
 		//Get  profiles
-		$database->setQuery( "SELECT profile_code as value, profile_description as text FROM #__easysdi_community_profile ORDER BY text" );
+		$database->setQuery( "SELECT profile_code as value, profile_translation as text FROM #__easysdi_community_profile ORDER BY text" );
 		$rowsProfile = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		

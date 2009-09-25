@@ -295,6 +295,14 @@ echo $pane->endPanel();
 
 	}
 
+	function alter_array_value_with_Jtext(&$rows)
+	{		
+		if (count($rows)>0){
+		  foreach($rows as $key => $row) {		  	
+       		$rows[$key]->text = JText::_($rows[$key]->text);
+  		}			    
+		}
+	}
 	function editconfig($xml,$new = false){
 			
 		$option = JRequest::getVar('option');
@@ -849,46 +857,53 @@ var geoQueryValid = new Array();
 
 function submitbutton(pressbutton)
 {
-	var server = 0;
-	while (document.getElementById('serverPrefixe'+server) != null)
+	if(pressbutton=='cancelPolicy')
 	{
-		if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
-		{
-			alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
-			return;
-		}
-		server ++;
-	}
-	
-	if(document.getElementById('maxHeight') != null)//Just for WMS policy
-	{
-		if( (document.getElementById('minWidth').value != "" && document.getElementById('minHeight').value == "")
-		  ||(document.getElementById('minWidth').value == "" && document.getElementById('minHeight').value != "")
-		  ||(document.getElementById('maxWidth').value != "" && document.getElementById('maxHeight').value == "")
-		  ||(document.getElementById('maxWidth').value == "" && document.getElementById('maxHeight').value != "")
-		)
-		{
-			alert ('<?php echo  JText::_( 'EASYSDI_IMAGE_SIZE_VALIDATION_ERROR');?>');		
-		}
-		else
-		{
-			submitform(pressbutton);
-		}
-	}
-	else if (document.getElementById('remoteServer0') != null) //Just for WFS policy
-	{
-		if(geoQueryValid.length != 0)
-		{
-			alert ('<?php echo  JText::_( 'EASYSDI_QUERY_VALIDATION_ERROR');?>');
-		}
-		else
-		{
-			submitform(pressbutton);
-		}
+		submitform(pressbutton);	
 	}
 	else
 	{
-		submitform(pressbutton);
+		var server = 0;
+		while (document.getElementById('serverPrefixe'+server) != null)
+		{
+			if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
+			{
+				alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
+				return;
+			}
+			server ++;
+		}
+		
+		if(document.getElementById('maxHeight') != null)//Just for WMS policy
+		{
+			if( (document.getElementById('minWidth').value != "" && document.getElementById('minHeight').value == "")
+			  ||(document.getElementById('minWidth').value == "" && document.getElementById('minHeight').value != "")
+			  ||(document.getElementById('maxWidth').value != "" && document.getElementById('maxHeight').value == "")
+			  ||(document.getElementById('maxWidth').value == "" && document.getElementById('maxHeight').value != "")
+			)
+			{
+				alert ('<?php echo  JText::_( 'EASYSDI_IMAGE_SIZE_VALIDATION_ERROR');?>');		
+			}
+			else
+			{
+				submitform(pressbutton);
+			}
+		}
+		else if (document.getElementById('remoteServer0') != null) //Just for WFS policy
+		{
+			if(geoQueryValid.length != 0)
+			{
+				alert ('<?php echo  JText::_( 'EASYSDI_QUERY_VALIDATION_ERROR');?>');
+			}
+			else
+			{
+				submitform(pressbutton);
+			}
+		}
+		else
+		{
+			submitform(pressbutton);
+		}
 	}
 }
 
@@ -1070,6 +1085,7 @@ function activateLayer(server,layerName){
 			{
 				$disabled = "disabled ";
 			}
+			HTML_proxy::alter_array_value_with_Jtext($rowsProfile);
 ?>
 	<td><?php echo JHTML::_("select.genericlist",$rowsUser, 'userNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userSelected ); ?></td>
 	<td></td>
