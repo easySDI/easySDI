@@ -724,13 +724,13 @@ function addNewServer(){
 					
 				if (count($policy->Subjects->Role)>0){
 					foreach ($policy->Subjects->Role as $role){
-						echo $role.",";
+						echo  JText::_( $role).",";
 					}
 				}
 					
 				if (count($policy->Subjects->User)>0){
 					foreach ($policy->Subjects->User as $user){
-						echo $user.",";
+						echo  JText::_( $user).",";
 					}
 
 				}
