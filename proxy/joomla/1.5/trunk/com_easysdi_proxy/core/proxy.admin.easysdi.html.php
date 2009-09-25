@@ -1377,7 +1377,7 @@ function generateWMSHTML($config,$thePolicy){
 			value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
 		<td><textarea
 		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
-			rows="3" cols="70"
+			rows="3" cols="60"
 			id="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 	</tr>
@@ -1631,7 +1631,7 @@ function generateWMSHTML($config,$thePolicy){
 					
 		</td> 
 		<td>
-		   <textarea rows="4" cols="57"  
+		   <textarea rows="4" cols="50"  
 		   onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
@@ -1640,7 +1640,7 @@ function generateWMSHTML($config,$thePolicy){
 			if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea>
 		</td>
 		<td>
-		 	<textarea rows="4" cols="57" 
+		 	<textarea rows="4" cols="50" 
 		 	onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
 			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
 			id="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
