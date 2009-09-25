@@ -860,7 +860,7 @@ function submitbutton(pressbutton)
 		server ++;
 	}
 	
-	if(document.getElementById('minWidth') != null)//Just for WMS policy
+	if(document.getElementById('maxHeight') != null)//Just for WMS policy
 	{
 		if( (document.getElementById('minWidth').value != "" && document.getElementById('minHeight').value == "")
 		  ||(document.getElementById('minWidth').value == "" && document.getElementById('minHeight').value != "")
