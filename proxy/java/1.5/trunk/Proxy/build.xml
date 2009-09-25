@@ -6,8 +6,8 @@
   <property name="projet.work.dir" value="work"/>
   <property name="projet.out.dir" value="out"/>
   <property name="projet.lib.dir" value="lib"/>
-  <property name="projet.tomcat.lib.dir" value="C:\Program Files\Apache Software Foundation\Tomcat 5.5\common\lib"/>
-  <property name="projet.gt2-2.4.1.lib.dir" value="D:\DEPTH\Projets\projets\eclipse\workspace\gt2-2.4.1\"/>
+  <property name="projet.tomcat.lib.dir" value="C:\Program Files\Apache Software Foundation\Tomcat 6.0\lib"/>
+  <property name="projet.gt2-2.4.1.lib.dir" value="C:\Documents and Settings\tbussien\workspace\proxy_java\"/>
 	
    <path id="projet.classpath">
 	    <fileset dir="${projet.lib.dir}">
@@ -46,7 +46,7 @@
 
 	 <target name="Sync-jar">    
 			<echo>Copy the resources into the working directory</echo>
-	  		<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/proxy/WEB-INF/lib" >
+	  		<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 6.0/webapps/proxy/WEB-INF/lib" >
 	  	      <fileset dir="${projet.work.dir}/WEB-INF/lib" >
 	  	        <include name="easysdi.jar"/>
 	  	        
