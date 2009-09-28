@@ -47,7 +47,7 @@
 					&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129 107,129&lt;/gml:coordinates&gt;&#13;
                 &lt;/gml:LinearRing&gt;&#13;
             &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server></Servers><Subjects All="false"><Role>Super Administrator</Role></Subjects><Operations All="true"/><ImageSize><Minimum><Width>256</Width><Height>256</Height></Minimum><Maximum><Width>1024</Width><Height>1024</Height></Maximum></ImageSize><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
+        &lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server></Servers><Subjects All="true"></Subjects><Operations All="true"/><ImageSize><Minimum><Width>256</Width><Height>256</Height></Minimum><Maximum><Width>1024</Width><Height>1024</Height></Maximum></ImageSize><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
     </Policy>
 	<Policy Id="rwgis wfs" ConfigId="rwgis"><Servers All="false">
 		<Server><url>http://localhost:8080/geoserver/wfs</url><Prefix>eai</Prefix><Namespace>http://www.easysdi.org/eai</Namespace><Metadata All="true"><Attributes All="true"/></Metadata><FeatureTypes All="false"><FeatureType><Attributes All="true"></Attributes><Name>states</Name><RemoteFilter>&lt;Filter&#13;
@@ -78,7 +78,7 @@
 					&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129 107,129&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
 			&lt;/gml:outerBoundaryIs&gt;&#13;
 		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType><FeatureType><Attributes All="true"></Attributes><Name>gis_cache_taxon</Name><RemoteFilter></RemoteFilter><LocalFilter></LocalFilter></FeatureType></FeatureTypes></Server>
-		</Servers><Subjects All="false"><User>admin</User></Subjects><Operations All="true"/><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
+		</Servers><Subjects All="false"><User>admin</User><Role>Administrator</Role></Subjects><Operations All="true"/><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
 	</Policy>
 	<Policy Id="new simple Policy" ConfigId="rwgissimple"><Servers All="false"><Server><url>http://localhost:8080/geoserver/wfs</url><Metadata All="true"><Attributes All="true"/></Metadata><FeatureTypes All="false"><FeatureType><Attributes All="true"/><Name>states</Name><RemoteFilter>&lt;Filter&#13;
 			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;&lt;/PropertyName&gt;&lt;Box&#13;
