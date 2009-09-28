@@ -1,0 +1,47 @@
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+
+
+	<bean id="authenticationManager" class="org.springframework.security.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="joomlaProvider" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="joomlaProvider" class="org.easysdi.security.JoomlaProvider">
+		<security:custom-authentication-provider />
+		<property name="prefix">
+			<value>esdi_</value>
+		</property>
+	</bean>
+
+	<security:http auto-config="false" access-decision-manager-ref="accessDecisionManager">
+		<security:intercept-url pattern="/**" access="proxy_user"/>
+		<security:http-basic />
+	</security:http>
+
+	<bean id="accessDecisionManager" class="org.springframework.security.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<ref bean="roleVoter" />
+				<ref bean="authenticatedVoter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="roleVoter" class="org.springframework.security.vote.RoleVoter">
+		<property name="rolePrefix" value="" />
+	</bean>
+
+	<bean id="authenticatedVoter" class="org.springframework.security.vote.AuthenticatedVoter">
+	</bean>
+	
+</beans>

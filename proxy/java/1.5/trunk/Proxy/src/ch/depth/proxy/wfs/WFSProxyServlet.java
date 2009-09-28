@@ -1947,12 +1947,17 @@ public class WFSProxyServlet extends ProxyServlet {
 								    hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 	
 								    GMLFeatureCollection  doc =null; //Réutilise le résultat TempFile
-								    if (user!=null && user.length()>0)
-										{
-										doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
-										}
-									else
-										doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+// Debug tb 28.09.2009								    
+//								    if (user!=null && user.length()>0)
+//										{
+//										doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
+//										}
+//									else
+								    //Utilisation de la classe Java "Authenticator" qui ajoute l'authentication, selon les besoins, à la classe java "URLConnection".
+								    //Pour des raisons de vérification de schema xsd (requete DescribeFeatureType), la classe "DocumentFactory" nécessite l'authentication au cas où geoserver défini un compte de service.
+								    org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
+//Fin de Debug
+									doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
 								    
 								    // Création du fichier résultat de la proachaine transformation
 								    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");

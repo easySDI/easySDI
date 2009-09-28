@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurations>
+	<config id="rwgiswms">
+		<authorization>
+			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+		</authorization>
+		<servlet-class>ch.depth.proxy.wms.WMSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>C:\RecorderWebGIS\PROXY_log</path>
+				<suffix>wms</suffix>
+				<prefix>_easi</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+		</log-config>
+		<host-translator/>
+		<remote-server-list>
+			<remote-server>
+				<user>proxy</user>
+				<url>http://localhost:8080/geoserver/wms</url>
+				<prefix>tiger</prefix>
+				<password>geoserver</password>
+			</remote-server>
+	<!--		
+			<remote-server>
+				<user/>
+				<url>http://vpc-rwgis-e:8080/geoserver/wms</url>
+				<prefix>tiger</prefix>
+				<password/>
+			</remote-server>
+	-->
+		</remote-server-list>
+	</config>
+	<config id="rwgis">
+		<authorization>
+			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+		</authorization>
+		<servlet-class>ch.depth.proxy.wfs.WFSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>C:\RecorderWebGIS\PROXY_log</path>
+				<suffix>wfs</suffix>
+				<prefix>easi_</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+		</log-config><host-translator/>
+		<remote-server-list>
+				<remote-server>
+				<user>proxy</user>
+				<url>http://localhost:8080/geoserver/wfs</url>
+				<prefix>eai</prefix>
+				<password>geoserver</password>
+			</remote-server>
+		</remote-server-list>
+	</config>
+	<config id="rwgissimple">
+		<authorization>
+			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+		</authorization>
+		<servlet-class>ch.depth.proxy.wfs.SimpleWFSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>C:\RecorderWebGIS\PROXY_log</path>
+				<suffix>simple_wfs</suffix>
+				<prefix>easi_</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<host-translator></host-translator>
+		<remote-server-list>
+			<remote-server>
+				<user></user>
+				<url>http://localhost:8080/geoserver/wfs</url>
+				<password></password>
+			</remote-server>
+		</remote-server-list>
+	</config>
+</configurations>

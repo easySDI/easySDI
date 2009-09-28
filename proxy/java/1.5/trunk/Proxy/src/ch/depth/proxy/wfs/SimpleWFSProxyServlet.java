@@ -962,10 +962,15 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 
 				    
 				GMLFeatureCollection  doc =null;
-				if (user!=null && user.length()>0){
-					    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
-					}else
-					    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+// Debug tb 28.09.2009		
+//				if (user!=null && user.length()>0){
+//					    doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING,user,password);
+//					}else
+			    //Utilisation de la classe Java "Authenticator" qui ajoute l'authentication, selon les besoins, à la classe java "URLConnection".
+			    //Pour des raisons de vérification de schema xsd (requete DescribeFeatureType), la classe "DocumentFactory" nécessite l'authentication au cas où geoserver défini un compte de service.
+				org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
+//Fin de Debug
+				doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
 
 				//If remote filter equals local filter or local filter is empty
 				//Do not apply the filter

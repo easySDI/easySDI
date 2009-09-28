@@ -55,7 +55,10 @@ public class OgcProxyServlet extends HttpServlet {
     public String configFile; 
     public static HashMap executionCount = new HashMap();
 
-    public void init(ServletConfig config) throws ServletException {		
+    public void init(ServletConfig config) throws ServletException {
+//Debug tb 28.09.2009
+    	super.init(config);
+//Fin de Debug
 	configFile = config.getInitParameter("configFile");
 	  System.setProperty("org.geotools.referencing.forceXY", "true");
     }
@@ -231,7 +234,9 @@ public class OgcProxyServlet extends HttpServlet {
 	{	    
 	    XMLReader xr = XMLReaderFactory.createXMLReader();
 	    ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
-	    InputStream is = new java.io.FileInputStream(new File(configFile));
+//Debug tb 28.09.2009
+	    InputStream is = new java.io.FileInputStream(getServletContext().getRealPath(configFile));
+//Fin de Debug
 	    xr.setContentHandler(confHandler);
 	    xr.parse(new InputSource(is));
 	    configuration = confHandler.getConfig();
