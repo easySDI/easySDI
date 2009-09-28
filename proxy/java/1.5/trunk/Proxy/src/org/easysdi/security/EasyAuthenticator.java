@@ -3,8 +3,6 @@ package org.easysdi.security;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
-import org.springframework.stereotype.Service;
-
 public class EasyAuthenticator extends Authenticator {
 
     private String login;

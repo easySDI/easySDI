@@ -249,8 +249,10 @@ public class OgcProxyServlet extends HttpServlet {
 	    ps.setConfiguration(configuration);
 
 	    JAXBContext jc = JAXBContext.newInstance(ch.depth.proxy.policy.PolicySet.class);
-	    Unmarshaller u = jc.createUnmarshaller();	    
-	    PolicySet policySet = (PolicySet)u.unmarshal(new FileInputStream(configuration.getPolicyFile()));
+	    Unmarshaller u = jc.createUnmarshaller();	  
+//Debug tb 28.09.2009
+	    PolicySet policySet = (PolicySet)u.unmarshal(new FileInputStream(getServletContext().getRealPath(configuration.getPolicyFile())));
+//Fin de Debug
 	    PolicyHelpers ph = new PolicyHelpers(policySet,servletName);
 	    String user = null;
 	    if (req.getUserPrincipal() !=null) user =req.getUserPrincipal().getName(); 

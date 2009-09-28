@@ -803,7 +803,15 @@ public abstract class ProxyServlet extends HttpServlet {
 	Iterator<RemoteServerInfo> it =  serverInfoList.iterator();
 	while( it.hasNext()){
 	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr)) return serverInfo.getPassword();
+	    if (serverInfo.getUrl().equals(urlstr)) 
+	    {
+//Debug tb 28.09.2009
+		    //Utilisation de la classe Java "Authenticator" qui ajoute l'authentication, selon les besoins, à la classe java "URLConnection".
+		    //Pour des raisons de vérification de schema xsd (requete DescribeFeatureType), la classe "DocumentFactory" nécessite l'authentication au cas où geoserver défini un compte de service.
+	    	org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
+//Fin de debug
+	    	return serverInfo.getPassword();
+	    }
 	}
 
 	return null;

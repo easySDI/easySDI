@@ -50,6 +50,7 @@
 				<exclude name="**/jetty*"/>
 				<exclude name="**/servlet-api-6.0.18.jar"/>
 				<exclude name="**/jsp-api-6.0.18.jar"/>
+				<exclude name="**/rt.jar"/>
 			</fileset>
 		</copy>
 

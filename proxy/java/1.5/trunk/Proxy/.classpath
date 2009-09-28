@@ -66,9 +66,6 @@
 	<classpathentry kind="lib" path="lib/jai_core.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-impl.jar"/>
-	<classpathentry kind="lib" path="lib/jaxb-xjc.jar"/>
-	<classpathentry kind="lib" path="lib/jaxb.jar"/>
-	<classpathentry kind="lib" path="lib/jaxb1-impl.jar"/>
 	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jsr108-0.01.jar"/>
 	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>

@@ -27,10 +27,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +41,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.zip.GZIPOutputStream;
 
 import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
@@ -56,16 +53,11 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.geotools.data.DataSourceException;
 import org.geotools.data.ows.FeatureSetDescription;
-import org.geotools.feature.AttributeType;
-import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.FeatureType;
-import org.geotools.feature.IllegalAttributeException;
-import org.geotools.feature.visitor.FeatureVisitor;
 import org.geotools.filter.Filter;
 import org.geotools.filter.FilterDOMParser;
 import org.geotools.gml.producer.FeatureTransformer;
@@ -90,15 +82,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.sun.msv.driver.textui.Debug;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-
 import ch.depth.proxy.core.ProxyServlet;
 import ch.depth.proxy.policy.Operation;
 import ch.depth.xml.handler.RequestHandler;
 import ch.depth.xml.resolver.ResourceResolver;
+
+import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 /**
  * @author rmi
@@ -968,7 +957,8 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 //					}else
 			    //Utilisation de la classe Java "Authenticator" qui ajoute l'authentication, selon les besoins, à la classe java "URLConnection".
 			    //Pour des raisons de vérification de schema xsd (requete DescribeFeatureType), la classe "DocumentFactory" nécessite l'authentication au cas où geoserver défini un compte de service.
-				org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
+				//Voir ProxyServlet.getPassword
+				//org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
 //Fin de Debug
 				doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
 
