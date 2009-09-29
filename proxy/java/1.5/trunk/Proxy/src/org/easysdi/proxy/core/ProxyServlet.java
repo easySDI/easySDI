@@ -18,6 +18,7 @@ package org.easysdi.proxy.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,13 +27,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -41,12 +42,17 @@ import java.util.UUID;
 import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
+import javax.naming.NoPermissionException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.AvailabilityPeriod;
 import org.easysdi.proxy.policy.FeatureType;
@@ -611,6 +617,27 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
 
+    protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
+
+    	try{
+    		HttpClient client = new HttpClient();
+    		
+    		PostMethod post = new PostMethod(urlstr);
+    		post.addRequestHeader("Content-Type","application/xml");
+    		post.addRequestHeader("Charset","UTF-8");
+    		post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
+    		
+    		GetMethod loginGet = new GetMethod(loginServiceUrl);
+    		client.executeMethod(loginGet);
+    		client.executeMethod(post);
+    		StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
+    	    
+    	    return response;    
+    	}catch(Exception e){
+    	    e.printStackTrace();
+    	}   
+    	return new StringBuffer();
+        }
 
     protected StringBuffer send( String urlstr, String loginServiceUrl) {
 	try {
