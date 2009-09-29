@@ -57,6 +57,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.policy.Attribute;
@@ -1177,8 +1180,33 @@ public class WFSProxyServlet extends ProxyServlet {
 //Debug tb 05.06.2009
 							// Edit l'attribut typeName de <wfs:Query typeName="tmpFT"> avec tmpFT
 							//nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT); // Non nécessaire de réécrire ce qui est déjà présent
-						    NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "PropertyName");
+						    NodeList antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
+//Debug tb 29.09.2009
+						    // Pour établir la liste des noeuds PropertyName directement sous Query tiré de la requête user
+						    for (int k=0;k<antltemp.getLength();k++)
+						    	{
+						    	Node node = (Node)antltemp.item(k);
+						    	if(!"Query".equals(node.getParentNode().getLocalName()))
+						    		{
+						    		documentMaster.renameNode(node, "http://www.opengis.net/ogc", "MyFilterPropertyName");
+						    		}
+						    	}
+						    NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
 						    
+//						    XPathFactory factory = XPathFactory.newInstance();
+//						    XPath xPath = factory.newXPath();
+//						    NodeList shows = (NodeList) xPath.evaluate("GetFeature/Query/PropertyName", documentMaster, XPathConstants.NODESET);
+//						    Integer nbn = shows.getLength();
+//						    shows.item(0).getTextContent();
+//						    for (int k=0;k<atnl.getLength();k++)
+//						    	{
+//						    	Node node = atnl.item(k);
+//						    	if(!"Query".equals(node.getParentNode().getLocalName()))
+//						    		{
+//						    		node.getParentNode().removeChild(node);
+//						    		}
+//						    	}
+//Fin de Debug
 
 						    // Au cas: PropertyNames dans req utilisateur, et restriction dans Policy Attributes
 						    //A') Recherche des attibuts autorisés pour le FeatureType courant
@@ -1233,7 +1261,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						    	{
 						    	for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
 						    		{
-						    		Element docElem = documentMaster.createElement("wfs:PropertyName");
+						    		Element docElem = documentMaster.createElement("ogc:PropertyName");
 						    		docElem.setTextContent(policyServerPrefix+":"+attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k));
 						    		nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
 						    		if(geomAttribut.equalsIgnoreCase(attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k)))
@@ -1281,10 +1309,22 @@ public class WFSProxyServlet extends ProxyServlet {
 					      			WFSProxyGeomAttributesList.add(geomAttributesObj);
 					      			
 					      			// Ajoute l'attribut géométrique à la requête utilisateur
-					    			Element docElem = documentMaster.createElement("wfs:PropertyName");
+					    			Element docElem = documentMaster.createElement("ogc:PropertyName");
 					    			docElem.setTextContent(policyServerPrefix+":"+geomAttribut);
 					    			nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
 					    			}
+						    	}
+//Fin de Debug
+//Debug tb 29.09.2009
+						    // Pour rétablir la liste des noeuds PropertyName de la requête user
+						    antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "MyFilterPropertyName");
+						    for (int k=0;k<antltemp.getLength();k++)
+						    	{
+						    	Node node = (Node)antltemp.item(k);
+						    	if(!"Query".equals(node.getParentNode().getLocalName()))
+						    		{
+						    		documentMaster.renameNode(node, "http://www.opengis.net/ogc", "PropertyName");
+						    		}
 						    	}
 //Fin de Debug
 						    isInList = true;
