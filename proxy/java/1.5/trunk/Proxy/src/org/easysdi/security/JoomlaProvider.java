@@ -1,6 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 package org.easysdi.security;
 
@@ -30,19 +42,19 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     private DataSource dataSource;
-    
+
     private String prefix;
 
     public String getPrefix() {
-		return prefix;
-	}
+	return prefix;
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public void setPrefix(String prefix) {
+	this.prefix = prefix;
+    }
 
-	private JoomlaUser loadUserByUsername(String username) throws BadCredentialsException {
-	String sql = "select u.* from "+getPrefix()+"easysdi_community_partner p join "+getPrefix()+"users u on (p.user_id = u.id) where username = :username and block = 0";
+    private JoomlaUser loadUserByUsername(String username) throws BadCredentialsException {
+	String sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix() + "users u on (p.user_id = u.id) where username = :username and block = 0";
 	MapSqlParameterSource source = new MapSqlParameterSource();
 	source.addValue("username", username);
 	SimpleJdbcTemplate sjt = new SimpleJdbcTemplate(dataSource);
@@ -56,7 +68,9 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
     }
 
     private GrantedAuthority[] getAuthorities(String username) {
-	String sql = "select profile_code as role from "+getPrefix()+"easysdi_community_profile r join "+getPrefix()+"easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join "+getPrefix()+"easysdi_community_partner p on (p.partner_id = pr.partner_id) join "+getPrefix()+"users u on (u.id = p.user_id) where u.username = ?";
+	String sql = "select profile_code as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
+		+ "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix() + "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix()
+		+ "users u on (u.id = p.user_id) where u.username = ?";
 	SimpleJdbcTemplate sjt = new SimpleJdbcTemplate(dataSource);
 	List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
 
