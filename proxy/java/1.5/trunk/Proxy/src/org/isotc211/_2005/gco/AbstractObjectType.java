@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import ch.depth._2008.ext.EXExtendedMetadataType;
+
+import org.easysdi._2008.ext.EXExtendedMetadataType;
 import org.isotc211._2005.gmd.AbstractDQElementType;
 import org.isotc211._2005.gmd.AbstractDQResultType;
 import org.isotc211._2005.gmd.AbstractDSAggregateType;

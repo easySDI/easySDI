@@ -5,7 +5,7 @@
 
 	<servlet>
 		<servlet-name>ogc</servlet-name>
-		<servlet-class>ch.depth.proxy.core.OgcProxyServlet</servlet-class>
+		<servlet-class>org.easysdi.proxy.core.OgcProxyServlet</servlet-class>
 		<init-param>
 			<param-name>configFile</param-name>
 			<param-value>/WEB-INF/conf/config.xml</param-value>

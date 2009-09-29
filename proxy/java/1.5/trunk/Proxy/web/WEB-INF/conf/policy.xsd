@@ -1,233 +1,233 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="Attribute">
-    <xs:complexType mixed="true" />
-  </xs:element>
- 
- <xs:element name="Exclude">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="Attribute" maxOccurs="unbounded" />        
-      </xs:choice>      
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="Attributes">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="Attribute" maxOccurs="unbounded" />
-        <xs:element ref="Exclude" minOccurs="0" />
-      </xs:choice>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Attribute">
+		<xs:complexType mixed="true" />
+	</xs:element>
 
-  <xs:element name="AvailabilityPeriod">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="From" minOccurs="1" maxOccurs="1"/>
-        <xs:element ref="Mask" minOccurs="1" maxOccurs="1"/>
-        <xs:element ref="To" minOccurs="1" maxOccurs="1"/>
-      </xs:choice>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Exclude">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="Attribute" maxOccurs="unbounded" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Date" type="xs:string" />
-    
-  
+	<xs:element name="Attributes">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="Attribute" maxOccurs="unbounded" />
+				<xs:element ref="Exclude" minOccurs="0" />
+			</xs:choice>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="FeatureType">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Name" />
-        <xs:element ref="Attributes"  minOccurs="1" />
-        <xs:element ref="RemoteFilter" minOccurs="0" />
-        <xs:element ref="LocalFilter" minOccurs="0" />        
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="AvailabilityPeriod">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="From" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Mask" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="To" minOccurs="1" maxOccurs="1" />
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="FeatureTypes">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="FeatureType" maxOccurs="unbounded" />
-      </xs:sequence>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Date" type="xs:string" />
 
-<xs:element name="Metadata">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Attributes"  minOccurs="1" maxOccurs="1"/>
-      </xs:sequence>      
-    </xs:complexType>
-  </xs:element>
- 
- <xs:element name="RemoteFilter">
-    <xs:complexType mixed="true" />
-  </xs:element>
-   <xs:element name="LocalFilter">
-    <xs:complexType mixed="true" />
-  </xs:element>
-  <xs:element name="Filter">
-    <xs:complexType mixed="true" />
-  </xs:element>
 
-  <xs:element name="From">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Date"  minOccurs="1" maxOccurs="1"/>        
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
 
-  <xs:element name="Height" type="xs:int"/>
-    
+	<xs:element name="FeatureType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Name" />
+				<xs:element ref="Attributes" minOccurs="1" />
+				<xs:element ref="RemoteFilter" minOccurs="0" />
+				<xs:element ref="LocalFilter" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="ImageSize">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Minimum" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="Maximum" minOccurs="0" maxOccurs="1"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="FeatureTypes">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="FeatureType" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Layer">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Name" />
-        <xs:element ref="ScaleMin" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="ScaleMax" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="Filter" minOccurs="0" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Metadata">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Attributes" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Layers">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Layer" maxOccurs="unbounded"/>
-      </xs:sequence>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="RemoteFilter">
+		<xs:complexType mixed="true" />
+	</xs:element>
+	<xs:element name="LocalFilter">
+		<xs:complexType mixed="true" />
+	</xs:element>
+	<xs:element name="Filter">
+		<xs:complexType mixed="true" />
+	</xs:element>
 
-  <xs:element name="Mask" type="xs:string"/>
-    
-  <xs:element name="Maximum">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Width" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="Height" minOccurs="0" maxOccurs="1" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="From">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Date" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Minimum">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Width" minOccurs="0" maxOccurs="1"/>
-        <xs:element ref="Height" minOccurs="0" maxOccurs="1"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Height" type="xs:int" />
 
-  <xs:element name="Name" type="xs:string"/>
 
-  <xs:element name="Operation">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Name" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="ImageSize">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Minimum" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Maximum" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Operations">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Operation" maxOccurs="unbounded" />
-      </xs:sequence>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Layer">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Name" />
+				<xs:element ref="ScaleMin" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="ScaleMax" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Filter" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Policy">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="AvailabilityPeriod" />
-        <xs:element ref="ImageSize" />
-        <xs:element ref="Operations" />
-        <xs:element ref="Servers" />
-        <xs:element ref="Subjects" />
-      </xs:choice>
-      <xs:attribute name="ConfigId" type="xs:string" use="optional" />
-      <xs:attribute name="Inherit" type="xs:string" use="optional" />
-      <xs:attribute name="Id" type="xs:string" use="required" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Layers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Layer" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="PolicySet">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Policy" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Mask" type="xs:string" />
 
-  <xs:element name="Role" type="xs:string"/>
-    
-  <xs:element name="ScaleMax" type="xs:double"/>
-    
-  <xs:element name="ScaleMin" type="xs:double"/>
-    
+	<xs:element name="Maximum">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Width" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Height" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Server">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="url" />
-        <xs:element ref="FeatureTypes" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="Layers" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="Metadata" minOccurs="0" maxOccurs="1" />        
-        <xs:element ref="Filter" minOccurs="0" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Minimum">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Width" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Height" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="Servers">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Server" maxOccurs="unbounded" />
-      </xs:sequence>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Name" type="xs:string" />
 
-  <xs:element name="Subjects">
-    <xs:complexType>
-      <xs:choice>
-        <xs:element ref="Role" maxOccurs="unbounded" />
-        <xs:element ref="User" maxOccurs="unbounded"/>
-      </xs:choice>
-      <xs:attribute name="All" type="xs:boolean" use="optional" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Operation">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Name" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="To">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="Date" minOccurs="1" maxOccurs="1"/>        
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="Operations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Operation" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
 
-  <xs:element name="url" type="xs:string"/>
-    
-  <xs:element name="User" type="xs:string"/>
-    
-  <xs:element name="Width" type="xs:int"/>
-    
-    
+	<xs:element name="Policy">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="AvailabilityPeriod" />
+				<xs:element ref="ImageSize" />
+				<xs:element ref="Operations" />
+				<xs:element ref="Servers" />
+				<xs:element ref="Subjects" />
+			</xs:choice>
+			<xs:attribute name="ConfigId" type="xs:string" use="optional" />
+			<xs:attribute name="Inherit" type="xs:string" use="optional" />
+			<xs:attribute name="Id" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="PolicySet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Policy" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Role" type="xs:string" />
+
+	<xs:element name="ScaleMax" type="xs:double" />
+
+	<xs:element name="ScaleMin" type="xs:double" />
+
+
+	<xs:element name="Server">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="url" />
+				<xs:element ref="FeatureTypes" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Layers" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Metadata" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Filter" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Servers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Server" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Subjects">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="Role" maxOccurs="unbounded" />
+				<xs:element ref="User" maxOccurs="unbounded" />
+			</xs:choice>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="To">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Date" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="url" type="xs:string" />
+
+	<xs:element name="User" type="xs:string" />
+
+	<xs:element name="Width" type="xs:int" />
+
+
 </xs:schema>

@@ -1,103 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PolicySet>
-	<Policy Id="rwgis wms" ConfigId="rwgiswms"><Servers All="false">
-		<!--
-		<Server><url>http://vpc-rwgis-e:8080/geoserver/wms</url><Prefix>tiger</Prefix><Namespace>http://www.census.gov</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>poly_landmarks</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;-74.05,40.68 -74.05,40.80 -73.98,40.80 -73.98,40.68 -74.05,40.68&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>tiger_roads</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;-73.99,40.72 -73.99,40.88 -73.96,40.88 -73.96,40.72 -73.99,40.72&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server>
-		-->
-		<Server><url>http://localhost:8080/geoserver/wms</url><Prefix>tiger</Prefix><Namespace>http://www.census.gov</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>states</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;-124.731422,24.955967 -124.731422,49.371735 -66.969849,49.371735 -66.969849,24.955967 -124.731422,24.955967&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>poly_landmarks</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;-73.95,40.68 -73.95,40.88 -73.91,40.88 -73.91,40.68 -73.95,40.68&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>tiger_roads</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;-73.95,40.68 -73.95,40.88 -73.91,40.88 -73.91,40.68 -73.95,40.68&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer>
-		<Layer><Name>gis_cache_unit</Name><Filter>&lt;gml:Polygon&#13;
-			xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:2169"&gt;&#13;
-            &lt;gml:outerBoundaryIs&gt;&#13;
-                &lt;gml:LinearRing&gt;                    &#13;
-					&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129 107,129&lt;/gml:coordinates&gt;&#13;
-                &lt;/gml:LinearRing&gt;&#13;
-            &lt;/gml:outerBoundaryIs&gt;&#13;
-        &lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server></Servers><Subjects All="true"></Subjects><Operations All="true"/><ImageSize><Minimum><Width>256</Width><Height>256</Height></Minimum><Maximum><Width>1024</Width><Height>1024</Height></Maximum></ImageSize><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
-    </Policy>
-	<Policy Id="rwgis wfs" ConfigId="rwgis"><Servers All="false">
-		<Server><url>http://localhost:8080/geoserver/wfs</url><Prefix>eai</Prefix><Namespace>http://www.easysdi.org/eai</Namespace><Metadata All="true"><Attributes All="true"/></Metadata><FeatureTypes All="false"><FeatureType><Attributes All="true"></Attributes><Name>states</Name><RemoteFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;the_geom&lt;/PropertyName&gt;&lt;Box&#13;
-			srsName="EPSG:4326" gml="http://www.opengis.net/gml"&gt; &lt;coordinates&gt;-124.731422,24.955967 -66.969849,49.371735&lt;/coordinates&gt; &lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter><LocalFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;the_geom&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'&gt;&#13;
-			&lt;gml:outerBoundaryIs&gt;&#13;
-				&lt;gml:LinearRing&gt;&#13;
-					&lt;gml:coordinates&gt;-124.731422,24.955967 -124.731422,49.371735 -66.969849,49.371735 -66.969849,24.955967 -124.731422,24.955967&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
-			&lt;/gml:outerBoundaryIs&gt;&#13;
-		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType><FeatureType><Attributes All="false"><Attribute>unit_guid</Attribute></Attributes><Name>gis_cache_unit_point_view</Name><RemoteFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
-			srsName="EPSG:2169" gml="http://www.opengis.net/gml"&gt; &lt;coordinates&gt;107,129 780108,200130&lt;/coordinates&gt; &lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter><LocalFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:2169'&gt;&#13;
-			&lt;gml:outerBoundaryIs&gt;&#13;
-				&lt;gml:LinearRing&gt;&#13;
-					&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129 107,129&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
-			&lt;/gml:outerBoundaryIs&gt;&#13;
-		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType><FeatureType><Attributes All="true"></Attributes><Name>gis_cache_unit</Name><RemoteFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
-			srsName="EPSG:2169" gml="http://www.opengis.net/gml"&gt; &lt;coordinates&gt;107,129 780108,200130&lt;/coordinates&gt; &lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter><LocalFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:2169'&gt;&#13;
-			&lt;gml:outerBoundaryIs&gt;&#13;
-				&lt;gml:LinearRing&gt;&#13;
-					&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129 107,129&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
-			&lt;/gml:outerBoundaryIs&gt;&#13;
-		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType><FeatureType><Attributes All="true"></Attributes><Name>gis_cache_taxon</Name><RemoteFilter></RemoteFilter><LocalFilter></LocalFilter></FeatureType></FeatureTypes></Server>
-		</Servers><Subjects All="false"><User>admin</User><Role>Administrator</Role></Subjects><Operations All="true"/><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
+	<Policy Id="rwgis wms" ConfigId="rwgiswms">
+		<Servers All="false">
+			<!--
+				<Server><url>http://vpc-rwgis-e:8080/geoserver/wms</url><Prefix>tiger</Prefix><Namespace>http://www.census.gov</Namespace><Metadata></Metadata><Layers
+				All="false"><Layer><Name>poly_landmarks</Name><Filter>&lt;gml:Polygon&#13;
+				xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
+				&lt;gml:outerBoundaryIs&gt;&#13; &lt;gml:LinearRing&gt; &#13;
+				&lt;gml:coordinates&gt;-74.05,40.68 -74.05,40.80 -73.98,40.80
+				-73.98,40.68 -74.05,40.68&lt;/gml:coordinates&gt;&#13;
+				&lt;/gml:LinearRing&gt;&#13; &lt;/gml:outerBoundaryIs&gt;&#13;
+				&lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>tiger_roads</Name><Filter>&lt;gml:Polygon&#13;
+				xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
+				&lt;gml:outerBoundaryIs&gt;&#13; &lt;gml:LinearRing&gt; &#13;
+				&lt;gml:coordinates&gt;-73.99,40.72 -73.99,40.88 -73.96,40.88
+				-73.96,40.72 -73.99,40.72&lt;/gml:coordinates&gt;&#13;
+				&lt;/gml:LinearRing&gt;&#13; &lt;/gml:outerBoundaryIs&gt;&#13;
+				&lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server>
+			-->
+			<Server>
+				<url>http://localhost:8080/geoserver/wms</url>
+				<Prefix>tiger</Prefix>
+				<Namespace>http://www.census.gov</Namespace>
+				<Metadata></Metadata>
+				<Layers All="false">
+					<Layer>
+						<Name>states</Name>
+						<Filter>&lt;gml:Polygon&#13;
+							xmlns:gml="http://www.opengis.net/gml"
+							srsName="EPSG:4326"&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt; &#13;
+							&lt;gml:coordinates&gt;-124.731422,24.955967 -124.731422,49.371735 -66.969849,49.371735 -66.969849,24.955967
+							-124.731422,24.955967&lt;/gml:coordinates&gt;&#13;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;</Filter>
+					</Layer>
+					<Layer>
+						<Name>poly_landmarks</Name>
+						<Filter>&lt;gml:Polygon&#13;
+							xmlns:gml="http://www.opengis.net/gml"
+							srsName="EPSG:4326"&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt; &#13;
+							&lt;gml:coordinates&gt;-73.95,40.68 -73.95,40.88 -73.91,40.88 -73.91,40.68
+							-73.95,40.68&lt;/gml:coordinates&gt;&#13;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;</Filter>
+					</Layer>
+					<Layer>
+						<Name>tiger_roads</Name>
+						<Filter>&lt;gml:Polygon&#13;
+							xmlns:gml="http://www.opengis.net/gml"
+							srsName="EPSG:4326"&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt; &#13;
+							&lt;gml:coordinates&gt;-73.95,40.68 -73.95,40.88 -73.91,40.88 -73.91,40.68
+							-73.95,40.68&lt;/gml:coordinates&gt;&#13;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;</Filter>
+					</Layer>
+					<Layer>
+						<Name>gis_cache_unit</Name>
+						<Filter>&lt;gml:Polygon&#13;
+							xmlns:gml="http://www.opengis.net/gml"
+							srsName="EPSG:2169"&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt; &#13;
+							&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129
+							107,129&lt;/gml:coordinates&gt;&#13;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;</Filter>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true"></Subjects>
+		<Operations All="true" />
+		<ImageSize>
+			<Minimum>
+				<Width>256</Width>
+				<Height>256</Height>
+			</Minimum>
+			<Maximum>
+				<Width>1024</Width>
+				<Height>1024</Height>
+			</Maximum>
+		</ImageSize>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
 	</Policy>
-	<Policy Id="new simple Policy" ConfigId="rwgissimple"><Servers All="false"><Server><url>http://localhost:8080/geoserver/wfs</url><Metadata All="true"><Attributes All="true"/></Metadata><FeatureTypes All="false"><FeatureType><Attributes All="true"/><Name>states</Name><RemoteFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;&lt;/PropertyName&gt;&lt;Box&#13;
-			srsName="EPSG:4326" gml="http://www.opengis.net/gml"&gt; &lt;coordinates&gt;-180,-90 180,90&lt;/coordinates&gt; &lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter><LocalFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4326'&gt;&#13;
-			&lt;gml:outerBoundaryIs&gt;&#13;
-				&lt;gml:LinearRing&gt;&#13;
-					&lt;gml:coordinates&gt;-180,-90 -180,90 180,90 180,-90 -180,-90&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
-			&lt;/gml:outerBoundaryIs&gt;&#13;
-		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType><FeatureType><Attributes All="true"/><Name>cache_ct_cu_nn</Name><RemoteFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
-			srsName="EPSG:4181" gml="http://www.opengis.net/gml"&gt; &lt;coordinates&gt;-180,-90 180,90&lt;/coordinates&gt; &lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter><LocalFilter>&lt;Filter&#13;
-			xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
-			xmlns:gml='http://www.opengis.net/gml' srsName='EPSG:4181'&gt;&#13;
-			&lt;gml:outerBoundaryIs&gt;&#13;
-				&lt;gml:LinearRing&gt;&#13;
-					&lt;gml:coordinates&gt;-180,-90 -180,90 180,90 180,-90 -180,-90&lt;/gml:coordinates&gt;    &lt;/gml:LinearRing&gt;&#13;
-			&lt;/gml:outerBoundaryIs&gt;&#13;
-		&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter></FeatureType></FeatureTypes></Server></Servers><Subjects All="false"/><Operations All="true"/><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod>
+	<Policy Id="rwgis wfs" ConfigId="rwgis">
+		<Servers All="false">
+			<Server>
+				<url>http://localhost:8080/geoserver/wfs</url>
+				<Prefix>eai</Prefix>
+				<Namespace>http://www.easysdi.org/eai</Namespace>
+				<Metadata All="true">
+					<Attributes All="true" />
+				</Metadata>
+				<FeatureTypes All="false">
+					<FeatureType>
+						<Attributes All="true"></Attributes>
+						<Name>states</Name>
+						<RemoteFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;the_geom&lt;/PropertyName&gt;&lt;Box&#13;
+							srsName="EPSG:4326" gml="http://www.opengis.net/gml"&gt;
+							&lt;coordinates&gt;-124.731422,24.955967
+							-66.969849,49.371735&lt;/coordinates&gt;
+							&lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter>
+						<LocalFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;the_geom&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
+							xmlns:gml='http://www.opengis.net/gml'
+							srsName='EPSG:4326'&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt;&#13;
+							&lt;gml:coordinates&gt;-124.731422,24.955967 -124.731422,49.371735 -66.969849,49.371735 -66.969849,24.955967
+							-124.731422,24.955967&lt;/gml:coordinates&gt;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter>
+					</FeatureType>
+					<FeatureType>
+						<Attributes All="false">
+							<Attribute>unit_guid</Attribute>
+						</Attributes>
+						<Name>gis_cache_unit_point_view</Name>
+						<RemoteFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
+							srsName="EPSG:2169" gml="http://www.opengis.net/gml"&gt;
+							&lt;coordinates&gt;107,129 780108,200130&lt;/coordinates&gt;
+							&lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter>
+						<LocalFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
+							xmlns:gml='http://www.opengis.net/gml'
+							srsName='EPSG:2169'&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt;&#13;
+							&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129
+							107,129&lt;/gml:coordinates&gt; &lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter>
+					</FeatureType>
+					<FeatureType>
+						<Attributes All="true"></Attributes>
+						<Name>gis_cache_unit</Name>
+						<RemoteFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
+							srsName="EPSG:2169" gml="http://www.opengis.net/gml"&gt;
+							&lt;coordinates&gt;107,129 780108,200130&lt;/coordinates&gt;
+							&lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter>
+						<LocalFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
+							xmlns:gml='http://www.opengis.net/gml'
+							srsName='EPSG:2169'&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt;&#13;
+							&lt;gml:coordinates&gt;107,129 107,200130 780108,200130 780108,129
+							107,129&lt;/gml:coordinates&gt; &lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter>
+					</FeatureType>
+					<FeatureType>
+						<Attributes All="true"></Attributes>
+						<Name>gis_cache_taxon</Name>
+						<RemoteFilter></RemoteFilter>
+						<LocalFilter></LocalFilter>
+					</FeatureType>
+				</FeatureTypes>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>admin</User>
+			<Role>Administrator</Role>
+		</Subjects>
+		<Operations All="true" />
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+	</Policy>
+	<Policy Id="new simple Policy" ConfigId="rwgissimple">
+		<Servers All="false">
+			<Server>
+				<url>http://localhost:8080/geoserver/wfs</url>
+				<Metadata All="true">
+					<Attributes All="true" />
+				</Metadata>
+				<FeatureTypes All="false">
+					<FeatureType>
+						<Attributes All="true" />
+						<Name>states</Name>
+						<RemoteFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;&lt;/PropertyName&gt;&lt;Box&#13;
+							srsName="EPSG:4326" gml="http://www.opengis.net/gml"&gt;
+							&lt;coordinates&gt;-180,-90 180,90&lt;/coordinates&gt;
+							&lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter>
+						<LocalFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
+							xmlns:gml='http://www.opengis.net/gml'
+							srsName='EPSG:4326'&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt;&#13;
+							&lt;gml:coordinates&gt;-180,-90 -180,90 180,90 180,-90 -180,-90&lt;/gml:coordinates&gt;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter>
+					</FeatureType>
+					<FeatureType>
+						<Attributes All="true" />
+						<Name>cache_ct_cu_nn</Name>
+						<RemoteFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;BBOX&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;Box&#13;
+							srsName="EPSG:4181" gml="http://www.opengis.net/gml"&gt;
+							&lt;coordinates&gt;-180,-90 180,90&lt;/coordinates&gt;
+							&lt;/Box&gt;&lt;/BBOX&gt;&lt;/Filter&gt;</RemoteFilter>
+						<LocalFilter>&lt;Filter&#13;
+							xmlns:gml='http://www.opengis.net/gml'&gt;&lt;Within&gt;&lt;PropertyName&gt;_geom_point_sample&lt;/PropertyName&gt;&lt;gml:Polygon&#13;
+							xmlns:gml='http://www.opengis.net/gml'
+							srsName='EPSG:4181'&gt;&#13;
+							&lt;gml:outerBoundaryIs&gt;&#13;
+							&lt;gml:LinearRing&gt;&#13;
+							&lt;gml:coordinates&gt;-180,-90 -180,90 180,90 180,-90 -180,-90&lt;/gml:coordinates&gt;
+							&lt;/gml:LinearRing&gt;&#13;
+							&lt;/gml:outerBoundaryIs&gt;&#13;
+							&lt;/gml:Polygon&gt;&lt;/Within&gt;&lt;/Filter&gt;</LocalFilter>
+					</FeatureType>
+				</FeatureTypes>
+			</Server>
+		</Servers>
+		<Subjects All="false" />
+		<Operations All="true" />
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
 	</Policy>
 </PolicySet>

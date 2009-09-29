@@ -14,7 +14,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import ch.depth._2008.ext.EXExtendedMetadataPropertyType;
+
+import org.easysdi._2008.ext.EXExtendedMetadataPropertyType;
 import org.isotc211._2005.gco.AbstractObjectType;
 import org.isotc211._2005.gco.CharacterStringPropertyType;
 import org.isotc211._2005.gco.DatePropertyType;

@@ -4,7 +4,7 @@
 		<authorization>
 			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
-		<servlet-class>ch.depth.proxy.wms.WMSProxyServlet</servlet-class>
+		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
 				<path>C:\RecorderWebGIS\PROXY_log</path>
@@ -15,7 +15,7 @@
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
 		</log-config>
-		<host-translator/>
+		<host-translator />
 		<remote-server-list>
 			<remote-server>
 				<user>proxy</user>
@@ -23,21 +23,18 @@
 				<prefix>tiger</prefix>
 				<password>geoserver</password>
 			</remote-server>
-	<!--		
-			<remote-server>
-				<user/>
+			<!--
+				<remote-server> <user/>
 				<url>http://vpc-rwgis-e:8080/geoserver/wms</url>
-				<prefix>tiger</prefix>
-				<password/>
-			</remote-server>
-	-->
+				<prefix>tiger</prefix> <password/> </remote-server>
+			-->
 		</remote-server-list>
 	</config>
 	<config id="rwgis">
 		<authorization>
 			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
-		<servlet-class>ch.depth.proxy.wfs.WFSProxyServlet</servlet-class>
+		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
 				<path>C:\RecorderWebGIS\PROXY_log</path>
@@ -47,9 +44,10 @@
 				<period>daily</period>
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
-		</log-config><host-translator/>
+		</log-config>
+		<host-translator />
 		<remote-server-list>
-				<remote-server>
+			<remote-server>
 				<user>proxy</user>
 				<url>http://localhost:8080/geoserver/wfs</url>
 				<prefix>eai</prefix>
@@ -61,7 +59,8 @@
 		<authorization>
 			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
-		<servlet-class>ch.depth.proxy.wfs.SimpleWFSProxyServlet</servlet-class>
+		<servlet-class>org.easysdi.proxy.wfs.SimpleWFSProxyServlet
+		</servlet-class>
 		<log-config>
 			<file-structure>
 				<path>C:\RecorderWebGIS\PROXY_log</path>
