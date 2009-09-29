@@ -89,7 +89,6 @@ public class CSWProxyServlet extends ProxyServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
-
 	super.doPost(req, resp);
     }
 
@@ -425,11 +424,11 @@ public class CSWProxyServlet extends ProxyServlet {
     }
 
 
+
     /* (non-Javadoc)
-     * @see org.easysdi.proxy.core.ProxyServlet#requestPreTreatmentPOST(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see ch.depth.proxy.core.ProxyServlet#requestPreTreatmentPOST(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    @Override
-    protected void requestPreTreatmentPOST(HttpServletRequest req,
+    protected void old_requestPreTreatmentPOST(HttpServletRequest req,
 	    HttpServletResponse resp) {
 	try{
 	    XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -451,7 +450,12 @@ public class CSWProxyServlet extends ProxyServlet {
 
 	    String currentOperation =  rh.getOperation();
 
-
+	    /*
+		 * sdondainaz
+		 * 
+		 * Ajouter ici le filtre sur la visibilité de la métadonnée
+		 */
+	    
 	    //In the case of transaction only one remote server is supported.
 	    //We use the configuration of the first one.
 	    //TODO :add a tag in the configuration file to set the default server.
@@ -469,79 +473,80 @@ public class CSWProxyServlet extends ProxyServlet {
 		    List<String> uuidList = rh.getUUIdListToInsert();
 		    Iterator<String> it = uuidList.iterator();
 		    int count = 0;
-		    while (it.hasNext()){
-			String uuid = it.next();
-
-
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			Transformer transformer = null;
-			StringBuffer xslt = new StringBuffer();
-			xslt.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
-			xslt.append(" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"");
-			xslt.append(" xmlns:csw=\"http://www.opengis.net/cat/csw\">");
-			xslt.append("<xsl:template match=\"csw:Insert\">");			    
-			xslt.append("<xsl:copy-of select=\"@* | node()\">");	    		
-			xslt.append("<xsl:apply-templates  select=\"@* | node()\"/>");	    
-			xslt.append("</xsl:copy-of>");	    
-			xslt.append("</xsl:template>");
-			xslt.append("</xsl:stylesheet>");
-			ByteArrayInputStream baisXsl = new ByteArrayInputStream(xslt.toString().getBytes());
-			transformer = tFactory.newTransformer(new StreamSource(baisXsl));
-
-			ByteArrayInputStream bais = new ByteArrayInputStream(param.toString().getBytes());
-			
-			//Write the result in a temporary file
-			StringBuffer metadata = new StringBuffer();
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();	
-
-			transformer.transform(new StreamSource(bais), new StreamResult(baos));
-			metadata.append(baos.toString());
-
-
-			StringBuffer[] sourceContent = new StringBuffer[]{generateInfoFileForMef(uuid, req.getRemoteAddr()),metadata};    
-			ByteArrayOutputStream mefFileOutputStream = new ByteArrayOutputStream();			    
-			ZipOutputStream out = new ZipOutputStream(mefFileOutputStream);
-			// Compress the files
-			for (int i=0; i<sourceName.length; i++) {				
-			    CRC32 crc = new CRC32();
-			    crc.update(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
-			    ZipEntry entry = new ZipEntry(sourceName[i]);
-			    entry.setMethod(ZipEntry.STORED);
-			    entry.setSize(sourceContent[i].toString().getBytes().length);
-			    entry.setCrc(crc.getValue());
-			    out.putNextEntry(entry);
-			    out.write(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
-			    out.closeEntry();				  
-			}    
-			out.close();	
-
-
-			//Search for the geonetwork id using the uuid
-			StringBuffer response = send(rsi.getSearchServiceUrl()+"?any="+uuid,rsi.getLoginService());
-			dump (response);			    
-			InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-
-			XMLReader xrSearchResponse = XMLReaderFactory.createXMLReader();
-			GeonetworkSearchResultHandler gnSearchHandler = new GeonetworkSearchResultHandler ();		 
-			xrSearchResponse.setContentHandler(gnSearchHandler);
-			xrSearchResponse.parse(new InputSource(is));
-			List<String> listId = gnSearchHandler.getGeonetworkInternalId(uuid);
-
-			//If a metadata already exists, remove it from Geonetwork 
-			if (listId !=null){
-			    Iterator<String> itId = listId.iterator();
-			    while (itId.hasNext()){
-				String s = itId.next();
-				response = send(rsi.getDeleteServiceUrl()+"?id="+s,rsi.getLoginService());									 	 		 
-			    }
-			}
-			//Send the generated mef dile				   
-			InputStream mefFileInputStream = new ByteArrayInputStream(mefFileOutputStream.toByteArray());
-
-			response = sendFile(rsi.getInsertServiceUrl(), mefFileInputStream, rsi.getLoginService(), "mefFile", uuid+".mef");
-						    			    
-			sourceContent=null;
-			count++;
+		    while (it.hasNext())
+		    {
+				String uuid = it.next();
+	
+	
+				TransformerFactory tFactory = TransformerFactory.newInstance();
+				Transformer transformer = null;
+				StringBuffer xslt = new StringBuffer();
+				xslt.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
+				xslt.append(" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"");
+				xslt.append(" xmlns:csw=\"http://www.opengis.net/cat/csw\">");
+				xslt.append("<xsl:template match=\"csw:Insert\">");			    
+				xslt.append("<xsl:copy-of select=\"@* | node()\">");	    		
+				xslt.append("<xsl:apply-templates  select=\"@* | node()\"/>");	    
+				xslt.append("</xsl:copy-of>");	    
+				xslt.append("</xsl:template>");
+				xslt.append("</xsl:stylesheet>");
+				ByteArrayInputStream baisXsl = new ByteArrayInputStream(xslt.toString().getBytes());
+				transformer = tFactory.newTransformer(new StreamSource(baisXsl));
+	
+				ByteArrayInputStream bais = new ByteArrayInputStream(param.toString().getBytes());
+				
+				//Write the result in a temporary file
+				StringBuffer metadata = new StringBuffer();
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();	
+	
+				transformer.transform(new StreamSource(bais), new StreamResult(baos));
+				metadata.append(baos.toString());
+	
+	
+				StringBuffer[] sourceContent = new StringBuffer[]{generateInfoFileForMef(uuid, req.getRemoteAddr()),metadata};    
+				ByteArrayOutputStream mefFileOutputStream = new ByteArrayOutputStream();			    
+				ZipOutputStream out = new ZipOutputStream(mefFileOutputStream);
+				// Compress the files
+				for (int i=0; i<sourceName.length; i++) {				
+				    CRC32 crc = new CRC32();
+				    crc.update(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
+				    ZipEntry entry = new ZipEntry(sourceName[i]);
+				    entry.setMethod(ZipEntry.STORED);
+				    entry.setSize(sourceContent[i].toString().getBytes().length);
+				    entry.setCrc(crc.getValue());
+				    out.putNextEntry(entry);
+				    out.write(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
+				    out.closeEntry();				  
+				}    
+				out.close();	
+	
+	
+				//Search for the geonetwork id using the uuid
+				StringBuffer response = send(rsi.getSearchServiceUrl()+"?any="+uuid,rsi.getLoginService());
+				dump (response);			    
+				InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+	
+				XMLReader xrSearchResponse = XMLReaderFactory.createXMLReader();
+				GeonetworkSearchResultHandler gnSearchHandler = new GeonetworkSearchResultHandler ();		 
+				xrSearchResponse.setContentHandler(gnSearchHandler);
+				xrSearchResponse.parse(new InputSource(is));
+				List<String> listId = gnSearchHandler.getGeonetworkInternalId(uuid);
+	
+				//If a metadata already exists, remove it from Geonetwork 
+				if (listId !=null){
+				    Iterator<String> itId = listId.iterator();
+				    while (itId.hasNext()){
+					String s = itId.next();
+					response = send(rsi.getDeleteServiceUrl()+"?id="+s,rsi.getLoginService());									 	 		 
+				    }
+				}
+				//Send the generated mef dile				   
+				InputStream mefFileInputStream = new ByteArrayInputStream(mefFileOutputStream.toByteArray());
+	
+				response = sendFile(rsi.getInsertServiceUrl(), mefFileInputStream, rsi.getLoginService(), "mefFile", uuid+".mef");
+							    			    
+				sourceContent=null;
+				count++;
 		    }
 		    sourceName = null;
 		    StringBuffer cswResponse = new StringBuffer ();
@@ -553,8 +558,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		    cswResponse.append("</csw:TransactionSummary>");
 		    cswResponse.append("</csw:TransactionResponse>");			
 
-			resp.setContentType("application/xml");
-			resp.setContentLength(Integer.MAX_VALUE);
+
 		    OutputStream os = resp.getOutputStream();
 
 		    InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
@@ -608,8 +612,6 @@ public class CSWProxyServlet extends ProxyServlet {
 		    cswResponse.append("<csw:totalDeleted>"+count+"</csw:totalDeleted>");
 		    cswResponse.append("</csw:TransactionSummary>");
 		    cswResponse.append("</csw:TransactionResponse>");
-			resp.setContentType("application/xml");
-			resp.setContentLength(Integer.MAX_VALUE);
 		    OutputStream os = resp.getOutputStream();
 
 		    InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
@@ -639,6 +641,119 @@ public class CSWProxyServlet extends ProxyServlet {
 	}catch(Exception e){e.printStackTrace();
 	dump("ERROR",e.getMessage());}
     }
+
+    /* (non-Javadoc)
+     * @see ch.depth.proxy.core.ProxyServlet#requestPreTreatmentPOST(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    @Override
+    protected void requestPreTreatmentPOST(HttpServletRequest req,
+	    HttpServletResponse resp) {
+	try{
+		
+	    XMLReader xr = XMLReaderFactory.createXMLReader();
+	    CswRequestHandler rh = new CswRequestHandler();
+	    xr.setContentHandler(rh);	    
+
+	    StringBuffer param = new StringBuffer();	    
+	    String input;
+	    BufferedReader in = new BufferedReader(new InputStreamReader(req
+		    .getInputStream()));
+	    while ((input = in.readLine()) != null) {
+	    	dump (input);
+		    param.append(input);
+	    }	    
+
+	    xr.parse(new InputSource(new InputStreamReader(
+		    new ByteArrayInputStream(param.toString().getBytes()))));
+
+	    String version = rh.getVersion();
+
+	    String currentOperation =  rh.getOperation();
+
+	    //In the case of transaction only one remote server is supported.
+	    //We use the configuration of the first one.
+	    //TODO :add a tag in the configuration file to set the default server.
+	    RemoteServerInfo rsi = getRemoteServerInfo(0);
+	    String transactionType = "ogc";
+	    if (rsi !=null){
+		transactionType =  rsi.getTransaction();
+	    }
+
+	    if (currentOperation.equalsIgnoreCase("Transaction")&&transactionType.equalsIgnoreCase("geonetwork")){
+
+		if (rh.isTransactionInsert()){
+			//Send the xml				  
+			StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+				
+			// Get the response
+			OutputStream os = resp.getOutputStream();
+			InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+		    int byteRead;
+		    try {
+			while((byteRead = is.read()) != -1) {  
+			    os.write(byteRead);
+			}
+		    } finally{
+			os.flush();
+			os.close();   			    
+		    }
+		    os=null;
+		    is=null;
+		}
+
+		if (rh.isTransactionUpdate()){
+			//Send the xml				  
+			StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+				
+			// Get the response
+			OutputStream os = resp.getOutputStream();
+			InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+		    int byteRead;
+		    try {
+			while((byteRead = is.read()) != -1) {  
+			    os.write(byteRead);
+			}
+		    } finally{
+			os.flush();
+			os.close();   			    
+		    }
+		    os=null;
+		    is=null;
+		}
+		
+		if (rh.isTransactionDelete()){
+			//Send the xml				  
+			StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+				
+			// Get the response
+			OutputStream os = resp.getOutputStream();
+			InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+		    int byteRead;
+		    try {
+			while((byteRead = is.read()) != -1) {  
+			    os.write(byteRead);
+			}
+		    } finally{
+			os.flush();
+			os.close();   			    
+		    }
+		    os=null;
+		    is=null;
+		}
+
+	    }else{
+		if (version!=null)	    version = version.replaceAll("\\.", "");
+
+		dump (param.toString());
+		List<String> filePathList = new Vector<String>();
+		String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+		filePathList.add(filePath);
+		transform(version,currentOperation,req, resp, filePathList);
+	    }
+	}catch(Exception e){e.printStackTrace();
+	dump("ERROR",e.getMessage());}
+    }
+
 
     protected StringBuffer generateXSLTForMetadata(){
 
