@@ -20,7 +20,7 @@
 	<target name="compression" description="Compression">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_core.zip"
 			basedir="." 
-			excludes=" modules/** , out/** , .cache/** , .svn/** , .settings/** , .project, .prefs"
+			excludes=" modules/** , out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml"
 			
 		/>
 	</target>
