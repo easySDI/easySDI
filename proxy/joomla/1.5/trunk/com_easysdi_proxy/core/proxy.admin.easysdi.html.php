@@ -205,16 +205,28 @@ echo $pane->endPanel();
 
 
 
-	function getLayerLocalFilter($theServer,$theLayer){
+	function getLayerLocalFilter($theServer,$layer){
 
 		if (count($theServer->Layers->Layer)==0) return "";
 
 
-		foreach ($theServer->Layers->Layer as $layer ){
-
-			if (strcmp($layer->{'Name'},$theLayer->{'Name'})==0){
-				return $layer->{'Filter'};
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+			if (!(strrpos($layer->{'Name'}, ":") ===False))
+			{
+				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
+				{
+					return $theLayer->{'Filter'};
+				}
 			}
+			else
+			{				
+				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+				{
+					return $theLayer->{'Filter'};
+				}
+			}
+			
 		}
 
 		return "";
@@ -226,9 +238,19 @@ echo $pane->endPanel();
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+			if (!(strrpos($layer->{'Name'}, ":") ===False))
 			{
-				return $theLayer->ScaleMin;
+				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
+				{
+					return $theLayer->ScaleMin;
+				}
+			}
+			else
+			{				
+				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+				{
+					return $theLayer->ScaleMin;
+				}
 			}
 		}
 		return "";
@@ -238,9 +260,19 @@ echo $pane->endPanel();
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+			if (!(strrpos($layer->{'Name'}, ":") ===False))
 			{
-				return $theLayer->ScaleMax;
+				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
+				{
+					return $theLayer->ScaleMax;
+				}
+			}
+			else
+			{				
+				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+				{
+					return $theLayer->ScaleMax;
+				}
 			}
 		}
 		return "";
@@ -251,18 +283,26 @@ echo $pane->endPanel();
 
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
 
-		if (count($theServer->Layers->Layer)==0) return "";
+		if (count($theServer->Layers->Layer)==0) return false;
 
-		foreach ($theServer->Layers->Layer as $theLayer ){
-
-			if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0){
-				return true;
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+			if (!(strrpos($layer->{'Name'}, ":") ===False))
+			{
+				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
+				{
+					return true;
+				}
+			}
+			else
+			{				
+				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
+				{
+					return true;
+				}
 			}
 		}
-
 		return false;
-
-
 	}
 
 
@@ -1346,7 +1386,7 @@ function generateWMSHTML($config,$thePolicy){
 					<td width="15">
 						<input
 						onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
-						<?php if( HTML_proxy ::isLayerChecked($theServer,$layer)) echo 'checked';?>
+						<?php if( HTML_proxy::isLayerChecked($theServer,$layer)) echo 'checked';?>
 						type="checkbox"
 						id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 						name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
@@ -1364,19 +1404,19 @@ function generateWMSHTML($config,$thePolicy){
 			</table>		
 		</td>
 		<td align = "center"><input 
-		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
+		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
 			id="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
 		<td  align = "center"><input
-		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
+		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
 			id="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
 		<td><textarea
-		<?php if(! HTML_proxy ::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
+		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			rows="3" cols="60"
 			id="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
 			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
