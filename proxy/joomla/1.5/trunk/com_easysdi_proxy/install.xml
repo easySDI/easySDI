@@ -18,7 +18,6 @@
 			<filename>admin.easysdi_proxy.php</filename>
 			<filename>license.txt</filename>
 			<filename>toolbar.easysdi_proxy.php</filename>
-			<folder>com_easysdi_proxy</folder>
 			<folder>config</folder>
 			<folder>core</folder>
 			<folder>language</folder>		
@@ -29,5 +28,8 @@
 			<language tag="en-GB">en-GB.com_easysdi_proxy.ini</language>
 		</languages>
 	</administration>	
+	<files folder="com_easysdi_proxy"> 
+			<filename>license.txt</filename>									
+	</files>
 </install>
 
