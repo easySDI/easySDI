@@ -74,7 +74,6 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
 	SimpleJdbcTemplate sjt = new SimpleJdbcTemplate(dataSource);
 	List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
 
-	    @Override
 	    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
 		return new GrantedAuthorityImpl(rs.getString("role"));
 	    }

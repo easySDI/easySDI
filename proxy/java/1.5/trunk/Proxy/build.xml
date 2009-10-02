@@ -70,7 +70,7 @@
 	</target>
 	
 	<target name="compilation" description="Compilation" >
-		<javac debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes" >
+		<javac source="1.5" target="1.5" debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes">
 			<classpath refid="projet.classpath"/>
 		</javac>
 	</target>
