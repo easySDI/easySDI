@@ -247,11 +247,13 @@ public class CSWProxyServlet extends ProxyServlet {
     public void transform(String version,String currentOperation, HttpServletRequest req,
 	    HttpServletResponse resp, List<String> filePathList) {
 
-	if (isOperationAllowed(currentOperation)){
+	if (isOperationAllowed(currentOperation))
+	{
 	    try {
 
 		String userXsltPath = getConfiguration().getXsltPath();
-		if(req.getUserPrincipal() != null){		
+		if(req.getUserPrincipal() != null)
+		{		
 		    userXsltPath=userXsltPath+"/"+req.getUserPrincipal().getName()+"/";
 		}	 
 
@@ -259,15 +261,19 @@ public class CSWProxyServlet extends ProxyServlet {
 		String globalXsltPath = getConfiguration().getXsltPath()+"/"+version+"/"+currentOperation+".xsl";;	    
 		File xsltFile = new File(userXsltPath);
 		boolean isPostTreat = false;	    
-		if(!xsltFile.exists()){	
+		if(!xsltFile.exists())
+		{	
 		    dump("Postreatment file "+xsltFile.toString()+"does not exist");
 		    xsltFile = new File(globalXsltPath);
-		    if (xsltFile.exists()){
+		    if (xsltFile.exists())
+		    {
 			isPostTreat=true;		    
-		    }else{
+		    }else
+		    {
 			dump("Postreatment file "+xsltFile.toString()+"does not exist");
 		    }
-		}else{
+		}else
+		{
 		    isPostTreat=true;
 		}
 
@@ -282,7 +288,8 @@ public class CSWProxyServlet extends ProxyServlet {
 
 		Transformer transformer = null;
 
-		if (currentOperation != null) {
+		if (currentOperation != null) 
+		{
 
 		    if (currentOperation.equals("GetCapabilities")) {
 			tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
@@ -323,16 +330,16 @@ public class CSWProxyServlet extends ProxyServlet {
 		     * if a xslt file exists then 
 		     * post-treat the response
 		     */				
-		    if (isPostTreat){		    
-			PrintWriter out = resp.getWriter();
-			transformer = tFactory.newTransformer(new StreamSource(xsltFile));		    
-			transformer.transform(new StreamSource(tempFile), new StreamResult(out));
-			//delete the temporary file
-			tempFile.delete();
-			out.close();
-			//the job is done. we can go out
-			return;
-
+		    if (isPostTreat)
+		    {		    
+				PrintWriter out = resp.getWriter();
+				transformer = tFactory.newTransformer(new StreamSource(xsltFile));		    
+				transformer.transform(new StreamSource(tempFile), new StreamResult(out));
+				//delete the temporary file
+				tempFile.delete();
+				out.close();
+				//the job is done. we can go out
+				return;
 		    }
 		}
 
@@ -368,7 +375,8 @@ public class CSWProxyServlet extends ProxyServlet {
 		e.printStackTrace();
 		dump("ERROR",e.getMessage());
 	    }
-	}else{
+	}
+	else{
 	    try{
 		resp.setContentType("application/xml");
 		resp.setContentLength(Integer.MAX_VALUE);
@@ -692,26 +700,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		    try {
 			while((byteRead = is.read()) != -1) {  
 			    os.write(byteRead);
-			}
-		    } finally{
-			os.flush();
-			os.close();   			    
-		    }
-		    os=null;
-		    is=null;
-		}
-
-		if (rh.isTransactionUpdate()){
-			//Send the xml				  
-			StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
-				
-			// Get the response
-			OutputStream os = resp.getOutputStream();
-			InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-		    int byteRead;
-		    try {
-			while((byteRead = is.read()) != -1) {  
-			    os.write(byteRead);
+			    //dump(byteRead);
 			}
 		    } finally{
 			os.flush();
@@ -744,7 +733,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	    }else{
 		if (version!=null)	    version = version.replaceAll("\\.", "");
 
-		dump (param.toString());
+		//dump (param.toString());
 		List<String> filePathList = new Vector<String>();
 		String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 		filePathList.add(filePath);

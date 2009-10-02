@@ -90,30 +90,32 @@ public class OgcProxyServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	ProxyServlet obj = null;
-	try {
-	    obj = createProxy(req.getPathInfo().substring(1), req);
-	    waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
-
-	    if (obj != null) {
-		obj.doPost(req, resp);
-
-	    }
-	} catch (Exception e) {
-	    StringBuffer sb = generateOgcError(e.getMessage());
-	    resp.setContentType("text/xml");
-	    resp.setContentLength(sb.length());
-	    OutputStream os = resp.getOutputStream();
-	    os.write(sb.toString().getBytes());
-	    os.flush();
-	    os.close();
-	} finally {
-	    /**
-	     * What ever happens, always decrease the connection number when
-	     * finished.
-	     */
-	    if (obj != null)
-		decreaseConnections(req, obj.getConfiguration().getMaxRequestNumber());
-	}
+		try {
+		    obj = createProxy(req.getPathInfo().substring(1), req);
+		    waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
+	
+		    if (obj != null) {
+			obj.doPost(req, resp);
+	
+		    }
+		} catch(Exception e){
+		    e.printStackTrace();
+			StringBuffer sb = generateOgcError(e.getMessage());
+			resp.setContentType("text/xml");
+			resp.setContentLength(sb.length());
+			OutputStream os = resp.getOutputStream();
+			os.write(sb.toString().getBytes());
+			os.flush();
+			os.close();
+		} 
+    	finally {
+		    /**
+		     * What ever happens, always decrease the connection number when
+		     * finished.
+		     */
+		    if (obj != null)
+			decreaseConnections(req, obj.getConfiguration().getMaxRequestNumber());
+		}
     }
 
     private StringBuffer generateOgcError(String errorMessage) {
