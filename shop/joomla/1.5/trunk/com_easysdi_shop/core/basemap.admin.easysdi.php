@@ -35,7 +35,7 @@ class ADMIN_basemap {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 
-		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE  basemap_def_id = $basemapId AND ordering < $row1->ordering  order by ordering";
+		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE  basemap_def_id = $basemapId AND ordering < $row1->ordering  order by ordering DESC";
 		$database->setQuery( $query );
 		$row2 = $database->loadObject() ;
 			if ($database->getErrorNum()) {
