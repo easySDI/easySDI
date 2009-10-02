@@ -62,7 +62,6 @@ import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
-
 public abstract class ProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = 3499090220094877198L;
@@ -78,50 +77,70 @@ public abstract class ProxyServlet extends HttpServlet {
     protected static final String APPLICATION_XML = "application/xml";
     protected static final String XML_OGC_WMS = "application/vnd.ogc.wms_xml";
     protected static final String XML_OGC_EXCEPTION = "application/vnd.ogc.se_xml";
-    protected static final String  SVG = "image/svg+xml";
-    private List<String> temporaryFileList= new Vector();
+    protected static final String SVG = "image/svg+xml";
+    private List<String> temporaryFileList = new Vector();
 
-    protected org.easysdi.xml.documents.Config configuration; 
+    protected org.easysdi.xml.documents.Config configuration;
 
     protected Policy policy;
-    protected String responseContentType=null; 
+    protected String responseContentType = null;
     protected String bbox = null;
     protected String srsName = null;
-    protected Vector<String> filePathList = new Vector<String>(); // Contient une liste des fichiers (sendData) réponse de chaque serveur WFS.
+    protected Vector<String> filePathList = new Vector<String>(); // Contient
+								  // une liste
+								  // des
+								  // fichiers
+								  // (sendData)
+								  // réponse de
+								  // chaque
+								  // serveur
+								  // WFS.
     protected Vector<String> layerFilePathList = new Vector<String>();
-    protected Vector<String> featureTypePathList = new Vector<String>(); //Contient le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
-//Debug tb 04.06.2009
+    protected Vector<String> featureTypePathList = new Vector<String>(); // Contient
+									 // le
+									 // featureTypetoKeep.get(0)
+									 // (->reference
+									 // pour
+									 // le
+									 // filtre
+									 // remoteFilter)
+									 // par
+									 // Server
+    // Debug tb 04.06.2009
     protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
     protected int policyAttributeListNb = 0;
-//Fin de debug
-
+    // Fin de debug
 
     private List<String> lLogs = new Vector<String>();
     protected boolean hasPolicy = true;
-    //protected String prefix = "SRV";
+
+    // protected String prefix = "SRV";
 
     protected List<RemoteServerInfo> getRemoteServerInfoList() {
-	if (configuration == null) return null;	
+	if (configuration == null)
+	    return null;
 
 	return configuration.getRemoteServer();
     }
 
     protected RemoteServerInfo getRemoteServerInfo(int i) {
-	if (configuration == null) return null;
+	if (configuration == null)
+	    return null;
 
 	List<RemoteServerInfo> l = configuration.getRemoteServer();
-	if (l != null && l.size() >0){
-	    return (RemoteServerInfo)l.get(i);
+	if (l != null && l.size() > 0) {
+	    return (RemoteServerInfo) l.get(i);
 	}
 	return null;
     }
 
     protected String getRemoteServerUrl(int i) {
-	if (configuration == null) return null;
+	if (configuration == null)
+	    return null;
 
 	List<RemoteServerInfo> l = configuration.getRemoteServer();
-	if (l != null && l.size() >0){
-	    return (String)((RemoteServerInfo)l.get(i)).getUrl();
+	if (l != null && l.size() > 0) {
+	    return (String) ((RemoteServerInfo) l.get(i)).getUrl();
 	}
 	return null;
     }
@@ -129,8 +148,9 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String getPolicyFilePath() {
 	return configuration.getPolicyFile();
     }
-    public void setConfiguration (org.easysdi.xml.documents.Config conf){
-	configuration =  conf;	
+
+    public void setConfiguration(org.easysdi.xml.documents.Config conf) {
+	configuration = conf;
     }
 
     /**
@@ -148,58 +168,57 @@ public abstract class ProxyServlet extends HttpServlet {
 	return policyFile;
     }
 
-    public void doPost(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {
-	//Get the date and time of the request
-	//lLogs = null;
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	// Get the date and time of the request
+	// lLogs = null;
 
 	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	Date d = new Date();	
-	try{
+	Date d = new Date();
+	try {
 	    requestPreTreatmentPOST(req, resp);
-	}
-	finally{
+	} finally {
 	    deleteTempFileList();
-	    writeInLog(dateFormat.format(d),req);
+	    writeInLog(dateFormat.format(d), req);
 	}
-	
+
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-    throws ServletException, IOException {
-	//lLogs = null;
-	//Get the date and time of the request
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	// lLogs = null;
+	// Get the date and time of the request
 	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	Date d = new Date();	
+	Date d = new Date();
 
-	try{	
-	    requestPreTreatmentGET(req,  resp);
-	}finally{
+	try {
+	    requestPreTreatmentGET(req, resp);
+	} finally {
 	    deleteTempFileList();
-	    writeInLog(dateFormat.format(d),req);
+	    writeInLog(dateFormat.format(d), req);
 	}
-	
+
     }
 
-    protected abstract void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp);    
+    protected abstract void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp);
+
     protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
-    /*protected abstract void transform(HashMap<String,String> env,  HttpServletRequest req,
-	    HttpServletResponse resp, String filePath) ;*/
 
-
+    /*
+     * protected abstract void transform(HashMap<String,String> env,
+     * HttpServletRequest req, HttpServletResponse resp, String filePath) ;
+     */
 
     /**
      * Builds the url from the request
      * 
      * @param req
-     *                the HttpServletRequest request
+     *            the HttpServletRequest request
      * @return returns the url
      */
     protected String getServletUrl(HttpServletRequest req) {
 	// http://hostname.com:80/mywebapp/servlet/MyServlet/a/b;c=123?d=789
-	if (configuration.getHostTranslator()!=null && configuration.getHostTranslator().length()>0){
+	if (configuration.getHostTranslator() != null && configuration.getHostTranslator().length() > 0) {
 	    return configuration.getHostTranslator();
-	} 
+	}
 	String scheme = req.getScheme(); // http
 	String serverName = req.getServerName(); // hostname.com
 	int serverPort = req.getServerPort(); // 80
@@ -208,8 +227,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	String pathInfo = req.getPathInfo(); // /a/b;c=123
 	// String queryString = req.getQueryString(); // d=789
 
-	String url = scheme + "://" + serverName + ":" + serverPort
-	+ contextPath + servletPath;
+	String url = scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
 	if (pathInfo != null) {
 	    url += pathInfo;
 	}
@@ -217,86 +235,93 @@ public abstract class ProxyServlet extends HttpServlet {
 	return url;
     }
 
-    private void writeInLog(String date, HttpServletRequest req){
-	boolean newLog=false;
-	String u="";	
-	if (req.getUserPrincipal()!=null){
+    private void writeInLog(String date, HttpServletRequest req) {
+	boolean newLog = false;
+	String u = "";
+	if (req.getUserPrincipal() != null) {
 	    u = req.getUserPrincipal().getName();
 	}
 
-	try{  
+	try {
 	    String logFile = configuration.getLogFile();
-	    if (logFile!=null){
+	    if (logFile != null) {
 		File fLogFile = new File(logFile);
-		if (!fLogFile.exists()){	  
+		if (!fLogFile.exists()) {
 		    fLogFile.createNewFile();
-		    newLog=true;    
+		    newLog = true;
 		}
 
-		FileWriter fstream = new FileWriter(fLogFile,true);
+		FileWriter fstream = new FileWriter(fLogFile, true);
 		BufferedWriter bWriter = new BufferedWriter(fstream);
 
+		dump("SYSTEM", "RemoteAddr", req.getRemoteAddr());
+		dump("SYSTEM", "RemoteUser", req.getRemoteUser());
+		dump("SYSTEM", "QueryString", req.getQueryString());
+		dump("SYSTEM", "RequestURL", req.getRequestURL());
 
-		dump("SYSTEM","RemoteAddr",req.getRemoteAddr());	
-		dump("SYSTEM","RemoteUser",req.getRemoteUser());
-		dump("SYSTEM","QueryString",req.getQueryString());
-		dump("SYSTEM","RequestURL",req.getRequestURL());
-
-		if (newLog)bWriter.write("<Log>");
-		bWriter.write("<LogRequest user=\""+u+"\" requestTime=\""+date+"\"> \n");
+		if (newLog)
+		    bWriter.write("<Log>");
+		bWriter.write("<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\"> \n");
 		synchronized (lLogs) {
-		    for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-			bWriter.write(i.next()+"\n");
-		    } 
+		    for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+			bWriter.write(i.next() + "\n");
+		    }
 		}
-		bWriter.write("</LogRequest>"+"\n");
-		bWriter.close();}
-	    else{
-		String sHeader = "<LogRequest user=\""+u+"\" requestTime=\""+date+"\">"+"\n";
+		bWriter.write("</LogRequest>" + "\n");
+		bWriter.close();
+	    } else {
+		String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
 		System.err.println(sHeader);
 		synchronized (lLogs) {
-		    for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-			System.err.println(i.next()+"\n");
-		    } 
+		    for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+			System.err.println(i.next() + "\n");
+		    }
 		}
-		System.err.println("</LogRequest>"+"\n");
+		System.err.println("</LogRequest>" + "\n");
 	    }
-	}
-	catch(Exception e){
+	} catch (Exception e) {
 	    e.printStackTrace();
-	    String sHeader = "<LogRequest user=\""+u+"\" requestTime=\""+date+"\">"+"\n";
+	    String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
 	    System.err.println(sHeader);
 	    synchronized (lLogs) {
-		for( Iterator<String> i = lLogs.iterator(); i.hasNext();){
-		    System.err.println(i.next()+"\n");
-		} 
+		for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+		    System.err.println(i.next() + "\n");
+		}
 	    }
-	    System.err.println("</LogRequest>"+"\n");	    	    
+	    System.err.println("</LogRequest>" + "\n");
 
 	}
 
     }
-    protected void dump(String severity, String name ,Object o) {
-	dump(severity,name,""+o);	
+
+    protected void dump(String severity, String name, Object o) {
+	dump(severity, name, "" + o);
     }
-    protected void dump(String severity, String name ,int sb) {
-	dump(severity,name,""+sb);
+
+    protected void dump(String severity, String name, int sb) {
+	dump(severity, name, "" + sb);
 
     }
-    protected void dump(String severity, String name ,StringBuffer sb) {
-	if (sb!=null) dump(severity,name,sb.toString());
-	else dump(severity,name,"null");
+
+    protected void dump(String severity, String name, StringBuffer sb) {
+	if (sb != null)
+	    dump(severity, name, sb.toString());
+	else
+	    dump(severity, name, "null");
     }
-    protected void dump(String severity, String name ,String s) {
-	if (severity==null) severity="DEBUG";
-	if (s==null) s="null";
-	StringBuffer sb = new StringBuffer();		
+
+    protected void dump(String severity, String name, String s) {
+	if (severity == null)
+	    severity = "DEBUG";
+	if (s == null)
+	    s = "null";
+	StringBuffer sb = new StringBuffer();
 
 	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	Date d = new Date();
 
-	sb.append("<logEntry time=\""+dateFormat.format(d)+"\" severity=\""+ severity+"\"");
-	if (name!=null){
+	sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"" + severity + "\"");
+	if (name != null) {
 	    sb.append(" name=\"");
 	    sb.append(name);
 	    sb.append("\"");
@@ -305,26 +330,34 @@ public abstract class ProxyServlet extends HttpServlet {
 	sb.append(s);
 	sb.append("</logEntry>");
 
-	synchronized (lLogs) {	    	
-	    if (lLogs==null) lLogs=new Vector<String>();
+	synchronized (lLogs) {
+	    if (lLogs == null)
+		lLogs = new Vector<String>();
 	    lLogs.add(sb.toString());
 	}
     }
+
     protected void dump(String s, String s2) {
-	if (s2!=null)dump(s, null,s2);
-	else dump(s, null,"null");
+	if (s2 != null)
+	    dump(s, null, s2);
+	else
+	    dump(s, null, "null");
 
     }
 
     protected void dump(String s, Object o) {
-	if (o!=null)dump(s, o.toString());
-	else dump(s, "null");
+	if (o != null)
+	    dump(s, o.toString());
+	else
+	    dump(s, "null");
 
     }
 
     protected void dump(Object o) {
-	if (o!=null)dump("INFO", o.toString());
-	else dump("INFO", "null");
+	if (o != null)
+	    dump("INFO", o.toString());
+	else
+	    dump("INFO", "null");
     }
 
     protected void dump(String s, Double d) {
@@ -334,89 +367,96 @@ public abstract class ProxyServlet extends HttpServlet {
     protected void dump(Double d) {
 	dump("INFO", d.toString());
     }
-    protected void dump(String s,double d) {
+
+    protected void dump(String s, double d) {
 	dump(s, Double.toString(d));
     }
+
     protected void dump(double d) {
 	dump("INFO", Double.toString(d));
     }
+
     /***************************************************************************
      * Dump the string into the log file with the info severity
      * 
      * @param s
-     *                the String to dump
+     *            the String to dump
      */
     protected void dump(String s) {
-	if (s!=null) dump("INFO", s);
-	else dump("INFO","null");
+	if (s != null)
+	    dump("INFO", s);
+	else
+	    dump("INFO", "null");
     }
 
     /***************************************************************************
      * Dump the stringBuffer into the log file with the info severity
      * 
      * @param s
-     *                the StringBuffer to dump
+     *            the StringBuffer to dump
      */
     protected void dump(StringBuffer s) {
-	if (s!=null)dump(s.toString());
-	else dump("null");
+	if (s != null)
+	    dump(s.toString());
+	else
+	    dump("null");
     }
 
     /***************************************************************************
      * Dump the stringBuffer into the log file
      * 
      * @param s
-     *                the StringBuffer to dump
+     *            the StringBuffer to dump
      */
     protected void dump(String severity, StringBuffer s) {
-	if (s!=null) dump(severity, s.toString());
-	else dump(severity, "null");
+	if (s != null)
+	    dump(severity, s.toString());
+	else
+	    dump(severity, "null");
     }
 
     /**
      * Sends parameters to a remote server
      * 
      * @param method
-     *                GET or POST method
+     *            GET or POST method
      * @param urlstr
-     *                remote server url
+     *            remote server url
      * @param parameters
-     *                parameters to send to the remote server
-     * @return a String containing the path to the file containing the response from the remote server
+     *            parameters to send to the remote server
+     * @return a String containing the path to the file containing the response
+     *         from the remote server
      * @throws IOException
      */
 
-    protected String sendData(String method, String urlstr,
-	    String parameters) {
+    protected String sendData(String method, String urlstr, String parameters) {
 	try {
-	    if (urlstr!=null){
-		if (urlstr.endsWith("?")){
-		    urlstr =urlstr.substring(0, urlstr.length()-1);
+	    if (urlstr != null) {
+		if (urlstr.endsWith("?")) {
+		    urlstr = urlstr.substring(0, urlstr.length() - 1);
 		}
 	    }
 	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    Date d = new Date();	
-	    dump("SYSTEM","RemoteRequestUrl",urlstr);
-	    dump("SYSTEM","RemoteRequest",parameters);
-	    dump("SYSTEM","RemoteRequestLength",parameters.length());
-	    dump("SYSTEM","RemoteRequestDateTime",dateFormat.format(d));
+	    Date d = new Date();
+	    dump("SYSTEM", "RemoteRequestUrl", urlstr);
+	    dump("SYSTEM", "RemoteRequest", parameters);
+	    dump("SYSTEM", "RemoteRequestLength", parameters.length());
+	    dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
 	    String cookie = null;
 
 	    if (getLoginService(urlstr) != null) {
 		cookie = geonetworkLogIn(getLoginService(urlstr));
 	    }
 
-
-	    String encoding =null;
+	    String encoding = null;
 
 	    if (getUsername(urlstr) != null && getPassword(urlstr) != null) {
 		String userPassword = getUsername(urlstr) + ":" + getPassword(urlstr);
-		encoding = new sun.misc.BASE64Encoder()
-		.encode(userPassword.getBytes());
+		encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
 
 	    }
 
-	    if (method.equalsIgnoreCase("GET")) {	
+	    if (method.equalsIgnoreCase("GET")) {
 
 		urlstr = urlstr + "?" + parameters;
 
@@ -429,21 +469,19 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (cookie != null) {
 		hpcon.addRequestProperty("Cookie", cookie);
 	    }
-	    if (encoding!=null){
+	    if (encoding != null) {
 		hpcon.setRequestProperty("Authorization", "Basic " + encoding);
 	    }
 	    hpcon.setUseCaches(false);
 	    hpcon.setDoInput(true);
 
 	    if (method.equalsIgnoreCase("POST")) {
-		hpcon.setRequestProperty("Content-Length", ""
-			+ Integer.toString(parameters.getBytes().length));
-		//hpcon.setRequestProperty("Content-Type", contentType);
+		hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
+		// hpcon.setRequestProperty("Content-Type", contentType);
 		hpcon.setRequestProperty("Content-Type", "text/xml");
 
 		hpcon.setDoOutput(true);
-		DataOutputStream printout = new DataOutputStream(hpcon
-			.getOutputStream());
+		DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
 		printout.writeBytes(parameters);
 		printout.flush();
 		printout.close();
@@ -453,41 +491,41 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	    // getting the response is required to force the request, otherwise
 	    // it might not even be sent at all
-	    InputStream in= null;
+	    InputStream in = null;
 
-	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) { 
+	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
 		in = new GZIPInputStream(hpcon.getInputStream());
-		dump("DEBUG","return of the remote server is zipped");
-	    }else{
-		in= hpcon.getInputStream();
+		dump("DEBUG", "return of the remote server is zipped");
+	    } else {
+		in = hpcon.getInputStream();
 	    }
 
 	    int input;
 
-	    responseContentType = hpcon.getContentType();	    	    
+	    responseContentType = hpcon.getContentType();
 	    String tmpDir = System.getProperty("java.io.tmpdir");
-	    dump (" tmpDir :  "+tmpDir);
+	    dump(" tmpDir :  " + tmpDir);
 
-	    File tempFile = createTempFile("sendData_"+UUID.randomUUID().toString(), getExtension(responseContentType));
+	    File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseContentType));
 
 	    FileOutputStream tempFos = new FileOutputStream(tempFile);
 
 	    byte[] buf = new byte[32768];
-	    int nread;	    	    
+	    int nread;
 
-	    while((nread = in.read(buf, 0, buf.length)) >= 0) {
-		tempFos.write(buf, 0, nread);	       
-	    }		    
+	    while ((nread = in.read(buf, 0, buf.length)) >= 0) {
+		tempFos.write(buf, 0, nread);
+	    }
 
 	    tempFos.flush();
 	    tempFos.close();
 	    in.close();
-	    dump("SYSTEM","RemoteResponseToRequestUrl",urlstr);
-	    dump("SYSTEM","RemoteResponseLength",tempFile.length());
+	    dump("SYSTEM", "RemoteResponseToRequestUrl", urlstr);
+	    dump("SYSTEM", "RemoteResponseLength", tempFile.length());
 
 	    dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-	    d = new Date();	
-	    dump("SYSTEM","RemoteResponseDateTime",dateFormat.format(d));
+	    d = new Date();
+	    dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
 	    return tempFile.toString();
 
 	} catch (Exception e) {
@@ -498,24 +536,20 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
     }
 
-
-    protected String geonetworkLogIn (String loginServiceUrl){
+    protected String geonetworkLogIn(String loginServiceUrl) {
 
 	String cookie = null;
-	//dump("SYSTEM","LoginServiceUrl",loginServiceUrl);
-	try{
+	// dump("SYSTEM","LoginServiceUrl",loginServiceUrl);
+	try {
 	    URL urlLoginService = new URL(loginServiceUrl);
 	    HttpURLConnection hpconLoginService = null;
-	    hpconLoginService = (HttpURLConnection) urlLoginService
-	    .openConnection();
+	    hpconLoginService = (HttpURLConnection) urlLoginService.openConnection();
 	    hpconLoginService.setRequestMethod("GET");
 	    hpconLoginService.setUseCaches(false);
 	    hpconLoginService.setDoInput(true);
 	    hpconLoginService.setDoOutput(false);
 
-	    BufferedReader inLoginService = new BufferedReader(
-		    new InputStreamReader(hpconLoginService
-			    .getInputStream()));
+	    BufferedReader inLoginService = new BufferedReader(new InputStreamReader(hpconLoginService.getInputStream()));
 	    String inputLoginService;
 	    cookie = hpconLoginService.getHeaderField("Set-Cookie");
 
@@ -523,7 +557,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		// dump(inputLoginService);
 	    }
 	    inLoginService.close();
-	}catch (Exception e){
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 
@@ -531,30 +565,35 @@ public abstract class ProxyServlet extends HttpServlet {
 
     }
 
-
     /*
      * Send a file using mulipart/form-data
-     *  @param urlstr the url where to send
-     *  @param filePath the path of the file to send
-     *  @param loginServiceUrl Url to log in If needed
-     *  @param parameterName The name of the file paramater
-     *  @param parameterFileName The name of the file that will be published in the request  
+     * 
+     * @param urlstr the url where to send
+     * 
+     * @param filePath the path of the file to send
+     * 
+     * @param loginServiceUrl Url to log in If needed
+     * 
+     * @param parameterName The name of the file paramater
+     * 
+     * @param parameterFileName The name of the file that will be published in
+     * the request
      */
-    protected StringBuffer sendFile(String urlstr, String filePath, String loginServiceUrl,String parameterName,String parameterFileName) {
-	try{
+    protected StringBuffer sendFile(String urlstr, String filePath, String loginServiceUrl, String parameterName, String parameterFileName) {
+	try {
 	    InputStream is = new FileInputStream(filePath);
-	    return sendFile( urlstr,is , loginServiceUrl,parameterName,parameterFileName) ;
-	}catch (Exception e){
+	    return sendFile(urlstr, is, loginServiceUrl, parameterName, parameterFileName);
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
 	return new StringBuffer();
     }
 
-    protected StringBuffer sendFile(String urlstr, InputStream in, String loginServiceUrl,String parameterName,String parameterFileName) {
+    protected StringBuffer sendFile(String urlstr, InputStream in, String loginServiceUrl, String parameterName, String parameterFileName) {
 
-	try{
+	try {
 	    String cookie = null;
-	    if (loginServiceUrl!=null) {		    
+	    if (loginServiceUrl != null) {
 		cookie = geonetworkLogIn(loginServiceUrl);
 	    }
 
@@ -565,81 +604,79 @@ public abstract class ProxyServlet extends HttpServlet {
 	    hpcon.setRequestMethod("POST");
 	    hpcon.addRequestProperty("Cookie", cookie);
 
-	    hpcon.setUseCaches(false); 
+	    hpcon.setUseCaches(false);
 	    hpcon.setDoInput(true);
 	    hpcon.setDoOutput(true);
-
 
 	    Random random = new Random();
 
 	    String boundary = "---------------------------" + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36) + Long.toString(random.nextLong(), 36);
-	    hpcon.setRequestProperty("Content-Type","multipart/form-data; boundary=" + boundary);
+	    hpcon.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
 
-	    hpcon.connect();	    
+	    hpcon.connect();
 	    DataOutputStream os = new DataOutputStream(hpcon.getOutputStream());
 
-	    String s1 = "--" +boundary +"\r\ncontent-disposition: form-data; name=\"" +parameterName +"\"; filename=\"" +parameterFileName +"\"\r\nContent-Type: application/octet-stream\r\n\r\n";
+	    String s1 = "--" + boundary + "\r\ncontent-disposition: form-data; name=\"" + parameterName + "\"; filename=\"" + parameterFileName
+		    + "\"\r\nContent-Type: application/octet-stream\r\n\r\n";
 
-	    os.writeBytes(s1);		
+	    os.writeBytes(s1);
 
 	    byte[] buf = new byte[32768];
-	    int nread;	    	    
+	    int nread;
 	    synchronized (in) {
-		while((nread = in.read(buf, 0, buf.length)) >= 0) {
-		    os.write(buf, 0, nread);	       
+		while ((nread = in.read(buf, 0, buf.length)) >= 0) {
+		    os.write(buf, 0, nread);
 		}
 	    }
 	    os.flush();
 
-	    String boundar = "\r\n--" +boundary +"--";
-	    os.writeBytes(boundar);	   	        
-	    buf = null;	   
+	    String boundar = "\r\n--" + boundary + "--";
+	    os.writeBytes(boundar);
+	    buf = null;
 	    os.close();
-	    in= null;
-	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) { 
-		in = new GZIPInputStream(hpcon.getInputStream());		
-	    }else{
-		in= hpcon.getInputStream();
-	    }	    	    	    
-	    BufferedReader br = new BufferedReader(
-		    new InputStreamReader(in));
+	    in = null;
+	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
+		in = new GZIPInputStream(hpcon.getInputStream());
+	    } else {
+		in = hpcon.getInputStream();
+	    }
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 	    String input;
-	    StringBuffer response= new StringBuffer();
+	    StringBuffer response = new StringBuffer();
 	    while ((input = br.readLine()) != null) {
-		response.append(input);			    
-	    }  	    	    	    
-	    return response;    
-	}catch(Exception e){
+		response.append(input);
+	    }
+	    return response;
+	} catch (Exception e) {
 	    e.printStackTrace();
-	}   
+	}
 	return new StringBuffer();
     }
 
-
     protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
-    	try{
-    		HttpClient client = new HttpClient();
-    		
-    		PostMethod post = new PostMethod(urlstr);
-    		post.addRequestHeader("Content-Type","application/xml");
-    		post.addRequestHeader("Charset","UTF-8");
-    		post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
-    		
-    		GetMethod loginGet = new GetMethod(loginServiceUrl);
-    		client.executeMethod(loginGet);
-    		client.executeMethod(post);
-    		StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
-    	    
-    	    return response;    
-    	}catch(Exception e){
-    	    e.printStackTrace();
-    	}   
-    	return new StringBuffer();
-        }
+	try {
+	    HttpClient client = new HttpClient();
 
-    protected StringBuffer send( String urlstr, String loginServiceUrl) {
+	    PostMethod post = new PostMethod(urlstr);
+	    post.addRequestHeader("Content-Type", "application/xml");
+	    post.addRequestHeader("Charset", "UTF-8");
+	    post.setRequestBody(new ByteArrayInputStream(param.toString().getBytes("UTF-8")));
+
+	    GetMethod loginGet = new GetMethod(loginServiceUrl);
+	    client.executeMethod(loginGet);
+	    client.executeMethod(post);
+	    StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
+
+	    return response;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return new StringBuffer();
+    }
+
+    protected StringBuffer send(String urlstr, String loginServiceUrl) {
 	try {
 
 	    String cookie = null;
@@ -656,66 +693,58 @@ public abstract class ProxyServlet extends HttpServlet {
 		hpcon.addRequestProperty("Cookie", cookie);
 	    }
 
-
 	    hpcon.setUseCaches(false);
 	    hpcon.setDoInput(true);
 
 	    hpcon.setDoOutput(false);
 
-
 	    // getting the response is required to force the request, otherwise
 	    // it might not even be sent at all
-	    InputStream in= null;
+	    InputStream in = null;
 
-	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) { 
+	    if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
 		in = new GZIPInputStream(hpcon.getInputStream());
-	    }else{
-		in= hpcon.getInputStream();
+	    } else {
+		in = hpcon.getInputStream();
 	    }
 
-
-
-
-	    BufferedReader br = new BufferedReader(
-		    new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 	    String input;
-	    StringBuffer response= new StringBuffer();
+	    StringBuffer response = new StringBuffer();
 	    while ((input = br.readLine()) != null) {
-		response.append(input);			    
-	    }  	    	    	    
+		response.append(input);
+	    }
 	    return response;
 
-
-
 	} catch (Exception e) {
-	    e.printStackTrace();	    
+	    e.printStackTrace();
 	}
 	return new StringBuffer();
     }
 
-
-    protected boolean isAcceptingTransparency(String responseContentType) {		
+    protected boolean isAcceptingTransparency(String responseContentType) {
 	boolean isTransparent = true;
-	if (responseContentType== null) return true;
-	if (isXML(responseContentType)){
+	if (responseContentType == null)
+	    return true;
+	if (isXML(responseContentType)) {
 	    isTransparent = false;
-	}else if (responseContentType.startsWith(PNG)){
+	} else if (responseContentType.startsWith(PNG)) {
 	    isTransparent = true;
-	}else if (responseContentType.startsWith(SVG)){
-	    isTransparent = true;   
-	}else if (responseContentType.startsWith(GIF)){
-	    isTransparent = true;   
-	}else if (responseContentType.startsWith(JPG)){
-	    isTransparent = false;   
-	}else if (responseContentType.startsWith(JPEG)){
-	    isTransparent = false;   
-	}else if (responseContentType.startsWith(TIFF)){
-	    isTransparent = true;   
-	}else if (responseContentType.startsWith(BMP)){
-	    isTransparent = false;    
-	}else{
-	    dump("unkwnon content type"+responseContentType);
+	} else if (responseContentType.startsWith(SVG)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(GIF)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(JPG)) {
+	    isTransparent = false;
+	} else if (responseContentType.startsWith(JPEG)) {
+	    isTransparent = false;
+	} else if (responseContentType.startsWith(TIFF)) {
+	    isTransparent = true;
+	} else if (responseContentType.startsWith(BMP)) {
+	    isTransparent = false;
+	} else {
+	    dump("unkwnon content type" + responseContentType);
 	}
 
 	return isTransparent;
@@ -725,74 +754,74 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param responseContentType2
      * @return
      */
-    protected String getExtension(String responseContentType) {		
+    protected String getExtension(String responseContentType) {
 	String ext = ".unk";
-	if (responseContentType== null) return ext;
-	if (isXML(responseContentType)){
+	if (responseContentType == null)
+	    return ext;
+	if (isXML(responseContentType)) {
 	    ext = ".xml";
-	}else if (responseContentType.startsWith(PNG)){
+	} else if (responseContentType.startsWith(PNG)) {
 	    ext = ".png";
-	}else if (responseContentType.startsWith(SVG)){
-	    ext = ".svg";	    
-	}else if (responseContentType.startsWith(GIF)){
-	    ext = ".gif";	    
-	}else if (responseContentType.startsWith(JPG)){
-	    ext = ".jpg";	    
-	}else if (responseContentType.startsWith(JPEG)){
-	    ext = ".jpeg";	    
-	}else if (responseContentType.startsWith(TIFF)){
-	    ext = ".tiff";	    
-	}else if (responseContentType.startsWith(BMP)){
-	    ext = ".bmp";	    
-	}else{
-	    dump("unkwnon content type"+responseContentType);
+	} else if (responseContentType.startsWith(SVG)) {
+	    ext = ".svg";
+	} else if (responseContentType.startsWith(GIF)) {
+	    ext = ".gif";
+	} else if (responseContentType.startsWith(JPG)) {
+	    ext = ".jpg";
+	} else if (responseContentType.startsWith(JPEG)) {
+	    ext = ".jpeg";
+	} else if (responseContentType.startsWith(TIFF)) {
+	    ext = ".tiff";
+	} else if (responseContentType.startsWith(BMP)) {
+	    ext = ".bmp";
+	} else {
+	    dump("unkwnon content type" + responseContentType);
 	}
 
 	return ext;
     }
 
-    protected File createTempFile(String name , String ext){
-	try{
+    protected File createTempFile(String name, String ext) {
+	try {
 	    File f = File.createTempFile(name, ext);
 	    temporaryFileList.add(f.toURI().toString());
 	    return f;
-	}catch(Exception e){
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    return null;
 	}
 
     }
 
-    protected void deleteTempFileList(){
-	
-	
-	try{
-	    for (int i = 0;i<temporaryFileList.size();i++){
+    protected void deleteTempFileList() {
+
+	try {
+	    for (int i = 0; i < temporaryFileList.size(); i++) {
 		File f = new File(new URI(temporaryFileList.get(i)));
 		if (f.exists()) {
 		    boolean deleted = f.delete();
-		    if (deleted) dump ("INFO","temporary file "+f.toURI().toString()+" is deleted");
+		    if (deleted)
+			dump("INFO", "temporary file " + f.toURI().toString() + " is deleted");
 		    else {
 			f.deleteOnExit();
-			dump ("WARNING","temporary file "+f.toURI().toString()+" is not deleted");		    
+			dump("WARNING", "temporary file " + f.toURI().toString() + " is not deleted");
 		    }
 		}
 
-	    }	    
+	    }
 	    temporaryFileList.clear();
-	}catch(Exception e){
-	    e.printStackTrace();	    
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
 
     }
 
-    protected boolean isXML(String responseContentType){
-	if (responseContentType==null ) return false;
+    protected boolean isXML(String responseContentType) {
+	if (responseContentType == null)
+	    return false;
 
-	if (responseContentType.startsWith(XML) || 
-		responseContentType.startsWith(XML_OGC_WMS) || 
-		responseContentType.startsWith(XML_OGC_EXCEPTION) ||
-		responseContentType.startsWith(APPLICATION_XML)) return true;
+	if (responseContentType.startsWith(XML) || responseContentType.startsWith(XML_OGC_WMS) || responseContentType.startsWith(XML_OGC_EXCEPTION) || responseContentType.startsWith(APPLICATION_XML))
+	    return true;
 	return false;
 
     }
@@ -804,23 +833,25 @@ public abstract class ProxyServlet extends HttpServlet {
     protected Object getUsername(String urlstr) {
 
 	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it =  serverInfoList.iterator();
-	while( it.hasNext()){
+	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
+	while (it.hasNext()) {
 	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr)) return serverInfo.getUser();
+	    if (serverInfo.getUrl().equals(urlstr))
+		return serverInfo.getUser();
 	}
 
 	return null;
     }
 
-    protected StringBuffer  generateOgcError(String errorMessage){
-	StringBuffer sb = new StringBuffer ("<?xml version='1.0' encoding='utf-8' ?>");
-	sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+    protected StringBuffer generateOgcError(String errorMessage) {
+	StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+	sb
+		.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
 	sb.append("<ServiceException>");
 	sb.append(errorMessage);
 	sb.append("</ServiceException>");
 	sb.append("</ServiceExceptionReport>");
-	return sb;  
+	return sb;
     }
 
     /**
@@ -829,17 +860,21 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected Object getPassword(String urlstr) {
 	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it =  serverInfoList.iterator();
-	while( it.hasNext()){
+	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
+	while (it.hasNext()) {
 	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr)) 
-	    {
-//Debug tb 28.09.2009
-		    //Utilisation de la classe Java "Authenticator" qui ajoute l'authentication, selon les besoins, à la classe java "URLConnection".
-		    //Pour des raisons de vérification de schema xsd (requete DescribeFeatureType), la classe "DocumentFactory" nécessite l'authentication au cas où geoserver défini un compte de service.
-	    	org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
-//Fin de debug
-	    	return serverInfo.getPassword();
+	    if (serverInfo.getUrl().equals(urlstr)) {
+		// Debug tb 28.09.2009
+		// Utilisation de la classe Java "Authenticator" qui ajoute
+		// l'authentication, selon les besoins, à la classe java
+		// "URLConnection".
+		// Pour des raisons de vérification de schema xsd (requete
+		// DescribeFeatureType), la classe "DocumentFactory" nécessite
+		// l'authentication au cas où geoserver défini un compte de
+		// service.
+		org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
+		// Fin de debug
+		return serverInfo.getPassword();
 	    }
 	}
 
@@ -851,10 +886,11 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     private String getLoginService(String urlstr) {
 	List<RemoteServerInfo> serverInfoList = configuration.getRemoteServer();
-	Iterator<RemoteServerInfo> it =  serverInfoList.iterator();
-	while( it.hasNext()){
+	Iterator<RemoteServerInfo> it = serverInfoList.iterator();
+	while (it.hasNext()) {
 	    RemoteServerInfo serverInfo = it.next();
-	    if (serverInfo.getUrl().equals(urlstr)) return serverInfo.getLoginService();
+	    if (serverInfo.getUrl().equals(urlstr))
+		return serverInfo.getLoginService();
 	}
 	return null;
     }
@@ -863,7 +899,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	return configuration;
     }
 
-    public Policy getPolicy() {	
+    public Policy getPolicy() {
 	return this.policy;
     }
 
@@ -872,412 +908,453 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     /**
-     * If the operation is allowed in the policy then return true, in any other case return false.
-     * @param operation the operation to check
-     * @return true | false. 
+     * If the operation is allowed in the policy then return true, in any other
+     * case return false.
+     * 
+     * @param operation
+     *            the operation to check
+     * @return true | false.
      */
-    protected boolean isOperationAllowed (String operation){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+    protected boolean isOperationAllowed(String operation) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
 	}
 
-	if (policy.getOperations().isAll()) return true;
+	if (policy.getOperations().isAll())
+	    return true;
 	List<Operation> operationList = policy.getOperations().getOperation();
-	for (int i=0;i<operationList.size();i++){
-	    if (operation.equalsIgnoreCase(operationList.get(i).getName())) return true;
-	}	
+	for (int i = 0; i < operationList.size(); i++) {
+	    if (operation.equalsIgnoreCase(operationList.get(i).getName()))
+		return true;
+	}
 	return false;
     }
 
     /**
-     * Detects if the feature type is allowed or not against the rule. 
-     * @param ft The feature Type to test
-     * @param url the url of the remote server.
+     * Detects if the feature type is allowed or not against the rule.
+     * 
+     * @param ft
+     *            The feature Type to test
+     * @param url
+     *            the url of the remote server.
      * @return true if the feature type is allowed, false if not
      */
-    protected boolean isFeatureTypeAllowed (String ft,String url){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+    protected boolean isFeatureTypeAllowed(String ft, String url) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
 	}
 
-
-	boolean isServerFound = false;	
+	boolean isServerFound = false;
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound=true;
-		//Are all feature Types Allowed ?
-		if (serverList.get(i).getFeatureTypes().isAll()) return true;
+		isServerFound = true;
+		// Are all feature Types Allowed ?
+		if (serverList.get(i).getFeatureTypes().isAll())
+		    return true;
 
 		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j=0;j<ftList.size();j++){
-		    //Is a specific feature type allowed ? 
-		    if (ft.equals(ftList.get(j).getName())) return true;		    
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName()))
+			return true;
 		}
 
 	    }
-	}	
-	//if the server is not overloaded and if all the servers are allowed then 
-	//We can consider that's ok
-	if (!isServerFound && policy.getServers().isAll()) return true;
+	}
+	// if the server is not overloaded and if all the servers are allowed
+	// then
+	// We can consider that's ok
+	if (!isServerFound && policy.getServers().isAll())
+	    return true;
 
-	//in any other case the feature type is not allowed
+	// in any other case the feature type is not allowed
 	return false;
     }
 
     /**
-     * Detects if the layer is allowed or not against the rule. 
-     * @param layer The layer to test
-     * @param url the url of the remote server.
+     * Detects if the layer is allowed or not against the rule.
+     * 
+     * @param layer
+     *            The layer to test
+     * @param url
+     *            the url of the remote server.
      * @return true if the layer is allowed, false if not
      */
-    protected boolean isLayerAllowed (String layer,String url){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+    protected boolean isLayerAllowed(String layer, String url) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
 	}
 
-	if (layer == null )return false;
+	if (layer == null)
+	    return false;
 
-	boolean isServerFound = false;	
+	boolean isServerFound = false;
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound=true;
-		//Are all layers Allowed ?
-		if (serverList.get(i).getLayers().isAll()) return true;
+		isServerFound = true;
+		// Are all layers Allowed ?
+		if (serverList.get(i).getLayers().isAll())
+		    return true;
 
 		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j=0;j<layerList.size();j++){		    
-		    //Is a specific layer allowed ? 
-		    if (layer.equals(layerList.get(j).getName())) return true; 
+		for (int j = 0; j < layerList.size(); j++) {
+		    // Is a specific layer allowed ?
+		    if (layer.equals(layerList.get(j).getName()))
+			return true;
 		}
 
 	    }
 	}
-	//if the server is not overloaded and if all the servers are allowed then 
-	//We can consider that's ok
-	if (!isServerFound && policy.getServers().isAll()) return true;
+	// if the server is not overloaded and if all the servers are allowed
+	// then
+	// We can consider that's ok
+	if (!isServerFound && policy.getServers().isAll())
+	    return true;
 
-	//in any other case the feature type is not allowed
+	// in any other case the feature type is not allowed
 	return false;
     }
+
     /**
-     * Detects if the layer is an allowed or not against the rule. 
-     * @param layer The layer to test
-     * @param url the url of the remote server.
-     * @param scale the current scale
+     * Detects if the layer is an allowed or not against the rule.
+     * 
+     * @param layer
+     *            The layer to test
+     * @param url
+     *            the url of the remote server.
+     * @param scale
+     *            the current scale
      * @return true if the layer is the allowed scale, false if not
      */
-    protected boolean isLayerInScale (String layer,String url,double scale){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+    protected boolean isLayerInScale(String layer, String url, double scale) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
 	}
 
-
-	boolean isServerFound = false;	
+	boolean isServerFound = false;
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		isServerFound=true;
-		//Are all layers Allowed ?
-		if (serverList.get(i).getLayers().isAll()) return true;
+		isServerFound = true;
+		// Are all layers Allowed ?
+		if (serverList.get(i).getLayers().isAll())
+		    return true;
 
 		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		for (int j=0;j<layerList.size();j++){
-		    //Is a specific layer allowed ? 
+		for (int j = 0; j < layerList.size(); j++) {
+		    // Is a specific layer allowed ?
 		    if (layer.equals(layerList.get(j).getName())) {
 			Double scaleMin = layerList.get(j).getScaleMin();
 			Double scaleMax = layerList.get(j).getScaleMax();
 
-			if (scaleMin == null) scaleMin = new Double(0);
-			if (scaleMax == null) scaleMax = new Double(Double.MAX_VALUE);
-			if (scale>=scaleMin.doubleValue() && scale<=scaleMax.doubleValue())return true;
-			else return false;
+			if (scaleMin == null)
+			    scaleMin = new Double(0);
+			if (scaleMax == null)
+			    scaleMax = new Double(Double.MAX_VALUE);
+			if (scale >= scaleMin.doubleValue() && scale <= scaleMax.doubleValue())
+			    return true;
+			else
+			    return false;
 		    }
 		}
 
 	    }
-	}	
+	}
 
-	//if the server is not overloaded and if all the servers are allowed then 
-	//We can consider that's ok
-	if (!isServerFound && policy.getServers().isAll()) return true;
+	// if the server is not overloaded and if all the servers are allowed
+	// then
+	// We can consider that's ok
+	if (!isServerFound && policy.getServers().isAll())
+	    return true;
 
-	//in any other case the feature type is not allowed
+	// in any other case the feature type is not allowed
 	return false;
     }
 
-
     /**
-     * Detects if the attribute of a feature type is allowed or not against the rule. 
-     * @param ft The feature Type to test
-     * @param url the url of the remote server.
-     * @param isAllAttributes if the user request need all attributes.
+     * Detects if the attribute of a feature type is allowed or not against the
+     * rule.
+     * 
+     * @param ft
+     *            The feature Type to test
+     * @param url
+     *            the url of the remote server.
+     * @param isAllAttributes
+     *            if the user request need all attributes.
      * @return true if the feature type is allowed, false if not
      */
-    protected boolean isAttributeAllowed (String url,String ft,String attribute)
-    	{
-		if (policy == null) return false;
-		if (policy.getAvailabilityPeriod() !=null) 
-			{
-		    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
-			}
-	
-		boolean isServerFound = false;
-		boolean isFeatureTypeFound = false;
-		boolean FeatureTypeAllowed = false;
-	
-		List<Server> serverList = policy.getServers().getServer();
-	
-		for (int i=0;i<serverList.size();i++)
-			{
-		    //Is the server overloaded?  
-		    if (url.equalsIgnoreCase(serverList.get(i).getUrl()))
-		    	{
-		    	isServerFound=true;		
-		    	List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		    	FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
-		    	for (int j=0;j<ftList.size();j++)
-		    		{
-				    //Is a specific feature type allowed ? 
-				    if (ft.equals(ftList.get(j).getName()))
-				    	{
-				    	isFeatureTypeFound=true;			
-				    	//If all the attribute are authorized, then return true;
-				    	if (ftList.get(j).getAttributes().isAll())
-				    	{
-//Debug tb 08.06.2009
-				    	policyAttributeListNb = 0;
-//Fin de debug
-				    	return true;
-				    	}
-				    	
-				    	//List d'attributs de Policy pour le featureType courant
-				    	List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
-				    	//Supprime les résultats, contenu dans la globale var, issus du précédent appel de la fonction courante
-				    	policyAttributeListToKeepPerFT.clear();
-				    	for (int k=0;k<attributeList.size();k++)
-				    		{
-				    		//If attributes are listed in user req 
-				    		if (attribute.equals(attributeList.get(k).getContent())) return true;
-//Debug tb 04.06.2009
-				    		//If no attributes are listed in user req -> all the Policy Attributes will be returned
-				    		else if (attribute.equals(""))
-				    			{
-				    			String tmpFA = attributeList.get(k).getContent();
-					    		if (tmpFA!=null)
-					    			{
-					    			String [] s = tmpFA.split(":");
-					    			tmpFA = s[s.length-1];
-					    			}
-					    		policyAttributeListToKeepPerFT.add(tmpFA);
-				    			//then at the end of function -> return false, "" is effectively not a valid attribute
-				    			}
-//Fin de debug
-				    		}
-//Debug tb 08.06.2009
-				    	// Pour que attributeListToKeepNbPerFT du featureType courant puisse enregistrer le nombre d'attributs de la Policy
-				    	policyAttributeListNb = attributeList.size();
-//Fin de debug
-				    	} 
-		    		}
-		    	}
-			}	
-	
-	
-		//if the server is not overloaded and if all the servers are allowed then 
-		//We can say that's ok
-		if (!isServerFound && policy.getServers().isAll()) return true;
-	
-		//if the server is overloaded and if the specific featureType was not overloaded and All the featuetypes are allowed 
-		//We can say that's ok
-		if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed) return true;
-	
-		//in any other case the feature type is not allowed
+    protected boolean isAttributeAllowed(String url, String ft, String attribute) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
 		return false;
-    	}
-
-    
-    protected String getLayerFilter(String layer)
-    	{
-    	if (policy == null) return null;
-    	if (layer == null) return null;
-    	
-    	List<Server> serverList = policy.getServers().getServer();
-
-		for (int i=0;i<serverList.size();i++)
-			{
-		    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-		    for (int j=0;j<layerList.size();j++)
-		    	{
-		    	//Is a specific feature type allowed ? 
-		    	if (layer.equals(layerList.get(j).getName())) 
-		    		{
-		    		if (layerList.get(j).getFilter() == null) return null;
-		    		return layerList.get(j).getFilter().getContent();
-		    		} 
-		    	}
-			}	
-		return null;
-    	}
-
-
-    protected String getLayerFilter(String url,String layer)
-    	{
-    	if (policy == null) return null;
-    	
-    	List<Server> serverList = policy.getServers().getServer();
-
-		for (int i=0;i<serverList.size();i++)
-			{
-		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
-		    	{
-		    	List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-				for (int j=0;j<layerList.size();j++)
-					{
-				    //Is a specific feature type allowed ? 
-				    if (layer.equals(layerList.get(j).getName())) 
-				    	{
-				    	if (layerList.get(j).getFilter() == null) return null;
-				    	return layerList.get(j).getFilter().getContent();
-				    	} 
-					}
-		    	}
-			}	
-		return null;
-    	}
-
-    
-    protected String getServerNamespace(String url)
-    	{
-    	if (policy == null) return null;
-    	List<Server> serverList = policy.getServers().getServer();
-
-    	for(int i=0;i<serverList.size();i++)
-    		{
-    	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
-    	    	{
-    	    	if (serverList.get(i).getNamespace() == null) return null;
-    	    	return serverList.get(i).getNamespace();
-    	    	}
-    		}	
-    	return null;
-        }
-    
-    
-	protected String getServerPrefix(String url)
-		{
-		if (policy == null) return null;
-		List<Server> serverList = policy.getServers().getServer();
-	
-		for(int i=0;i<serverList.size();i++)
-			{
-		    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) 
-		    	{
-		    	if (serverList.get(i).getPrefix() == null) return null;
-		    	return serverList.get(i).getPrefix();
-		    	}
-			}	
-		return null;
-	    }
-    
-    
-    protected String getFeatureTypeLocalFilter(String url,String ft){
-
-	if (policy == null) return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j=0;j<ftList.size();j++){
-		    //Is a specific feature type allowed ? 
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getLocalFilter() == null) return null;
-			return ftList.get(j).getLocalFilter().getContent();
-		    } 
-		}
-
-	    }
-	}	
-	return null;
-    }
-    protected String getFeatureTypeRemoteFilter(String url,String ft){
-
-	if (policy == null) return null;
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-
-		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
-		for (int j=0;j<ftList.size();j++){
-		    //Is a specific feature type allowed ? 
-		    if (ft.equals(ftList.get(j).getName())) {
-			if (ftList.get(j).getRemoteFilter() == null) return null;
-			return ftList.get(j).getRemoteFilter().getContent();
-		    } 
-		}
-	    }
-	}	
-	return null;
-    }
-
-    protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight){
-
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
 	}
-	
+
+	boolean isServerFound = false;
+	boolean isFeatureTypeFound = false;
+	boolean FeatureTypeAllowed = false;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		isServerFound = true;
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			isFeatureTypeFound = true;
+			// If all the attribute are authorized, then return
+			// true;
+			if (ftList.get(j).getAttributes().isAll()) {
+			    // Debug tb 08.06.2009
+			    policyAttributeListNb = 0;
+			    // Fin de debug
+			    return true;
+			}
+
+			// List d'attributs de Policy pour le featureType
+			// courant
+			List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
+			// Supprime les résultats, contenu dans la globale var,
+			// issus du précédent appel de la fonction courante
+			policyAttributeListToKeepPerFT.clear();
+			for (int k = 0; k < attributeList.size(); k++) {
+			    // If attributes are listed in user req
+			    if (attribute.equals(attributeList.get(k).getContent()))
+				return true;
+			    // Debug tb 04.06.2009
+			    // If no attributes are listed in user req -> all
+			    // the Policy Attributes will be returned
+			    else if (attribute.equals("")) {
+				String tmpFA = attributeList.get(k).getContent();
+				if (tmpFA != null) {
+				    String[] s = tmpFA.split(":");
+				    tmpFA = s[s.length - 1];
+				}
+				policyAttributeListToKeepPerFT.add(tmpFA);
+				// then at the end of function -> return false,
+				// "" is effectively not a valid attribute
+			    }
+			    // Fin de debug
+			}
+			// Debug tb 08.06.2009
+			// Pour que attributeListToKeepNbPerFT du featureType
+			// courant puisse enregistrer le nombre d'attributs de
+			// la Policy
+			policyAttributeListNb = attributeList.size();
+			// Fin de debug
+		    }
+		}
+	    }
+	}
+
+	// if the server is not overloaded and if all the servers are allowed
+	// then
+	// We can say that's ok
+	if (!isServerFound && policy.getServers().isAll())
+	    return true;
+
+	// if the server is overloaded and if the specific featureType was not
+	// overloaded and All the featuetypes are allowed
+	// We can say that's ok
+	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
+	    return true;
+
+	// in any other case the feature type is not allowed
+	return false;
+    }
+
+    protected String getLayerFilter(String layer) {
+	if (policy == null)
+	    return null;
+	if (layer == null)
+	    return null;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+	    for (int j = 0; j < layerList.size(); j++) {
+		// Is a specific feature type allowed ?
+		if (layer.equals(layerList.get(j).getName())) {
+		    if (layerList.get(j).getFilter() == null)
+			return null;
+		    return layerList.get(j).getFilter().getContent();
+		}
+	    }
+	}
+	return null;
+    }
+
+    protected String getLayerFilter(String url, String layer) {
+	if (policy == null)
+	    return null;
+
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		for (int j = 0; j < layerList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (layer.equals(layerList.get(j).getName())) {
+			if (layerList.get(j).getFilter() == null)
+			    return null;
+			return layerList.get(j).getFilter().getContent();
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+
+    protected String getServerNamespace(String url) {
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i).getNamespace() == null)
+		    return null;
+		return serverList.get(i).getNamespace();
+	    }
+	}
+	return null;
+    }
+
+    protected String getServerPrefix(String url) {
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i).getPrefix() == null)
+		    return null;
+		return serverList.get(i).getPrefix();
+	    }
+	}
+	return null;
+    }
+
+    protected String getFeatureTypeLocalFilter(String url, String ft) {
+
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			if (ftList.get(j).getLocalFilter() == null)
+			    return null;
+			return ftList.get(j).getLocalFilter().getContent();
+		    }
+		}
+
+	    }
+	}
+	return null;
+    }
+
+    protected String getFeatureTypeRemoteFilter(String url, String ft) {
+
+	if (policy == null)
+	    return null;
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+
+		List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+		for (int j = 0; j < ftList.size(); j++) {
+		    // Is a specific feature type allowed ?
+		    if (ft.equals(ftList.get(j).getName())) {
+			if (ftList.get(j).getRemoteFilter() == null)
+			    return null;
+			return ftList.get(j).getRemoteFilter().getContent();
+		    }
+		}
+	    }
+	}
+	return null;
+    }
+
+    protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight) {
+
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
+
 	int minWidth = 0;
 	int minHeight = 0;
 	int maxWidth = Integer.MAX_VALUE;
-	int maxHeight = Integer.MAX_VALUE; 
-	if (policy.getImageSize()==null) return true;
-	if (policy.getImageSize().getMinimum() !=null){
+	int maxHeight = Integer.MAX_VALUE;
+	if (policy.getImageSize() == null)
+	    return true;
+	if (policy.getImageSize().getMinimum() != null) {
 	    minWidth = policy.getImageSize().getMinimum().getWidth();
 	    minHeight = policy.getImageSize().getMinimum().getHeight();
 	}
 
-	if (policy.getImageSize().getMaximum() !=null){
+	if (policy.getImageSize().getMaximum() != null) {
 	    maxWidth = policy.getImageSize().getMaximum().getWidth();
-	    maxHeight =  policy.getImageSize().getMaximum().getHeight();
+	    maxHeight = policy.getImageSize().getMaximum().getHeight();
 	}
 
-	if (currentWidth>=minWidth && currentWidth<= maxWidth && currentHeight>=minHeight && currentHeight<= maxHeight){
+	if (currentWidth >= minWidth && currentWidth <= maxWidth && currentHeight >= minHeight && currentHeight <= maxHeight) {
 	    return true;
 	}
 
 	return false;
     }
 
-    protected String getServerFilter(String url){
-	if (policy == null) return null;
+    protected String getServerFilter(String url) {
+	if (policy == null)
+	    return null;
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
+	for (int i = 0; i < serverList.size(); i++) {
 
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
 
-		if (serverList.get(i).getFilter() == null) return null;
+		if (serverList.get(i).getFilter() == null)
+		    return null;
 		return serverList.get(i).getFilter().getContent();
-
 
 	    }
 
@@ -1287,102 +1364,115 @@ public abstract class ProxyServlet extends HttpServlet {
 
     /**
      * If the current date is not in the right date range returns an error
+     * 
      * @param conf
      * @return
-     * @throws NoPermissionException 
+     * @throws NoPermissionException
      */
     protected boolean isDateAvaillable(AvailabilityPeriod p) {
-	if (policy == null) return false;
+	if (policy == null)
+	    return false;
 	SimpleDateFormat sdf = new SimpleDateFormat(p.getMask());
 	Date fromDate = null;
-	Date toDate = 	null;
-	try{
-	    if (p.getFrom()!=null) fromDate = sdf.parse(p.getFrom().getDate());
-	    if (p.getTo()!=null) toDate = 	sdf.parse(p.getTo().getDate());
-	}catch(Exception e){
+	Date toDate = null;
+	try {
+	    if (p.getFrom() != null)
+		fromDate = sdf.parse(p.getFrom().getDate());
+	    if (p.getTo() != null)
+		toDate = sdf.parse(p.getTo().getDate());
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    return false;
 	}
 	Date currentDate = new Date();
-	if (fromDate !=null) if (currentDate.before(fromDate)) return false;
+	if (fromDate != null)
+	    if (currentDate.before(fromDate))
+		return false;
 
-	if (toDate !=null) if (!currentDate.before(toDate)) return false;
+	if (toDate != null)
+	    if (!currentDate.before(toDate))
+		return false;
 
 	return true;
     }
 
-    protected List<String> getAttributesNotAllowedInMetadata(String url){
+    protected List<String> getAttributesNotAllowedInMetadata(String url) {
 	List<String> attrList = new Vector<String>();
 
-	if (policy == null) return attrList;
+	if (policy == null)
+	    return attrList;
 
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
 		if (serverList.get(i).getMetadata().getAttributes().isAll()) {
 		    attrList.add("%");
 		    return attrList;
 		}
 		List<Attribute> attrList2 = serverList.get(i).getMetadata().getAttributes().getExclude().getAttribute();
-		for(int j=0;j<attrList2.size();j++){
-		    attrList.add(attrList2.get(j).getContent());	
-		}						
+		for (int j = 0; j < attrList2.size(); j++) {
+		    attrList.add(attrList2.get(j).getContent());
+		}
 	    }
 	}
-	//in any other case the attribute is not allowed
+	// in any other case the attribute is not allowed
 	return attrList;
     }
 
-    protected boolean isAttributeAllowedForMetadata(String url,String attribute){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
+    protected boolean isAttributeAllowedForMetadata(String url, String attribute) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
 	}
-
 
 	List<Server> serverList = policy.getServers().getServer();
 
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i).getMetadata().getAttributes().isAll()) return true;
+		if (serverList.get(i).getMetadata().getAttributes().isAll())
+		    return true;
 		List<Attribute> attrList = serverList.get(i).getMetadata().getAttributes().getAttribute();
-		for(int j=0;j<attrList.size();j++){
-		    if (attribute.equals(attrList.get(j).getContent())){
+		for (int j = 0; j < attrList.size(); j++) {
+		    if (attribute.equals(attrList.get(j).getContent())) {
 			return true;
-		    }				
-		}						
-	    }
-	}	
-
-	//in any other case the attribute is not allowed
-	return false;
-    }
-    protected boolean areAllAttributesAllowedForMetadata(String url){
-	if (policy == null) return false;
-	if (policy.getAvailabilityPeriod() !=null) {
-	    if (isDateAvaillable(policy.getAvailabilityPeriod())==false) return false;	    
-	}
-
-
-	List<Server> serverList = policy.getServers().getServer();
-
-	for (int i=0;i<serverList.size();i++){
-	    //Is the server overloaded?  
-	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-		if (serverList.get(i) !=null && serverList.get(i).getMetadata()!=null && serverList.get(i).getMetadata().getAttributes()!=null){
-		    if (serverList.get(i).getMetadata().getAttributes().isAll()) return true;
-		    else return false;
+		    }
 		}
 	    }
-	}	
+	}
 
-	//in any other case the attribute is not allowed
+	// in any other case the attribute is not allowed
 	return false;
+    }
 
+    protected boolean areAllAttributesAllowedForMetadata(String url) {
+	if (policy == null)
+	    return false;
+	if (policy.getAvailabilityPeriod() != null) {
+	    if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+		return false;
+	}
 
+	List<Server> serverList = policy.getServers().getServer();
+
+	for (int i = 0; i < serverList.size(); i++) {
+	    // Is the server overloaded?
+	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		if (serverList.get(i) != null && serverList.get(i).getMetadata() != null && serverList.get(i).getMetadata().getAttributes() != null) {
+		    if (serverList.get(i).getMetadata().getAttributes().isAll())
+			return true;
+		    else
+			return false;
+		}
+	    }
+	}
+
+	// in any other case the attribute is not allowed
+	return false;
 
     }
 }
