@@ -58,6 +58,7 @@
 			<fileset dir="${projet.conf.dir}/WEB-INF/conf" >
 				<include name="config.xml"/>
 				<include name="NewPolicy.xml"/>
+				<include name="policy_csw.xml"/>
 			</fileset>
 		</copy>
 
