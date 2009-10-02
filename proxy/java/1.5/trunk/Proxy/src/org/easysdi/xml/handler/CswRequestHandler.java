@@ -35,10 +35,8 @@ public class CswRequestHandler extends DefaultHandler {
     private boolean hasFilter= false;
     private boolean isInInsert = false;
     private boolean isInDelete = false;
-    private boolean isInUpdate = false;
     private boolean hasInsert = false;
     private boolean hasDelete = false;
-    private boolean hasUpdate = false;
     private boolean isInFileIdentifier=false;
     private boolean isInMetadata=false;
     private boolean isInCharacterString=false;
@@ -60,9 +58,7 @@ public class CswRequestHandler extends DefaultHandler {
     public boolean isTransactionDelete(){
 	return hasDelete;
     }
-    public boolean isTransactionUpdate(){
-    	return hasUpdate;
-        }
+    
     public boolean hasRequestFilter(){
 
 	return hasFilter;
@@ -138,12 +134,6 @@ public class CswRequestHandler extends DefaultHandler {
 	    }
 	}
 	
-	if (localName.equals("Update")){
-	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		hasUpdate=true;
-		isInUpdate = true;
-	    }
-	}
 	
 	
 	/***
@@ -186,11 +176,6 @@ public class CswRequestHandler extends DefaultHandler {
 	    }	    	    
 	}
 
-	if (localName.equals("Update")){
-	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		isInUpdate = false;
-	    }	    	    
-	}
 	if (isInFileIdentifier && isInMetadata && localName.equals("CharacterString")){
 	     MdToInsertList.add(data);
 	     isInCharacterString = false;
