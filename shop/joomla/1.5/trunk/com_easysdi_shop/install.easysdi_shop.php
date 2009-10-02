@@ -1930,7 +1930,7 @@ if ($version == "0.998")
 		}
 		
 	  	//Add translation code 
-		$query="ALTER TABLE #__easysdi_metadata_classes add column `transaltion` varchar(100)";
+		$query="ALTER TABLE #__easysdi_metadata_classes add column `translation` varchar(100)";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
