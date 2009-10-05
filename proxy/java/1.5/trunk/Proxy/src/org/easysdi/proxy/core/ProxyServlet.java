@@ -872,9 +872,12 @@ public abstract class ProxyServlet extends HttpServlet {
 		// DescribeFeatureType), la classe "DocumentFactory" nécessite
 		// l'authentication au cas où geoserver défini un compte de
 		// service.
-		org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
-		// Fin de debug
-		return serverInfo.getPassword();
+		//Do not setCredentials if no account and password were supplied
+		if(serverInfo.getUser() != null && serverInfo.getPassword() != null){
+			org.easysdi.security.EasyAuthenticator.setCredientials(getUsername(urlstr).toString(), serverInfo.getPassword());
+			// Fin de debug
+			return serverInfo.getPassword();
+		}
 	    }
 	}
 
