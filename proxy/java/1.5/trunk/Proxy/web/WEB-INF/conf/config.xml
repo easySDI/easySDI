@@ -2,7 +2,7 @@
 <configurations>
 	<config id="rwgiswms">
 		<authorization>
-			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+			<policy-file>C:\Program Files\apache-tomcat-6.0.20\webapps\proxy\WEB-INF\conf\NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
@@ -32,7 +32,7 @@
 	</config>
 	<config id="rwgis">
 		<authorization>
-			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+			<policy-file>C:\Program Files\apache-tomcat-6.0.20\webapps\proxy\WEB-INF\conf\NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
