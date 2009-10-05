@@ -28,10 +28,12 @@ import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -52,6 +54,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -79,6 +84,7 @@ import org.geotools.gml.producer.FeatureTransformer;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.shape.FilterTransformer;
 import org.geotools.xml.DocumentFactory;
+import org.geotools.xml.XSISAXHandler;
 import org.geotools.xml.gml.GMLComplexTypes;
 import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
@@ -104,7 +110,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  */
 public class WFSProxyServlet extends ProxyServlet {
-//Debug tb 12.05.2009
+//Debug tb 02.10.2009
+	private SAXParser parser;
 	private List<Integer> serversIndex = new Vector<Integer>(); // list of server index corresponding to the response file index
 	private List<String> policyServersPrefix = new Vector<String>(); // list of prefix per server
 	private List<String> policyServersNamespace = new Vector<String>(); // list of namespace per server
@@ -1182,10 +1189,11 @@ public class WFSProxyServlet extends ProxyServlet {
 							//nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT); // Non nécessaire de réécrire ce qui est déjà présent
 						    NodeList antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
 //Debug tb 29.09.2009
-						    // Pour établir la liste des noeuds PropertyName directement sous Query tiré de la requête user
+						    // Pour établir la liste des noeuds PropertyName directement sous la balise <Query> tiré de la requête user
 						    for (int k=0;k<antltemp.getLength();k++)
 						    	{
 						    	Node node = (Node)antltemp.item(k);
+						    	//renommer les noeuds "PropertyName" autre que ceux directement et uniquement sous <Query>: ex ceux de <Filter>
 						    	if(!"Query".equals(node.getParentNode().getLocalName()))
 						    		{
 						    		documentMaster.renameNode(node, "http://www.opengis.net/ogc", "MyFilterPropertyName");
@@ -1317,6 +1325,7 @@ public class WFSProxyServlet extends ProxyServlet {
 //Fin de Debug
 //Debug tb 29.09.2009
 						    // Pour rétablir la liste des noeuds PropertyName de la requête user
+					    	//renommer les noeuds "PropertyName" autre que ceux directement et uniquement sous <Query>: ex ceux de <Filter>
 						    antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "MyFilterPropertyName");
 						    for (int k=0;k<antltemp.getLength();k++)
 						    	{
@@ -1677,9 +1686,24 @@ public class WFSProxyServlet extends ProxyServlet {
 							WFSDescribeFeatureType.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 							//On récupère le gml
 							InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));
-							// PBM à la Ligne suivante: attention en mode debug schema n'est pas cleaner entre chaque appel de debug!
-							Schema schema = org.geotools.xml.SchemaFactory.getInstance(null, dataSourceInputStream);
-
+							// PBM à la Ligne suivante: attention "schema" est un singleton: n'est pas cleaner entre chaque appel sur les servlets!
+							// Or, "SchemaFactory" merge chaque schéma lu s'il est différent des appels précédents
+							//Schema schema = org.geotools.xml.SchemaFactory.getInstance(null, dataSourceInputStream);
+// Debug tb	02.10.2009
+							Schema schema = getSchema(dataSourceInputStream);
+//							XSISAXHandler contentHandler = new XSISAXHandler(null);
+//							XSISAXHandler.setLogLevel(Level.WARNING);
+//							SAXParserFactory factory = SAXParserFactory.newInstance();
+//							factory.setNamespaceAware(true);
+//							factory.setValidating(false);
+//							SAXParser parser = factory.newSAXParser();
+//							parser.parse(dataSourceInputStream, contentHandler);
+//
+//						    Schema schema = contentHandler.getSchema();
+						    //"registerSchema" seulement nécessaire si appeler dans une autre méthode
+						    //URI targetNamespace=schema.getTargetNamespace();
+						    //org.geotools.xml.SchemaFactory.registerSchema(targetNamespace,schema);
+// Fin de Debug
 							ComplexType[] ct = schema.getComplexTypes();
 // Debug tb	09.06.2009					
 							org.geotools.xml.schema.Element[] el = schema.getElements();
@@ -1999,6 +2023,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								    //Voir ProxyServlet.getPassword
 								    //org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
 //Fin de Debug
+								    //doc = (GMLFeatureCollection)org.geotools.xml.SchemaFactory.getInstance(null, tempFile.toURI(), Level.WARNING, user, password); //SchemaFactory Instance non castable en une instance GMLFeatureCollection
 									doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
 								    // Création du fichier résultat de la proachaine transformation
 								    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");
@@ -2392,34 +2417,80 @@ public class WFSProxyServlet extends ProxyServlet {
 
     
 //***************************************************************************************************************************************    
-    private FeatureType parseDescribeFeatureTypeResponse( String typeName, Schema schema ) throws SAXException {
-	org.geotools.xml.schema.Element[] elements = schema.getElements();
+    private Schema getSchema(InputStream dataSourceInputStream) throws SAXException
+		{
+		try 
+			{
+		    XSISAXHandler contentHandler = new XSISAXHandler(null);
+			XSISAXHandler.setLogLevel(Level.WARNING);
+			setParser();
+			parser.parse(dataSourceInputStream, contentHandler);
+			return contentHandler.getSchema();
+			} 
+		catch (IOException e) 
+			{
+			e.printStackTrace();
+			return null;
+			}
+		}
+    
+    
+  //***************************************************************************************************************************************    
+  
+    private void setParser() throws SAXException
+    	{
+    	if (parser == null)
+    		{
+    		SAXParserFactory spfactory = SAXParserFactory.newInstance();
+    		spfactory.setNamespaceAware(true);
+    		spfactory.setValidating(false);
 
-	if (elements == null) {
-	    return null; // not found
-	}
+    	    try 
+    	    	{
+    	    	parser = spfactory.newSAXParser();
+    	    	} 
+    	    catch (ParserConfigurationException e) 
+    	    	{
+    	    	throw new SAXException(e);
+    	    	}
+    	    catch (SAXException e)
+    	    	{
+    	    	throw new SAXException(e);
+    	    	}
+    		}
+    	}
 
-	org.geotools.xml.schema.Element element = null;
-
-	String ttname = typeName.substring(typeName.indexOf(":") + 1);
-
-	for (int i = 0; (i < elements.length) && (element == null); i++) {
-	    // HACK -- namspace related -- should be checking ns as opposed to removing prefix
-	    if (typeName.equals(elements[i].getName())
-		    || ttname.equals(elements[i].getName())) {
-		element = elements[i];
-	    }
-	}
-
-	if (element == null) {
-	    return null;
-	}
-
-	FeatureType ft = GMLComplexTypes.createFeatureType(element);
-
-
-	return ft;
-    }
+    	
+//***************************************************************************************************************************************    
+    	
+//    private FeatureType parseDescribeFeatureTypeResponse( String typeName, Schema schema ) throws SAXException {
+//	org.geotools.xml.schema.Element[] elements = schema.getElements();
+//
+//	if (elements == null) {
+//	    return null; // not found
+//	}
+//
+//	org.geotools.xml.schema.Element element = null;
+//
+//	String ttname = typeName.substring(typeName.indexOf(":") + 1);
+//
+//	for (int i = 0; (i < elements.length) && (element == null); i++) {
+//	    // HACK -- namspace related -- should be checking ns as opposed to removing prefix
+//	    if (typeName.equals(elements[i].getName())
+//		    || ttname.equals(elements[i].getName())) {
+//		element = elements[i];
+//	    }
+//	}
+//
+//	if (element == null) {
+//	    return null;
+//	}
+//
+//	FeatureType ft = GMLComplexTypes.createFeatureType(element);
+//
+//
+//	return ft;
+//    }
 
 //***************************************************************************************************************************************
     /**
