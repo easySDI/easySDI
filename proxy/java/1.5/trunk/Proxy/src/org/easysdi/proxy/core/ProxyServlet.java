@@ -35,11 +35,14 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 
 import javax.naming.NoPermissionException;
@@ -51,6 +54,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.easysdi.proxy.policy.Attribute;
@@ -61,6 +66,12 @@ import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
 import org.easysdi.xml.documents.RemoteServerInfo;
+import org.geotools.xml.DocumentFactory;
+import org.geotools.xml.SchemaFactory;
+import org.geotools.xml.XMLHandlerHints;
+import org.jdom.Document;
+import org.jdom.Namespace;
+import org.jdom.input.SAXBuilder;
 
 public abstract class ProxyServlet extends HttpServlet {
 
@@ -1478,4 +1489,49 @@ public abstract class ProxyServlet extends HttpServlet {
 	return false;
 
     }
+    
+    /**
+     * Open a wfs GetFeature response file and load xsd schema correctly. See remote-server-list element in config.xml for credentials. 
+     * @param file temporary response file to parse
+     * @param username xsd schema provider server username.  
+     * @param password xsd schema provider server password. 
+     * @return
+     */
+    protected Object documentFactoryGetInstance(File file, String username, String password) {
+	// File schema = new File("src/main/webapp/schemas/eai/eai.xsd");
+	Map hints = new HashMap();
+	Map<String, URI> namespaceMapping = new HashMap<String, URI>();
+	hints.put(DocumentFactory.VALIDATION_HINT, false);
+	hints.put(XMLHandlerHints.NAMESPACE_MAPPING, namespaceMapping);
+	SAXBuilder sb = new SAXBuilder();
+	Document doc;
+	try {
+	    doc = sb.build(file);
+	    Namespace xsiNS = Namespace.getNamespace("http://www.w3.org/2001/XMLSchema-instance");
+	    String schemaLocation = doc.getRootElement().getAttributeValue("schemaLocation", xsiNS);
+	    String schemaParts[] = schemaLocation.split(" ");
+	    for (int i = 0; i < schemaParts.length; i += 2) {
+		String namespace = schemaParts[i];
+		String schemaLocationURI = schemaParts[i + 1];
+		if (SchemaFactory.getInstance(new URI(namespace)) == null) {
+		    GetMethod get = new GetMethod(schemaLocationURI);
+		    HttpClient client = new HttpClient();
+		    if (username != null && password != null)
+			client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		    client.executeMethod(get);
+		    File tempSchemaFile = File.createTempFile("proxy", ".xsd");
+		    FileWriter writer = new FileWriter(tempSchemaFile);
+		    writer.write(get.getResponseBodyAsString());
+		    writer.close();
+		    namespaceMapping.put(namespace, tempSchemaFile.toURI());
+		}
+	    }
+	    Object obj = DocumentFactory.getInstance(file.toURI(), hints, Level.WARNING);
+	    return obj;
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }    
 }

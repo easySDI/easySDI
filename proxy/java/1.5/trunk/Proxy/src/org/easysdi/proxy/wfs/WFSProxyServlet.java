@@ -1712,12 +1712,24 @@ public class WFSProxyServlet extends ProxyServlet {
 							
 							for (int i =0;i<ct.length;i++)
 								{
-// Debug tb	05.10.2009
-								//Préparation de tmpFT, récupération du nom du featureType: ComplexType.name correspondant au Element.name
+// Debug tb	09.06.2009
 								String tmpFT = "";
-								tmpFT = el[i].getName();				    	
-							    String [] s = tmpFT.split(":");
-							    tmpFT = s[s.length-1];
+								//Préparation de tmpFT, recherche du nom du featureType: ComplexType.name correspondant au Element.name
+								for(int n =0;n<el.length;n++)
+					    			{
+									tmpFT = el[n].getName();
+									if (tmpFT!=null)
+										{					    	
+							    		String [] s = tmpFT.split(":");
+							    		tmpFT = s[s.length-1];
+							    		
+							    		String [] ss = ct[i].getName().split(tmpFT);   		
+							    		if(ss.length > 1 || ct[i].getName().equals(tmpFT))
+							    			{
+							    			break;
+							    			}		
+								    	}
+									}
 // Fin de Debug
 							    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(serversIndex.get(j))))
 									{
@@ -2012,7 +2024,8 @@ public class WFSProxyServlet extends ProxyServlet {
 								    //org.easysdi.security.EasyAuthenticator.setCredientials(user, password);
 //Fin de Debug
 								    //doc = (GMLFeatureCollection)org.geotools.xml.SchemaFactory.getInstance(null, tempFile.toURI(), Level.WARNING, user, password); //SchemaFactory Instance non castable en une instance GMLFeatureCollection
-									doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+									//doc = (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);				     
+									doc = (GMLFeatureCollection)documentFactoryGetInstance(tempFile,user, password);				     
 								    // Création du fichier résultat de la proachaine transformation
 								    File tempFile2 = createTempFile("transform_GetFeature_2_"+UUID.randomUUID().toString(), ".xml");
 								    tempFos = new FileOutputStream(tempFile2);
