@@ -2857,8 +2857,17 @@ if (count($rows)>0){
 <br>
 <br>
 -->
-
-
+<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
+<table width="100%">
+   <tr>
+	<td colspan="3">&nbsp;</td>
+   </tr>
+   <tr>
+	<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+	<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
+	<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+   </tr>
+</table>
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 
@@ -2869,17 +2878,11 @@ if (count($rows)>0){
 <input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
 
 <input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>"> 
-	<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <span class="searchCriteria">
 
 <table width="100%">
    <tr>
    	<td colspan="3" align="left"><?php echo JText::_("EASYSDI_SHOP_NUMBER_OF_PRODUCT_FOUND");?><?php echo $total ?></td>
-   </tr>
-   <tr>
-	<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-	<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
-	<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
    </tr>
 </table>
 <table class="mdsearchresult" width="100%">
