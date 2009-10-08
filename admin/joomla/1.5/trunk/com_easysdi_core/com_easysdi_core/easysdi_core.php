@@ -22,6 +22,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport("joomla.html.pagination");
 
 jimport("joomla.html.pane");
+
+include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'user'.DS.'helper.php');
+
 require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		

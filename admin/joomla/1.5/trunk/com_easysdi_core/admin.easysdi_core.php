@@ -28,6 +28,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'menu.php')
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'module.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
+include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'user'.DS.'helper.php');
 
 
 JHTML::_('stylesheet', 'com_easysdi_core.css', 'administrator/components/com_easysdi_core/templates/css/');

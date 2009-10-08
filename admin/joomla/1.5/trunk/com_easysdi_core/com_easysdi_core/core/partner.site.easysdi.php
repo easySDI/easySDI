@@ -529,17 +529,23 @@ class SITE_partner {
 			$rowUser->usertype='Registered';
 			$rowUser->gid=18;
 		}
-			
+		$r_id=$rowPartner->root_id;
+		if(!$r_id)
+		{
+			$r_id = $rowPartner->partner_id;
+		}
 		//Get user root profiles to get availaible profiles
-		$database->setQuery( "SELECT profile_id as value, profile_translation as text FROM #__easysdi_community_profile WHERE profile_id IN(SELECT profile_id FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->root_id.")" );
+		$database->setQuery( "SELECT profile_id as value, profile_translation as text FROM #__easysdi_community_profile WHERE profile_id IN(SELECT profile_id FROM #__easysdi_community_partner_profile WHERE partner_id=".$r_id.")" );
 		$rowsProfile = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
-		//Get user profile
-		$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
-		$rowsPartnerProfile = $database->loadObjectList();
-		echo $database->getErrorMsg();
-		
+		if($rowPartner->partner_id)
+		{
+			//Get user profile
+			$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
+			$rowsPartnerProfile = $database->loadObjectList();
+			echo $database->getErrorMsg();
+		}
 		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile);
 	}
 
@@ -664,7 +670,10 @@ class SITE_partner {
 		}
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
-			$rowUser->password = md5( JRequest::getVar('password','') );
+			//$rowUser->password = md5( JRequest::getVar('password','') );
+			$salt = JUserHelper::genRandomPassword(32);
+			$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
+			$rowUser->password = $crypt . ':' . $salt;
 		}
 		if (!$rowUser->store()) {
 
@@ -849,7 +858,10 @@ class SITE_partner {
 		//New status --> jos_users.block=1
 		$rowUser->block=1;
 
-		$rowUser->password = md5( JRequest::getVar('password','') );
+		//$rowUser->password = md5( JRequest::getVar('password','') );
+		$salt = JUserHelper::genRandomPassword(32);
+		$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
+		$rowUser->password = $crypt . ':' . $salt;
 
 		$rowUser->usertype='Registered';
 		$rowUser->gid=18;
@@ -1022,7 +1034,10 @@ class SITE_partner {
 		}
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
-			$rowUser->password = md5( JRequest::getVar('password','') );
+			//$rowUser->password = md5( JRequest::getVar('password','') );
+			$salt = JUserHelper::genRandomPassword(32);
+			$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
+			$rowUser->password = $crypt . ':' . $salt;
 		}
 		if (!$rowUser->store()) {
 

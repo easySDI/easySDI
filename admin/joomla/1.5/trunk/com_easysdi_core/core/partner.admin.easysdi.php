@@ -147,9 +147,12 @@ class ADMIN_partner {
 		echo $database->getErrorMsg();
 		
 		//Get user profile
-		$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
-		$rowsPartnerProfile = $database->loadObjectList();
-		echo $database->getErrorMsg();
+		if($rowPartner->partner_id)
+		{
+			$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
+			$rowsPartnerProfile = $database->loadObjectList();
+			echo $database->getErrorMsg();
+		}
 		
 		$rowUser =&	 new JTableUser($database);
 		$JId = JRequest::getVar('JId');
@@ -230,10 +233,13 @@ class ADMIN_partner {
 		$rowsProfile = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
-		//Get user profile
-		$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
-		$rowsPartnerProfile = $database->loadObjectList();
-		echo $database->getErrorMsg();
+		if($rowPartner->partner_id)
+		{
+			//Get user profile
+			$database->setQuery( "SELECT profile_id as value FROM #__easysdi_community_partner_profile WHERE partner_id=".$rowPartner->partner_id );
+			$rowsPartnerProfile = $database->loadObjectList();
+			echo $database->getErrorMsg();
+		}
 
 		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile  );
 	}
@@ -373,7 +379,10 @@ class ADMIN_partner {
 		}
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
-			$rowUser->password = md5( JRequest::getVar('password','') );
+			//$rowUser->password = md5( JRequest::getVar('password','') );
+			$salt = JUserHelper::genRandomPassword(32);
+			$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
+			$rowUser->password = $crypt . ':' . $salt;			
 		}
 		if (!$rowUser->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
