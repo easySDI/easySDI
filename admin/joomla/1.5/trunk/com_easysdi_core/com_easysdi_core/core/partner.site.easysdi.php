@@ -529,7 +529,7 @@ class SITE_partner {
 			$rowUser->usertype='Registered';
 			$rowUser->gid=18;
 		}
-		$r_id=$rowPartner->root_id;
+		$r_id=$rowPartner->parent_id;
 		if(!$r_id)
 		{
 			$r_id = $rowPartner->partner_id;
