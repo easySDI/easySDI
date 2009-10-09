@@ -2461,37 +2461,6 @@ public class WFSProxyServlet extends ProxyServlet {
     		}
     	}
 
-    	
-//***************************************************************************************************************************************    
-    	
-//    private FeatureType parseDescribeFeatureTypeResponse( String typeName, Schema schema ) throws SAXException {
-//	org.geotools.xml.schema.Element[] elements = schema.getElements();
-//
-//	if (elements == null) {
-//	    return null; // not found
-//	}
-//
-//	org.geotools.xml.schema.Element element = null;
-//
-//	String ttname = typeName.substring(typeName.indexOf(":") + 1);
-//
-//	for (int i = 0; (i < elements.length) && (element == null); i++) {
-//	    // HACK -- namspace related -- should be checking ns as opposed to removing prefix
-//	    if (typeName.equals(elements[i].getName())
-//		    || ttname.equals(elements[i].getName())) {
-//		element = elements[i];
-//	    }
-//	}
-//
-//	if (element == null) {
-//	    return null;
-//	}
-//
-//	FeatureType ft = GMLComplexTypes.createFeatureType(element);
-//
-//
-//	return ft;
-//    }
 
 //***************************************************************************************************************************************
     /**
