@@ -1712,24 +1712,12 @@ public class WFSProxyServlet extends ProxyServlet {
 							
 							for (int i =0;i<ct.length;i++)
 								{
-// Debug tb	09.06.2009
+// Debug tb	05.10.2009
+								//Préparation de tmpFT, récupération du nom du featureType: ComplexType.name correspondant au Element.name
 								String tmpFT = "";
-								//Préparation de tmpFT, recherche du nom du featureType: ComplexType.name correspondant au Element.name
-								for(int n =0;n<el.length;n++)
-					    			{
-									tmpFT = el[n].getName();
-									if (tmpFT!=null)
-										{					    	
-							    		String [] s = tmpFT.split(":");
-							    		tmpFT = s[s.length-1];
-							    		
-							    		String [] ss = ct[i].getName().split(tmpFT);   		
-							    		if(ss.length > 1 || ct[i].getName().equals(tmpFT))
-							    			{
-							    			break;
-							    			}		
-								    	}
-									}
+								tmpFT = el[i].getName();				    	
+							    String [] s = tmpFT.split(":");
+							    tmpFT = s[s.length-1];
 // Fin de Debug
 							    if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(serversIndex.get(j))))
 									{
