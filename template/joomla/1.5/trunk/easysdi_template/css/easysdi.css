@@ -1,4 +1,4 @@
-﻿@CHARSET "ISO-8859-1";
+@CHARSET "ISO-8859-1";
 
 
 /********************************************************/
@@ -30,11 +30,19 @@ div .privateMd{
 }
 
 div .easysdi_product_exists{
+	height:16px;
+	width:16px;
 	background-image:url(../icons/silk/cart.png);
 }
 
 div .easysdi_product_does_not_exist{
 	background-image:url(../images/cart_disabled.png);
+}
+
+div .easysdi_product_exists_internal{
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk_extended/cart_private.png);
 }
 
 div .freeMd{
@@ -91,11 +99,39 @@ div .freeMd{
 	vertical-align: top;
 }
 
+.mdPanContent input, .mdPanContent select{
+	width:200px;
+}
+
 .olmdControlEditingToolbar  {
      float:left;
      right: 0px;
      height: 30px; 
      width: 150px;
+}
+
+.catalog_controls{
+    text-align:right;
+}
+
+#advSearchRadio, #filter_visible, #filter_orderable{
+	width:10px;
+}
+
+#divAdvancedSearch{
+	border: 1px solid #ccc;
+	padding-bottom:5px;
+	padding-left:5px;
+	padding-right:5px;
+	padding-top:5px;
+}
+
+#update_select{
+	width:150px;
+}
+
+#update_cal{
+	width:80px;
 }
 /********************************************************/
 /***     EasySDI Shop                                 ***/
@@ -800,40 +836,20 @@ width: 545px;
 
 background-color: #e4e4e4;
 
-background-image: url(none);
-
 }
 #status{
           background-color: red;
-}
-
-.product_propreties
-{
-  border: 2px solid #9f9f9f;
-}
-
-.product_propreties legend {
-  padding: 0.2em 0.5em;
-  border: 1px solid #9f9f9f;
-  background-color: #9f9f9f;
-  color:white;
 }
 
 .product_proprety_row
 {
 	border:1px solid #9f9f9f;
 }
-
-.product_proprety_row legend {
-  background-color: transparent;
-  border:0px;
-  color:#9f9f9f;
-}
  
 /* Width of the lists */
 .product_proprety_row_list{
-  width: 250px;
-  	 padding-left: 10px;
+	width: 250px;
+  	padding-left: 10px;
 }
 
 .product_proprety_row_list li{
@@ -859,6 +875,17 @@ background-image: url(none);
 .thirdPartySelect{
 	width: 400px;
 }
+
+/* PageNav */
+/*.pagenav span{
+	color:#00000;
+	font-weight:bold;
+}
+
+.pagenav a:link, .pageNav a:visited{
+	color:#993300;
+}*/
+
 /*--------------------------------------------------|
 | dTree 2.05 | www.destroydrop.com/javascript/tree/ |
 |---------------------------------------------------|
@@ -899,6 +926,81 @@ background-image: url(none);
 }
 
 /********************************************************/
+/***     EasySDI Edit Product edition                 ***/
+/********************************************************/
+
+.editProductPane td{
+	padding:2px;
+}
+
+.editProductPane .inputbox{
+	width:350px;
+}
+
+.editProductPane .ProductPropreties .inputbox {
+	width:520px;
+}
+
+.editProductPane .ptitle{
+	font-weight:bold;
+	width:170px;
+}
+
+.editProductPane fieldset{
+	margin-top:10px;
+}
+
+.editProductPane #perimeter_id{
+	width:520px;
+}
+
+/********************************************************/
+/***     EasySDI Edit Product                         ***/
+/********************************************************/
+
+div#editProduct:hover, div#deleteProduct:hover{
+	cursor:pointer;
+}
+
+div#editProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:16px;	
+}
+
+div#deleteProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:16px;
+}
+
+.box-table {
+	border-collapse:collapse;
+	width:100%;
+}
+
+.box-table tr:hover td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#a2c4ea none repeat scroll 0 0;
+}
+
+.box-table td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	padding:1px;
+}
+
+
+/********************************************************/
 /***     EasySDI Order                                ***/
 /********************************************************/
 table#orderList div{
@@ -911,15 +1013,16 @@ table#orderList div{
 }
 div .orderDate{
 	background-image:url(../icons/silk/calendar.png);
-	}
+}
+div .savedOrderDelete:hover, div .savedOrderOrder:hover{
+	cursor:pointer;
+}
 div .savedOrderDelete{
 	background-image:url(../icons/silk/bin.png);
 }
 div .savedOrderOrder{
 	background-image:url(../icons/silk/basket_put.png);
 }
-
-
 
 /********************************************************/
 /***      EasySDI Process Order                       ***/
@@ -937,13 +1040,19 @@ div .savedOrderOrder{
 	{
 		font-weight:bold;
 	}
+
 /********************************************************/
 /***      EasySDI Order Recap                         ***/
 /********************************************************/
+#divOrderRecap{
+	clear:both;
+	width:auto;	
+	padding-left:0px;
+	padding-right:0px;
+}
 .orderRecap
 {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	
 }
 .orderRecapTitle{
 	font-size:22px;
@@ -1018,6 +1127,22 @@ div#printOrderRecap:hover{
 .orderRecap td, .orderRecap th {
 padding:0;
 }
+
+.orderList{
+	width:100%;
+}
+
+.orderList th, .orderList td{
+	text-align:left;
+}
+
+.ordersListForm table{
+	width:100%;
+}
+
+.ordersListForm th, .ordersListForm td{
+	text-align:left;
+}
 /********************************************************/
 /***              EasySDI Caddy                       ***/
 /********************************************************/
@@ -1049,6 +1174,36 @@ padding:0;
 	height:28px;
 	width:28px;
 	background-repeat:no-repeat;
+}
+
+/***********************/
+/*** EasySDI Perimeter */
+/***********************/
+.inmodule table{
+	width:100%;
+}
+
+#totalSurfaceDisplayed {
+	width:160px;
+}
+
+
+.inmodule select{
+	font-size:1.1em;
+	width:160px;
+}
+
+.inmodule h4{
+	font-size:1.2em;
+	width:100%;
+}
+
+.inmodule h5{
+	margin-top:10px;
+	width:100%;
+	font-size:1em;
+	line-height:13px;
+	font-weight:bold;
 }
 
 /***********************/
