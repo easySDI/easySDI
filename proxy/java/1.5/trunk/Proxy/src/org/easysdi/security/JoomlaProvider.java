@@ -64,6 +64,10 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
 	} catch (DataAccessException e) {
 	    e.printStackTrace();
 	}
+//	if (user == null) {
+//	    user = new JoomlaUser("spring2a2d595e6ed9a0b24f027f2b63b134d6", "anonymous", null, new GrantedAuthority[] { new GrantedAuthorityImpl("anonymous") }, true, true, true, true);
+//	}
+
 	return user;
     }
 
@@ -85,7 +89,9 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
     private class UserMapper implements ParameterizedRowMapper<JoomlaUser> {
 
 	public JoomlaUser mapRow(ResultSet rs, int arg1) throws SQLException {
-	    String salt = rs.getString("password").split(":")[1];
+	    String[] passwordParts = rs.getString("password").split(":");
+	    String password = passwordParts[0];
+	    String salt = (passwordParts.length > 1) ? passwordParts[1] : null;
 	    return new JoomlaUser(rs.getString("username"), rs.getString("password"), salt, getAuthorities(rs.getString("username")), true, true, true, !rs.getBoolean("block"));
 
 	}
@@ -104,12 +110,15 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
 		try {
 		    msgDigest = java.security.MessageDigest.getInstance("MD5");
 		    msgDigest.update(authentication.getCredentials().toString().getBytes());
-		    msgDigest.update(user.getSalt().getBytes());
+		    if (user.getSalt() != null)
+			msgDigest.update(user.getSalt().getBytes());
 		    StringBuffer joomlaPasswordBuilder = new StringBuffer();
 		    byte[] digest = msgDigest.digest();
 		    joomlaPasswordBuilder.append(toHexString(digest));
-		    joomlaPasswordBuilder.append(":");
-		    joomlaPasswordBuilder.append(user.getSalt());
+		    if (user.getSalt() != null) {
+			joomlaPasswordBuilder.append(":");
+			joomlaPasswordBuilder.append(user.getSalt());
+		    }
 		    String joomlaPassword = joomlaPasswordBuilder.toString();
 
 		    if (joomlaPassword.equals(user.getPassword())) {

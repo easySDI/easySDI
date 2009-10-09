@@ -37,6 +37,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -279,9 +280,10 @@ public class WFSProxyServlet extends ProxyServlet {
 	    String currentOperation =  rh.getOperation();
 
 	    String user="";
-	    if(req.getUserPrincipal() != null)
+	    Principal principal = req.getUserPrincipal(); 
+	    if(principal != null)
 	    	{
-	    	user= req.getUserPrincipal().getName();
+	    	user= principal.getName();
 	    	}
 	    if (hasPolicy)
 	    	{

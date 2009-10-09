@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.Principal;
 import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
@@ -268,8 +269,8 @@ public class OgcProxyServlet extends HttpServlet {
 	    // Fin de Debug
 	    PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 	    String user = null;
-	    if (req.getUserPrincipal() != null)
-		user = req.getUserPrincipal().getName();
+	    Principal principal = req.getUserPrincipal(); 
+	    if (principal != null) user = principal.getName();
 	    ps.setPolicy(ph.getPolicy(user, req));
 
 	    return ps;

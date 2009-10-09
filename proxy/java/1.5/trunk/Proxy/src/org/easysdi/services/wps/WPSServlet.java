@@ -64,7 +64,6 @@ import net.opengis.wps._1_0.OutputDataType;
 import net.opengis.wps._1_0.StatusType;
 import net.opengis.wps._1_0.ExecuteResponse.ProcessOutputs;
 
-import sun.text.CompactShortArray.Iterator;
 
 
 public class WPSServlet extends HttpServlet {

@@ -24,7 +24,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import sun.text.CompactShortArray.Iterator;
 
 public class PolicyHandler extends DefaultHandler {
 

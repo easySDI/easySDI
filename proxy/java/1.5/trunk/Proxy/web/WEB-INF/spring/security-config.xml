@@ -8,40 +8,32 @@ http://www.springframework.org/schema/security
 http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
 
-	<bean id="authenticationManager" class="org.springframework.security.providers.ProviderManager">
-		<property name="providers">
-			<list>
-				<ref local="joomlaProvider" />
-			</list>
-		</property>
-	</bean>
-
 	<bean id="joomlaProvider" class="org.easysdi.security.JoomlaProvider">
 		<security:custom-authentication-provider />
 		<property name="prefix">
-			<value>esdi_</value>
+			<value>jos_</value>
 		</property>
 	</bean>
 
-	<security:http auto-config="false" access-decision-manager-ref="accessDecisionManager">
-		<security:intercept-url pattern="/**" access="proxy_user"/>
+	<security:http auto-config="false"
+		access-decision-manager-ref="accessDecisionManager">
 		<security:http-basic />
+		<security:anonymous username="spring2a2d595e6ed9a0b24f027f2b63b134d6" granted-authority="anonymous"/>
+		<security:intercept-url pattern="/**" access="anonymous,proxy_user" />
 	</security:http>
+
 
 	<bean id="accessDecisionManager" class="org.springframework.security.vote.AffirmativeBased">
 		<property name="decisionVoters">
 			<list>
-				<ref bean="roleVoter" />
 				<ref bean="authenticatedVoter" />
+				<ref bean="roleVoter" />
 			</list>
 		</property>
 	</bean>
-
 	<bean id="roleVoter" class="org.springframework.security.vote.RoleVoter">
 		<property name="rolePrefix" value="" />
 	</bean>
+	<bean id="authenticatedVoter" class="org.springframework.security.vote.AuthenticatedVoter" />
 
-	<bean id="authenticatedVoter" class="org.springframework.security.vote.AuthenticatedVoter">
-	</bean>
-	
 </beans>
