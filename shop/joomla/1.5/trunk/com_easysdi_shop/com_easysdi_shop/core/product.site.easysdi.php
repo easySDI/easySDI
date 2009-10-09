@@ -402,7 +402,6 @@ class SITE_product {
 		$database =& JFactory::getDBO(); 
 		$rowProduct = new product( $database );
 		$rowProduct->load( $id );					
-		
 		if ($id ==0){
 			$rowProduct->creation_date =date('d.m.Y H:i:s');
 			$rowProduct->metadata_id = helper_easysdi::getUniqueId();
@@ -427,6 +426,18 @@ class SITE_product {
 		}
 	}
 	
+	function suppressProduct($cid,$option){
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.php');
+		global  $mainframe;
+		$database=& JFactory::getDBO(); 
+		$user = JFactory::getUser();
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
+		ADMIN_product::deleteProduct($cid,$option);
+        }
 	
 	function editMetadata($isNew = false) {
 		global  $mainframe;
@@ -514,7 +525,7 @@ class SITE_product {
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PRODUCTS");
         
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 5 );
+		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
 		$database =& JFactory::getDBO();		 	
@@ -577,6 +588,7 @@ class SITE_product {
 		//List only the products belonging to the current user
 		$query = " SELECT * FROM #__easysdi_product where admin_partner_id = $partner->partner_id " ;
 		$query .= $filter;
+		$query .= " order by data_title";
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {

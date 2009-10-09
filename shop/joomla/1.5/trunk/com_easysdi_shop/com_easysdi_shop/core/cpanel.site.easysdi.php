@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community

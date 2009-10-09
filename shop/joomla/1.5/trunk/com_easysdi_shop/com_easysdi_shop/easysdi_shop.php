@@ -303,6 +303,10 @@ switch($task){
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		}
 		break;
+	case "suppressProduct":
+		SITE_product::suppressProduct($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		break;
 	case "listProduct":
 		SITE_product::listProduct();
 		break;

@@ -100,11 +100,11 @@ class HTML_cpanel {
 	<?php
 	$param=JRequest::getVar("param");
 	JHTML::_("behavior.modal","a.modal",$param); ?>
-	<table id="orderList" >
+	<table class="box-table" id="orderList" width="100%">
 	<thead>
 	<tr>
 	<th><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
-	<th><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
+	<th align="left"><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_DATE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
@@ -125,7 +125,7 @@ class HTML_cpanel {
 				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?>
 				</a>
 				</span><br></td>
-			<td>
+			<td align="center">
 			<?php
 			if($row->order_send_date == "0000-00-00 00:00:00" && $row->RESPONSE_SEND == 0)
 			{
@@ -151,8 +151,8 @@ class HTML_cpanel {
 			
 			?>
 			</td>
-			<td><?php echo JText::_($row->type_translation) ;?></td>
-			<td><?php echo JText::_($row->status_translation) ;?></td>
+			<td align="center"><?php echo JText::_($row->type_translation) ;?></td>
+			<td align="center"><?php echo JText::_($row->status_translation) ;?></td>
 			<td>
 			<?php
 				if($saved == $row->status)
