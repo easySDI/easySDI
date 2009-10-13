@@ -248,9 +248,12 @@ public class OgcProxyServlet extends HttpServlet {
 	try {
 	    XMLReader xr = XMLReaderFactory.createXMLReader();
 	    ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
-	    // Debug tb 28.09.2009
-	    InputStream is = new java.io.FileInputStream(getServletContext().getRealPath(configFile));
-	    // Fin de Debug
+// Debug tb 28.09.2009
+	    // Dans le fichier web.xml, si le chemin d'accès au fichier config.xml est donné en relatif à la servlet
+//	    InputStream is = new java.io.FileInputStream(getServletContext().getRealPath(configFile));
+	    // Dans le fichier web.xml, si le chemin d'accès au fichier config.xml est donné en absolu
+	    InputStream is = new java.io.FileInputStream(configFile);
+// Fin de Debug
 	    xr.setContentHandler(confHandler);
 	    xr.parse(new InputSource(is));
 	    configuration = confHandler.getConfig();
@@ -262,11 +265,11 @@ public class OgcProxyServlet extends HttpServlet {
 
 	    JAXBContext jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
 	    Unmarshaller u = jc.createUnmarshaller();
-	    // Debug tb 28.09.2009
+// Debug tb 28.09.2009
 	    //PolicySet policySet = (PolicySet) u.unmarshal(new FileInputStream(getServletContext().getRealPath(configuration.getPolicyFile())));
 	    String filePath = new File(configuration.getPolicyFile()).getAbsolutePath();
 	    PolicySet policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
-	    // Fin de Debug
+// Fin de Debug
 	    PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 	    String user = null;
 	    Principal principal = req.getUserPrincipal(); 
