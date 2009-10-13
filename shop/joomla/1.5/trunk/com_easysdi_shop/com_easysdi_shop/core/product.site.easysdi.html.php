@@ -526,9 +526,9 @@ class HTML_product{
 						<?php echo JHTML::_("select.genericlist",$res, 'properties_id[]', 'class="inputbox" size="3" onchange="messageContents_change(this);"', 'value', 'text', $selected ); ?>
 						</td></tr>
 						<tr><td id="messageContents">
-						</fieldset>
 						</td></tr>
 						</table>
+						</fieldset>
 						<?php
 						break;
 					}	
