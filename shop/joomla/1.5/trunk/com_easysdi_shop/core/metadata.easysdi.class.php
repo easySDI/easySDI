@@ -27,6 +27,11 @@ class MDClasses extends JTable
 	var $description=null;
 	var $is_final=null;
 	var $ordering=null;
+	var $translation=null;
+	var $lowerbound = 1;
+	var $upperbound = 1;
+	var $is_relation = false;
+	var $xlinkTitle=null;
 	
 	function __construct( &$db )
 	{
@@ -75,7 +80,9 @@ class MDFreetext extends JTable
 	var $is_global=0;
 	var $is_constant=0;
 	var $is_date=0;
+	var $is_datetime=0;
 	var $is_number=0;
+	var $is_integer=0;
 	var $is_id=0;
 	var $translation=null;
 	function __construct( &$db )
@@ -91,6 +98,8 @@ class MDList extends JTable
 	var $partner_id=null;
 	var $multiple=null;
 	var $translation=null;
+	var $iso_key=null;
+	var $codeValue=0;
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__easysdi_metadata_list', 'id', $db ) ;    		
