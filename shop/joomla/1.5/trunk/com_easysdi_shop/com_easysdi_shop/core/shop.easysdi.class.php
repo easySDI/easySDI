@@ -1685,7 +1685,7 @@ if (count($rows)>0){
 								OR 
 								p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 								OR
-								p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ))" ;
+								p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ))" ;
 						$db->SetQuery($query);
 						$countProduct = $db->loadResult();
 				if($row->internal == '1')
@@ -2653,7 +2653,7 @@ if (count($rows)>0){
 					OR 
 					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 					OR
-					p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					
 					))) ";
 				}
@@ -2675,7 +2675,7 @@ if (count($rows)>0){
 						AND 
 						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 						AND
-						p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 						
 						)
 						) ";
@@ -2687,7 +2687,7 @@ if (count($rows)>0){
 						AND
 						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 						AND
-						p.partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 						)) ";
 					}
 					*/
@@ -2704,7 +2704,7 @@ if (count($rows)>0){
 					OR 
 					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 					OR
-					p.partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					)) ";
 									
 				}
