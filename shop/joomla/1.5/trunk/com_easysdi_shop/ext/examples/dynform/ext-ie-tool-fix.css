@@ -1,0 +1,2 @@
+/** IE fix for messed up tool icon */
+.ext-ie .x-fieldset legend{width:150px;}
