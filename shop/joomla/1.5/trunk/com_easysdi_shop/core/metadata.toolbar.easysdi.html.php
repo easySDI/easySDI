@@ -19,6 +19,12 @@
 defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_metadata{
 
+	function _EDITMETADATA() {
+		global $mainframe;
+
+		JToolBarHelper::cancel('cancelMetadata');						
+	}
+	
 	function _EDITMETADATATAB() {
 		global $mainframe;
 
