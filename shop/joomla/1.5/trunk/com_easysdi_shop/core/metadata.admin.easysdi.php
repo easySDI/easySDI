@@ -143,7 +143,7 @@ class ADMIN_metadata {
 			// Récupération du path du bloc de champs qui va être créé pour construire le nom
 			$name = $parentName."/".$child->iso_key;
 
-			for ($pos=1; $pos<=$index; $pos++)
+			for ($pos=2; $pos<=$index; $pos++)
 			{
 				echo " / ".$child->iso_key;
 				// Flag d'index dans le nom
