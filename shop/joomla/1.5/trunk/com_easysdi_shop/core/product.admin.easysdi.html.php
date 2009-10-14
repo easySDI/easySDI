@@ -929,8 +929,7 @@ function listProduct($use_pagination, $rows, $pageNav,$option){
 
 
 $database =& JFactory::getDBO();
-JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); $partners =
-array(); ?>
+JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); $partners = array(); ?>
 <form action="index.php" method="post" name="adminForm">
 		
 		<table width="100%">
