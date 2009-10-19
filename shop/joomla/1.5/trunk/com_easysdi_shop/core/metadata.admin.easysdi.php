@@ -382,10 +382,18 @@ class ADMIN_metadata {
 				}
 				else
 				{
+					$xlinkTitleValue = 	"";
+					// S'il y a un xlink:title défini, alors le mettre comme attribut du noeud
+					if ($child->has_xlinkTitle)
+						$xlinkTitleValue = utf8_decode($_POST[$name.'_xlinktitle']);
+						
 					// Parcours récursif des classes
 					$XMLNode = $XMLDoc->createElement($child->iso_key);
 					$xmlClassParent->appendChild($XMLNode);
+					if ($xlinkTitleValue <> "")
+						$XMLNode->setAttribute('xlink:title', $xlinkTitleValue);
 					$xmlParent = $XMLNode;
+							
 					// Récupération des codes ISO et appel récursif de la fonction
 					$nextIsocode = $child->iso_key;
 					//echo " [ ".$nextIsocode."] ";
