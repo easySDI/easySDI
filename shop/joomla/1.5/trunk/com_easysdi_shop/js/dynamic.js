@@ -47,7 +47,7 @@
 		return f;
 	}
 	
-	function createTextArea(id, label, optional, clone, master, min, max, value, width, height)
+	function createTextArea(id, label, optional, clone, master, min, max, value)
 	{
 		 var ta = new Ext.form.TextArea({
 	            id:id,
