@@ -1,5 +1,3 @@
-<script>
-// Create user extensions namespace (Ext.ux)
 Ext.namespace('Ext.ux');
  
 /**
@@ -124,6 +122,4 @@ Ext.extend(Ext.ux.ExtendedHidden, Ext.form.Hidden, {
 		}
 		return cmps;								
 	}
-}); // end of extend
-// end of file	
-</script>
+});

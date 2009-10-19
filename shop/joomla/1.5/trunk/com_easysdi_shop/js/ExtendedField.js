@@ -1,4 +1,3 @@
-<script>
 Ext.override(Ext.form.TriggerField, {
     alignErrorIcon : function() {
         this.errorIcon.alignTo(this.wrap, 'tl-tr', [2 + this.dicon? this.dicon.getWidth() + 4 : 0, 0]);
@@ -313,6 +312,4 @@ Ext.override(Ext.form.Field, {
             this.on('resize', this.alignMinusIcon, this);
 		}
 	}
-}); // end of extend
-// end of file	
-</script>
+});

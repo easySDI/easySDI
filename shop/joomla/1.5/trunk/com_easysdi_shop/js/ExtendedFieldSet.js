@@ -1,4 +1,3 @@
-<script>
 Ext.override(Ext.form.FieldSet, {
     dynamic : false,
 	
@@ -103,6 +102,16 @@ Ext.override(Ext.form.FieldSet, {
 		var isHiddenPlus = (component.clone) ? true : false;
 		var isHiddenMinus = (component.clone) ? false : true;
 		
+		//console.log(component.minOccurs+"-"+component.maxOccurs+"-"+component.clone);
+		if (component.minOccurs==1 && component.maxOccurs==1 && component.clone) 
+		{
+			isHiddenMinus = true;
+			isHiddenPlus = true;
+		}
+		
+		if (!component.clone && component.clones().length == component.maxOccurs) isHiddenPlus=true;
+		if (component.clone && component.clones().length == component.minOccurs) isHiddenMinus=true;
+		
 /*		if (!component.clone)
 		{
 			var cnt = component.clones().length;
@@ -171,13 +180,15 @@ Ext.override(Ext.form.FieldSet, {
 						    
 						fieldset.cascade(function(cmp)
 						{
-						//console.log(cmp.getId());
 							if (cmp.xtype=='fieldset') cmp.layout.layout(true);
 						});
-						   //fieldset.doLayout(true,true);
+						
 						var panel = fieldset.ownerCt;
 						fieldset.clones(cnt+1);
-						fieldset.manageIcons(fieldset); //mise a jour des boutons
+						var listOfClones = fieldset.clones();
+						var lastClone = listOfClones[listOfClones.length-1];									
+						if (lastClone) lastClone.manageIcons(lastClone);
+						fieldset.manageIcons(fieldset);
 						//fieldset.collapseFieldSet(fieldset);
 						panel.doLayout();																								   
 					}
@@ -228,6 +239,10 @@ Ext.override(Ext.form.FieldSet, {
 							var tmpl = fieldset.template;
 							panel.remove(fieldset, true);
 							tmpl.manageIcons(tmpl); //mise a jour des boutons
+							
+							var listOfClones = tmpl.clones();
+							var lastClone = listOfClones[listOfClones.length-1];									
+							if (lastClone) lastClone.manageIcons(lastClone);
 						}
 					}
 				}
@@ -235,5 +250,3 @@ Ext.override(Ext.form.FieldSet, {
 		}
 	})
 });
-// end of file
-</script>

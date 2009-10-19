@@ -1,83 +1,63 @@
-<script>
-	/*!
-	 * Ext JS Library 3.0+
-	 * Copyright(c) 2006-2009 Ext JS, LLC
-	 * licensing@extjs.com
-	 * http://www.extjs.com/license
-	 */
-	
-	/**  
-	 * * Fires when the document is ready (before onload and before images are loaded).  Shorthand of {@link Ext.EventManager#onDocumentReady}.  
-	 * * @param {Function} fn The method the event invokes  
-	 * * @param {Object} scope An object that becomes the scope of the handler  
-	 * * @param {boolean} options (optional) An object containing standard {@link #addListener} options  
-	 * * @member Ext  
-	 * * @method onReady */
-
 	Ext.onReady(function(){
 	
 	    Ext.QuickTips.init();
 	});
 
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max)
-	 { 
-	  if (title) title = title+" "+min+" - "+max;
-	  
-	  coll=false;
-	   if (relation && !clone) coll=true;
-	  
-	  
-	  var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
-	  
-	  // Créer un nouveau fieldset
-	  var f = new Ext.form.FieldSet(
-	    {
-	     xtype: 'fieldset', 
-	     title:title, 
-	     id:id, 
-	     name:id,  
-	     minOccurs:min, 
-	              maxOccurs:5,
-	              border: border,
-	     clone: clone,
-	     hidden: hidden,
-	           collapsible: !coll,
-	           collapsed: coll,
-	        relation: relation,
-	     dynamic: dynamic,
-	     template: master,
-	     listeners : { 
-	                 'minoccurs' : 
-	              {
-	               fn: function(field) 
-	               { 
-	                Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-	               }
-	              },
-	              'maxoccurs' : 
-	              {
-	               fn: function(field) 
-	               { 
-	                Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-	               }
-	              }
-	                }
-	         });
-	  return f;
-	 }
+	{	
+		if (title) title = title+" "+min+" - "+max;
+		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
+		var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
+		
+		// Créer un nouveau fieldset
+		var f = new Ext.form.FieldSet(
+				{
+					xtype: 'fieldset',
+					cls: 'easysdi_shop_backend_fieldset', 
+					title:title, 
+					id:id, 
+					name:id,
+					minOccurs:min, 
+		            maxOccurs:max,
+		            border: border,
+					clone: clone,
+					hidden: hidden,
+			        collapsible: !collapsed,
+			        collapsed: collapsed,
+				    relation: relation,
+					dynamic: dynamic,
+					template: master,
+					listeners : { 
+	            				'minoccurs' : 
+       							{
+       								fn: function(field) 
+       								{ 
+       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
+       								}
+       							},
+       							'maxoccurs' : 
+       							{
+       								fn: function(field) 
+       								{ 
+       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
+       								}
+       							}
+	            			}
+	        });
+		return f;
+	}
 	
 	function createTextArea(id, label, optional, clone, master, min, max, value, width, height)
 	{
 		 var ta = new Ext.form.TextArea({
 	            id:id,
 	            xtype: 'textarea',
+				cls: 'easysdi_shop_backend_textarea', 
 	            fieldLabel: label,
 	            name: id,
 	            allowBlank: optional,
 	            value: value,
 	            grow: true,
-	            width:200,
-	            height:height,
 	            dynamic:true,
 	            clone: clone,
 	            template: master,
@@ -108,13 +88,14 @@
 	function createComboBox(id, label, optional, min, max, data, value)
 	{
 		var store = new Ext.data.ArrayStore({
-						    fields: ['key', 'translation'],
+						    fields: ['id', 'key', 'translation'],
 						    data: data
 						});
 		 
 		 var c = new Ext.form.ComboBox({
 	            id:id,
 	            name: id,
+				cls: 'easysdi_shop_backend_combobox', 
 	            fieldLabel: label,
 	            allowBlank: optional,
 	            store: store,
@@ -123,9 +104,9 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            editable:false,
-	            valueField:'key',
+	            valueField:'id',
 	            value:value,
-	            displayField:'translation',
+	            displayField:'key',
 		        mode: 'local',
 		        forceSelection: true,
 		        triggerAction: 'all',
@@ -154,10 +135,12 @@
 	
 	function createMultiSelector(id, label, optional, min, max, data, value)
 	{
+	//console.log(data);
 		 var ta = new Ext.ux.form.MultiSelect({
 	            id:id,
 	            name: id,
 	            xtype: 'multiselect',
+				cls: 'easysdi_shop_backend_multiselect', 
 	            fieldLabel: label,
 	            allowBlank: optional,
 	            store: data,
@@ -192,6 +175,7 @@
 		 var tf = new Ext.form.TextField({
 	            id:id,
 	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
 	            fieldLabel: label,
 	            name: id,
 	            allowBlank: optional,
@@ -229,6 +213,7 @@
 		 var tf = new Ext.form.NumberField({
 	            id:id,
 	            xtype: 'numberfield',
+				cls: 'easysdi_shop_backend_numberfield', 
 	            fieldLabel: label,
 	            name: id,
 	            decimalPrecision: dec,
@@ -279,6 +264,7 @@
 		 var df = new Ext.form.DateField({
 	            id:id,
 	            xtype: 'datefield',
+				cls: 'easysdi_shop_backend_datetimefield', 
 	            fieldLabel: label,
 	            name: id,
 	            dynamic: true,
@@ -315,6 +301,7 @@
 		 var df = new Ext.form.DateField({
 	            id:id,
 	            xtype: 'datefield',
+				cls: 'easysdi_shop_backend_datefield', 
 	            fieldLabel: label,
 	            name: id,
 	            dynamic: true,
@@ -345,4 +332,3 @@
 		 
 		 return df;
 	}
-</script>

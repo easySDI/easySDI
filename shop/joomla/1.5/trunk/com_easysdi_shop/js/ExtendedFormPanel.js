@@ -1,5 +1,3 @@
-<script>
-// Create user extensions namespace (Ext.ux)
 Ext.namespace('Ext.ux');
  
 /**
@@ -198,6 +196,4 @@ Ext.extend(Ext.ux.ExtendedFormPanel, Ext.form.FormPanel, {
 			}
 		}
 	}
-}); // end of extend
-// end of file	
-</script>
+});
