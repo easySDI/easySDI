@@ -20,43 +20,51 @@
 	});
 
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max)
-	{	
-		if (title) title = title+" "+min+" - "+max;
-		
-		// Créer un nouveau fieldset
-		var f = new Ext.form.FieldSet(
-				{
-					xtype: 'fieldset', 
-					title:title, 
-					id:id, 
-					name:id,  
-					minOccurs:min, 
-		            maxOccurs:max,
-		            border: border,
-					clone: clone,
-					collapsible: collapsible,
-					relation: relation,
-					dynamic: dynamic,
-					template: master,
-					listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
-	        });
-		return f;
-	}
+	 { 
+	  if (title) title = title+" "+min+" - "+max;
+	  
+	  coll=false;
+	   if (relation && !clone) coll=true;
+	  
+	  
+	  var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
+	  
+	  // Créer un nouveau fieldset
+	  var f = new Ext.form.FieldSet(
+	    {
+	     xtype: 'fieldset', 
+	     title:title, 
+	     id:id, 
+	     name:id,  
+	     minOccurs:min, 
+	              maxOccurs:5,
+	              border: border,
+	     clone: clone,
+	     hidden: hidden,
+	           collapsible: !coll,
+	           collapsed: coll,
+	        relation: relation,
+	     dynamic: dynamic,
+	     template: master,
+	     listeners : { 
+	                 'minoccurs' : 
+	              {
+	               fn: function(field) 
+	               { 
+	                Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
+	               }
+	              },
+	              'maxoccurs' : 
+	              {
+	               fn: function(field) 
+	               { 
+	                Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
+	               }
+	              }
+	                }
+	         });
+	  return f;
+	 }
 	
 	function createTextArea(id, label, optional, clone, master, min, max, value, width, height)
 	{
@@ -68,7 +76,7 @@
 	            allowBlank: optional,
 	            value: value,
 	            grow: true,
-	            width:width,
+	            width:200,
 	            height:height,
 	            dynamic:true,
 	            clone: clone,
@@ -100,7 +108,7 @@
 	function createComboBox(id, label, optional, min, max, data, value)
 	{
 		var store = new Ext.data.ArrayStore({
-						    fields: ['id', 'key', 'translation'],
+						    fields: ['key', 'translation'],
 						    data: data
 						});
 		 
@@ -115,13 +123,13 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            editable:false,
-	            valueField:'id',
+	            valueField:'key',
 	            value:value,
-	            displayField:'key',
+	            displayField:'translation',
 		        mode: 'local',
 		        forceSelection: true,
 		        triggerAction: 'all',
-		        emptyText:'Select a value...',
+		        emptyText:'',
 		        selectOnFocus:true,
 	            listeners : { 
 	            				'minoccurs' : 
@@ -193,7 +201,7 @@
 	            maxOccurs:max,
 	            clone: clone,
 	            template: master,
-	            disabled: dis,
+	            disabled: false,
 	            minLength:length,
 	            listeners : { 
 	            				'minoccurs' : 
@@ -280,7 +288,7 @@
 	            clone: clone,
 	            template: master,
 	            value:value,
-	            format: 'Y-m-dTH:i:s',
+	            format: 'd.m.Y',
 	            listeners : { 
 	            				'minoccurs' : 
        							{

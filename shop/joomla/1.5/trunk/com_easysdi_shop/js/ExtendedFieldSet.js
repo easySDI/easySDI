@@ -55,11 +55,18 @@ Ext.override(Ext.form.FieldSet, {
 				
 				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+oldIndexComponent.getValue().length);
 			    var newName = parentName + partOfNameToModify2 + newVal + nameEndPart;
+			    
+				var coll=false;
+				if (master.relation && !isClone) coll=true;
+			    
+			    
 				var clone = master.cloneConfig({
 					id : newName,
 					name : newName,
 					clone : isClone,
-					template : master
+					template : master,
+					collapsible: !coll,
+					collapsed: coll
 				});
 
 				clone.constructClone(master);
@@ -146,7 +153,7 @@ Ext.override(Ext.form.FieldSet, {
 		{	
 			
 			this.on("afterrender",this.manageIcons);
-			this.on("afterrender",this.collapseFieldSet);
+			//this.on("afterrender",this.collapseFieldSet);
 			
 			this.tools = 
 			[ 
@@ -161,10 +168,17 @@ Ext.override(Ext.form.FieldSet, {
 								   return;													   
 							   }
 						    }	
+						    
+						fieldset.cascade(function(cmp)
+						{
+						//console.log(cmp.getId());
+							if (cmp.xtype=='fieldset') cmp.layout.layout(true);
+						});
+						   //fieldset.doLayout(true,true);
 						var panel = fieldset.ownerCt;
 						fieldset.clones(cnt+1);
 						fieldset.manageIcons(fieldset); //mise a jour des boutons
-						fieldset.collapseFieldSet(fieldset);
+						//fieldset.collapseFieldSet(fieldset);
 						panel.doLayout();																								   
 					}
 				},
@@ -174,7 +188,7 @@ Ext.override(Ext.form.FieldSet, {
 					{	
 						var cnt = fieldset.clones().length;
 					   if ( !Ext.isEmpty(fieldset.minOccurs) ) {
-					   	   console.log(fieldset.minOccurs);
+					   	   //console.log(fieldset.minOccurs);
 						   if ( fieldset.minOccurs  >= cnt) {
 							   fieldset.fireEvent('minoccurs',fieldset);
 							   return;													   

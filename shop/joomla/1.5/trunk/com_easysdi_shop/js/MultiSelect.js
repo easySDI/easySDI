@@ -231,12 +231,16 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
      */
     getValue: function(valueField){
         var returnArray = [];
+        if (this.view)
+        {
+        //console.log(this.getId());
         var selectionsArray = this.view.getSelectedIndexes();
         if (selectionsArray.length == 0) {return '';}
         for (var i=0; i<selectionsArray.length; i++) {
             returnArray.push(this.store.getAt(selectionsArray[i]).get((valueField != null) ? valueField : this.valueField));
         }
         return returnArray.join(this.delimiter);
+        }
     },
 
     /**
@@ -270,6 +274,8 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
     // inherit docs
     getRawValue: function(valueField) {
         var tmp = this.getValue(valueField);
+        if (tmp)
+        {
         if (tmp.length) {
             tmp = tmp.split(this.delimiter);
         }
@@ -277,6 +283,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             tmp = [];
         }
         return tmp;
+        }
     },
 
     // inherit docs
@@ -286,6 +293,8 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
 
     // inherit docs
     validateValue : function(value){
+    	if (value)
+    	{
         if (value.length < 1) { // if it has no value
              if (this.allowBlank) {
                  this.clearInvalid();
@@ -302,6 +311,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
         if (value.length > this.maxSelections) {
             this.markInvalid(String.format(this.maxSelectionsText, this.maxSelections));
             return false;
+        }
         }
         return true;
     },
