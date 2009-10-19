@@ -117,7 +117,7 @@ class HTML_metadata {
 				form.add(createHidden('option', 'option', '".$option."'));
 				form.add(createHidden('task', 'task', 'saveMetadata'));
 				form.add(createHidden('metadata_id', 'metadata_id', '".$metadata_id."'));
-				form.add(createHidden('metadata_id', 'product_id', '".$product_id."'));
+				form.add(createHidden('product_id', 'product_id', '".$product_id."'));
 				
 	    		// Affichage du formulaire
 	    		form.doLayout();";
@@ -465,7 +465,9 @@ class HTML_metadata {
 	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
 	     	// La liste
 	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
-	    	";
+	    	// L'index pour les potentiels clones de la liste 
+	     	fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
+	     	";
 	   }
 	   else
 	   {

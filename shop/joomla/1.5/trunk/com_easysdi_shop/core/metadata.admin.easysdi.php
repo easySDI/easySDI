@@ -449,12 +449,12 @@ class ADMIN_metadata {
 		$product_id = $_POST['product_id'];
 
 		// Sauver dans un fichier les valeurs du POST
-		$myFile = "C:\\RecorderWebGIS\\myFile.txt";
+		/*$myFile = "C:\\RecorderWebGIS\\myFile.txt";
 		$fh = fopen($myFile, 'w') or die("can't open file");
 		foreach ($_POST as $key => $val)
 			fwrite($fh, $key." - ".$val);
 		fclose($fh);
-		
+		*/
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		
@@ -505,7 +505,7 @@ class ADMIN_metadata {
 		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $doc, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
 		$doc=$doc."</gmd:MD_Metadata>";
 
-		$XMLDoc->save("C:\\RecorderWebGIS\\xml.xml");
+		//$XMLDoc->save("C:\\RecorderWebGIS\\xml.xml");
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'product.admin.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
