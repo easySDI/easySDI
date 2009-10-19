@@ -31,7 +31,7 @@ class MDClasses extends JTable
 	var $lowerbound = 1;
 	var $upperbound = 1;
 	var $is_relation = false;
-	var $xlinkTitle=null;
+	var $has_xlinkTitle=false;
 	
 	function __construct( &$db )
 	{
@@ -164,8 +164,9 @@ class MDStandard extends JTable{
 	var $id=null;	
 	var $name=null;
 	var $partner_id=null;
-	var $inherited=null;
+	//var $inherited=null;
 	var $is_global=null;
+	var $classes_id=null;
 	
 	function __construct( &$db )
 	{

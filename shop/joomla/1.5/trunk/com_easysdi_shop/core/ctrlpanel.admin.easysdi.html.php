@@ -189,14 +189,14 @@ echo $pane->endPanel();
 	echo $pane->startPane("content-pane");
 			echo $pane->startPanel( JText::_('EASYSDI_EASYSDI MODULES'), 'cpanel-panel-1' );
 		?>
-		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
 			<input type="hidden" name="task" id="task" value="">
 		</form> 
 	<div id="cpanel">
 		<?php
 		$link = "index.php?option=$option&amp;task=listMetadataStandardClasses";
-?>
+?><!-- 
 		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
@@ -207,7 +207,7 @@ echo $pane->endPanel();
 					<span><?php echo $text; ?></span></a>
 			</div>
 		</div>
-
+ -->
 
 		<?php
 		$link = "index.php?option=$option&amp;task=listMetadataStandard";
@@ -285,7 +285,7 @@ echo $pane->endPanel();
 	
 		<?php
 		$link = "index.php?option=$option&amp;task=listMetadataExt";
-?>
+?><!-- 
 		<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
@@ -296,11 +296,12 @@ echo $pane->endPanel();
 					<span><?php echo $text; ?></span></a>
 			</div>
 		</div>
-	
+ -->	
 	<?php	
 		$link = "index.php?option=$option&amp;task=listMetadataTabs";
 
 ?>
+<!-- 
 	<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 			<div class="icon">
 				<a href="<?php echo $link; ?>">
@@ -311,7 +312,7 @@ echo $pane->endPanel();
 			</div>
 		</div>
 	</div> 
-	 
+ -->	 
 		<?php
 echo $pane->endPanel();
 	?>
