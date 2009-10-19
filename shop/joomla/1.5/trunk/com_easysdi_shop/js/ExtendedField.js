@@ -158,22 +158,20 @@ Ext.override(Ext.form.Field, {
     	if (component.xtype!='hidden')
     	{
 		var isHiddenPlus = (component.clone) ? true : false;
-		var isHiddenMinus = (component.clone) ? false : true;
+		var isHiddenMinus = false;
 		
-		if (!component.clone)
+		if (component.minOccurs==0) component.minOccurs=1;
+		
+		//console.log(component.getId()+"-"+component.minOccurs+"-"+component.maxOccurs+"-"+component.clones().length);
+		if (component.minOccurs==1 && component.maxOccurs==1) 
 		{
-			var cnt = component.clones().length;
-			if (cnt>0)
-			{
-				isHiddenMinus = false;
-			}
-			else
-			{
-				isHiddenMinus = true;
-			}
+			isHiddenMinus = true;
+			isHiddenPlus = true;
 		}
-		var icnContainer = component.getEl();
-		//console.log(component.minusIcon);
+		
+		if (component.clones().length+1 == component.maxOccurs) isHiddenPlus=true;
+		if (component.clones().length+1 == component.minOccurs) isHiddenMinus=true;
+
 		var plusIcon = component.plusIcon;
 		var minusIcon = component.minusIcon;
 		if (plusIcon) (isHiddenPlus) ? plusIcon.setVisible(false) : plusIcon.setVisible(true);
@@ -187,29 +185,19 @@ Ext.override(Ext.form.Field, {
 			this.addIcon({cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'});
 			this.addListener('onPlusIcon',function(field) 
 			{
-			   var cnt = this.clones().length;
-			   if ( !Ext.isEmpty(this.maxOccurs) ) {
-				   if ( this.maxOccurs  <= cnt + 1) {
-					   field.fireEvent('maxoccurs',this);
-					   return;													   
-				   }
-			   }			
-			   var panel = this.ownerCt;	
-			   this.clones(cnt+1);
-			   panel.doLayout();
-			   field.manageIcons(field);
+			   	var cnt = this.clones().length;
+			   	var panel = this.ownerCt;	
+			   	this.clones(cnt+1);
+				var listOfClones = field.clones();
+				var lastClone = listOfClones[listOfClones.length-1];									
+				if (lastClone) lastClone.manageIcons(lastClone);
+			   	panel.doLayout();
+			   	field.manageIcons(field);
 			});
 			
 			this.addListener('onMinusIcon',function(field) 
 			{
 		    	var cnt = this.clones().length;
-					   if ( !Ext.isEmpty(this.minOccurs) ) {
-						   if ( this.minOccurs  >= cnt-1) {
-						   	   field.fireEvent('minoccurs',this);
-							   return;													   
-						   }
-					    }
-					    
 				var item = Ext.get(field.el.findParent('.x-form-item'));
 			    var fieldset = field.ownerCt;
 				
@@ -251,6 +239,10 @@ Ext.override(Ext.form.Field, {
 					fieldset.remove(field, true);
 					fieldset.doLayout();
 					tmpl.manageIcons(tmpl); //mise a jour des boutons
+							
+							var listOfClones = tmpl.clones();
+							var lastClone = listOfClones[listOfClones.length-1];									
+							if (lastClone) lastClone.manageIcons(lastClone);
 			    }
 			});
 		} 

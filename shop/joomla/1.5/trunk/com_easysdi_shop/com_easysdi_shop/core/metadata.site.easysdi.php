@@ -100,7 +100,7 @@ function editMetadata($id, $option)
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 
-		HTML_metadata::editMetadata($root, $rowProduct->metadata_id, $xpathResults, $option);
+		HTML_metadata::editMetadata($id, $root, $rowProduct->metadata_id, $xpathResults, $option);
 	}
 
 

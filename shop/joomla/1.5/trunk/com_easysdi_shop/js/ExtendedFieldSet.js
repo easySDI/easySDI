@@ -71,8 +71,8 @@ Ext.override(Ext.form.FieldSet, {
 				clone.constructClone(master);
 				if (isClone)
 				{
-					var idx = idx = panel.items.indexOf(master)+1+i;
-			   		panel.insert(idx,clone);	
+					var idx = panel.items.indexOf(master)+2+i;
+			   		panel.insert(idx,clone);
 				}
 				else
 				{
@@ -97,6 +97,20 @@ Ext.override(Ext.form.FieldSet, {
 		}
 		return cmps;								
 	},
+	manageTitle: function(component)
+	{
+		if (component.clone)
+		{
+			var clones = component.template.clones();
+			
+			for (var i=0 ; i<clones.length ; i++)
+			{
+			//console.log(clones[i].getId());
+				var position = clones.indexOf(clones[i]);
+				clones[i].setTitle(clones[i].originalTitle + " - N&deg;" + (Number(position)+1));
+			}
+		}
+	},
 	manageIcons: function(component)
 	{
 		var isHiddenPlus = (component.clone) ? true : false;
@@ -111,19 +125,7 @@ Ext.override(Ext.form.FieldSet, {
 		
 		if (!component.clone && component.clones().length == component.maxOccurs) isHiddenPlus=true;
 		if (component.clone && component.clones().length == component.minOccurs) isHiddenMinus=true;
-		
-/*		if (!component.clone)
-		{
-			var cnt = component.clones().length;
-			if (cnt>0)
-			{
-				isHiddenMinus = false;
-			}
-			else
-			{
-				isHiddenMinus = true;
-			}
-		}*/
+
 		if (component.tools) if (component.getTool('minus')) (isHiddenMinus) ? component.getTool('minus').hide() : component.getTool('minus').show();
 		if (component.tools) if (component.getTool('plus')) (isHiddenPlus) ? component.getTool('plus').hide() : component.getTool('plus').show();
 	},
@@ -162,6 +164,7 @@ Ext.override(Ext.form.FieldSet, {
 		{	
 			
 			this.on("afterrender",this.manageIcons);
+			this.on("afterrender",this.manageTitle);
 			//this.on("afterrender",this.collapseFieldSet);
 			
 			this.tools = 
@@ -170,14 +173,7 @@ Ext.override(Ext.form.FieldSet, {
 					id:'plus', 
 					handler: function(event, toolEl, fieldset)
 					{	
-						var cnt = fieldset.clones().length;
-						   if ( !Ext.isEmpty(fieldset.maxOccurs) ) {
-							   if ( fieldset.maxOccurs  <= cnt) {
-								   fieldset.fireEvent('maxoccurs',fieldset);
-								   return;													   
-							   }
-						    }	
-						    
+						var cnt = fieldset.clones().length;				    
 						fieldset.cascade(function(cmp)
 						{
 							if (cmp.xtype=='fieldset') cmp.layout.layout(true);
@@ -186,9 +182,10 @@ Ext.override(Ext.form.FieldSet, {
 						var panel = fieldset.ownerCt;
 						fieldset.clones(cnt+1);
 						var listOfClones = fieldset.clones();
-						var lastClone = listOfClones[listOfClones.length-1];									
-						if (lastClone) lastClone.manageIcons(lastClone);
+						var firstClone = listOfClones[0];									
+						if (firstClone) firstClone.manageIcons(firstClone);
 						fieldset.manageIcons(fieldset);
+						fieldset.manageTitle(fieldset);
 						//fieldset.collapseFieldSet(fieldset);
 						panel.doLayout();																								   
 					}
@@ -198,13 +195,6 @@ Ext.override(Ext.form.FieldSet, {
 					handler: function(event, toolEl, fieldset)
 					{	
 						var cnt = fieldset.clones().length;
-					   if ( !Ext.isEmpty(fieldset.minOccurs) ) {
-					   	   //console.log(fieldset.minOccurs);
-						   if ( fieldset.minOccurs  >= cnt) {
-							   fieldset.fireEvent('minoccurs',fieldset);
-							   return;													   
-						   }
-					    }
 						var panel = fieldset.ownerCt;
 
 						if (!fieldset.clone)
@@ -233,6 +223,7 @@ Ext.override(Ext.form.FieldSet, {
 								listOfClones[i].template = firstClone;
 							}
 							firstClone.manageIcons(firstClone); //mise a jour des boutons
+							firstClone.manageTitle(firstClone); //mise a jour des boutons
 						}
 						else
 						{
@@ -241,8 +232,9 @@ Ext.override(Ext.form.FieldSet, {
 							tmpl.manageIcons(tmpl); //mise a jour des boutons
 							
 							var listOfClones = tmpl.clones();
-							var lastClone = listOfClones[listOfClones.length-1];									
-							if (lastClone) lastClone.manageIcons(lastClone);
+							var firstClone = listOfClones[0];									
+							if (firstClone) firstClone.manageIcons(firstClone);									
+							if (firstClone) firstClone.manageTitle(firstClone);
 						}
 					}
 				}

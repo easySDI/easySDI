@@ -5,7 +5,7 @@
 
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max)
 	{	
-		if (title) title = title+" "+min+" - "+max;
+		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
 		var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
 		
@@ -15,6 +15,7 @@
 					xtype: 'fieldset',
 					cls: 'easysdi_shop_backend_fieldset', 
 					title:title, 
+					originalTitle:title,
 					id:id, 
 					name:id,
 					minOccurs:min, 
@@ -185,7 +186,7 @@
 	            maxOccurs:max,
 	            clone: clone,
 	            template: master,
-	            disabled: false,
+	            disabled: dis,
 	            minLength:length,
 	            listeners : { 
 	            				'minoccurs' : 
