@@ -78,12 +78,11 @@ class MDFreetext extends JTable
 	var $partner_id=null;	
 	var $is_default=null;
 	var $is_global=0;
-	var $is_constant=0;
+	var $is_system=0;
 	var $is_date=0;
 	var $is_datetime=0;
 	var $is_number=0;
 	var $is_integer=0;
-	var $is_id=0;
 	var $translation=null;
 	function __construct( &$db )
 	{

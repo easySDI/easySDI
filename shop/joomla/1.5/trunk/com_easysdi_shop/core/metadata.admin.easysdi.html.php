@@ -143,6 +143,7 @@ class HTML_metadata {
 		$database->setQuery( $query );
 		$rowAttributeChilds = array_merge( $rowAttributeChilds, $database->loadObjectList() );
 		//echo "rowAttributeChilds: ".count($rowAttributeChilds)."<br>";
+		
 		foreach($rowAttributeChilds as $child)
 		{
 			// Stockage du path pour atteindre ce noeud du XML
@@ -159,10 +160,18 @@ class HTML_metadata {
 			$type = $database->loadObject();
 			
 			// Traitement de chaque attribut
-			if ($type->is_id)
+			if ($type->is_system)
 			{
-				$path = $path."/gco:CharacterString";
-				$name = $name."/gco:CharacterString";
+				if ($type->is_datetime)
+				{
+					$path = $path."/gco:DateTime";
+					$name = $name."/gco:DateTime";
+				}
+				else
+				{
+					$path = $path."/gco:CharacterString";
+					$name = $name."/gco:CharacterString";
+				}
 			}
 			else if ($type->is_date)
 			{		
@@ -183,11 +192,6 @@ class HTML_metadata {
 			{
 				$path = $path."/gco:Integer";
 				$name = $name."/gco:Integer";
-			}
-			else if ($type->is_constant)
-			{
-				$path = $path."/gco:CharacterString";
-				$name = $name."/gco:CharacterString";
 			}
 			else
 			{
@@ -216,12 +220,13 @@ class HTML_metadata {
 
 				if ($pos==0)
 				{
-					if ($type->is_id)
+					if ($type->is_system)
 					{
 						$this->javascript .="
 							// La relation entre la classe et l'attribut
 							// L'attribut
 							fieldset".$parent.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+							fieldset".$parent.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 							";
 					}
 					else if ($type->is_date)
@@ -285,12 +290,13 @@ class HTML_metadata {
 						index.setValue(Number(oldIndex)+1);
 						";
 					
-					if ($type->is_id)
+					if ($type->is_system)
 					{
 						$this->javascript .="
 							// La relation entre la classe et l'attribut
 							// L'attribut
-							fieldset".$parent.".add(createTextField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+							fieldset".$parent.".add(createTextField('".$currentName."', '".$child->name."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+							fieldset".$parent.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 							";
 					}
 					else if ($type->is_date)
@@ -348,16 +354,17 @@ class HTML_metadata {
 				//echo $nodeValue."<br>";
 				//echo $path."(".$node->length."): ".$nodeValue."<br>";
 					
-			// Traitement de chaque attribut
+				// Traitement de chaque attribut
 				if ($type->default_value <> "")
 					$nodeValue = html_Metadata::cleanText($type->default_value);
 					
-					if ($type->is_id)
+					if ($type->is_system)
 					{
 						$this->javascript .="
 							// La relation entre la classe et l'attribut
 							// L'attribut
 							fieldset".$parent.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+							fieldset".$parent.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 							";
 					}
 					else if ($type->is_date)
@@ -455,7 +462,7 @@ class HTML_metadata {
 	   {
 	   	$this->javascript .="
 			var valueList = ".HTML_metadata::array2extjs($dataValues)."
-	     	var selectedValueList = ".array2json($nodeValues)."
+	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
 	     	// La liste
 	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
 	    	";
@@ -464,7 +471,7 @@ class HTML_metadata {
 	   {
 	    $this->javascript .="
 		var valueList = ".HTML_metadata::array2extjs($dataValues).";
-	     var selectedValueList = ".array2json($nodeValues).";
+	     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 	     // La liste
 	     fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
 	     // L'index pour les potentiels clones de la liste 
@@ -1924,6 +1931,7 @@ window.onload=function(){
 		<td><select name="is_global" > <option value="1" <?php if($row->is_global == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_global == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
 	</tr>
+	<!-- 
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_CONSTANT"); ?></td>
 		<td><select name="is_constant" > <option value="1" <?php if($row->is_constant == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
@@ -1933,6 +1941,12 @@ window.onload=function(){
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_ID"); ?></td>
 		<td><select name="is_id" > <option value="1" <?php if($row->is_id == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_id == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
+	</tr>	
+	 -->
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_SYSTEM"); ?></td>
+		<td><select name="is_system" > <option value="1" <?php if($row->is_system == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+		<option value="0" <?php if($row->is_system == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
 	</tr>				
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_DATE"); ?></td>
@@ -1954,12 +1968,13 @@ window.onload=function(){
 		<td><select name="is_integer" > <option value="1" <?php if($row->is_integer == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_integer == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
 	</tr>
+	<!-- 
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_CONSTANT"); ?></td>
 		<td><select name="is_constant" > <option value="1" <?php if($row->is_constant == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 		<option value="0" <?php if($row->is_constant == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select></td> 
 	</tr>				
-					
+	-->			
 	<tr>
 		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_DEFAULT_VALUE"); ?></td>
 		<td><input size="50" type="text" name ="default_value" value="<?php echo $row->default_value?>"> </td>		 
@@ -2337,7 +2352,7 @@ function array2extjs($arr) {
  
 	 function array2json($arr) 
 	 { 
-	    if(function_exists('json_encode')) 
+	 	if(function_exists('json_encode')) 
 	    	return json_encode($arr); //Lastest versions of PHP already has this functionality. 
 	    
 	    $parts = array(); 

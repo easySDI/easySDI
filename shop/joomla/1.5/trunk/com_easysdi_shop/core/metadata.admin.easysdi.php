@@ -269,11 +269,20 @@ class ADMIN_metadata {
 			$type = $database->loadObject();
 			
 			// Traitement de chaque attribut
-			if ($type->is_id)
+			if ($type->is_system)
 			{
-				$path = $path."/gco:CharacterString";
-				$name = $name."/gco:CharacterString";
-				$childType = "gco:CharacterString";
+				if ($type->is_datetime)
+				{
+					$path = $path."/gco:DateTime";
+					$name = $name."/gco:DateTime";
+					$childType = "gco:DateTime";
+				}
+				else
+				{
+					$path = $path."/gco:CharacterString";
+					$name = $name."/gco:CharacterString";
+					$childType = "gco:CharacterString";
+				}
 			}
 			else if ($type->is_date)
 			{		
@@ -336,6 +345,21 @@ class ADMIN_metadata {
 					else
 						$nodeValue = date('Y-m-d');
 					$nodeValue = $nodeValue."T00:00:00";
+				}
+				
+				if ($type->is_system)
+				{
+					if ($type->is_datetime)
+					{
+						$nodeValue = date('Y-m-d')."T".date('H:m:s');
+						//echo $nodeValue."\r\n";
+					}
+					else
+					{
+						//echo $name."__".$pos."_hiddenVal\r\n";
+						$nodeValue = $_POST[$name."__".$pos."_hiddenVal"];
+						//echo $nodeValue."\r\n";
+					}
 				}
 					
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
@@ -425,12 +449,12 @@ class ADMIN_metadata {
 		$product_id = $_POST['product_id'];
 
 		// Sauver dans un fichier les valeurs du POST
-		/*$myFile = "C:\\RecorderWebGIS\\myFile.txt";
+		$myFile = "C:\\RecorderWebGIS\\myFile.txt";
 		$fh = fopen($myFile, 'w') or die("can't open file");
 		foreach ($_POST as $key => $val)
 			fwrite($fh, $key." - ".$val);
 		fclose($fh);
-		*/
+		
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		
