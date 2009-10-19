@@ -84,6 +84,18 @@
 		      <include name="**/en-GB.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
+		<copy
+			todir="C:\www\Site\Joomla\includes\js\extjs">
+			<fileset dir="./ext">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy
+			todir="C:\www\Site\Joomla\administrator\includes\js\extjs">
+			<fileset dir="./ext">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
 	</target>
 	
 

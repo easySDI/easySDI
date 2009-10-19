@@ -19,6 +19,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+jimport( 'joomla.filesystem.folder' );
 
 function com_install(){
 
@@ -82,7 +83,6 @@ function com_install(){
 		}
 		return false;
 	}
-
 
 	/**
 	 * Creates the database structure
@@ -1915,6 +1915,9 @@ if ($version == "0.998")
 	 }
 	if($version == "0.99991")
 	 {
+	 	/*
+		* Update #__easysdi_metadata_classes
+		* */
 		 //Add lowerbound et upperbound with default value '1' 
 		$query="ALTER TABLE #__easysdi_metadata_classes add column `lowerbound` bigint(20) NOT NULL default '1' ";
 		$db->setQuery( $query);
@@ -1936,8 +1939,8 @@ if ($version == "0.998")
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	 	//Update component version
+	 	
+		//Update component version
 		$version = "0.99992";
 		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
@@ -1946,6 +1949,100 @@ if ($version == "0.998")
 		}
 	 }
 	 
+	 if($version == "0.99992")
+	 {		
+	 	//Add is_relation flag 
+		$query="ALTER TABLE #__easysdi_metadata_classes add column `is_relation` tinyint(1) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Add xlink-title value 
+		$query="ALTER TABLE #__easysdi_metadata_classes add column `xlinkTitle` varchar(100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		/*
+		* Update #__easysdi_metadata_freetext
+		* */
+		 //Add is_datetime flag 
+		 $query="ALTER TABLE #__easysdi_metadata_freetext add column `is_datetime` tinyint(1) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		 //Add is_integer flag 
+		 $query="ALTER TABLE #__easysdi_metadata_freetext add column `is_integer` tinyint(1) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	/*
+		* Update #__easysdi_metadata_list
+		* */
+		 //Add is_datetime flag 
+		 $query="ALTER TABLE #__easysdi_metadata_list add column `iso_key` varchar(100) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		 //Add is_integer flag 
+		 $query="ALTER TABLE #__easysdi_metadata_list add column `codeValue` tinyint(1) NOT NULL default '0' ";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	/*
+		* Update #__easysdi_metadata_standard
+		* */
+		 //Add is_datetime flag 
+		 $query="ALTER TABLE #__easysdi_metadata_standard add column `classes_id` bigint(20) NOT NULL";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	//Update component version
+		$version = "0.99993";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
+	 
+if($version == "0.99993")
+	 {		
+	 	// Remove inherited from standard 
+		$query="ALTER TABLE #__easysdi_metadata_standard drop column `inherited`";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
+		
+	 	//Update component version
+		$version = "0.99994";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 
 	/**
 	 * Menu creation

@@ -14,7 +14,7 @@
 	
 	<installfile>install.easysdi_shop.php</installfile>
 	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
-	
+	<!-- Backend -->
 	<administration>		
 		<files>
 			<filename>admin.easysdi_shop.php</filename>
@@ -23,6 +23,8 @@
 			<folder>language</folder>			
 			<folder>xml</folder>
 			<folder>templates</folder>
+			<folder>ext</folder>
+			<folder>js</folder>
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_shop.ini</language>
@@ -30,6 +32,7 @@
 		</languages>
 		
 	</administration>
+	<!-- Frontend -->
 		<files folder="com_easysdi_shop">
 			<filename>easysdi_shop.php</filename>
 			<filename>license.txt</filename>								
@@ -38,6 +41,11 @@
 			<folder>img</folder>	
 			<folder>views</folder>		
 		</files>
+		<files>
+			<folder>ext</folder>
+			<folder>js</folder>
+		</files>
+	
 	
 	<languages folder="language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_shop.ini</language>
