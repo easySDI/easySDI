@@ -32,7 +32,6 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 
 JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi_shop/templates/css/');
 JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
-JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_shop/templates/css/');
 
 
 global $mainframe;
