@@ -386,10 +386,16 @@ class SITE_catalog {
 					$cswSimpleTextFilter .= "<ogc:And>";
 				foreach ($kwords as $word) {
 					$cswSimpleTextFilter .= "
-				  <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-				  <ogc:PropertyName>any</ogc:PropertyName>
+				 <ogc:Or>
+				 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+				  <ogc:PropertyName>title</ogc:PropertyName>
 				    <ogc:Literal>$word%</ogc:Literal>
-				  </ogc:PropertyIsLike>\r\n";
+				  </ogc:PropertyIsLike>\r\n
+				 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+				  <ogc:PropertyName>abstract</ogc:PropertyName>
+				    <ogc:Literal>$word%</ogc:Literal>
+				  </ogc:PropertyIsLike>
+				  </ogc:Or>\r\n";
 				}
 				if(count($kwords > 0))
 					$cswSimpleTextFilter .= "</ogc:And>";
@@ -475,7 +481,7 @@ class SITE_catalog {
 				$pageNav = new JPagination($total,$limitstart,$limit);
 				
 				// S�paration en n �l�ments par page
-				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "", "");
+				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
 				
 				//Get the result from the server
 				//echo $xmlBody;
