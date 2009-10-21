@@ -504,6 +504,18 @@ class HTML_catalog{
 	?>
 	</table>
 	
+	<!-- pageNav at footer -->
+	<table width="100%">
+	   <tr>
+		<td colspan="3">&nbsp;</td>
+	   </tr>
+	   <tr>
+		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+		<td align="center">&nbsp;</td>
+		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+	   </tr>
+	</table>
+	
 	<?php } ?></div>
 		
 
