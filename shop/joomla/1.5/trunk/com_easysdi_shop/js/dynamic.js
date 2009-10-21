@@ -22,23 +22,7 @@
 			        collapsed: collapsed,
 				    relation: relation,
 					dynamic: dynamic,
-					template: master,
-					listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+					template: master
 	        });
 		return f;
 	}
@@ -59,23 +43,7 @@
 	            template: master,
 	            minOccurs:min,
 	            maxOccurs:max,
-	            multiline:true,
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            multiline:true
 	        });
 		 
 		 return ta;
@@ -107,23 +75,7 @@
 		        forceSelection: true,
 		        triggerAction: 'all',
 		        emptyText:'',
-		        selectOnFocus:true,
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+		        selectOnFocus:true
 	        });
 		 
 		 return c;
@@ -144,23 +96,7 @@
 	            dynamic:true,
 	            editable:false,
 	            minOccurs:min,
-	            maxOccurs:max,
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            maxOccurs:max
 	        });
 		 return ta;
 	}
@@ -182,23 +118,7 @@
 	            clone: clone,
 	            template: master,
 	            disabled: dis,
-	            minLength:length,
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            minLength:length
 	        });
 		 return tf;
 	}
@@ -221,23 +141,7 @@
 	            maxOccurs:max,
 	            clone: clone,
 	            template: master,
-	            emptyText:def,
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            emptyText:def
 	        });
 		 
 		 return tf;
@@ -270,23 +174,7 @@
 	            clone: clone,
 	            template: master,
 	            value:value,
-	            format: 'd.m.Y',
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            format: 'd.m.Y'
 	        });
 		 
 		 return df;
@@ -307,23 +195,7 @@
 	            clone: clone,
 	            template: master,
 	            value:value,
-	            format: 'd.m.Y',
-	            listeners : { 
-	            				'minoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite minimale atteinte', 'Le nombre d\'elements minimum de ce type a ete atteint.\nVous ne pouvez pas en supprimer d\'autres.'); 
-       								}
-       							},
-       							'maxoccurs' : 
-       							{
-       								fn: function(field) 
-       								{ 
-       									Ext.Msg.alert('Limite maximale atteinte', 'Le nombre d\'elements maximum de ce type a ete atteint.\nVous ne pouvez pas en ajouter d\'autres.'); 
-       								}
-       							}
-	            			}
+	            format: 'd.m.Y'
 	        });
 		 
 		 return df;
