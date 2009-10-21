@@ -2922,8 +2922,8 @@ if (count($rows)>0){
 		{
 			$isMdPublic = true;
 		}
-		
-		$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
+		$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$row->metadata_id."'";
+		//$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
 		$db->setQuery( $query);
 		$hasPreview = $db->loadResult();
 		if ($db->getErrorNum()) {
@@ -2965,16 +2965,31 @@ if (count($rows)>0){
 	  <td>&nbsp;</td>
 	 </tr>
 	 <tr>
-	    <td colspan="4" halign="middle"><div id="mdSeparator" /></td>
+	    <td colspan="5" halign="middle"><div class="separator" /></td>
 	 </tr>
 			<?php
 			$i=$i+1;
 	}
 	?>
 	</table>
+	
+	<!-- pageNav at footer -->
+	<table width="100%">
+	   <tr>
+		<td colspan="3">&nbsp;</td>
+	   </tr>
+	   <tr>
+		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+		<td align="center">&nbsp;</td>
+		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+	   </tr>
+	</table>
+	
 	<input type="hidden" name="countMD" value="<?php echo $countMD;?>">
 </span></form>
 </div>
+
+
 	<?php
 	}
 	
