@@ -241,15 +241,53 @@ class ADMIN_product {
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
 		}
-
-
+		
+		// Création de la métadonnée pour le nouveau guid
+		// Insérer dans Geonetwork la nouvelle version de la métadonnée
+		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+		<csw:Transaction service=\"CSW\"
+		version=\"2.0.2\"
+		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+			<csw:Insert>
+				<gmd:MD_Metadata
+					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
+					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
+					xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+					xmlns:gml=\"http://www.opengis.net/gml\" 
+					xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
+					xmlns:srv=\"http://www.isotc211.org/2005/srv\"
+					xmlns:ext=\"http://www.depth.ch/2008/ext\">
+					
+					<gmd:fileIdentifier>
+						<gco:CharacterString>".$_POST['metadata_id']."</gco:CharacterString>
+					</gmd:fileIdentifier>
+				</gmd:MD_Metadata>
+			</csw:Insert>
+		</csw:Transaction>";
+		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		
+		$insertResults = DOMDocument::loadXML($result);
+		
+		$xpathInsert = new DOMXPath($insertResults);
+		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+		
+		if ($inserted <> 1)
+		{
+			$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			exit();
+		}
+		
+		// Si la métadonnée a pu être ajoutée, le produit peut être créé
 		if (!$rowProduct->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
 		}
-
-
 
 		$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$rowProduct->id;
 		$database->setQuery( $query );
@@ -309,33 +347,6 @@ class ADMIN_product {
 			}
 		}
 		
-		// Création de la métadonnée pour le nouveau guid
-		// Insérer dans Geonetwork la nouvelle version de la métadonnée
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-			<csw:Insert>
-				<gmd:MD_Metadata
-					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
-					xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-					xmlns:gml=\"http://www.opengis.net/gml\" 
-					xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
-					xmlns:srv=\"http://www.isotc211.org/2005/srv\"
-					xmlns:ext=\"http://www.depth.ch/2008/ext\">
-					
-					<gmd:fileIdentifier>
-						<gco:CharacterString>".$_POST['metadata_id']."</gco:CharacterString>
-					</gmd:fileIdentifier>
-				</gmd:MD_Metadata>
-			</csw:Insert>
-		</csw:Transaction>";
-		
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		
 		if ($returnList == true) {
 			$mainframe->redirect("index.php?option=$option&task=listProduct");
 		}
@@ -357,13 +368,6 @@ class ADMIN_product {
 			$product = new product( $database );
 			$product->load( $id );
 
-			if (!$product->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			}
-
-			//ADMIN_product::deleteMetadata($product->metadata_id);
-
 			// Supprimer de Geonetwork la métadonnée
 			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
@@ -384,6 +388,26 @@ class ADMIN_product {
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 			
+			$deleteResults = DOMDocument::loadXML($result);
+			
+			$xpathDelete = new DOMXPath($deleteResults);
+			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			
+			if ($deleted <> 1)
+			{
+				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
+			
+			// Si la métadonnée a pu être supprimée, on essaie de supprimer le produit
+			if (!$product->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			}
+
+			//ADMIN_product::deleteMetadata($product->metadata_id);
 
 			$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$id;
 			$database->setQuery( $query );

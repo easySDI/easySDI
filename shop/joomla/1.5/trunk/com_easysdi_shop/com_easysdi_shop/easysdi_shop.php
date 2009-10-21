@@ -1631,7 +1631,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
 		
-		ADMIN_metadata::saveMetadata($option);
+		SITE_metadata::saveMetadata($option);
 		break;
 	case "editMetadata2":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');

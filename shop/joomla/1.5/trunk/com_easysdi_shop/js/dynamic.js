@@ -1,8 +1,3 @@
-	Ext.onReady(function(){
-	
-	    Ext.QuickTips.init();
-	});
-
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max)
 	{	
 		//if (title) title = title+" "+min+" - "+max;

@@ -20,8 +20,10 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_metadata {
 
+	//function editMetadata($prof, $id, $option)
 	function editMetadata($id, $option)
 	{
+		//$prof->startTimer("phpPart");
 		//echo "Appel editMetadata: ".date('H:m:s')."<br>";
 		JToolBarHelper::title(JText::_("EASYSDI_EDIT_METADATA"));
 		global  $mainframe;
@@ -107,13 +109,17 @@ class ADMIN_metadata {
 		$root = $database->loadObjectList();
 		
 		//echo "Apres construction DomDocument: ".date('H:m:s')."<br>";
+		//$prof->stopTimer("phpPart");
+		
+		//HTML_metadata::editMetadata($prof, $id, $root, $rowProduct->metadata_id, $xpathResults, $option);
 		HTML_metadata::editMetadata($id, $root, $rowProduct->metadata_id, $xpathResults, $option);
 	}
 
 
 	function buildXMLTree($parent, $parentFieldset, $parentName, $doc, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $option)
 	{
-		//echo $currentIsocode." - ";
+		//echo "Name: ".$parentName." \r\n ";
+		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
 		$database =& JFactory::getDBO();
 		$rowChilds = array();
 		$xmlClassParent = $xmlParent;
@@ -121,7 +127,8 @@ class ADMIN_metadata {
 		
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
-
+		//echo "QueryPath: ".$queryPath." \r\n ";
+		
 		// Traitement des enfants de type list
 		$rowListClass = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent;
@@ -166,7 +173,7 @@ class ADMIN_metadata {
 						
 						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key);
 						$XMLNode->appendChild($XMLListNode);
-						$XMLListNode->setAttribute('codeListValue', utf8_decode($val));
+						$XMLListNode->setAttribute('codeListValue', $val);
 						$xmlParent = $XMLListNode;
 					}
 				}
@@ -177,13 +184,13 @@ class ADMIN_metadata {
 						$XMLNode = $XMLDoc->createElement($child->iso_key);
 						$xmlAttributeParent->appendChild($XMLNode);
 						
-						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, utf8_decode($val));
+						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, $val);
 						$XMLNode->appendChild($XMLListNode);
 						$xmlParent = $XMLListNode;
 					}
 				}
 				/*
-				$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, utf8_decode($nodeValue));
+				$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, $nodeValue);
 				$XMLNode->appendChild($XMLListNode);
 				*/
 				
@@ -226,9 +233,10 @@ class ADMIN_metadata {
 				foreach($langages as $lang)
 				{
 					// Nombre d'occurence de cet élément
-					$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
+					//$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
+					$langIndex = 1;
 					//echo "LangName: ".$LocName."/gmd:LocalisedCharacterString/".$lang->lang." - ".$langIndex."\r\n";
-				
+					 
 					// Ajouter chacune des copies du champ dans le XML résultat
 					for ($langPos=1; $langPos<=$langIndex; $langPos++)
 					{
@@ -239,7 +247,7 @@ class ADMIN_metadata {
 						else
 							$nodeValue="";
 		
-						$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", utf8_decode($nodeValue));
+						$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
 						$xmlLocParent->appendChild($XMLNode);
 						$XMLNode->setAttribute('locale', $lang->lang);
 						$xmlParent = $XMLNode;
@@ -247,7 +255,7 @@ class ADMIN_metadata {
 				}
 			}
 		}
-			
+		
 		// Traitement des enfants de type freetext
 		$rowAttributeChilds = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type = 'freetext' and rel.classes_from_id=".$parent;
@@ -362,10 +370,11 @@ class ADMIN_metadata {
 					}
 				}
 					
+				//echo "Value of ".$name.": ".$nodeValue." \r\n ";
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
 				$xmlAttributeParent->appendChild($XMLNode);
 				
-				$XMLValueNode = $XMLDoc->createElement($childType, utf8_decode($nodeValue));
+				$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 				$XMLNode->appendChild($XMLValueNode);
 				$xmlParent = $XMLValueNode;
 			}
@@ -376,28 +385,46 @@ class ADMIN_metadata {
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent;
 		$database->setQuery( $query );
 		$rowClassChilds = array_merge( $rowClassChilds, $database->loadObjectList() );
-
+		//echo $database->getQuery()." ".count($rowClassChilds);
 		foreach($rowClassChilds as $child)
 		{
+			//echo $child->iso_key." \r\n ";
 			// Traitement de la multiplicité
 			// Récupération du path du bloc de champs qui va être créé pour construire le nom
-			$name = $parentName."/".$child->iso_key;
+			//$name = $parentName."/".$child->iso_key;
 			
 			// Récupérer le nombre d'occurences de ce noeud (Multiplicité)
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$name."__1_index"];
+			$index=0;
 			//echo $name."__1_index"." - ".$index."\\r\\n";
 			
-			for ($pos=1; $pos<=$index; $pos++)
+			if ($child->is_relation)
 			{
+				$name = $parentName."/".$child->iso_key;
+				$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
+				$index = $index-1;
+			}
+			else
+			{
+				$name = $parentName;
+				$index = 1;
+			}
+			
+			//echo "index: ".$index."\\r\\n";
+			for ($pos=0; $pos<$index; $pos++)
+			{
+				//echo " pos: ".$pos." - childlowerbound: ".$child->lowerbound." - relation: ".$child->is_relation."\\r\\n";
 				// Flag d'index dans le nom
+				//echo $parentName."<br>";
 				if (!$child->is_relation)
 				{
-					$name = $parentName."/".$child->iso_key."__".($pos);
+					//$name = $parentName."/".$child->iso_key."__".($pos+1);
+					//echo $parentName." \r\n ";
+					$name = $parentName;
 				}
 				else
 				{
-					$name = $parentName."/".$child->iso_key."__".($pos+1);
+					$name = $parentName."/".$child->iso_key."__".($pos+2);
 				}
 				
 				if ($index==1 and $child->lowerbound==0 and $child->is_relation)
@@ -408,8 +435,8 @@ class ADMIN_metadata {
 				{
 					$xlinkTitleValue = 	"";
 					// S'il y a un xlink:title défini, alors le mettre comme attribut du noeud
-					if ($child->has_xlinkTitle)
-						$xlinkTitleValue = utf8_decode($_POST[$name.'_xlinktitle']);
+					if ($child->has_xlinkTitle and $child->is_relation)
+						$xlinkTitleValue = $_POST[$name.'_xlinktitle'];
 						
 					// Parcours récursif des classes
 					$XMLNode = $XMLDoc->createElement($child->iso_key);
@@ -422,7 +449,14 @@ class ADMIN_metadata {
 					$nextIsocode = $child->iso_key;
 					//echo " [ ".$nextIsocode."] ";
 						
-					ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+					if (!$child->is_relation)
+					{
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+					}
+					else
+					{
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+					}
 				}
 			}
 		}
@@ -457,7 +491,7 @@ class ADMIN_metadata {
 		*/
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
-		
+		$XMLDoc->formatOutput = true;
 		// Récupérer l'objet lié à cette métadonnée
 		$database =& JFactory::getDBO();
 		/*
@@ -504,8 +538,8 @@ class ADMIN_metadata {
 		//ADMIN_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
 		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $doc, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
 		$doc=$doc."</gmd:MD_Metadata>";
-
-		//$XMLDoc->save("C:\\RecorderWebGIS\\xml.xml");
+		
+		//echo 'Ecrit : ' . $XMLDoc->save("C:\\RecorderWebGIS\\xml.xml") . ' octets';
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'product.admin.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -554,10 +588,10 @@ class ADMIN_metadata {
 		version=\"2.0.2\"
 		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
 		<csw:Insert>
-		".utf8_encode(substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>')))."
+		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
 		</csw:Insert>
 		</csw:Transaction>";
-		//echo $xmlstr."\\r\\n";
+		//echo $XMLDoc->saveXML()." \r\n ";
 			
 		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 		

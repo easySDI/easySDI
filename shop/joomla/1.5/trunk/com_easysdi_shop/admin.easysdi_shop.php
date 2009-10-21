@@ -6574,7 +6574,12 @@ case "saveLocation":
 		
 		
 	case "editMetadata":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');
+		//include_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'profiler'.DS.'profiler.inc');
+		
+		//$prof = new Profiler( true, true ); // Output the profile information but no trace
+
+        //$prof->startTimer( "initialise" );
+        require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.easysdi.class.php');
@@ -6584,8 +6589,18 @@ case "saveLocation":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
 		
+		//$prof->stopTimer( "initialise" );
+
+		//$prof->startTimer("loadToolbar");
 		TOOLBAR_metadata::_EDITMETADATA();
+		//$prof->stopTimer("loadToolbar");
+		//$prof->startTimer("main_call");
+		//ADMIN_metadata::editMetadata($prof, $cid[0],$option);
 		ADMIN_metadata::editMetadata($cid[0],$option);
+		//$prof->stopTimer("main_call");
+		
+		//$prof->printTimers(true);
+		
 		break;
 	case "saveMetadata":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');

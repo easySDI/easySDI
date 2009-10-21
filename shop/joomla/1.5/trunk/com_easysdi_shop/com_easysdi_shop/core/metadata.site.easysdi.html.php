@@ -154,14 +154,16 @@ class HTML_Metadata {
 										method	: 'POST',
 										success: function(form, action) 
 										{
-											console.log('SUCCESS !!!');
-											console.log(form);
-											console.log(action);
+											alert('Metadata saved successfully');
+											//console.log('SUCCESS !!!');
+											//console.log(form);
+											//console.log(action);
 										},
 										failure: function(form, action) 
 										{
-											console.log('FAIL !!!');
-											console.log(action.result.errors.xml);
+											alert(action.result.errors.xml);
+											//console.log('FAIL !!!');
+											//console.log(action.result.errors.xml);
 										},
 										url:'".$url."'
 									});
@@ -177,7 +179,7 @@ class HTML_Metadata {
 				// Bouclage pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->iso_key);
 				$nodeCount = $node->length;
-				HTML_metadata::buildTree($database, $root[0]->id, $root[0]->id, "//".$root[0]->iso_key, $xpathResults, $node->item(0), $queryPath, $root[0]->iso_key, $partner_id, $option);
+				HTML_Metadata::buildTree($database, $root[0]->id, $root[0]->id, "//".$root[0]->iso_key, $xpathResults, $node->item(0), $queryPath, $root[0]->iso_key, $partner_id, $option);
 			
 				$this->javascript .="
 				form.add(createHidden('option', 'option', '".$option."'));
