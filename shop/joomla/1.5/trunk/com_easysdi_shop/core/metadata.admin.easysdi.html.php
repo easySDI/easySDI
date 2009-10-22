@@ -52,14 +52,9 @@ class HTML_metadata {
 		$user_id = $user->get('id');
 
 		$this->javascript = "";
-		/*
-		 $database->setQuery( "SELECT a.partner_id as partner_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user_id." ORDER BY b.name" );
-		 $partner_id = $database->loadResult();
-		 */
-
+		
 		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user_id." ORDER BY b.name" );
 		$partner_id = $database->loadResult();
-
 		if ($partner_id == null)
 		$partner_id = $user_id;
 
@@ -84,26 +79,40 @@ class HTML_metadata {
 				        collapsed:false,
 				        renderTo: document.getElementById('formContainer'),
 				        buttons: [{
-				            text: 'Envoyer',
-				            handler: function(){
-					        	form.getForm().submit({
-								    	scope: this,
-										method	: 'POST',
-										success: function(form, action) 
-										{
-											alert('Metadata saved successfully');
-											//console.log('SUCCESS !!!');
-											//console.log(form);
-											//console.log(action);
-										},
-										failure: function(form, action) 
-										{
-											alert(action.result.errors.xml);
-											//console.log('FAIL !!!');
-											//console.log(action.result.errors.xml);
-										},
-										url:'".$url."'
-									});
+					                text: 'Envoyer',
+					                handler: function()
+					                {
+					                 	var fields = new Array();
+					        			form.cascade(function(cmp)
+					        			{
+					         				if (cmp.xtype=='fieldset')
+					         				{
+					          					if (cmp.clones_count)
+					          					{
+					           						fields.push(cmp.getId()+','+cmp.clones_count);
+					         					}
+					         				}
+					        			});
+					        			var fieldsets = fields.join(' | ');
+					        			form.getForm().setValues({fieldsets: fieldsets});
+					              		form.getForm().submit({
+									    	scope: this,
+											method	: 'POST',
+											success: function(form, action) 
+											{
+												alert('Metadata saved successfully');
+												//console.log('SUCCESS !!!');
+												//console.log(form);
+												//console.log(action);
+											},
+											failure: function(form, action) 
+											{
+												alert(action.result.errors.xml);
+												//console.log('FAIL !!!');
+												//console.log(action.result.errors.xml);
+											},
+											url:'".$url."'
+										});
 					        	}
 				        }]
 				    });
@@ -127,7 +136,7 @@ class HTML_metadata {
 				form.add(createHidden('task', 'task', 'saveMetadata'));
 				form.add(createHidden('metadata_id', 'metadata_id', '".$metadata_id."'));
 				form.add(createHidden('product_id', 'product_id', '".$product_id."'));
-				
+				form.add(createHidden('fieldsets', 'fieldsets', ''));
 	    		// Affichage du formulaire
 	    		form.doLayout();";
 			
@@ -177,7 +186,7 @@ class HTML_metadata {
 			$database->setQuery( $query );
 			$type = $database->loadObject();
 			//$prof->stopTimer('sql');
-				
+
 			// Traitement de chaque attribut
 			if ($type->is_system)
 			{
@@ -240,6 +249,8 @@ class HTML_metadata {
 
 				if ($pos==0)
 				{
+					//html_Metadata::constructFreetext($type, $parentFieldset, $currentName, $child->name, $child->lowerbound, $child->upperbound, $nodeValue, $child->length, 'false', 'null');
+					
 					if ($type->is_system)
 					{
 						$this->javascript .="
@@ -252,8 +263,8 @@ class HTML_metadata {
 					}
 					else if ($type->is_datetime)
 					{
-						/*$date = substr($nodeValue,0,strpos($nodeValue,"T"));
-						 $date = date_format(date_create($date), 'd.m.Y');*/
+						//$date = substr($nodeValue,0,strpos($nodeValue,"T"));
+						//$date = date_format(date_create($date), 'd.m.Y');
 						$date = date('d.m.Y', strtotime($nodeValue));
 
 						$this->javascript .="
@@ -274,6 +285,11 @@ class HTML_metadata {
 						$this->javascript .="
 						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
+					/*
+					$this->javascript .="
+						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+						fieldset".$parentFieldset.".add(createHidden('".$currentName."_index', '".$currentName."_index','1'));
+					";*/
 				}
 				else
 				{
@@ -281,8 +297,14 @@ class HTML_metadata {
 					$master = substr($currentName,0,strlen($currentName)-2)."1";
 						
 					$this->javascript .="
-					var master = Ext.getCmp('".$master."');";
+						var master = Ext.getCmp('".$master."');						
+						//var index = Ext.getCmp('".$master."_index');
+						//oldIndex = index.getValue();
+						//index.setValue(Number(oldIndex)+1);
+						";
 						
+					//html_Metadata::constructFreetext($type, $parentFieldset, $currentName, $child->name, $child->lowerbound, $child->upperbound, $nodeValue, $child->length, 'true', $master);
+					
 					if ($type->is_system)
 					{
 						$this->javascript .="
@@ -332,6 +354,8 @@ class HTML_metadata {
 				if ($type->default_value <> "")
 				$nodeValue = html_Metadata::cleanText($type->default_value);
 					
+				//html_Metadata::constructFreetext($type, $parentFieldset, $currentName, $child->name, $child->lowerbound, $child->upperbound, $nodeValue, $child->length, 'false', 'null');
+				
 				if ($type->is_system)
 				{
 					$this->javascript .="
@@ -362,6 +386,11 @@ class HTML_metadata {
 					$this->javascript .="
 					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
+				/*
+				$this->javascript .="
+							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							fieldset".$parentFieldset.".add(createHidden('".$currentName."_index', '".$currentName."_index','1'));
+						";*/
 			}
 		}
 		//$prof->stopTimer('FreetextTreatment');
@@ -411,27 +440,35 @@ class HTML_metadata {
 	 		//$prof->stopTimer('xpath');
 	 		if ($listNode->length > 0)
 	 		if ($content[0]->l_codeValue)
-	 		$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
+	 			$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
 	 		else
-	 		$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
+	 			$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
 	 		else
 	 		$nodeValues[]="";
 	 	}
-
+		
 	 	// Deux traitement pour deux types de listes
 	 	if ($content[0]->multiple)
 	 	{
 	 		$this->javascript .="
 			var valueList = ".HTML_metadata::array2extjs($dataValues)."
 	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
-	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));";
+	     	// La liste
+	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
+	    	// L'index pour les potentiels clones de la liste 
+	     	//fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
+	     	";
 	 	}
 	 	else
 	 	{
 	 		$this->javascript .="
 			var valueList = ".HTML_metadata::array2extjs($dataValues).";
-	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-	     	fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));";
+		     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+		     // La liste
+		     fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
+		     // L'index pour les potentiels clones de la liste 
+		     //fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
+		    ";
 	 	}
 	 }
 		//$prof->stopTimer('ListTreatment');
@@ -461,9 +498,15 @@ class HTML_metadata {
 
 				if ($pos==0)
 				{
-						$this->javascript .="
-						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";	
+					//HTML_metadata::constructLocfreetext($pos, $parentFieldset, $child->classes_to_id, $LocName, $child->name, $lang, $child->lowerbound, $child->upperbound, 'false', 'null');
+					
+					$this->javascript .="
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
+						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+						//fieldset".$parentFieldset.".add(createHidden('".$LocName."_index', '".$LocName."_index', '1'));
+					";
+						
 					// Création des enfants langue
 					//$prof->startTimer('sql');
 					$langages = array();
@@ -485,17 +528,32 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
+							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
+						";
 					}
+					
 				}
 				else
 				{
 					$master = $parentName."/".$child->iso_key."__1";
+					
 					$this->javascript .="
-					var master = Ext.getCmp('".$master."');
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
-						
+						var master = Ext.getCmp('".$master."');
+						//var index = Ext.getCmp('".$master."_index');
+						//oldIndex = index.getValue();
+						//index.setValue(Number(oldIndex)+1);
+					";
+					
+					//HTML_metadata::constructLocfreetext($pos-1, $parentFieldset, $child->classes_to_id, $LocName, $child->name, $lang, $child->lowerbound, $child->upperbound, 'true', $master);
+					
+					
+					$this->javascript .="
+						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
+						//master.manageIcons(master);
+					";
 					// Création des enfants langue
 					//$prof->startTimer('sql');
 					$langages = array();
@@ -517,7 +575,10 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
+							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
+						";
 					}
 				}
 			}
@@ -532,10 +593,19 @@ class HTML_metadata {
 				$master = $parentName."/".$child->iso_key."__1";
 					
 				$this->javascript .="
-				var master = Ext.getCmp('".$master."');
-				var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
-					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
+					var master = Ext.getCmp('".$master."');
+					//var index = Ext.getCmp('".$master."_index');
+					//oldIndex = index.getValue();
+					//index.setValue(Number(oldIndex)+1);
+				";
 
+				//HTML_metadata::constructLocfreetext(0, $parentFieldset, $child->classes_to_id, $LocName, $child->name, $lang, $child->lowerbound, $child->upperbound, 'true', $master);
+				
+				
+				$this->javascript .="
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
+				";
 				// Création des enfants langue
 				//$prof->startTimer('sql');
 				$langages = array();
@@ -557,8 +627,12 @@ class HTML_metadata {
 					$nodeValue = "";
 						
 					$this->javascript .="
-					fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
+						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+						//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
+					";
 				}
+				
 			}
 		}
 		//$prof->stopTimer('LocfreetextTreatment');
@@ -635,8 +709,12 @@ class HTML_metadata {
 
 						// Construction de la relation
 						$this->javascript .="
-						var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
+							// Créer un nouveau fieldset
+							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							//fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
+						";
 
 						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 						if ($child->has_xlinkTitle)
@@ -674,9 +752,14 @@ class HTML_metadata {
 
 						// Construction de la relation
 						$this->javascript .="
-							var master = Ext.getCmp('".$master."');
+							var master = Ext.getCmp('".$master."');							
+							//var index = Ext.getCmp('".$master."_index');
+							//oldIndex = index.getValue();
+							//index.setValue(Number(oldIndex)+1);
+							// Créer un nouveau fieldset
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
+						";
 
 						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 						if ($child->has_xlinkTitle)
@@ -712,9 +795,15 @@ class HTML_metadata {
 						
 					// Construction du fieldset
 					$this->javascript .="
-					var master = Ext.getCmp('".$master."');
-					var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";			
+						var master = Ext.getCmp('".$master."');							
+						//var index = Ext.getCmp('".$master."_index');
+						//oldIndex = index.getValue();
+						//index.setValue(Number(oldIndex)+1);
+						// Créer un nouveau fieldset
+						var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+						//master.manageIcons(master);
+					";			
 						
 					// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 					if ($child->has_xlinkTitle)
@@ -736,6 +825,90 @@ class HTML_metadata {
 		//$prof->stopTimer('ClassTreatment');
 	}
 
+	function constructFreetext($type, $parentFieldset, $id, $label, $min, $max, $value, $length, $clone, $master)
+	{
+		// is system
+		if ($type->is_system){
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createTextField('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$value."', '".$length."', true));
+			fieldset".$parentFieldset.".add(createHidden('".$id."_hiddenVal', '".$id."_hiddenVal', '".$value."'));
+			";
+		}
+		// is date
+		if ($type->is_date){
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createDateField('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$value."'));
+			";
+		}
+		// is datetime
+		if ($type->is_datetime){
+			$date = date('d.m.Y', strtotime($nodeValue));
+
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createDateTimeField('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$date."'));
+			";
+		}
+		// is number
+		if ($type->is_number){
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createNumberField('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$value."','".$type->default_value."', true, 15));
+			";
+		}
+		// is integer
+		if ($type->is_integer){
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createNumberField('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$value."','".$type->default_value."', false, 0));
+			";
+		}
+		else {
+			$this->javascript .="
+			fieldset".$parentFieldset.".add(createTextArea('".$id."', '".$label."',true, $clone, $master, '".$min."', '".$max."', '".$value."'));
+			";
+		}
+		
+		$this->javascript .="
+			// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+			//fieldset".$parentFieldset.".add(createHidden('".$id."_index', '".$id."_index','1'));
+		";
+	}
+	
+	function constructLocfreetext($pos, $parentFieldset, $fieldsetId, $id, $label, $lang, $min, $max, $clone, $master)
+	{
+		$this->javascript .="
+		var fieldset".$fieldsetId." = createFieldSet('".$id."', '".$label."', true, $clone, true, true, true, $master, ".$min.", ".$max."); 
+			fieldset".$parentFieldset.".add(fieldset".$fieldsetId.");	
+			// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+			//fieldset".$parentFieldset.".add(createHidden('".$id."_index', '".$id."_index', '1'));
+		";
+			
+		// Création des enfants langue
+		//$prof->startTimer('sql');
+		$langages = array();
+		$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$fieldsetId;
+		$database->setQuery( $query );
+		$langages = array_merge( $langages, $database->loadObjectList() );
+		//$prof->stopTimer('sql');
+	
+		foreach($langages as $lang)
+		{
+			$LocLangName = $id."/gmd:LocalisedCharacterString/".$lang->lang."__1";
+
+			//$prof->startTimer('xpath');
+			$node = $xpathResults->query($queryPath."[@locale='".$lang->lang."']", $attributScope);
+			//$prof->stopTimer('xpath');
+			if ($node->length > 0)
+			$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+			else
+			$nodeValue = "";
+
+			$this->javascript .="
+				fieldset".$fieldsetId.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+				// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+				// fieldset".$fieldsetId.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
+			";
+		}
+	}
+	
 	function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 
 		$database =& JFactory::getDBO();
