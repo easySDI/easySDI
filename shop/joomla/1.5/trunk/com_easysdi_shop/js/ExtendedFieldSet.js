@@ -72,7 +72,7 @@ Ext.override(Ext.form.FieldSet, {
 					collapsed: coll
 				});
 				
-				console.log(name+" - "+clones_count);
+				//console.log(name+" - "+clones_count);
 
 				clone.constructClone(master);
 				if (isClone)

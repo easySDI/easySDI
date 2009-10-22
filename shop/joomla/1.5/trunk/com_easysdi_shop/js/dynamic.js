@@ -64,26 +64,26 @@
 						});
 		 
 		 var c = new Ext.form.ComboBox({
-	            id:id,
-	            name: id,
-				cls: 'easysdi_shop_backend_combobox', 
-	            fieldLabel: label,
-	            allowBlank: optional,
-	            store: store,
-	            typeAhead:true,
-	            dynamic:true,
-	            minOccurs:min,
-	            maxOccurs:max,
-	            editable:false,
-	            valueField:'id',
-	            value:value,
-	            displayField:'key',
-		        mode: 'local',
-		        forceSelection: true,
-		        triggerAction: 'all',
-		        emptyText:'',
-		        selectOnFocus:true
-	        });
+            hiddenName:id,
+            hiddenId:id,
+    		cls: 'easysdi_shop_backend_combobox', 
+            fieldLabel: label,
+            allowBlank: optional,
+            store: store,
+            typeAhead:true,
+            dynamic:true,
+            minOccurs:min,
+            maxOccurs:max,
+            editable:false,
+            displayField:'key',
+            valueField:'id',
+            value:value,
+          	mode: 'local',
+          	forceSelection: true,
+          	triggerAction: 'all',
+          	emptyText:'',
+          	selectOnFocus:true
+         });
 		 
 		 return c;
 	}
