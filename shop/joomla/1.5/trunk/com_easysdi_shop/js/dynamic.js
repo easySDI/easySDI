@@ -3,6 +3,8 @@
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
 		var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 		
 		// Créer un nouveau fieldset
 		var f = new Ext.form.FieldSet(
@@ -17,6 +19,7 @@
 		            maxOccurs:max,
 		            border: border,
 					clone: clone,
+					clones_count: clones_count,
 					hidden: hidden,
 			        collapsible: !collapsed,
 			        collapsed: collapsed,
@@ -24,11 +27,14 @@
 					dynamic: dynamic,
 					template: master
 	        });
+	        //console.log(id+" - "+clones_count);
 		return f;
 	}
 	
 	function createTextArea(id, label, optional, clone, master, min, max, value)
 	{
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 		 var ta = new Ext.form.TextArea({
 	            id:id,
 	            xtype: 'textarea',
@@ -40,6 +46,7 @@
 	            grow: true,
 	            dynamic:true,
 	            clone: clone,
+				clones_count: clones_count,
 	            template: master,
 	            minOccurs:min,
 	            maxOccurs:max,
@@ -103,6 +110,8 @@
 	
 	function createTextField(id, label, optional, clone, master, min, max, value, length, dis)
 	{
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 		var dynamic = !dis;
 		 var tf = new Ext.form.TextField({
 	            id:id,
@@ -116,6 +125,7 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
+				clones_count: clones_count,
 	            template: master,
 	            disabled: dis,
 	            minLength:length
@@ -125,6 +135,8 @@
 	
 	function createNumberField(id, label, optional, clone, master, min, max, value, def, allowdec, dec)
 	{
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 
 		 var tf = new Ext.form.NumberField({
 	            id:id,
@@ -140,6 +152,7 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
+				clones_count: clones_count,
 	            template: master,
 	            emptyText:def
 	        });
@@ -161,6 +174,8 @@
 	
 	function createDateTimeField(id, label, optional, clone, master, min, max, value)
 	{	
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 		 var df = new Ext.form.DateField({
 	            id:id,
 	            xtype: 'datefield',
@@ -172,6 +187,7 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
+				clones_count: clones_count,
 	            template: master,
 	            value:value,
 	            format: 'd.m.Y'
@@ -182,6 +198,8 @@
 	
 	function createDateField(id, label, optional, clone, master, min, max, value)
 	{	
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
 		 var df = new Ext.form.DateField({
 	            id:id,
 	            xtype: 'datefield',
@@ -193,6 +211,7 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
+				clones_count: clones_count,
 	            template: master,
 	            value:value,
 	            format: 'd.m.Y'
