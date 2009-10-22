@@ -1960,7 +1960,7 @@ if ($version == "0.998")
 		}
 		
 		//Add xlink-title value 
-		$query="ALTER TABLE #__easysdi_metadata_classes add column `xlinkTitle` varchar(100)";
+		$query="ALTER TABLE #__easysdi_metadata_classes add column `has_xlinkTitle` tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
