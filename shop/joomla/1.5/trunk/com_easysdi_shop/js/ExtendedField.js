@@ -43,16 +43,18 @@ Ext.override(Ext.form.Field, {
 			//
 			// add clones untill card is reached			
 			for ( var i = cmps.length ; i < card ; i ++ ) {
-				
+
 				var parentName = panel.getId();
 				var name = master.getId();
-					//console.log("Field: "+name + '_index');
-				var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
-				
+				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
+					//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				var partOfNameToModify2 = name.substring(parentName.length,name.length-oldIndexComponent.getValue().length);
+				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+			    
+			    master.clones_count = master.clones_count+1;
+			    clones_count = master.clones_count;
 				
-				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
+/*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
 				var newVal = 1;
 				var newPos = 1;
 				if (indexComponent!=undefined)
@@ -60,23 +62,17 @@ Ext.override(Ext.form.Field, {
 					newPos = indexComponent.getValue().length;
 			    	indexComponent.setValue(newVal);
 				}
-
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+oldIndexComponent.getValue().length);
-			    var newName = parentName + partOfNameToModify2 + newVal + nameEndPart;
+*/				
+				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+			    var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
 			    
 				var clone = master.cloneConfig({
 					id : newName,
 					name : newName,
 					clone : isClone,
+					clones_count: clones_count,
 					template : master,
-					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'},
-					listeners : { 'onIcon' : {fn: function(field) {
-												var item = Ext.get(field.el.findParent('.x-form-item'));
-												item.remove();
-												panel.remove(field);
-												panel.doLayout();
-											  }}											 
-								}																	   
+					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 				});
 
 				if (isClone)
