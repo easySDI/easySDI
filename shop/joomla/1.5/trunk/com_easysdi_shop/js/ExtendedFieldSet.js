@@ -38,12 +38,15 @@ Ext.override(Ext.form.FieldSet, {
 				
 				var parentName = panel.getId();
 				var name = master.getId();
-				var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
+				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
 					//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				var partOfNameToModify2 = name.substring(parentName.length,name.length-oldIndexComponent.getValue().length);
+				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+			    
+			    master.clones_count = master.clones_count+1;
+			    clones_count = master.clones_count;
 				
-				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
+/*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
 				var newVal = 1;
 				var newPos = 1;
 				if (indexComponent!=undefined)
@@ -51,10 +54,10 @@ Ext.override(Ext.form.FieldSet, {
 					newPos = indexComponent.getValue().length;
 			    	indexComponent.setValue(newVal);
 				}
-				
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+oldIndexComponent.getValue().length);
-			    var newName = parentName + partOfNameToModify2 + newVal + nameEndPart;
-			    
+*/				
+				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+			    var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
+			    //console.log(partOfNameToModify+" - "+partOfNameToModify2+" - "+nameEndPart+" - "+String(master.clones_count).length);
 				var coll=false;
 				if (master.relation && !isClone) coll=true;
 			    
@@ -63,10 +66,13 @@ Ext.override(Ext.form.FieldSet, {
 					id : newName,
 					name : newName,
 					clone : isClone,
+					clones_count: clones_count,
 					template : master,
 					collapsible: !coll,
 					collapsed: coll
 				});
+				
+				console.log(name+" - "+clones_count);
 
 				clone.constructClone(master);
 				if (isClone)
@@ -145,19 +151,6 @@ Ext.override(Ext.form.FieldSet, {
 			}
 		}
 	},
-	collapseFieldSet: function(component)
-	{
-   			var cmpId = component.getId();
-   			var cmpIsFirst = cmpId.substring(cmpId.length-3)=='__1';
-   			
-   			//console.log(cmpId);
-   			if (!component.clone && component.dynamic && cmpIsFirst && component.relation) 
-   			{
-   				component.collapse(false);
-   				component.getTool('toggle').hide();
-   				component.doLayout();
-   			}
-   	},
 	onRender : Ext.form.FieldSet.prototype.onRender.createInterceptor(function(ct, position) 
 	{ 	
 		if ( this.dynamic) 
@@ -165,7 +158,6 @@ Ext.override(Ext.form.FieldSet, {
 			
 			this.on("afterrender",this.manageIcons);
 			this.on("afterrender",this.manageTitle);
-			//this.on("afterrender",this.collapseFieldSet);
 			
 			this.tools = 
 			[ 
@@ -186,7 +178,6 @@ Ext.override(Ext.form.FieldSet, {
 						if (firstClone) firstClone.manageIcons(firstClone);
 						fieldset.manageIcons(fieldset);
 						fieldset.manageTitle(fieldset);
-						//fieldset.collapseFieldSet(fieldset);
 						panel.doLayout();																								   
 					}
 				},
