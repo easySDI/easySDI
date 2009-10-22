@@ -243,19 +243,12 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
-							fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
@@ -264,39 +257,23 @@ class HTML_metadata {
 						$date = date('d.m.Y', strtotime($nodeValue));
 
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));
-							";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));
-							";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));
-							";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
-					$this->javascript .="
-						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-						fieldset".$parentFieldset.".add(createHidden('".$currentName."_index', '".$currentName."_index','1'));
-					";
 				}
 				else
 				{
@@ -304,60 +281,37 @@ class HTML_metadata {
 					$master = substr($currentName,0,strlen($currentName)-2)."1";
 						
 					$this->javascript .="
-						var master = Ext.getCmp('".$master."');						
-						var index = Ext.getCmp('".$master."_index');
-						oldIndex = index.getValue();
-						index.setValue(Number(oldIndex)+1);
-						";
+					var master = Ext.getCmp('".$master."');";
 						
 					if ($type->is_system)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
-							fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));
-							";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));
-							";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 				}
 			}
@@ -381,56 +335,33 @@ class HTML_metadata {
 				if ($type->is_system)
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
-							fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-							";
+					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
 				}
 				else if ($type->is_date)
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+					fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_datetime)
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+					fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_number)
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));
-							";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 				}
 				else if ($type->is_integer)
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));
-							";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 				}
 				else
 				{
 					$this->javascript .="
-							// La relation entre la classe et l'attribut
-							// L'attribut
-							fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));
-							";
+					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
-				$this->javascript .="
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-							fieldset".$parentFieldset.".add(createHidden('".$currentName."_index', '".$currentName."_index','1'));
-						";
 			}
 		}
 		//$prof->stopTimer('FreetextTreatment');
@@ -493,22 +424,14 @@ class HTML_metadata {
 	 		$this->javascript .="
 			var valueList = ".HTML_metadata::array2extjs($dataValues)."
 	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
-	     	// La liste
-	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
-	    	// L'index pour les potentiels clones de la liste 
-	     	fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
-	     	";
+	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));";
 	 	}
 	 	else
 	 	{
 	 		$this->javascript .="
-		var valueList = ".HTML_metadata::array2extjs($dataValues).";
-	     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-	     // La liste
-	     fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
-	     // L'index pour les potentiels clones de la liste 
-	     fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
-	    ";
+			var valueList = ".HTML_metadata::array2extjs($dataValues).";
+	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+	     	fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));";
 	 	}
 	 }
 		//$prof->stopTimer('ListTreatment');
@@ -538,13 +461,9 @@ class HTML_metadata {
 
 				if ($pos==0)
 				{
-					$this->javascript .="
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-						fieldset".$parentFieldset.".add(createHidden('".$LocName."_index', '".$LocName."_index', '1'));
-					";
-						
+						$this->javascript .="
+						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";	
 					// Création des enfants langue
 					//$prof->startTimer('sql');
 					$langages = array();
@@ -566,24 +485,16 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-							fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
-						";
+						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
 					}
 				}
 				else
 				{
 					$master = $parentName."/".$child->iso_key."__1";
 					$this->javascript .="
-						var master = Ext.getCmp('".$master."');
-						var index = Ext.getCmp('".$master."_index');
-						oldIndex = index.getValue();
-						index.setValue(Number(oldIndex)+1);
-						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-						master.manageIcons(master);
-					";
+					var master = Ext.getCmp('".$master."');
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
 						
 					// Création des enfants langue
 					//$prof->startTimer('sql');
@@ -606,10 +517,7 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-							fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
-						";
+						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
 					}
 				}
 			}
@@ -624,15 +532,9 @@ class HTML_metadata {
 				$master = $parentName."/".$child->iso_key."__1";
 					
 				$this->javascript .="
-					var master = Ext.getCmp('".$master."');
-					var index = Ext.getCmp('".$master."_index');
-					oldIndex = index.getValue();
-					index.setValue(Number(oldIndex)+1);
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
-					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-					
-					master.manageIcons(master);
-				";
+				var master = Ext.getCmp('".$master."');
+				var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
 
 				// Création des enfants langue
 				//$prof->startTimer('sql');
@@ -655,10 +557,7 @@ class HTML_metadata {
 					$nodeValue = "";
 						
 					$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-						fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
-					";
+					fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));";
 				}
 			}
 		}
@@ -736,12 +635,8 @@ class HTML_metadata {
 
 						// Construction de la relation
 						$this->javascript .="
-							// Créer un nouveau fieldset
-							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-							fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
-						";
+						var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
 
 						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 						if ($child->has_xlinkTitle)
@@ -752,9 +647,7 @@ class HTML_metadata {
 							$xlinkTitleValue = "";
 
 							$this->javascript .="
-							// La saisie de la balise xlink:title
-							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));
-							";
+							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
 						}
 
 
@@ -781,15 +674,9 @@ class HTML_metadata {
 
 						// Construction de la relation
 						$this->javascript .="
-							var master = Ext.getCmp('".$master."');							
-							var index = Ext.getCmp('".$master."_index');
-							oldIndex = index.getValue();
-							index.setValue(Number(oldIndex)+1);
-							// Créer un nouveau fieldset
+							var master = Ext.getCmp('".$master."');
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-							master.manageIcons(master);
-						";
+								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";
 
 						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 						if ($child->has_xlinkTitle)
@@ -800,9 +687,7 @@ class HTML_metadata {
 							$xlinkTitleValue = "";
 
 							$this->javascript .="
-							// La saisie de la balise xlink:title
-							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));
-							";
+							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
 						}
 
 
@@ -827,15 +712,9 @@ class HTML_metadata {
 						
 					// Construction du fieldset
 					$this->javascript .="
-						var master = Ext.getCmp('".$master."');							
-						var index = Ext.getCmp('".$master."_index');
-						oldIndex = index.getValue();
-						index.setValue(Number(oldIndex)+1);
-						// Créer un nouveau fieldset
-						var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-						master.manageIcons(master);
-					";			
+					var master = Ext.getCmp('".$master."');
+					var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");";			
 						
 					// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
 					if ($child->has_xlinkTitle)
@@ -843,9 +722,7 @@ class HTML_metadata {
 						$xlinkTitleValue = "";
 
 						$this->javascript .="
-						// La saisie de la balise xlink:title
-						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));
-						";
+						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
 					}
 						
 						
