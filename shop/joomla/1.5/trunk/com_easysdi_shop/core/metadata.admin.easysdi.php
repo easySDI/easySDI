@@ -116,7 +116,7 @@ class ADMIN_metadata {
 	}
 
 
-	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $option)
+	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $option)
 	{
 		//echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
@@ -463,35 +463,32 @@ class ADMIN_metadata {
 		foreach($rowClassChilds as $child)
 		{
 			// Nombre d'occurence de cet élément
-			$index=0;
+			//$index=0;
+			$count=0;
 			if ($child->is_relation)
 			{
 				$name = $parentName."/".$child->iso_key;
-				$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
-				$index = $index-1;
+				//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
+				//$index = $index-1;
+			
+				foreach($keyVals as $key => $val)
+				{
+					if ($key == $parentName."/".$child->iso_key."__1")
+					{
+						$count = $val;
+						break;
+					}
+				}
+				$count = $count - 1;
 			}
 			else
 			{
 				$name = $parentName;
-				$index = 1;
+				//$index = 1;
+				$count = 1;
 			}
 			
-			// Nombre d'éléments de cette classe
-			$fieldsets = array();
-			$fieldsets = split('|', $_POST['fieldsets']);
-			$count=0;
-			foreach($fieldsets as $fieldset)
-			{
-				$keys = split(',', $fieldset);
-				echo $keys[0]." \r\n ";
-				if ($keys[0] == $name)
-				{
-					//echo $keys[0]." \r\n ";
-				}
-			}
-			
-			//echo "index: ".$index."\\r\\n";
-			for ($pos=0; $pos<$index; $pos++)
+			for ($pos=0; $pos<$count; $pos++)
 			{
 				// Flag d'index dans le nom
 				if (!$child->is_relation)
@@ -530,9 +527,9 @@ class ADMIN_metadata {
 					$nextIsocode = $child->iso_key;
 						
 					if (!$child->is_relation)
-						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $option);
 					else
-						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $option);
 				}
 			}
 		}
@@ -558,10 +555,22 @@ class ADMIN_metadata {
 		$metadata_id = $_POST['metadata_id'];
 		$product_id = $_POST['product_id'];
 
+		// Récupération des index des fieldsets
+		$fieldsets = array();
+		$fieldsets = explode(" | ", $_POST['fieldsets']);
+		$keyVals = array();
+		foreach($fieldsets as $fieldset)
+		{
+			$keys = explode(',', $fieldset);
+			$keyVals[$keys[0]] = $keys[1];
+		}
+		//print_r($keyVals); echo " \r\n ";
+		
+		
 		// Sauver dans un fichier les valeurs du POST
 		/*$myFile = "C:\\RecorderWebGIS\\myFile.txt";
 		$fh = fopen($myFile, 'w') or die("can't open file");
-		foreach ($_POST as $key => $val)
+		foreach ($keyVals as $key => $val)
 			fwrite($fh, $key." - ".$val);
 		fclose($fh);
 		*/
@@ -612,7 +621,7 @@ class ADMIN_metadata {
 		$root = $database->loadObjectList();
 		
 		//ADMIN_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
-		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
+		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $keyVals, $option);
 		//$doc=$doc."</gmd:MD_Metadata>";
 		
 		//echo 'Ecrit : ' . $XMLDoc->save("C:\\RecorderWebGIS\\xml.xml") . ' octets';
