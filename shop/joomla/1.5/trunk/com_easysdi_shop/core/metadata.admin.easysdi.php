@@ -116,7 +116,7 @@ class ADMIN_metadata {
 	}
 
 
-	function buildXMLTree($parent, $parentFieldset, $parentName, $doc, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $option)
+	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $option)
 	{
 		//echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
@@ -138,10 +138,31 @@ class ADMIN_metadata {
 		foreach($rowListClass as $child)
 		{
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
-				
+			//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
+
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($parentName."/".$child->iso_key));
+				if ($partToCompare == $parentName."/".$child->iso_key)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = $_POST[$key];
+					}
+				}
+			}
+			//print_r($usefullVals); echo " \r\n ";
+			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=1; $pos<=$index; $pos++)
+			for ($pos=1; $pos<=$count; $pos++)
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
@@ -155,12 +176,14 @@ class ADMIN_metadata {
 					
 				// Deux traitement pour deux types de listes
 				$queryPath = $queryPath."/".$child->iso_key."/".$content[0]->l_iso_key;
-				
+				/*
 				if ($_POST[$listName] <>"")
 						$nodeValue = $_POST[$listName];
 					else
 						$nodeValue="";
-				
+				*/
+				$nodeValue = $usefullVals[$pos-1];
+						
 				$nodeValues=split(",",$nodeValue);
 	   			
 	   			// Le contenu de la liste
@@ -209,49 +232,76 @@ class ADMIN_metadata {
 			$queryPath = $queryPath."/".$child->iso_key."/gmd:LocalisedCharacterString";
 			$searchName = $parentName."/".$child->iso_key;
 			
+			// Création des enfants langue
+			$langages = array();
+			$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
+			$database->setQuery( $query );
+			$langages = array_merge( $langages, $database->loadObjectList() );
+
+			
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$searchName."__1_index"];
+			//$index = $_POST[$searchName."__1_index"];
 			//echo $searchName." - ".$index."\r\n";
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($searchName));
+				if ($partToCompare == $searchName)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = array(substr($key, -8, 5) => $_POST[$key]);
+					}
+				}
+			}
+			$count = $count/count($langages);
+			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=2; $pos<=$index; $pos++)
+			$langIndex = 0;
+			for ($pos=1; $pos<=$count; $pos++)
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
 				$LocName = $parentName."/".$child->iso_key."__".$pos;
 				//echo "LocName: ".$LocName." - ".$pos."\r\n";
-					
+
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
 				$xmlAttributeParent->appendChild($XMLNode);
 				$xmlLocParent = $XMLNode;
-					
-				// Création des enfants langue
-				$langages = array();
-				$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
-				$database->setQuery( $query );
-				$langages = array_merge( $langages, $database->loadObjectList() );
-					
+				
 				foreach($langages as $lang)
-				{
+				{	
 					// Nombre d'occurence de cet élément
 					//$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
-					$langIndex = 1;
+					//$langIndex = 1;
 					//echo "LangName: ".$LocName."/gmd:LocalisedCharacterString/".$lang->lang." - ".$langIndex."\r\n";
 					 
 					// Ajouter chacune des copies du champ dans le XML résultat
-					for ($langPos=1; $langPos<=$langIndex; $langPos++)
-					{
-						$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
+					//for ($langPos=1; $langPos<=$langIndex; $langPos++)
+					//{
+						//$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
+						$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1";
 						//echo $LangName." - ".$_POST[$LangName]."\r\n";
-						if ($_POST[$LangName] <>"")
+						/*if ($_POST[$LangName] <>"")
 							$nodeValue = $_POST[$LangName];
 						else
 							$nodeValue="";
-		
+						*/
+						$nodeValue=$usefullVals[$langIndex][$lang->lang];
+						
 						$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
 						$xmlLocParent->appendChild($XMLNode);
 						$XMLNode->setAttribute('locale', $lang->lang);
 						$xmlParent = $XMLNode;
-					}
+					//}
+					$langIndex = $langIndex+1;
 				}
 			}
 		}
@@ -331,15 +381,39 @@ class ADMIN_metadata {
 				
 			// Nombre d'occurence de cet élément
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$name."__1_index"];
+			//$index = $_POST[$name."__1_index"];
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($name));
+				if ($partToCompare == $name)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = $_POST[$key];
+					}
+				}
+			}
+			//echo $name." - ".$count." \r\n ";
+			//print_r($usefullKeys); echo " \r\n ";	
 			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=1; $pos<=$index; $pos++)
+			for ($pos=1; $pos<=$count; $pos++)
 			{
+				/*
 				if ($_POST[$name."__".$pos] <> "")
 					$nodeValue = $_POST[$name."__".$pos];
 				else
 					$nodeValue = "";
+				*/
+				$nodeValue = $usefullVals[$pos-1];
 				
 				// Traitement de chaque attribut
 				if ($type->default_value <> "" and $nodeValue == "")
@@ -365,7 +439,7 @@ class ADMIN_metadata {
 					else
 					{
 						//echo $name."__".$pos."_hiddenVal\r\n";
-						$nodeValue = $_POST[$name."__".$pos."_hiddenVal"];
+						//$nodeValue = $_POST[$name."__".$pos."_hiddenVal"];
 						//echo $nodeValue."\r\n";
 					}
 				}
@@ -385,19 +459,11 @@ class ADMIN_metadata {
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent;
 		$database->setQuery( $query );
 		$rowClassChilds = array_merge( $rowClassChilds, $database->loadObjectList() );
-		//echo $database->getQuery()." ".count($rowClassChilds);
+		
 		foreach($rowClassChilds as $child)
 		{
-			//echo $child->iso_key." \r\n ";
-			// Traitement de la multiplicité
-			// Récupération du path du bloc de champs qui va être créé pour construire le nom
-			//$name = $parentName."/".$child->iso_key;
-			
-			// Récupérer le nombre d'occurences de ce noeud (Multiplicité)
 			// Nombre d'occurence de cet élément
 			$index=0;
-			//echo $name."__1_index"." - ".$index."\\r\\n";
-			
 			if ($child->is_relation)
 			{
 				$name = $parentName."/".$child->iso_key;
@@ -410,34 +476,49 @@ class ADMIN_metadata {
 				$index = 1;
 			}
 			
+			// Nombre d'éléments de cette classe
+			$fieldsets = array();
+			$fieldsets = split('|', $_POST['fieldsets']);
+			$count=0;
+			foreach($fieldsets as $fieldset)
+			{
+				$keys = split(',', $fieldset);
+				echo $keys[0]." \r\n ";
+				if ($keys[0] == $name)
+				{
+					//echo $keys[0]." \r\n ";
+				}
+			}
+			
 			//echo "index: ".$index."\\r\\n";
 			for ($pos=0; $pos<$index; $pos++)
 			{
-				//echo " pos: ".$pos." - childlowerbound: ".$child->lowerbound." - relation: ".$child->is_relation."\\r\\n";
 				// Flag d'index dans le nom
-				//echo $parentName."<br>";
 				if (!$child->is_relation)
-				{
-					//$name = $parentName."/".$child->iso_key."__".($pos+1);
-					//echo $parentName." \r\n ";
 					$name = $parentName;
-				}
 				else
-				{
 					$name = $parentName."/".$child->iso_key."__".($pos+2);
-				}
 				
-				if ($index==1 and $child->lowerbound==0 and $child->is_relation)
+				// Structure à créer ou pas
+				$keys = array_keys($_POST);
+				$existVal=false;
+				foreach($keys as $key)
 				{
-					continue;
+					$partToCompare = substr($key, 0, strlen($name));
+					if ($partToCompare == $name)
+					{
+						$existVal = true;
+						break;
+					}
 				}
-				else
+
+				if ($existVal)
 				{
 					$xlinkTitleValue = 	"";
 					// S'il y a un xlink:title défini, alors le mettre comme attribut du noeud
 					if ($child->has_xlinkTitle and $child->is_relation)
 						$xlinkTitleValue = $_POST[$name.'_xlinktitle'];
-						
+
 					// Parcours récursif des classes
 					$XMLNode = $XMLDoc->createElement($child->iso_key);
 					$xmlClassParent->appendChild($XMLNode);
@@ -447,16 +528,11 @@ class ADMIN_metadata {
 							
 					// Récupération des codes ISO et appel récursif de la fonction
 					$nextIsocode = $child->iso_key;
-					//echo " [ ".$nextIsocode."] ";
 						
 					if (!$child->is_relation)
-					{
-						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
-					}
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
 					else
-					{
-						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
-					}
+						ADMIN_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
 				}
 			}
 		}
@@ -515,7 +591,7 @@ class ADMIN_metadata {
 		//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:srv', 'http://www.isotc211.org/2005/srv');
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:ext', 'http://www.depth.ch/2008/ext');
 
-		$doc = "<gmd:MD_Metadata
+		/*$doc = "<gmd:MD_Metadata
 					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
 					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
 					xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
@@ -523,7 +599,7 @@ class ADMIN_metadata {
 					xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
 					xmlns:srv=\"http://www.isotc211.org/2005/srv\"
 					xmlns:ext=\"http://www.depth.ch/2008/ext\">";
-
+		*/
 		$path="/";
 		//ADMIN_metadata::buildXML($root[0]->id, $path, "", $root[0]->isocode, $doc);
 
@@ -536,8 +612,8 @@ class ADMIN_metadata {
 		$root = $database->loadObjectList();
 		
 		//ADMIN_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
-		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $doc, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
-		$doc=$doc."</gmd:MD_Metadata>";
+		ADMIN_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
+		//$doc=$doc."</gmd:MD_Metadata>";
 		
 		//echo 'Ecrit : ' . $XMLDoc->save("C:\\RecorderWebGIS\\xml.xml") . ' octets';
 		
