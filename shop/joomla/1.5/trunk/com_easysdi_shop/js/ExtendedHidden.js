@@ -81,15 +81,7 @@ Ext.extend(Ext.ux.ExtendedHidden, Ext.form.Hidden, {
 			    	id: newName,
 				    name : newName,
 				    clone : isClone,
-					template : master,
-					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'},
-					listeners : { 'onIcon' : {fn: function(field) {
-												var item = Ext.get(field.el.findParent('.x-form-item'));
-												item.remove();
-												panel.remove(field);
-												panel.doLayout();
-											  }}											 
-								}																	   
+					template : master
 			   });
 			   // Put the start value for the new field
 			   clone.setValue('1');
