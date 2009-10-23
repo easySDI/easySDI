@@ -17,6 +17,7 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 class HTML_preview{
 	
@@ -27,13 +28,11 @@ function previewProduct($id){
 		
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/lib/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
 	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
-	
-	
 	
 	<?php	
 	global  $mainframe;
@@ -50,8 +49,10 @@ function previewProduct($id){
 	}					  
 	
 	?>
+	<div id="productPreview">
 	<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_PRODUCT_PREVIEW"); ?></h2>
-	<h3 ><?php echo JText::_("EASYSDI_CATALOG_PRODUCT_TITLE"); ?> : <?php echo $rowProduct->data_title; ?></h3>
+	<h3 class="productPreviewTitle"><?php echo JText::_("EASYSDI_CATALOG_PRODUCT_TITLE"); ?> : <?php echo $rowProduct->data_title; ?></h3>
+	<div class="contentin">
 	<?php
 	
 	$query = "select * from #__easysdi_basemap_definition where id = (SELECT previewBaseMapId FROM #__easysdi_product WHERE metadata_id = '$id')"; 
@@ -107,8 +108,20 @@ foreach ($rows as $row){
 ?>				
 				  
 		layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
-                    "<?php echo $row->url; ?>",
-                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                    
+		<?php 
+		if ($row->user != null && strlen($row->user)>0){
+			//if a user and password is requested then use the joomla proxy.
+			$proxyhost = config_easysdi::getValue("PROXYHOST");
+			$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
+			echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
+		}else{	
+			//if no user and password then don't use any proxy.					
+			echo "\"$row->url\",";	
+		}					
+		?>
+		
+		   {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
@@ -135,7 +148,18 @@ $i++;
 } ?>                    
 		
 		layerProduit = new OpenLayers.Layer.WMS( "<?php echo $rowProduct->metadata_id; ?>",
-                    "<?php echo $rowProduct->previewWmsUrl; ?>",
+                    
+		    <?php 
+		    if ($rowProduct->previewUser != null && strlen($rowProduct->previewUser)>0){
+		    	//if a user and password is requested then use the joomla proxy.
+		    	$proxyhost = config_easysdi::getValue("PROXYHOST");
+			$proxyhost = $proxyhost."&type=wms&previewId=$rowProduct->id&url=";
+		    	echo "\"$proxyhost".urlencode  (trim($rowProduct->previewWmsUrl))."\",";												
+		    }else{	
+		    	//if no user and password then don't use any proxy.					
+		    	echo "\"$rowProduct->previewWmsUrl\",";	
+		    }					
+		    ?>		    
                     {isBaseLayer:true,layers: '<?php echo $rowProduct->previewWmsLayers; ?>', 
                     	format : "<?php echo $rowProduct->previewImageFormat; ?>",transparent: "true"},                                          
                      {singleTile: "false"},                                                    
@@ -164,9 +188,17 @@ $i++;
 
 
                       
-	</script>   
-		<div id="map" class="smallmap">
-	</div>
+	</script> 
+		<table class="productPreview">
+		   <tr>
+			<td align="center"><div id="map" class="smallmap"></div></td>
+		   </tr>
+		   <tr>
+			<td align="center">&nbsp</div></td>
+		   </tr>
+		</table>
+		</div>
+		</div>
 	<script>
 		window.onload=function()
 		{	
