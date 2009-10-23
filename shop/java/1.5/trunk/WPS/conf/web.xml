@@ -43,15 +43,7 @@
 	<init-param> 
     	<param-name>sender</param-name>
 		<param-value>stephanie.dondainaz@depth.ch</param-value>
-	</init-param>
-	<init-param> 
-    	<param-name>mailConfig</param-name>
-		<param-value>/var/lib/tomcat5/webapps/wps/conf/mailer.conf</param-value>
-	</init-param>
-	<init-param> 
-    	<param-name>configFile</param-name>
-		<param-value>/home/users/depthch/easysdi/proxy/config.xml</param-value>
-	</init-param>    
+	</init-param>  
   </servlet>
 
   
