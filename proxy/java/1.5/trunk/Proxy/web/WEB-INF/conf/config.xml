@@ -98,17 +98,17 @@
 		<host-translator></host-translator>
 		<remote-server-list>
 			<remote-server>
-				<url>http://depth-geodbmeta:8083/geonetwork/srv/en/csw</url>
+				<url>http://depth-geodbmeta:8084/geonetwork/srv/en/csw</url>
 				<user>admin</user>
 				<password>admin</password>
 				<max-records>50</max-records>
-				<login-service>http://depth-geodbmeta:8083/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service>
+				<login-service>http://depth-geodbmeta:8084/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service>
 				<transaction>
 				<type>geonetwork</type>
-				<search-service-url>http://depth-geodbmeta:8083/geonetwork/srv/en/xml.search</search-service-url>
-				<delete-service-url>http://depth-geodbmeta:8083/geonetwork/srv/en/metadata.delete</delete-service-url>
-				<insert-service-url>http://depth-geodbmeta:8083/geonetwork/srv/en/mef.import</insert-service-url>
-				<update-service-url>http://depth-geodbmeta:8083/geonetwork/srv/en/metadata.update</update-service-url>
+				<search-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/xml.search</search-service-url>
+				<delete-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/metadata.delete</delete-service-url>
+				<insert-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/mef.import</insert-service-url>
+				<update-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/metadata.update</update-service-url>
 				</transaction>
 			</remote-server>
 		</remote-server-list>
