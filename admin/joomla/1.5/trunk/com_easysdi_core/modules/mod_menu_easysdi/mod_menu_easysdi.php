@@ -17,6 +17,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 
 $user = JFactory::getUser();
@@ -40,6 +41,21 @@ if (!$user->guest)
 		$db =& JFactory::getDBO();
 		$rowPartner = new partnerByUserId( $db );
 		$rowPartner->load( $user->id );
+		
+		/*
+		 * Custom home
+		 * Add a link to a custom user home article. This article is normally the one displayed
+		 * after the login. The EasySDI USER_HOME Key must be set to enable this link.
+		 */
+		
+		 $userHome = config_easysdi::getValue("USER_HOME");
+		 if($userHome != ''){
+			 ?>
+			 <li >
+			<a href ="<?php echo $userHome; ?>"><span><?php echo JText::_("EASYSDI_USER_HOME"); ?></span></a>
+			</li>
+			<?php
+		 }
 		
 		/*
 		 * EasySDI Account
