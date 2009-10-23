@@ -926,7 +926,7 @@ background-color: #e4e4e4;
 }
 
 /********************************************************/
-/***     EasySDI Edit Product edition                 ***/
+/***     EasySDI Product                              ***/
 /********************************************************/
 
 .editProductPane td{
@@ -941,7 +941,7 @@ background-color: #e4e4e4;
 	width:520px;
 }
 
-.editProductPane .ptitle{
+.ptitle{
 	font-weight:bold;
 	width:170px;
 }
@@ -953,10 +953,6 @@ background-color: #e4e4e4;
 .editProductPane #perimeter_id{
 	width:520px;
 }
-
-/********************************************************/
-/***     EasySDI Edit Product                         ***/
-/********************************************************/
 
 div#editProduct:hover, div#deleteProduct:hover{
 	cursor:pointer;
@@ -999,6 +995,32 @@ div#deleteProduct{
 	padding:1px;
 }
 
+.inputboxSearchProduct{
+	width:200px;
+}
+
+.productPreview{
+	width:100%; 
+}
+
+.productPreview .smallmap{
+	background-color:transparent;
+	border:1px solid #CCCCCC;
+	height:300px;
+	width:400px;
+}
+
+.productPreviewTitle{
+	background-color:#E4E4E4;
+	font-size:15px;
+	line-height:18px;
+	margin-bottom:10px;
+	padding:3px 3px 3px 10px;
+	position:relative;
+}
+
+#productPreview{
+}
 
 /********************************************************/
 /***     EasySDI Order                                ***/
@@ -1215,4 +1237,45 @@ padding:0;
 }
 .easysdi_disconnect_table td{
 	text-align: right
+}
+
+/***********************/
+/*** EasySDI Partner   */
+/***********************/
+.partner_properties
+{
+  border: 1px solid #9f9f9f;
+}
+
+.partner_properties legend {
+  padding: 0px 3px;
+  border: 0px solid #9f9f9f;
+  background-color: #9f9f9f;
+  color:white;
+}
+
+.inputboxEditAffiliates{
+	width:240px;
+}
+
+div#editAffiliate:hover, div#deleteAffiliate:hover{
+	cursor:pointer;
+}
+
+div#editAffiliate{
+	background-color:transparent;
+	background-image:url(../images/btn_edition.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;	
+}
+
+div#deleteAffiliate{
+	background-color:transparent;
+	background-image:url(../images/btn_supprimer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
 }
