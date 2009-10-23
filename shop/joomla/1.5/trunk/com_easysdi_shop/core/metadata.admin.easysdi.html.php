@@ -79,7 +79,7 @@ class HTML_metadata {
 				        collapsed:false,
 				        renderTo: document.getElementById('formContainer'),
 				        buttons: [{
-					                text: 'Envoyer',
+					                text: '".JText::_('EDIT_METADATA_SEND')."',
 					                handler: function()
 					                {
 					                 	var fields = new Array();

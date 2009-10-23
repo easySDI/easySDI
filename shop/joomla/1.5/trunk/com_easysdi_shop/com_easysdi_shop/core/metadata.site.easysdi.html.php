@@ -146,7 +146,7 @@ class HTML_Metadata {
 				        collapsed:false,
 				        renderTo: document.getElementById('formContainer'),
 				        buttons: [{
-					                text: 'Envoyer',
+					                text: '".JText::_('EDIT_METADATA_SEND')."',
 					                handler: function()
 					                {
 					                 	var fields = new Array();
@@ -180,8 +180,16 @@ class HTML_Metadata {
 											},
 											url:'".$url."'
 										});
-					        	}
-				        }]
+					        		}
+				        		},
+					        	{
+					                text: '".JText::_('EDIT_METADATA_CANCEL')."',
+					                handler: function()
+					                {
+					                	history.go(-1);
+					                }
+					            }
+				        ]
 				    });
 					
 				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".JText::_($root[0]->translation)."', xtype: 'fieldset'});
