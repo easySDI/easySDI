@@ -609,7 +609,7 @@ class HTML_metadata {
 				
 				
 				$this->javascript .="
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
 					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 				";
 				// Création des enfants langue
