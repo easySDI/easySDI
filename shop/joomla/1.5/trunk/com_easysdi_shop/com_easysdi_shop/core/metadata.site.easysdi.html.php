@@ -134,7 +134,7 @@ class HTML_Metadata {
 		<?php
 		$this->javascript .="
 				var domNode = Ext.DomQuery.selectNode('div#maincolumn')
-				Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
+				Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 				
 				// Créer le formulaire qui va contenir la structure
 				var form = new Ext.ux.ExtendedFormPanel({
