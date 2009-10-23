@@ -641,7 +641,7 @@ class SITE_partner {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
 		}
 		
-		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&type=".JRequest::getVar("type")."&search=".JRequest::getVar("search")  );
 	}
 
 
@@ -1204,7 +1204,7 @@ class SITE_partner {
 		
 		SITE_partner::includePartnerExtension(0,'BOTTOM','savePartner',$rowPartner->partner_id);
 		
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner')."&type=".JRequest::getVar('type') );
 	}
 
 	function cancelPartner( $returnList, $option ) {

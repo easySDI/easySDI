@@ -39,25 +39,30 @@ class HTML_partner
 		$database =& JFactory::getDBO();		 
 							
 ?>
+	<div id="page">
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_AFFILIATE_LIST"); ?></h2>
 	<div class="contentin">
 	<form action="index.php" method="GET" id="adminAffiliatePartnerForm" name="adminAffiliatePartnerForm">
-	
-	<h2 class="contentheading"><?php echo JText::_("EASYSDI_AFFILIATE_LIST"); ?></h2>
-	
 	<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
-	
 		<table width="100%">
 			<tr>
-				<td align="left">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listPartner');" />			
-				</td>
 				<td>
-					<?php echo JText::_("EASYSDI_TITLE_ACCOUNT"); ?>&nbsp;<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputbox" "', 'value', 'text', $type ); ?>				
+					<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputboxEditAffiliates" onchange="document.getElementById(\'adminAffiliatePartnerForm\').submit();"', 'value', 'text', $type ); ?>				
+				</td>
+				<td align="right">
+					&nbsp;
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxEditAffiliates" onChange="javascript:submitbutton('listPartner');" />			
+				</td>
+				<td align="right">
+					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+				<button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
 				</td>
 			</tr>
 		</table>
-		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
 		<table width="100%">
 			<tr>																																						
@@ -65,16 +70,27 @@ class HTML_partner
 			</tr>
 		</table>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
-		<table class="affiliatePartnerList">
+		<script>
+		function suppressAffiliate_click(id, name, type, search){
+			text = '<?php echo JText::_("EASYSDI_SHOP_CONFIRM_AFFILIATE_DELETE"); ?>';
+			conf = confirm(text.replace('%s',name));
+			if(!conf)
+				return false;
+			window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=deleteAffiliate&affiliate_id='+id+'&type='+type+'&search='+search, '_self');
+		}
+		</script>
+		<table class="box-table">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_TEXT_SHARP"); ?></th>
-				<th width="20" class='title'></th>
-				<th class='title'><?php echo JText::_("EASYSDI_TEXT_ID"); ?></th>
+				<!-- <th width="20" class='title'><?php echo JText::_("EASYSDI_TEXT_SHARP"); ?></th>
+				<th width="20" class='title'></th> -->
+				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_ID"); ?></th> -->
 				<th class='title'><?php echo JText::_("EASYSDI_TEXT_USER"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_TEXT_ACCOUNT"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?></th>				
-				<th class='title'><?php echo JText::_("EASYSDI_TEXT_LASTUPDATE"); ?></th>
+				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?></th> -->				
+				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_LASTUPDATE"); ?></th> -->
+				<th>&nbsp;</th>
+				<th>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -86,13 +102,15 @@ class HTML_partner
 			$row = $rows[$i];
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><input type="radio" id="cb<?php echo $i;?>" name="affiliate_id" value="<?php echo $row->user_id; ?>"  /></td>
-				<td><?php echo $row->partner_id; ?></td>
-				<td><?php echo $row->partner_username; ?></td>
-				<td><a href="#edit" onclick="document.getElementById('task').value='editAffiliateById';document.getElementById('cb<?php echo $i;?>').checked=true;document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo $row->partner_name; ?></a></td>
-				<td><?php echo $row->partner_acronym; ?></td>				
-				<td><?php echo date('d.m.Y H:i:s',strtotime($row->partner_update)); ?></td>
+				<!-- <td align="center"><?php echo $i+$pageNav->limitstart+1;?></td> -->
+				<!--<td><input type="radio" id="cb<?php echo $i;?>" name="affiliate_id" value="<?php echo $row->user_id; ?>"  /></td>-->
+				<!-- <td><?php echo $row->partner_id; ?></td> -->
+				<td align="center"><?php echo $row->partner_username; ?></td>
+				<td><?php echo $row->partner_name; ?></td>
+				<!-- <td align="center"><?php echo $row->partner_acronym; ?></td> -->				
+				<!-- <td align="center"><?php echo date('d.m.Y H:i:s',strtotime($row->partner_update)); ?></td> -->
+				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editAffiliate" onClick="window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=editAffiliateById&affiliate_id=<?php echo $row->user_id;?>&type=<?php echo $type;?>&search=<?php echo addslashes($search);?>', '_self');"/></td>
+				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_DELETE_AFFILIATE'); ?>" id="deleteAffiliate" onClick="return suppressAffiliate_click('<?php echo $row->user_id; ?>','<?php echo addslashes($row->partner_name); ?>','<?php echo $type;?>','<?php echo addslashes($search);?>');" /></td>
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -107,9 +125,8 @@ class HTML_partner
 	  	<input type="hidden" name="return" value="listAffiliatePartner" />
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" id="task" name="task" value="listAffiliatePartner" />	  	 	 
-	  </form>	  
-	  <button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
-	  <button type="button" onclick="document.getElementById('task').value='deleteAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_DELETE_AFFILIATE"); ?></button>
+	  </form>
+	  </div>
 	  </div>
 <?php
 	}
@@ -173,16 +190,7 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
 								<td><?php echo $rowUser->email; ?></td>
-							</tr>							
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
 							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
-							</tr>
-												
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><?php echo $rowPartner->partner_acronym; ?> </td>
@@ -207,7 +215,14 @@ class HTML_partner
 								<td class="ptitle"><?php echo JText::_("EASYSDI_REBATE"); ?> : </td>
 								<td><?php echo $rowPartner->rebate; ?></td>
 							</tr>
-							
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
+							</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -559,23 +574,14 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /></td>
-							</tr>							
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
-							</tr>
-												
+							</tr>											
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="<?php echo $rowPartner->partner_acronym; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LOGO"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_logo" value="<?php echo $rowPartner->partner_logo; ?>" /></td>
+								<td><?php echo $rowPartner->partner_logo; ?></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_DESCRIPTION"); ?> : </td>
@@ -584,6 +590,14 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="<?php echo $rowPartner->partner_url; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
 							</tr>
 <?php 
 							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" )
@@ -924,16 +938,7 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
 								<td><?php echo $rowUser->email; ?></td>
-							</tr>
-							
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
-							</tr>																													
+							</tr>																											
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><?php echo $rowPartner->partner_acronym; ?></td>
@@ -945,6 +950,14 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><?php echo $rowPartner->partner_url; ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
 							</tr>								
 		</table>
 		</fieldset>
@@ -1108,18 +1121,9 @@ class HTML_partner
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
-							</tr>
-							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?> : </td>
 								<td><?php echo $rowPartner->partner_id; ?></td>
 							</tr>
-																					
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_acronym" value="<?php echo $rowPartner->partner_acronym; ?>" /></td>
@@ -1131,6 +1135,14 @@ class HTML_partner
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_WEBSITE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="partner_url" value="<?php echo $rowPartner->partner_url; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_REGISTER"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->registerDate)); ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("EASYSDI_TEXT_LASTVISIT"); ?> : </td>
+								<td><?php echo date('d.m.Y H:i:s',strtotime($rowUser->lastvisitDate)); ?></td>
 							</tr>
 							<?php 
 							if ($rowUser->usertype == "Administrator" || $rowUser->usertype == "Super Administrator" ){
@@ -1347,6 +1359,8 @@ class HTML_partner
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editAffiliatePartner" />
 		<input type="hidden" name="return" value="<?php echo JRequest::getVar('return','showPartner');?>"/>
+		<input type="hidden" name="type" value="<?php echo JRequest::getVar('type');?>"/>
+		<input type="hidden" name="search" value="<?php echo JRequest::getVar('search');?>"/>
 		<input type="hidden" name="root_id" value="<?php echo $rowPartner->root_id; ?>" />
 		<button type="button" onCLick="var form = document.partnerForm;form.task.value='saveAffiliatePartner';submitbutton();" ><?php echo JText::_("EASYSDI_SAVE"); ?></button>
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='<?php echo JRequest::getVar('return','showPartner'); ?>';form.submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PARTNER"); ?></button>
