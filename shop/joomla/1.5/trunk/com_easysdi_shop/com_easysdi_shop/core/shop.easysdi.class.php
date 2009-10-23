@@ -2959,7 +2959,7 @@ if (count($rows)>0){
 	  	<?php if ($hasPreview > 0){ ?>
 	  <td><span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
-			rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+	    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
       </td>
 		<?php } ?>
 	  <td>&nbsp;</td>

@@ -53,10 +53,10 @@ class HTML_cpanel {
 	
 	
 	</script>
+	<div id="page">
+	<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
-	
 		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
 		<table width="100%">
@@ -85,10 +85,12 @@ class HTML_cpanel {
 				 <?php } ?>
 				</select>				
 				</td>
+				<td>
+					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+				</td>
 				</tr>
 		</table>
 		
-		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 		<br>		
 		<table width="100%">
 			<tr>
@@ -199,6 +201,7 @@ class HTML_cpanel {
 			<!--  <button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
 			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>-->
 		</form>
+		</div>
 		</div>
 	<?php	
 	}
