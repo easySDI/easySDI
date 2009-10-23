@@ -47,21 +47,8 @@ class displayManager{
 		$xml = "";
 		if ($type == "abstract")
 		{
-			
-			$style = new DomDocument();
-			if (file_exists(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl")){
-				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl");
-			}else{
-				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract.xsl');
-			}
-			
-			
-			$fullxml = displayManager::getCSWresult();
 			$xml = new DomDocument();
-			
-			$processor = new xsltProcessor();
-			$processor->importStylesheet($style);
-			$xml = $processor->transformToDoc($fullxml);
+			$xml = displayManager::getCSWresult();
 		}
 		else if ($type == "complete")
 		{
@@ -141,8 +128,57 @@ class displayManager{
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		
+		$database =& JFactory::getDBO();
+		
+		// Récupérer le nom du compte root pour cet utilisateur
+		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
+		$root_id = $database->loadResult();
+		
+		if ($root_id == null)
+			$root_id = $user->get('id');
+		
+		
+		// Récupérer la norme de ce produit
+		$id = JRequest::getVar('id');
+		$database->setQuery( "SELECT metadata_standard_id FROM #__easysdi_product WHERE metadata_id='".$id."'");
+		$standard_id = $database->loadResult();
+		
+		//echo $user->get('id')." - ".$root_id." - ".$database->getQuery()." - ".$standard_id;
+		
+		// Construction des noms possibles du fichier xslt à récupérer
+		$baseName = dirname(__FILE__).'/../xsl/'.$type.'.xsl';
+		$standardName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'.xsl';
+		$rootName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'_'.$root_id.'.xsl';
+		$langName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'_'.$root_id.'_'.$language.'.xsl';
+		//echo $baseName."<br>".$standardName."<br>".$rootName."<br>".$langName;
+		
+		$style = new DomDocument();
+		// Chargement du bon fichier de transformation XSL 
+		if (file_exists($langName))
+		{
+			$style->load($langName);
+			//echo $langName;
+		}
+		else if (file_exists($rootName))
+		{
+			$style->load($rootName);
+			//echo $rootName;
+		}
+		else if (file_exists($standardName))
+		{
+			$style->load($standardName);
+			//echo $standardName;
+		}
+		else
+		{
+			$style->load($baseName);
+			//echo $baseName;
+		}
+		
+		
 		if ($type == "abstract")
 		{
+			/*
 			$style = new DomDocument();
 			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl")){
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl");
@@ -150,11 +186,13 @@ class displayManager{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 			}
 			//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
+			*/
 			$xml = displayManager::getCSWresult();
 			displayManager::DisplayMetadata($style,$xml);
 		}
 		else if ($type == "complete")
 		{
+			/*
 			$style = new DomDocument();
 			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl")){
 				$style->load(dirname(__FILE__).'/../xsl/iso19115_'.$language.".xsl");
@@ -162,14 +200,14 @@ class displayManager{
 				$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 			}
 			//$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
+			*/
 			$xml = displayManager::getCSWresult();
-			
 			displayManager::DisplayMetadata($style,$xml);
 		}
 		else if ($type == "diffusion")
 		{
-			$database =& JFactory::getDBO();
-			$id = JRequest::getVar('id');
+			//$database =& JFactory::getDBO();
+			//$id = JRequest::getVar('id');
 			$title;
 			
 			$titleQuery = "select data_title from #__easysdi_product where metadata_id = '".$id."'";
@@ -229,14 +267,14 @@ class displayManager{
 			
 			$document = new DomDocument();
 			$document->loadXML($doc);
-			
+			/*
 			$style = new DomDocument();
 			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl")){
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl");
 			}else{
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
 			}
-			
+			*/
 			displayManager::DisplayMetadata($style,$document);
 		}	
 		
@@ -524,13 +562,76 @@ class displayManager{
 	
 	function exportXml()
 	{
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
+		$id = JRequest::getVar('id');
 		$type = JRequest::getVar('type', 'abstract');
 		
 		//$cswResults = displayManager::getCSWresult();
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
+		if ($type == 'abstract')
+		{
+			// Récupérer le nom du compte root pour cet utilisateur
+			$database =& JFactory::getDBO();
+			$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
+			$root_id = $database->loadResult();
+			
+			if ($root_id == null)
+				$root_id = $user->get('id');
+			
+			// Récupérer la norme de ce produit
+			$id = JRequest::getVar('id');
+			$database->setQuery( "SELECT metadata_standard_id FROM #__easysdi_product WHERE metadata_id='".$id."'");
+			$standard_id = $database->loadResult();
+			
+			//echo $user->get('id')." - ".$root_id." - ".$database->getQuery()." - ".$standard_id;
+			
+			// Construction des noms possibles du fichier xslt à récupérer
+			$baseName = dirname(__FILE__).'/../xsl/complete-to-abstract.xsl';
+			$standardName = dirname(__FILE__).'/../xsl/complete-to-abstract_'.$standard_id.'.xsl';
+			$rootName = dirname(__FILE__).'/../xsl/complete-to-abstract_'.$standard_id.'_'.$root_id.'.xsl';
+			$langName = dirname(__FILE__).'/../xsl/complete-to-abstract_'.$standard_id.'_'.$root_id.'_'.$language.'.xsl';
+			//echo $baseName."<br>".$standardName."<br>".$rootName."<br>".$langName;
+			
+			$style = new DomDocument();
+			// Chargement du bon fichier de transformation XSL 
+			if (file_exists($langName))
+			{
+				$style->load($langName);
+				//echo $langName;
+			}
+			else if (file_exists($rootName))
+			{
+				$style->load($rootName);
+				//echo $rootName;
+			}
+			else if (file_exists($standardName))
+			{
+				$style->load($standardName);
+				//echo $standardName;
+			}
+			else
+			{
+				$style->load($baseName);
+				//echo $baseName;
+			}
+			/*
+			$style = new DomDocument();
+			if (file_exists(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl")){
+				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract_'.$language.".xsl");
+			}else{
+				$style->load(dirname(__FILE__).'/../xsl/xml-to-xml_iso19115_abstract.xsl');
+			}
+			*/
+			$processor = new xsltProcessor();
+			$processor->importStylesheet($style);
+			$cswResults = $processor->transformToDoc($cswResults);
+		}
+		
 		$xpath = new DomXPath($cswResults);
+		
 		if ($type == 'diffusion')
 		{
 			$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
@@ -586,6 +687,52 @@ class displayManager{
 		$user =& JFactory::getUser();
 		$language = $user->getParam('language', '');
 
+		// Récupérer le nom du compte root pour cet utilisateur
+		$database =& JFactory::getDBO();
+		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
+		$root_id = $database->loadResult();
+		
+		if ($root_id == null)
+			$root_id = $user->get('id');
+		
+		// Récupérer la norme de ce produit
+		$id = JRequest::getVar('id');
+		$database->setQuery( "SELECT metadata_standard_id FROM #__easysdi_product WHERE metadata_id='".$id."'");
+		$standard_id = $database->loadResult();
+		
+		//echo $user->get('id')." - ".$root_id." - ".$database->getQuery()." - ".$standard_id;
+		
+		// Construction des noms possibles du fichier xslt à récupérer
+		$baseName = dirname(__FILE__).'/../xsl/'.$type.'.xsl';
+		$standardName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'.xsl';
+		$rootName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'_'.$root_id.'.xsl';
+		$langName = dirname(__FILE__).'/../xsl/'.$type.'_'.$standard_id.'_'.$root_id.'_'.$language.'.xsl';
+		//echo $baseName."<br>".$standardName."<br>".$rootName."<br>".$langName;
+		
+		// Chargement du bon fichier de transformation XSL 
+		if (file_exists($langName))
+		{
+			$style->load($langName);
+			//echo $langName;
+		}
+		else if (file_exists($rootName))
+		{
+			$style->load($rootName);
+			//echo $rootName;
+		}
+		else if (file_exists($standardName))
+		{
+			$style->load($standardName);
+			//echo $standardName;
+		}
+		else
+		{
+			$style->load($baseName);
+			//echo $baseName;
+		}
+		
+		
+		/*
 		if ($type == 'abstract')
 		{
 			if (file_exists(dirname(__FILE__).'/../xsl/iso19115_abstract_'.$language.".xsl"))
@@ -616,7 +763,7 @@ class displayManager{
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
 			}
 		}
-		
+		*/
 		$processor->importStylesheet($style);
 		$myHtml = $processor->transformToXml($cswResults);
 		displayManager::exportPDFfile($myHtml);
