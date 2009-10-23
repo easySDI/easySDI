@@ -20,8 +20,11 @@ defined('_JEXEC') or die('Restricted access');
 
 class SITE_metadata {
 
-function editMetadata($id, $option)
+//function editMetadata($prof, $id, $option)
+	function editMetadata($id, $option)
 	{
+		//$prof->startTimer("phpPart");
+		//echo "Appel editMetadata: ".date('H:m:s')."<br>";
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		/*
@@ -33,7 +36,7 @@ function editMetadata($id, $option)
 		// Récupérer l'objet lié à cette métadonnée
 		$rowProduct = new product( $database );
 		$rowProduct->load( $id );
-		
+
 		/*
 		 $rowObject = new objectByMetadataId( $database );
 		 $rowObject->load( $id );
@@ -47,13 +50,12 @@ function editMetadata($id, $option)
 		// Récupérer la métadonnée en CSW
 		//$metadata_id = "0f62e111-831d-4547-aee7-03ad10a3a141";
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		
+
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$catalogUrlBase = "http://demo.easysdi.org:8084/geonetwork/srv/en/csw";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowProduct->metadata_id;
+		//$catalogUrlBase = "http://demo.easysdi.org:8084/geonetwork/srv/en/csw";
+		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowProduct->metadata_id;
 		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=".$id;
-		
-		
+
 		$xmlBody= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n
 			<csw:GetRecordById xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\"
 			    outputSchema=\"csw:IsoRecord\"> 
@@ -63,16 +65,16 @@ function editMetadata($id, $option)
 
 
 		//echo "<hr>".$catalogUrlBase."<br>".htmlspecialchars($xmlBody)."<hr>";
-
+		//echo "Avant post request: ".date('H:m:s')."<br>";
 		//echo "Envoi à ".$catalogUrlBase." de ".htmlspecialchars($xmlBody)."<br>";
 		$xmlResponse = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
-
+		//echo "Reponse post request: ".date('H:m:s')."<br>";
 		//echo "<hr>".$xmlResponse."<br>";
 		// En POST
 		$cswResults = DOMDocument::loadXML($xmlResponse);
 
 		// En GET
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		//echo "Fichier à traiter: ".$cswResults->saveXML()."<br>";
 
 		/*
@@ -94,19 +96,28 @@ function editMetadata($id, $option)
 		$xpathResults->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 		$xpathResults->registerNamespace('gco','http://www.isotc211.org/2005/gco');
 		$xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
+		$xpathResults->registerNamespace('ext','http://www.depth.ch/2008/ext');
+		$xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');		
 
-
-		$query = "SELECT * FROM #__easysdi_metadata_classes WHERE id=4001";
+		$query = "SELECT s.classes_id as root_id FROM #__easysdi_metadata_standard s, #__easysdi_product p WHERE p.metadata_standard_id=s.id and p.id=".$id;
+		$database->setQuery( $query );
+		$root_id = $database->loadResult();
+		
+		$query = "SELECT * FROM #__easysdi_metadata_classes WHERE id=".$root_id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
-
+		
+		//echo "Apres construction DomDocument: ".date('H:m:s')."<br>";
+		//$prof->stopTimer("phpPart");
+		
+		//HTML_metadata::editMetadata($prof, $id, $root, $rowProduct->metadata_id, $xpathResults, $option);
 		HTML_metadata::editMetadata($id, $root, $rowProduct->metadata_id, $xpathResults, $option);
 	}
 
 
-	
-	function buildXMLTree($parent, $parentFieldset, $parentName, $doc, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $option)
+	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $option)
 	{
+		//echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
 		$database =& JFactory::getDBO();
 		$rowChilds = array();
@@ -115,7 +126,8 @@ function editMetadata($id, $option)
 		
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
-
+		//echo "QueryPath: ".$queryPath." \r\n ";
+		
 		// Traitement des enfants de type list
 		$rowListClass = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent;
@@ -125,10 +137,31 @@ function editMetadata($id, $option)
 		foreach($rowListClass as $child)
 		{
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
-				
+			//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
+
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($parentName."/".$child->iso_key));
+				if ($partToCompare == $parentName."/".$child->iso_key)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = $_POST[$key];
+					}
+				}
+			}
+			//print_r($usefullVals); echo " \r\n ";
+			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=1; $pos<=$index; $pos++)
+			for ($pos=1; $pos<=$count; $pos++)
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
@@ -142,12 +175,14 @@ function editMetadata($id, $option)
 					
 				// Deux traitement pour deux types de listes
 				$queryPath = $queryPath."/".$child->iso_key."/".$content[0]->l_iso_key;
-				
+				/*
 				if ($_POST[$listName] <>"")
 						$nodeValue = $_POST[$listName];
 					else
 						$nodeValue="";
-				
+				*/
+				$nodeValue = $usefullVals[$pos-1];
+						
 				$nodeValues=split(",",$nodeValue);
 	   			
 	   			// Le contenu de la liste
@@ -160,7 +195,7 @@ function editMetadata($id, $option)
 						
 						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key);
 						$XMLNode->appendChild($XMLListNode);
-						$XMLListNode->setAttribute('codeListValue', utf8_decode($val));
+						$XMLListNode->setAttribute('codeListValue', $val);
 						$xmlParent = $XMLListNode;
 					}
 				}
@@ -171,13 +206,13 @@ function editMetadata($id, $option)
 						$XMLNode = $XMLDoc->createElement($child->iso_key);
 						$xmlAttributeParent->appendChild($XMLNode);
 						
-						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, utf8_decode($val));
+						$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, $val);
 						$XMLNode->appendChild($XMLListNode);
 						$xmlParent = $XMLListNode;
 					}
 				}
 				/*
-				$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, utf8_decode($nodeValue));
+				$XMLListNode = $XMLDoc->createElement($content[0]->l_iso_key, $nodeValue);
 				$XMLNode->appendChild($XMLListNode);
 				*/
 				
@@ -196,52 +231,80 @@ function editMetadata($id, $option)
 			$queryPath = $queryPath."/".$child->iso_key."/gmd:LocalisedCharacterString";
 			$searchName = $parentName."/".$child->iso_key;
 			
+			// Création des enfants langue
+			$langages = array();
+			$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
+			$database->setQuery( $query );
+			$langages = array_merge( $langages, $database->loadObjectList() );
+
+			
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$searchName."__1_index"];
+			//$index = $_POST[$searchName."__1_index"];
 			//echo $searchName." - ".$index."\r\n";
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($searchName));
+				if ($partToCompare == $searchName)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = array(substr($key, -8, 5) => $_POST[$key]);
+					}
+				}
+			}
+			$count = $count/count($langages);
+			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=2; $pos<=$index; $pos++)
+			$langIndex = 0;
+			for ($pos=1; $pos<=$count; $pos++)
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
 				$LocName = $parentName."/".$child->iso_key."__".$pos;
 				//echo "LocName: ".$LocName." - ".$pos."\r\n";
-					
+
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
 				$xmlAttributeParent->appendChild($XMLNode);
 				$xmlLocParent = $XMLNode;
-					
-				// Création des enfants langue
-				$langages = array();
-				$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
-				$database->setQuery( $query );
-				$langages = array_merge( $langages, $database->loadObjectList() );
-					
-				foreach($langages as $lang)
-				{
-					// Nombre d'occurence de cet élément
-					$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
-					//echo "LangName: ".$LocName."/gmd:LocalisedCharacterString/".$lang->lang." - ".$langIndex."\r\n";
 				
+				foreach($langages as $lang)
+				{	
+					// Nombre d'occurence de cet élément
+					//$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
+					//$langIndex = 1;
+					//echo "LangName: ".$LocName."/gmd:LocalisedCharacterString/".$lang->lang." - ".$langIndex."\r\n";
+					 
 					// Ajouter chacune des copies du champ dans le XML résultat
-					for ($langPos=1; $langPos<=$langIndex; $langPos++)
-					{
-						$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
+					//for ($langPos=1; $langPos<=$langIndex; $langPos++)
+					//{
+						//$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
+						$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1";
 						//echo $LangName." - ".$_POST[$LangName]."\r\n";
-						if ($_POST[$LangName] <>"")
+						/*if ($_POST[$LangName] <>"")
 							$nodeValue = $_POST[$LangName];
 						else
 							$nodeValue="";
-		
-						$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", utf8_decode($nodeValue));
+						*/
+						$nodeValue=$usefullVals[$langIndex][$lang->lang];
+						
+						$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
 						$xmlLocParent->appendChild($XMLNode);
 						$XMLNode->setAttribute('locale', $lang->lang);
 						$xmlParent = $XMLNode;
-					}
+					//}
+					$langIndex = $langIndex+1;
 				}
 			}
 		}
-			
+		
 		// Traitement des enfants de type freetext
 		$rowAttributeChilds = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type = 'freetext' and rel.classes_from_id=".$parent;
@@ -317,15 +380,39 @@ function editMetadata($id, $option)
 				
 			// Nombre d'occurence de cet élément
 			// Nombre d'occurence de cet élément
-			$index = $_POST[$name."__1_index"];
+			//$index = $_POST[$name."__1_index"];
+			
+			// Récupération des valeurs postées correspondantes
+			$keys = array_keys($_POST);
+			$usefullVals=array();
+			//$usefullKeys=array();
+			$count=0;
+			foreach($keys as $key)
+			{
+				$partToCompare = substr($key, 0, strlen($name));
+				if ($partToCompare == $name)
+				{
+					if (substr($key, -6) <> "_index")
+					{
+						$count = $count+1;
+						//$usefullKeys[] = $key;
+						$usefullVals[] = $_POST[$key];
+					}
+				}
+			}
+			//echo $name." - ".$count." \r\n ";
+			//print_r($usefullKeys); echo " \r\n ";	
 			
 			// Ajouter chacune des copies du champ dans le XML résultat
-			for ($pos=1; $pos<=$index; $pos++)
+			for ($pos=1; $pos<=$count; $pos++)
 			{
+				/*
 				if ($_POST[$name."__".$pos] <> "")
 					$nodeValue = $_POST[$name."__".$pos];
 				else
 					$nodeValue = "";
+				*/
+				$nodeValue = $usefullVals[$pos-1];
 				
 				// Traitement de chaque attribut
 				if ($type->default_value <> "" and $nodeValue == "")
@@ -351,15 +438,16 @@ function editMetadata($id, $option)
 					else
 					{
 						//echo $name."__".$pos."_hiddenVal\r\n";
-						$nodeValue = $_POST[$name."__".$pos."_hiddenVal"];
+						//$nodeValue = $_POST[$name."__".$pos."_hiddenVal"];
 						//echo $nodeValue."\r\n";
 					}
 				}
 					
+				//echo "Value of ".$name.": ".$nodeValue." \r\n ";
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
 				$xmlAttributeParent->appendChild($XMLNode);
 				
-				$XMLValueNode = $XMLDoc->createElement($childType, utf8_decode($nodeValue));
+				$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 				$XMLNode->appendChild($XMLValueNode);
 				$xmlParent = $XMLValueNode;
 			}
@@ -370,48 +458,63 @@ function editMetadata($id, $option)
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent;
 		$database->setQuery( $query );
 		$rowClassChilds = array_merge( $rowClassChilds, $database->loadObjectList() );
-
+		
 		foreach($rowClassChilds as $child)
 		{
-			// Traitement de la multiplicité
-			// Récupération du path du bloc de champs qui va être créé pour construire le nom
-			$name = $parentName."/".$child->iso_key;
-			
-			// Récupérer le nombre d'occurences de ce noeud (Multiplicité)
 			// Nombre d'occurence de cet élément
-			$index=0;
-			$index = $_POST[$name."__1_index"];
-			//echo $name."__1_index"." - ".$index."\\r\\n";
-			
+			//$index=0;
+			$count=0;
 			if ($child->is_relation)
-				$index = $index-1;
-			
-			//echo "index: ".$index."\\r\\n";
-			for ($pos=0; $pos<$index; $pos++)
 			{
-				//echo " pos: ".$pos." - childlowerbound: ".$child->lowerbound." - relation: ".$child->is_relation."\\r\\n";
+				$name = $parentName."/".$child->iso_key;
+				//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
+				//$index = $index-1;
+			
+				foreach($keyVals as $key => $val)
+				{
+					if ($key == $parentName."/".$child->iso_key."__1")
+					{
+						$count = $val;
+						break;
+					}
+				}
+				$count = $count - 1;
+			}
+			else
+			{
+				$name = $parentName;
+				//$index = 1;
+				$count = 1;
+			}
+			
+			for ($pos=0; $pos<$count; $pos++)
+			{
 				// Flag d'index dans le nom
-				
 				if (!$child->is_relation)
-				{
-					$name = $parentName."/".$child->iso_key."__".($pos+1);
-				}
+					$name = $parentName;
 				else
-				{
 					$name = $parentName."/".$child->iso_key."__".($pos+2);
-				}
 				
-				if ($index==1 and $child->lowerbound==0 and $child->is_relation)
+				// Structure à créer ou pas
+				$keys = array_keys($_POST);
+				$existVal=false;
+				foreach($keys as $key)
 				{
-					continue;
+					$partToCompare = substr($key, 0, strlen($name));
+					if ($partToCompare == $name)
+					{
+						$existVal = true;
+						break;
+					}
 				}
-				else
+
+				if ($existVal)
 				{
 					$xlinkTitleValue = 	"";
 					// S'il y a un xlink:title défini, alors le mettre comme attribut du noeud
-					if ($child->has_xlinkTitle)
-						$xlinkTitleValue = utf8_decode($_POST[$name.'_xlinktitle']);
-						
+					if ($child->has_xlinkTitle and $child->is_relation)
+						$xlinkTitleValue = $_POST[$name.'_xlinktitle'];
+
 					// Parcours récursif des classes
 					$XMLNode = $XMLDoc->createElement($child->iso_key);
 					$xmlClassParent->appendChild($XMLNode);
@@ -421,9 +524,11 @@ function editMetadata($id, $option)
 							
 					// Récupération des codes ISO et appel récursif de la fonction
 					$nextIsocode = $child->iso_key;
-					//echo " [ ".$nextIsocode."] ";
 						
-					SITE_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$doc, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $option);
+					if (!$child->is_relation)
+						SITE_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $option);
+					else
+						SITE_metadata::buildXMLTree($child->classes_to_id, $child->classes_to_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $option);
 				}
 			}
 		}
@@ -448,17 +553,29 @@ function editMetadata($id, $option)
 		$option = $_POST['option'];
 		$metadata_id = $_POST['metadata_id'];
 		$product_id = $_POST['product_id'];
-
+		
+		// Récupération des index des fieldsets
+		$fieldsets = array();
+		$fieldsets = explode(" | ", $_POST['fieldsets']);
+		$keyVals = array();
+		foreach($fieldsets as $fieldset)
+		{
+			$keys = explode(',', $fieldset);
+			$keyVals[$keys[0]] = $keys[1];
+		}
+		//print_r($keyVals); echo " \r\n ";
+		
+		
 		// Sauver dans un fichier les valeurs du POST
 		/*$myFile = "C:\\RecorderWebGIS\\myFile.txt";
 		$fh = fopen($myFile, 'w') or die("can't open file");
-		foreach ($_POST as $key => $val)
+		foreach ($keyVals as $key => $val)
 			fwrite($fh, $key." - ".$val);
 		fclose($fh);
 		*/
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
-		
+		$XMLDoc->formatOutput = true;
 		// Récupérer l'objet lié à cette métadonnée
 		$database =& JFactory::getDBO();
 		/*
@@ -482,7 +599,7 @@ function editMetadata($id, $option)
 		//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:srv', 'http://www.isotc211.org/2005/srv');
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:ext', 'http://www.depth.ch/2008/ext');
 
-		$doc = "<gmd:MD_Metadata
+		/*$doc = "<gmd:MD_Metadata
 					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
 					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
 					xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
@@ -490,9 +607,9 @@ function editMetadata($id, $option)
 					xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
 					xmlns:srv=\"http://www.isotc211.org/2005/srv\"
 					xmlns:ext=\"http://www.depth.ch/2008/ext\">";
-
+		*/
 		$path="/";
-		//ADMIN_metadata::buildXML($root[0]->id, $path, "", $root[0]->isocode, $doc);
+		//SITE_metadata::buildXML($root[0]->id, $path, "", $root[0]->isocode, $doc);
 
 		$query = "SELECT s.classes_id as root_id FROM #__easysdi_metadata_standard s, #__easysdi_product p WHERE p.metadata_standard_id=s.id and p.id=".$product_id;
 		$database->setQuery( $query );
@@ -502,11 +619,11 @@ function editMetadata($id, $option)
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
-		//ADMIN_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
-		SITE_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $doc, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $option);
-		$doc=$doc."</gmd:MD_Metadata>";
-
-		//$XMLDoc->save("C:\\RecorderWebGIS\\xml.xml");
+		//SITE_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
+		SITE_metadata::buildXMLTree($root_id, $root_id, "//".$root[0]->iso_key, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $keyVals, $option);
+		//$doc=$doc."</gmd:MD_Metadata>";
+		
+		//echo 'Ecrit : ' . $XMLDoc->save("C:\\RecorderWebGIS\\xml.xml") . ' octets';
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'product.admin.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -535,18 +652,18 @@ function editMetadata($id, $option)
 		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		
+		$errorMsg = "";
 		if ($deleted <> 1)
 		{
-			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-			$response = '{
+			$errorMsg = "Metadata has not been deleted. ";
+			/* $response = '{
 				    		success: false,
 						    errors: {
-						        xml: "Metadata has not been deleted. '.$errorMsg.'"
+						        xml: "'.$errorMsg.'"
 						    }
 						}';
 			print_r($response);
-			die();
+			die();*/ 
 		}
 		
 		// Insérer dans Geonetwork la nouvelle version de la métadonnée
@@ -555,13 +672,13 @@ function editMetadata($id, $option)
 		version=\"2.0.2\"
 		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
 		<csw:Insert>
-		".utf8_encode(substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>')))."
+		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
 		</csw:Insert>
 		</csw:Transaction>";
-		//echo $xmlstr."\\r\\n";
+		//echo $XMLDoc->saveXML()." \r\n ";
 			
 		$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		
+		//echo $result;
 		$insertResults = DOMDocument::loadXML($result);
 		
 		$xpathInsert = new DOMXPath($insertResults);
@@ -571,11 +688,11 @@ function editMetadata($id, $option)
 		
 		if ($inserted <> 1)
 		{
-			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			$errorMsg .= "Metadata has not been inserted.";
 			$response = '{
 				    		success: false,
 						    errors: {
-						        xml: "Metadata has not been inserted. '.$errorMsg.'"
+						        xml: "'.$errorMsg.'"
 						    }
 						}';
 			print_r($response);
@@ -585,7 +702,7 @@ function editMetadata($id, $option)
 		{
 			//$result="";
 			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			//ADMIN_metadata::cswTest($xmlstr);
+			//SITE_metadata::cswTest($xmlstr);
 			$response = '{
 				    		success: true,
 						    errors: {

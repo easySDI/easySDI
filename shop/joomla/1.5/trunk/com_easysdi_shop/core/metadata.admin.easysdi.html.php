@@ -117,7 +117,7 @@ class HTML_metadata {
 				        }]
 				    });
 					
-				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".$root[0]->name."', xtype: 'fieldset', tabtip:'".$root[0]->label."'});
+				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".JText::_($root[0]->translation)."', xtype: 'fieldset'});
 				form.add(fieldset".$root[0]->id.");";
 
 
@@ -254,12 +254,14 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+						";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
@@ -268,22 +270,22 @@ class HTML_metadata {
 						$date = date('d.m.Y', strtotime($nodeValue));
 
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					/*
 					$this->javascript .="
@@ -308,32 +310,34 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+						";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 				}
 			}
@@ -359,32 +363,34 @@ class HTML_metadata {
 				if ($type->is_system)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));";
+					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+					fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+					";
 				}
 				else if ($type->is_date)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_datetime)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_number)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 				}
 				else if ($type->is_integer)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 				}
 				else
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".$child->name."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				/*
 				$this->javascript .="
@@ -501,7 +507,7 @@ class HTML_metadata {
 					//HTML_metadata::constructLocfreetext($pos, $parentFieldset, $child->classes_to_id, $LocName, $child->name, $lang, $child->lowerbound, $child->upperbound, 'false', 'null');
 					
 					$this->javascript .="
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", 5); 
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
 						//fieldset".$parentFieldset.".add(createHidden('".$LocName."_index', '".$LocName."_index', '1'));
@@ -550,7 +556,7 @@ class HTML_metadata {
 					
 					
 					$this->javascript .="
-						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
+						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", 5); 
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 						//master.manageIcons(master);
 					";
@@ -695,89 +701,174 @@ class HTML_metadata {
 					// Construction du master
 					if ($pos==0)
 					{
-						// Flag d'index dans le nom
-						$name = $parentName."/".$child->iso_key."__".($pos+1);
-							
-						if ($nodeCount > 0)
+						/*if ($child->lowerbound == $child->upperbound)
 						{
-							$classScope = $node->item($pos);
+							// Flag d'index dans le nom
+							$name = $parentName."/".$child->iso_key."__".($pos+1);
+								
+							if ($nodeCount > 0)
+							{
+								$classScope = $node->item($pos);
+							}
+							else
+							{
+								$classScope = $scope;
+							}
+	
+							// Construction de la relation
+							$this->javascript .="
+								// Créer un nouveau fieldset
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+							";
+	
+							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							if ($child->has_xlinkTitle)
+							{
+								if ($nodeCount > 0)
+								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
+								else
+								$xlinkTitleValue = "";
+	
+								$this->javascript .="
+								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+							}
+	
+	
+							// Récupération des codes ISO et appel récursif de la fonction
+							$nextIsocode = $child->iso_key;
+							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 						}
 						else
-						{
-							$classScope = $scope;
-						}
-
-						// Construction de la relation
-						$this->javascript .="
-							// Créer un nouveau fieldset
-							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
-							//fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
-						";
-
-						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
-						if ($child->has_xlinkTitle)
-						{
+						{*/
+							// Flag d'index dans le nom
+							$name = $parentName."/".$child->iso_key."__".($pos+1);
+								
 							if ($nodeCount > 0)
-							$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
+							{
+								$classScope = $node->item($pos);
+							}
 							else
-							$xlinkTitleValue = "";
-
+							{
+								$classScope = $scope;
+							}
+	
+							// Construction de la relation
 							$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-						}
-
-
-						// Récupération des codes ISO et appel récursif de la fonction
-						$nextIsocode = $child->iso_key;
-						//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
-						HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+								// Créer un nouveau fieldset
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+								// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+								//fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
+							";
+	
+							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							if ($child->has_xlinkTitle)
+							{
+								if ($nodeCount > 0)
+								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
+								else
+								$xlinkTitleValue = "";
+	
+								$this->javascript .="
+								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+							}
+	
+	
+							// Récupération des codes ISO et appel récursif de la fonction
+							$nextIsocode = $child->iso_key;
+							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+						//}
 					}
 					else
 					{
-						// Création du clone
-						// Flag d'index dans le nom
-						$name = $parentName."/".$child->iso_key."__".($pos+1);
-							
-						$master = $parentName."/".$child->iso_key."__1";
-						if ($nodeCount > 0)
+						/*if ($child->lowerbound == $child->upperbound)
 						{
-							$classScope = $node->item($pos-1);
+							// Création du clone
+							// Flag d'index dans le nom
+							$name = $parentName."/".$child->iso_key."__".($pos+1);
+								
+							if ($nodeCount > 0)
+							{
+								$classScope = $node->item($pos-1);
+							}
+							else
+							{
+								$classScope = $scope;
+							}
+	
+							// Construction de la relation
+							$this->javascript .="
+								// Créer un nouveau fieldset
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
+							";
+	
+							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							if ($child->has_xlinkTitle)
+							{
+								if ($nodeCount > 0)
+								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos-1)->getAttribute('xlink:title'));
+								else
+								$xlinkTitleValue = "";
+	
+								$this->javascript .="
+								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+							}
+	
+	
+							$nextIsocode = $child->iso_key;
+							// Récupération des codes ISO et appel récursif de la fonction
+							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 						}
 						else
-						{
-							$classScope = $scope;
-						}
-
-						// Construction de la relation
-						$this->javascript .="
-							var master = Ext.getCmp('".$master."');							
-							//var index = Ext.getCmp('".$master."_index');
-							//oldIndex = index.getValue();
-							//index.setValue(Number(oldIndex)+1);
-							// Créer un nouveau fieldset
-							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
-						";
-
-						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
-						if ($child->has_xlinkTitle)
-						{
+						{*/
+							// Création du clone
+							// Flag d'index dans le nom
+							$name = $parentName."/".$child->iso_key."__".($pos+1);
+								
+							$master = $parentName."/".$child->iso_key."__1";
 							if ($nodeCount > 0)
-							$xlinkTitleValue = html_Metadata::cleanText($node->item($pos-1)->getAttribute('xlink:title'));
+							{
+								$classScope = $node->item($pos-1);
+							}
 							else
-							$xlinkTitleValue = "";
-
+							{
+								$classScope = $scope;
+							}
+	
+							// Construction de la relation
 							$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-						}
-
-
-						$nextIsocode = $child->iso_key;
-						// Récupération des codes ISO et appel récursif de la fonction
-						//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
-						HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+								var master = Ext.getCmp('".$master."');							
+								//var index = Ext.getCmp('".$master."_index');
+								//oldIndex = index.getValue();
+								//index.setValue(Number(oldIndex)+1);
+								// Créer un nouveau fieldset
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
+							";
+	
+							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							if ($child->has_xlinkTitle)
+							{
+								if ($nodeCount > 0)
+								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos-1)->getAttribute('xlink:title'));
+								else
+								$xlinkTitleValue = "";
+	
+								$this->javascript .="
+								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+							}
+	
+	
+							$nextIsocode = $child->iso_key;
+							// Récupération des codes ISO et appel récursif de la fonction
+							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+						//}
 					}
 				}
 
@@ -785,46 +876,81 @@ class HTML_metadata {
 				// et qu'il n'y a aucune occurence de celle-ci dans le XML
 				if ($nodeCount==0 and $child->lowerbound>0)
 				{
-					// Création du clone
-					// Flag d'index dans le nom
-					$name = $parentName."/".$child->iso_key."__2";
-
-					$master = $parentName."/".$child->iso_key."__1";
-						
-					$classScope = $scope;
-						
-					// Construction du fieldset
-					$this->javascript .="
-						var master = Ext.getCmp('".$master."');							
-						//var index = Ext.getCmp('".$master."_index');
-						//oldIndex = index.getValue();
-						//index.setValue(Number(oldIndex)+1);
-						// Créer un nouveau fieldset
-						var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".$child->name."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
-						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-						//master.manageIcons(master);
-					";			
-						
-					// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
-					if ($child->has_xlinkTitle)
+					/*if ($child->lowerbound == $child->upperbound)
 					{
-						$xlinkTitleValue = "";
-
+						// Création du clone
+						// Flag d'index dans le nom
+						$name = $parentName."/".$child->iso_key."__2";
+						$classScope = $scope;
+							
+						// Construction du fieldset
 						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', 'Titre de l\'extension',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+							// Créer un nouveau fieldset
+							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+						";			
+							
+						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+						if ($child->has_xlinkTitle)
+						{
+							$xlinkTitleValue = "";
+	
+							$this->javascript .="
+							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+						}
+							
+							
+						$nextIsocode = $child->iso_key;
+						// Récupération des codes ISO et appel récursif de la fonction
+						//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+						HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 					}
-						
-						
-					$nextIsocode = $child->iso_key;
-					// Récupération des codes ISO et appel récursif de la fonction
-					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
-					HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+					else
+					{*/
+						// Création du clone
+						// Flag d'index dans le nom
+						$name = $parentName."/".$child->iso_key."__2";
+	
+						$master = $parentName."/".$child->iso_key."__1";
+							
+						$classScope = $scope;
+							
+						// Construction du fieldset
+						$this->javascript .="
+							var master = Ext.getCmp('".$master."');							
+							//var index = Ext.getCmp('".$master."_index');
+							//oldIndex = index.getValue();
+							//index.setValue(Number(oldIndex)+1);
+							// Créer un nouveau fieldset
+							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
+							//master.manageIcons(master);
+						";			
+							
+						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+						if ($child->has_xlinkTitle)
+						{
+							$xlinkTitleValue = "";
+	
+							$this->javascript .="
+							fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
+						}
+							
+							
+						$nextIsocode = $child->iso_key;
+						// Récupération des codes ISO et appel récursif de la fonction
+						//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+						HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
+					//}
 				}
 			}
 		}
 		//$prof->stopTimer('ClassTreatment');
 	}
-
+/* 
+ * À mettre en place ou supprimer dans le futur
+ * [23.1.0.2009] Stéphanie Gilliéron
+ * 
 	function constructFreetext($type, $parentFieldset, $id, $label, $min, $max, $value, $length, $clone, $master)
 	{
 		// is system
@@ -908,7 +1034,7 @@ class HTML_metadata {
 			";
 		}
 	}
-	
+*/	
 	function listMetadataTabs($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 
 		$database =& JFactory::getDBO();
