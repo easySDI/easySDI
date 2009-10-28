@@ -418,7 +418,7 @@ class HTML_metadata {
 	 }
 		// Traitement des enfants de type local freetext
 		$rowLocText = array();
-		$query = "SELECT c.*, c.id as val, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type = 'locfreetext' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$partner_id.") ORDER BY c.ordering";
+		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type = 'locfreetext' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$partner_id.") ORDER BY c.ordering";
 		$database->setQuery( $query );
 		$rowLocText = array_merge( $rowLocText, $database->loadObjectList() );
 		
