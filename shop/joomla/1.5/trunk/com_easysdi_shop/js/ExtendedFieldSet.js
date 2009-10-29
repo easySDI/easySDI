@@ -77,7 +77,10 @@ Ext.override(Ext.form.FieldSet, {
 				clone.constructClone(master);
 				if (isClone)
 				{
-					var idx = panel.items.indexOf(master)+2+i;
+					if (panel.items.indexOf(master) == 0)
+						var idx = panel.items.indexOf(master)+2+i;
+					else
+						var idx = panel.items.indexOf(master)+1+i;
 			   		panel.insert(idx,clone);
 				}
 				else
