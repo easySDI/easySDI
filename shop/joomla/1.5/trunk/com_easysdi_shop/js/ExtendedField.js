@@ -46,13 +46,22 @@ Ext.override(Ext.form.Field, {
 
 				var parentName = panel.getId();
 				var name = master.getId();
+				if (isClone)
+				{
+					var masterName = parentName + name.substring(parentName.length);
+					master = Ext.getCmp(masterName);
+				}
 				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
 					//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
 				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
 			    
 			    master.clones_count = master.clones_count+1;
-			    clones_count = master.clones_count;
+			    if (isClone)
+					clones_count = master.clones_count;
+				else
+					clones_count = 1;
+				
 				
 /*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
 				var newVal = 1;
