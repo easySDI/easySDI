@@ -35,6 +35,9 @@ class HTML_metadata {
 
 	function editMetadata($product_id, $root, $metadata_id, $xpathResults, $option)
 	{
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$divPos = config_easysdi::getValue("div_container_backend");
+		
 		$uri =& JUri::getInstance();
 		$database =& JFactory::getDBO();
 
@@ -63,7 +66,7 @@ class HTML_metadata {
 	value="" /></form>
 		<?php
 		$this->javascript .="
-				var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
+				var domNode = Ext.DomQuery.selectNode('".$divPos."')
 				Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 				
 				// Créer le formulaire qui va contenir la structure
@@ -428,7 +431,7 @@ class HTML_metadata {
 			$queryPath = $child->iso_key."/gmd:LocalisedCharacterString";
 				
 			$relNode = $xpathResults->query($child->iso_key, $attributScope);
-							
+
 			for($pos=0;$pos<=$relNode->length;$pos++)
 			{
 				// Traitement de la multiplicité
