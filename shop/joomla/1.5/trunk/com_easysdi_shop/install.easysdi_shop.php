@@ -2077,6 +2077,31 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	if($version == "0.99995")
+	 {		
+	 	// Add config keys fort extjs form pos
+		$query="INSERT INTO #__easysdi_config (thekey, value) values('DIV_CONTAINER_FRONTEND','div#maincolumn')";
+	 	$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	$query="INSERT INTO #__easysdi_config (thekey, value) values('DIV_CONTAINER_BACKEND','div#element-box div.m')";
+	 	$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+				
+	 	//Update component version
+		$version = "0.99996";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 
 	/**
 	 * Menu creation
