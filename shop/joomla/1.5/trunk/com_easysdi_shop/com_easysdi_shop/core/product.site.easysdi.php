@@ -615,7 +615,7 @@ class SITE_product {
 		
 		
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 5 );
+		$limit = JRequest::getVar('limit', 15 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
 		$database =& JFactory::getDBO();		 	

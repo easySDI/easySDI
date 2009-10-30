@@ -356,8 +356,8 @@ class HTML_product{
 ?>
 								  <tr>
 								  	<td align="left"><?php  echo $curPerim->text; ?></td>
-									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" onchange="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
-									<td align="center"><input type="checkbox" id="buffer_<?php echo $curPerim->value;?>" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"?> disabled></td>
+									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->product_id != "") echo "checked"?> onchange="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
+									<td align="center"><input type="checkbox" id="buffer_<?php echo $curPerim->value;?>" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"; else if ($bufferRow->product_id == "") echo "disabled";?>></td>
 								</tr>
 <?php } ?>
 								</tbody>
@@ -731,7 +731,7 @@ class HTML_product{
 		<?php
 		echo $tabs->endPanel();
 	
-		/* Faire autant d'onglets qu'il y a de tab associ�s � la m�tadonn�e */
+		/* Faire autant d'onglets qu'il y a de tab associï¿½s ï¿½ la mï¿½tadonnï¿½e */
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id AND (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and  id = $rowProduct->metadata_standard_id)) group by a.tab_id " ;
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
@@ -748,7 +748,7 @@ class HTML_product{
 				<tr>
 					<td>
 						<?php
-							/* Afficher toutes les classes associ�es aux onglets */
+							/* Afficher toutes les classes associï¿½es aux onglets */
 							$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where  is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) order by position" ;
 							
 							$database->setQuery($query);				 
@@ -835,7 +835,7 @@ class HTML_product{
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
 		$geoMD = new geoMetadata($cswResults);				 
 
-		// Compter les occurences de la balise gmd:fileIndentifier dans la m�tadonn�e
+		// Compter les occurences de la balise gmd:fileIndentifier dans la mï¿½tadonnï¿½e
 		$count  = $geoMD->isXPathResultCount("//gmd:fileIdentifier");
 		if ($count == 0)
 		{
@@ -918,7 +918,7 @@ class HTML_product{
 		<?php
 		echo $tabs->endPanel();
 	
-		/* Faire autant d'onglets qu'il y a de tab associ�s � la m�tadonn�e */
+		/* Faire autant d'onglets qu'il y a de tab associï¿½s ï¿½ la mï¿½tadonnï¿½e */
 		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id AND (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and  id = $rowProduct->metadata_standard_id)) group by a.tab_id " ;
 		$database->setQuery($query);				 
 		$rows = $database->loadObjectList();		
@@ -941,7 +941,7 @@ class HTML_product{
 						<legend><?php echo JText::_($row->text); ?></legend>
 						
 					<?php 
-					/* Afficher toutes les classes associ�es aux onglets */
+					/* Afficher toutes les classes associï¿½es aux onglets */
 					$query = "SELECT c.id,c.name as name,c.description as description,c.iso_key as iso_key, c.type as type FROM #__easysdi_metadata_classes c,#__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id and (a.standard_id = $rowProduct->metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $rowProduct->metadata_standard_id)) and c.id = a.class_id and a.tab_id = $row->tab_id" ;		
 					$database->setQuery($query);				 
 					$rowstab = $database->loadObjectList();		
@@ -951,7 +951,7 @@ class HTML_product{
 					//print_r($rowstab);
 					foreach ($rowstab as $rowtab)
 					{
-						/* Retrouver dans la m�tadonn�e la balise correspondant � la classe qu'on veut �diter */
+						/* Retrouver dans la mï¿½tadonnï¿½e la balise correspondant ï¿½ la classe qu'on veut ï¿½diter */
 						$count  = $geoMD->isXPathResultCount("//".$rowtab->iso_key);
 						
 						for ($i=0 ;$i<$count;$i++)
@@ -961,7 +961,7 @@ class HTML_product{
 								<fieldset>
 									<legend><?php echo JText::_($rowtab->description); ?>
 										<?php 
-										/* Afficher la possibilit� d'ins�rer un nouvel �l�ment de ce type ou pas */
+										/* Afficher la possibilitï¿½ d'insï¿½rer un nouvel ï¿½lï¿½ment de ce type ou pas */
 										if ($rowtab->type == "class")
 										{ 
 										?>
@@ -1030,22 +1030,26 @@ class HTML_product{
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_PRODUCT"); ?></h2>
 		<div class="contentin">
-		
+		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
 	
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
+				</td>
+				<td align="right">
 					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<td align="left">&nbsp;</td>
+				<td align="right">
 					<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
-
 				</td>
 			</tr>
 		</table>
-		
-		
-		<br>		
+		<br/>		
 		<table width="100%">
 			<tr>																																						
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
@@ -1062,13 +1066,13 @@ class HTML_product{
 			window.open('./index.php?option=com_easysdi_shop&task=suppressProduct&publishedobject=product&cid[]='+id, '_self');
 		}
 	</script>
-	<table class="box-table">
+	<table id="myProducts" class="box-table">
 	<thead>
 	<tr>
-	<th></th>
+	<th class="logo2"></th>
 	<th><?php echo JText::_('EASYSDI_PRODUCT_NAME'); ?></th>
-	<th>&nbsp;</th>
-	<th>&nbsp;</th>
+	<th class="logo">&nbsp;</th>
+	<th class="logo">&nbsp;</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -1095,6 +1099,14 @@ class HTML_product{
 	?>
 	</tbody>
 	</table>
+	<br/>
+	<table width="100%">
+		<tr>																																						
+			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+			<td align="center">&nbsp;</td>
+			<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+		</tr>
+	</table>
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
@@ -1116,37 +1128,35 @@ class HTML_product{
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_LIST_METADATA"); ?></h2>
 		<div class="contentin">
-		<form action="index.php" method="GET" id="productListForm" name="productListForm">
-	
 		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
-	
+		
+		<form action="index.php" method="GET" id="productListForm" name="productListForm">
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
+					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 				</td>
 			</tr>
 		</table>
-		
-		<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-		<br>		
+		<br>	
+		<!-- pageNav header -->
 		<table width="100%">
 			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
+				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+				<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?>
+				<?php echo $pageNav->getLimitBox(); ?>
+				</td>
+				<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
-	
-	
-	<table>
+	<table class="box-table" id="manageMetadata">
 	<thead>
 	<tr>
-	<th><?php echo JText::_('EASYSDI_PRODUCT_SHARP'); ?></th>
 	<th></th>
 	<th><?php echo JText::_('EASYSDI_PRODUCT_NAME'); ?></th>
-	<th><?php echo JText::_('EASYSDI_PRODUCT_INTERNAL'); ?></th>
-	<th><?php echo JText::_('EASYSDI_PRODUCT_EXTERNAL'); ?></th>
+	<th></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -1159,27 +1169,34 @@ class HTML_product{
 			
 			?>		
 			<tr>
-			<td><?php echo $i; ?></td>
-			<td><input type="radio"  name="id" value="<?php echo $row->id ;?>" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>'"></td>						
+			<td class="logo2"><div <?php if($row->metadata_external) echo 'class="publicMd" title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'"'; else if($row->metadata_internal && !$row->metadata_external) echo '"class="privateMd" title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'"';?>></div></td>
+			<!--<td><input type="radio"  name="id" value="<?php echo $row->id ;?>" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>'"></td>	-->					
 			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
-			
-			<td><input type="checkbox" <?php if ($row->internal) {echo "checked";};?> disabled> </td>
-			<td><input type="checkbox" <?php if ($row->external) {echo "checked";};?> disabled> </td>
+			<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editMetadata" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>';document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('productListForm').submit();"/></td>
 			</tr>
 			
 				<?php		
 		}
 		
 	?>
-	</tbody>
-	</table>
-	
+			</tbody>
+			</table>
+			<br/>
+			<table width="100%">
+				<tr>																																						
+					<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+					<td align="center">&nbsp;</td>
+					<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
+				</tr>
+			</table>
+			
+			<input type="hidden" id="id" name="id" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
+			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProductMetadata">
 			<?php
 			if (userManager::hasRight($rootPartner->partner_id,"METADATA")){?>
 			
-			<button type="button" onClick="document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_METADATA"); ?></button>
+			<!-- <button type="button" onClick="document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_EDIT_METADATA"); ?></button> -->
 			<?php }?>
 		</form>
 		</div>

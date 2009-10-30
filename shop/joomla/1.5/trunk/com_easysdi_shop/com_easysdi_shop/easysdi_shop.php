@@ -32,14 +32,19 @@ $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
 $order_id = JRequest::getVar('order_id');
-
 $myFavoritesFirst = JRequest::getVar('myFavoritesFirst');
 $simpleSearchCriteria = JRequest::getVar('simpleSearchCriteria');
 $limitstart= JRequest::getVar('limitstart');
+$limit= JRequest::getVar('limit');
+$furnisher_id= JRequest::getVar('furnisher_id');
+
+/*
 if($simpleSearchCriteria=="")
 {
 	$simpleSearchCriteria = "lastAddedMD";
 }
+*/
+
 $freetextcriteria = JRequest::getVar('freetextcriteria');
 
 $cid = JRequest::getVar ('cid', array(0) );
@@ -181,7 +186,7 @@ switch($task){
 			
 		SITE_favorite::metadataNotification(1);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
 		break;
 
 	case "removeMetadataNotification":
@@ -224,7 +229,7 @@ switch($task){
 			
 		SITE_favorite::metadataNotification(0);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
 		break;
 			
 	case "addFavorite":
@@ -266,7 +271,7 @@ switch($task){
 			
 			
 		SITE_favorite::favoriteProduct(1);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
 		break;
 
 	case "removeFavorite":
@@ -308,7 +313,7 @@ switch($task){
 			
 			
 		SITE_favorite::favoriteProduct(0);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
 		break;
 
 	case "manageFavoriteProduct":
@@ -349,7 +354,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
 		break;
 
 	case "manageFavorite":
@@ -613,6 +618,15 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		//SITE_cpanel::orderReportForProvider($cid[0]);
 		SITE_cpanel::orderReport($cid[0], true, true);
+		break;
+	case "showSummaryForPartner":
+		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+
+		//Shop FrontEnd
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');		
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.partner.site.easysdi.html.php');	
+		SITE_cpanel::showSummaryForPartner();
 		break;
 	case "downloadProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');

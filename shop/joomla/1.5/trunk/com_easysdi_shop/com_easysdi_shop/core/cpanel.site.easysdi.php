@@ -175,6 +175,7 @@ class SITE_cpanel {
 						 p.data_title as productName,
 						 opl.id as product_list_id,
 					     uClient.name as username,
+					     uClient.id as client_id,
 					     p.data_title as data_title,
 					     o.name as name,
 					     o.type as type, 
@@ -279,7 +280,6 @@ class SITE_cpanel {
 		}
 
 		$pageNav = new JPagination($total,$limitstart,$limit);
-			
 		$database->setQuery($query, $pageNav->limitstart, $pageNav->limit);
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
@@ -1064,6 +1064,13 @@ class SITE_cpanel {
 		{
 			//
 		}
+	}
+	
+	function showSummaryForPartner(){
+		$summaryForId = JRequest::getVar('SummaryForId');
+		$print = JRequest::getVar('print');
+		$toolbar = JRequest::getVar('toolbar');
+		HTML_cpanel_partner::showSummaryForPartner($summaryForId, $print, $toolbar);
 	}
 }
 ?>

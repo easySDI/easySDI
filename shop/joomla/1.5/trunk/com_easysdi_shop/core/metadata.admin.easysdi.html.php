@@ -19,7 +19,6 @@
  echo '$_POST["'.$key.'"]='.$val.'<br />';*/
 defined('_JEXEC') or die('Restricted access');
 
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_shop/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_shop/ext/');
@@ -35,9 +34,6 @@ class HTML_metadata {
 
 	function editMetadata($product_id, $root, $metadata_id, $xpathResults, $option)
 	{
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$divPos = config_easysdi::getValue("div_container_backend");
-		
 		$uri =& JUri::getInstance();
 		$database =& JFactory::getDBO();
 
@@ -59,17 +55,19 @@ class HTML_metadata {
 		$partner_id = $user_id;
 
 		?>
-<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
+<!-- Pour permettre le retour ï¿½ la liste des produits depuis la toolbar Joomla -->
+<div id="page">
 <form action="index.php" method="post" name="adminForm" id="adminForm"
 	class="adminForm"><input type="hidden" name="option"
 	value="<?php echo $option; ?>" /> <input type="hidden" name="task"
 	value="" /></form>
+</div>
 		<?php
 		$this->javascript .="
-				var domNode = Ext.DomQuery.selectNode('".$divPos."')
+				var domNode = Ext.DomQuery.selectNode('div#page')
 				Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 				
-				// Créer le formulaire qui va contenir la structure
+				// Crï¿½er le formulaire qui va contenir la structure
 				var form = new Ext.ux.ExtendedFormPanel({
 						id:'metadataForm',
 						url: 'index.php',
@@ -160,8 +158,8 @@ class HTML_metadata {
 			// Stockage du path pour atteindre ce noeud du XML
 			$path = $child->iso_key;
 				
-			// Traitement de la multiplicité
-			// Récupération du path du bloc de champs qui va être créé pour construire le nom
+			// Traitement de la multiplicitï¿½
+			// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 			$name = $parentName."/".$child->iso_key;
 				
 			// Selon le type de noeud, on lit un type de balise
@@ -309,7 +307,7 @@ class HTML_metadata {
 			}
 				
 				
-			// Ajout d'une occurence de création si la classe est obligatoire
+			// Ajout d'une occurence de crï¿½ation si la classe est obligatoire
 			// et qu'il n'y a aucune occurence de celle-ci dans le XML
 			if ($node->length==0 and $child->lowerbound>=0)
 			{
@@ -371,8 +369,8 @@ class HTML_metadata {
 	 	$dataValues = array();
 	 	$nodeValues = array();
 
-	 	// Traitement de la multiplicité
-	 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+	 	// Traitement de la multiplicitï¿½
+	 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 	 	$listName = $parentName."/".$child->iso_key."__1";
 	 	 
 	 	// Construction de la liste
@@ -431,11 +429,10 @@ class HTML_metadata {
 			$queryPath = $child->iso_key."/gmd:LocalisedCharacterString";
 				
 			$relNode = $xpathResults->query($child->iso_key, $attributScope);
-
 			for($pos=0;$pos<=$relNode->length;$pos++)
 			{
-				// Traitement de la multiplicité
-				// Récupération du path du bloc de champs qui va être créé pour construire le nom
+				// Traitement de la multiplicitï¿½
+				// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 				$LocName = $parentName."/".$child->iso_key."__".($pos+1);
 
 				if ($pos==0)
@@ -443,11 +440,11 @@ class HTML_metadata {
 					$this->javascript .="
 					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+						// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 						//fieldset".$parentFieldset.".add(createHidden('".$LocName."_index', '".$LocName."_index', '1'));
 					";
 						
-					// Création des enfants langue
+					// Crï¿½ation des enfants langue
 					$langages = array();
 					$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
 					$database->setQuery( $query );
@@ -465,7 +462,7 @@ class HTML_metadata {
 
 						$this->javascript .="
 							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 						";
 					}
@@ -487,7 +484,7 @@ class HTML_metadata {
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 						//master.manageIcons(master);
 					";
-					// Création des enfants langue
+					// Crï¿½ation des enfants langue
 					$langages = array();
 					$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
 					$database->setQuery( $query );
@@ -505,19 +502,19 @@ class HTML_metadata {
 
 						$this->javascript .="
 							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-							// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+							// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 						";
 					}
 				}
 			}
 				
-			// Ajout d'une occurence de création si la classe est obligatoire
+			// Ajout d'une occurence de crï¿½ation si la classe est obligatoire
 			// et qu'il n'y a aucune occurence de celle-ci dans le XML
 			if ($relNode->length==0 and $child->lowerbound>=0)
 			{
-				// Traitement de la multiplicité
-				// Récupération du path du bloc de champs qui va être créé pour construire le nom
+				// Traitement de la multiplicitï¿½
+				// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 				$LocName = $parentName."/".$child->iso_key."__2";
 				$master = $parentName."/".$child->iso_key."__1";
 					
@@ -532,7 +529,7 @@ class HTML_metadata {
 					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 				";
-				// Création des enfants langue
+				// Crï¿½ation des enfants langue
 				$langages = array();
 				$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
 				$database->setQuery( $query );
@@ -550,14 +547,14 @@ class HTML_metadata {
 
 					$this->javascript .="
 						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-						// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+						// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 						//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 					";
 				}
 				
 			}
 		}
-		// Récupération des classes enfants du noeud
+		// Rï¿½cupï¿½ration des classes enfants du noeud
 		$rowClassChilds = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$partner_id.") ORDER BY c.ordering";
 		$database->setQuery( $query );
@@ -565,7 +562,7 @@ class HTML_metadata {
 			
 		foreach($rowClassChilds as $child)
 		{
-			// Compte du nombre d'occurence de ce noeud (Multiplicité)
+			// Compte du nombre d'occurence de ce noeud (Multiplicitï¿½)
 			$node = $xpathResults->query($child->iso_key, $scope);
 			$nodeCount = $node->length;
 				
@@ -582,7 +579,7 @@ class HTML_metadata {
 					$classScope = $scope;
 				}
 
-				// Récupération des codes ISO et appel récursif de la fonction
+				// Rï¿½cupï¿½ration des codes ISO et appel rï¿½cursif de la fonction
 				$nextIsocode = $child->iso_key;
 				HTML_metadata::buildTree($database, $child->classes_to_id, $parent, $parentName, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 			}
@@ -608,14 +605,14 @@ class HTML_metadata {
 	
 							// Construction de la relation
 							$this->javascript .="
-								// Créer un nouveau fieldset
+								// Crï¿½er un nouveau fieldset
 								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
 								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
-								// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+								// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 								//fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
 							";
 	
-							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 							if ($child->has_xlinkTitle)
 							{
 								if ($nodeCount > 0)
@@ -628,14 +625,14 @@ class HTML_metadata {
 							}
 	
 	
-							// Récupération des codes ISO et appel récursif de la fonction
+							// Rï¿½cupï¿½ration des codes ISO et appel rï¿½cursif de la fonction
 							$nextIsocode = $child->iso_key;
 							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 					}
 					else
 					{
-							// Création du clone
+							// Crï¿½ation du clone
 							// Flag d'index dans le nom
 							$name = $parentName."/".$child->iso_key."__".($pos+1);
 								
@@ -655,12 +652,12 @@ class HTML_metadata {
 								//var index = Ext.getCmp('".$master."_index');
 								//oldIndex = index.getValue();
 								//index.setValue(Number(oldIndex)+1);
-								// Créer un nouveau fieldset
+								// Crï¿½er un nouveau fieldset
 								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 							";
 	
-							// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+							// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 							if ($child->has_xlinkTitle)
 							{
 								if ($nodeCount > 0)
@@ -674,17 +671,17 @@ class HTML_metadata {
 	
 	
 							$nextIsocode = $child->iso_key;
-							// Récupération des codes ISO et appel récursif de la fonction
+							// Rï¿½cupï¿½ration des codes ISO et appel rï¿½cursif de la fonction
 							//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 							HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 					}
 				}
 
-				// Ajout d'une occurence de création si la classe est obligatoire
+				// Ajout d'une occurence de crï¿½ation si la classe est obligatoire
 				// et qu'il n'y a aucune occurence de celle-ci dans le XML
 				if ($nodeCount==0 and $child->lowerbound>0)
 				{
-						// Création du clone
+						// Crï¿½ation du clone
 						// Flag d'index dans le nom
 						$name = $parentName."/".$child->iso_key."__2";
 	
@@ -698,13 +695,13 @@ class HTML_metadata {
 							//var index = Ext.getCmp('".$master."_index');
 							//oldIndex = index.getValue();
 							//index.setValue(Number(oldIndex)+1);
-							// Créer un nouveau fieldset
+							// Crï¿½er un nouveau fieldset
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 							//master.manageIcons(master);
 						";			
 							
-						// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+						// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 						if ($child->has_xlinkTitle)
 						{
 							$xlinkTitleValue = "";
@@ -715,15 +712,15 @@ class HTML_metadata {
 							
 							
 						$nextIsocode = $child->iso_key;
-						// Récupération des codes ISO et appel récursif de la fonction
+						// Rï¿½cupï¿½ration des codes ISO et appel rï¿½cursif de la fonction
 						HTML_metadata::buildTree($database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $partner_id, $option);
 				}
 			}
 		}
 	}
 /* 
- * À mettre en place ou supprimer dans le futur
- * [23.1.0.2009] Stéphanie Gilliéron
+ * ï¿½ mettre en place ou supprimer dans le futur
+ * [23.1.0.2009] Stï¿½phanie Gilliï¿½ron
  * 
 	function constructFreetext($type, $parentFieldset, $id, $label, $min, $max, $value, $length, $clone, $master)
 	{
@@ -767,7 +764,7 @@ class HTML_metadata {
 		}
 		
 		$this->javascript .="
-			// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+			// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 			//fieldset".$parentFieldset.".add(createHidden('".$id."_index', '".$id."_index','1'));
 		";
 	}
@@ -777,11 +774,11 @@ class HTML_metadata {
 		$this->javascript .="
 		var fieldset".$fieldsetId." = createFieldSet('".$id."', '".$label."', true, $clone, true, true, true, $master, ".$min.", ".$max."); 
 			fieldset".$parentFieldset.".add(fieldset".$fieldsetId.");	
-			// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+			// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 			//fieldset".$parentFieldset.".add(createHidden('".$id."_index', '".$id."_index', '1'));
 		";
 			
-		// Création des enfants langue
+		// Crï¿½ation des enfants langue
 		//$prof->startTimer('sql');
 		$langages = array();
 		$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$fieldsetId;
@@ -803,7 +800,7 @@ class HTML_metadata {
 
 			$this->javascript .="
 				fieldset".$fieldsetId.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-				// Création du champ caché (qui conservera l'index) lié au bloc de champs multiple
+				// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 				// fieldset".$fieldsetId.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 			";
 		}
