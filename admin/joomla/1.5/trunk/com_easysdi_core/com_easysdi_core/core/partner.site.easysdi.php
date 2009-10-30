@@ -53,10 +53,6 @@ class SITE_partner {
 
 		$db =& JFactory::getDBO();
 
-		$limit = JRequest::getVar('limit', 5 );
-		$limitstart = JRequest::getVar('limitstart', 0 );
-
-
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
@@ -92,20 +88,17 @@ class SITE_partner {
 
 		/*if ($hasTheRightToManageAffiliates){*/
 		$query = "SELECT COUNT(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type";
-			
-
 		$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
-
-		$pageNav = new JPagination($total,$limitstart,$limit);
-			
+		
 		$query = "SELECT #__users.name as partner_name,#__users.username as partner_username,#__easysdi_community_partner.* FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND #__easysdi_community_partner.parent_id = ".$type." AND #__easysdi_community_partner.partner_id <> $type ";
+
 		$query .= $filter;
 		$query .= " ORDER BY #__users.name";
 
 
-		$db->setQuery( $query ,$limitstart,$limit);
+		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
 
 		if ($db->getErrorNum()) {
@@ -127,7 +120,7 @@ class SITE_partner {
 
 		$types = array_merge( $types, $db->loadObjectList() );
 
-		HTML_partner::listPartner( $rows, $pageNav, $search, $option, $rowPartner->partner_id,$types,$type);
+		HTML_partner::listPartner( $rows, $search, $option, $rowPartner->partner_id,$types,$type);
 		/*}else{
 		 echo "<div class='alert'>";
 		 echo JText::_("EASYSDI_NOT ALLOWED TO EDIT AFFILIATES");
@@ -214,9 +207,12 @@ class SITE_partner {
 		$user = JFactory::getUser();
 
 		//Allows Pathway with mod_menu_easysdi
-		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYACCOUNT");
-
-			
+		//breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYACCOUNT");
+		
+		//breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYACCOUNT",
+		//								   "EASYSDI_MENU_ITEM_MYACCOUNT",
+		//								   "index.php?option=$option&task=showPartner");
+		
 		if ($user->guest){
 			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
 			return;
@@ -549,6 +545,85 @@ class SITE_partner {
 		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile);
 	}
 
+	function checkIsPartnerDeletable($affiliate_id){
+		$database =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		if(!usermanager::isUserAllowed($user, "ACCOUNT"))
+		{
+			return;
+		}
+
+		if (!$affiliate_id) {
+			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			return;
+		}
+		
+		$partner = new partnerByUserId( $database );
+		$partner->load( $affiliate_id );
+		$user =&	 new JTableUser($database);
+		$user->load( $partner->user_id );		
+		//Check if the user is referenced by product, order, affiliate before deleting it
+		$errMsg = array();
+		$query ="SELECT * FROM #__easysdi_product WHERE partner_id=$partner->partner_id OR metadata_partner_id=$partner->partner_id OR diffusion_partner_id=$partner->partner_id OR admin_partner_id=$partner->partner_id";
+		$database->setQuery( $query );
+		$products = $database->loadObjectList();
+		if($products)
+		{
+			$list = "";
+			foreach ($products as $product)
+			{
+				$list .= "<br> - ".$product->data_title; 
+			}	
+			$list .= "<br>";
+			if(count($errMsg) == 0)
+				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
+			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		}
+		
+		//Check if the user is Referenced by an pending order
+		$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR third_party=$partner->partner_id";
+		$database->setQuery( $query );
+		$orders = $database->loadObjectList();
+		if($orders)
+		{
+			$list = "";
+			foreach ($orders as $order)
+			{
+				$list .= "<br> - ".$order->name; 
+			}	
+			$list .= "<br>";
+			if(count($errMsg) == 0)
+				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
+			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		}
+		
+		//check if current user has children
+		$query ="SELECT p.*, u.username FROM #__easysdi_community_partner p, #__users u WHERE (p.root_id=$partner->partner_id OR p.parent_id=$partner->partner_id) AND ( p.user_id=u.id)";
+		$database->setQuery( $query );
+		$partners = $database->loadObjectList();
+		if($partners)
+		{
+			$list = "";
+			foreach ($partners as $partner)
+			{
+				$list .= "<br> - ".$partner->username; 
+			}	
+			$list .= "<br>";
+			if(count($errMsg) == 0)
+				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PARTNER",$user->username, $list));
+			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PARTNER",$user->username, $list));
+			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+		}
+		//Add conclusion if there was an error
+		
+		return $errMsg;
+	}
 	
 	function deleteAffiliate( $affiliate_id) {
 		global $mainframe;
@@ -573,57 +648,9 @@ class SITE_partner {
 		$user =&	 new JTableUser($database);
 		$user->load( $partner->user_id );
 		
-		//Check if the user is referenced by product, order, affiliate before deleting it
-		$deletable = true;
-		$query ="SELECT * FROM #__easysdi_product WHERE partner_id=$partner->partner_id OR metadata_partner_id=$partner->partner_id OR diffusion_partner_id=$partner->partner_id OR admin_partner_id=$partner->partner_id";
-		$database->setQuery( $query );
-		$products = $database->loadObjectList();
-		if($products)
-		{
-			$deletable = false;
-			$list = "";
-			foreach ($products as $product)
-			{
-				$list .= "<br> - ".$product->data_title; 
-			}	
-			$list .= "<br>";
-			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
-		}
+		$errMsg = SITE_partner::checkIsPartnerDeletable($affiliate_id);
 		
-		$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR third_party=$partner->partner_id";
-		$database->setQuery( $query );
-		$orders = $database->loadObjectList();
-		if($orders)
-		{
-			$deletable = false;
-			$list = "";
-			foreach ($orders as $order)
-			{
-				$list .= "<br> - ".$order->name; 
-			}	
-			$list .= "<br>";
-			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
-		}
-		
-		$query ="SELECT p.*, u.username FROM #__easysdi_community_partner p, #__users u WHERE (p.root_id=$partner->partner_id OR p.parent_id=$partner->partner_id) AND ( p.user_id=u.id)";
-		$database->setQuery( $query );
-		$partners = $database->loadObjectList();
-		if($partners)
-		{
-			$deletable = false;
-			$list = "";
-			foreach ($partners as $partner)
-			{
-				$list .= "<br> - ".$partner->username; 
-			}	
-			$list .= "<br>";
-			$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PARTNER",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
-		}
-		
-		if($deletable == true)
+		if(count($errMsg) == 0)
 		{
 			if (!$partner->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -638,9 +665,12 @@ class SITE_partner {
 		}
 		else
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+			//Loop each error and output them
+			foreach( $errMsg as $error )
+				$mainframe->enqueueMessage($error); 
+			
 		}
-		
+
 		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&type=".JRequest::getVar("type")."&search=".JRequest::getVar("search")  );
 	}
 

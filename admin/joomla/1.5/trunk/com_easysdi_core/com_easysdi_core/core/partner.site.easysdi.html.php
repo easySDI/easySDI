@@ -34,7 +34,7 @@ class HTML_partner
 		}
 	}
 	
-	function listPartner( &$rows, &$pageNav, $search, $option, $root_partner_id,$types,$type)
+	function listPartner( &$rows, $search, $option, $root_partner_id,$types,$type)
 	{				
 		$database =& JFactory::getDBO();		 
 							
@@ -50,25 +50,23 @@ class HTML_partner
 					<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputboxEditAffiliates" onchange="document.getElementById(\'adminAffiliatePartnerForm\').submit();"', 'value', 'text', $type ); ?>				
 				</td>
 				<td align="right">
-					&nbsp;
+					<button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
 				</td>
 			</tr>
+		<!-- 
 			<tr>
 				<td>
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxEditAffiliates" onChange="javascript:submitbutton('listPartner');" />			
+				
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxEditAffiliates" onChange="javascript:submitbutton('listPartner');" /> 
 				</td>
+				
 				<td align="right">
 					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-				<button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliatePartnerForm').submit();"><?php echo JText::_("EASYSDI_NEW_AFFILIATE"); ?></button>
 				</td>
 			</tr>
+		-->
 		</table>
-		<br>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td><td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
+		<br/>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
 		<script>
 		function suppressAffiliate_click(id, name, type, search){
@@ -79,18 +77,18 @@ class HTML_partner
 			window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=deleteAffiliate&affiliate_id='+id+'&type='+type+'&search='+search, '_self');
 		}
 		</script>
-		<table class="box-table">
+		<table id="affiliateTable" class="box-table">
 		<thead>
 			<tr>
 				<!-- <th width="20" class='title'><?php echo JText::_("EASYSDI_TEXT_SHARP"); ?></th>
 				<th width="20" class='title'></th> -->
 				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_ID"); ?></th> -->
 				<th class='title'><?php echo JText::_("EASYSDI_TEXT_USER"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_TEXT_ACCOUNT"); ?></th>
+				<th class='descr'><?php echo JText::_("EASYSDI_TEXT_ACCOUNT"); ?></th>
 				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_ACRONYM"); ?></th> -->				
 				<!-- <th class='title'><?php echo JText::_("EASYSDI_TEXT_LASTUPDATE"); ?></th> -->
-				<th>&nbsp;</th>
-				<th>&nbsp;</th>
+				<th class='logo'>&nbsp;</th>
+				<th class='logo'>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -100,9 +98,19 @@ class HTML_partner
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
 			$row = $rows[$i];
+			$deleteErrors = SITE_partner::checkIsPartnerDeletable($row->user_id);
+			$deleteErrorsTxt = $deleteErrors[0]." ";
+			
+			$m = 0;
+			foreach ($deleteErrors as $err){
+				if($m > 0)
+				   $deleteErrorsTxt .= $err;
+			   	if($m > 0 && $m < (count($deleteErrors)-1))
+				   $deleteErrorsTxt .= " ".JText::_("EASYSDI_AND")." ";
+				$m++;
+			}
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<!-- <td align="center"><?php echo $i+$pageNav->limitstart+1;?></td> -->
 				<!--<td><input type="radio" id="cb<?php echo $i;?>" name="affiliate_id" value="<?php echo $row->user_id; ?>"  /></td>-->
 				<!-- <td><?php echo $row->partner_id; ?></td> -->
 				<td align="center"><?php echo $row->partner_username; ?></td>
@@ -110,7 +118,7 @@ class HTML_partner
 				<!-- <td align="center"><?php echo $row->partner_acronym; ?></td> -->				
 				<!-- <td align="center"><?php echo date('d.m.Y H:i:s',strtotime($row->partner_update)); ?></td> -->
 				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editAffiliate" onClick="window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=editAffiliateById&affiliate_id=<?php echo $row->user_id;?>&type=<?php echo $type;?>&search=<?php echo addslashes($search);?>', '_self');"/></td>
-				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_DELETE_AFFILIATE'); ?>" id="deleteAffiliate" onClick="return suppressAffiliate_click('<?php echo $row->user_id; ?>','<?php echo addslashes($row->partner_name); ?>','<?php echo $type;?>','<?php echo addslashes($search);?>');" /></td>
+				<td align="center"><div title="<?php if(count($deleteErrors) == 0) echo JText::_('EASYSDI_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>." id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('$row->user_id','".addslashes($row->partner_name)."','$type','".addslashes($search)."');\"";?> class="<?php if(count($deleteErrors) == 0) echo "deletablePartner"; else echo "unDeletablePartner";?>" /></td>
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -1283,7 +1291,7 @@ class HTML_partner
 			<tr>
 				<td>
 					<fieldset class="partner_properties">
-						<legend><?php echo $row->type_name ?></legend>
+						<legend><?php echo JText::_($row->type_name); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php
