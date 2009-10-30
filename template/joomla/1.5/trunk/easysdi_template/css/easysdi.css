@@ -29,6 +29,10 @@ div .privateMd{
 	background-image:url(../icons/silk/lock.png);
 }
 
+div .publicMd{
+	background-image:url(../icons/silk/lock_open.png);
+}
+
 div .easysdi_product_exists{
 	height:16px;
 	width:16px;
@@ -136,6 +140,10 @@ div .freeMd{
 /********************************************************/
 /***     EasySDI Shop                                 ***/
 /********************************************************/
+.favoritePanContent .inputbox{
+	width:200px;
+}
+
 div.info {
     background: #F8FAFC url('../icons/silk/information.png') center no-repeat;
     background-position: 15px 50%; /* x-pos y-pos */
@@ -843,7 +851,7 @@ background-color: #e4e4e4;
 
 .product_proprety_row
 {
-	border:1px solid #9f9f9f;
+	border:1px solid #135CAE;
 }
  
 /* Width of the lists */
@@ -960,10 +968,10 @@ div#editProduct:hover, div#deleteProduct:hover{
 
 div#editProduct{
 	background-color:transparent;
-	background-image:url(../icons/silk/page_edit.png);
+	background-image:url(../icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
+	height:16px;
 	width:16px;	
 }
 
@@ -972,7 +980,7 @@ div#deleteProduct{
 	background-image:url(../icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
+	height:16px;
 	width:16px;
 }
 
@@ -1020,7 +1028,6 @@ div#deleteProduct{
 }
 
 #productPreview{
-	background:transparent url(../images/bg_degrade_centre.png) repeat-y scroll 110px 50%;
 	clear:both;
 	width:auto;	
 	padding-left:0px;
@@ -1033,11 +1040,11 @@ div#deleteProduct{
 
 .pdFavorite, .pdNotFavorite{
 	background-color:transparent;
-	background-image:url(../images/star.png);
+	background-image:url(../icons/silk/star.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;
+	height:16px;
+	width:16px;
 }
 
 .pdNotFavorite{
@@ -1053,11 +1060,11 @@ div#deleteProduct{
 
 .pdNotificated, .pdNotNotificated{
 	background-color:transparent;
-	background-image:url(../images/asit_picto_contact1.png);
+	background-image:url(../icons/silk/bell.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;
+	height:16px;
+	width:16px;
 }
 
 .pdNotNotificated{
@@ -1073,42 +1080,42 @@ div#deleteProduct{
 
 .treatRequest{
 	background-color:transparent;
-	background-image:url(../images/btn_edition.png);
+	background-image:url(../icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;
+	height:16px;
+	width:16px;
 }
 
 div .reqDevis{
 	background-color:transparent;
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:28px;
-	background-image:url(../images/calendrier.png);
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk_extended/question.png);
 }
 
 div .reqOrder{
 	background-color:transparent;
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:28px;
-	background-image:url(../images/commande_ok.png);
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/basket_go.png);
 }
 
 div .reqUser{
 	background-color:transparent;
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:18px;
-	background-image:url(../images/picto_user.png);
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/user.png);
 }
 
 #reqTreatTable .infoLogo{
-	width:38px;
+	width:20px;
 }
 
 #reqTreatTable .logo{
@@ -1157,7 +1164,7 @@ table#orderList div{
 	
 }
 div .orderDate{
-	background-image:url(../icons/silk/calendar.png);
+	background-image:url(../icons/silk/date.png);
 }
 div .savedOrderDelete:hover, div .savedOrderOrder:hover{
 	cursor:pointer;
@@ -1367,13 +1374,13 @@ padding:0;
 /***********************/
 .partner_properties
 {
-  border: 1px solid #9f9f9f;
+  border: 1px solid #135CAE;
 }
 
 .partner_properties legend {
   padding: 0px 3px;
-  border: 0px solid #9f9f9f;
-  background-color: #9f9f9f;
+  border: 0px solid #135CAE;
+  background-color: #135CAE;
   color:white;
 }
 
@@ -1387,20 +1394,20 @@ div#editAffiliate:hover, div#deleteAffiliate:hover{
 
 div#editAffiliate{
 	background-color:transparent;
-	background-image:url(../images/btn_edition.png);
+	background-image:url(../icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;	
+	height:16px;
+	width:16px;
 }
 
 .deletablePartner{
 	background-color:transparent;
-	background-image:url(../images/btn_supprimer.png);
+	background-image:url(../icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;
+	height:16px;
+	width:16px;
 }
 
 
@@ -1410,15 +1417,20 @@ div#editAffiliate{
 	filter:alpha(opacity=20);
 	/* CSS3 standard */
 	opacity:0.2;
-	background-image:url(../images/btn_supprimer.png);
+	background-image:url(../icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;
+	height:16px;
+	width:16px;
+}
+
+#myProducts .logo2{
+	width:21px;
+	padding-left:10px;
 }
 
 #affiliateTable .logo, #favoriteManTable .logo{
-	width:14px;
+	width:16px;
 }
 
 #affiliateTable .title{
@@ -1427,7 +1439,7 @@ div#editAffiliate{
 
 div#printPartnerRecap{
 	background-color:transparent;
-	background-image:url(/templates/asit/images/printButton.png);
+	background-image:url(../icons/silk/printer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -1472,11 +1484,11 @@ table#manageMetadata div{
 }
 
 #manageMetadata .internalOrderable{
-	background-image:url(../images/commande_internal_ok.png);
+	background-image:url(../icons/silk/lock.png);
 }
 
 #manageMetadata .publicOrderable{
-	background-image:url(../images/commande_ok.png);
+	background-image:url(../icons/silk/basket.png);
 }
 
 div#editMetadata:hover{
@@ -1485,26 +1497,26 @@ div#editMetadata:hover{
 
 div#editMetadata{
 	background-color:transparent;
-	background-image:url(../images/btn_edition.png);
+	background-image:url(../icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
-	height:18px;
-	width:14px;	
+	height:16px;
+	width:16px;	
 }
 
 #manageMetadata .logo{
-	width:14px;
+	width:16px;
 }
 
 #manageMetadata .logo2{
-	width:28px;
+	width:16px;
 }
 
 /*******************************/
 /*** EasySDI metadata edition  */
 /*******************************/
 .easysdi_shop_backend_form {
-	width: 400px;
+	width: 520px;
 }
 
 .x-panel-body {
