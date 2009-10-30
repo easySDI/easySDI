@@ -38,14 +38,24 @@ Ext.override(Ext.form.FieldSet, {
 				
 				var parentName = panel.getId();
 				var name = master.getId();
+				
+				if (isClone)
+				{
+					var masterName = parentName + name.substring(parentName.length);
+					master = Ext.getCmp(masterName);
+				}
+				
 				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
 					//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
 				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
 			    
 			    master.clones_count = master.clones_count+1;
-			    clones_count = master.clones_count;
-				
+			    if (isClone)
+					clones_count = master.clones_count;
+				else
+					clones_count = 1;
+								
 /*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
 				var newVal = 1;
 				var newPos = 1;
@@ -61,6 +71,8 @@ Ext.override(Ext.form.FieldSet, {
 				var coll=false;
 				if (master.relation && !isClone) coll=true;
 			    
+			    hidden = master.hidden;
+			    if (isClone) hidden=false;
 			    
 				var clone = master.cloneConfig({
 					id : newName,
@@ -69,7 +81,8 @@ Ext.override(Ext.form.FieldSet, {
 					clones_count: clones_count,
 					template : master,
 					collapsible: !coll,
-					collapsed: coll
+					collapsed: coll,
+					hidden: hidden
 				});
 				
 				//console.log(name+" - "+clones_count);
@@ -151,6 +164,11 @@ Ext.override(Ext.form.FieldSet, {
 			if (!child.clone)
 			{
 				child.clones(1,this, false);
+				
+				if (child.minOccurs > 0 && child.xtype=='fieldset')
+				{
+					child.clones(child.minOccurs+1,this, true);
+				}
 			}
 		}
 	},
