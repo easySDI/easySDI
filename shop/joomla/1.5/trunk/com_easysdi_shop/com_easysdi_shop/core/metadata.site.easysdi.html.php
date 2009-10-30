@@ -104,7 +104,9 @@ class HTML_Metadata {
 	function editMetadata($product_id, $root, $metadata_id, $xpathResults, $option)
 	{
 		//$prof->startTimer("htmlPart");
-
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$divPos = config_easysdi::getValue("div_container_frontend");
+		
 		$uri =& JUri::getInstance();
 		$database =& JFactory::getDBO();
 
@@ -133,7 +135,7 @@ class HTML_Metadata {
 	value="" /></form>
 		<?php
 		$this->javascript .="
-				var domNode = Ext.DomQuery.selectNode('div#maincolumn')
+				var domNode = Ext.DomQuery.selectNode('".$divPos."')
 				Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 				
 				// Créer le formulaire qui va contenir la structure
