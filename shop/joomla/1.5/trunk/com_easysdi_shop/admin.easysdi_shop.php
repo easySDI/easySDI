@@ -6662,8 +6662,7 @@ case "saveLocation":
 		//Core FrontEnd
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 		TOOLBAR_product::_LISTPRODUCT();
-		ADMIN_product::listProduct($option);		
-		break;
+		ADMIN_product::listProduct($option);
 		break;
 		
 	case "editProductMetadata":	
