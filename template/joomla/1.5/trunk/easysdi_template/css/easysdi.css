@@ -1020,6 +1020,129 @@ div#deleteProduct{
 }
 
 #productPreview{
+	background:transparent url(../images/bg_degrade_centre.png) repeat-y scroll 110px 50%;
+	clear:both;
+	width:auto;	
+	padding-left:0px;
+	padding-right:0px;
+}
+
+.pdFavorite:hover, .pdNotFavorite:hover {
+	cursor:pointer;
+}
+
+.pdFavorite, .pdNotFavorite{
+	background-color:transparent;
+	background-image:url(../images/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+.pdNotFavorite{
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+.pdNotificated:hover, .pdNotNotificated:hover {
+	cursor:pointer;
+}
+
+.pdNotificated, .pdNotNotificated{
+	background-color:transparent;
+	background-image:url(../images/asit_picto_contact1.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+.pdNotNotificated{
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+.treatRequest:hover {
+	cursor:pointer;
+}
+
+.treatRequest{
+	background-color:transparent;
+	background-image:url(../images/btn_edition.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+div .reqDevis{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:28px;
+	background-image:url(../images/calendrier.png);
+}
+
+div .reqOrder{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:28px;
+	background-image:url(../images/commande_ok.png);
+}
+
+div .reqUser{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:18px;
+	background-image:url(../images/picto_user.png);
+}
+
+#reqTreatTable .infoLogo{
+	width:38px;
+}
+
+#reqTreatTable .logo{
+	width:21px;
+	padding-left:10px;
+}
+
+#reqTreatTable .reqName{
+	width:80px;
+	text-align:left;
+}
+
+#reqTreatTable .reqStat{
+	width:50px;
+}
+
+.processTreatmentPage input, .processTreatmentPage textarea{
+	width:250px;
+}
+
+.listOrdersForProvider .inputbox{
+	width:100px;
+}
+
+.listOrdersForProvider select{
+	width:110px;
+}
+
+.listOrders .inputbox{
+	width:150px;
+}
+
+.listOrders select{
+	width:110px;
 }
 
 /********************************************************/
@@ -1271,11 +1394,120 @@ div#editAffiliate{
 	width:14px;	
 }
 
-div#deleteAffiliate{
+.deletablePartner{
 	background-color:transparent;
 	background-image:url(../images/btn_supprimer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:18px;
 	width:14px;
+}
+
+
+.unDeletablePartner{
+	background-color:transparent;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	background-image:url(../images/btn_supprimer.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+#affiliateTable .logo, #favoriteManTable .logo{
+	width:14px;
+}
+
+#affiliateTable .title{
+	width:100px;
+}
+
+div#printPartnerRecap{
+	background-color:transparent;
+	background-image:url(/templates/asit/images/printButton.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	right:5px;
+	top:10px;
+	position: absolute;
+}
+div#printPartnerRecap:hover{ 
+	cursor : pointer;
+}
+
+.partnerList .ptitle{
+	width:100px;
+}
+
+.partnerList table{
+	margin-top:20px;
+}
+
+.partnerSummaryContent{
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+	width:100%;
+}
+
+.partnerList h3{
+	padding-left:17px;
+}
+
+/*******************************/
+/*** EasySDI manage metadata   */
+/*******************************/
+
+table#manageMetadata div{
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:28px;
+}
+
+#manageMetadata .internalOrderable{
+	background-image:url(../images/commande_internal_ok.png);
+}
+
+#manageMetadata .publicOrderable{
+	background-image:url(../images/commande_ok.png);
+}
+
+div#editMetadata:hover{
+	cursor:pointer;
+}
+
+div#editMetadata{
+	background-color:transparent;
+	background-image:url(../images/btn_edition.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;	
+}
+
+#manageMetadata .logo{
+	width:14px;
+}
+
+#manageMetadata .logo2{
+	width:28px;
+}
+
+/*******************************/
+/*** EasySDI metadata edition  */
+/*******************************/
+.easysdi_shop_backend_form {
+	width: 400px;
+}
+
+.x-panel-body {
+	background-color:transparent;
+	border-color:#99BBE8;
 }
