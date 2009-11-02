@@ -1025,7 +1025,7 @@ class HTML_product{
 	}
 	
 	
-	function listProduct($pageNav,$rows,$option,$rootPartner){
+	function listProduct($pageNav,$rows,$option,$rootPartner,$search){
 		?>	
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_PRODUCT"); ?></h2>
@@ -1036,7 +1036,7 @@ class HTML_product{
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
+					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
 				</td>
 				<td align="right">
 					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>

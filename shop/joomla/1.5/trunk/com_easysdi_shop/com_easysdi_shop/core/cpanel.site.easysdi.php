@@ -601,7 +601,7 @@ class SITE_cpanel {
 			}
 		}
 
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchOrder{$option}", 'searchOrder', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";

@@ -539,7 +539,7 @@ class SITE_product {
 		$rootPartner = new partnerByUserId($database);
 		$rootPartner->load($user->id);		
 		
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
@@ -596,7 +596,7 @@ class SITE_product {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
-		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner);
+		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner,$search);
 		
 /*		if (helper_easysdi::hasRight($rootPartner->partner_id,"INTERNAL")){
 		HTML_product::listProduct($pageNav,$rows,$option,$rootPartner);

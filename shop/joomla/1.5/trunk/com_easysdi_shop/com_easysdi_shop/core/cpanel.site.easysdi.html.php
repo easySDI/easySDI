@@ -62,7 +62,7 @@ class HTML_cpanel {
 		<table width="100%">
 			<tr>
 				<td align="left">
-				   <input type="text" name="search" class="inputbox" value="<?php echo $search;?>" />			
+				   <input type="text" name="searchOrder" class="inputbox" value="<?php echo $search;?>" />			
 				</td>
 				<td>
 				<select name="ordertype" >
