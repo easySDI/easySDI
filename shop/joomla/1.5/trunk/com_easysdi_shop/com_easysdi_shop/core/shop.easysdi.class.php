@@ -3028,7 +3028,7 @@ if (count($rows)>0){
 		$mainframe->setUserState('productList',$productArray);
 		
 		//Selected surfaces
-		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id";
+		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id ORDER BY id";
 		$database->setQuery($queryPerimeters);
 		$perimeterList = $database->loadObjectList();
 		$selectedSurfaces = array ();
