@@ -547,7 +547,7 @@ class HTML_metadata {
 
 					$this->javascript .="
 						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
-						// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
+						// Création du champ caché (qui conservera l'index) liï¿½ au bloc de champs multiple
 						//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 					";
 				}
