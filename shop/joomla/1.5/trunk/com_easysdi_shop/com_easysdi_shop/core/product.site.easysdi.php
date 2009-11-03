@@ -278,6 +278,50 @@ class SITE_product {
 			$rowProduct->partner_id = $rowPartner->partner_id;
 		}
 		
+	// Si le produit n'existe pas encore, créer la métadonnée
+		if ($rowProduct->id == 0)
+		{
+			// Création de la métadonnée pour le nouveau guid
+			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+			<csw:Transaction service=\"CSW\"
+			version=\"2.0.2\"
+			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+				<csw:Insert>
+					<gmd:MD_Metadata
+						xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
+						xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
+						xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+						xmlns:gml=\"http://www.opengis.net/gml\" 
+						xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
+						xmlns:srv=\"http://www.isotc211.org/2005/srv\"
+						xmlns:ext=\"http://www.depth.ch/2008/ext\">
+						
+						<gmd:fileIdentifier>
+							<gco:CharacterString>".$_POST['metadata_id']."</gco:CharacterString>
+						</gmd:fileIdentifier>
+					</gmd:MD_Metadata>
+				</csw:Insert>
+			</csw:Transaction>";
+			
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			
+			$insertResults = DOMDocument::loadXML($result);
+			
+			$xpathInsert = new DOMXPath($insertResults);
+			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+			
+			if ($inserted <> 1)
+			{
+				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
+		}
+		
 		if (!$rowProduct->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
