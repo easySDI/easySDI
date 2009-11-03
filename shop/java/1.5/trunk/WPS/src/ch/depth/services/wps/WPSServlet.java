@@ -532,7 +532,7 @@ public class WPSServlet extends HttpServlet {
 			if(isRebate==1){
 			res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
 			}
-			else if(isRebate==0)
+			else
 			{
 				res.append("<easysdi:REBATE>0</easysdi:REBATE>\n");		    
 			}
