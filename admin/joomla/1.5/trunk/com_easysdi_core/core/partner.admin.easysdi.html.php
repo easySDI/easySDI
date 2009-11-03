@@ -565,14 +565,14 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php
-			$profiles = array();
-			$profiles = array_merge( $profiles, $rowsProfile );
+			//$profiles = array();
+			//$profiles = array_merge( $profiles, $rowsProfile );
 			HTML_partner::alter_array_value_with_Jtext($rowsProfile);
 			$selected = array();
 			$selected = $rowsPartnerProfile;
 			//print_r ($selected);
 ?>
-								<td><?php echo JHTML::_("select.genericlist",$profiles, 'profile_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$rowsProfile, 'profile_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
 							</tr>
 						</table>
 					</fieldset>
