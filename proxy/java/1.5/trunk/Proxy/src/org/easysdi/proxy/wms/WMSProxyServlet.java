@@ -412,70 +412,116 @@ public class WMSProxyServlet extends ProxyServlet {
 				    
 				    dump("transform end GetCapabilities operation");
 		    		}
-		    	else
-		    		{
-		    		// Pour une requête utilisateur de type: Map ************************************************************
-		    		if (currentOperation.equals("GetMap") || "Map".equalsIgnoreCase(currentOperation)) 
-		    			{
-		    			dump("transform begin GetMap operation");
-		    			
-						boolean isTransparent= isAcceptingTransparency(responseContentType);
-						//dump("DEBUG","LAYER N°:"+0+" "+layerFilePathList.get(0));
+		    	// Pour une requête utilisateur de type: Map ************************************************************
+		    	else if (currentOperation.equalsIgnoreCase("GetMap") || "Map".equalsIgnoreCase(currentOperation)) 
+	    			{
+	    			dump("transform begin GetMap operation");
+	    			
+					boolean isTransparent= isAcceptingTransparency(responseContentType);
+					//dump("DEBUG","LAYER N°:"+0+" "+layerFilePathList.get(0));
+					
+					dump("transform begin filterImage to layer "+0);
+//Debug tb 08.07.2009
+					BufferedImage imageSource;
+					//Si les threads ont renvoyés une réponse
+					if(serverUrlPerfilePathList.size()>0)
+						{
+						imageSource = filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),layerFilePathList.get(0)),filePathList.get(0),isTransparent);
+//Fin de Debug
+						Graphics2D g = imageSource.createGraphics();
+						dump("transform end filterImage to layer "+0);
 						
-						dump("transform begin filterImage to layer "+0);
+						 //Boucle sur les fichiers réponses
+						for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++)
+							{			
+						    //dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
+						    if(layerFilePathList.get(iFilePath)!=null)
+						    	{
+						    	dump("transform begin filterImage to layer "+iFilePath);
 //Debug tb 08.07.2009
-						BufferedImage imageSource;
-						//Si les threads ont renvoyés une réponse
-						if(serverUrlPerfilePathList.size()>0)
-							{
-							imageSource = filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),layerFilePathList.get(0)),filePathList.get(0),isTransparent);
+						    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
 //Fin de Debug
-							Graphics2D g = imageSource.createGraphics();
-							dump("transform end filterImage to layer "+0);
-							
-							 //Boucle sur les fichiers réponses
-							for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++)
-								{			
-							    //dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
-							    if(layerFilePathList.get(iFilePath)!=null)
-							    	{
-							    	dump("transform begin filterImage to layer "+iFilePath);
-//Debug tb 08.07.2009
-							    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
-//Fin de Debug
-							    	if (image !=null) g.drawImage(image, null, 0, 0);
-							    	dump("transform end filterImage to layer "+iFilePath);
-							    	}
-								}
+						    	if (image !=null) g.drawImage(image, null, 0, 0);
+						    	dump("transform end filterImage to layer "+iFilePath);
+						    	}
+							}
 //Debug tb 11.08.2009
-							}
-						//Si aucune requête n'a été envoyé au serveur, retourne: empty image
-						else
-							{
-							imageSource = ImageIO.read(new File(filePathList.get(0)));
-							}
+						}
+					//Si aucune requête n'a été envoyé au serveur, retourne: empty image
+					else
+						{
+						imageSource = ImageIO.read(new File(filePathList.get(0)));
+						}
 //Fin de Debug
-			
-						Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
-			
-						if (iter.hasNext()) 
-							{
-						    ImageWriter writer = (ImageWriter)iter.next();
-			
-						    tempFile = createTempFile("transform_GetMap_"+UUID.randomUUID().toString(), getExtension(responseContentType));
-						    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 
-						    writer.setOutput(output);
-						    writer.write(imageSource);
+		
+					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+		
+					if (iter.hasNext()) 
+						{
+					    ImageWriter writer = (ImageWriter)iter.next();
+		
+					    tempFile = createTempFile("transform_GetMap_"+UUID.randomUUID().toString(), getExtension(responseContentType));
+					    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 
+					    writer.setOutput(output);
+					    writer.write(imageSource);
 //Debug tb 06.07.2009						
-						    output.flush();
-						    output.close();
+					    output.flush();
+					    output.close();
 //Fin de Debug
-							}
+						}
+					dump("transform end GetMap operation");
+	    			}
+//Debug tb 04.11.2009
+			    // Pour une requête utilisateur de type: GetLegendGraphic ********************************************************
+		    	else if (currentOperation.equalsIgnoreCase("GetLegendGraphic")) 
+	    			{
+	    			dump("transform begin GetLegendGraphic operation");
+	    			
+					//boolean isTransparent= isAcceptingTransparency(responseContentType);
+					
+					dump("transform begin add Legend Image "+0);
+					BufferedImage imageSource = ImageIO.read(new File(filePathList.get(0)));
+					//Si les threads ont renvoyés une réponse
+					if(serverUrlPerfilePathList.size()>0)
+						{
+						Graphics2D g = imageSource.createGraphics();
+						dump("transform end add Legend Image "+0);
 						
-						dump("transform end GetMap operation");
-					    }
-		    		}
-		    	}
+						 //Boucle sur les fichiers réponses
+						for (int iFilePath = 1;iFilePath<filePathList.size();iFilePath++)
+							{			
+						    if(layerFilePathList.get(iFilePath)!=null)
+						    	{
+						    	dump("transform begin add Legend Image "+iFilePath);
+						    	BufferedImage image = ImageIO.read(new File(filePathList.get(iFilePath)));
+						    	if (image !=null) g.drawImage(image, null, 0, imageSource.getHeight());
+						    	dump("transform end add Legend Image "+iFilePath);
+						    	}
+							}
+						}
+					//Si aucune requête n'a été envoyé au serveur, retourne: empty image
+					else
+						{
+						imageSource = ImageIO.read(new File(filePathList.get(0)));
+						}
+		
+					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+		
+					if (iter.hasNext()) 
+						{
+					    ImageWriter writer = (ImageWriter)iter.next();
+		
+					    tempFile = createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(), getExtension(responseContentType));
+					    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 
+					    writer.setOutput(output);
+					    writer.write(imageSource);					
+					    output.flush();
+					    output.close();
+//Fin de Debug
+						}
+					dump("transform end GetLegendGraphic operation");
+				    }
+			    }
 	
 		    //********************************************************************************************************************
 		    // Traitement du résultat final avec le xslt utilisateur s'il exist (voir début de transform())
@@ -674,8 +720,9 @@ public class WMSProxyServlet extends ProxyServlet {
 		    String operation = null;
 		    String version = "000";
 		    String service = "";
-		    String width = "";
-		    String height ="";
+		    String layer = ""; // Pour l'opération GetLegendGraphic seulement
+		    String width = "1";
+		    String height ="1";
 		    String format ="";
 	
 		    layers=null;
@@ -691,7 +738,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		    	{
 				String key = (String) parameterNames.nextElement();
 				String value="";
-				if (key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS") )
+				if (key.equalsIgnoreCase("LAYER") || key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS") )
 					{
 				    value  = req.getParameter(key); 
 					}
@@ -715,33 +762,37 @@ public class WMSProxyServlet extends ProxyServlet {
 						{
 						operation = value;
 						}
-	
 					}
 				else if (key.equalsIgnoreCase("version")) 
 					{
-					// Gets the requested Operation
+					// Gets the requested version
 					version = value;
 					}
 				else if (key.equalsIgnoreCase("wmtver")) 
 					{
-					// Gets the requested Operation
+					// Gets the requested wmtver
 					version = value;
 					service = "WMS";
 					}
 				else if (key.equalsIgnoreCase("service")) 
 					{
-				    // Gets the requested Operation
+				    // Gets the requested service
 				    service = value;
 					}
 				else if (key.equalsIgnoreCase("BBOX")) 
 					{
-				    // Gets the requested Operation
+				    // Gets the requested bbox
 				    bbox = value;
 					}
 				else if (key.equalsIgnoreCase("SRS")) 
 					{
-				    // Gets the requested Operation
+				    // Gets the requested srs
 				    srsName  = value;
+					}
+				else if (key.equalsIgnoreCase("LAYER")) 
+					{
+				    // Gets the requested layer -> GetLegendGraphic only
+					layer = value;
 					}
 				else if (key.equalsIgnoreCase("LAYERS")) 
 					{
@@ -1056,6 +1107,27 @@ public class WMSProxyServlet extends ProxyServlet {
 									}
 								}
 							}
+//Debug tb 04.11.2009
+		    			else if("GetLegendGraphic".equalsIgnoreCase(operation))
+							{
+		    				String filePath  = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
+		    				
+							synchronized (filePathList) 
+								{
+								synchronized (layerFilePathList)
+									{
+									synchronized (serverUrlPerfilePathList)
+										{
+										// Insert les réponses
+										dump("requestPreTraitementGET save response legendGraphic from thread server "+getRemoteServerUrl(j));
+									    layerFilePathList.add("");
+										serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+									    filePathList.add(filePath);
+										}
+									}
+								}
+							}
+//Fin de Debug
 						dump("DEBUG","Thread Server: "+getRemoteServerUrl(j)+" work finished");
 		    			}
 		    		catch(Exception e)
@@ -1088,8 +1160,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				    	sendRequest=false;
 				    	}		    
 	
-				    // Vérification de la présence du pramètre "LAYER" dans la requête -> si vrai: recherche des layers autorisées et styles correspondant
-					// Permet la réécriture des paramètres "LAYER" et "STYLES" de la requête
+				    // Vérification de la présence du pramètre "LAYERS" dans la requête -> si vrai: recherche des layers autorisées et styles correspondant
+					// Permet la réécriture des paramètres "LAYERS" et "STYLES" de la requête
 				    if (sendRequest && layers!=null && layers.length()>0)
 				    	{
 						String[] layerArray = layers.split(",");
@@ -1131,6 +1203,7 @@ public class WMSProxyServlet extends ProxyServlet {
 //Fin de Debug
 				    			// Vérification que la couche de la req est autorisée par Policy
 						    	boolean isLayerTypePermited = isLayerAllowed(layerArray[i], getRemoteServerUrl(j));
+						    	
 						    	String []c = bbox.split(",");
 			
 						    	ReferencedEnvelope re = new ReferencedEnvelope(Double.parseDouble(c[0]),Double.parseDouble(c[2]),Double.parseDouble(c[1]),Double.parseDouble(c[3]),CRS.decode(srsName));
@@ -1144,10 +1217,11 @@ public class WMSProxyServlet extends ProxyServlet {
 								    	}
 								    else
 								    	{
+								    	dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
 								    	isLayerTypePermited = false;
 								    	}
 									}
-				
+						    	
 								//Ajout de la couche et de son sytle associé, si cette dernière est autorisée par Policy
 								if (isLayerTypePermited) 
 									{
@@ -1171,6 +1245,22 @@ public class WMSProxyServlet extends ProxyServlet {
 							}
 //Fin de Debug
 					    }
+//Debug tb 04.09.2009				    
+				    // Vérification de l'authorisation policy pour la couche "LAYER" de l'opération GetLegendGraphic
+				    if ("GetLegendGraphic".equalsIgnoreCase(operation))
+				    	{
+				    	// Vérification que la couche de la req est autorisée par Policy
+				    	String tmpFT = "";
+				    	String [] s = layer.split(":");
+		    			tmpFT = s[s.length-1];
+				    	boolean isLayerTypePermited = isLayerAllowed(tmpFT, getRemoteServerUrl(j));
+				    	if(!isLayerTypePermited)	
+					    	{
+					    	dump("requestPreTraitementGET says: GetLegendGraphic request Layer is not allowed by policy");
+					    	sendRequest=isLayerTypePermited;
+					    	}
+				    	}
+//Fin de Debug
 					}
 				
 				//Si pas de fichier Policy défini, envoi direct de la requête sur le serveur j
@@ -1205,9 +1295,9 @@ public class WMSProxyServlet extends ProxyServlet {
 				else
 					{
 					sendRequest=true;
-					if ("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation))
+					if ("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation) || "GetLegendGraphic".equalsIgnoreCase(operation))
 						{
-						dump("requestPreTraitementGET save response server "+getRemoteServerUrl(j)+": emptyImage");
+						dump("requestPreTraitementGET save response server "+getRemoteServerUrl(j)+": emptyImage. Proxy bloc the request to this server due to policy config.");
 						generateEmptyImage(width,height,format,true);
 						}
 					}	
