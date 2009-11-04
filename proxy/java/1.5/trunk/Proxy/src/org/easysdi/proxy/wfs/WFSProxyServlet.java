@@ -1271,7 +1271,11 @@ public class WFSProxyServlet extends ProxyServlet {
 						    	{
 						    	for(int k=0;k<attributeListToKeepNbPerFT.get(j);k++)
 						    		{
-						    		Element docElem = documentMaster.createElement("ogc:PropertyName");
+//Debug tb 16.10.2009
+					      			//Si le namespace ogc n'est pas déclaré dans la balise Query de la requete user GetFeature
+						    		//Element docElem = documentMaster.createElement("ogc:PropertyName");
+						    		Element docElem = documentMaster.createElement("PropertyName");
+//Fin de Debug
 						    		docElem.setTextContent(policyServerPrefix+":"+attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k));
 						    		nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
 						    		if(geomAttribut.equalsIgnoreCase(attributeListToKeepPerFT.get(j*attributeListToKeepNbPerFT.get(j)+k)))
@@ -1319,7 +1323,11 @@ public class WFSProxyServlet extends ProxyServlet {
 					      			WFSProxyGeomAttributesList.add(geomAttributesObj);
 					      			
 					      			// Ajoute l'attribut géométrique à la requête utilisateur
-					    			Element docElem = documentMaster.createElement("ogc:PropertyName");
+//Debug tb 16.10.2009
+					      			//Si le namespace ogc n'est pas déclaré dans la balise Query de la requete user GetFeature
+					      			//Element docElem = documentMaster.createElement("ogc:PropertyName");
+					    			Element docElem = documentMaster.createElement("PropertyName");
+//Fin de Debug
 					    			docElem.setTextContent(policyServerPrefix+":"+geomAttribut);
 					    			nl.item(i).insertBefore(docElem,nl.item(i).getFirstChild());
 					    			}
