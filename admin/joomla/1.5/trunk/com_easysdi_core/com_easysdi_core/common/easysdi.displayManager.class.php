@@ -115,6 +115,10 @@ class displayManager{
 				$doc.= "</Property>";
 			}
 			$doc .= '</Diffusion></Metadata>';
+			
+			//Take care here to replace some non XHTML tags preventing the dom parser to fail
+			$doc = str_replace("<br>", "<br/>", $doc);
+			
 			$xml = new DomDocument();
 			$xml->loadXML($doc);
 		}	
@@ -265,8 +269,14 @@ class displayManager{
 		
 			$doc .= '</Diffusion></Metadata>';
 			
+			//Take care here to replace some non XHTML tags preventing the dom parser to fail
+			$doc = str_replace("<br>", "<br/>", $doc);
+			
+			
 			$document = new DomDocument();
 			$document->loadXML($doc);
+			
+			
 			/*
 			$style = new DomDocument();
 			if (file_exists(dirname(__FILE__).'/../xsl/diffusion_metadata_'.$language.".xsl")){
@@ -276,6 +286,7 @@ class displayManager{
 			}
 			*/
 			displayManager::DisplayMetadata($style,$document);
+			 
 		}	
 		
 	}
@@ -495,7 +506,7 @@ class displayManager{
 			window.open('./index.php?tmpl=component&format=raw&option=$option&task=exportXml&id=$id&type=$type', '_self');
 		});
 		$('printMetadata').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+			window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
 		});
 		$('orderProduct').addEvent( 'click' , function() { 
 			window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
@@ -525,7 +536,7 @@ class displayManager{
 		//Workaround to avoid printf problem with text with a "%", must
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
-		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
+		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);		
 		$myHtml .= $xmlToHtml;
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
