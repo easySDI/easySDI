@@ -6465,7 +6465,7 @@ case "saveLocation":
 		
 		//Core FrontEnd
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
-		ADMIN_product::saveProduct($option);				
+		ADMIN_product::saveProduct(true, $option);				
 		break;
 	case "deleteProduct":		
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.toolbar.easysdi.html.php');
