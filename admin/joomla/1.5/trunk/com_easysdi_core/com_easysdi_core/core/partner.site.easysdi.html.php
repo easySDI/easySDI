@@ -872,6 +872,7 @@ class HTML_partner
 		echo $tabs->endPane();
 ?>
 		<input type="hidden" name="usertype" value="<?php echo $rowUser->usertype; ?>" />
+		<input type="hidden" name="partner_logo" value="<?php echo $rowPartner->partner_logo;  ?>" />
 		<input type="hidden" name="gid" value="<?php echo $rowUser->gid; ?>"/>
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />	
 		<input type="hidden" name="partner_id" value="<?php echo $rowPartner->partner_id; ?>" />
