@@ -738,7 +738,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		    	{
 				String key = (String) parameterNames.nextElement();
 				String value="";
-				if (key.equalsIgnoreCase("LAYER") || key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS") )
+				if (key.equalsIgnoreCase("LAYER") || key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS")||key.equalsIgnoreCase("CRS") )
 					{
 				    value  = req.getParameter(key); 
 					}
@@ -785,6 +785,11 @@ public class WMSProxyServlet extends ProxyServlet {
 				    bbox = value;
 					}
 				else if (key.equalsIgnoreCase("SRS")) 
+					{
+				    // Gets the requested srs
+				    srsName  = value;
+					}
+				else if (key.equalsIgnoreCase("CRS")) // Version 1.3.0
 					{
 				    // Gets the requested srs
 				    srsName  = value;
