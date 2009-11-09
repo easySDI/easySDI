@@ -21,13 +21,13 @@
 			<value>com.mysql.jdbc.Driver</value>
 		</property>
 		<property name="url">
-			<value>jdbc:mysql://localhost:3306/easysdi_db</value>
+			<value>jdbc:mysql://localhost:3306/project_database</value>
 		</property>
 		<property name="username">
-			<value>root</value>
+			<value>the user</value>
 		</property>
 		<property name="password">
-			<value>RWGIS_2009</value>
+			<value>the password</value>
 		</property>
 	</bean>
 
