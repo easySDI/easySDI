@@ -615,10 +615,22 @@ class HTML_metadata {
 							// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 							if ($child->has_xlinkTitle)
 							{
-								if ($nodeCount > 0)
-								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
-								else
 								$xlinkTitleValue = "";
+	                            if ($nodeCount > 0)
+								{
+									//echo "****Attribute dump: Position ".$pos.":<br>"; 
+									//echo count($node->item($pos)->attributes).":<br>";
+		                            foreach ($node->item($pos)->attributes as $attrName => $attrNode) 
+		                            { 
+		                            	//echo "<br>Clé:".$attrName."<br>";
+		                            	//echo "attrName:".$attrNode->nodeName."<br>";
+		                            	//echo "attrValue:".$attrNode->nodeValue."<br>";
+		                            	//echo "owner:".$attrNode->ownerElement."<br>";
+		                            	if ($attrNode->nodeName == 'xlink:title')
+		                            		$xlinkTitleValue = html_Metadata::cleanText($attrNode->nodeValue);	
+		                            } 
+									//$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
+								}
 	
 								$this->javascript .="
 								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
@@ -660,10 +672,22 @@ class HTML_metadata {
 							// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 							if ($child->has_xlinkTitle)
 							{
-								if ($nodeCount > 0)
-								$xlinkTitleValue = html_Metadata::cleanText($node->item($pos-1)->getAttribute('xlink:title'));
-								else
 								$xlinkTitleValue = "";
+	                            if ($nodeCount > 0)
+								{
+									//echo "****Attribute dump: Position ".$pos.":<br>"; 
+									//echo count($node->item($pos)->attributes).":<br>";
+		                            foreach ($node->item($pos-1)->attributes as $attrName => $attrNode) 
+		                            { 
+		                            	//echo "<br>Clé:".$attrName."<br>";
+		                            	//echo "attrName:".$attrNode->nodeName."<br>";
+		                            	//echo "attrValue:".$attrNode->nodeValue."<br>";
+		                            	//echo "owner:".$attrNode->ownerElement."<br>";
+		                            	if ($attrNode->nodeName == 'xlink:title')
+		                            		$xlinkTitleValue = html_Metadata::cleanText($attrNode->nodeValue);	
+		                            } 
+									//$xlinkTitleValue = html_Metadata::cleanText($node->item($pos-1)->getAttribute('xlink:title'));
+								}
 	
 								$this->javascript .="
 								fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
