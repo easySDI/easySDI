@@ -115,7 +115,7 @@ class HTML_metadata {
 				        }]
 				    });
 					
-				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".JText::_($root[0]->translation)."', xtype: 'fieldset'});
+				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".html_Metadata::cleanText(JText::_($root[0]->translation))."', xtype: 'fieldset'});
 				form.add(fieldset".$root[0]->id.");";
 
 
@@ -227,36 +227,36 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
 						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 						";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
 						$date = date('d.m.Y', strtotime($nodeValue));
 
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$date."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 				}
 				else
@@ -274,34 +274,34 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
 						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 						";
 					}
 					else if ($type->is_date)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_datetime)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 					else if ($type->is_number)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 					}
 					else if ($type->is_integer)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
 					else
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+						fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 					}
 				}
 			}
@@ -322,34 +322,34 @@ class HTML_metadata {
 				if ($type->is_system)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
 					fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 					";
 				}
 				else if ($type->is_date)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_datetime)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createDateTimeField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 				else if ($type->is_number)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', true, 15));";
 				}
 				else if ($type->is_integer)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 				}
 				else
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".JText::_($child->translation)."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
+					fieldset".$parentFieldset.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."'));";
 				}
 			}
 		}
@@ -376,7 +376,7 @@ class HTML_metadata {
 	 	// Construction de la liste
 	 	foreach ($content as $cont)
 	 	{
-	 		$dataValues[$cont->cont_code_key] = JText::_($cont->cont_translation);
+	 		$dataValues[$cont->cont_code_key] = html_Metadata::cleanText(JText::_($cont->cont_translation));
 	 	}
 	 		
 	 	$relNode = $xpathResults->query($child->iso_key, $attributScope);
@@ -400,7 +400,7 @@ class HTML_metadata {
 			var valueList = ".HTML_metadata::array2extjs($dataValues)."
 	     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
 	     	// La liste
-	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
+	     	fieldset".$parentFieldset.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($content[0]->l_translation))."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
 	    	// L'index pour les potentiels clones de la liste 
 	     	//fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
 	     	";
@@ -411,7 +411,7 @@ class HTML_metadata {
 			var valueList = ".HTML_metadata::array2extjs($dataValues).";
 		     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 		     // La liste
-		     fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".JText::_($content[0]->l_translation)."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
+		     fieldset".$parentFieldset.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($content[0]->l_translation))."', true, '".$child->lowerbound."', '".$child->upperbound."', valueList, selectedValueList));
 		     // L'index pour les potentiels clones de la liste 
 		     //fieldset".$parentFieldset.".add(createHidden('".$listName."_index', '".$listName."_index', '1'));
 		    ";
@@ -438,7 +438,7 @@ class HTML_metadata {
 				if ($pos==0)
 				{
 					$this->javascript .="
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 						// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 						//fieldset".$parentFieldset.".add(createHidden('".$LocName."_index', '".$LocName."_index', '1'));
@@ -461,7 +461,7 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($lang->translation))."', true, false, null, '1', '1', '".$nodeValue."'));
 							// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 						";
@@ -480,7 +480,7 @@ class HTML_metadata {
 					";
 					
 					$this->javascript .="
-						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+						var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 						fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 						//master.manageIcons(master);
 					";
@@ -501,7 +501,7 @@ class HTML_metadata {
 						$nodeValue = "";
 
 						$this->javascript .="
-							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+							fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($lang->translation))."', true, false, null, '1', '1', '".$nodeValue."'));
 							// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 							//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 						";
@@ -526,7 +526,7 @@ class HTML_metadata {
 				";
 
 				$this->javascript .="
-					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+					var fieldset".$child->classes_to_id." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 					fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 				";
 				// Crï¿½ation des enfants langue
@@ -546,7 +546,7 @@ class HTML_metadata {
 					$nodeValue = "";
 
 					$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+						fieldset".$child->classes_to_id.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($lang->translation))."', true, false, null, '1', '1', '".$nodeValue."'));
 						// Création du champ caché (qui conservera l'index) liï¿½ au bloc de champs multiple
 						//fieldset".$child->classes_to_id.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 					";
@@ -606,7 +606,7 @@ class HTML_metadata {
 							// Construction de la relation
 							$this->javascript .="
 								// Crï¿½er un nouveau fieldset
-								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
 								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 								// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 								//fieldset".$parentFieldset.".add(createHidden('".$name."_index', '".$name."_index', '1'));
@@ -665,7 +665,7 @@ class HTML_metadata {
 								//oldIndex = index.getValue();
 								//index.setValue(Number(oldIndex)+1);
 								// Crï¿½er un nouveau fieldset
-								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+								var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 								fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 							";
 	
@@ -720,7 +720,7 @@ class HTML_metadata {
 							//oldIndex = index.getValue();
 							//index.setValue(Number(oldIndex)+1);
 							// Crï¿½er un nouveau fieldset
-							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".JText::_($child->translation)."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
+							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 							//master.manageIcons(master);
 						";			
@@ -823,7 +823,7 @@ class HTML_metadata {
 			$nodeValue = "";
 
 			$this->javascript .="
-				fieldset".$fieldsetId.".add(createTextArea('".$LocLangName."', '".JText::_($lang->translation)."', true, false, null, '1', '1', '".$nodeValue."'));
+				fieldset".$fieldsetId.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($lang->translation))."', true, false, null, '1', '1', '".$nodeValue."'));
 				// Crï¿½ation du champ cachï¿½ (qui conservera l'index) liï¿½ au bloc de champs multiple
 				// fieldset".$fieldsetId.".add(createHidden('".$LocLangName."_index', '".$LocLangName."_index', '1'));
 			";
