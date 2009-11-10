@@ -34,6 +34,12 @@ defined('_JEXEC') or die('Restricted access');
 				return;
 			}
 			
+			//Replace \ by / to avoid duplicate character due to magic_quote
+			if (form.elements['partner_logo'])
+			{
+				var logo = form.elements['partner_logo'].value;
+				form.elements['partner_logo'].value = logo.replace(/\\/g, "/");
+			}
 			// do field validation
 			if (   form.elements['title_id[0]'].value == '0' 
 				|| form.elements['name'].value == '' 
