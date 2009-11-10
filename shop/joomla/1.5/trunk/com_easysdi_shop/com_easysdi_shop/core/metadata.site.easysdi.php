@@ -53,7 +53,7 @@ class SITE_metadata {
 
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		//$catalogUrlBase = "http://demo.easysdi.org:8084/geonetwork/srv/en/csw";
-		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowProduct->metadata_id;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowProduct->metadata_id;
 		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=".$id;
 
 		$xmlBody= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n
@@ -74,7 +74,7 @@ class SITE_metadata {
 		$cswResults = DOMDocument::loadXML($xmlResponse);
 
 		// En GET
-		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		//echo "Fichier à traiter: ".$cswResults->saveXML()."<br>";
 
 		/*
