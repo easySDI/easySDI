@@ -121,15 +121,18 @@ Ext.override(Ext.form.FieldSet, {
 	},
 	manageTitle: function(component)
 	{
-		if (component.clone)
+		if (component.maxOccurs != 1)
 		{
-			var clones = component.template.clones();
-			
-			for (var i=0 ; i<clones.length ; i++)
+			if (component.clone)
 			{
-			//console.log(clones[i].getId());
-				var position = clones.indexOf(clones[i]);
-				clones[i].setTitle(clones[i].originalTitle + " - N&deg;" + (Number(position)+1));
+				var clones = component.template.clones();
+				
+				for (var i=0 ; i<clones.length ; i++)
+				{
+				//console.log(clones[i].getId());
+					var position = clones.indexOf(clones[i]);
+						clones[i].setTitle(clones[i].originalTitle + " - N&deg;" + (Number(position)+1));
+				}
 			}
 		}
 	},
@@ -151,6 +154,16 @@ Ext.override(Ext.form.FieldSet, {
 		if (component.tools) if (component.getTool('minus')) (isHiddenMinus) ? component.getTool('minus').hide() : component.getTool('minus').show();
 		if (component.tools) if (component.getTool('plus')) (isHiddenPlus) ? component.getTool('plus').hide() : component.getTool('plus').show();
 	},
+	/*
+	manageMaster: function(component)
+	{
+		console.log(component.getId() + " - " + component.maxOccurs + " - " + component.clones().length + " - " + component.clone);
+		if (component.maxOccurs==1 && component.clones().length == 1 && !component.clone)
+			component.hidden = true;
+		else
+			component.hidden = true;
+		console.log(component.hidden);
+	},*/
 	constructClone : function(original) 
 	{
 		var childs = Ext.getCmp(original.getId()).items;
@@ -179,6 +192,7 @@ Ext.override(Ext.form.FieldSet, {
 			
 			this.on("afterrender",this.manageIcons);
 			this.on("afterrender",this.manageTitle);
+			//this.on("afterrender",this.manageMaster);
 			
 			this.tools = 
 			[ 
@@ -199,6 +213,7 @@ Ext.override(Ext.form.FieldSet, {
 						if (firstClone) firstClone.manageIcons(firstClone);
 						fieldset.manageIcons(fieldset);
 						fieldset.manageTitle(fieldset);
+						//fieldset.manageMaster(fieldset);
 						panel.doLayout();																								   
 					}
 				},
@@ -242,7 +257,7 @@ Ext.override(Ext.form.FieldSet, {
 							var tmpl = fieldset.template;
 							panel.remove(fieldset, true);
 							tmpl.manageIcons(tmpl); //mise a jour des boutons
-							
+							//tmpl.manageMaster(tmpl);
 							var listOfClones = tmpl.clones();
 							var firstClone = listOfClones[0];									
 							if (firstClone) firstClone.manageIcons(firstClone);									

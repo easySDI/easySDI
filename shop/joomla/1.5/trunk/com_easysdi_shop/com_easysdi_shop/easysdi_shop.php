@@ -1618,7 +1618,7 @@ switch($task){
 		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
 		break;
 	case "editMetadata":
-		
+		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php'); 		
 		//Shop BackEnd
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
 			

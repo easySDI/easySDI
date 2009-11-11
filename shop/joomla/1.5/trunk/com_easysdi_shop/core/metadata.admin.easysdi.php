@@ -147,8 +147,8 @@ class ADMIN_metadata {
 			$count=0;
 			foreach($keys as $key)
 			{
-				$partToCompare = substr($key, 0, strlen($parentName."-".$child->iso_key));
-				if ($partToCompare == $parentName."-".$child->iso_key)
+				$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->iso_key)));
+				if ($partToCompare == $parentName."-".str_replace(":", "_", $child->iso_key))
 				{
 					if (substr($key, -6) <> "_index")
 					{
@@ -165,7 +165,7 @@ class ADMIN_metadata {
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
-				$listName = $parentName."-".$child->iso_key."__".$pos;
+				$listName = $parentName."-".str_replace(":", "_", $child->iso_key)."__".$pos;
 
 				// La liste
 				$content = array();
@@ -229,7 +229,7 @@ class ADMIN_metadata {
 		{
 			// Stockage du path pour atteindre ce noeud du XML
 			$queryPath = $queryPath."/".$child->iso_key."/gmd:LocalisedCharacterString";
-			$searchName = $parentName."-".$child->iso_key;
+			$searchName = $parentName."-".str_replace(":", "_", $child->iso_key);
 			
 			// Création des enfants langue
 			$langages = array();
@@ -268,7 +268,7 @@ class ADMIN_metadata {
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
-				$LocName = $parentName."-".$child->iso_key."__".$pos;
+				$LocName = $parentName."-".str_replace(":", "_", $child->iso_key)."__".$pos;
 				//echo "LocName: ".$LocName." - ".$pos."\r\n";
 
 				$XMLNode = $XMLDoc->createElement($child->iso_key);
@@ -286,7 +286,7 @@ class ADMIN_metadata {
 					//for ($langPos=1; $langPos<=$langIndex; $langPos++)
 					//{
 						//$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
-						$LangName = $LocName."-gmd:LocalisedCharacterString-".$lang->lang."__1";
+						$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->lang."__1";
 						//echo $LangName." - ".$_POST[$LangName]."\r\n";
 						/*if ($_POST[$LangName] <>"")
 							$nodeValue = $_POST[$LangName];
@@ -318,7 +318,7 @@ class ADMIN_metadata {
 				
 			// Traitement de la multiplicité
 			// Récupération du path du bloc de champs qui va être créé pour construire le nom
-			$name = $parentName."-".$child->iso_key;
+			$name = $parentName."-".str_replace(":", "_", $child->iso_key);
 				
 			// Selon le type de noeud, on lit un type de balise
 			$query = "SELECT f.* FROM #__easysdi_metadata_freetext f, #__easysdi_metadata_classes_freetext rel WHERE rel.freetext_id = f.id and rel.classes_id=".$child->classes_to_id;
@@ -331,56 +331,56 @@ class ADMIN_metadata {
 				if ($type->is_datetime)
 				{
 					$path = $path."/gco:DateTime";
-					$name = $name."-gco:DateTime";
+					$name = $name."-gco_DateTime";
 					$childType = "gco:DateTime";
 				}
 				else
 				{
 					$path = $path."/gco:CharacterString";
-					$name = $name."-gco:CharacterString";
+					$name = $name."-gco_CharacterString";
 					$childType = "gco:CharacterString";
 				}
 			}
 			else if ($type->is_date)
 			{		
 				$path = $path."/gco:Date";
-				$name = $name."-gco:Date";
+				$name = $name."-gco_Date";
 				$childType = "gco:Date";
 			}
 			else if ($type->is_datetime)
 			{		
 				$path = $path."/gco:DateTime";
-				$name = $name."-gco:DateTime";
+				$name = $name."-gco_DateTime";
 				$childType = "gco:DateTime";
 			}
 			else if ($type->is_number)
 			{
 				$path = $path."/gco:Decimal";
-				$name = $name."-gco:Decimal";
+				$name = $name."-gco_Decimal";
 				$childType = "gco:Decimal";
 			}
 			else if ($type->is_integer)
 			{
 				$path = $path."/gco:Integer";
-				$name = $name."-gco:Integer";
+				$name = $name."-gco_Integer";
 				$childType = "gco:Integer";
 			}
 			else if ($type->is_constant)
 			{
 				$path = $path."/gco:CharacterString";
-				$name = $name."-gco:CharacterString";
+				$name = $name."-gco_CharacterString";
 				$childType = "gco:CharacterString";
 			}
 			else if ($type->is_shorttext)
 			{
 				$path = $path."/gco:CharacterString";
-				$name = $name."-gco:CharacterString";
+				$name = $name."-gco_CharacterString";
 				$childType = "gco:CharacterString";
 			}
 			else
 			{
 				$path = $path."/gco:CharacterString";
-				$name = $name."-gco:CharacterString";
+				$name = $name."-gco_CharacterString";
 				$childType = "gco:CharacterString";
 			}
 				
@@ -472,13 +472,13 @@ class ADMIN_metadata {
 			$count=0;
 			if ($child->is_relation)
 			{
-				$name = $parentName."-".$child->iso_key;
+				$name = $parentName."-".str_replace(":", "_", $child->iso_key);
 				//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
 				//$index = $index-1;
 			
 				foreach($keyVals as $key => $val)
 				{
-					if ($key == $parentName."-".$child->iso_key."__1")
+					if ($key == $parentName."-".str_replace(":", "_", $child->iso_key)."__1")
 					{
 						$count = $val;
 						break;
@@ -499,7 +499,7 @@ class ADMIN_metadata {
 				if (!$child->is_relation)
 					$name = $parentName;
 				else
-					$name = $parentName."-".$child->iso_key."__".($pos+2);
+					$name = $parentName."-".str_replace(":", "_", $child->iso_key)."__".($pos+2);
 				
 				// Structure à créer ou pas
 				$keys = array_keys($_POST);
@@ -626,7 +626,7 @@ class ADMIN_metadata {
 		$root = $database->loadObjectList();
 		
 		//ADMIN_metadata::buildXML('4001', "//gmd:MD_Metadata", $path, 'gmd:MD_Metadata', $doc, $XMLDoc, $XMLNode);
-		ADMIN_metadata::buildXMLTree($root_id, $root_id, $root[0]->iso_key, $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $keyVals, $option);
+		ADMIN_metadata::buildXMLTree($root_id, $root_id, str_replace(":", "_", $root[0]->iso_key), $XMLDoc, $XMLNode, $path, $root[0]->iso_key, $_POST, $keyVals, $option);
 		//$doc=$doc."</gmd:MD_Metadata>";
 		
 		//echo 'Ecrit : ' . $XMLDoc->save("C:\\RecorderWebGIS\\xml.xml") . ' octets';
