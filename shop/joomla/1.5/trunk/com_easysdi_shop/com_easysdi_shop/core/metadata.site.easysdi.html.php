@@ -195,7 +195,7 @@ class HTML_Metadata {
 				        ]
 				    });
 					
-				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'//".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".html_Metadata::cleanText(JText::_($root[0]->translation))."', xtype: 'fieldset'});
+				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'".$root[0]->iso_key."', cls: 'easysdi_shop_backend_form', title:'".html_Metadata::cleanText(JText::_($root[0]->translation))."', xtype: 'fieldset'});
 				form.add(fieldset".$root[0]->id.");";
 				
 				$queryPath="/";
@@ -203,7 +203,7 @@ class HTML_Metadata {
 		$node = $xpathResults->query($queryPath."/".$root[0]->iso_key);
 		$nodeCount = $node->length;
 		
-		HTML_metadata::buildTree($database, $root[0]->id, $root[0]->id, "//".$root[0]->iso_key, $xpathResults, $node->item(0), $queryPath, $root[0]->iso_key, $partner_id, $option);
+		HTML_metadata::buildTree($database, $root[0]->id, $root[0]->id, $root[0]->iso_key, $xpathResults, $node->item(0), $queryPath, $root[0]->iso_key, $partner_id, $option);
 		
 		$this->javascript .="
 				form.add(createHidden('option', 'option', '".$option."'));
@@ -239,7 +239,7 @@ class HTML_Metadata {
 				
 			// Traitement de la multiplicité
 			// Récupération du path du bloc de champs qui va être créé pour construire le nom
-			$name = $parentName."/".$child->iso_key;
+			$name = $parentName."-".$child->iso_key;
 				
 			// Selon le type de noeud, on lit un type de balise
 			$query = "SELECT f.* FROM #__easysdi_metadata_freetext f, #__easysdi_metadata_classes_freetext rel WHERE rel.freetext_id = f.id and rel.classes_id=".$child->classes_to_id;
@@ -252,43 +252,43 @@ class HTML_Metadata {
 				if ($type->is_datetime)
 				{
 					$path = $path."/gco:DateTime";
-					$name = $name."/gco:DateTime";
+					$name = $name."-gco:DateTime";
 				}
 				else
 				{
 					$path = $path."/gco:CharacterString";
-					$name = $name."/gco:CharacterString";
+					$name = $name."-gco:CharacterString";
 				}
 			}
 			else if ($type->is_date)
 			{
 				$path = $path."/gco:Date";
-				$name = $name."/gco:Date";
+				$name = $name."-gco:Date";
 			}
 			else if ($type->is_datetime)
 			{
 				$path = $path."/gco:DateTime";
-				$name = $name."/gco:DateTime";
+				$name = $name."-gco:DateTime";
 			}
 			else if ($type->is_number)
 			{
 				$path = $path."/gco:Decimal";
-				$name = $name."/gco:Decimal";
+				$name = $name."-gco:Decimal";
 			}
 			else if ($type->is_integer)
 			{
 				$path = $path."/gco:Integer";
-				$name = $name."/gco:Integer";
+				$name = $name."-gco:Integer";
 			}
 			else if ($type->is_shorttext)
 			{
 				$path = $path."/gco:CharacterString";
-				$name = $name."/gco:CharacterString";
+				$name = $name."-gco:CharacterString";
 			}
 			else
 			{
 				$path = $path."/gco:CharacterString";
-				$name = $name."/gco:CharacterString";
+				$name = $name."-gco:CharacterString";
 			}
 			// Valeur de l'attribut
 			$node = $xpathResults->query($path, $attributScope);
@@ -467,7 +467,7 @@ class HTML_Metadata {
 
 	 	// Traitement de la multiplicité
 	 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
-	 	$listName = $parentName."/".$child->iso_key."__1";
+	 	$listName = $parentName."-".$child->iso_key."__1";
 	 	 
 	 	// Construction de la liste
 	 	foreach ($content as $cont)
@@ -526,7 +526,7 @@ class HTML_Metadata {
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
-				$LocName = $parentName."/".$child->iso_key."__".($pos+1);
+				$LocName = $parentName."-".$child->iso_key."__".($pos+1);
 
 				if ($pos==0)
 				{
@@ -543,7 +543,7 @@ class HTML_Metadata {
 				
 					foreach($langages as $lang)
 					{
-						$LocLangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1";
+						$LocLangName = $LocName."-gmd:LocalisedCharacterString-".$lang->lang."__1";
 
 						$node = $xpathResults->query($queryPath."[@locale='".$lang->lang."']", $attributScope);
 						if ($node->	length > 0)
@@ -559,7 +559,7 @@ class HTML_Metadata {
 				}
 				else
 				{
-					$master = $parentName."/".$child->iso_key."__1";
+					$master = $parentName."-".$child->iso_key."__1";
 					
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');
@@ -577,7 +577,7 @@ class HTML_Metadata {
 				
 					foreach($langages as $lang)
 					{
-						$LocLangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1";
+						$LocLangName = $LocName."-gmd:LocalisedCharacterString-".$lang->lang."__1";
 
 						$node = $xpathResults->query($queryPath."[@locale='".$lang->lang."']", $attributScope);
 						if ($node->	length > 0)
@@ -598,8 +598,8 @@ class HTML_Metadata {
 			{
 				// Traitement de la multiplicité
 				// Récupération du path du bloc de champs qui va être créé pour construire le nom
-				$LocName = $parentName."/".$child->iso_key."__2";
-				$master = $parentName."/".$child->iso_key."__1";
+				$LocName = $parentName."-".$child->iso_key."__2";
+				$master = $parentName."-".$child->iso_key."__1";
 					
 				$this->javascript .="
 					var master = Ext.getCmp('".$master."');
@@ -617,7 +617,7 @@ class HTML_Metadata {
 			
 				foreach($langages as $lang)
 				{
-					$LocLangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1";
+					$LocLangName = $LocName."-gmd:LocalisedCharacterString-".$lang->lang."__1";
 						
 					$node = $xpathResults->query($queryPath."[@locale='".$lang->lang."']", $attributScope);
 					if ($node->	length > 0)
@@ -669,7 +669,7 @@ class HTML_Metadata {
 					if ($pos==0)
 					{
 						// Flag d'index dans le nom
-						$name = $parentName."/".$child->iso_key."__".($pos+1);
+						$name = $parentName."-".$child->iso_key."__".($pos+1);
 							
 						if ($nodeCount > 0)
 						{
@@ -719,9 +719,9 @@ class HTML_Metadata {
 					{
 						// Création du clone
 						// Flag d'index dans le nom
-						$name = $parentName."/".$child->iso_key."__".($pos+1);
+						$name = $parentName."-".$child->iso_key."__".($pos+1);
 							
-						$master = $parentName."/".$child->iso_key."__1";
+						$master = $parentName."-".$child->iso_key."__1";
 						if ($nodeCount > 0)
 						{
 							$classScope = $node->item($pos-1);
@@ -776,9 +776,9 @@ class HTML_Metadata {
 				{
 						// Création du clone
 						// Flag d'index dans le nom
-						$name = $parentName."/".$child->iso_key."__2";
+						$name = $parentName."-".$child->iso_key."__2";
 	
-						$master = $parentName."/".$child->iso_key."__1";
+						$master = $parentName."-".$child->iso_key."__1";
 							
 						$classScope = $scope;
 							
