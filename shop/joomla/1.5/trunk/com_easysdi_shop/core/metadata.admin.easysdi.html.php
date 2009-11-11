@@ -201,6 +201,11 @@ class HTML_metadata {
 				$path = $path."/gco:Integer";
 				$name = $name."/gco:Integer";
 			}
+			else if ($type->is_shorttext)
+			{
+				$path = $path."/gco:CharacterString";
+				$name = $name."/gco:CharacterString";
+			}
 			else
 			{
 				$path = $path."/gco:CharacterString";
@@ -208,7 +213,7 @@ class HTML_metadata {
 			}
 			// Valeur de l'attribut
 			$node = $xpathResults->query($path, $attributScope);
-				
+
 			for ($pos=0; $pos<$node->length; $pos++)
 			{
 				if ($node->length > 0)
@@ -227,7 +232,7 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', true));
 						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 						";
 					}
@@ -253,6 +258,11 @@ class HTML_metadata {
 						$this->javascript .="
 						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
 					}
+					else if ($type->is_shorttext)
+					{
+						$this->javascript .="
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', false));";
+					}
 					else
 					{
 						$this->javascript .="
@@ -274,7 +284,7 @@ class HTML_metadata {
 					if ($type->is_system)
 					{
 						$this->javascript .="
-						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', true));
 						fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 						";
 					}
@@ -297,6 +307,11 @@ class HTML_metadata {
 					{
 						$this->javascript .="
 						fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+					}
+					else if ($type->is_shorttext)
+					{
+						$this->javascript .="
+						fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, true, master, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', false));";
 					}
 					else
 					{
@@ -322,7 +337,7 @@ class HTML_metadata {
 				if ($type->is_system)
 				{
 					$this->javascript .="
-					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', '".$child->length."', true));
+					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', true));
 					fieldset".$parentFieldset.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 					";
 				}
@@ -345,6 +360,11 @@ class HTML_metadata {
 				{
 					$this->javascript .="
 					fieldset".$parentFieldset.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."','".$type->default_value."', false, 0));";
+				}
+				else if ($type->is_shorttext)
+				{
+					$this->javascript .="
+					fieldset".$parentFieldset.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($child->translation))."',true, false, null, '".$child->lowerbound."', '".$child->upperbound."', '".$nodeValue."', false));";
 				}
 				else
 				{
@@ -2061,6 +2081,13 @@ window.onload=function(){
 		<td><select name="is_integer">
 			<option value="1" <?php if($row->is_integer == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 			<option value="0" <?php if($row->is_integer == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><?php echo JText::_("EASYSDI_METADATA_FREETEXT_IS_SHORTTEXT"); ?></td>
+		<td><select name="is_shorttext">
+			<option value="1" <?php if($row->is_shorttext == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+			<option value="0" <?php if($row->is_shorttext == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
 		</select></td>
 	</tr>
 	<!-- 

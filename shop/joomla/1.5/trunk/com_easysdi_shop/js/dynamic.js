@@ -108,7 +108,7 @@
 		 return ta;
 	}
 	
-	function createTextField(id, label, optional, clone, master, min, max, value, length, dis)
+	function createTextField(id, label, optional, clone, master, min, max, value, dis)
 	{
 		if (master) master.clones_count=master.clones_count+1;
 		var clones_count = (master) ? master.clones_count : 1;
@@ -127,8 +127,7 @@
 	            clone: clone,
 				clones_count: clones_count,
 	            template: master,
-	            disabled: dis,
-	            minLength:length
+	            disabled: dis
 	        });
 		 return tf;
 	}
