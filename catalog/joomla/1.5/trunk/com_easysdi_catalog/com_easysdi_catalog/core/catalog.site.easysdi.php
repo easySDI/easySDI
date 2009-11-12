@@ -462,8 +462,16 @@ class SITE_catalog {
 			$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
 			$postResult;
 			//Get the result from the server, only for count
+			/*
+			$myFile = "/home/sites/joomla.asitvd.ch/web/components/com_easysdi_shop/core/myFile_cat.txt";
+		$fh = fopen($myFile, 'w') or die("can't open file");
+		
+			fwrite($fh, $xmlBody);
+			fwrite($fh, $xmlResponse);
+			
+			fclose($fh);
+			*/
 			$xmlResponse = SITE_catalog::PostXMLRequest($catalogUrlBase,$xmlBody);
-
 			$cswResults= simplexml_load_string($xmlResponse);
 			
 			//echo "dump the file: <br/><br/><br/>";
@@ -482,7 +490,6 @@ class SITE_catalog {
 				
 				// S�paration en n �l�ments par page
 				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
-				
 				//Get the result from the server
 				//echo $xmlBody;
 				
@@ -506,7 +513,6 @@ class SITE_catalog {
 		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr);
 		
 	}
-	
 	//$maxRecords == 0 => no limit
 	//$typeNames ex: gmd:MD_Metadata
 	//$elementSetName ex: full
@@ -516,10 +522,10 @@ class SITE_catalog {
 	//$sortBy: [dc:title|dct:abstract|ows:BoundingBox]
 	//$sortOrder: ASC
 	
-	
 	function BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder){
-		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
-		$req .= "\r\n";
+		//Bug: If we have accents, we must specify ISO-8859-1
+		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		$req .= "";
 		
 		//Get Records section
 		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" ";
@@ -560,7 +566,7 @@ class SITE_catalog {
 		$req .= "</csw:Query>\r\n";
 		$req .= "</csw:GetRecords>\r\n";
 		
-		return $req;
+		return utf8_encode($req);
 	}
 	
 	function PostXMLRequest($url,$xmlBody){
