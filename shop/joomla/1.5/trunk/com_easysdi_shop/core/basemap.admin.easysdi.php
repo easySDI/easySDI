@@ -161,8 +161,13 @@ class ADMIN_basemap {
 	
 		$rowBasemap->basemap_def_id = JRequest::getVar('basemap_def_id',-1); 
 		
+		//Select all available easysdi Account
+		$rowsAccount = array();
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
 		
-		HTML_Basemap::editBasemapContent( $rowBasemap,$id, $option );
+		HTML_Basemap::editBasemapContent( $rowBasemap, $rowsAccount, $id, $option );
 	}
 	
 	
@@ -185,6 +190,18 @@ class ADMIN_basemap {
 		$total = $database->loadResult();	
 			
 		$rowBasemap->ordering = $total;		
+		
+		$via_proxy = JRequest::getVar('via_proxy');
+		if($via_proxy == 1)
+		{
+			$rowBasemap->user = "";
+			$rowBasemap->password = "";
+		}
+		else
+		{
+			$rowBasemap->easysdi_account_id="";
+		}
+		 
 		
 		if (!$rowBasemap->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

@@ -21,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_basemap {
 
-	function editBasemapContent( $rowBasemap,$id, $option ){
+	function editBasemapContent( $rowBasemap,$rowsAccount,$id, $option ){
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -29,6 +29,26 @@ class HTML_basemap {
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_BASEMAP_CONTENT"), 'generic.png' );
 			
 		?>				
+		<script>
+		function displayAuthentication()
+		{
+			if (document.forms['adminForm'].elements['via_proxy'].checked)
+			{
+				document.getElementById('password').disabled = true;
+				document.getElementById('password').value = "";
+				document.getElementById('user').disabled = true;
+				document.getElementById('user').value ="";
+				document.getElementById('easysdi_account_id').disabled = false;
+			}
+			else
+			{
+				document.getElementById('password').disabled = false;
+				document.getElementById('user').disabled = false;
+				document.getElementById('easysdi_account_id').disabled = true;
+				document.getElementById('easysdi_account_id').value = '0';
+			}
+		}		
+		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
 		echo $tabs->startPane("BasemapPane");
@@ -119,21 +139,30 @@ class HTML_basemap {
 								<td><?php echo JText::_("EASYSDI_BASEMAP_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>							
 							</tr>
-							
-							
-								<tr>
-							
-								<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
-							</tr>
-							
-								<tr>
-							
-								<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
-								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
-							</tr>
-							
-													
+							<tr>
+							<td colspan ="3">
+							<fieldset>
+							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
+								<table>
+									<tr>
+										<td colspan="2"><input type="checkbox" id="via_proxy" name="via_proxy" value="1" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->easysdi_account_id){echo "checked";} ?> /><?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?></td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
+										<td><input <?php if ($rowBasemap->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
+									</tr>							
+									<tr>
+										<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
+										<td><input <?php if ($rowBasemap->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
+									</tr>
+									<tr>
+										<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
+										<td><?php $enable = $rowBasemap->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowBasemap->easysdi_account_id); ?></td>
+									</tr>
+								</table>
+							</fieldset>	
+							<td>	
+							</tr>			
 						</table>
 
 					</fieldset>

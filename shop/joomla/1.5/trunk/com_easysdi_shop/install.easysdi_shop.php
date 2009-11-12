@@ -2102,8 +2102,8 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
-	 
-	if($version == "0.99996")
+
+	 if($version == "0.99996")
 	 {		
 	 	// Add is_shorttext field to #__easysdi_metadata_freetext
 		$query="ALTER TABLE #__easysdi_metadata_freetext add column `is_shorttext` tinyint(1) NOT NULL default '0' ";
@@ -2115,6 +2115,32 @@ if ($version == "0.998")
 				
 	 	//Update component version
 		$version = "0.99997";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
+	 
+	 if ($version == "0.99997")
+	 {
+	 	$query="ALTER TABLE #__easysdi_basemap_content add column easysdi_account_id bigint(20) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	$query="ALTER TABLE #__easysdi_perimeter_definition add column easysdi_account_id bigint(20) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	$query="ALTER TABLE #__easysdi_location_definition add column easysdi_account_id bigint(20) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	//Update component version
+		$version = "0.99998";
 		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
