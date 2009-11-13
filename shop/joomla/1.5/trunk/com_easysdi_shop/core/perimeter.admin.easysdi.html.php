@@ -248,7 +248,7 @@ class HTML_perimeter {
 								</tr>
 								<tr>
 									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if (!$rowPerimeter->easysdi_account_id) echo "checked";?>> 
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowPerimeter->user) echo "checked";?>> 
 								 	</td>
 								 	<td colspan="2">
 									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
@@ -375,7 +375,7 @@ class HTML_perimeter {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
-				<td><?php echo $row->wfs_url; ?></td>				
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->wfs_url; ?></td>				
 				<td><?php echo $row->layer_name; ?></td>
 				<td><?php echo $row->perimeter_name; ?></td>
 				<td><?php echo $row->perimeter_desc; ?></td>
