@@ -31,6 +31,11 @@
 	</target>
 
 	<target name="copy-resources">
+		<copy todir="${projet.work.dir}" >
+			<fileset dir="${projet.conf.dir}" >
+				<include name="*.jsp"/>
+			</fileset>
+		</copy>
 		<copy todir="${projet.work.dir}/META-INF/" >
 			<fileset dir="${projet.conf.dir}/META-INF" >
 				<include name="context.xml"/>
@@ -39,6 +44,7 @@
 		<copy todir="${projet.work.dir}/WEB-INF/" >
 			<fileset dir="${projet.conf.dir}/WEB-INF" >
 				<include name="web.xml"/>
+				<include name="log4j.xml"/>
 			</fileset>
 		</copy>
 		
@@ -48,6 +54,7 @@
 				<include name="**/*.jar"/>
 				<include name="**/*.zip"/>
 				<exclude name="**/jetty*"/>
+				<exclude name="**/jasper*"/>
 				<exclude name="**/servlet-api-6.0.18.jar"/>
 				<exclude name="**/jsp-api-6.0.18.jar"/>
 				<exclude name="**/rt.jar"/>

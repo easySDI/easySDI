@@ -91,6 +91,14 @@
 	<classpathentry kind="lib" path="lib/spring-web-2.5.6.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-core-2.0.5.RELEASE.jar" sourcepath="C:/Documents and Settings/ilyas/.m2/repository/org/springframework/security/spring-security-core/2.0.5.RELEASE/spring-security-core-2.0.5.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jasper-compiler-5.5.15.jar"/>
+	<classpathentry kind="lib" path="lib/jasper-compiler-jdt-5.5.15.jar"/>
+	<classpathentry kind="lib" path="lib/jasper-runtime-5.5.15.jar"/>
+	<classpathentry kind="lib" path="lib/jstl.jar"/>
+	<classpathentry kind="lib" path="lib/standard.jar"/>
+	<classpathentry kind="lib" path="lib/xalan-2.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-el-1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
