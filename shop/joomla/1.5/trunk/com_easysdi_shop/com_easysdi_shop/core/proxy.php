@@ -23,7 +23,8 @@
 class SITE_proxy{
 	
 	function proxy(){
-		
+		$user="";
+		$password="";
 		
 		$url = ($_POST['url']) ? $_POST['url'] : $_GET['url'];
 		
@@ -73,8 +74,9 @@ class SITE_proxy{
 			$db->setQuery( $query);
 			$row = $db->loadObject();
 
-			$user = $row->user; 
-			$password = $row->password;
+			SITE_proxy::getAuthentication ($row, $user, $password);
+			//$user = $row->user; 
+			//$password = $row->password;
 		}
 		else
 		{
@@ -88,8 +90,9 @@ class SITE_proxy{
 				$query = $query = "SELECT * FROM #__easysdi_perimeter_definition WHERE id = $perimeterdefid"; 
 				$db->setQuery( $query);
 				$row = $db->loadObject();
-				$user = $row->user; 
-				$password = $row->password;
+				SITE_proxy::getAuthentication ($row, $user, $password);
+				//$user = $row->user; 
+				//$password = $row->password;
 					
 			}		
 			else
@@ -104,9 +107,9 @@ class SITE_proxy{
 					$query = $query = "SELECT * FROM #__easysdi_location_definition WHERE id = $locationid"; 
 					$db->setQuery( $query);
 					$row = $db->loadObject();
-	
-					$user = $row->user; 
-					$password = $row->password;
+					SITE_proxy::getAuthentication ($row, $user, $password);
+					//$user = $row->user; 
+					//$password = $row->password;
 							 
 				}	
 				else
@@ -121,9 +124,9 @@ class SITE_proxy{
 						$query = $query = "SELECT * FROM #__easysdi_product WHERE id = $previewId"; 
 						$db->setQuery( $query);
 						$row = $db->loadObject();
-		
-						$user = $row->previewUser; 
-						$password = $row->previewPassword;
+						SITE_proxy::getAuthentication ($row, $user, $password);
+						//$user = $row->previewUser; 
+						//$password = $row->previewPassword;
 						
 					}
 				}
@@ -271,6 +274,24 @@ class SITE_proxy{
 			}
 		}
 		return $xmlEncodingHeader;
+	}
+	
+	function getAuthentication ($object, &$user, &$password)
+	{
+		if ($object->easysdi_account_id && $object->easysdi_account_id <> 0)
+		{
+			 $db =& JFactory::getDBO(); 
+			 $query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__easysdi_community_partner WHERE partner_id= $object->easysdi_account_id)";
+			 $db->setQuery( $query);
+			 $row = $db->loadObject();
+			 $user = $row->username;
+			 $password = $row->password;
+		}
+		else
+		{
+			 $user = $object->user;
+			 $password = $object->password;
+		}
 	}
 	
 }
