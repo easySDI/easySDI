@@ -54,6 +54,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.GeometricOpImage;
+import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -164,7 +165,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	
 //***************************************************************************************************************************************    
 	
-    protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req,int remoteServerIndex)
+    protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req,int remoteServerIndex,String version)
     	{
 
 		try 
@@ -178,21 +179,69 @@ public class WMSProxyServlet extends ProxyServlet {
 		    String url = getServletUrl(req);
 	
 		    try 
-		    	{		
+		    	{
 		    	StringBuffer WMSCapabilities111 = new StringBuffer ();		
 	
 	
 				WMSCapabilities111.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-	
-				WMSCapabilities111.append("<xsl:template match=\"OnlineResource\">");
-				WMSCapabilities111.append("<OnlineResource>"); 
-				WMSCapabilities111.append("<xsl:attribute name=\"xlink:href\">");
-		
-				WMSCapabilities111.append(url);				
-		
-				WMSCapabilities111.append("</xsl:attribute>");
-				WMSCapabilities111.append("</OnlineResource>");
-				WMSCapabilities111.append("</xsl:template>");
+
+//Debug tb 12.11.2009
+//				WMSCapabilities111.append("<xsl:template match=\"OnlineResource\">");
+//				WMSCapabilities111.append("<xsl:choose>"); 
+//				WMSCapabilities111.append("<xsl:when test = \"./@xlink:href != ''\">");
+//				WMSCapabilities111.append("<xsl:attribute name=\"xlink:href\">");
+//				WMSCapabilities111.append(url);
+//				WMSCapabilities111.append("<xsl:param name=\"thisValue\">");
+//				WMSCapabilities111.append("<xsl:value-of select=\"./@xlink:href\"/>");
+//				WMSCapabilities111.append("</xsl:param>");
+//				WMSCapabilities111.append("<xsl:value-of select=\"substring-after($thisValue,'"+getRemoteServerUrl(remoteServerIndex)+"')\"/>");
+//				WMSCapabilities111.append("</xsl:attribute>");
+//				WMSCapabilities111.append("</xsl:when>");
+//				WMSCapabilities111.append("<xsl:otherwise>");
+//				WMSCapabilities111.append("<xsl:text>Test otherwise</xsl:text>");
+//				WMSCapabilities111.append("</xsl:otherwise>");
+//              WMSCapabilities111.append("</xsl:choose>"); 
+               
+				if(!"100".equalsIgnoreCase(version))
+					{
+					WMSCapabilities111.append("<xsl:template match=\"OnlineResource/@xlink:href\">"); 
+					WMSCapabilities111.append("<xsl:attribute name=\"xlink:href\">");
+					WMSCapabilities111.append(url);
+					//Changer seulement la partie racine de l'URL, pas les param après '?'
+					WMSCapabilities111.append("<xsl:param name=\"thisValue\">");
+					WMSCapabilities111.append("<xsl:value-of select=\".\"/>");
+					WMSCapabilities111.append("</xsl:param>");
+					WMSCapabilities111.append("<xsl:value-of select=\"substring-after($thisValue,'"+getRemoteServerUrl(remoteServerIndex)+"')\"/>");
+					WMSCapabilities111.append("</xsl:attribute>");
+					WMSCapabilities111.append("</xsl:template>");
+					}
+				else
+					{
+					//Add change on wmtver=1.0.0&request=capabilities support
+					StringBuffer WMSCapabilities100 = new StringBuffer ();
+					WMSCapabilities100.append("<xsl:template match=\"OnlineResource\">");
+					WMSCapabilities100.append("<OnlineResource>"); 
+					//Changer seulement la partie racine de l'URL, pas les param après '?'
+					WMSCapabilities100.append("<xsl:param name=\"thisValue\">");
+					WMSCapabilities100.append("<xsl:value-of select=\".\"/>");
+					WMSCapabilities100.append("</xsl:param>");
+					WMSCapabilities100.append(url);
+					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'"+getRemoteServerUrl(remoteServerIndex)+"')\"/>");
+					WMSCapabilities100.append("</OnlineResource>");
+					WMSCapabilities100.append("</xsl:template>");
+					WMSCapabilities100.append("<xsl:template match=\"@onlineResource\">");
+					WMSCapabilities100.append("<xsl:attribute name=\"onlineResource\">");
+					WMSCapabilities100.append(url);
+					//Changer seulement la partie racine de l'URL, pas les param après '?'
+					WMSCapabilities100.append("<xsl:param name=\"thisValue\">");
+					WMSCapabilities100.append("<xsl:value-of select=\".\"/>");
+					WMSCapabilities100.append("</xsl:param>");
+					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'"+getRemoteServerUrl(remoteServerIndex)+"')\"/>");								
+					WMSCapabilities100.append("</xsl:attribute>");
+					WMSCapabilities100.append("</xsl:template>");
+					WMSCapabilities111.append(WMSCapabilities100);
+					}
+//Fin de Debug
 		
 				//Filtrage xsl des opérations
 				if(hasPolicy)
@@ -374,7 +423,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				    	tempFileCapa.add(createTempFile("transform_GetCapabilities_"+UUID.randomUUID().toString(), ".xml"));
 				    	FileOutputStream tempFosCapa  = new FileOutputStream(tempFileCapa.get(iFilePath));
 		
-				    	InputStream xslt =  new ByteArrayInputStream(buildCapabilitiesXSLT(req,iFilePath).toString().getBytes());
+				    	InputStream xslt =  new ByteArrayInputStream(buildCapabilitiesXSLT(req,iFilePath,version).toString().getBytes());
 		
 				    	InputSource inputSource = new InputSource(new FileInputStream(filePathList.get(iFilePath)));
 		
@@ -826,6 +875,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		    	{
 		    	user= req.getUserPrincipal().getName();
 		    	}
+
+//Debug tb 11.11.2009
+		    if (hasPolicy)
+	    		{
+		    	if (!isOperationAllowed(operation)) throw new NoPermissionException("operation is not allowed");
+	    		}
+//Fin de Debug
 		    
 		    
 		    //*********************************************************************
