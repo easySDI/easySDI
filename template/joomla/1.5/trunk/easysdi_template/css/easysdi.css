@@ -140,6 +140,100 @@ div .freeMd{
 /********************************************************/
 /***     EasySDI Shop                                 ***/
 /********************************************************/
+.olControlLoadingPanel {
+        background-image:url(../images/loading.gif);
+        background-position:center;
+        background-repeat:no-repeat;
+	width:16px;
+	height:15px;
+	}
+
+
+.infoShop .shopHeader, .infoShop .shopFooter{
+	border=0;
+	border-collapse:collapse;
+}
+
+.infoShop .shopHeader,.infoShop .shopFooter{
+
+}
+
+.shopInfoLogo{
+	background:url(../icons/silk/information.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+.shopWarnLogoContainer{
+	width:"16px";
+}
+
+.scaleStatusContainer{
+}
+
+.shopWarnLogoInactive{
+	background:url(../images/pixel.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+.shopWarnLogoActive{
+	background:url(../icons/silk/error.png);
+	width:16px;
+	height:16px;
+	background-color:transparent;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+
+/* status bg color */
+#status{
+        #background-color: red;
+}
+
+/*tells which tool is active*/
+.toolsStatusContainer{
+	width:200px;
+	text-align:right;
+}
+
+.shopInfoLogoContainer{
+	width:16px;
+	height:16px;
+}
+
+/*coordinate container*/
+.ccordinateTextHolder{
+	width:75px;
+	text-align:left;
+}
+
+.coordinateContainer{
+	width:150px;
+	text-align:right;
+}
+
+/*scaleContainer container*/
+.scaleContainer{
+	width:150px;
+	text-align:left;
+}
+
+#myProducts .logo{
+	width:14px;
+}
+
+#myProducts .logo2{
+	width:28px;
+}
+
 .favoritePanContent .inputbox{
 	width:200px;
 }
