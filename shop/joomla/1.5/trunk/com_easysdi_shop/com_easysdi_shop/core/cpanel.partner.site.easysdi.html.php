@@ -33,22 +33,26 @@ class HTML_cpanel_partner {
 			throw new Exception('Erreur db: '.$database->getErrorMsg());
 		}
 		$rows =  $database->loadObjectList();
-		
+				
 		$array = explode("-", $rows[0]->partner_entry);
 		$displayEntryDate = $array[2]."-".$array[1]."-".$array[0];
 		
 		if($rows[0]->country_code == 'CH')
 			$rows[0]->country_code='Suisse';
 		
-		//Select the root partner name
-		$request="SELECT name FROM #__easysdi_community_partner p LEFT JOIN #__easysdi_community_address a ON p.partner_id=a.partner_id LEFT JOIN #__users u ON p.user_id=u.id where a.type_id=1 and p.partner_id=".$rows[0]->root_id;
+		$isRoot = $rows[0]->root_id == null ? true : false;
 		
-		$database->setQuery($request);
-		if (!$database->query()) {
-			throw new Exception('Erreur db: '.$database->getErrorMsg());
+		//Select the root partner name if not root
+		$rowsRoot = null;
+		if(!$isRoot){
+			$request="SELECT name FROM #__easysdi_community_partner p LEFT JOIN #__easysdi_community_address a ON p.partner_id=a.partner_id LEFT JOIN #__users u ON p.user_id=u.id where a.type_id=1 and p.partner_id=".$rows[0]->root_id;
+		
+			$database->setQuery($request);
+			if (!$database->query()) {
+				throw new Exception('Erreur db: '.$database->getErrorMsg());
+			}
+			$rowsRoot =  $database->loadObjectList();
 		}
-		$rowsRoot =  $database->loadObjectList();
-		
 		?>
 		<?php
 		if ($toolbar==1){
@@ -72,7 +76,7 @@ class HTML_cpanel_partner {
 		<div id="page" class="partnerList">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_PARTNERLIST_PARTENAIRE") ?></h2>
 		<div class="contentin">
-		<h3><?php echo $rowsRoot[0]->name?> (<?php echo $rows[0]->address_corporate_name1 ?><?php echo $rows[0]->address_corporate_name2 ?>)</h3>
+		<h3><?php if($rowsRoot != null) echo $rowsRoot[0]->name." (".$rows[0]->address_corporate_name1 ." ". $rows[0]->address_corporate_name2 .")"; else echo $rows[0]->address_corporate_name1 ." ". $rows[0]->address_corporate_name2;?></h3>
 	<table width="100%" border="0">
 	  <tr>
 	     <td>&nbsp;</td>
