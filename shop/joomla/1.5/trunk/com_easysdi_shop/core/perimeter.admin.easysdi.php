@@ -286,8 +286,13 @@ class ADMIN_perimeter {
 		}
 		$rowPerimeter->update_date = date('d.m.Y H:i:s'); 
 		
+		//Select all available easysdi Account
+		$rowsAccount = array();
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
 		
-		HTML_Perimeter::editPerimeter( $rowPerimeter,$id, $option );
+		HTML_Perimeter::editPerimeter( $rowPerimeter, $rowsAccount, $id, $option );
 	}
 	
 	//Save perimeter
@@ -312,6 +317,17 @@ class ADMIN_perimeter {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->stderr(),'error');
 			}
+		}
+		
+		$service_type = JRequest::getVar('service_type');
+		if($service_type == "via_proxy")
+		{
+			$rowPerimeter->user = "";
+			$rowPerimeter->password = "";
+		}
+		else
+		{
+			$rowPerimeter->easysdi_account_id="";
 		}
 		
 		if (!$rowPerimeter->store()) {

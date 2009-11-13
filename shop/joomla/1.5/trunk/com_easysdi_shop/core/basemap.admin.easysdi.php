@@ -191,8 +191,8 @@ class ADMIN_basemap {
 			
 		$rowBasemap->ordering = $total;		
 		
-		$via_proxy = JRequest::getVar('via_proxy');
-		if($via_proxy == 1)
+		$service_type = JRequest::getVar('service_type');
+		if($service_type == "via_proxy")
 		{
 			$rowBasemap->user = "";
 			$rowBasemap->password = "";

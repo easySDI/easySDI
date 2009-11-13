@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_perimeter {
 
-	function editPerimeter( $rowPerimeter,$id, $option ){
+	function editPerimeter( $rowPerimeter,$rowsAccount,$id, $option ){
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -67,6 +67,26 @@ class HTML_perimeter {
 			}
 			?>
 		}
+		</script>
+		<script>
+		function displayAuthentication()
+		{
+			if (document.forms['adminForm'].service_type[0].checked)
+			{
+				document.getElementById('password').disabled = true;
+				document.getElementById('password').value = "";
+				document.getElementById('user').disabled = true;
+				document.getElementById('user').value ="";
+				document.getElementById('easysdi_account_id').disabled = false;
+			}
+			else
+			{
+				document.getElementById('password').disabled = false;
+				document.getElementById('user').disabled = false;
+				document.getElementById('easysdi_account_id').disabled = true;
+				document.getElementById('easysdi_account_id').value = '0';
+			}
+		}		
 		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
@@ -204,20 +224,51 @@ class HTML_perimeter {
 								<option value="0" <?php if($rowLocation->sort == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
-							
-							<tr>
-							<td><?php echo JText::_("EASYSDI_PERIMETER_USER"); ?> : </td>
-							<td><input type="text" name="user"  value="<?php echo $rowPerimeter->user?>"></td>
-							</tr>
-							<tr>							
-							<td><?php echo JText::_("EASYSDI_PERIMETER_PASSWORD"); ?> : </td>
-							<td><input type="password" name="password"  value="<?php echo $rowPerimeter->password ?>"></td>
-							</tr>
 							<tr>							
 							<td><?php echo JText::_("EASYSDI_PERIMETER_CODE"); ?> : </td>
 							<td><input type="text" name="perimeter_code"  value="<?php echo $rowPerimeter->perimeter_code ?>"></td>
 							</tr>
-							
+							<tr>
+							<td colspan ="3">
+							<fieldset>
+							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
+								<table>
+								<tr>
+									<td >
+										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowPerimeter->easysdi_account_id) echo "checked";?>>
+									</td>
+									<td colspan="2">
+										<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
+									<td><?php $enable = $rowPerimeter->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowPerimeter->easysdi_account_id); ?></td>
+								</tr>
+								<tr>
+									<td >
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if (!$rowPerimeter->easysdi_account_id) echo "checked";?>> 
+								 	</td>
+								 	<td colspan="2">
+									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
+								 	</td>
+							 	<tr>
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
+									<td><input <?php if ($rowPerimeter->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowPerimeter->user; ?>" /></td>							
+								</tr>							
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
+									<td><input <?php if ($rowPerimeter->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowPerimeter->password; ?>" /></td>							
+								</tr>
+								
+								</table>
+							</fieldset>	
+							<td>	
+							</tr>
 							
 							
 						</table>

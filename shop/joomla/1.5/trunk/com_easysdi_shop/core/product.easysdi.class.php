@@ -87,6 +87,7 @@ class perimeter extends JTable
 	var $max_resolution=0;
 	var $perimeter_code=null;
 	var $ordering =0;
+	var $easysdi_account_id=null;
 	// Class constructor
 	function __construct( &$db )
 	{
