@@ -159,7 +159,8 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 	 	if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
 	 	{	
 	 		isOutOfRange = false;
-	 		$("scaleStatus").innerHTML = "";
+			$("shopWarnLogo").className = "shopWarnLogoInactive";
+			$("scaleStatus").innerHTML = "";
 	 		if(<?php echo $row->min_resolution;?> == 0 && <?php echo $row->max_resolution; ?> == 0 )
 	 		{
 	 			//Free selection perimeter case
@@ -171,6 +172,7 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 			 	if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>)
 			 	{
 					text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->perimeter_name); ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
+					$("shopWarnLogo").className = 'shopWarnLogoActive';
 					$("scaleStatus").innerHTML = text;
 					isOutOfRange = true;
 				}
