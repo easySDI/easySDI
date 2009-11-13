@@ -98,8 +98,11 @@ class HTML_shop {
 	?>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/lib/OpenLayers/Control/LoadingPanel.js"></script>
+	
 	<script>
 	var map;
+	 var loadingpanel;
 	var wfs=null;
 	var wfs3=null;
 	var vectors;
@@ -193,6 +196,7 @@ class HTML_shop {
               wfs2.events.register("featureadded", null, 
               						function(myEvent) { 
                 										$("status").innerHTML = "";
+												$("loadingPanelPosition").style.display = 'block';
 														removeSelection();
 														var wfsFeatures = wfs.features;
 
@@ -397,8 +401,8 @@ class HTML_shop {
 				                { featureClass: OpenLayers.Feature.WFS}
 					                 );
 					
-					wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-					wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; intersect();})
+					wfs.events.register("loadstart", null, function() {$("loadingPanelPosition").style.display = 'block';$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+					wfs.events.register("loadend", null, function() { $("loadingPanelPosition").style.display = 'none';$("status").innerHTML = ""; intersect();})
 					
 					map.addLayer(wfs);
 			 	}	
@@ -477,11 +481,17 @@ function setAlpha(imageformat)
 					}));
 					
 					
+					map.addControl(new OpenLayers.Control.LoadingPanel({ 
+					div: document.getElementById("loadingPanelPosition")
+					}));
+					
+					
 					 baseLayerVector = new OpenLayers.Layer.Vector(
 	                "BackGround",
 	                {isBaseLayer: true,transparent: "true"}
-	            ); 
-					  map.addLayer(baseLayerVector);
+	            );
+		   
+		map.addLayer(baseLayerVector);
 	
 	
 	<?php
@@ -601,6 +611,7 @@ function setAlpha(imageformat)
 															 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 															} 
 														}
+														$("shopWarnLogo").className = 'shopWarnLogoActive';
 														$("scaleStatus").innerHTML = text;
 														selectPerimeter('perimeterList', true);
 													}
@@ -679,17 +690,20 @@ function setAlpha(imageformat)
 				oZoomBoxInCtrl = new OpenLayers.Control.ZoomBox({
         	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMIN_HINT") ?>'
 				});
-				
+				oZoomBoxInCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_ZOOMIN_ACTIVATED") ?>"; fromZoomEnd =false;})
+
 				//Zoom out
 				oZoomBoxOutCtrl = new OpenLayers.Control.ZoomBox({
         	    out: true, displayClass: "olControlZoomBoxOut",
         	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMOUT_HINT") ?>'
 				});
+				oZoomBoxOutCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_ZOOMOUT_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				//Pan
 				oDragPanCtrl = new OpenLayers.Control.DragPan({
         	    title: '<?php echo JText::_("EASYSDI_TOOL_PAN_HINT") ?>'
 				});
+				oDragPanCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_PAN_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				//Zoom to full extends
 				oZoomMxExtCtrl = new OpenLayers.Control.ZoomToMaxExtent({
@@ -805,7 +819,11 @@ function setAlpha(imageformat)
      
      		document.getElementById("selectedSurface").options.length=0;
      
-     		if (feature.geometry.components[0].components.length > 2)
+		if(feature.geometry.components == null)
+		{
+			return;
+		}
+     		else if (feature.geometry.components[0].components.length > 2)
      		{
    		 		featureArea = feature.geometry.getArea();
 	    	}else
@@ -842,6 +860,7 @@ function setAlpha(imageformat)
 	 	else
 	 	{
 			$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
+			$("loadingPanelPosition").style.display = 'block';
 			//$("status").innerHTML = "wfsUrl : " + wfsUrl;
 	   		var features = vectors.features;
 	        var gmlOptions = {featureType: "feature",featureNS: "http://example.com/feature"};
@@ -916,6 +935,7 @@ function setAlpha(imageformat)
 				{ 
 					removeSelection();
 					$("status").innerHTML = "";
+					$("loadingPanelPosition").style.display = 'none';
 					    		
 		              feat2 = event.feature;
 		              var name = feat2.attributes[nameField];
@@ -980,40 +1000,57 @@ function setAlpha(imageformat)
 	}
 	
 	</script>
-	
-	<div id="map" class="smallmap"></div>
-	
-	<hr>
-	
-	<table width="100%">
+	<table class="infoShop">
+	<!-- info sup -->
+        <tr>
+	   <td class="shopWarnLogoContainer">
+	      <div id="shopWarnLogo" class="shopWarnLogoInactive">
+	      </div>
+	   </td>
+	   <td class="scaleStatusContainer" colspan="3">
+	      <div id="scaleStatus"/>
+	   </td>
+	</tr>
+	<tr class="shopHeader">
+	  <td class="shopInfoLogoContainer">
+	   <!-- <div id="infoLogo" class="shopInfoLogo"/> -->
+	    <div id="loadingPanelPosition" class="olControlLoadingPanel"/>
+	  </td>
+	  <td colspan="2" align="left">
+	    <div id="status"/>
+	  </td>
+	  <td class="toolsStatusContainer">
+	    <div id="toolsStatus"><?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
+	  </td>
+	 </tr>
+	 <!-- the map -->
 	 <tr>
-	  <td width="40" rowspan=2>
-	    <div id="infoLogo" class="shopInfoLogo"/>
+	    <td colspan="4">
+	  	<div id="map" class="smallmap"></div>
+	    </td>
+	 </tr>
+	 <!-- info inf -->
+	 <tr>
+	 <td colspan="4">
+	
+	 <table width="100%"> 
+	 <tr class="shopFooter">
+	  <td class="scaleContainer">
+	     <div id="scale"/>
 	  </td>
-	  <td width="120">
-	    <div id="scale"/>
-	  </td>
-	  <td>
-	    <div id="scaleStatus"/>
-	  </td>
-	  <td width="100" align="right">
-	    <?php echo JText::_("EASYSDI_MAP_COORDINATE") ?>
-	  </td>
-	  <td width="100" align="right">
+	  <td width="45%">&nbsp;</td>
+	  <td class="ccordinateTextHolder"><?php echo JText::_("EASYSDI_MAP_COORDINATE") ?></td>
+	  <td class="coordinateContainer">
 	    <div id="mouseposition"></div>
 	  </td>
 	 </tr>
-	 <tr>
-	  <td colspan=4>
-	    <div id="toolsStatus"> <?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
-	  </td>
-	 </tr>
-	 <tr>
-	  <td colspan=4>
-	    <div id="status"/>
-	  </td>
+	 </table>
+	 
+	 </td>
 	 </tr>
 	</table>
+	
+	
 	
 	
 	<div id="docs"></div>
@@ -2469,7 +2506,6 @@ if (count($rows)>0){
 	<tr>
 		<td>
 		<div class="bodyShop">
-		<br/>
 		<?php if ($step ==1) HTML_shop::searchProducts();?>
 		<?php if ($step ==2) HTML_shop::orderPerimeter($cid,$option);?> 
 		<?php if ($step ==3) HTML_shop::orderProperties($cid,$option);?>
