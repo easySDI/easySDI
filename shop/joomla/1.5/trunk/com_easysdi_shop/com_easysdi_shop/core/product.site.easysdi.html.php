@@ -1169,10 +1169,10 @@ class HTML_product{
 			
 			?>		
 			<tr>
-			<td class="logo2"><div <?php if($row->metadata_external) echo 'class="publicMd" title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'"'; else if($row->metadata_internal && !$row->metadata_external) echo '"class="privateMd" title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'"';?>></div></td>
+			<td class="logo2"><div <?php if($row->metadata_external) echo 'class="publicMd" title="'.JText::_("EASYSDI_METADATA_EXTERNAL").'"'; else if($row->metadata_internal && !$row->metadata_external) echo '"class="privateMd" title="'.JText::_("EASYSDI_METADATA_INTERNAL").'"';?>></div></td>
 			<!--<td><input type="radio"  name="id" value="<?php echo $row->id ;?>" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>'"></td>	-->					
 			<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
-			<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editMetadata" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>';document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('productListForm').submit();"/></td>
+			<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task<?php echo $option; ?>').value='editMetadata<?php if ($row->hasMetadata == 1) echo "2";?>';document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('productListForm').submit();"/></td>
 			</tr>
 			
 				<?php		
