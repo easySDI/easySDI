@@ -1071,8 +1071,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	    if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
 		isServerFound = true;
 		// Are all layers Allowed ?
-		if (serverList.get(i).getLayers().isAll())
-		    return true;
+// Debug tb 12.11.2009
+		//if (serverList.get(i).getLayers().isAll())
+		    //return true;
+// Fin de debug
 
 		List<Layer> layerList = serverList.get(i).getLayers().getLayer();
 		for (int j = 0; j < layerList.size(); j++) {
@@ -1196,7 +1198,12 @@ public abstract class ProxyServlet extends HttpServlet {
 	// overloaded and All the featuetypes are allowed
 	// We can say that's ok
 	if (isServerFound && !isFeatureTypeFound && FeatureTypeAllowed)
-	    return true;
+//Debug tb 11.11.2009
+			{
+		    policyAttributeListNb = 0; //-> Attribure.All() = true
+		    return true;
+			}
+//Fin de Debug
 
 	// in any other case the feature type is not allowed
 	return false;
