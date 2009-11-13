@@ -158,7 +158,7 @@ class HTML_basemap {
 								</tr>
 								<tr>
 									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if (!$rowBasemap->easysdi_account_id) echo "checked";?>> 
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->user) echo "checked";?>> 
 								 	</td>
 								 	<td colspan="2">
 									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
