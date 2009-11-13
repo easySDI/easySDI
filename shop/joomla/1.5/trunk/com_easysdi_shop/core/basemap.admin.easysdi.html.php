@@ -167,12 +167,12 @@ class HTML_basemap {
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
-									<td><input <?php if ($rowBasemap->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
+									<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
 								</tr>							
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
-									<td><input <?php if ($rowBasemap->easysdi_account_id){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
+									<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
 								</tr>
 								
 								</table>

@@ -147,10 +147,16 @@ class ADMIN_product {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
+		//Select all available easysdi Account
+		$rowsAccount = array();
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
+		
 		if (strlen($catalogUrlBase )==0){
 			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $rowProduct,$id, $option );
+			HTML_product::editProduct( $rowProduct,$rowsAccount,$id, $option );
 		}
 	}
 
@@ -242,11 +248,11 @@ class ADMIN_product {
 			exit();
 		}
 		
-		// Si le produit n'existe pas encore, créer la métadonnée
+		// Si le produit n'existe pas encore, crï¿½er la mï¿½tadonnï¿½e
 		if ($rowProduct->id == 0)
 		{
-			// Création de la métadonnée pour le nouveau guid
-			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			// Crï¿½ation de la mï¿½tadonnï¿½e pour le nouveau guid
+			// Insï¿½rer dans Geonetwork la nouvelle version de la mï¿½tadonnï¿½e
 			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 			<csw:Transaction service=\"CSW\"
 			version=\"2.0.2\"
@@ -285,7 +291,19 @@ class ADMIN_product {
 				exit();
 			}
 		}
-		// Si la métadonnée a pu être ajoutée, le produit peut être créé
+		
+		$service_type = JRequest::getVar('service_type');
+		if($service_type == "via_proxy")
+		{
+			$rowProduct->previewUser = "";
+			$rowProduct->previewpassword = "";
+		}
+		else
+		{
+			$rowProduct->easysdi_account_id="";
+		}
+
+		// Si la mï¿½tadonnï¿½e a pu ï¿½tre ajoutï¿½e, le produit peut ï¿½tre crï¿½ï¿½
 		if (!$rowProduct->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -371,7 +389,7 @@ class ADMIN_product {
 			$product = new product( $database );
 			$product->load( $id );
 
-			// Supprimer de Geonetwork la métadonnée
+			// Supprimer de Geonetwork la mï¿½tadonnï¿½e
 			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
 				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
@@ -404,7 +422,7 @@ class ADMIN_product {
 				exit();
 			}
 			
-			// Si la métadonnée a pu être supprimée, on essaie de supprimer le produit
+			// Si la mï¿½tadonnï¿½e a pu ï¿½tre supprimï¿½e, on essaie de supprimer le produit
 			if (!$product->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );

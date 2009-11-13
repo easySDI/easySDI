@@ -2124,6 +2124,9 @@ if ($version == "0.998")
 	 
 	 if ($version == "0.99997")
 	 {
+	 	/**
+	 	 * Add the support of an easySDI account for authentication on each service subject to be called via proxy.php
+	 	 */
 	 	$query="ALTER TABLE #__easysdi_basemap_content add column easysdi_account_id bigint(20) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -2135,6 +2138,11 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 	$query="ALTER TABLE #__easysdi_location_definition add column easysdi_account_id bigint(20) ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	$query="ALTER TABLE #__easysdi_product add column easysdi_account_id bigint(20) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

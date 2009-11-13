@@ -51,6 +51,7 @@ class product extends JTable
 	var $metadata_internal=0;
 	var $metadata_external=0;
 	var $admin_partner_id=0;
+	var $easysdi_account_id=null;
 	
 	// Class constructor
 	function __construct( &$db )

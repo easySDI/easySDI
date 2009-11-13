@@ -24,7 +24,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct( $rowProduct,$id, $option ){
+	function editProduct( $rowProduct,$rowsAccount,$id, $option ){
 		
 		global  $mainframe;
 				
@@ -164,7 +164,27 @@ class HTML_product {
 		}
 		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList);
 		
-		?>				
+		?>	
+		<script>
+		function displayAuthentication()
+		{
+			if (document.forms['adminForm'].service_type[0].checked)
+			{
+				document.getElementById('previewPassword').disabled = true;
+				document.getElementById('previewPassword').value = "";
+				document.getElementById('previewUser').disabled = true;
+				document.getElementById('previewUser').value ="";
+				document.getElementById('easysdi_account_id').disabled = false;
+			}
+			else
+			{
+				document.getElementById('previewPassword').disabled = false;
+				document.getElementById('previewUser').disabled = false;
+				document.getElementById('easysdi_account_id').disabled = true;
+				document.getElementById('easysdi_account_id').value = '0';
+			}
+		}		
+		</script>			
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
 		echo $tabs->startPane("productPane");
@@ -328,20 +348,51 @@ class HTML_product {
 								</select>
 								</td>																						
 							</tr>
-
-							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="400" id="previewUser" name="previewUser" value="<?php echo $rowProduct->previewUser; ?>" /></td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_PASSWORD"); ?> : </td>
-								<td><input class="inputbox" type="password" size="50" maxlength="400" id="previewPassword" name="previewPassword" value="<?php echo $rowProduct->previewPassword; ?>" /></td>								
-							</tr>											
+							<td colspan ="3">
+							<fieldset>
+							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
+								<table>
+								<tr>
+									<td >
+										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowProduct->easysdi_account_id) echo "checked";?>>
+									</td>
+									<td colspan="2">
+										<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
+									<td><?php $enable = $rowProduct->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowProduct->easysdi_account_id); ?></td>
+								</tr>
+								<tr>
+									<td >
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowProduct->previewUser) echo "checked";?>> 
+								 	</td>
+								 	<td colspan="2">
+									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
+								 	</td>
+							 	<tr>
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
+									<td><input <?php if (!$rowProduct->previewUser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="previewUser" id="previewUser" value="<?php echo $rowProduct->previewUser; ?>" /></td>							
+								</tr>							
+								<tr>
+									<td></td>
+									<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
+									<td><input <?php if (!$rowProduct->previewUser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="previewPassword" id="previewPassword" value="<?php echo $rowProduct->previewPassword; ?>" /></td>							
+								</tr>
+								
+								</table>
+							</fieldset>	
+							<td>	
+							</tr>										
 						</table>
 					</fieldset>
 				</td>

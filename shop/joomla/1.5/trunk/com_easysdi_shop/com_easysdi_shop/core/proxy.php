@@ -124,7 +124,7 @@ class SITE_proxy{
 						$query = $query = "SELECT * FROM #__easysdi_product WHERE id = $previewId"; 
 						$db->setQuery( $query);
 						$row = $db->loadObject();
-						SITE_proxy::getAuthentication ($row, $user, $password);
+						SITE_proxy::getAuthentication ($row, $user, $password, "preview");
 						//$user = $row->previewUser; 
 						//$password = $row->previewPassword;
 						
@@ -276,7 +276,7 @@ class SITE_proxy{
 		return $xmlEncodingHeader;
 	}
 	
-	function getAuthentication ($object, &$user, &$password)
+	function getAuthentication ($object, &$user, &$password, $type="")
 	{
 		if ($object->easysdi_account_id && $object->easysdi_account_id <> 0)
 		{
@@ -289,8 +289,16 @@ class SITE_proxy{
 		}
 		else
 		{
-			 $user = $object->user;
-			 $password = $object->password;
+			if($type == "preview")
+			{
+				$user = $object->previewUser;
+				$password = $object->previewPassword;
+			}
+			else
+			{
+				 $user = $object->user;
+				 $password = $object->password;
+			}
 		}
 	}
 	
