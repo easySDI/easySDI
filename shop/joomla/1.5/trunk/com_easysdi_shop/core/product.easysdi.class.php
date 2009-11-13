@@ -113,6 +113,7 @@ class location extends JTable
 	var $sort=0;
 	var $user=null;
 	var $password=null;
+	var $easysdi_account_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
