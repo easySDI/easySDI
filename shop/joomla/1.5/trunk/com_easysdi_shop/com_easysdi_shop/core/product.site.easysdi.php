@@ -278,11 +278,11 @@ class SITE_product {
 			$rowProduct->partner_id = $rowPartner->partner_id;
 		}
 		
-	// Si le produit n'existe pas encore, créer la métadonnée
+	// Si le produit n'existe pas encore, crï¿½er la mï¿½tadonnï¿½e
 		if ($rowProduct->id == 0)
 		{
-			// Création de la métadonnée pour le nouveau guid
-			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			// Crï¿½ation de la mï¿½tadonnï¿½e pour le nouveau guid
+			// Insï¿½rer dans Geonetwork la nouvelle version de la mï¿½tadonnï¿½e
 			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 			<csw:Transaction service=\"CSW\"
 			version=\"2.0.2\"
@@ -703,7 +703,8 @@ class SITE_product {
 		//List only the products for which metadata manager is the current user
 		$query = " SELECT * FROM #__easysdi_product where metadata_partner_id = $partner->partner_id " ;
 		$query .= $filter;
-
+		$query .= " order by data_title ASC";
+		
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
