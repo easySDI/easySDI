@@ -353,6 +353,7 @@ public class WPSServlet extends HttpServlet {
 			String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
 			String user_id = rs.getString("user_id");
 			String partner_id = rs.getString("partner_id");
+			String root_id = rs.getString("root_id");
 			String status = rs.getString("orderCode");
 			int buffer = 0;
 			buffer = rs.getInt("buffer");
@@ -424,7 +425,11 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:FAX>"+rsAddContact.getString("address_fax")+"</easysdi:FAX>\n");
 			    res.append("</easysdi:CONTACTADDRESS>\n");																
 			}
-			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+partner_id);
+			if (root_id != null)
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+root_id);
+			else
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+partner_id);
+			
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:INVOICEADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
@@ -442,7 +447,10 @@ public class WPSServlet extends HttpServlet {
 			    res.append("</easysdi:INVOICEADDRESS>\n");																
 			}
 	
-			rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+partner_id);
+			if (root_id != null)
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+root_id);
+			else
+				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+partner_id);
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:DELIVERYADDRESS>\n");
 			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
