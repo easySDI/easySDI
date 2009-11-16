@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Proxy</title>
+<title>EasySDI PROXY</title>
 </head>
 <body>
 <h1>EasySDI: Available PROXY services</h1>
