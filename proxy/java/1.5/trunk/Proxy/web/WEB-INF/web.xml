@@ -12,6 +12,12 @@
 		</init-param>
 	</servlet>
 
+	<!-- necessary for index.jsp -->
+	<context-param>
+		<param-name>configFile</param-name>
+		<param-value>C:/url_to_config/config.xml</param-value>
+	</context-param>
+
 	<servlet-mapping>
 		<servlet-name>ogc</servlet-name>
 		<url-pattern>/ogc/*</url-pattern>
