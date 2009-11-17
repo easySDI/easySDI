@@ -99,12 +99,21 @@ div .freeMd{
 	color: #666;
 }
 
-.mdPanContent{
+.mdCatContent{
 	vertical-align: top;
 }
 
-.mdPanContent input, .mdPanContent select{
-	width:200px;
+/* only for titles*/
+.mdCatContent tr td:first-child{
+	width:110px;
+}
+
+.mdCatContent input, .mdCatContent select{
+	width:240px;
+}
+
+.mdCatContent #simple_filterfreetextcriteria{
+	width:239px;
 }
 
 .olmdControlEditingToolbar  {
@@ -114,28 +123,36 @@ div .freeMd{
      width: 150px;
 }
 
-.catalog_controls{
-    text-align:right;
-}
-
 #advSearchRadio, #filter_visible, #filter_orderable{
 	width:10px;
 }
 
 #divAdvancedSearch{
-	border: 1px solid #ccc;
-	padding-bottom:5px;
-	padding-left:5px;
-	padding-right:5px;
-	padding-top:5px;
+	padding:1px;
+}
+
+.bodyShop #freetextcriteria{
+	width:239px;
+}
+
+.bodyShop #partner_id{
+	width:240px;
+}
+
+/* the calendar */
+.calendar, .calendar table {
+	border:0px solid #CCCCCC;
+	vertical-align:top;
+	height:18px;
+	width:18px;
 }
 
 #update_select{
-	width:150px;
+	width:140px;
 }
 
 #update_cal{
-	width:80px;
+	width:79px;
 }
 /********************************************************/
 /***     EasySDI Shop                                 ***/
@@ -235,7 +252,7 @@ div .freeMd{
 }
 
 .favoritePanContent .inputbox{
-	width:200px;
+	width:239px;
 }
 
 div.info {
@@ -939,8 +956,10 @@ width: 545px;
 background-color: #e4e4e4;
 
 }
-#status{
-          background-color: red;
+
+.product_propreties
+{
+  border: 2px solid #9f9f9f;
 }
 
 .product_proprety_row
@@ -1208,6 +1227,16 @@ div .reqUser{
 	background-image:url(../icons/silk/user.png);
 }
 
+.particular-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/user.png) top left no-repeat; 
+                   text-align: center;
+                   line-height: 16px; } 
+
+.particular-link{
+	height:16px;
+	width:16px;
+}
+
 #reqTreatTable .infoLogo{
 	width:20px;
 }
@@ -1223,69 +1252,85 @@ div .reqUser{
 }
 
 #reqTreatTable .reqStat{
-	width:50px;
+	width:75px;
 }
 
-.processTreatmentPage input, .processTreatmentPage textarea{
-	width:250px;
+#treatmentSearch{
+	width:256px;
 }
 
-.listOrdersForProvider .inputbox{
-	width:100px;
-}
-
-.listOrdersForProvider select{
-	width:110px;
+.listOrdersForProvider .treatment select{
+	width:125px;
 }
 
 .listOrders .inputbox{
-	width:150px;
+	width:252px;
 }
 
-.listOrders select{
-	width:110px;
+.listOrders select, .listOrdersContainer{
+	width:125px;
 }
-
 /********************************************************/
 /***     EasySDI Order                                ***/
 /********************************************************/
-table#orderList div{
+
+div .orderDate{
+	background-image:url(../icons/silk/date.png);
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+div .savedOrderDelete:hover, div .savedOrderOrder:hover{
 	background-color:transparent;
 	background-position:center;
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
-	
-}
-div .orderDate{
-	background-image:url(../icons/silk/date.png);
-}
-div .savedOrderDelete:hover, div .savedOrderOrder:hover{
 	cursor:pointer;
 }
 div .savedOrderDelete{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
 	background-image:url(../icons/silk/bin.png);
 }
 div .savedOrderOrder{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
 	background-image:url(../icons/silk/basket_put.png);
 }
 
 /********************************************************/
 /***      EasySDI Process Order                       ***/
 /********************************************************/
-.orderInfo
-	{
-		font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-		font-size:11px;
-		margin: 0px 0px 0px 15px;
-		width: 500px;
-		border: 1px solid #CCCCCC;
-  		margin-bottom: 15px;
-	}
-.orderInfo .orderInfoDetail
-	{
-		font-weight:bold;
-	}
+.orderInfo{
+	width:100%;
+}
+.orderInfo a.modal{
+	padding:0px;
+	font-weight:bold;
+}
+
+.orderInfo th{
+	text-align:left;
+}
+
+.orderInfoTitle
+{
+	width:150px;
+	font-weight:bold;
+	text-align:left;
+}
+
+.processTreatmentPage input, .processTreatmentPage textarea{
+	width:350px;
+}
 
 /********************************************************/
 /***      EasySDI Order Recap                         ***/
@@ -1313,7 +1358,6 @@ div .savedOrderOrder{
 	background-color:  rgb( 240, 240, 240);
 	padding:3px 3px 3px 5px;
 	margin: 5px 0px 0px 0px;
-	border-top:15px solid #FFFFFF;
 }
 .orderRecap .ortitle3{
 	font-weight: bold;
@@ -1609,11 +1653,161 @@ div#editMetadata{
 /*******************************/
 /*** EasySDI metadata edition  */
 /*******************************/
+
+/* Text in boxes, beside title */
+#formContainer .x-form-field {
+	font-size:11px;
+}
+
+/* Title text, spacing beetween lines */
+#formContainer .x-form-item{
+	margin-bottom:3px !important;
+	font-size:11px;
+}
+
+/* Titles */
+#formContainer .x-form-item-label{
+	width:150px !important;
+}
+
+/* Boxes, beside title */
+#formContainer .x-form-element{
+	padding-left:150px !important;
+}
+
+
+/* form */
 .easysdi_shop_backend_form {
 	width: 520px;
 }
 
-.x-panel-body {
+#formContainer .x-panel-body {
 	background-color:transparent;
 	border-color:#99BBE8;
 }
+
+.easysdi_shop_backend_fieldset {
+	width: auto;
+}
+
+/* root fieldset */
+#gmd_MD_Metadata
+{
+	border: 0px solid #9f9f9f !important;
+}
+#gmd_MD_Metadata legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #9f9f9f !important;
+	  background-color: transparent !important;
+	  color:transparent !important;
+}
+
+
+
+/*first fieldset floor */
+#gmd_MD_Metadata div div fieldset
+{
+	border: 2px solid #9f9f9f !important;
+}
+#gmd_MD_Metadata div div fieldset legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #9f9f9f !important;
+	  background-color: #9f9f9f !important;
+	  color:white !important;
+}
+
+#gmd_MD_Metadata div div fieldset .x-panel-collapsed{
+	  border-left: 0px !important;
+	  border-right: 0px !important;
+	  border-bottom: 0px !important;
+	  border-top: 2px solid #9f9f9f !important;
+}
+
+/*second fieldset floor and followings */
+#gmd_MD_Metadata div div fieldset div div fieldset
+{
+	border: 1px solid #B5B8C8 !important;
+}
+
+#gmd_MD_Metadata div div fieldset div div fieldset legend
+{
+	  padding: 0px 3px !important;
+	  border: 0px solid #B5B8C8 !important;
+	  background-color: transparent !important;
+	  color:#333333 !important;
+}
+
+#gmd_MD_Metadata div div fieldset div div fieldset .x-panel-collapsed{
+	  border-left: 0px !important;
+	  border-right: 0px !important;
+	  border-bottom: 0px !important;
+	  border-top: 1px solid #9f9f9f !important;
+}
+
+#gmd_MD_Metadata div div fieldset legend{
+  padding: 0px 3px;
+  border: 0px solid #9f9f9f;
+  background-color: #9f9f9f;
+  color:white;
+}
+
+.easysdi_shop_backend_textarea {
+	margin-bottom:3px;
+	margin-top:3px;
+	width: 292px !important;
+	height: 80px !important;
+}
+
+/* Fieldset in general */
+#formContainer .x-fieldset {
+	border:1px solid #ccc;
+	display:block;
+	margin-bottom:5px;
+	padding:5px;
+	width:auto !important; //for the multiselect box
+}
+
+#formContainer .x-fieldset-body{
+	width:auto !important; //for the multiselect box
+}
+
+#formContainer .x-fieldset-header  {
+	color: #333333;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#formContainer .x-form-field-wrap #formContainer .x-form-trigger {
+	background-image:url(../images/default/form/trigger.gif);
+	border-bottom-color:#B5B8C8;
+}
+
+.easysdi_shop_backend_multiselect {
+	width:300px !important;
+	height:100px !important;
+}
+
+.easysdi_shop_backend_combobox {
+	width:281px !important;
+}
+
+.easysdi_shop_backend_textfield {
+	width:298px !important;
+}
+
+
+.easysdi_shop_backend_numberfield {
+	width:292px !important;
+}
+
+
+.easysdi_shop_backend_datetimefield {
+	width:281px !important;
+}
+
+.easysdi_shop_backend_datefield {
+	width:281px !important;
+}
+
