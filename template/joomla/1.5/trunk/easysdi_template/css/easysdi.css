@@ -1437,6 +1437,7 @@ padding:0;
 /***              EasySDI Caddy                       ***/
 /********************************************************/
 .deleteProductCaddy { 
+	cursor:pointer;
 	background-image:url(../icons/silk/bin.png);
 	background-position:center;
 	background-color:transparent;
@@ -1445,6 +1446,7 @@ padding:0;
 	background-repeat:no-repeat;
 }
 .previewActivableProductCaddy { 
+	cursor:pointer;
 	background-image:url(../images/btn_visualiser_1.png);
 	background-position:center;
 	height:28px;
@@ -1452,6 +1454,7 @@ padding:0;
 	background-repeat:no-repeat;
 }
 .previewActivateProductCaddy { 
+	cursor:pointer;
 	background-image:url(../images/btn_visualiser_2.png);
 	background-position:center;
 	height:28px;
@@ -1459,6 +1462,7 @@ padding:0;
 	background-repeat:no-repeat;
 }
 .previewDisableProductCaddy { 
+	cursor:pointer;
 	background-image:url(../images/btn_visualiser_0.png);
 	background-position:center;
 	height:28px;
