@@ -43,9 +43,9 @@ function manageFavoriteProduct ( $orderable = 1)
 		$language=&JFactory::getLanguage();
 		$language->load('com_easysdi');
 		$limitstart = JRequest::getVar('limitstart',0);
-		$limit = JRequest::getVar('limit',5);
+		$limit = JRequest::getVar('limit',20);
 		if($limit == "")
-			$limit = 5;
+			$limit = 20;
 		if($limit == 0)
 			$limitstart = 0;
 		$option = JRequest::getVar('option');
@@ -178,6 +178,7 @@ function manageFavoriteProduct ( $orderable = 1)
 		$db->setQuery( $query,$limitstart,$limit);
 		$rows = $db->loadObjectList();
 		
+		
 		if ($db->getErrorNum()) 
 		{
 			echo "<div class='alert'>"; 										
@@ -276,6 +277,7 @@ function manageFavoriteProduct ( $orderable = 1)
 					<table id="favoriteManTable" class="box-table" width="100%">
 					<thead>
 						<tr>
+							<th class="logo">&nbsp;</th>
 							<th class="ptitle"><?php echo JText::_("EASYSDI_PRODUCT_TITLE"); ?></th>
 							<th class="logo">&nbsp;</th>
 							<th class="logo">&nbsp;</th>
@@ -288,25 +290,27 @@ function manageFavoriteProduct ( $orderable = 1)
 					$i=0;	
 					//Display all the products 
 					foreach ($rows  as $row)
-					{		
+					{
+					$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$row->admin_partner_id;
+					$db->setQuery($queryPartnerLogo);
+					$partner_logo = $db->loadResult();
 					?>
 	
 							<tr>		
-								<!--<td width="45" > 
-									<img src="./img.gif" width="40" height="40"> 
+								<td>
+								   <img height="18px" width="18px" src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
 								</td>
-								-->
 								<td width="100%">
 									<span class="mdtitle" >
 									<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" 
-										href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title; ?></a>
+									href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title; ?></a>
 									</span>
-									<!--
-									<br>
-									<span class="mdsupplier" ><?php echo $row->supplier_name;?>								</span>
-									<br>
-									-->
 								</td>
+								<!--
+								<td width="30%">
+									<span class="mdsupplier" ><?php echo $row->supplier_name;?></span>
+								</td>
+								-->
 								<td class="logo"><div title="<?php if ( in_array($row->id,$productList)) echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); else echo JText::_('EASYSDI_ADD_TO_FAVORITE'); ?>" class="<?php if ( in_array($row->id,$productList)) echo "pdFavorite"; else echo "pdNotFavorite"; ?>" id="chooseFavorite" onClick="document.getElementById('productId').value='<?php echo $row->id; ?>';document.getElementById('task').value='<?php if ( in_array($row->id,$productList)) echo "remove"; else echo "add"; ?>Favorite'; submitOrderForm();"/></td>
 								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="document.getElementById('productId').value='<?php echo $row->id; ?>';document.getElementById('task').value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
 							</tr>

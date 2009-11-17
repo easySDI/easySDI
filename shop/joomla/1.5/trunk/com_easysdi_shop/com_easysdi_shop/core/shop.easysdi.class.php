@@ -2827,8 +2827,22 @@ if (count($rows)>0){
 
 
 <h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+<script  type="text/javascript">
+	window.addEvent('domready', function() {
+		//Handler for the clear button
+		document.getElementById('easysdi_clear_button').addEvent('click', function() {
+			document.getElementById('freetextcriteria').value='';
+			document.getElementById('partner_id').value = '';
+			document.getElementById('filter_visible').checked = false;
+			document.getElementById('update_select').value = 'equal';
+			document.getElementById('update_cal').value = '';
+			document.getElementById('catalog_search_form').submit();
+		});
+	});
+	
 
-<table width="100%" class="mdPanContent">
+</script>
+<table width="100%" class="mdCatContent">
 	<tr>
 		<td>
 			<table width="100%">
@@ -2839,6 +2853,8 @@ if (count($rows)>0){
 					<td class="catalog_controls">
 						<button type="submit" class="easysdi_search_button">
 							<?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+						<button id="easysdi_clear_button" class="easysdi_clear_button" type="submit">
+							<?php echo JText::_("EASYSDI_SHOP_CLEAR_BUTTON"); ?></button>
 					</td>
 				</tr>
 				<tr>
@@ -2846,11 +2862,10 @@ if (count($rows)>0){
 					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
 					<td>&nbsp;</td>		
 				</tr>
-			</table>
-			<table width="100%">
 				<tr>
 					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_VISIBLE");?></td>
 					<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
+					<td>&nbsp;</td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("EASYSDI_SHOP_UPDATE");?></td>
@@ -2861,6 +2876,7 @@ if (count($rows)>0){
 							<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_AFTER");?></option>
 							<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_NOTEQUAL");?></option>
 						</select>
+					
 						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
 					</td>
 				</tr>

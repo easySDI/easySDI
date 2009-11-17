@@ -110,8 +110,10 @@ class SITE_cpanel {
 
 		//Build the query on product treatment type
 		$treatmentTypeQuery = "";
-		$treatmentType = JRequest::getVar("treatmentType","");
-		if($treatmentType != "")
+		$treatmentType = JRequest::getVar("treatmentType");
+		if($treatmentType == "")
+			$treatmentType =1;
+		if($treatmentType != "" and $treatmentType != "-1")
 		{
 			$treatmentTypeQuery = " AND p.treatment_type = $treatmentType ";
 		}
@@ -178,6 +180,7 @@ class SITE_cpanel {
 					     uClient.id as client_id,
 					     p.data_title as data_title,
 					     o.name as name,
+					     o.order_date as order_date,
 					     o.type as type, 
 					     o.status as status, 
 					     osl.code as code, 
@@ -287,7 +290,6 @@ class SITE_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-
 		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter, $treatmentList, $treatmentType);
 
 	}
@@ -710,10 +712,8 @@ class SITE_cpanel {
 		}
 		
 		$db =& JFactory::getDBO();
-		
 		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
-		$db->setQuery($query );
-
+		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			echo "<div class='alert'>";

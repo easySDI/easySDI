@@ -569,7 +569,7 @@ class SITE_product {
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PRODUCTS");
         
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 10 );
+		$limit = JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
 		$database =& JFactory::getDBO();		 	
@@ -659,7 +659,7 @@ class SITE_product {
 		
 		
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 15 );
+		$limit = JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
 		$database =& JFactory::getDBO();		 	

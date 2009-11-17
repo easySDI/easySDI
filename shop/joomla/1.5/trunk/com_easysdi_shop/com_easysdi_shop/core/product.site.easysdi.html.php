@@ -1036,6 +1036,9 @@ class HTML_product{
 		<table width="100%">
 			<tr>
 				<td align="left">
+					<b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+				</td>
+				<td align="left">
 					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
 				</td>
 				<td align="right">
@@ -1043,8 +1046,7 @@ class HTML_product{
 				</td>
 			</tr>
 			<tr>
-				<td align="left">&nbsp;</td>
-				<td align="right">
+				<td colspan="3" align="right">
 					<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
 				</td>
 			</tr>
@@ -1085,7 +1087,7 @@ class HTML_product{
 			
 			?>		
 			<tr>
-			<td class="logo2"><div <?php if($row->external) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->internal) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
+			<td class="logo2"><div <?php if($row->external && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->internal && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
 			<td width="100%"><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
 			
 			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editProduct" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>', '_self');"/></td>
@@ -1134,7 +1136,12 @@ class HTML_product{
 		<table width="100%">
 			<tr>
 				<td align="left">
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" " />			
+					<b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+				</td>
+				<td align="left">
+					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxSearchProduct" " />
+				</td>
+				<td align="right">
 					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 				</td>
 			</tr>
