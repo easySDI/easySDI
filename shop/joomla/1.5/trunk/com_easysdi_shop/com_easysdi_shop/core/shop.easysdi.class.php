@@ -2226,7 +2226,7 @@ if (count($rows)>0){
 			//only if status is SENT
 			if($order_status_value == "SENT")
 			{
-				SITE_product::sendMailByEmail($user->email,JText::_("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT"),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name));
+				SITE_product::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
 			}
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
