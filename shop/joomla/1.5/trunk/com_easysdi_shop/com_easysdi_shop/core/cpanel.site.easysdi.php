@@ -151,7 +151,7 @@ class SITE_cpanel {
 		}
 
 		if ( $search ) {
-			$filterList[] = "(o.name LIKE '%$search%')";
+			$filterList[]= "(o.name LIKE '%$search%' OR o.order_id LIKE '%$search%')";
 		}
 
 		if (count($filterList) > 0)
@@ -628,7 +628,7 @@ class SITE_cpanel {
 		}
 
 		if ( $search ) {
-			$filterList[]= "(o.name LIKE '%$search%')";
+			$filterList[]= "(o.name LIKE '%$search%' OR o.order_id LIKE '%$search%')";
 		}
 
 		if (count($filterList) > 1)
