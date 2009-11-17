@@ -195,38 +195,27 @@ class HTML_catalog{
 			<!--
 				This is the simple search
 			-->
-
-			<table width="100%" class="mdPanContent">
+			<div>
+			<table width="100%" class="mdCatContent">
 				<tr>
-					<td>
-						<table width="100%">
-							<tr>
-								<td align="left"><b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
-								<!-- this was the old advanced critera: filterfreetextcriteria -->
-								<td align="left"><input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
-								<td class="catalog_controls">
-									<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
-										<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
-									<button type="submit" id="easysdi_clear_button" class="easysdi_clear_button">
-										<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
-								</td>
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_PARTNER");?></td>
-								<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
-								<td>&nbsp;</td>		
-							</tr>
-							<tr>
-								<td class="catalog_controls" colspan="3">
-									<input id="advSearchRadio" name="advSearchRadio" type="checkBox" value=""/>
-									<span><?php echo JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"); ?></span>
-								</td>
-							</tr>
-						</table>
+					<td align="left"><b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
+					<!-- this was the old advanced critera: filterfreetextcriteria -->
+					<td align="left"><input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
+					<td class="catalog_controls">
+						<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
+							<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+						<button type="submit" id="easysdi_clear_button" class="easysdi_clear_button">
+							<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
 					</td>
 				</tr>
+				<tr>
+					<td><?php echo JText::_("EASYSDI_CATALOG_FILTER_PARTNER");?></td>
+					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
+					<td><input id="advSearchRadio" name="advSearchRadio" type="checkBox" value=""/>
+						<span><?php echo JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"); ?></span></td>		
+				</tr>
 			</table>
-			
+			</div>
 			<!--
 			<table>
 				<tr>
@@ -263,7 +252,7 @@ class HTML_catalog{
 		
 ?>
 			<div id="divAdvancedSearch">
-				<table width="100%" class="mdPanContent">
+				<table width="100%" class="mdCatContent">
 					<tr>
 						<td ><?php echo JText::_("EASYSDI_CATALOG_FILTER_THEME");?></td>
 						<td><?php echo JHTML::_("select.genericlist", $themes, 'filter_theme', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_theme')); ?></td>
@@ -497,8 +486,6 @@ class HTML_catalog{
 	 <tr>
 	   <td colspan="5" halign="middle"><div class="separator" /></td>
 	 </tr>
-	 
-
 	 <?php
 	}
 	?>
