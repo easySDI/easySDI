@@ -199,12 +199,11 @@ if ($curstep == "2")
 		$query2 = "SELECT * FROM #__easysdi_location_definition ";
 		$db->setQuery( $query2 );
 		$rows2 = $db->loadObjectList();
-			
+		
 		foreach ($rows2 as $row)
 		{?>
 	 		if ( parId == 'locationsListLocation<?php echo $row->id; ?>')
 	 		{
-	 			
 	 			var filter ="";
 	 			<?php 
 	 			/*	if ($row->searchbox == 0) 
@@ -465,12 +464,12 @@ if ($curstep == "2")
 						map.zoomToExtent (feat2.geometry.getBounds(),true);
                        break;
                     }
-                }                       
+                }
                 break;
-             }                       
-    	}		  	       		
-	}				
-		</script>				
+             }
+    	}
+	}
+		</script>
 		<?php	
 }
 
