@@ -19,7 +19,17 @@
 defined('_JEXEC') or die('Restricted access');
 
 global  $mainframe;
+global  $areaPrecision;
+global  $meterToKilometerLimit;
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 $curstep = JRequest::getVar('step',0);
+$areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");
+$meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");
+if($areaPrecision == "")
+	$areaPrecision = 2;
+if($meterToKilometerLimit == "")
+	$meterToKilometerLimit = 100000;
+
 
 if ($curstep == "2")
 {
@@ -68,9 +78,6 @@ if ($curstep == "2")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			echo 			$db->getErrorMsg();
 		}
-
-
-
 
 		$query = "SELECT count(*) as total ,perimeter_id  FROM `#__easysdi_product_perimeter` where product_id in (";
 		foreach( $cid as $id )
@@ -259,7 +266,7 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 			$rowsSurfaceMin = $db->loadObjectList();
 			foreach( $rowsSurfaceMin as $surfaceMin )
 			{
-				echo JText::_("EASYSDI_SURFACE_MIN")." ".($surfaceMin->surface_min/1000000)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL")."<br>";
+				echo JText::_("EASYSDI_SURFACE_MIN")." ".renderAreaText($surfaceMin->surface_min, true)."<br>";
 				?>
 				<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
 				<?php
@@ -270,7 +277,7 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 			$rowsSurfaceMax = $db->loadObjectList();
 			foreach( $rowsSurfaceMax as $surfaceMax )
 			{
-				echo JText::_("EASYSDI_SURFACE_MAX")." ".($surfaceMax->surface_max/1000000)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL")."<br>";
+				echo JText::_("EASYSDI_SURFACE_MAX")." ".renderAreaText($surfaceMax->surface_max, true)."<br>";
 				?>
 				<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
 				<?php
@@ -279,11 +286,15 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 				
 			$totalArea = $mainframe->getUserState('totalArea');
 			if (!$totalArea) $totalArea=0;
-
-
-			echo JText::_("EASYSDI_SURFACE_SELECTED");?>
+			$un = "";
+			if($totalArea <= $meterToKilometerLimit)
+				$un = JText::_("EASYSDI_SURFACE_M2");
+			else
+				$un = JText::_("EASYSDI_SURFACE_KM2");
+				
+				echo "<div id=\"EASYSDI_SURFACE_SELECTED\">".JText::_("EASYSDI_SURFACE_SELECTED")." ($un):"."</div>";?>
 <input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
-<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo round($totalArea/1000000, $decimal_precision); ?>">
+<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo renderAreaText($totalArea, false); ?>">
 <br>
 <select multiple="multiple" size="10" id="selectedSurface"  	onChange="changeSelectedSurface()">
 	<?php
@@ -368,6 +379,10 @@ function checkBufferValue()
 
 	 function drawSelectedSurface()
 	 {	
+		var meterToKilometerLimit = <?php echo $meterToKilometerLimit;?>;
+		var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
+		var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
+		var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
 	 	var elSel = document.getElementById('selectedSurface');
 		var features = vectors.features;
 		if (features.length == 0) 
@@ -400,8 +415,9 @@ function checkBufferValue()
     		{
     			featureArea = 0;
     		}
-			document.getElementById('totalSurface').value =  parseFloat(featureArea );   
-			document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(featureArea )/1000000).toFixed(<?php echo $decimal_precision; ?> );    		
+			document.getElementById('totalSurface').value =  parseFloat(featureArea );
+			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = featureArea <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+			document.getElementById('totalSurfaceDisplayed').value = featureArea <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(<?php echo $areaPrecision; ?> ) : parseFloat( parseFloat(featureArea/1000000)).toFixed(<?php echo $areaPrecision; ?> );
 		}
 		
 	}
@@ -536,6 +552,7 @@ function checkBufferValue()
 			}
 		}
 		
+		//Manual selection starts here
 		function selectManualPerimeter()
 		{
 			if (isFreeSelectionPerimeter)
@@ -581,10 +598,17 @@ function checkBufferValue()
  <button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
  */
 ?> <?php include 'manual_perimeter.php' ;?></div>
-<div id="manualAddGeometry" style="display: none"><?php echo JText::_("EASYSDI_ADD_X_TEXT");?>
-<input type="text" id="xText" value=""><br>
-<?php echo JText::_("EASYSDI_ADD_Y_TEXT");?> <input type="text"
-	id="yText" value=""><br>
+<div id="manualAddGeometry" style="display: none">
+<table>
+	<tr>
+		<td><?php echo JText::_("EASYSDI_ADD_Y_TEXT");?></td>
+		<td><input type="text" id="xText" value=""></td>
+	</tr>
+	<tr>
+		<td><?php echo JText::_("EASYSDI_ADD_X_TEXT");?></td>
+		<td><input type="text" id="yText" value=""></td>
+	</tr>
+</table>
 <button class="addPerimeterButton" type="button"
 	onClick="addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>
 <button class="addPerimeterButton" type="button"
@@ -609,8 +633,6 @@ function checkBufferValue()
 		}
 	
 		$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
-			
-
 		$totalArea = $mainframe->getUserState('totalArea');
 		if (!$totalArea) $totalArea=0;
 		?>
@@ -647,8 +669,7 @@ function checkBufferValue()
 		<div>
 		<h5>
 		<?php
-		//Convert m2 to km2 before display
-		echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".round($totalArea/1000000,$decimal_precision)." ".JText::_("EASYSDI_SURFACE_MAX_UNIT_LABEL") ;
+		echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".renderAreaText($totalArea, true);
 		?></h5>
 		</div>
 		<div>
@@ -663,4 +684,30 @@ function checkBufferValue()
 		<?php
 	}
 }
+
+function renderAreaText($surfSqMtr, $langSuffix){
+	global  $areaPrecision;
+	global  $meterToKilometerLimit;
+	$text = "";
+	//display m2
+	if($surfSqMtr <= $meterToKilometerLimit){
+		$text = round($surfSqMtr,$areaPrecision);
+		if($langSuffix)
+			$text .=" ".JText::_("EASYSDI_SURFACE_M2") ;
+	}
+	//display km2
+	else if($surfSqMtr > $meterToKilometerLimit){
+		$text = round($surfSqMtr/1000000,$areaPrecision);
+		if($langSuffix)
+			$text .=" ".JText::_("EASYSDI_SURFACE_KM2") ;
+	}
+	return $text;
+}
+
+function renderArea($surfSqMtr){
+	global $meterToKilometerLimit;
+	
+}
+
+
 ?>
