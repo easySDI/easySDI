@@ -115,7 +115,11 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"METADATA"))
+			//the partner must at least have a metadata assigned to him
+			//
+			$db->setQuery("SELECT count(*) FROM #__easysdi_product where metadata_partner_id=".$rowPartner->partner_id);
+			$res = $db->loadResult();
+			if(userManagerRight::hasRight($rowPartner->partner_id,"METADATA") && $res > 0)
 			{
 				?>
 				<li>
@@ -132,14 +136,6 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE"))
-			{
-				?>
-				<li>
-				<a href ="./index.php?option=com_easysdi_shop&task=manageFavoriteProduct"><span><?php echo JText::_("EASYSDI_MENU_ITEM_FAVORITES"); ?></span></a>
-				</li>
-				<?php
-			}
 			/*
 			$query = "SELECT role_id FROM `#__easysdi_community_role` where role_code='DIFFUSION'";
 			$db->setQuery( $query);
@@ -151,7 +147,12 @@ if (!$user->guest)
 			$db->setQuery( $query);
 			$product_count = $db->loadResult();
 			if($product_count > 0)*/
-			if (userManagerRight::hasRight($rowPartner->partner_id,"DIFFUSION"))
+			
+			//the partner must at least have a product for diffusion assigned to him
+			//
+			$db->setQuery("SELECT count(*) FROM #__easysdi_product where diffusion_partner_id=".$rowPartner->partner_id);
+			$res = $db->loadResult();
+			if (userManagerRight::hasRight($rowPartner->partner_id,"DIFFUSION") && $res > 0)
 			{
 				?>
 				<li>
@@ -159,7 +160,14 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			
+			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE"))
+			{
+				?>
+				<li>
+				<a href ="./index.php?option=com_easysdi_shop&task=manageFavoriteProduct"><span><?php echo JText::_("EASYSDI_MENU_ITEM_FAVORITES"); ?></span></a>
+				</li>
+				<?php
+			}
 			?>
 		</ul>
 		<table class="easysdi_disconnect_table" width="100%">
