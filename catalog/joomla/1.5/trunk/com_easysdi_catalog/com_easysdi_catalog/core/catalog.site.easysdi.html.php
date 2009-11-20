@@ -478,7 +478,7 @@ class HTML_catalog{
 	  	<?php if ($hasPreview > 0){ ?>
 	  <td><span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
-			rel="{handler:'iframe',size:{x:540,y:660}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+			rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
       </td>
 		<?php } ?>
 	  <td>&nbsp;</td>
