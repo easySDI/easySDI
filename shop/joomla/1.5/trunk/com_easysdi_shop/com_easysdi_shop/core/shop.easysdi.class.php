@@ -114,7 +114,13 @@ class HTML_shop {
 	var isFreeSelectionPerimeter = false;
 	var wfsSelection;
 	var fromZoomEnd = false;
-	
+	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");?>;
+	if(meterToKilometerLimit == '') meterToKilometerLimit = 100000;
+	var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
+	var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
+	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
+	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");?>;
+	if(MOD_PERIM_AREA_PRECISION == '') MOD_PERIM_AREA_PRECISION = 2;
 	
 	function onFeatureSelect(feature) 
 	{
@@ -152,7 +158,9 @@ class HTML_shop {
 			elSel.remove(elSel.length - 1);
 		}
 		document.getElementById('totalSurface').value = 0;
-		document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> ); 		
+		
+		document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";		
+		document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION); 		
 		removeSelection();
 	}
 	
@@ -832,7 +840,8 @@ function setAlpha(imageformat)
 	    	}
 	    	
 			document.getElementById('totalSurface').value =  parseFloat(featureArea );
-			document.getElementById('totalSurfaceDisplayed').value =  parseFloat(parseFloat(featureArea )/1000000).toFixed(<?php echo $decimal_precision; ?> );    		
+			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(featureArea) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+		        document.getElementById('totalSurfaceDisplayed').value = parseFloat(featureArea) <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(featureArea/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 	     
 	     	if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
 	     	{
@@ -849,8 +858,9 @@ function setAlpha(imageformat)
 	     	}
 			if (feature.geometry instanceof OpenLayers.Geometry.Point)
 			{
-	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );                         
-			   	document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );       
+			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 			   	    		
 			   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 				new Option(feature.geometry,feature.geometry);
@@ -922,7 +932,8 @@ function setAlpha(imageformat)
 								//Remove the value							
 								document.getElementById("selectedSurface").remove(k);								
 								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-								document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+								document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+								document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 																								
 								found=k;																			
 							}            				
@@ -971,7 +982,8 @@ function setAlpha(imageformat)
 			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 			   		    		//Add the new value
 		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            			document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+		            			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+							document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    
 			   		    	}
 			   		    }
@@ -982,7 +994,8 @@ function setAlpha(imageformat)
 			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 		   		    	//Add the new value
 		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            	document.getElementById('totalSurfaceDisplayed').value = parseFloat( parseFloat(document.getElementById('totalSurface').value) /1000000).toFixed(<?php echo $decimal_precision; ?> );
+		            	document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+				document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    
 		   		    }
 		   		    
@@ -1309,7 +1322,7 @@ function setAlpha(imageformat)
 ?>
 
 
-<fieldset class="product_propreties"><legend><?php echo JText::_($product->data_title);?></legend> <?php
+<fieldset id="product_propreties" class="product_propreties"><legend><?php echo JText::_($product->data_title);?></legend> <?php
 $db->setQuery( $query );
 $rows = $db->loadObjectList();
 		
@@ -1324,11 +1337,12 @@ if (count($rows)>0){
 		switch($row->type_code){
 			case "list":
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-				
-				echo "<select class=\"product_proprety_row_list\" name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
+				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
+				echo "<table><tr><td>";
+				echo "<select class=\"product_proprety_row_list$isMandatoryClass\" name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
 				//add a default option that replaces the text before the list, value = -1 to be sure to not interfer with pvd.id.
 				echo "<option value='-1'>-". JText::_($row->translation)."-</option>";
 				echo "<option></option>";
@@ -1342,17 +1356,19 @@ if (count($rows)>0){
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
 				}
 				echo "</select>";
+				echo "</td><td>";
+				if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+				echo "</td></tr></table>";
 				break;
 			case "mlist":
-				echo JText::_($row->translation)."<br/>";
-
+				echo "<div id='".$row->code."_mlist_property_".$product->id."[]_label'>".JText::_($row->translation).":</div>";
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
-				
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-
-				echo "<select class=\"product_proprety_row_list\" multiple size='5' name='".$row->code."_mlist_property_".$product->id."[]' id='".$row->code."_mlist_property_".$product->id."[]'>";
+				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
+				echo "<table><tr><td>";
+				echo "<select class=\"product_proprety_row_list$isMandatoryClass\" multiple size='5' name='".$row->code."_mlist_property_".$product->id."[]' id='".$row->code."_mlist_property_".$product->id."[]'>";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_mlist_property_'.$product->id);
 					$selected = "";
@@ -1362,31 +1378,36 @@ if (count($rows)>0){
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
 				}
 				echo "</select>";
+				echo "</td><td>";
+				if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+				echo "</td></tr></table>";
 				break;
 			case "cbox":
 				echo 	JText::_($row->translation).":&nbsp;&nbsp;";
 				
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
-				
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
-
+				$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_cbox_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
 						if (in_array($rowValue->value,$selProduct)) $selected ="checked";
 					}
-					echo "<input type='checkbox' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'> ". JText::_($rowValue->val_trans)."&nbsp;&nbsp;";
+					
+					echo "<input type='checkbox' class='".$isMandatoryClass."' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'> ". JText::_($rowValue->val_trans)."&nbsp;";
+					if($rowValue->mandatory == 1) echo "<span class=\"mdtyProperty\">*</span>&nbsp;&nbsp;"; else echo"&nbsp;";
 				}
 				break;
 			case "text":
-				echo JText::_($row->translation).":<br/>";
+				echo "<div id='".$row->code."_text_property_".$product->id."_label'>".JText::_($row->translation).":</div>";
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
+				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
 				foreach ($rowsValue as $rowValue){
 					$valueText = $mainframe->getUserState($row->code.'_text_property_'.$product->id);
 
@@ -1395,19 +1416,23 @@ if (count($rows)>0){
 					}else{
 						$selected = $rowValue->val_trans;
 					}
-					echo "<input  type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' value='".JText::_($selected)."' />";
+					echo "<table><tr><td>";
+					echo "<input class=\"msgProperty$isMandatoryClass\" type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' value='".JText::_($selected)."' />";
+					echo "</td><td>";
+					if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+					echo "</td></tr></table>";
 					break;
 				}
 				break;
 				
 				
 			case "textarea":
-				echo JText::_($row->translation)."<br/>";
+				echo "<div id='".$row->code."_textarea_property_".$product->id."[]_label'>".JText::_($row->translation).":</div>";
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
-				
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
+				$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
 				
 			foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_textarea_property_'.$product->id);
@@ -1417,14 +1442,17 @@ if (count($rows)>0){
 					}else{
 						$selected = $rowValue->val_trans;
 					}
-
-					echo "<TEXTAREA  rows=3 COLS=62 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
+					echo "<table><tr><td>";
+					echo "<TEXTAREA class='".$isMandatoryClass."' rows=3 COLS=62 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
+					echo "</td><td>";
+					if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+					echo "</td></tr></table>";
 					break;
 				}
 				break;
 			case "message":
 				echo JText::_($row->translation);
-				$query="SELECT pvd.order as value_order, 
+				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, 
 							   pvd.text as value_text, 
 							   pvd.id as value, 
 							   pvd.translation as val_trans 
@@ -1447,7 +1475,7 @@ if (count($rows)>0){
 					<?php 
 					echo JText::_($selected);
 					?>
-					<input type='hidden'  name='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' id='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' value='<?php echo $selected;?>'></input>
+					<input type='hidden' name='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' id='<?php echo $row->code; ?>_message_property_<?php echo $product->id; ?>' value='<?php echo $selected;?>'></input>
 					</div>
 					<?php 
 					break;
@@ -2426,17 +2454,101 @@ if (count($rows)>0){
 		}
 		?>
 <h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
+<script>
+function validateForm(curStep){
+	//curStep = the new step to come
+	//check that all properties were filled in
+	if(curStep == 4){
+		
+		
+		var errorMsg = "";
+		var errorNum = 0;
+		//
+		//select
+		//
+		var aSel = $('product_propreties').getElementsByTagName("select");
+		for(var i=0;i<aSel.length;i++){
+			
+			//Is the property mandatory?
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){			
+				selected = new Array(); 
+				for (var j = 0; j < aSel[i].options.length; j++){
+					if (aSel[i].options[j].selected && (aSel[i].options[j].value != -1 || aSel[i].options[j].value != ""))
+					selected.push(aSel[i].options[j].value);
+				}
+				
+				//Select multiple
+				if(aSel[i].multiple){
+					if(selected.length < 1){
+						label = aSel[i].id+'_label';
+						errorMsg += "\r\n"+$(label).innerHTML.innerHTML.replace(":","");
+						errorNum++;
+					}
+				}else{
+				//select box normal
+					if(aSel[i].options[aSel[i].selectedIndex].value == -1 || aSel[i].options[aSel[i].selectedIndex].value == ""){
+						errorMsg += "\r\n"+aSel[i].options[0].text;
+						errorNum++;
+					}
+				}
+			}
+		}
+		
+		//
+		//input
+		//
+		var aSel = $('product_propreties').getElementsByTagName("input");
+		for(var i=0;i<aSel.length;i++){
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+				//text
+				if(aSel[i].type == 'text'){
+					if(aSel[i].value.length < 1){
+						label = aSel[i].id+'_label';
+						errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
+					}
+				}
+			}
+		}
+		
+		//
+		//textArea
+		//
+		var aSel = $('product_propreties').getElementsByTagName("textarea");
+		for(var i=0;i<aSel.length;i++){
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+				if(aSel[i].value.length < 1){
+					label = aSel[i].id+'_label';
+					errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
+				}
+			}
+		}
+		
+		if(errorMsg != ""){
+			if(errorNum > 1)
+				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
+			else
+				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
+			alert(msgHeader+errorMsg);
+			return false;
+		}
+	}
+	
+	//All checks are ok
+	document.getElementById('step').value=curStep;
+	submitOrderForm();
+}
+</script>
 <table>
 	<tr>
 		<td>
 		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2446,12 +2558,12 @@ if (count($rows)>0){
 		</div>
 			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2460,12 +2572,12 @@ if (count($rows)>0){
 		</div>
 		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2474,12 +2586,12 @@ if (count($rows)>0){
 		</div>
 		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2488,12 +2600,12 @@ if (count($rows)>0){
 		</div>
 		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="document.getElementById('step').value='<?php echo $curStep; ?>' ;submitOrderForm();"
+			onClick="return validateForm(<?php echo $curStep; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>

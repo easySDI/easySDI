@@ -575,7 +575,7 @@ class HTML_cpanel {
 			?>
 			</td>
 			<?php 
-			if($rows[0]->RESPONSE_DATE != "0000-00-00 00:00:00")
+			if($rows[0]->RESPONSE_DATE != "0000-00-00 00:00:00" && $rows[0]->RESPONSE_SEND == 1)
 			{
 				?>
 				<td>
