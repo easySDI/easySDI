@@ -55,9 +55,9 @@ class helper_easysdi{
 				\"	><option > </option></select></td>";
 				echo "</tr>";
 				echo "<tr>";
-				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
-							type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "<td><table><tr><td><input style='display:none' class=\"locFilter\" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td><td>";
+				echo "<button style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
+							class=\"searchButton\">".JText::_("EASYSDI_SEARCH")."</button></td></tr></table></td>"	;
 				echo "</tr>";
 			}
 			else
@@ -93,8 +93,8 @@ class helper_easysdi{
 			echo "</tr>";
 			if ($row->searchbox == 1) {
 				echo "<tr >";
-				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input style='display:none' onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent''') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "<td><table><tr><td><input style='display:none' class=\"locFilter\" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td><td>"	;
+				echo "<button style='display:none' onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent''') \" type=\"button\" class=\"searchButton\">".JText::_("EASYSDI_SEARCH")."</button></td></tr></table></td>"	;
 				echo "</tr>";
 			}
 		}
