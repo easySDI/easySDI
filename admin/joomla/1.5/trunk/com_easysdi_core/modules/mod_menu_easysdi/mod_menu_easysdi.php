@@ -21,7 +21,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 
 
 $user = JFactory::getUser();
-
+$task = JRequest::getVar("task");
 if (!$user->guest)
 {
 	?>
@@ -51,7 +51,7 @@ if (!$user->guest)
 		 $userHome = config_easysdi::getValue("USER_HOME");
 		 if($userHome != ''){
 			 ?>
-			 <li >
+			 <li <?php if( $task == "")echo"class=\"mod_menu_item_active\"";?>>
 			<a href ="<?php echo $userHome; ?>"><span><?php echo JText::_("EASYSDI_USER_HOME"); ?></span></a>
 			</li>
 			<?php
@@ -69,7 +69,7 @@ if (!$user->guest)
 			if(userManagerRight::hasRight($rowPartner->partner_id,"MYACCOUNT"))
 			{
 				?>
-				<li >
+				<li <?php if( $task == "showPartner" || $task=="editPartner")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_core&task=showPartner"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"); ?></span></a>
 				</li>
 				
@@ -78,7 +78,7 @@ if (!$user->guest)
 			if(userManagerRight::hasRight($rowPartner->partner_id,"ACCOUNT"))
 			{
 				?>
-				<li >
+				<li <?php if( $task == "listAffiliatePartner" || $task == "editAffiliateById")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_core&task=listAffiliatePartner"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"); ?></span></a>
 				</li>
 				
@@ -110,7 +110,7 @@ if (!$user->guest)
 				|| userManagerRight::hasRight($rowPartner->partner_id,"REQUEST_EXTERNAL") )
 			{
 				?>
-				<li>
+				<li <?php if( $task == "listOrders")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_shop&task=listOrders"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYORDERS"); ?></span></a>
 				</li>
 				<?php
@@ -122,7 +122,7 @@ if (!$user->guest)
 			if(userManagerRight::hasRight($rowPartner->partner_id,"METADATA") && $res > 0)
 			{
 				?>
-				<li>
+				<li <?php if($task == "listProductMetadata" || $task == "editMetadata")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_shop&task=listProductMetadata"><span><?php echo JText::_("EASYSDI_MENU_ITEM_METADATA"); ?></span></a>
 				</li>
 				
@@ -131,7 +131,7 @@ if (!$user->guest)
 			if(userManagerRight::hasRight($rowPartner->partner_id,"PRODUCT"))
 			{
 				?>
-				<li>
+				<li <?php if( $task == "listProduct" || $task == "editProduct")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_shop&task=listProduct"><span><?php echo JText::_("EASYSDI_MENU_ITEM_PRODUCTS"); ?></span></a>
 				</li>
 				<?php
@@ -155,7 +155,7 @@ if (!$user->guest)
 			if (userManagerRight::hasRight($rowPartner->partner_id,"DIFFUSION") && $res > 0)
 			{
 				?>
-				<li>
+				<li <?php if( $task == "listOrdersForProvider" || $task == "processOrder")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_shop&task=listOrdersForProvider"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYTREATMENT"); ?></span></a>
 				</li>
 				<?php
@@ -163,7 +163,7 @@ if (!$user->guest)
 			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE"))
 			{
 				?>
-				<li>
+				<li <?php if( $task == "manageFavorite")echo"class=\"mod_menu_item_active\"";?>>
 				<a href ="./index.php?option=com_easysdi_shop&task=manageFavoriteProduct"><span><?php echo JText::_("EASYSDI_MENU_ITEM_FAVORITES"); ?></span></a>
 				</li>
 				<?php
