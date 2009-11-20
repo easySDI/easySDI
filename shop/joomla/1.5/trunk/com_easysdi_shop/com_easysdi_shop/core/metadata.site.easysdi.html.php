@@ -125,8 +125,25 @@ class HTML_Metadata {
 		?>
 		<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
 		<div id="page">
-		   <h2 class="contentheading"><?php echo JText::_("EDIT_METADATA_TITLE") ?></h2>
+		   <h2 class="contentheading"><?php echo JText::_("EDIT_METADATA_EDIT_TITLE") ?></h2>
 		   <div id="contentin" class="contentin">
+		   <table width="100%">
+			<tr>
+				<td width="100%" align="right">
+					<button id="submitSaveMd0" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
+					<button id="cancelMdEdit0" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<td width="100%"><div id="editMdOutput"</td>
+			</tr>
+			<tr>
+				<td width="100%" align="right">
+					<button id="submitSaveMd1" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
+					<button id="cancelMdEdit1" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+				</td>
+			</tr>
+		   </table>
 		   <form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm"><input type="hidden" name="option"
 			value="<?php echo $option; ?>" /> <input type="hidden" name="task"
@@ -136,9 +153,8 @@ class HTML_Metadata {
 		</div>
 		<?php
 		$this->javascript .="
-				var domNode = Ext.DomQuery.selectNode('div#contentin')
+				var domNode = Ext.DomQuery.selectNode('div#editMdOutput')
 				Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
-				
 				// Créer le formulaire qui va contenir la structure
 				var form = new Ext.ux.ExtendedFormPanel({
 						id:'metadataForm',
@@ -147,8 +163,10 @@ class HTML_Metadata {
 				        labelWidth: 200,
 				        border: false,
 				        collapsed:false,
-				        renderTo: document.getElementById('formContainer'),
-				        buttons: [{
+				        renderTo: document.getElementById('formContainer')
+					
+					/*,
+					buttons: [{
 					                text: '".JText::_('EDIT_METADATA_SEND')."',
 					                handler: function()
 					                {
@@ -165,7 +183,8 @@ class HTML_Metadata {
 					        			});
 					        			var fieldsets = fields.join(' | ');
 					        			form.getForm().setValues({fieldsets: fieldsets});
-					              		form.getForm().submit({
+
+									form.getForm().submit({
 									    	scope: this,
 											method	: 'POST',
 											success: function(form, action) 
@@ -192,9 +211,77 @@ class HTML_Metadata {
 					                	history.go(-1);
 					                }
 					            }
-				        ]
+				        ]*/
 				    });
-					
+				    
+				//Ajout des listener pour les boutons Joomla
+				window.addEvent('domready', function() {
+					$('submitSaveMd0').addEvent( 'click' , function() { 
+						submitHandler();
+					});
+					$('submitSaveMd1').addEvent( 'click' , function() { 
+						submitHandler();
+					});
+					$('cancelMdEdit0').addEvent( 'click' , function() { 
+						cancelHandler();
+					});
+					$('cancelMdEdit1').addEvent( 'click' , function() { 
+						cancelHandler();
+					});
+				});
+				    
+				function cancelHandler()
+				{
+					history.go(-1);
+				}
+				
+				function submitHandler()
+				{
+					var fields = new Array();
+					form.cascade(function(cmp)
+					{
+						if (cmp.xtype=='fieldset')
+						{
+								if (cmp.clones_count)
+								{
+										fields.push(cmp.getId()+','+cmp.clones_count);
+							}
+						}
+					});
+					var fieldsets = fields.join(' | ');
+					form.getForm().setValues({fieldsets: fieldsets});
+						var oWait = Ext.Msg.wait('".JText::_("EDIT_METADATA_SAVING_MD")."');
+					   	form.getForm().submit({
+					   	scope: this,
+						method	: 'POST',
+						success: function(form, action) 
+						{
+							oWait.hide();
+							Ext.Msg.show({
+							   title:'Info',
+							   msg: '".JText::_("EDIT_METADATA_SAVING_SUCCESS")."',
+							   buttons: Ext.Msg.OK
+							});
+							//console.log('SUCCESS !!!');
+							//console.log(form);
+							//console.log(action);
+						},
+						failure: function(form, action) 
+						{
+							oWait.hide();
+							Ext.Msg.show({
+							   title:'Info',
+							   msg: '".JText::_("EDIT_METADATA_SAVING_ERROR")."'+action.result.errors.xml,
+							   buttons: Ext.Msg.OK
+							});
+							//alert(action.result.errors.xml);
+							//console.log('FAIL !!!');
+							//console.log(action.result.errors.xml);
+						},
+						url:'".$url."'
+					});
+				}
+				
 				var fieldset".$root[0]->id."= new Ext.form.FieldSet({id:'".str_replace(":", "_", $root[0]->iso_key)."', cls: 'easysdi_shop_backend_form', title:'".html_Metadata::cleanText(JText::_($root[0]->translation))."', xtype: 'fieldset'});
 				form.add(fieldset".$root[0]->id.");";
 				
@@ -682,7 +769,8 @@ class HTML_Metadata {
 
 						// Construction de la relation
 						$this->javascript .="
-							// Créer un nouveau fieldset
+							// Créer un nouveau fieldset 3
+							//$child->translation
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, false, true, true, true, null, ".$child->lowerbound.", ".$child->upperbound."); 
 							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 						";
@@ -697,7 +785,7 @@ class HTML_Metadata {
 								//echo count($node->item($pos)->attributes).":<br>";
 	                            foreach ($node->item($pos)->attributes as $attrName => $attrNode) 
 	                            { 
-	                            	//echo "<br>Cl�:".$attrName."<br>";
+	                            	//echo "<br>Cl�:".$attrName."<br>";
 	                            	//echo "attrName:".$attrNode->nodeName."<br>";
 	                            	//echo "attrValue:".$attrNode->nodeValue."<br>";
 	                            	//echo "owner:".$attrNode->ownerElement."<br>";
@@ -734,7 +822,7 @@ class HTML_Metadata {
 						// Construction de la relation
 						$this->javascript .="
 							var master = Ext.getCmp('".$master."');							
-							// Créer un nouveau fieldset
+							// Créer un nouveau fieldset 2
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");
 						";
@@ -749,7 +837,7 @@ class HTML_Metadata {
 								//echo count($node->item($pos)->attributes).":<br>";
 	                            foreach ($node->item($pos-1)->attributes as $attrName => $attrNode) 
 	                            { 
-	                            	//echo "<br>Cl�:".$attrName."<br>";
+	                            	//echo "<br>Cl�:".$attrName."<br>";
 	                            	//echo "attrName:".$attrNode->nodeName."<br>";
 	                            	//echo "attrValue:".$attrNode->nodeValue."<br>";
 	                            	//echo "owner:".$attrNode->ownerElement."<br>";
@@ -785,7 +873,7 @@ class HTML_Metadata {
 						// Construction du fieldset
 						$this->javascript .="
 							var master = Ext.getCmp('".$master."');							
-							// Créer un nouveau fieldset
+							// Créer un nouveau fieldset 1
 							var fieldset".$child->classes_to_id." = createFieldSet('".$name."', '".html_Metadata::cleanText(JText::_($child->translation))."', true, true, true, true, true, master, ".$child->lowerbound.", ".$child->upperbound."); 
 							fieldset".$parentFieldset.".add(fieldset".$child->classes_to_id.");	
 						";			
