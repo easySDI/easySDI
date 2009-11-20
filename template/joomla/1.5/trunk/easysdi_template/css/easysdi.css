@@ -39,15 +39,17 @@ div .easysdi_product_exists{
 	background-image:url(../icons/silk/cart.png);
 }
 
-div .easysdi_product_does_not_exist{
-	background-image:url(../images/cart_disabled.png);
-}
-
 div .easysdi_product_exists_internal{
 	height:16px;
 	width:16px;
 	background-image:url(../icons/silk_extended/cart_private.png);
 }
+
+div .easysdi_product_does_not_exist{
+	background-image:url(../images/cart_disabled.png);
+}
+
+
 
 div .freeMd{
 	background-image:url(../images/money_dollar_disabled.png);
@@ -157,6 +159,11 @@ div .freeMd{
 /********************************************************/
 /***     EasySDI Shop                                 ***/
 /********************************************************/
+.mdtyProperty{
+	color:red;
+	font-weight:bold;
+}
+
 .olControlLoadingPanel {
         background-image:url(../images/loading.gif);
         background-position:center;
@@ -164,7 +171,6 @@ div .freeMd{
 	width:16px;
 	height:15px;
 	}
-
 
 .infoShop .shopHeader, .infoShop .shopFooter{
 	border=0;
@@ -973,6 +979,11 @@ background-color: #e4e4e4;
   	padding-left: 10px;
 }
 
+.product_proprety_row_list textarea,
+.product_proprety_row_list .msgProperty{
+	width: 250px;
+}
+
 .product_proprety_row_list li{
 	 list-style-type: decimal;
 	 margin-left:1.5em;
@@ -1500,6 +1511,9 @@ padding:0;
 	font-weight:bold;
 }
 
+.locFilter{
+	width:68px;
+}
 /***********************/
 /*** EasySDI Mod-menu */
 /***********************/
