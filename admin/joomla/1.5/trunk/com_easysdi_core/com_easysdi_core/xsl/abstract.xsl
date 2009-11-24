@@ -29,7 +29,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <table class="descr" id="metadataTitle">
  <tr>
  	<td rowspan="2">__ref_1$s</td>
-	<td>Fournisseur: __ref_2$s</td>
+	<td class="furnisherTitle">Fournisseur: __ref_2$s</td>
  </tr>
  <tr>
  	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
@@ -46,7 +46,21 @@ __ref_6$s
 <tr valign="top"><td class="title">Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/></td></tr>
 -->
 <tr valign="top"><td class="title">Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString"/></td></tr>
+<tr valign="top"><td class="title">Création de la donnée:</td><td>
+ <xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
+     <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation'">
+		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
+     </xsl:if>
+ </xsl:for-each>
+</td></tr>
 
+<tr valign="top"><td class="title">Mise à jour de la donnée:</td><td>
+<xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
+     <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
+		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
+     </xsl:if>
+ </xsl:for-each>
+</td></tr>
 <tr valign="top"><td class="title">Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gco:CharacterString"/></td></tr>
 <tr valign="top"><td class="title">Couverture spatiale:</td><td>
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/@xlink:title"/>        

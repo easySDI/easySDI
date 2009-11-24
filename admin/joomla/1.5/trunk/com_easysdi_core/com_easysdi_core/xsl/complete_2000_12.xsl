@@ -44,6 +44,14 @@ __ref_6$s
 <table class="descr"  >
 <tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
 <tr valign="top"><td class="title">Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/></td></tr>
+<tr valign="top"><td class="title">Nom de la table:</td><td>
+ <xsl:for-each select="./gmd:extendedMetadata[@xlink:title='Identification']">
+ 	<xsl:if test="ext:EX_extendedMetadata_Type/ext:name/gco:CharacterString = 'Nom de la table' ">
+				<xsl:value-of disable-output-escaping="yes" select="ext:EX_extendedMetadata_Type/ext:value/gco:CharacterString"/>
+      </xsl:if>
+</xsl:for-each>
+</td>
+</tr>
 <tr valign="top"><td class="title">Description :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString"/></td></tr>
 <tr valign="top"><td class="title">Création de la donnée:</td><td>
  <xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
