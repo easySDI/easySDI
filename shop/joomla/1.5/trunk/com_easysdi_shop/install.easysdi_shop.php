@@ -2155,6 +2155,21 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	 if ($version == "0.99998")
+	 {
+		 $query="ALTER TABLE #__easysdi_product add column metadata_update_date datetime NOT NULL default '0000-00-00 00:00:00' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	//Update component version
+		$version = "0.99999";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 
 	/**
 	 * Menu creation
