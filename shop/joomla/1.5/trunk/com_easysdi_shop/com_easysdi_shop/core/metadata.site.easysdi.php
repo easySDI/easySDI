@@ -24,7 +24,7 @@ class SITE_metadata {
 	function editMetadata($id, $option)
 	{
 		//$prof->startTimer("phpPart");
-		//echo "Appel editMetadata: ".date('H:m:s')."<br>";
+		//echo "Appel editMetadata: ".date('H:i:s')."<br>";
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
@@ -72,11 +72,11 @@ class SITE_metadata {
 
 
 		//echo "<hr>".$catalogUrlBase."<br>".htmlspecialchars($xmlBody)."<hr>";
-		//echo "Avant post request: ".date('H:m:s')."<br>";
+		//echo "Avant post request: ".date('H:i:s')."<br>";
 		//echo "Envoi � ".$catalogUrlBase." de ".htmlspecialchars($xmlBody)."<br>";
 		
 		$xmlResponse = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
-		//echo "Reponse post request: ".date('H:m:s')."<br>";
+		//echo "Reponse post request: ".date('H:i:s')."<br>";
 		//echo "<hr>".$xmlResponse."<br>";
 		// En POST
 		$cswResults = DOMDocument::loadXML($xmlResponse);
@@ -115,7 +115,7 @@ class SITE_metadata {
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
-		//echo "Apres construction DomDocument: ".date('H:m:s')."<br>";
+		//echo "Apres construction DomDocument: ".date('H:i:s')."<br>";
 		//$prof->stopTimer("phpPart");
 		
 		//HTML_metadata::editMetadata($prof, $id, $root, $rowProduct->metadata_id, $xpathResults, $option);
@@ -446,7 +446,7 @@ class SITE_metadata {
 				{
 					if ($type->is_datetime)
 					{
-						$nodeValue = date('Y-m-d')."T".date('H:m:s');
+						//$nodeValue = date('Y-m-d')."T".date('H:i:s');
 						//echo $nodeValue."\r\n";
 					}
 					else
@@ -721,6 +721,15 @@ class SITE_metadata {
 		}
 		else
 		{
+			//update timestamp of the metadata file
+			$query = "UPDATE #__easysdi_product SET metadata_update_date=now() WHERE id =". $product_id;
+			$database->setQuery( $query );
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+				exit();			
+			}
+			
 			//$result="";
 			//$mainframe->redirect("index.php?option=$option&task=listObject" );
 			//SITE_metadata::cswTest($xmlstr);
