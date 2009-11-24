@@ -135,12 +135,11 @@ class displayManager{
 		$database =& JFactory::getDBO();
 		
 		// Récupérer le nom du compte root pour cet utilisateur
-		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
+		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
 		$root_id = $database->loadResult();
-		
+				
 		if ($root_id == null)
 			$root_id = $user->get('id');
-		
 		
 		// Récupérer la norme de ce produit
 		$id = JRequest::getVar('id');
@@ -424,11 +423,10 @@ class displayManager{
 			$db->setQuery($query);
 			$product_creation_date = $db->loadResult();
 		
-		$query = "select update_date from #__easysdi_product where metadata_id = '".$id."'";
+		$query = "select metadata_update_date from #__easysdi_product where metadata_id = '".$id."'";
 			$db->setQuery($query);
-			$product_update_date = $db->loadResult();
+			$product_update_date = $db->loadResult() == '0000-00-00 00:00:00' ? '-' : $db->loadResult();
 
-			
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
@@ -541,12 +539,14 @@ class displayManager{
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
+		/*
 		$temp = explode(" ", $product_creation_date);
 		$temp = explode("-", $temp[0]);
 		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
 		$temp = explode(" ", $product_update_date);
 		$temp = explode("-", $temp[0]);
 		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+		*/
 		
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$partner_logo.'">';
 		
