@@ -51,6 +51,7 @@ class product extends JTable
 	var $admin_partner_id=0;
 	var $metadata_internal=0;
 	var $metadata_external=0;
+	var $metadata_update_date = null;
 
 	
 	// Class constructor
