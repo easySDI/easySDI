@@ -4,6 +4,10 @@
 /********************************************************/
 /*** EasySDI Metadata                                 ***/
 /********************************************************/
+#metadata .furnisherTitle{
+	font-weight:bold;
+	font-size:14px;
+}
 /* metadata separator in result view */
 .separator{
 	background-color:transparent;
@@ -1736,7 +1740,7 @@ div#editMetadata{
 	  color:white !important;
 }
 
-#gmd_MD_Metadata div div fieldset .x-panel-collapsed{
+#gmd_MD_Metadata div div .x-panel-collapsed{
 	  border-left: 0px !important;
 	  border-right: 0px !important;
 	  border-bottom: 0px !important;
@@ -1757,7 +1761,7 @@ div#editMetadata{
 	  color:#333333 !important;
 }
 
-#gmd_MD_Metadata div div fieldset div div fieldset .x-panel-collapsed{
+#gmd_MD_Metadata div div fieldset div div .x-panel-collapsed{
 	  border-left: 0px !important;
 	  border-right: 0px !important;
 	  border-bottom: 0px !important;
