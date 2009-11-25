@@ -135,15 +135,16 @@ class displayManager{
 		$database =& JFactory::getDBO();
 		
 		// Récupérer le nom du compte root pour cet utilisateur
-		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
-		$root_id = $database->loadResult();
-				
-		if ($root_id == null)
-			$root_id = $user->get('id');
-		
+		$database->setQuery("SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name");
+		$root_id = $database->loadResult();	
+		if ($root_id == null){
+			$database->setQuery("SELECT a.partner_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name");
+			$root_id = $database->loadResult();
+		}
 		// Récupérer la norme de ce produit
 		$id = JRequest::getVar('id');
-		$database->setQuery( "SELECT metadata_standard_id FROM #__easysdi_product WHERE metadata_id='".$id."'");
+		$qry = "SELECT metadata_standard_id FROM #__easysdi_product WHERE metadata_id='".$id."'";
+		$database->setQuery($qry);
 		$standard_id = $database->loadResult();
 		
 		//echo $user->get('id')." - ".$root_id." - ".$database->getQuery()." - ".$standard_id;
@@ -589,8 +590,10 @@ class displayManager{
 			$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
 			$root_id = $database->loadResult();
 			
-			if ($root_id == null)
-				$root_id = $user->get('id');
+			if ($root_id == null){
+				$database->setQuery("SELECT a.partner_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name");
+				$root_id = $database->loadResult();
+			}
 			
 			// Récupérer la norme de ce produit
 			$id = JRequest::getVar('id');
@@ -703,8 +706,10 @@ class displayManager{
 		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name" );
 		$root_id = $database->loadResult();
 		
-		if ($root_id == null)
-			$root_id = $user->get('id');
+		if ($root_id == null){
+			$database->setQuery("SELECT a.partner_id FROM #__easysdi_community_partner a,#__users b where a.user_id = b.id and b.id=".$user->get('id')." ORDER BY b.name");
+			$root_id = $database->loadResult();
+		}
 		
 		// Récupérer la norme de ce produit
 		$id = JRequest::getVar('id');
