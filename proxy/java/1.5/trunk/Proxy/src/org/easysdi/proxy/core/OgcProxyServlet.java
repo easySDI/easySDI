@@ -59,7 +59,8 @@ public class OgcProxyServlet extends HttpServlet {
 	// Debug tb 28.09.2009
 	super.init(config);
 	// Fin de Debug
-	configFile = config.getInitParameter("configFile");
+	configFile = getInitParameter("configFile");
+	config.getInitParameter("");
 	System.setProperty("org.geotools.referencing.forceXY", "true");
     }
 

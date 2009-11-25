@@ -27,13 +27,16 @@ import org.mortbay.jetty.webapp.WebAppContext;
 public class Launcher {
 
     public static void main(String[] args) throws Exception {
+	String warPath = "web";
+	if(args.length>0) warPath = args[0];
+	
 	Server jetty = new Server();
 	Connector connector = new SelectChannelConnector();
 	connector.setPort(8081);
 	jetty.setConnectors(new Connector[] { connector });
 	WebAppContext appContext = new WebAppContext();
 	appContext.setContextPath("/proxy");
-	appContext.setWar("web");
+	appContext.setWar(warPath);
 	HandlerList handlers = new HandlerList();
 	handlers.setHandlers(new Handler[] { appContext, new DefaultHandler() });
 	jetty.setHandler(handlers);
