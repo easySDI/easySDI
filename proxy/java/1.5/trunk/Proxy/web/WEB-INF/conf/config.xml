@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurations>
-	<config id="rwgiswms">
+	<config id="geoserverwms">
 		<authorization>
 			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
 		</authorization>
@@ -23,14 +23,9 @@
 				<prefix>tiger</prefix>
 				<password>user_pass</password>
 			</remote-server>
-			<!--
-				<remote-server> <user/>
-				<url>http://vpc-rwgis-e:8080/geoserver/wms</url>
-				<prefix>tiger</prefix> <password/> </remote-server>
-			-->
 		</remote-server-list>
 	</config>
-	<config id="rwgis">
+	<config id="geoserverwfs">
 		<authorization>
 			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
 		</authorization>
@@ -55,9 +50,9 @@
 			</remote-server>
 		</remote-server-list>
 	</config>
-	<config id="rwgissimple">
+	<config id="geoserversimplewfs">
 		<authorization>
-			<policy-file>/WEB-INF/conf/NewPolicy.xml</policy-file>
+			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.SimpleWFSProxyServlet
 		</servlet-class>
@@ -80,9 +75,9 @@
 			</remote-server>
 		</remote-server-list>
 	</config>
-	<config id="geonetwork">
+	<config id="geonetworkcsw">
 		<authorization>
-			<policy-file>/WEB-INF/conf/policy_csw.xml</policy-file>
+			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
 		<log-config>
@@ -98,17 +93,17 @@
 		<host-translator></host-translator>
 		<remote-server-list>
 			<remote-server>
-				<url>http://depth-geodbmeta:8084/geonetwork/srv/en/csw</url>
+				<url>http://localhost:8080/geonetwork/srv/en/csw</url>
 				<user>service_user</user>
 				<password>user_pass</password>
 				<max-records>50</max-records>
-				<login-service>http://depth-geodbmeta:8084/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service>
+				<login-service>http://localhost:8080/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service>
 				<transaction>
 				<type>geonetwork</type>
-				<search-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/xml.search</search-service-url>
-				<delete-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/metadata.delete</delete-service-url>
-				<insert-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/mef.import</insert-service-url>
-				<update-service-url>http://depth-geodbmeta:8084/geonetwork/srv/en/metadata.update</update-service-url>
+				<search-service-url>http://localhost:8080/geonetwork/srv/en/xml.search</search-service-url>
+				<delete-service-url>http://localhost:8080/geonetwork/srv/en/metadata.delete</delete-service-url>
+				<insert-service-url>http://localhost:8080/geonetwork/srv/en/mef.import</insert-service-url>
+				<update-service-url>http://localhost:8080/geonetwork/srv/en/metadata.update</update-service-url>
 				</transaction>
 			</remote-server>
 		</remote-server-list>

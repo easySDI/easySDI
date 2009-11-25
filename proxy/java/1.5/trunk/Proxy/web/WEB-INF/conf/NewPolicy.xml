@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PolicySet>
-	<Policy Id="rwgis wms" ConfigId="rwgiswms">
+	<Policy Id="geoserver wms Policy" ConfigId="geoserverwms">
 		<Servers All="false">
-			<!--
-				<Server><url>http://vpc-rwgis-e:8080/geoserver/wms</url><Prefix>tiger</Prefix><Namespace>http://www.census.gov</Namespace><Metadata></Metadata><Layers
-				All="false"><Layer><Name>poly_landmarks</Name><Filter>&lt;gml:Polygon&#13;
-				xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-				&lt;gml:outerBoundaryIs&gt;&#13; &lt;gml:LinearRing&gt; &#13;
-				&lt;gml:coordinates&gt;-74.05,40.68 -74.05,40.80 -73.98,40.80
-				-73.98,40.68 -74.05,40.68&lt;/gml:coordinates&gt;&#13;
-				&lt;/gml:LinearRing&gt;&#13; &lt;/gml:outerBoundaryIs&gt;&#13;
-				&lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>tiger_roads</Name><Filter>&lt;gml:Polygon&#13;
-				xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
-				&lt;gml:outerBoundaryIs&gt;&#13; &lt;gml:LinearRing&gt; &#13;
-				&lt;gml:coordinates&gt;-73.99,40.72 -73.99,40.88 -73.96,40.88
-				-73.96,40.72 -73.99,40.72&lt;/gml:coordinates&gt;&#13;
-				&lt;/gml:LinearRing&gt;&#13; &lt;/gml:outerBoundaryIs&gt;&#13;
-				&lt;/gml:Polygon&gt;</Filter></Layer></Layers></Server>
-			-->
 			<Server>
 				<url>http://localhost:8080/geoserver/wms</url>
 				<Prefix>tiger</Prefix>
@@ -88,7 +72,7 @@
 			</To>
 		</AvailabilityPeriod>
 	</Policy>
-	<Policy Id="rwgis wfs" ConfigId="rwgis">
+	<Policy Id="geoserver wfs Policy" ConfigId="geoserverwfs">
 		<Servers All="false">
 			<Server>
 				<url>http://localhost:8080/geoserver/wfs</url>
@@ -137,7 +121,7 @@
 			</To>
 		</AvailabilityPeriod>
 	</Policy>
-	<Policy Id="new simple Policy" ConfigId="rwgissimple">
+	<Policy Id="geoserver simple wfs Policy" ConfigId="geoserversimplewfs">
 		<Servers All="false">
 			<Server>
 				<url>http://localhost:8080/geoserver/wfs</url>
@@ -179,4 +163,27 @@
 			</To>
 		</AvailabilityPeriod>
 	</Policy>
+	<Policy Id="geonetwork csw Policy" ConfigId="geonetworkcsw">
+		<Servers All="false">
+			<Server>
+				<url>http://10.11.224.9:8083/geonetwork/srv/en/csw</url>
+				<Metadata All="true">
+					<Attributes All="true" />
+				</Metadata>
+			</Server>
+		</Servers>
+		<Subjects All="true">
+			<User>RM</User>
+		</Subjects>
+		<Operations All="true" />
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>04-03-2008</Date>
+			</From>
+			<To>
+				<Date>28-03-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+	</Policy>	
 </PolicySet>
