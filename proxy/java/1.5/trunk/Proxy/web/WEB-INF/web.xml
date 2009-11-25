@@ -17,13 +17,8 @@
 	<servlet>
 		<servlet-name>ogc</servlet-name>
 		<servlet-class>org.easysdi.proxy.core.OgcProxyServlet</servlet-class>
-		<init-param>
-			<param-name>configFile</param-name>
-			<param-value>C:/url_to_config/config.xml</param-value>
-		</init-param>
 	</servlet>
 
-	<!-- necessary for index.jsp -->
 	<context-param>
 		<param-name>configFile</param-name>
 		<param-value>C:/url_to_config/config.xml</param-value>
