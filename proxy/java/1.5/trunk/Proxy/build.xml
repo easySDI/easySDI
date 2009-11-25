@@ -43,8 +43,7 @@
 		</copy>
 		<copy todir="${projet.work.dir}/WEB-INF/" >
 			<fileset dir="${projet.conf.dir}/WEB-INF" >
-				<include name="web.xml"/>
-				<include name="log4j.xml"/>
+				<include name="*.*"/>
 			</fileset>
 		</copy>
 		
@@ -56,7 +55,7 @@
 				<exclude name="**/jetty*"/>
 				<exclude name="**/jasper*"/>
 				<exclude name="**/servlet-api-6.0.18.jar"/>
-				<exclude name="**/jsp-api-6.0.18.jar"/>
+				<exclude name="**/jsp-api*.jar"/>
 				<exclude name="**/rt.jar"/>
 			</fileset>
 		</copy>
@@ -73,6 +72,12 @@
 			<fileset dir="${projet.conf.dir}/WEB-INF/spring" >
 				<include name="app-config.xml"/>
 				<include name="security-config.xml"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${projet.work.dir}/WEB-INF/tlds/" >
+			<fileset dir="${projet.conf.dir}/WEB-INF/tlds" >
+				<include name="*.tld"/>
 			</fileset>
 		</copy>
 	</target>

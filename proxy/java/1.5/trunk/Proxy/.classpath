@@ -78,7 +78,6 @@
 	<classpathentry kind="lib" path="lib/jetty-embedded-6.1.20.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-sslengine-6.1.20.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.20.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api-6.0.18.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-6.0.18.jar"/>
 	<classpathentry kind="lib" path="lib/spring-aop-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-2.5.6.jar"/>

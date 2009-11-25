@@ -3,6 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+			<taglib-location>/WEB-INF/tlds/c.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/xml</taglib-uri>
+			<taglib-location>/WEB-INF/tlds/x.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+
 	<servlet>
 		<servlet-name>ogc</servlet-name>
 		<servlet-class>org.easysdi.proxy.core.OgcProxyServlet</servlet-class>
