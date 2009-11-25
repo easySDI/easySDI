@@ -1025,7 +1025,7 @@ class SITE_partner {
 	function sendMail ($rows,$subject,$body){
 
 		$mailer =& JFactory::getMailer();
-		$mailer ->IsHTML(true);
+		//$mailer ->IsHTML(true);
 		foreach ($rows as $row){
 			$mailer->addRecipient($row->email);
 		}
