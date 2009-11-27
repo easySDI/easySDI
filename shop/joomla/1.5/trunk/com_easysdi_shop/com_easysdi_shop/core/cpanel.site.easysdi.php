@@ -390,7 +390,7 @@ class SITE_cpanel {
 		$database =& JFactory::getDBO();
 			
 
-		$query = "SELECT o.user_id as user_id,u.email as email,o.name as data_title FROM  #__easysdi_order o,#__users u WHERE order_id=$order_id and o.user_id = u.id";
+		$query = "SELECT o.user_id as user_id,u.email as email,o.name as data_title, o.order_id as order_id FROM  #__easysdi_order o,#__users u WHERE order_id=$order_id and o.user_id = u.id";
 		$database->setQuery($query);
 		$row = $database->loadObject();
 
@@ -399,8 +399,7 @@ class SITE_cpanel {
 		echo $partner->notify_order_ready;
 
 		if ($partner->notify_order_ready == 1) {
-
-			SITE_product::sendMailByEmail($row->email,JText::_($subject),JText::sprintf($body,$row->data_title));
+			SITE_product::sendMailByEmail($row->email,JText::sprintf($subject, $row->data_title, $row->order_id),JText::sprintf($body,$row->data_title, $row->order_id));
 			//SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
 
 		}
@@ -966,14 +965,19 @@ class SITE_cpanel {
 			echo $db->getErrorMsg();
 			echo "</div>";
 		}
-
+		
+		$db->setQuery("SELECT o.name as order_name, u.email as email FROM #__easysdi_order o, #__users u where o.user_id = u.id and order_id=".$order_id);
+		$results = $db->loadObjectList();
+		$order_name = $results[0]->order_name;
+		$email = $results[0]->email;
+		
 		if ($total ==0)
 		{
-			SITE_cpanel::notifyUserByEmail($order_id, "EASYSDI_CMD_READY_MAIL_SUBJECT","EASYSDI_CMD_READY_MAIL_BODY");
+			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 		else if ($total == $totalProduct -1)
 		{
-			SITE_cpanel::notifyUserByEmail($order_id, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_SUBJECT","EASYSDI_CMD_FIRST_PROD_READY_MAIL_BODY");
+			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 	}
 	

@@ -992,7 +992,7 @@ function setAlpha(imageformat)
 		   		    else
 		   		    {
 			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
-		   		    	//Add the new value
+		   		//Add the new value
 		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
 		            	document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
 				document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
@@ -1024,18 +1024,22 @@ function setAlpha(imageformat)
 	      <div id="scaleStatus"/>
 	   </td>
 	</tr>
+	
+	<!-- second line -->
 	<tr class="shopHeader">
 	  <td class="shopInfoLogoContainer">
 	   <!-- <div id="infoLogo" class="shopInfoLogo"/> -->
 	    <div id="loadingPanelPosition" class="olControlLoadingPanel"/>
 	  </td>
-	  <td colspan="2" align="left">
+	  <td class="shopInfoMessageContainer" colspan="2" align="left">
 	    <div id="status"/>
 	  </td>
 	  <td class="toolsStatusContainer">
 	    <div id="toolsStatus"><?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
 	  </td>
 	 </tr>
+	 
+	 
 	 <!-- the map -->
 	 <tr>
 	    <td colspan="4">
@@ -1563,7 +1567,7 @@ if (count($rows)>0){
 	<table class="ordersteps">
 		<tr>
 			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_NAME"); ?>:</td>
-			<td><input type="text" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"></td>
+			<td><input type="text" class="infoClient" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"></td>
 		</tr>
 		<tr>
 			<td colspan="2"><div class="separator" /></td>
@@ -1589,11 +1593,11 @@ if (count($rows)>0){
 		</tr>
 		<tr>
 			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_USER"); ?>:</td>
-			<td><input type="text" name="user" value=""></td>
+			<td><input type="text" class="infoClient" name="user" value=""></td>
 		</tr>
 		<tr>
 			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?>:</td>
-			<td><input type="password" name="password" value=""></td>
+			<td><input type="password" class="infoClient" name="password" value=""></td>
 		</tr>
 		<?php
 	}
@@ -2252,6 +2256,7 @@ if (count($rows)>0){
 			
 			//Send an email to the customer to inform that his order has been received
 			//only if status is SENT
+			
 			if($order_status_value == "SENT")
 			{
 				SITE_product::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
@@ -2466,73 +2471,74 @@ function validateForm(curStep){
 		//
 		//select
 		//
-		var aSel = $('product_propreties').getElementsByTagName("select");
-		for(var i=0;i<aSel.length;i++){
-			
-			//Is the property mandatory?
-			if(aSel[i].className.indexOf("mdtryElem",0) != -1){			
-				selected = new Array(); 
-				for (var j = 0; j < aSel[i].options.length; j++){
-					if (aSel[i].options[j].selected && (aSel[i].options[j].value != -1 || aSel[i].options[j].value != ""))
-					selected.push(aSel[i].options[j].value);
-				}
+		if($('product_propreties') != null){
+			var aSel = $('product_propreties').getElementsByTagName("select");
+			for(var i=0;i<aSel.length;i++){
 				
-				//Select multiple
-				if(aSel[i].multiple){
-					if(selected.length < 1){
-						label = aSel[i].id+'_label';
-						errorMsg += "\r\n"+$(label).innerHTML.innerHTML.replace(":","");
-						errorNum++;
+				//Is the property mandatory?
+				if(aSel[i].className.indexOf("mdtryElem",0) != -1){			
+					selected = new Array(); 
+					for (var j = 0; j < aSel[i].options.length; j++){
+						if (aSel[i].options[j].selected && (aSel[i].options[j].value != -1 || aSel[i].options[j].value != ""))
+						selected.push(aSel[i].options[j].value);
 					}
-				}else{
-				//select box normal
-					if(aSel[i].options[aSel[i].selectedIndex].value == -1 || aSel[i].options[aSel[i].selectedIndex].value == ""){
-						errorMsg += "\r\n"+aSel[i].options[0].text;
-						errorNum++;
+					
+					//Select multiple
+					if(aSel[i].multiple){
+						if(selected.length < 1){
+							label = aSel[i].id+'_label';
+							errorMsg += "\r\n"+$(label).innerHTML.innerHTML.replace(":","");
+							errorNum++;
+						}
+					}else{
+					//select box normal
+						if(aSel[i].options[aSel[i].selectedIndex].value == -1 || aSel[i].options[aSel[i].selectedIndex].value == ""){
+							errorMsg += "\r\n"+aSel[i].options[0].text;
+							errorNum++;
+						}
 					}
 				}
 			}
-		}
-		
-		//
-		//input
-		//
-		var aSel = $('product_propreties').getElementsByTagName("input");
-		for(var i=0;i<aSel.length;i++){
-			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
-				//text
-				if(aSel[i].type == 'text'){
+			
+			//
+			//input
+			//
+			var aSel = $('product_propreties').getElementsByTagName("input");
+			for(var i=0;i<aSel.length;i++){
+				if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+					//text
+					if(aSel[i].type == 'text'){
+						if(aSel[i].value.length < 1){
+							label = aSel[i].id+'_label';
+							errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
+						}
+					}
+				}
+			}
+			
+			//
+			//textArea
+			//
+			var aSel = $('product_propreties').getElementsByTagName("textarea");
+			for(var i=0;i<aSel.length;i++){
+				if(aSel[i].className.indexOf("mdtryElem",0) != -1){
 					if(aSel[i].value.length < 1){
 						label = aSel[i].id+'_label';
 						errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
 					}
 				}
 			}
-		}
-		
-		//
-		//textArea
-		//
-		var aSel = $('product_propreties').getElementsByTagName("textarea");
-		for(var i=0;i<aSel.length;i++){
-			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
-				if(aSel[i].value.length < 1){
-					label = aSel[i].id+'_label';
-					errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
-				}
+			
+			if(errorMsg != ""){
+				if(errorNum > 1)
+					msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
+				else
+					msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
+				alert(msgHeader+errorMsg);
+				return false;
 			}
 		}
-		
-		if(errorMsg != ""){
-			if(errorNum > 1)
-				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
-			else
-				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
-			alert(msgHeader+errorMsg);
-			return false;
-		}
 	}
-	
 	//All checks are ok
 	document.getElementById('step').value=curStep;
 	submitOrderForm();
@@ -2942,29 +2948,27 @@ function validateForm(curStep){
 <script  type="text/javascript">
 	window.addEvent('domready', function() {
 		//Handler for the clear button
-		document.getElementById('easysdi_clear_button').addEvent('click', function() {
-			document.getElementById('freetextcriteria').value='';
-			document.getElementById('partner_id').value = '';
-			document.getElementById('filter_visible').checked = false;
-			document.getElementById('update_select').value = 'equal';
-			document.getElementById('update_cal').value = '';
-			document.getElementById('catalog_search_form').submit();
+		$('easysdi_clear_button').addEvent('click', function() {
+			$('freetextcriteria').value='';
+			$('partner_id').value = '';
+			$('filter_visible').checked = false;
+			$('update_select').value = 'equal';
+			$('update_cal').value = '';
+			$('catalog_search_form').submit();
 		});
 	});
 	
 
 </script>
 <table width="100%" class="mdCatContent">
-	<tr>
-		<td>
-			<table width="100%">
+
 				<tr>
 					<td align="left"><b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
 					<td align="left"><input type="text" id="freetextcriteria"  name="freetextcriteria" value="<?php echo JRequest::getVar('freetextcriteria'); ?>" class="inputbox" /></td>
 	
 					<td class="catalog_controls">
 						<button type="submit" class="easysdi_search_button">
-							<?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+							<?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>&nbsp;
 						<button id="easysdi_clear_button" class="easysdi_clear_button" type="submit">
 							<?php echo JText::_("EASYSDI_SHOP_CLEAR_BUTTON"); ?></button>
 					</td>
@@ -2992,9 +2996,7 @@ function validateForm(curStep){
 						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
 					</td>
 				</tr>
-			</table>
-		</td>
-	</tr>
+
 </table>
 
 <!--
@@ -3096,7 +3098,7 @@ function validateForm(curStep){
 		?>
 <tr>
 	 <td valign="top" rowspan=3>
-	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
+	 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 	  </td>
 	  <td colspan=3><span class="mdtitle"><a><?php echo $row->data_title; ?></a></span>
 	  </td>
