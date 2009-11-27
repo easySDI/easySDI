@@ -26,7 +26,7 @@ public class Mailer
   private static String mail="";
   
   public void sendEmail(
-    String aFromEmailAddr, String aToEmailAddr,
+    String aFromEmailAddr, String aFromEmailName, String aToEmailAddr,
     String aSubject, String aBody
   ){
     //Here, no Authenticator argument is used (it is null).
@@ -36,7 +36,7 @@ public class Mailer
 	SimpleEmail email = new SimpleEmail();
 	email.setHostName("localhost");
 	email.setCharset(Email.ISO_8859_1);
-	email.addTo(aToEmailAddr, aToEmailAddr);
+	email.addTo(aToEmailAddr, aFromEmailName);
 	email.setFrom(aFromEmailAddr, aFromEmailAddr);
 	email.setSubject(aSubject);
 	email.setMsg(aBody);
