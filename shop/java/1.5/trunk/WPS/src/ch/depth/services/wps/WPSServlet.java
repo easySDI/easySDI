@@ -962,12 +962,13 @@ public class WPSServlet extends HttpServlet {
 	    	conn =  DriverManager.getConnection(getConnexionString());
 		    
 	    	Statement stmtRow = conn.createStatement();
-	    	ResultSet rsRow = stmtRow.executeQuery("SELECT o.user_id as user_id,u.email as email,o.name as data_title FROM "+getJoomlaPrefix()+"easysdi_order o,"+getJoomlaPrefix()+"users u WHERE o.user_id = u.id AND order_id="+order_id);
-			
+	    	ResultSet rsRow = stmtRow.executeQuery("SELECT o.order_id as order_id, o.user_id as user_id,u.email as email,o.name as data_title FROM "+getJoomlaPrefix()+"easysdi_order o,"+getJoomlaPrefix()+"users u WHERE o.user_id = u.id AND order_id="+order_id);
+			String orderId = "";
 			String email = "";
 			String data_title = "";
 			int user_id = 0;
 			while(rsRow.next()){
+				orderId = rsRow.getString("order_id");
 				email = rsRow.getString("email");
 				data_title = rsRow.getString("data_title");
 				user_id = rsRow.getInt("user_id");
@@ -992,8 +993,16 @@ public class WPSServlet extends HttpServlet {
 				Mailer mailer = new Mailer();
 			    //the domains of these email addresses should be valid,
 			    //or the example will fail:
-				mailer.sendEmail(senderEmail, email, subject, new PrintfFormat(body).sprintf(data_title));
-			}
+			    //Special treatment for escape characters
+			    body = body.replace("\\n", "\n");
+			    body = body.replace("\\t", "\t");
+			    body = body.replace("\\r", "\r");
+			    subject = subject.replace("\\n", "\n");
+			    subject = subject.replace("\\t", "\t");
+			    subject = subject.replace("\\r", "\r");
+			    String[] aStr = {data_title, orderId};
+			    
+			    mailer.sendEmail(senderEmail, email, new PrintfFormat(subject).sprintf(aStr), new PrintfFormat(body).sprintf(aStr));
     	}
     	catch (Exception e)
     	{
