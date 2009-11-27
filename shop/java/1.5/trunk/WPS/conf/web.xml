@@ -43,7 +43,11 @@
 	<init-param> 
     	<param-name>sender</param-name>
 		<param-value>stephanie.dondainaz@depth.ch</param-value>
-	</init-param>  
+	</init-param>
+	<init-param>
+		<param-name>senderTitle</param-name>
+		<param-value>Depth SA</param-value>
+	</init-param>
   </servlet>
 
   
