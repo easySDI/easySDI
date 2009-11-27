@@ -130,7 +130,7 @@ div .freeMd{
 }
 
 #advSearchRadio, #filter_visible, #filter_orderable{
-	width:10px;
+	width:15px;
 }
 
 #divAdvancedSearch{
@@ -181,9 +181,6 @@ div .freeMd{
 	border-collapse:collapse;
 }
 
-.infoShop .shopHeader,.infoShop .shopFooter{
-
-}
 
 .shopInfoLogo{
 	background:url(../icons/silk/information.png);
@@ -220,20 +217,17 @@ div .freeMd{
 }
 
 
-/* status bg color */
-#status{
-        #background-color: red;
+.shopInfoLogoContainer{
+	width:30px;
 }
 
-/*tells which tool is active*/
+.shopInfoMessageContainer{
+	width:425px;
+}
+
 .toolsStatusContainer{
 	width:200px;
 	text-align:right;
-}
-
-.shopInfoLogoContainer{
-	width:16px;
-	height:16px;
 }
 
 /*coordinate container*/
@@ -511,7 +505,6 @@ legend    {
 
 
 dl.tabs {
-	float: left;
 	margin: 10px 0 -1px 0;
 	z-index: 50;
 }
@@ -1002,7 +995,7 @@ background-color: #e4e4e4;
 }
 
 .ordersteps{
-	width:100%;	
+	width:100%;
 }
 .orderstepsTitle{
 	width:25%;
@@ -1010,6 +1003,10 @@ background-color: #e4e4e4;
 
 .thirdPartySelect{
 	width: 400px;
+}
+
+.ordersteps .infoClient{
+	width: 150px;
 }
 
 /* PageNav */
@@ -1132,7 +1129,7 @@ div#deleteProduct{
 }
 
 .inputboxSearchProduct{
-	width:200px;
+	width:239px;
 }
 
 .productPreview{
@@ -1252,13 +1249,12 @@ div .reqUser{
 	width:16px;
 }
 
-#reqTreatTable .infoLogo{
-	width:20px;
+#reqTreatTable .infoLogo, #orderList .infoLogo{
+	width:25px;
 }
 
-#reqTreatTable .logo{
-	width:21px;
-	padding-left:10px;
+#reqTreatTable .logo, #orderList .logo{
+	width:25px;
 }
 
 #reqTreatTable .reqName{
@@ -1402,6 +1398,7 @@ div#printOrderRecap{
 	position: absolute;
 }
 div#printOrderRecap:hover{ 
+	cursor : pointer;
 	border-style: inset;
 }
 
@@ -1516,7 +1513,12 @@ padding:0;
 }
 
 .locFilter{
-	width:68px;
+	width:55px;
+}
+
+.addPerimeterButton{
+	margin-top:3px;
+	width:125px !important;
 }
 /***********************/
 /*** EasySDI Mod-menu */
@@ -1526,7 +1528,7 @@ padding:0;
 	margin-right:10px;
 }
 .easysdi_disconnect_table td{
-	text-align: right
+	text-align: center
 }
 
 /***********************/
@@ -1548,7 +1550,7 @@ padding:0;
 	width:240px;
 }
 
-div#editAffiliate:hover, div#deleteAffiliate:hover{
+div#editAffiliate:hover, .deletablePartner:hover{
 	cursor:pointer;
 }
 
@@ -1582,11 +1584,6 @@ div#editAffiliate{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
-}
-
-#myProducts .logo2{
-	width:21px;
-	padding-left:10px;
 }
 
 #affiliateTable .logo, #favoriteManTable .logo{
