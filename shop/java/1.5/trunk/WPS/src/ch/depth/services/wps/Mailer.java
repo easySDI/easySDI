@@ -36,8 +36,8 @@ public class Mailer
 	SimpleEmail email = new SimpleEmail();
 	email.setHostName("localhost");
 	email.setCharset(Email.ISO_8859_1);
-	email.addTo(aToEmailAddr, aFromEmailName);
-	email.setFrom(aFromEmailAddr, aFromEmailAddr);
+	email.addTo(aToEmailAddr, aToEmailAddr);
+	email.setFrom(aFromEmailAddr, aFromEmailName);
 	email.setSubject(aSubject);
 	email.setMsg(aBody);
 	email.send();
