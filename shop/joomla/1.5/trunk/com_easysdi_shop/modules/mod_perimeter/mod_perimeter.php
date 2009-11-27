@@ -608,11 +608,15 @@ function checkBufferValue()
 		<td><?php echo JText::_("EASYSDI_ADD_X_TEXT");?></td>
 		<td><input type="text" id="yText" value=""></td>
 	</tr>
+	<tr>
+		<td colspan="2" align="left"><button class="searchButton" type="button"
+		onClick="addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="left"><button class="searchButton" type="button"
+		onClick="modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button></td>
+	</tr>
 </table>
-<button class="addPerimeterButton" type="button"
-	onClick="addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button>
-<button class="addPerimeterButton" type="button"
-	onClick="modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button>
 </div>
 <?php
 	}
