@@ -77,6 +77,8 @@ public class WPSServlet extends HttpServlet {
     
     private String senderEmail = "webmaster@depth.ch";
     
+    private String senderName = "Depth SA";
+    
     public void init(ServletConfig config) throws ServletException {
 	String conn = config.getInitParameter("connexionString");
 	String prefix = config.getInitParameter("joomlaPrefix");
@@ -84,6 +86,7 @@ public class WPSServlet extends HttpServlet {
 	String platform = config.getInitParameter("platformName");
 	String language = config.getInitParameter("languageFile");
 	String sender = config.getInitParameter("sender");
+	String senderTitle = config.getInitParameter("senderTitle");
 	
 	if (conn !=null && conn.length()>0){
 	    connexionString= conn;
@@ -108,6 +111,10 @@ public class WPSServlet extends HttpServlet {
 	if (sender !=null && sender.length()>0){
 		senderEmail = sender;
 	}	
+	
+	if (senderTitle !=null && senderTitle.length()>0){
+		senderName = senderTitle;
+	}
 	
 	}
 
@@ -737,21 +744,18 @@ public class WPSServlet extends HttpServlet {
 
     private String executeSetOrderResponse(net.opengis.wps._1_0.Execute execute ){
 
-	try{
-
-	    List lInputs = execute.getDataInputs().getInput();
-
-	    java.util.Iterator it = lInputs.iterator();
-
-	    String responseDate=null;
-	    String order_id=null;   
-	    String product_id=null;
-	    String data = "";
-	    String filename= "";
-	    String rebate ="0";
-	    String price="0";
-	    String remark="";
+	List lInputs = execute.getDataInputs().getInput();
+	java.util.Iterator it = lInputs.iterator();
+	String responseDate=null;
+	String order_id=null;   
+	String product_id=null;
+	String data = "";
+	String filename= "";
+	String rebate ="0";
+	String price="0";
+	String remark="";
 	    
+	try{
 	    while(it.hasNext())
         {
 			net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)it.next();
@@ -817,7 +821,6 @@ public class WPSServlet extends HttpServlet {
 			}
 			else
 				pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
-			
 			// Mise a jour de la requete
 			pre.executeUpdate();
 		
@@ -903,17 +906,15 @@ public class WPSServlet extends HttpServlet {
 
 		    m.marshal(er, baos);
 
-		    
 		    return baos.toString();
 	    }
 	}catch (Exception e)
 	{
 	    e.printStackTrace();
-	    
 	    // Ecriture d'un log texte sur le serveur en cas de probleme
 	    try
 	    {
-		    StringWriter sw = new StringWriter();
+		StringWriter sw = new StringWriter();
 	        PrintWriter pw = new PrintWriter(sw);
 	        e.printStackTrace(pw);
 	        File f = new File("/var/log/tomcat5/errorStream.txt");
@@ -921,6 +922,14 @@ public class WPSServlet extends HttpServlet {
 	        FileWriter fw = new FileWriter(f,true);
 	        fw.write(sw.toString());
 	        fw.write(e.getMessage());
+		fw.write("responseDate:"+responseDate);
+		fw.write("order_id:"+order_id);
+		fw.write("product_id:"+product_id);
+		fw.write("data:"+data);
+		fw.write("filename:"+filename);
+		fw.write("rebate:"+rebate);
+		fw.write("price:"+price);
+		fw.write("remark:"+remark);
 	        fw.close();
 	        pw.close();
 	    }
@@ -990,7 +999,7 @@ public class WPSServlet extends HttpServlet {
 			
 			if (notify_order_ready == 1) 
 			{
-				Mailer mailer = new Mailer();
+			    Mailer mailer = new Mailer();
 			    //the domains of these email addresses should be valid,
 			    //or the example will fail:
 			    //Special treatment for escape characters
@@ -1002,8 +1011,9 @@ public class WPSServlet extends HttpServlet {
 			    subject = subject.replace("\\r", "\r");
 			    String[] aStr = {data_title, orderId};
 			    
-			    mailer.sendEmail(senderEmail, email, new PrintfFormat(subject).sprintf(aStr), new PrintfFormat(body).sprintf(aStr));
-    	}
+			    mailer.sendEmail(senderEmail, senderName, email, new PrintfFormat(subject).sprintf(aStr), new PrintfFormat(body).sprintf(aStr));
+			}
+	}
     	catch (Exception e)
     	{
     		e.printStackTrace();
