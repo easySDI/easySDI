@@ -745,8 +745,8 @@ class SITE_metadata {
 	}
 
 	function PostXMLRequest($url,$xmlBody){
+		echo "URL: ".$url."<br>";
 		$url = parse_url($url);
-		
 		if(isset($url['port'])){
 			$port = $url['port'];
 		}else{

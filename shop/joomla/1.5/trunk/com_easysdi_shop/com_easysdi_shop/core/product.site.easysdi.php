@@ -236,7 +236,7 @@ class SITE_product {
 	}
 
 	
-	function saveProduct($option){
+	function saveProduct($returnList, $option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
@@ -278,7 +278,7 @@ class SITE_product {
 			$rowProduct->partner_id = $rowPartner->partner_id;
 		}
 		
-	// Si le produit n'existe pas encore, cr�er la m�tadonn�e
+		// Si le produit n'existe pas encore, cr�er la m�tadonn�e
 		if ($rowProduct->id == 0)
 		{
 			// Cr�ation de la m�tadonn�e pour le nouveau guid
@@ -306,8 +306,9 @@ class SITE_product {
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
+			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			echo htmlentities($result)."<br>";
 			$insertResults = DOMDocument::loadXML($result);
 			
 			$xpathInsert = new DOMXPath($insertResults);
@@ -407,8 +408,9 @@ class SITE_product {
 			
 		 //SITE_product::SaveMetadata();
 		 
-	
-		
+		if ($returnList == true) {
+			$mainframe->redirect("index.php?option=$option&task=listProduct");
+		}	
 	}
 	
 	function editProduct( $isNew = false) {
