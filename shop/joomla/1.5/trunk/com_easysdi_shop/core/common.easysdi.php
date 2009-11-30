@@ -31,7 +31,9 @@ class helper_easysdi{
 		}
 		if ($parent == 0){
 			echo "<tr>";
-			echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
+			echo "<td><select style='display:none' 
+							  id=\"locationsListLocation$row->id\"	
+							  onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
 
 			echo "</tr>";
 		}else{
@@ -84,17 +86,58 @@ class helper_easysdi{
 		}
 		if ($parent == 0){
 			echo "<tr>";
-			echo "<td><select style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
+			echo "<td><select style='display:none' 
+							  id=\"perimetersListPerimeter$row->id\"	
+							  onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\">
+							 <option > </option></select></td>";
 
 			echo "</tr>";
 		}else{
-			echo "<tr>";
-			echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent', '$parent') \"><option > </option></select></td>";
-			echo "</tr>";
+			/*echo "<tr>";
+			echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	
+					onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent', '$parent') \">
+					<option > </option></select></td>";
+			echo "</tr>";*/
 			if ($row->searchbox == 1) {
+				echo "<tr>";
+				echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	
+						onChange=\"hideParent($row->id);
+						if (document.getElementById('perimetersListPerimeter$row->id')[document.getElementById('perimetersListPerimeter$row->id').selectedIndex].value != -1)
+			      		{
+							if (document.getElementById('peri_filter'+$row->id)!=null )
+						 	{
+						 		document.getElementById('peri_filter'+$row->id).style.display = 'block';
+						 	}
+						 	if (document.getElementById('peri_search'+$row->id)!=null )
+						 	{
+						 		document.getElementById('peri_search'+$row->id).style.display = 'block';
+						 	}
+						}			
+						\">
+						<option > </option></select></td>";
+				echo "</tr>";
 				echo "<tr >";
-				echo "<td><table><tr><td><input style='display:none' class=\"locFilter\" size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" ></td><td>"	;
-				echo "<button style='display:none' onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent''') \" type=\"button\" class=\"searchButton\">".JText::_("EASYSDI_SEARCH")."</button></td></tr></table></td>"	;
+				echo "<td><table><tr><td><input style='display:none' 
+												class=\"locFilter\" 
+												size=5 
+												length=5 
+												type=\"text\" 
+												id =\"peri_filter$row->id\" 
+												value=\"\" ></td><td>"	;
+				echo "<button style='display:none' 
+								onClick=\"fillPerimeterParent ('peri_filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent') \" 
+								id=\"peri_search$row->id\"
+								type=\"button\" 
+								class=\"searchButton\">".JText::_("EASYSDI_SEARCH")."
+					 </button></td></tr></table></td>"	;
+				echo "</tr>";
+			}
+			else
+			{
+				echo "<tr>";
+				echo "<td><select style='display:none' id=\"perimetersListPerimeter$row->id\"	
+							onChange=\"hideParent($row->id);
+							fillPerimeterParent ('peri_filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent') \"><option > </option></select></td>";
 				echo "</tr>";
 			}
 		}
