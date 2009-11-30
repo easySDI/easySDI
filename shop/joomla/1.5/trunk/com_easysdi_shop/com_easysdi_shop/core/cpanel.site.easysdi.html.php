@@ -274,8 +274,8 @@ class HTML_cpanel {
 				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
 				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
 				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
-				</table>
 				</tbody>
+				</table>
 				<input type="hidden" name="product_id[]" value="<?php echo $row->product_id?>">
 				<?php	
 				break;

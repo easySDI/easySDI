@@ -135,7 +135,7 @@ class HTML_Metadata {
 				</td>
 			</tr>
 			<tr>
-				<td width="100%"><div id="editMdOutput"</td>
+				<td width="100%"><div id="editMdOutput"></div></td>
 			</tr>
 			<tr>
 				<td width="100%" align="right">
