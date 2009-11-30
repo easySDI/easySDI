@@ -194,7 +194,7 @@ $i++;
 			<td align="center"><div id="map" class="smallmap"></div></td>
 		   </tr>
 		   <tr>
-			<td align="center">&nbsp</div></td>
+			<td align="center">&nbsp</td>
 		   </tr>
 		</table>
 		</div>
