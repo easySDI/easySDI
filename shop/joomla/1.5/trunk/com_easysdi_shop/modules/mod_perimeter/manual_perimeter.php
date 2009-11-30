@@ -104,10 +104,11 @@ $db =& JFactory::getDBO();
 	 In case of unselection in a combobox, disable the display of parent comboboxes already displayed
 	 */
  	  function hideParent(curId)
+ 	  //alert ('hide parent');
       {
       	<?php
       	
-		$queryAll = "SELECT * FROM #__easysdi_location_definition";
+		$queryAll = "SELECT * FROM #__easysdi_perimeter_definition";
 		$db->setQuery( $queryAll );
 		$rowsAll = $db->loadObjectList();
 		
@@ -120,13 +121,13 @@ $db =& JFactory::getDBO();
 				{
 					document.getElementById('perimetersListPerimeter<?php echo $rowall->id; ?>').style.display = 'none';
 				}
-		      	if (document.getElementById('filter<?php echo $rowall->id; ?>')!=null )
+		      	if (document.getElementById('peri_filter<?php echo $rowall->id; ?>')!=null )
 			 	{
-			 		document.getElementById('filter<?php echo $rowall->id; ?>').style.display = 'none';
+			 		document.getElementById('peri_filter<?php echo $rowall->id; ?>').style.display = 'none';
 			 	}
-			 	if (document.getElementById('search<?php echo $rowall->id; ?>')!=null )
+			 	if (document.getElementById('peri_search<?php echo $rowall->id; ?>')!=null )
 			 	{
-			 		document.getElementById('search<?php echo $rowall->id; ?>').style.display = 'none';
+			 		document.getElementById('peri_search<?php echo $rowall->id; ?>').style.display = 'none';
 			 	}
 				
 				hideParent('<?php echo $rowall->id; ?>');
@@ -146,13 +147,13 @@ $db =& JFactory::getDBO();
       
 	    //Display the next parent elements
       	document.getElementById(parId).style.display = 'block';
-      	if (document.getElementById('filter'+parentId)!=null )
+      	if (document.getElementById('peri_filter'+parentId)!=null )
 	 	{
-	 		document.getElementById('filter'+parentId).style.display = 'block';
+	 		document.getElementById('peri_filter'+parentId).style.display = 'none';
 	 	}
-	 	if (document.getElementById('search'+parentId)!=null )
+	 	if (document.getElementById('peri_search'+parentId)!=null )
 	 	{
-	 		document.getElementById('search'+parentId).style.display = 'block';
+	 		document.getElementById('peri_search'+parentId).style.display = 'none';
 	 	}
 	 	
 	<?php
@@ -165,11 +166,11 @@ $db =& JFactory::getDBO();
 	 	if ( parId == 'perimetersListPerimeter<?php echo $row->id; ?>'){
 	 			var filter ="";
 	 			  
-	 			  	<?php if ($row->searchbox == 0) {
+	 			  	<?php /*if ($row->searchbox == 0) {
 	 			  	?>	 			  	
 	 			  	filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 			  	<?php
-	 			  	}else{?>
+	 			  	}else{*/?>
 	 			  	
 	 			  	
 	 			if (document.getElementById(filterId)==null || document.getElementById(filterId).value.length==0){
@@ -177,7 +178,7 @@ $db =& JFactory::getDBO();
 	 		 	}else{
 	 		 		filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 	 		 	}
-	 		 	<?php }
+	 		 	<?php /*}*/
 	 		 	
 	 		 	
 	 		 	if ($row->maxfeatures!="-1") {?>
@@ -198,7 +199,7 @@ $db =& JFactory::getDBO();
 					//}
 	 		 	
 	 		 	?>
-	 		 	
+	 		 	//alert (filter);
 	 		fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 	 
@@ -295,10 +296,10 @@ $db =& JFactory::getDBO();
 		perimeter_id_field = perimeter_id_field_name; 
 		
 		var wfsUrlWithBBox = perimeter_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+perimeter_feature_type_name+'&VERSION=1.0.0' ;
-		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;		
+		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;	
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
-	
+	//alert (wfsUrlWithBBox);
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
