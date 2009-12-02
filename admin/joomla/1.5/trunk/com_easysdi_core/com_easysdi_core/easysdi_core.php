@@ -63,7 +63,7 @@ if ($view)
 
 
 
-switch($task){	
+switch($task){
 	case "createBlockUser":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::createBlockUser();

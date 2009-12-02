@@ -1233,7 +1233,6 @@ class SITE_partner {
 		}
 		
 		SITE_partner::includePartnerExtension(0,'BOTTOM','savePartner',$rowPartner->partner_id);
-		
 		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner')."&type=".JRequest::getVar('type') );
 	}
 

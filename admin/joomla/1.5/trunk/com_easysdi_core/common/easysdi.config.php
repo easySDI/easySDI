@@ -19,7 +19,7 @@
 class config_easysdi{
 	
 	
-	function getValue($key){
+	function getValue($key, $alternative = ""){
 		$db =& JFactory::getDBO(); 
 		
 		$query= "select value from #__easysdi_config where thekey = '".$key."'";	
@@ -30,8 +30,10 @@ class config_easysdi{
 			echo 			$db->getErrorMsg();
 			echo "</div>";
 		}
-			
-		return $result;		
+		if($result == "")
+			return $alternative;
+		else
+			return $result;		
 	}	
 
 	

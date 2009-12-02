@@ -422,11 +422,13 @@ class displayManager{
 			
 		$query = "select creation_date from #__easysdi_product where metadata_id = '".$id."'";
 			$db->setQuery($query);
-			$product_creation_date = $db->loadResult();
+			$temp = $db->loadResult();
+			$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
 		$query = "select metadata_update_date from #__easysdi_product where metadata_id = '".$id."'";
 			$db->setQuery($query);
-			$product_update_date = $db->loadResult() == '0000-00-00 00:00:00' ? '-' : $db->loadResult();
+			$temp = $db->loadResult();
+			$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 

@@ -49,7 +49,12 @@ __ref_6$s
 <tr valign="top"><td class="title">Création de la donnée:</td><td>
  <xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
      <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation'">
-		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
+		<xsl:variable name="date_norm" select="gmd:CI_Date/gmd:date/gco:Date" />
+		<xsl:variable name="year" select="substring($date_norm, 1, 4)" />
+		<xsl:variable name="month" select="substring($date_norm, 6, 2)" />
+		<xsl:variable name="day" select="substring($date_norm, 9, 2)" />
+		<xsl:variable name="date_complete" select="concat($day, '.', $month, '.', $year)" />
+		<xsl:value-of select="$date_complete" />
      </xsl:if>
  </xsl:for-each>
 </td></tr>
@@ -57,7 +62,12 @@ __ref_6$s
 <tr valign="top"><td class="title">Mise à jour de la donnée:</td><td>
 <xsl:for-each select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
      <xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
-		<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date"/>        
+		<xsl:variable name="date_norm" select="gmd:CI_Date/gmd:date/gco:Date" />
+		<xsl:variable name="year" select="substring($date_norm, 1, 4)" />
+		<xsl:variable name="month" select="substring($date_norm, 6, 2)" />
+		<xsl:variable name="day" select="substring($date_norm, 9, 2)" />
+		<xsl:variable name="date_complete" select="concat($day, '.', $month, '.', $year)" />
+		<xsl:value-of select="$date_complete" />
      </xsl:if>
  </xsl:for-each>
 </td></tr>
