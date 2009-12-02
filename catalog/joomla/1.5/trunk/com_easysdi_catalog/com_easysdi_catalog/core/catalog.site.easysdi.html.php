@@ -202,10 +202,18 @@ class HTML_catalog{
 					<!-- this was the old advanced critera: filterfreetextcriteria -->
 					<td align="left"><input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
 					<td class="catalog_controls">
-						<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
-							<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
-						<button type="submit" id="easysdi_clear_button" class="easysdi_clear_button">
-							<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
+						<table>
+							<tr>
+								<td>
+								<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
+								<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
+								</td>
+								<td>
+								<button type="submit" id="easysdi_clear_button" class="easysdi_clear_button">
+								<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
+								</td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 				<tr>
@@ -441,7 +449,7 @@ class HTML_catalog{
 			?>
 			 
 	  <td valign="top" rowspan=3>
-	    <img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
+	 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 	  </td>
 	  <td colspan="3"><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></span>
 	  </td>
