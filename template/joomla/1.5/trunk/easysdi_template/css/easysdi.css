@@ -49,15 +49,17 @@ div .easysdi_product_exists_internal{
 	background-image:url(../icons/silk_extended/cart_private.png);
 }
 
+div .freeMd{
+	background-image:url(../images/money_dollar_disabled.png);
+}
+
 div .easysdi_product_does_not_exist{
 	background-image:url(../images/cart_disabled.png);
 }
 
 
 
-div .freeMd{
-	background-image:url(../images/money_dollar_disabled.png);
-}
+
 
 
 /********************************************************/
@@ -1199,6 +1201,10 @@ div#deleteProduct{
 	opacity:0.2;
 }
 
+#newQuery, #newProductBtn{
+	width:120px;
+}
+
 .treatRequest:hover {
 	cursor:pointer;
 }
@@ -1244,7 +1250,13 @@ div .reqUser{
                    text-align: center;
                    line-height: 16px; } 
 
-.particular-link{
+.particular-order-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../images/btn_visualiser_1.png) no-repeat scroll center center; 
+                   text-align: center;
+                   line-height: 16px;
+}
+		   
+.particular-link, .particular-order-link{
 	height:16px;
 	width:16px;
 }
@@ -1360,7 +1372,7 @@ div .savedOrderOrder{
 	font-size:22px;
 	font-weight:bold;
 	padding:5px 5px 12px 10px;
-	background-color:#d4deff;
+	background-color:#d4deff none repeat scroll 0 0;
 	color:#FFFFFF;
 }
 .orderRecap .ortitle2{
@@ -1722,6 +1734,10 @@ div#editMetadata{
 	  color:transparent !important;
 }
 
+#gmd_MD_Metadata legend span{
+	padding-left:5px;
+	padding-right:5px;
+}
 
 
 /*first fieldset floor */
