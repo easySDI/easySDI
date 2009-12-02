@@ -426,7 +426,7 @@ class SITE_cpanel {
 		}
 		$queryOrder = "SELECT * FROM #__easysdi_order_product_list WHERE id = $product_list_id";
 		$database->setQuery($queryOrder);
-		$result = $database->loadObject() ;
+		$result = $database->loadObject();
 		$order_id = $result->order_id;
 		$product_id = $result->product_id;
 		
@@ -441,7 +441,11 @@ class SITE_cpanel {
 
 		//Build the query on product treatment type
 		$treatmentTypeQuery = "";
-		$treatmentType = JRequest::getVar("treatmentType","");
+		
+		$database->setQuery("SELECT t.code as code, p.treatment_type as treatment_type FROM #__easysdi_product_treatment_type t, #__easysdi_product p WHERE p.treatment_type=t.id AND p.id = $product_id");
+		$result = $database->loadObject();
+		$treatmentType = $result->treatment_type;
+		$treatmentCode = $result->code;
 		$treatmentTranslation = "";
 		if($treatmentType != "")
 		{
@@ -510,7 +514,7 @@ class SITE_cpanel {
 		}
 
 
-		HTML_cpanel::processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation);
+		HTML_cpanel::processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation, $treatmentCode);
 
 	}
 
@@ -611,10 +615,10 @@ class SITE_cpanel {
 		$database->setQuery($queryType);
 		$typeFilter = $database->loadObjectList();
 
-		$queryStatus = "select * from #__easysdi_order_status_list where code<>'ARCHIVED' and code<>'HISTORIZED'";
+		$queryStatus = "select * from #__easysdi_order_status_list";
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
-
+		
 		$orderstatus=JRequest::getVar("orderstatus","");
 		if ($orderstatus !=""){
 			$filterList[]= "(o.status ='$orderstatus')";
@@ -637,10 +641,19 @@ class SITE_cpanel {
 
 		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id AND  o.user_id = ".$user->id;
 		$query .= $filter;
-		$query .= " and o.status <> ".$archive." and o.status <> ".$history;
+		
+		if ($orderstatus ==""){
+			$query .= " and o.status <> ".$archive." and o.status <> ".$history;
+		}
+		
 		$query .= " order by o.order_date";
 		
-		$queryCount = "select count(*) from #__easysdi_order o where o.status <> ".$archive." and o.status <> ".$history." AND  o.user_id = ".$user->id;
+		$queryCount = "select count(*) from #__easysdi_order o where";
+		if ($orderstatus ==""){
+			$queryCount .= " o.status <> ".$archive." and o.status <> ".$history." AND";
+		}
+		$queryCount .= " o.user_id = ".$user->id;
+		
 		$queryCount .= $filter;
 
 		$database->setQuery($queryCount);
@@ -711,7 +724,7 @@ class SITE_cpanel {
 		}
 		
 		$db =& JFactory::getDBO();
-		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
+		$query = "SELECT *, sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {

@@ -35,6 +35,17 @@ class HTML_Metadata {
 	function cleanText($text)
 	{
 	  $text = utf8_decode($text);
+	   # Quotes cleanup ???
+	  $text = ereg_replace( chr(ord("`")), "'", $text );        # `
+	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
+	  $text = ereg_replace( chr(ord("„")), ",", $text );        # „
+	  $text = ereg_replace( chr(ord("`")), "'", $text );        # `
+	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
+	  $text = ereg_replace( chr(ord("“")), "\"", $text );        # “
+	  $text = ereg_replace( chr(ord("”")), "\"", $text );        # ”
+	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
+	  $text = ereg_replace( chr(10), "\\n", $text );        # carriage return in plain text
+	  $text = ereg_replace( chr(13), "\\r", $text );        # carriage return in plain text
 	  $text = str_replace("\n","\\n",$text);
 	  $text = str_replace("'","\'",$text);
 	  $text = utf8_encode($text);
@@ -130,8 +141,16 @@ class HTML_Metadata {
 		   <table width="100%">
 			<tr>
 				<td width="100%" align="right">
-					<button id="submitSaveMd0" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
-					<button id="cancelMdEdit0" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+				<table>
+					<tr>
+						<td>
+							<button id="submitSaveMd0" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
+						</td>
+						<td>
+							<button id="cancelMdEdit0" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+						</td>
+					</tr>
+				</table>
 				</td>
 			</tr>
 			<tr>
@@ -139,8 +158,16 @@ class HTML_Metadata {
 			</tr>
 			<tr>
 				<td width="100%" align="right">
-					<button id="submitSaveMd1" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
-					<button id="cancelMdEdit1" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+				<table>
+					<tr>
+						<td>
+							<button id="submitSaveMd1" class="searchButton" > <?php echo JText::_("EASYSDI_SAVE_STANDARD"); ?></button>
+						</td>
+						<td>
+							<button id="cancelMdEdit1" class="searchButton" > <?php echo JText::_("EASYSDI_STANDARD_RETURN"); ?></button>
+						</td>
+					</tr>
+				</table>
 				</td>
 			</tr>
 		   </table>
@@ -213,8 +240,9 @@ class HTML_Metadata {
 					            }
 				        ]*/
 				    });
-				    
+				 
 				//Ajout des listener pour les boutons Joomla
+				
 				window.addEvent('domready', function() {
 					$('submitSaveMd0').addEvent( 'click' , function() { 
 						submitHandler();

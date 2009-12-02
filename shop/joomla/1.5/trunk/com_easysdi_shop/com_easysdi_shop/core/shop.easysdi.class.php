@@ -2044,7 +2044,7 @@ if (count($rows)>0){
 			{
 				//Before the dot, it is the perimeter id, after the dot id of the data
 				$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) 
-							VALUES (0,$order_id,$perimeter_id,'$sel','$selSurfaceListName[$i]')";
+							VALUES (0,$order_id,$perimeter_id,'$sel','".addslashes($selSurfaceListName[$i])."')";
 				$db->setQuery($query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";

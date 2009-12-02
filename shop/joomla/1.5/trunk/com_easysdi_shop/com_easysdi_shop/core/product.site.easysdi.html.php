@@ -321,7 +321,7 @@ class HTML_product{
 								<td width="100%">
 								<script>
 								   function productAvailability_change(obj, id){
-								   	if(obj.checked){
+								   if(obj.checked){
 										$('buffer_'+id).disabled = false;
 									}
 									else
@@ -356,7 +356,7 @@ class HTML_product{
 ?>
 								  <tr>
 								  	<td align="left"><?php  echo $curPerim->text; ?></td>
-									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->product_id != "") echo "checked"?> onchange="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
+									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->product_id != "") echo "checked"?> onclick="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
 									<td align="center"><input type="checkbox" id="buffer_<?php echo $curPerim->value;?>" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"; else if ($bufferRow->product_id == "") echo "disabled";?>></td>
 								</tr>
 <?php } ?>
@@ -607,8 +607,16 @@ class HTML_product{
 		<input type="hidden" id="task" name="task" value="cancelEditProduct">
 		</form>
 		</div>
-		<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>		
-		<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
+		<table>
+			<tr>
+				<td>
+					<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_SAVE_PRODUCT"); ?></button>		
+				</td>
+				<td>
+					<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
+				</td>
+			</tr>
+		</table>
 		</div>
 		</div>
 	<?php
@@ -1039,15 +1047,14 @@ class HTML_product{
 					<b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
 				<td align="left">
-					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
-				</td>
+					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct"/></td>
 				<td align="right">
 					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="3" align="right">
-					<button type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
+					<button id="newProductBtn" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("EASYSDI_NEW_PRODUCT"); ?></button>
 				</td>
 			</tr>
 		</table>

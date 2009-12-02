@@ -308,7 +308,7 @@ class SITE_product {
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
 			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			echo htmlentities($result)."<br>";
+			//echo htmlentities($result)."<br>";
 			$insertResults = DOMDocument::loadXML($result);
 			
 			$xpathInsert = new DOMXPath($insertResults);

@@ -264,7 +264,8 @@ function manageFavoriteProduct ( $orderable = 1)
 				<input type='hidden' name='option' value='<?php echo $option;?>'>
 				<input type='hidden' id ="task" name='task' value='manageFavoriteProduct'>
 				<input type='hidden'  name='limitstart' value="<?php echo  $limitstart; ?>">
-				
+				<input type="hidden" name="countMD" value="<?php echo $countMD;?>">		
+				<input type="hidden" id="productId" name="productId" value="">
 				
 				<!--<span class="searchCriteria">
 					-->
@@ -311,8 +312,8 @@ function manageFavoriteProduct ( $orderable = 1)
 									<span class="mdsupplier" ><?php echo $row->supplier_name;?></span>
 								</td>
 								-->
-								<td class="logo"><div title="<?php if ( in_array($row->id,$productList)) echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); else echo JText::_('EASYSDI_ADD_TO_FAVORITE'); ?>" class="<?php if ( in_array($row->id,$productList)) echo "pdFavorite"; else echo "pdNotFavorite"; ?>" id="chooseFavorite" onClick="document.getElementById('productId').value='<?php echo $row->id; ?>';document.getElementById('task').value='<?php if ( in_array($row->id,$productList)) echo "remove"; else echo "add"; ?>Favorite'; submitOrderForm();"/></td>
-								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="document.getElementById('productId').value='<?php echo $row->id; ?>';document.getElementById('task').value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
+								<td class="logo"><div title="<?php if ( in_array($row->id,$productList)) echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); else echo JText::_('EASYSDI_ADD_TO_FAVORITE'); ?>" class="<?php if ( in_array($row->id,$productList)) echo "pdFavorite"; else echo "pdNotFavorite"; ?>" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$productList)) echo "remove"; else echo "add"; ?>Favorite'; submitOrderForm();"/></td>
+								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
 							</tr>
 					<?php
 						$i=$i+1;
@@ -328,11 +329,7 @@ function manageFavoriteProduct ( $orderable = 1)
 							<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 						</tr>
 					</table>
-					<input type="hidden" name="countMD" value="<?php echo $countMD;?>">		
-					<input type="hidden" id="productId" name="productId" value="">
-					<!--						
-				</span>
-			--></form>
+				</form>
 		</div>
 		</div>
 		<?php

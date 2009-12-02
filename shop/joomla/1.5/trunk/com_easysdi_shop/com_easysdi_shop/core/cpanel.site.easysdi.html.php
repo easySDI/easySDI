@@ -91,9 +91,17 @@ class HTML_cpanel {
 				</select>				
 				</td>
 				<td align="right">
-					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-				        <button id="newQuery" type="button" onClick="document.getElementById('Itemid').value='<?php echo $redirectURL; ?>';document.getElementById('view').value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ORDER_NEW_QUERY"); ?></button>
-				   </td>
+				<table>
+					<tr>
+						<td>
+							<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+						</td>
+						<td>
+							<button id="newQuery" type="button" onClick="document.getElementById('Itemid').value='<?php echo $redirectURL; ?>';document.getElementById('view').value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ORDER_NEW_QUERY"); ?></button>
+						</td>
+					</tr>
+				</table>
+				</td>
 				</tr>
 		</table>
 		
@@ -118,6 +126,7 @@ class HTML_cpanel {
 	<th align="left"><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
 	<th><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
 	<th class="logo"></th>
+	<th class="logo"></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -134,7 +143,7 @@ class HTML_cpanel {
 			if($row->order_send_date == "0000-00-00 00:00:00" && $row->RESPONSE_SEND == 0)
 			{
 				?>
-				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : &#10;".$row->order_date;?>"> </div>
+				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : &#10;".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_date));?>"> </div>
 				<?php
 			}
 			else
@@ -142,13 +151,13 @@ class HTML_cpanel {
 				if($row->RESPONSE_SEND)
 				{
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->order_send_date;?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".$row->RESPONSE_DATE;?>" > </div>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
 					<?php 
 				}
 				else
 				{
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".$row->order_send_date;?> " > </div>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : &#10;".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> " > </div>
 					<?php
 				}
 			}
@@ -162,14 +171,30 @@ class HTML_cpanel {
 				</a>
 				</span><br></td>
 			<td align="center"><?php echo JText::_($row->status_translation) ;?></td>
+			<td class="logo">
+			<div class="particular-order-link">
+				<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
+				</div>
+			</td>
 			<td  class="logo">
+			<script>
+			function savedOrderDelete_click(){
+				if (confirm('<?php echo JText::_("EASYSDI_ORDER_ARCHIVE_CONFIRM_ACTION") ?>')){
+					document.getElementById('order_id').value='<?php echo $row->order_id ;?>';
+					document.getElementById('task<?php echo $option; ?>').value='archiveOrder';
+					document.getElementById('ordersListForm').submit();
+					return true;
+				}
+				return false;
+			}
+			</script>
 			<?php
 				if($saved == $row->status)
 				{	?>
-					<table >
+					<table>
 					<tr><td>
 					<div class="savedOrderDelete" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DELETE") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();"></div>
+					onClick="return savedOrderDelete_click();"></div>
 					</td>
 					<td>
 					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
@@ -184,7 +209,7 @@ class HTML_cpanel {
 					<table >
 					<tr><td>
 					<div class="savedOrderDelete" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DELETE") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();"></div>
+					onClick="return savedOrderDelete_click();"></div>
 					</td>
 					</tr>
 					</table>
@@ -212,7 +237,7 @@ class HTML_cpanel {
 	<?php	
 	}
 	
-	function processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation){
+	function processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation, $treatmentCode){
 				
 		?>
 		<?php JHTML::_("behavior.modal","a.modal",$param); ?>
@@ -248,7 +273,16 @@ class HTML_cpanel {
 				</td>
 				<td>
 				<?php  echo JText::_("EASYSDI_PROCESS_ORDER_FILTER_TREATMENT")." ".JText::_($treatmentTranslation) ;?>
-				</td>	
+				</td>
+			</tr>
+			<?php } ?>
+			<?php if($treatmentCode == "AUTO"){ ?>
+			<tr>
+				<td colspan="2">
+					<div class="alert">
+						<?php echo JText::_("EASYSDI_PROCESS_ORDER_AUTO_WARNING") ;?>
+					</div>
+				</td>
 			</tr>
 			<?php } ?>
 		</table>
@@ -273,7 +307,7 @@ class HTML_cpanel {
 				<tbody>
 				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
 				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
+				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>
 				</tbody>
 				</table>
 				<input type="hidden" name="product_id[]" value="<?php echo $row->product_id?>">
@@ -441,7 +475,7 @@ class HTML_cpanel {
 			<tr>
 			<td align="center"><a title="<?php echo $row->order_id.": ".$row->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->order_id; ?></a></td>
 				<td align="center" class="infoLogo"><div class="<?php if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_translation) ;?>"></div></td>
-				<td align="center" class="logo"><div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : &#10;".$row->order_date;?>"> </div></td>
+				<td align="center" class="logo"><div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : &#10;".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_date))?>"> </div></td>
 				<td align="center" class="logo">
 				<div class="particular-link">
 				<a  title="<?php echo $row->username ;?>" id="partnerLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:565,y:450}}" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForPartner&SummaryForId=<?php echo $row->client_id ;?>" class="modal">&nbsp;</a>
@@ -840,12 +874,26 @@ class HTML_cpanel {
 				
 				<tr>
 				<td class="ortitle4">
-				<?php echo JText::_("EASYSDI_RECAP_ORDER_FILE"); ?>			
+				<?php echo JText::_("EASYSDI_RECAP_ORDER_FILE")?>			
 				</td>
-				<td><a target="RAW"
+				<?php
+				$queryOrderStatus = "select l.code from #__easysdi_order_status_list l, #__easysdi_order o where l.id=o.status AND o.order_id=".$id;
+				$db->setQuery($queryOrderStatus);
+				$status_code = $db->loadResult();
+				if($status_code != "HISTORIZED"){
+				?>
+				<td>
+					<a target="RAW"
 						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
-						<?php echo $row->filename; ?></a>
+						<?php echo $row->filename ?></a>
 				</td>
+				<?php }else{ ?>
+				<td>
+					<div class='info'>
+					<?php echo JText::_("EASYSDI_ORDER_HISTORIZED MESSAGE"); ?>
+					</div>
+				</td>
+				<?php } ?>
 				</tr>
 				</table>
 				
