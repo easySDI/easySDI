@@ -26,17 +26,12 @@ div#metadata hr {
   border: 0;
   background-color: #CCCCCC;
   height: 1px;
-}
-
-div#metadata .tabs {
-  margin:17px 0 20px;
-  color:#663200;
-  font-family:Arial,Helvetica,sans-serif;
-  font-size:14px;
-  font-weight:bold;
+  margin: 9px 0 0;
 }
 
 div#metadata{
+  clear:both;
+  width:auto;
   padding-left:0px;
   padding-right:0px;
 }
@@ -56,6 +51,7 @@ div#metadata td{
 div#metadata .title{
 	width:30%;
 	text-align: left;
+	padding-left:5px;
 }
 
 div#metadata .descr{
@@ -85,6 +81,11 @@ div#printMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+}
+
+.actionImg{
+	height:26px;
+	width:28px;
 }
 
 div#printMetadata:hover{ 

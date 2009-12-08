@@ -74,10 +74,14 @@ div .easysdi_product_does_not_exist{
 }
 
 .mdsearchresult .mdviewfile{
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
 	font-weight: bold;
 }
 
 .mdsearchresult .mdviewproduct{
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
 	font-weight: bold;
 }
 
@@ -166,8 +170,10 @@ div .easysdi_product_does_not_exist{
 /***     EasySDI Shop                                 ***/
 /********************************************************/
 .mdtyProperty{
+	margin-left:5px;
 	color:red;
 	font-weight:bold;
+	font-size:16px;
 }
 
 .olControlLoadingPanel {
@@ -194,7 +200,7 @@ div .easysdi_product_does_not_exist{
 }
 
 .shopWarnLogoContainer{
-	width:"16px";
+	width:16px;
 }
 
 .scaleStatusContainer{
@@ -506,20 +512,29 @@ legend    {
 }
 
 
+
 dl.tabs {
+	padding: 4px 10px;
 	margin: 10px 0 -1px 0;
 	z-index: 50;
+	border-bottom: 1px solid #ABABAB;
 }
 
 dl.tabs dt {
-	float: left;
+	display:inline;
 	padding: 4px 10px;
-	border-left: 1px solid #ccc;
-	border-right: 1px solid #ccc;
-	border-top: 1px solid #ccc;
+	border-left: 1px solid #ABABAB;
+	border-right: 1px solid #ABABAB;
+	border-top: 1px solid #ABABAB;
 	margin-left: 3px;
-	background: #f0f0f0;
-	color: #666;
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#D3D8DC none repeat scroll 0 0;
+}
+
+dl.tabs dt span {
+	font-weight:bold;
 }
 
 dl.tabs dt.open {
@@ -962,20 +977,54 @@ background-color: #e4e4e4;
 
 }
 
-.product_propreties
+.fieldset_properties
 {
-  border: 2px solid #9f9f9f;
+  -moz-background-clip:border;
+  -moz-background-inline-policy:continuous;
+  -moz-background-origin:padding;
+  background:#EEEEEE none repeat scroll 0 0;
+  border: 1px solid #9f9f9f;
+  margin-top:5px;
+  * position: relative;
+  * margin-top:1em;
+  * padding-top:2em;
+
+
+}
+
+.fieldset_properties legend {
+  -moz-background-clip:border;
+  -moz-background-inline-policy:continuous;
+  -moz-background-origin:padding;
+  background:#D3D8DC none repeat scroll 0 0;
+  border:1px solid #ababab;
+  padding-left:3px;
+  padding-right:3px;
+  font-weight:bold;
+  * position:absolute;
+  * top: -.6em;
+  * left: .5em;
+
 }
 
 .product_proprety_row
 {
-	border:1px solid #135CAE;
+	border:1px solid #9f9f9f;
+}
+
+.product_proprety_row legend {
+  background-color: transparent;
+  border:0px;
+  color:#9f9f9f;
 }
  
 /* Width of the lists */
 .product_proprety_row_list{
 	width: 250px;
   	padding-left: 10px;
+	display:inline;
+	/* Holly Hack for IE */
+	* display:inline-block !important;
 }
 
 .product_proprety_row_list textarea,
@@ -1024,7 +1073,7 @@ background-color: #e4e4e4;
 /*--------------------------------------------------|
 | dTree 2.05 | www.destroydrop.com/javascript/tree/ |
 |---------------------------------------------------|
-| Copyright (c) 2002-2003 Geir Landr�               |
+| Copyright (c) 2002-2003 Geir Landry               |
 |--------------------------------------------------*/
 
 .dtree {
@@ -1274,10 +1323,6 @@ div .reqUser{
 	text-align:left;
 }
 
-#reqTreatTable .reqStat{
-	width:75px;
-}
-
 #treatmentSearch{
 	width:256px;
 }
@@ -1286,11 +1331,11 @@ div .reqUser{
 	width:125px;
 }
 
-.listOrders .inputbox{
+#searchOrder{
 	width:252px;
 }
 
-.listOrders select, .listOrdersContainer{
+.listOrdersContainer select{
 	width:125px;
 }
 /********************************************************/
@@ -1304,7 +1349,8 @@ div .orderDate{
 	height:16px;
 	width:16px;
 }
-div .savedOrderDelete:hover, div .savedOrderOrder:hover{
+
+div .savedOrderArchive:hover, div .savedOrderOrder:hover, div .savedOrderSuppress:hover{
 	background-color:transparent;
 	background-position:center;
 	background-repeat:no-repeat;
@@ -1312,7 +1358,8 @@ div .savedOrderDelete:hover, div .savedOrderOrder:hover{
 	width:16px;
 	cursor:pointer;
 }
-div .savedOrderDelete{
+
+div .savedOrderArchive{
 	background-color:transparent;
 	background-position:center;
 	background-repeat:no-repeat;
@@ -1320,6 +1367,25 @@ div .savedOrderDelete{
 	width:16px;
 	background-image:url(../icons/silk/bin.png);
 }
+
+div .savedOrderSuppress{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/cross.png);
+}
+
+div .noLogo{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background:url(../images/pixel.gif);
+}
+
 div .savedOrderOrder{
 	background-color:transparent;
 	background-position:center;
@@ -1546,17 +1612,6 @@ padding:0;
 /***********************/
 /*** EasySDI Partner   */
 /***********************/
-.partner_properties
-{
-  border: 1px solid #135CAE;
-}
-
-.partner_properties legend {
-  padding: 0px 3px;
-  border: 0px solid #135CAE;
-  background-color: #135CAE;
-  color:white;
-}
 
 .inputboxEditAffiliates{
 	width:240px;
