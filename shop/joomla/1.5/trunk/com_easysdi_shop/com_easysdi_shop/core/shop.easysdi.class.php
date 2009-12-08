@@ -102,7 +102,7 @@ class HTML_shop {
 	
 	<script>
 	var map;
-	 var loadingpanel;
+	var loadingpanel;
 	var wfs=null;
 	var wfs3=null;
 	var vectors;
