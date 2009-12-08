@@ -28,11 +28,11 @@ function previewProduct($id){
 		
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/lib/OpenLayers.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
 	
 	<?php	
 	global  $mainframe;
@@ -84,7 +84,13 @@ function initMap(){
             minScale: <?php echo $rowsBaseMap->minResolution; ?>,
             maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
 			<?php } ?>
-            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)            
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>)
+	     <?php
+			if($rowsBaseMap->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rowsBaseMap->maxExtent.")\n"
+	    ?>
+		<?php
+			if($rowsBaseMap->restrictedScales != '') echo  ",scales: [".$rowsBaseMap->restrictedScales."]\n"
+	    ?>
             });
 				  
 			baseLayerVector = new OpenLayers.Layer.Vector(
@@ -194,7 +200,7 @@ $i++;
 			<td align="center"><div id="map" class="smallmap"></div></td>
 		   </tr>
 		   <tr>
-			<td align="center">&nbsp</td>
+			<td align="center">&nbsp</div></td>
 		   </tr>
 		</table>
 		</div>
