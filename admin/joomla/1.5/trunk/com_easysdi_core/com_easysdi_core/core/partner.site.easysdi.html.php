@@ -185,7 +185,7 @@ class HTML_partner
 		<table width="100%">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_ACCOUNT"); ?></legend>
 						<table  border="0" cellpadding="3" cellspacing="0">
 					
@@ -246,7 +246,7 @@ class HTML_partner
 		<table width="100%">
 			<tr>
 				<td>
-		<fieldset class="partner_properties">
+		<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
 		
 		<table  border="0" cellpadding="3" cellspacing="0">			
@@ -317,7 +317,7 @@ class HTML_partner
 		<table width="100%">
 			<tr>
 				<td>							
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
 						<table  border="0" cellpadding="3" cellspacing="0">			
 							<tr>
@@ -390,7 +390,7 @@ class HTML_partner
 <table width="100%">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><b><?php echo JText::_("EASYSDI_TEXT_DELIVERY_ADDRESS"); ?></b></legend>		
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -460,13 +460,11 @@ class HTML_partner
 		{
 			echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
 ?>
-			<br>
-			<div class="easysdi_site_aff_list">
-			<br>
-			<table width="100%">
+			<br/>
+			<table cellspacing="0" cellpadding="0" border="0" width="100%">
 			<tr>
 				<td>
-				<fieldset class="partner_properties">
+				<fieldset class="fieldset_properties">
 					<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>	
 <?php	
 					$query = "SELECT * FROM #__easysdi_community_partner up, #__users u where up.partner_id = '$rowPartner->partner_id' AND up.user_id = u.id ORDER BY partner_id";
@@ -477,14 +475,11 @@ class HTML_partner
 					{	
 						userTree::buildTreeView($src_list[0], true);
 					}
-		//			HTML_partner::print_child($src_list );				
 ?>
-				</fieldset>		
+				</fieldset>
 				</td>
 			</tr>
-		</table>	
-			</div>
-			<br>
+			</table>	
 <?php
 			echo $tabs->endPanel(); 
 		}
@@ -590,7 +585,7 @@ class HTML_partner
 		<table width="100%">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_ACCOUNT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 					
@@ -670,7 +665,7 @@ class HTML_partner
 	<table width="100%">
 			<tr>
 				<td>
-		<fieldset class="partner_properties">
+		<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
 		
 		<table border="0" cellpadding="3" cellspacing="0">			
@@ -745,7 +740,7 @@ class HTML_partner
 	<table width="100%">
 	<tr>
 		<td>		
-		<fieldset class="partner_properties">
+		<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_BILLING_ADDRESS"); ?></b></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
 			
@@ -827,7 +822,7 @@ class HTML_partner
 		//Include TOP extension		
 		SITE_partner::includePartnerExtension(3,'TOP','editPartner',$rowPartner->partner_id);						
 		?>
-		<fieldset class="partner_properties">
+		<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_DELIVERY_ADDRESS"); ?></b></legend>		
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
@@ -961,7 +956,7 @@ class HTML_partner
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -1015,7 +1010,7 @@ class HTML_partner
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_CONTACT"); ?></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
@@ -1140,7 +1135,7 @@ class HTML_partner
 		<table width ="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -1222,7 +1217,7 @@ class HTML_partner
 			<tr>
 				<td>
 		
-		<fieldset class="partner_properties">
+		<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_CONTACT_ADRESS"); ?></b></legend>
 		
 		<table border="0" cellpadding="3" cellspacing="0">
@@ -1298,7 +1293,7 @@ class HTML_partner
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_('EASYSDI_PROFILE_TITLE'); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -1325,7 +1320,7 @@ class HTML_partner
 ?>
 			<tr>
 				<td>
-					<fieldset class="partner_properties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_($row->type_name); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -1362,10 +1357,11 @@ class HTML_partner
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_AFFILIATES"),"partnerPane");
 		?>
-<br>
-<div class="easysdi_site_aff_list">
-<br>
-	<fieldset class="partner_properties">
+<br/>
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr>
+   <td>
+	<fieldset class="fieldset_properties">
 		<legend><b><?php echo JText::_("EASYSDI_TEXT_AFFILIATES_LIST"); ?></b></legend>		
 		
 	<?php	
@@ -1385,9 +1381,10 @@ class HTML_partner
 	
 		
 		?>
-	</fieldset>		
-	</div><br>
-		
+	</fieldset>
+	</td>
+	</tr>
+	</table>
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
