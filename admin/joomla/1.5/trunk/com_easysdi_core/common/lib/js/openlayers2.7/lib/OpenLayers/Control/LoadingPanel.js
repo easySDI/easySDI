@@ -104,11 +104,11 @@ OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
     */
     addLayer: function(evt) {
         if (evt.layer) {
-            evt.layer.events.register('loadstart', this, this.increaseCounter);
-            evt.layer.events.register('loadend', this, this.decreaseCounter);
-        }
+		evt.layer.events.register('loadstart', this, this.increaseCounter);
+		evt.layer.events.register('loadend', this, this.decreaseCounter);
+	}
     },
-
+    
     /**
      * Method: setMap
      * Set the map property for the control and all handlers.
@@ -134,7 +134,7 @@ OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
         this.counter++;
         if (this.counter > 0) { 
             if (!this.maximized && this.visible) {
-                this.maximizeControl(); 
+                this.maximizeControl();
             }
         }
     },
@@ -171,8 +171,9 @@ OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
      * evt - {Event}
      */
     minimizeControl: function(evt) {
-        this.div.style.display = "none"; 
-        this.maximized = false;
+        this.div.style.display = "none";
+        document.getElementById('status').style.display = "none";
+	this.maximized = false;
     
         if (evt != null) {
             OpenLayers.Event.stop(evt);
@@ -188,6 +189,7 @@ OpenLayers.Control.LoadingPanel = OpenLayers.Class(OpenLayers.Control, {
      */
     maximizeControl: function(evt) {
         this.div.style.display = "block";
+	document.getElementById('status').style.display = "block";
         var viewSize = this.map.getSize();
         var msgW = viewSize.w;
         var msgH = viewSize.h;
