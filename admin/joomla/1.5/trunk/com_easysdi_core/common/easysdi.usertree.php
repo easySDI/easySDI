@@ -39,7 +39,9 @@ class userTree
 		?><!--  -->
 		
 		
-		
+		<?php 
+		$app =& JFactory::getApplication();
+		?>
 
 		<div class="dtree">
 			<table>
@@ -52,7 +54,7 @@ class userTree
 			
 			<td>
 			<script type="text/javascript">
-				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/';  ?>');
+				d = new dTree('d', '<?php echo JURI::root().'templates/'.$app->getTemplate().'/';  ?>');
 				
 				d.add(0,-1,'<?php echo addslashes($rootUser->name);  ?>');
 				
