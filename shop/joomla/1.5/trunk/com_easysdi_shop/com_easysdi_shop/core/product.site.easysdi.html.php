@@ -143,7 +143,7 @@ class HTML_product{
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset class="product_propreties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_IDENT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -180,7 +180,7 @@ class HTML_product{
 			</tr>
 			<tr>
 				<td>
-					<fieldset class="product_propreties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_METADATA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
@@ -215,7 +215,7 @@ class HTML_product{
 			</tr>
 			<tr>
 				<td>
-					<fieldset class="product_propreties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_DIFFUSION"); ?></legend>
 						<script>
 						   function toggle_state(obj){
@@ -293,7 +293,7 @@ class HTML_product{
 ?>
 			<tr>
 				<td>
-					<fieldset class="product_propreties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_PERIMETER") ?></legend>
 						<table width="100%">
 							<tr>
@@ -431,7 +431,7 @@ class HTML_product{
 					case "list":
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
 						</fieldset>
@@ -442,7 +442,7 @@ class HTML_product{
 					case "mlist":
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
 						</fieldset>
@@ -452,7 +452,7 @@ class HTML_product{
 					case "cbox":
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
 						</fieldset>
@@ -468,7 +468,7 @@ class HTML_product{
 						}
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox"', 'value', 'text', $selected ); ?>
 						</fieldset>
@@ -484,7 +484,7 @@ class HTML_product{
 						}
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox" size="1" ', 'value', 'text', $selected ); ?>
 						</fieldset>
@@ -519,7 +519,7 @@ class HTML_product{
 						}
 						?>
 						<tr><td>
-						<fieldset class="product_propreties">
+						<fieldset class="fieldset_properties">
 						<legend><?php echo $curProperty->text; ?></legend>
 						<table>
 						<tr><td>
@@ -548,7 +548,7 @@ class HTML_product{
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset class="product_propreties">
+					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_PREVIEW"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">						
 							<tr>
@@ -1075,6 +1075,10 @@ class HTML_product{
 			window.open('./index.php?option=com_easysdi_shop&task=suppressProduct&publishedobject=product&cid[]='+id, '_self');
 		}
 	</script>
+	<?php
+	if(count($rows) == 0){
+		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("EASYSDI_NO_RESULT_FOUND")."</td>";
+	}else{?>
 	<table id="myProducts" class="box-table">
 	<thead>
 	<tr>
@@ -1084,6 +1088,7 @@ class HTML_product{
 	<th class="logo">&nbsp;</th>
 	</tr>
 	</thead>
+	<?php } ?>
 	<tbody>
 	<?php
 		$i=0;
@@ -1165,6 +1170,10 @@ class HTML_product{
 			</tr>
 		</table>
 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+	<?php
+	if(count($rows) == 0){
+		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("EASYSDI_NO_RESULT_FOUND")."</td>";
+	}else{?>
 	<table class="box-table" id="manageMetadata">
 	<thead>
 	<tr>
@@ -1173,6 +1182,7 @@ class HTML_product{
 	<th></th>
 	</tr>
 	</thead>
+	<?php } ?>
 	<tbody>
 	<?php
 		$i=0;
