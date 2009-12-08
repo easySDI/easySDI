@@ -40,8 +40,8 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-
-<table class="descr"  >
+<br/>
+<table class="descr">
 <!--<tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
 <tr valign="top"><td class="title">Nom :</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/></td></tr>
 -->
@@ -124,10 +124,9 @@ mailto:<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationI
 </td></tr>
 </table>
 </div>
-
 <!-- Script to open all hyperlinks in a new window -->
-<script>
-
+<script xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr-fr" lang="fr-fr" dir="ltr">
+window.addEvent('domready', function() {
 var container = document.getElementById("metadata");
 var hlinks = container.getElementsByTagName("a");
 i=0;
@@ -138,10 +137,9 @@ while(true){
 		hlinks[i].setAttribute('target', '_blank');
 	i++;
 }
+});
 </script>
-
 </xsl:template>
-
 <!-- Template CategoryCode -->
 	<xsl:template name="categoryCodeTemplate">
 		<xsl:param name="categoryCode"/>

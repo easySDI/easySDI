@@ -34,8 +34,9 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-
+<br/>
 <table class="descr">
+<tr><td colspan="2"><div style="display:none;" id="message" class="info"/></td></tr>
 <xsl:for-each select="./Property">
 	<tr><td class="title" valign="top"><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
 	<table >
