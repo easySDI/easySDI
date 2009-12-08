@@ -572,14 +572,24 @@ class SITE_catalog {
 	function PostXMLRequest($url,$xmlBody){
 		//$args = http_build_query($array);
 		$url = parse_url($url);
+		$port="";
+		$scheme="";
+		$fp = null;
 		if(isset($url['port'])){
 			$port = $url['port'];
 		}else{
 			$port = 80;
 		}
+		$scheme = strtolower($url['scheme']);
 		//could not open socket
-		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			//$out = false;
+		if($scheme == "http"){
+			$fp = fsockopen ($url['host'], $port, $errno, $errstr);
+		}
+		if($scheme == "https"){
+			$fp = fsockopen ("ssl://".$url['host'], 443, $errno, $errstr);
+		}
+		if(!$fp){
+			//...
 		}
 		//socket ok
 		else{
@@ -610,6 +620,69 @@ class SITE_catalog {
 		}
 		return $out;
 	}
+	
+	//Gives usefull information about http headers and response code in a array
+	/*
+	function GetResponseHeaders($response){
+	$http_response_header = array();
+            if(  stripos($response, "\r\n\r\n") !== FALSE  ){
+                $hc = explode("\r\n\r\n",  $response);
+                $headers = explode("\r\n",  $hc[0]);
+                if(!is_array($headers))$headers = array();
+                $i = 0;
+		foreach($headers as $key => $header){
+                    $a = "";
+                    $b = "";
+		    if($i == 0){
+			    $temp = explode(" ", $header);
+			    if(count($temp)<2){
+				    $http_response_header["CODE"] = "UNKNOWN";
+			    }else{
+				    $http_response_header["CODE"] = trim($temp[1]);
+			    }
+		    }
+                    if(  stripos($header, ": ") !== FALSE  ){
+                        list($a, $b) = explode(": ", $header);
+                        $http_response_header[trim($a)] = trim($b);
+                    }
+		    $i++;
+                }
+                return $http_response_header;
+		//return end($hc);
+            }
+            else if(  stripos($response, "\r\n") !== FALSE  ){
+                $headers = explode("\r\n",  $response);
+                
+                if(!is_array($headers))$headers = array();
+		$i = 0;
+                foreach($headers as $key => $header){
+                    if(  $key < ( count($headers) - 1 )  ){
+                        $a = "";
+                        $b = "";
+			if($i == 0){
+			     $temp = explode(" ", $header);
+			    if(count($temp)<2){
+				    $http_response_header["CODE"] = "UNKNOWN";
+			    }else{
+				    $http_response_header["CODE"] = trim($temp[1]);
+			    }
+			}
+                        if(  stripos($header, ": ") !== FALSE  ){
+                            list($a, $b) = explode(": ", $header);
+                            $http_response_header[trim($a)] = trim($b);
+                        }
+			$i++;
+                    }
+                }
+              //  return end($headers);
+		 return $http_response_header;
+            }
+	    else{
+		    return null;
+	    }
+	}
+	*/
+
 
 }
 ?>

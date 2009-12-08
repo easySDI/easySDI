@@ -97,11 +97,6 @@ class HTML_catalog{
 						easysdiClearButton_click();
 					});
 					
-					//Handler for the search button
-					$('simple_search_button').addEvent('click', function() {
-						easysdiSearchButton_click();
-					});
-					
 				});
 				
 				function init(){
@@ -112,11 +107,6 @@ class HTML_catalog{
 				function easysdiClearButton_click(){
 					clearBasicSearch();
 					clearAdvancedSearch();
-					document.getElementById('tabIndex').value = '0';
-					document.getElementById('catalog_search_form').submit();
-				}
-				
-				function easysdiSearchButton_click(){
 					document.getElementById('tabIndex').value = '0';
 					document.getElementById('catalog_search_form').submit();
 				}
@@ -160,38 +150,6 @@ class HTML_catalog{
 			
 			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 			
-			
-			
-			
-			
-			
-			
-			<!--
-			<div onClick ="document.getElementById('simulatedTabIndex').value = '1';
-							clearDetailsForm();
-						  document.getElementById('catalog_search_form').submit();" 
-						  <?php if ($simulatedTabIndex == 2)
-						  		{echo "class='mdPanSelectable'" ;}
-						  		else
-						  		{echo "class='mdPanSelected'" ;} ?>>
-								<?php echo JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA");?></div>
-			<div onClick ="document.getElementById('simulatedTabIndex').value = '2';
-							clearForm();
-						  document.getElementById('catalog_search_form').submit();"
-						  <?php if ($simulatedTabIndex == 2)
-						  		{echo "class='mdPanSelected'" ;}
-						  		else
-						  		{echo "class='mdPanSelectable'" ;} ?>>
-						  <?php echo JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA");?></div>
-			-->			  
-						  
-						  
-			
-						  
-						  
-						  
-						  
-						  
 			<!--
 				This is the simple search
 			-->
@@ -205,7 +163,7 @@ class HTML_catalog{
 						<table>
 							<tr>
 								<td>
-								<button id="simple_search_button" name="simple_search_button" type="submit" class="easysdi_search_button">
+								<button id="simple_search_button" onclick="document.getElementById('tabIndex').value = '0';" name="simple_search_button" type="submit" class="easysdi_search_button">
 								<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
 								</td>
 								<td>
@@ -224,25 +182,7 @@ class HTML_catalog{
 				</tr>
 			</table>
 			</div>
-			<!--
-			<table>
-				<tr>
-					<td>
-					<button id="simple_search_button" type="submit" class="easysdi_search_button"
-						onclick="document.getElementById('tabIndex').value = '0';
-								 document.getElementById('catalog_search_form').submit();">
-								 <?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
-					</td>
-					<td>
-					<button type="submit" class="easysdi_clear_button"
-						onclick="clearForm();
-								 document.getElementById('tabIndex').value = '0';
-								document.getElementById('catalog_search_form').submit();">
-								<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
-					</td>
-				</tr>
-			</table>
-			-->
+			
 			<!--
 				This is the advanced search
 			-->
