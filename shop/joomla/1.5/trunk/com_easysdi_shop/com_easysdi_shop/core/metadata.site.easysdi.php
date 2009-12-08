@@ -745,40 +745,52 @@ class SITE_metadata {
 	}
 
 	function PostXMLRequest($url,$xmlBody){
+		//$args = http_build_query($array);
 		$url = parse_url($url);
+		$port="";
+		$scheme="";
+		$fp = null;
 		if(isset($url['port'])){
 			$port = $url['port'];
 		}else{
 			$port = 80;
 		}
+		$scheme = strtolower($url['scheme']);
 		//could not open socket
-		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			//$out = false;
+		if($scheme == "http"){
+			$fp = fsockopen ($url['host'], $port, $errno, $errstr);
+		}
+		if($scheme == "https"){
+			$fp = fsockopen ("ssl://".$url['host'], 443, $errno, $errstr);
+		}
+		if(!$fp){
+			//...
 		}
 		//socket ok
 		else{
+			//$size = strlen($args);
 			$size = strlen($xmlBody);
 			$request = "POST ".$url['path']." HTTP/1.1\n";
 			$request .= "Host: ".$url['host']."\n";
 			//add auth header if necessary
 			if(isset($url['user']) && isset($url['pass'])){
-				$user = $url['user'];
-				$pass = $url['pass'];
-				$request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
+			   $user = $url['user'];
+			   $pass = $url['pass'];
+			   $request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
 			}
 			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/xml\n";
+			$request .= "Content-type: application/x-www-form-urlencoded\n";
 			$request .= "Content-length: ".$size."\n\n";
 			$request .= $xmlBody."\n";
 			//send req
 			$fput = fputs($fp, $request);
-
 			//read response, do only send back the xml part, not the headers
 			$strResponse = "";
 			while (!feof($fp)) {
-				$strResponse .= fgets($fp, 128);
+			   $strResponse .= fgets($fp, 128);
 			}
 			$out = strstr($strResponse, '<?xml');
+			
 			fclose ($fp);
 		}
 		return $out;
@@ -1602,10 +1614,6 @@ if ($use_pagination) {
 		HTML_metadata::listList($use_pagination,$rows,$pageNav,$option);
 		
 	}
-	
-	
-
-	
 
 
 function listListContent($list_id,$option){

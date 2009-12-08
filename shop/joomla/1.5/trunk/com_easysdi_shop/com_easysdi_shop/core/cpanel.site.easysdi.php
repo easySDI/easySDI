@@ -84,6 +84,57 @@ class SITE_cpanel {
 			}
 		}
 	}
+	
+	function suppressOrder(){
+		global  $mainframe;
+		$option=JRequest::getVar("option");
+		$order_id=JRequest::getVar("order_id",0);
+		if ($order_id == 0){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo "</div>";
+		}else {
+			$database =& JFactory::getDBO();
+			$user = JFactory::getUser();
+
+			$rootPartner = new partnerByUserId($database);
+			$rootPartner->load($user->id);
+				
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
+			$database->setQuery($queryStatus);
+			$status_id = $database->loadResult();
+			
+			jimport("joomla.utilities.date");
+			$date = new JDate();
+			
+			$query_order_status = "select status from #__easysdi_order where user_id = ".$user->id." AND ORDER_ID =".$order_id;
+			$database->setQuery($query_order_status);
+			$order_status = $database->loadResult();
+			
+			//User must own this order to delete it
+			if ($order_status == ""){
+				echo "<div class='alert'>";
+				echo JText::_("EASYSDI_ERROR_NO_SUCH_ORDER_FOR_USER");
+				echo "</div>";
+			}
+			
+			//Only draft are permitted for deletion
+			if ($order_status <> $status_id){
+				echo "<div class='alert'>";
+				echo JText::_("EASYSDI_ERROR_TRY_DELETE_ORDER_OTHER_THAN_DRAFT");
+				echo "</div>";
+			}
+			
+			$query = "delete from #__easysdi_order where user_id = ".$user->id." AND ORDER_ID =".$order_id;
+			$database->setQuery($query);
+			if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}
+		}
+	}
 
 	function listOrdersForProvider(){
 
@@ -95,9 +146,12 @@ class SITE_cpanel {
 		//Allows Pathway with mod_menu_easysdi
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
 		
-		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
-		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
-
+		//$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		//$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
+		
+		$limit = JRequest::getVar('limit', 20 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
+		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$rootPartner = new partnerByUserId($database);
@@ -181,11 +235,14 @@ class SITE_cpanel {
 					     p.data_title as data_title,
 					     o.name as name,
 					     o.order_date as order_date,
+					     o.order_send_date as order_send_date,
+					     o.RESPONSE_SEND as RESPONSE_SEND,
+					     o.RESPONSE_DATE as RESPONSE_DATE,
 					     o.type as type, 
 					     o.status as status, 
 					     osl.code as code, 
 					     osl.translation as status_translation, 
-					     tl.translation as type_translation 
+					     tl.translation as type_translation
 				  FROM  #__easysdi_order o, 
 				  		#__easysdi_order_product_list opl, 
 				  		#__easysdi_product p, 
@@ -324,7 +381,7 @@ class SITE_cpanel {
 				$database->setQuery($queryStatus);
 				$status_id = $database->loadResult();
 
-				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= '.$remark.',price = $price ";
+				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= ".$remark.",price = $price ";
 					
 				 $fileName = $_FILES['file'.$product_id]["name"];
 			 	if (strlen($fileName)>0)
@@ -542,9 +599,10 @@ class SITE_cpanel {
 		/*$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 5 );
 		 $limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		 */
-		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
-		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
-
+		//$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+		//$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
+		$limit = JRequest::getVar('limit', 20 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
 		//Automatic Archive and/or Historize of the orders
 		//Get the delays in days unit
 		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY");
