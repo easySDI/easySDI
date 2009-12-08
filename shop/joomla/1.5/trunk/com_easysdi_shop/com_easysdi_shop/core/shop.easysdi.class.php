@@ -175,7 +175,7 @@ class HTML_shop {
 	/**
 	Add a WFS layer to the current map  
 	*/
-	function addLayerWfs (layerUrl)
+	function addLayerWfs (layerUrl, count)
 	{
 		if (!wfs) 
 		{				
@@ -186,8 +186,8 @@ class HTML_shop {
                         url: layerUrl,
                         format: new OpenLayers.Format.GML()
                     })
-                });		    	            
-			 wfsRegisterEvents();
+                });		
+			 wfsRegisterEvents(count);
 			 map.addLayer(wfs);		
 		}
 		else
@@ -200,11 +200,16 @@ class HTML_shop {
                         format: new OpenLayers.Format.GML()                                                
                     })});	
                 
-                
+              wfs2.events.register("featureadded", null, 
+		      function(myEvent) { 
+			      loadingpanel.decreaseCounter();
+			      if(count == 1)
+				      loadingpanel.decreaseCounter();
+		      });
+	      
               wfs2.events.register("featureadded", null, 
               						function(myEvent) { 
-                										$("status").innerHTML = "";
-												$("loadingPanelPosition").style.display = 'block';
+														loadingpanel.decreaseCounter();
 														removeSelection();
 														var wfsFeatures = wfs.features;
 
@@ -240,11 +245,9 @@ class HTML_shop {
 	function getWFSOfSelectedSurface()
 	{
 		var selectedSurface = document.getElementById('selectedSurface');
-		
 		if(selectedSurface.options.length > 0)
 		{
-			//$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
-			
+			loadingpanel.increaseCounter();
 			wfsUrlWithFilter = wfsUrl + '&FILTER=';
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
 			if(selectedSurface.options.length>1)
@@ -255,18 +258,15 @@ class HTML_shop {
 			for(var i=0; i<selectedSurface.options.length ; i++) 
 			{
 				var idSurface = selectedSurface.options[i].value;
-	            wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + idField +'</ogc:PropertyName><ogc:Literal>'+ idSurface +'</ogc:Literal></ogc:PropertyIsEqualTo>');
-	        }
-	        if(selectedSurface.options.length>1)
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + idField +'</ogc:PropertyName><ogc:Literal>'+ idSurface +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+			}
+			if(selectedSurface.options.length>1)
 			{
 				wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Or>');
 			}
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
 			
-			//$("status").innerHTML = wfsUrlWithFilter;
-			
-					
-			addLayerWfs(wfsUrlWithFilter);
+			addLayerWfs(wfsUrlWithFilter, selectedSurface.options.length);
 		}
 	}
 	
@@ -367,7 +367,8 @@ class HTML_shop {
 					layerPerimeter = new OpenLayers.Layer.WMS(perimName,
 			                    wmsUrl,
 			                    {layers: layerName, format : imgFormat  ,transparent: "true"},                                          
-			                     {singleTile: true},                                                    
+			                     {singleTile: true,
+					     ratio:1},                                                    
 			                     {                     
 								  minScale: pMinResolution,
 			               		  maxScale: pMaxResolution,                                    	     
@@ -409,8 +410,8 @@ class HTML_shop {
 				                { featureClass: OpenLayers.Feature.WFS}
 					                 );
 					
-					wfs.events.register("loadstart", null, function() {$("loadingPanelPosition").style.display = 'block';$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-					wfs.events.register("loadend", null, function() { $("loadingPanelPosition").style.display = 'none';$("status").innerHTML = ""; intersect();})
+					//wfs.events.register("loadstart", null, function() {$("loadingPanelPosition").style.display = 'block';$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+					wfs.events.register("loadend", null, function() { intersect();})
 					
 					map.addLayer(wfs);
 			 	}	
@@ -488,10 +489,10 @@ function setAlpha(imageformat)
 					numDigits: 0
 					}));
 					
-					
-					map.addControl(new OpenLayers.Control.LoadingPanel({ 
+					loadingpanel = new OpenLayers.Control.LoadingPanel({ 
 					div: document.getElementById("loadingPanelPosition")
-					}));
+					});
+					map.addControl(loadingpanel);
 					
 					
 					 baseLayerVector = new OpenLayers.Layer.Vector(
@@ -532,7 +533,12 @@ function setAlpha(imageformat)
 				?>
 				
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+                    <?php if($row->singletile == 1){ ?>
+		    {singleTile: <?php echo $row->singletile; ?>,
+		     ratio: 1},
+		     <?php }else{ ?>
+	             {singleTile: <?php echo $row->singletile; ?>},
+	             <?php }?>
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                       minScale: <?php echo $row->minResolution; ?>,
@@ -586,8 +592,9 @@ function setAlpha(imageformat)
 							
 		                    {layers: '<?php echo $product->previewWmsLayers ; ?>', 
 		                    format : "<?php echo $product->previewImageFormat ; ?>"  ,
-		                    transparent: "true"},                                          
-		                     {singleTile: true},                                                    
+		                    transparent: "true"},
+		                    {singleTile: true,
+				      ratio:1},                                                    
 		                     {                     
 							  minScale: <?php echo $product->previewMinResolution ; ?>,
 		               		  maxScale: <?php echo $product->previewMaxResolution ; ?>,                                    	     
@@ -869,9 +876,8 @@ function setAlpha(imageformat)
 	 	}
 	 	else
 	 	{
-			$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; 
-			$("loadingPanelPosition").style.display = 'block';
-			//$("status").innerHTML = "wfsUrl : " + wfsUrl;
+			//Start to render feature from a selection
+			loadingpanel.increaseCounter();
 	   		var features = vectors.features;
 	        var gmlOptions = {featureType: "feature",featureNS: "http://example.com/feature"};
 	
@@ -891,20 +897,19 @@ function setAlpha(imageformat)
 				wfsUrlWithFilter = wfsUrl+'&FILTER='+escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:Intersect><ogc:PropertyName>msGeometry</ogc:PropertyName>'+getElementsByTagNameNS(doc,'http://www.opengis.net/gml', 'Point')+'</ogc:Intersect></ogc:Filter>');		
 			}
 			
-			addLayerWfs(wfsUrlWithFilter);
+			addLayerWfs(wfsUrlWithFilter, null);
 		 }
 		return;                     
 	}
 	
 	
-	function wfsRegisterEvents()			
+	function wfsRegisterEvents(count)			
 	 {
 	 
-	 //	wfs.events.register("loadstart", null, function() { $("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
-	//	wfs.events.register("loadend", null, function() { $("status").innerHTML = ""; })
-		  
 	 			wfs.events.register("featureremoved",null,function(event)
 	 			{
+					//Selected features just removed from wfs
+					loadingpanel.decreaseCounter();
 					//If the call results from a zoom on the map, do not remove selected features
 					if(fromZoomEnd == false)
 					{
@@ -941,26 +946,28 @@ function setAlpha(imageformat)
 					}		                
 	            }
 				);
-				 
-			wfs.events.register("featureadded", null, function(event) 
+				
+				wfs.events.register("featureadded", null, function(event) 
 				{ 
+					//Selected features just loaded from wfs
+					loadingpanel.decreaseCounter();
+					if(count == 1)
+						loadingpanel.decreaseCounter();
 					removeSelection();
-					$("status").innerHTML = "";
-					$("loadingPanelPosition").style.display = 'none';
 					    		
-		              feat2 = event.feature;
-		              var name = feat2.attributes[nameField];
-		              //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-		              var id = feat2.attributes[idField];
+					feat2 = event.feature;
+					var name = feat2.attributes[nameField];
+					//var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+					var id = feat2.attributes[idField];
 		                       
-		              var area = feat2.attributes[areaField];
-		              var featArea = 0;	
-		              if (areaField.length > 0 && area)
-		              {
-            			 featArea = area; 
-            		  }else {
-            			 featArea = feat2.geometry.getArea();
-            		  }
+					var area = feat2.attributes[areaField];
+					var featArea = 0;	
+					if (areaField.length > 0 && area)
+					{
+						featArea = area; 
+					}else {
+						featArea = feat2.geometry.getArea();
+					}
 		                   	
 	  				
 		   		    //Add the surface in the selectedSurface list
@@ -1032,7 +1039,7 @@ function setAlpha(imageformat)
 	    <div id="loadingPanelPosition" class="olControlLoadingPanel"/>
 	  </td>
 	  <td class="shopInfoMessageContainer" colspan="2" align="left">
-	    <div id="status"/>
+	    <div id="status"><?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?></div>
 	  </td>
 	  <td class="toolsStatusContainer">
 	    <div id="toolsStatus"><?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
@@ -1325,8 +1332,9 @@ function setAlpha(imageformat)
 				  order by property_order";
 ?>
 
-
-<fieldset id="product_propreties" class="product_propreties"><legend><?php echo JText::_($product->data_title);?></legend> <?php
+<br/>
+<fieldset id="fieldset_properties" class="fieldset_properties"><legend><?php echo JText::_($product->data_title);?></legend>
+<?php
 $db->setQuery( $query );
 $rows = $db->loadObjectList();
 		
@@ -1345,7 +1353,6 @@ if (count($rows)>0){
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
-				echo "<table><tr><td>";
 				echo "<select class=\"product_proprety_row_list$isMandatoryClass\" name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
 				//add a default option that replaces the text before the list, value = -1 to be sure to not interfer with pvd.id.
 				echo "<option value='-1'>-". JText::_($row->translation)."-</option>";
@@ -1360,9 +1367,7 @@ if (count($rows)>0){
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
 				}
 				echo "</select>";
-				echo "</td><td>";
-				if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
-				echo "</td></tr></table>";
+				if($rowValue->mandatory == 1) echo "<span class=\"mdtyProperty\">*</span>"; else echo "&nbsp;";
 				break;
 			case "mlist":
 				echo "<div id='".$row->code."_mlist_property_".$product->id."[]_label'>".JText::_($row->translation).":</div>";
@@ -2349,8 +2354,6 @@ if (count($rows)>0){
 			
 			$previousExtent = JRequest::getVar ('previousExtent', '' );
 			$mainframe->setUserState('previousExtent',$previousExtent);
-			
-
 
 		}
 
@@ -2358,6 +2361,7 @@ if (count($rows)>0){
 			/*
 			 * Save the properties from the step 3
 			 */
+			
 			$cid = $mainframe->getUserState('productList');
 			$db =& JFactory::getDBO();
 			
@@ -2460,87 +2464,92 @@ if (count($rows)>0){
 		?>
 <h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
 <script>
-function validateForm(curStep){
-	//curStep = the new step to come
+function validateForm(toStep, fromStep){
+	
+	//Do not allow to go before the perimeter are loaded.
+	//Causes bug (selected perimeter not saved)
+	if(toStep == 3 && fromStep == 2){
+		if(loadingpanel.maximized){
+			//register an event to the loading panel to do this clear.			return false;
+		}
+	}
+	
 	//check that all properties were filled in
-	if(curStep == 4){
-		
+	if(toStep == 4 && fromStep == 3){
 		
 		var errorMsg = "";
 		var errorNum = 0;
 		//
 		//select
 		//
-		if($('product_propreties') != null){
-			var aSel = $('product_propreties').getElementsByTagName("select");
-			for(var i=0;i<aSel.length;i++){
+		var aSel = $('fieldset_properties').getElementsByTagName("select");
+		for(var i=0;i<aSel.length;i++){
+			
+			//Is the property mandatory?
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){			
+				selected = new Array(); 
+				for (var j = 0; j < aSel[i].options.length; j++){
+					if (aSel[i].options[j].selected && (aSel[i].options[j].value != -1 || aSel[i].options[j].value != ""))
+					selected.push(aSel[i].options[j].value);
+				}
 				
-				//Is the property mandatory?
-				if(aSel[i].className.indexOf("mdtryElem",0) != -1){			
-					selected = new Array(); 
-					for (var j = 0; j < aSel[i].options.length; j++){
-						if (aSel[i].options[j].selected && (aSel[i].options[j].value != -1 || aSel[i].options[j].value != ""))
-						selected.push(aSel[i].options[j].value);
+				//Select multiple
+				if(aSel[i].multiple){
+					if(selected.length < 1){
+						label = aSel[i].id+'_label';
+						errorMsg += "\r\n"+$(label).innerHTML.innerHTML.replace(":","");
+						errorNum++;
 					}
-					
-					//Select multiple
-					if(aSel[i].multiple){
-						if(selected.length < 1){
-							label = aSel[i].id+'_label';
-							errorMsg += "\r\n"+$(label).innerHTML.innerHTML.replace(":","");
-							errorNum++;
-						}
-					}else{
-					//select box normal
-						if(aSel[i].options[aSel[i].selectedIndex].value == -1 || aSel[i].options[aSel[i].selectedIndex].value == ""){
-							errorMsg += "\r\n"+aSel[i].options[0].text;
-							errorNum++;
-						}
+				}else{
+				//select box normal
+					if(aSel[i].options[aSel[i].selectedIndex].value == -1 || aSel[i].options[aSel[i].selectedIndex].value == ""){
+						errorMsg += "\r\n"+aSel[i].options[0].text;
+						errorNum++;
 					}
 				}
 			}
-			
-			//
-			//input
-			//
-			var aSel = $('product_propreties').getElementsByTagName("input");
-			for(var i=0;i<aSel.length;i++){
-				if(aSel[i].className.indexOf("mdtryElem",0) != -1){
-					//text
-					if(aSel[i].type == 'text'){
-						if(aSel[i].value.length < 1){
-							label = aSel[i].id+'_label';
-							errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
-						}
-					}
-				}
-			}
-			
-			//
-			//textArea
-			//
-			var aSel = $('product_propreties').getElementsByTagName("textarea");
-			for(var i=0;i<aSel.length;i++){
-				if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+		}
+		
+		//
+		//input
+		//
+		var aSel = $('fieldset_properties').getElementsByTagName("input");
+		for(var i=0;i<aSel.length;i++){
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+				//text
+				if(aSel[i].type == 'text'){
 					if(aSel[i].value.length < 1){
 						label = aSel[i].id+'_label';
 						errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
 					}
 				}
 			}
-			
-			if(errorMsg != ""){
-				if(errorNum > 1)
-					msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
-				else
-					msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
-				alert(msgHeader+errorMsg);
-				return false;
+		}
+		
+		//
+		//textArea
+		//
+		var aSel = $('fieldset_properties').getElementsByTagName("textarea");
+		for(var i=0;i<aSel.length;i++){
+			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
+				if(aSel[i].value.length < 1){
+					label = aSel[i].id+'_label';
+					errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
+				}
 			}
+		}
+		
+		if(errorMsg != ""){
+			if(errorNum > 1)
+				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
+			else
+				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
+			alert(msgHeader+errorMsg);
+			return false;
 		}
 	}
 	//All checks are ok
-	document.getElementById('step').value=curStep;
+	document.getElementById('step').value=toStep;
 	submitOrderForm();
 }
 </script>
@@ -2549,12 +2558,12 @@ function validateForm(curStep){
 		<td>
 		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2564,12 +2573,12 @@ function validateForm(curStep){
 		</div>
 			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2578,12 +2587,12 @@ function validateForm(curStep){
 		</div>
 		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2592,12 +2601,12 @@ function validateForm(curStep){
 		</div>
 		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2606,12 +2615,12 @@ function validateForm(curStep){
 		</div>
 		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
-			onClick="return validateForm(<?php echo $curStep; ?>);"
+			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
 			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
@@ -2778,7 +2787,6 @@ function validateForm(curStep){
 		}
 		
 		$user = JFactory::getUser();
-
 		$partner = new partnerByUserId($db);
 		if (!$user->guest){
 			$partner->load($user->id);
@@ -3056,7 +3064,17 @@ function validateForm(curStep){
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
 	$i=0;
-
+	if(count($rows) == 0 && !userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL")){
+		?>
+		<tr>
+			<td colspan="2">
+				<div class="alert">
+					<?php echo JText::_("EASYSDI_SHOP_NO_ORDER_RIGHTS") ;?>
+				</div>
+			</td>
+		</tr>
+		<?php
+	}
 	foreach ($rows  as $row){
 		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
 		$db->setQuery($queryPartnerID);
