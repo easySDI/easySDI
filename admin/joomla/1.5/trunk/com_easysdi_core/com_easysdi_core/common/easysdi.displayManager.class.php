@@ -192,7 +192,7 @@ class displayManager{
 			//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 			*/
 			$xml = displayManager::getCSWresult();
-			displayManager::DisplayMetadata($style,$xml);
+			displayManager::DisplayMetadata($style,$xml,"");
 		}
 		else if ($type == "complete")
 		{
@@ -206,7 +206,7 @@ class displayManager{
 			//$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 			*/
 			$xml = displayManager::getCSWresult();
-			displayManager::DisplayMetadata($style,$xml);
+			displayManager::DisplayMetadata($style,$xml,"");
 		}
 		else if ($type == "diffusion")
 		{
@@ -237,12 +237,12 @@ class displayManager{
 	 					WHERE #__easysdi_product_properties_definition.published = 1 ";
 			
 			$database->setQuery($query);
-			$rows = $database->loadObjectList();		
+			$rows = $database->loadObjectList();
+			$message = "";
 			foreach ($rows as $row)
 			{
 				$valueProp = JText::_($row->PropTranslation);
 				$doc .= "<Property><PropertyName>$valueProp</PropertyName>";
-				
 				
 				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
 						  from #__easysdi_product_properties_definition 
@@ -266,7 +266,10 @@ class displayManager{
 				
 				$doc.= "</Property>";
 			}
-		
+			if(count($rows) == 0){
+				$message = JText::_("EASYSDI_TEXT_NO_DIFFUSION_PROPERTY");
+			}
+			
 			$doc .= '</Diffusion></Metadata>';
 			
 			//Take care here to replace some non XHTML tags preventing the dom parser to fail
@@ -285,7 +288,7 @@ class displayManager{
 				$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
 			}
 			*/
-			displayManager::DisplayMetadata($style,$document);
+			displayManager::DisplayMetadata($style,$document, $message);
 			 
 		}	
 		
@@ -304,7 +307,7 @@ class displayManager{
 		}
 		//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 		$xml = displayManager::getCSWresult();
-		displayManager::DisplayMetadata($style,$xml);
+		displayManager::DisplayMetadata($style,$xml,"");
 	}
 	function showCompleteMetadata ()
 	{
@@ -320,7 +323,7 @@ class displayManager{
 		//$style->load(dirname(__FILE__).'/../xsl/iso19115.xsl');
 		$xml = displayManager::getCSWresult();
 		
-		displayManager::DisplayMetadata($style,$xml);
+		displayManager::DisplayMetadata($style,$xml,"");
 	}
 	function showDiffusionMetadata ()
 	{
@@ -389,10 +392,10 @@ class displayManager{
 			$style->load(dirname(__FILE__).'/../xsl/diffusion_metadata.xsl');
 		}
 		
-		displayManager::DisplayMetadata($style,$document);
+		displayManager::DisplayMetadata($style,$document,"");
 	}
 	
-	function DisplayMetadata ($xslStyle, $xml)
+	function DisplayMetadata ($xslStyle, $xml, $message)
 	{
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
@@ -465,8 +468,7 @@ class displayManager{
 				</td></tr></table>";		
 		}
 		if ($print ==1 ){
-			$myHtml .= "<script>window.print();</script>";
-			
+			$myHtml .= "<script>window.addEvent('domready', function() {window.print();});</script>";
 		}
 		
 		//Affichage des onglets
@@ -530,10 +532,18 @@ class displayManager{
 		}
 		});\n"; 
 
+		if($message != ""){
+			$myHtml .= "window.addEvent('domready', function() {
+				var divMsg = document.getElementById('message');
+				divMsg.style.display='block';
+				divMsg.innerHTML='".addslashes($message)."';
+			});\n";
+		}
+		
 		$myHtml .= "</script>";
 
 		}
-		
+
 		//Workaround to avoid printf problem with text with a "%", must
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
@@ -542,23 +552,11 @@ class displayManager{
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
-		/*
-		$temp = explode(" ", $product_creation_date);
-		$temp = explode("-", $temp[0]);
-		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		$temp = explode(" ", $product_update_date);
-		$temp = explode("-", $temp[0]);
-		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
-		*/
-		
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$partner_logo.'">';
-		
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
 		
-			
 		/***Add consultation informations*/
 		$db =& JFactory::getDBO();
-
 
 		$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
 		$db->setQuery( $query);
