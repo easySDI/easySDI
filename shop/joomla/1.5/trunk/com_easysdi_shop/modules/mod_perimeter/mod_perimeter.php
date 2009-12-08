@@ -125,7 +125,6 @@ if ($curstep == "2")
 			
 function selectPerimeter(perimListName, bFromZoomEnd)
 {
-	
 	var isOutOfRange = false;
 	selIndex = document.getElementById(perimListName).selectedIndex;
 
@@ -210,7 +209,7 @@ function selectPerimeter(perimListName, bFromZoomEnd)
 	 							isOutOfRange,
 	 							bFromZoomEnd);
 	 		
-	 		enableBufferByPerimeter('<?php echo $row->id; ?>');	 	
+	 		enableBufferByPerimeter('<?php echo $row->id; ?>');
 	 	}
 	 
 	 <?php 
