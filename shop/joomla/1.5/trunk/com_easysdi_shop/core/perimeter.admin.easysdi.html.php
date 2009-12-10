@@ -161,6 +161,11 @@ class HTML_perimeter {
 								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME_FIELD_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_name" value="<?php echo $rowPerimeter->name_field_name; ?>" /></td>							
 							</tr>
+							<tr>
+							
+								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME_FIELD_SEARCH_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_search_name" value="<?php echo $rowPerimeter->name_field_search_name; ?>" /></td>							
+							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_ID_FIELD_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="id_field_name" value="<?php echo $rowPerimeter->id_field_name; ?>" /></td>							

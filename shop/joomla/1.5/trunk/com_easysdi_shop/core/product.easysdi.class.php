@@ -72,6 +72,7 @@ class perimeter extends JTable
 	var $perimeter_desc=null;	
 	var $area_field_name=null;
 	var $name_field_name=null;
+	var $name_field_search_name=null;
 	var $id_field_name=null;
 	var $wms_scale_min=0;
   	var $wms_scale_max=-1;
