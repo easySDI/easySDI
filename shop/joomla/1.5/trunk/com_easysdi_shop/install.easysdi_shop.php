@@ -2170,7 +2170,22 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
-
+	 if ($version == "0.99999")
+	 {
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column name_field_search_name varchar(100) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	//Update component version
+		$version = "0.999991";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
+	 
 	/**
 	 * Menu creation
 	 */
