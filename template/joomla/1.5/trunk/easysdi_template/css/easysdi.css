@@ -61,10 +61,15 @@ div .easysdi_product_does_not_exist{
 
 
 
-
 /********************************************************/
 /***           EasySDI Catalog                        ***/
 /********************************************************/
+
+#sbox-btn-close
+{
+	background:url(../images/closebox.png) no-repeat top left;
+}
+
 .mdsearchresult .mdtitle{
 	font-weight: bold;
 }
@@ -685,7 +690,7 @@ div.olControlMousePosition {
   position: relative;
 }
 
-.olControlNavigationHistoryPreviousItemInactive {
+.olControlNavigationHistory.olControlNavigationHistoryPreviousItemInactive {
 background-image:url(../icons/silk/arrow_left.png);
 border:1px outset #D4DEFF;
 background-color: #DDDDDD;
@@ -695,7 +700,7 @@ width:16px;
 height:16px;
 }
 
-.olControlNavigationHistoryPreviousItemActive {
+.olControlNavigationHistory.olControlNavigationHistoryPreviousItemActive {
 background-image:url(../icons/silk/arrow_left.png);
 border:1px outset #D4DEFF;
 background-color:#FFFFFF;
@@ -705,7 +710,7 @@ width:16px;
 height:16px;
 }
 
-.olControlNavigationHistoryNextItemInactive {
+.olControlNavigationHistory.olControlNavigationHistoryNextItemInactive {
 border:1px outset #D4DEFF;
 background-image:url(../icons/silk/arrow_right.png);
 background-color:#DDDDDD;
@@ -715,7 +720,7 @@ width:16px;
 height:16px;
 }
 
-.olControlNavigationHistoryNextItemActive {
+.olControlNavigationHistory.olControlNavigationHistoryNextItemActive {
 border:1px outset #D4DEFF;
 background-image:url(../icons/silk/arrow_right.png);
 background-color:#FFFFFF;
@@ -762,34 +767,34 @@ height:16px;
 .olControlEditingToolbar .olControlNavigationItemInactive { 
   background-position: -103px -0px; 
 }
-.olControlPanel .olControlDrawFeaturePointItemActive { 
+.olControlEditingToolbar .olControlDrawFeaturePointItemActive { 
   background-position: -77px -24px; 
   background-image: url("../images/draw_point_on.png");
 }
-.olControlPanel .olControlDrawFeaturePointItemInactive { 
+.olControlEditingToolbar .olControlDrawFeaturePointItemInactive { 
   background-position: -77px -0px; 
   background-image: url("../images/draw_point_off.png");
 }
-.olControlPanel .olControlDrawFeaturePathItemInactive { 
+.olControlEditingToolbar .olControlDrawFeaturePathItemInactive { 
   background-position: -51px 0px; 
 }
-.olControlPanel .olControlDrawFeaturePathItemActive { 
+.olControlEditingToolbar .olControlDrawFeaturePathItemActive { 
   background-position: -51px -24px; 
 }
-.olControlPanel .olControlDrawFeaturePolygonItemInactive  { 
+.olControlEditingToolbar .olControlDrawFeaturePolygonItemInactive  { 
   background-position: -26px 0px; 
   background-image: url("../images/draw_polygon_off.png");
 }
-.olControlPanel  .olControlDrawFeaturePolygonItemActive { 
+.olControlEditingToolbar  .olControlDrawFeaturePolygonItemActive { 
   background-position: -26px -24px ;                        
   background-image: url("../images/draw_polygon_on.png");                                           
 }
 
-.olControlPanel .olControlDrawFeatureRectangleItemInactive  { 
+.olControlEditingToolbar .olControlDrawFeatureRectangleItemInactive  { 
   background-position: -26px 0px; 
   background-image: url("../images/draw_rectangle_off.png");
 }
-.olControlPanel  .olControlDrawFeatureRectangleItemActive { 
+.olControlEditingToolbar  .olControlDrawFeatureRectangleItemActive { 
   background-position: -26px -24px ;
   background-image: url("../images/draw_rectangle_on.png");                                                                   
 }
