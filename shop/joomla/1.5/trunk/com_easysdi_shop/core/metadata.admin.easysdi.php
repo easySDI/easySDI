@@ -34,7 +34,7 @@ class ADMIN_metadata {
 		 $database->setQuery( "SELECT id AS value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
 		 $metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		 */
-		// Récupérer l'objet lié à cette métadonnée
+		// Rï¿½cupï¿½rer l'objet liï¿½ ï¿½ cette mï¿½tadonnï¿½e
 		$rowProduct = new product( $database );
 		$rowProduct->load( $id );
 
@@ -42,13 +42,13 @@ class ADMIN_metadata {
 		 $rowObject = new objectByMetadataId( $database );
 		 $rowObject->load( $id );
 
-		 // Récupérer la classe racine du profile du type d'objet
+		 // Rï¿½cupï¿½rer la classe racine du profile du type d'objet
 		 $query = "SELECT c.name as name, c.isocode as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		 $database->setQuery( $query );
 		 $root = $database->loadObjectList();
 		 */
 
-		// Récupérer la métadonnée en CSW
+		// Rï¿½cupï¿½rer la mï¿½tadonnï¿½e en CSW
 		//$metadata_id = "0f62e111-831d-4547-aee7-03ad10a3a141";
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
@@ -66,7 +66,7 @@ class ADMIN_metadata {
 
 				//echo "<hr>".$catalogUrlBase."<br>".htmlspecialchars($xmlBody)."<hr>";
 		//echo "Avant post request: ".date('H:m:s')."<br>";
-		//echo "Envoi à ".$catalogUrlBase." de ".htmlspecialchars($xmlBody)."<br>";
+		//echo "Envoi ï¿½ ".$catalogUrlBase." de ".htmlspecialchars($xmlBody)."<br>";
 		$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
 		//echo "Reponse post request: ".date('H:m:s')."<br>";
 		//echo "<hr>".$xmlResponse."<br>";
@@ -75,7 +75,7 @@ class ADMIN_metadata {
 
 		// En GET
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		//echo "Fichier à traiter: ".$cswResults->saveXML()."<br>";
+		//echo "Fichier ï¿½ traiter: ".$cswResults->saveXML()."<br>";
 
 		/*
 		 $cswResults = new DOMDocument();
@@ -84,7 +84,7 @@ class ADMIN_metadata {
 		 echo var_dump($cswResults)."<br>";
 		 */
 
-		// Construction du DOMXPath à utiliser pour générer la vue d'édition
+		// Construction du DOMXPath ï¿½ utiliser pour gï¿½nï¿½rer la vue d'ï¿½dition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		 
 		if ($cswResults <> false)
@@ -136,11 +136,11 @@ class ADMIN_metadata {
 
 		foreach($rowListClass as $child)
 		{
-			// Nombre d'occurence de cet élément
+			// Nombre d'occurence de cet ï¿½lï¿½ment
 			//$index = $_POST[$parentName."/".$child->iso_key."__1_index"];
 
 			
-			// Récupération des valeurs postées correspondantes
+			// Rï¿½cupï¿½ration des valeurs postï¿½es correspondantes
 			$keys = array_keys($_POST);
 			$usefullVals=array();
 			//$usefullKeys=array();
@@ -160,11 +160,11 @@ class ADMIN_metadata {
 			}
 			//print_r($usefullVals); echo " \r\n ";
 			
-			// Ajouter chacune des copies du champ dans le XML résultat
+			// Ajouter chacune des copies du champ dans le XML rï¿½sultat
 			for ($pos=1; $pos<=$count; $pos++)
 			{
-				// Traitement de la multiplicité
-				// Récupération du path du bloc de champs qui va être créé pour construire le nom
+				// Traitement de la multiplicitï¿½
+				// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 				$listName = $parentName."-".str_replace(":", "_", $child->iso_key)."__".$pos;
 
 				// La liste
@@ -231,18 +231,18 @@ class ADMIN_metadata {
 			$queryPath = $queryPath."/".$child->iso_key."/gmd:LocalisedCharacterString";
 			$searchName = $parentName."-".str_replace(":", "_", $child->iso_key);
 			
-			// Création des enfants langue
+			// Crï¿½ation des enfants langue
 			$langages = array();
 			$query = "SELECT loc.* FROM #__easysdi_metadata_classes_locfreetext rel, #__easysdi_metadata_loc_freetext loc WHERE rel.loc_freetext_id = loc.id and rel.classes_id=".$child->classes_to_id;
 			$database->setQuery( $query );
 			$langages = array_merge( $langages, $database->loadObjectList() );
 
 			
-			// Nombre d'occurence de cet élément
+			// Nombre d'occurence de cet ï¿½lï¿½ment
 			//$index = $_POST[$searchName."__1_index"];
 			//echo $searchName." - ".$index."\r\n";
 			
-			// Récupération des valeurs postées correspondantes
+			// Rï¿½cupï¿½ration des valeurs postï¿½es correspondantes
 			$keys = array_keys($_POST);
 			$usefullVals=array();
 			//$usefullKeys=array();
@@ -262,12 +262,12 @@ class ADMIN_metadata {
 			}
 			$count = $count/count($langages);
 			
-			// Ajouter chacune des copies du champ dans le XML résultat
+			// Ajouter chacune des copies du champ dans le XML rï¿½sultat
 			$langIndex = 0;
 			for ($pos=1; $pos<=$count; $pos++)
 			{
-				// Traitement de la multiplicité
-				// Récupération du path du bloc de champs qui va être créé pour construire le nom
+				// Traitement de la multiplicitï¿½
+				// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 				$LocName = $parentName."-".str_replace(":", "_", $child->iso_key)."__".$pos;
 				//echo "LocName: ".$LocName." - ".$pos."\r\n";
 
@@ -277,12 +277,12 @@ class ADMIN_metadata {
 				
 				foreach($langages as $lang)
 				{	
-					// Nombre d'occurence de cet élément
+					// Nombre d'occurence de cet ï¿½lï¿½ment
 					//$langIndex = $_POST[$LocName."/gmd:LocalisedCharacterString/".$lang->lang."__1_index"];
 					//$langIndex = 1;
 					//echo "LangName: ".$LocName."/gmd:LocalisedCharacterString/".$lang->lang." - ".$langIndex."\r\n";
 					 
-					// Ajouter chacune des copies du champ dans le XML résultat
+					// Ajouter chacune des copies du champ dans le XML rï¿½sultat
 					//for ($langPos=1; $langPos<=$langIndex; $langPos++)
 					//{
 						//$LangName = $LocName."/gmd:LocalisedCharacterString/".$lang->lang."__".$langPos;
@@ -316,8 +316,8 @@ class ADMIN_metadata {
 			// Stockage du path pour atteindre ce noeud du XML
 			$path = $child->iso_key;
 				
-			// Traitement de la multiplicité
-			// Récupération du path du bloc de champs qui va être créé pour construire le nom
+			// Traitement de la multiplicitï¿½
+			// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 			$name = $parentName."-".str_replace(":", "_", $child->iso_key);
 				
 			// Selon le type de noeud, on lit un type de balise
@@ -384,11 +384,11 @@ class ADMIN_metadata {
 				$childType = "gco:CharacterString";
 			}
 				
-			// Nombre d'occurence de cet élément
-			// Nombre d'occurence de cet élément
+			// Nombre d'occurence de cet ï¿½lï¿½ment
+			// Nombre d'occurence de cet ï¿½lï¿½ment
 			//$index = $_POST[$name."__1_index"];
 			
-			// Récupération des valeurs postées correspondantes
+			// Rï¿½cupï¿½ration des valeurs postï¿½es correspondantes
 			$keys = array_keys($_POST);
 			$usefullVals=array();
 			//$usefullKeys=array();
@@ -409,7 +409,7 @@ class ADMIN_metadata {
 			//echo $name." - ".$count." \r\n ";
 			//print_r($usefullKeys); echo " \r\n ";	
 			
-			// Ajouter chacune des copies du champ dans le XML résultat
+			// Ajouter chacune des copies du champ dans le XML rï¿½sultat
 			for ($pos=1; $pos<=$count; $pos++)
 			{
 				/*
@@ -459,7 +459,7 @@ class ADMIN_metadata {
 			}
 		}
 		
-		// Récupération des enfants du noeud
+		// Rï¿½cupï¿½ration des enfants du noeud
 		$rowClassChilds = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent;
 		$database->setQuery( $query );
@@ -467,7 +467,7 @@ class ADMIN_metadata {
 		
 		foreach($rowClassChilds as $child)
 		{
-			// Nombre d'occurence de cet élément
+			// Nombre d'occurence de cet ï¿½lï¿½ment
 			//$index=0;
 			$count=0;
 			if ($child->is_relation)
@@ -501,7 +501,7 @@ class ADMIN_metadata {
 				else
 					$name = $parentName."-".str_replace(":", "_", $child->iso_key)."__".($pos+2);
 				
-				// Structure à créer ou pas
+				// Structure ï¿½ crï¿½er ou pas
 				$keys = array_keys($_POST);
 				$existVal=false;
 				foreach($keys as $key)
@@ -517,18 +517,18 @@ class ADMIN_metadata {
 				if ($existVal)
 				{
 					$xlinkTitleValue = 	"";
-					// S'il y a un xlink:title défini, alors le mettre comme attribut du noeud
+					// S'il y a un xlink:title dï¿½fini, alors le mettre comme attribut du noeud
 					if ($child->has_xlinkTitle and $child->is_relation)
 						$xlinkTitleValue = $_POST[$name.'_xlinktitle'];
 
-					// Parcours récursif des classes
+					// Parcours rï¿½cursif des classes
 					$XMLNode = $XMLDoc->createElement($child->iso_key);
 					$xmlClassParent->appendChild($XMLNode);
 					if ($xlinkTitleValue <> "")
 						$XMLNode->setAttribute('xlink:title', $xlinkTitleValue);
 					$xmlParent = $XMLNode;
 							
-					// Récupération des codes ISO et appel récursif de la fonction
+					// Rï¿½cupï¿½ration des codes ISO et appel rï¿½cursif de la fonction
 					$nextIsocode = $child->iso_key;
 						
 					if (!$child->is_relation)
@@ -560,7 +560,7 @@ class ADMIN_metadata {
 		$metadata_id = $_POST['metadata_id'];
 		$product_id = $_POST['product_id'];
 
-		// Récupération des index des fieldsets
+		// Rï¿½cupï¿½ration des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
 		$keyVals = array();
@@ -582,18 +582,18 @@ class ADMIN_metadata {
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		$XMLDoc->formatOutput = true;
-		// Récupérer l'objet lié à cette métadonnée
+		// Rï¿½cupï¿½rer l'objet liï¿½ ï¿½ cette mï¿½tadonnï¿½e
 		$database =& JFactory::getDBO();
 		/*
 		 $rowObject = new objectByMetadataId( $database );
 		 $rowObject->load($metadata_id);
 
-		 // Récupérer la classe racine du profile du type d'objet
+		 // Rï¿½cupï¿½rer la classe racine du profile du type d'objet
 		 $query = "SELECT c.name as name, c.isocode as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		 $database->setQuery( $query );
 		 $root = $database->loadObjectList();
 		 */
-		//Pour chaque élément rencontré, l'insérer dans le xml
+		//Pour chaque ï¿½lï¿½ment rencontrï¿½, l'insï¿½rer dans le xml
 		$XMLNode = $XMLDoc->createElement("gmd:MD_Metadata");
 		$XMLDoc->appendChild($XMLNode);
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
@@ -635,7 +635,7 @@ class ADMIN_metadata {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		//echo $catalogUrlBase."\\r\\n"; 
-		// Supprimer de Geonetwork l'ancienne version de la métadonnée
+		// Supprimer de Geonetwork l'ancienne version de la mï¿½tadonnï¿½e
 		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
 			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
@@ -672,7 +672,7 @@ class ADMIN_metadata {
 			die();
 		}
 		
-		// Insérer dans Geonetwork la nouvelle version de la métadonnée
+		// Insï¿½rer dans Geonetwork la nouvelle version de la mï¿½tadonnï¿½e
 		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 		<csw:Transaction service=\"CSW\"
 		version=\"2.0.2\"
@@ -721,39 +721,49 @@ class ADMIN_metadata {
 	}
 
 	function PostXMLRequest($url,$xmlBody){
+		//$args = http_build_query($array);
 		$url = parse_url($url);
-		
+		$port="";
+		$scheme="";
+		$fp = null;
 		if(isset($url['port'])){
 			$port = $url['port'];
 		}else{
 			$port = 80;
 		}
+		$scheme = strtolower($url['scheme']);
 		//could not open socket
-		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			//$out = false;
+		if($scheme == "http"){
+			$fp = fsockopen ($url['host'], $port, $errno, $errstr);
+		}
+		if($scheme == "https"){
+			$fp = fsockopen ("ssl://".$url['host'], 443, $errno, $errstr);
+		}
+		if(!$fp){
+			//...
 		}
 		//socket ok
 		else{
+			//$size = strlen($args);
 			$size = strlen($xmlBody);
 			$request = "POST ".$url['path']." HTTP/1.1\n";
 			$request .= "Host: ".$url['host']."\n";
 			//add auth header if necessary
 			if(isset($url['user']) && isset($url['pass'])){
-				$user = $url['user'];
-				$pass = $url['pass'];
-				$request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
+			   $user = $url['user'];
+			   $pass = $url['pass'];
+			   $request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
 			}
 			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/xml\n";
+			$request .= "Content-type: application/x-www-form-urlencoded\n";
 			$request .= "Content-length: ".$size."\n\n";
 			$request .= $xmlBody."\n";
 			//send req
 			$fput = fputs($fp, $request);
-
 			//read response, do only send back the xml part, not the headers
 			$strResponse = "";
 			while (!feof($fp)) {
-				$strResponse .= fgets($fp, 128);
+			   $strResponse .= fgets($fp, 128);
 			}
 			$out = strstr($strResponse, '<?xml');
 			fclose ($fp);

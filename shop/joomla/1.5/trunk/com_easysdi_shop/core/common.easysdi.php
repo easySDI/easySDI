@@ -89,7 +89,7 @@ class helper_easysdi{
 			echo "<td><select style='display:none' 
 							  id=\"perimetersListPerimeter$row->id\"	
 							  onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\">
-							 <option > </option></select></td>";
+							  <option > </option></select></td>";
 
 			echo "</tr>";
 		}else{
