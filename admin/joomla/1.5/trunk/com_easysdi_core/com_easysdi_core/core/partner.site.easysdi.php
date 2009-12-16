@@ -986,7 +986,7 @@ class SITE_partner {
 		}
 
 		SITE_partner::includePartnerExtension(0,'BOTTOM','registerPartner',$rowPartner->partner_id);
-
+		
 		//Send email notification to administrator
 		$query = "SELECT count(*) FROM #__users WHERE (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
 		$database->setQuery( $query );
@@ -995,11 +995,30 @@ class SITE_partner {
 		{
 			$query = "SELECT * FROM #__users WHERE  (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator')";
 			$database->setQuery( $query );
-
 			$rows = $database->loadObjectList();
+			
+			/* Hack ASITVD */
+			$query = "SELECT profile_name FROM #__asitvd_community_profile WHERE  profile_id=".$_POST['profile_id'];
+			$database->setQuery( $query );
+			$prf = $database->loadResult();
+						
+			$query = "SELECT title_name FROM #__easysdi_community_title WHERE  title_id=".$rowAddress->title_id;
+			$database->setQuery( $query );
+			$title = $database->loadResult();
+			
+			$query = "SELECT country_name FROM #__easysdi_community_country WHERE country_code='".$rowAddress->country_code."'";
+			$database->setQuery( $query );
+			$country = $database->loadResult();
+			
 			$mailer =& JFactory::getMailer();
+			$body = JText::sprintf("EASYSDI_NEW_USER_MAIL_BODY",
+				JText::_($prf), $rowUser->username, $rowUser->name, JText::_($title), $rowAddress->address_agent_lastname, $rowAddress->address_agent_firstname,
+				$rowAddress->address_agent_function, $rowAddress->address_street1, $rowAddress->address_street2, $rowAddress->address_postalcode,
+				$rowAddress->address_locality, $country, $rowAddress->address_phone, $rowAddress->address_fax, $rowUser->email);
+			
+			$body = str_replace("\\t", "\t", $body);
 
-			SITE_partner::sendMail($rows,JText::_("EASYSDI_NEW_USER_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_USER_MAIL_BODY",$rowUser->username));
+			SITE_partner::sendMail($rows,JText::sprintf("EASYSDI_NEW_USER_MAIL_SUBJECT", $rowUser->name, $rowUser->username), $body);
 		}
 		//Send email notification to user
 		$query = "SELECT * FROM #__users ";
