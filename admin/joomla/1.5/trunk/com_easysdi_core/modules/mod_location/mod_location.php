@@ -370,9 +370,16 @@ if ($curstep == "2")
                         format: new OpenLayers.Format.GML()                        
                     })
                 });		    	
-                            
-		wfs4.events.register("featureadded", null, function(event) {
-							var elSel = document.getElementById(locationsListLocationId);
+		var elSel = document.getElementById(locationsListLocationId);
+		wfs4.events.register("loadend", null, function(event) {
+			if(wfs4.features.length == 0)
+			{
+				elSel.remove(0);
+				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_MANUAL_PERIMETER_NO_FEATURE");?>","");
+				loadingPerimeter=false;
+			}
+		});
+		wfs4.events.register("featuresadded", null, function(event) {
 							//if (elSel.options[0].value==""){
 							if (loadingLocation==true)
 							{
@@ -381,19 +388,24 @@ if ($curstep == "2")
 								loadingLocation=false;
 							}
 									
-							var feat2 = event.feature;
+							for(var k=0; k<event.features.length; k++){
+								var feat2 = event.features[k];
+								var perim = document.getElementById(locationsListLocationId);
+								var id = feat2.attributes[location_id_field_name];
+								var name = feat2.attributes[location_name_field_name];	
+								perim.options[perim.options.length] =  new Option(name,id);
+							}
 							
-							var perim = document.getElementById(locationsListLocationId);
-							var id = feat2.attributes[location_id_field_name];
-							var name = feat2.attributes[location_name_field_name];	
-							perim.options[perim.options.length] =  new Option(name,id);
 							if (isSort == 1) 
 							{
 								sortList(locationsListLocationId);
 							}
+							
+							map.removeLayer(wfs4);
+							
 					              });              
-         map.addLayer(wfs4);
-         map.removeLayer(wfs4);                  
+		map.addLayer(wfs4);
+		                
 	}
             
 //    function utf8_encode ( argString ) {
@@ -452,22 +464,22 @@ if ($curstep == "2")
 		{
 		    if (elSel.options[i].selected) 
 		    {			     	
-            	var wfsFeatures = wfs4.features;
-				var idToLookFor = elSel.options[i].value;
-				var found = false;
-				for(var j=wfsFeatures.length-1; j>=0; j--) 
+			var wfsFeatures = wfs4.features;
+			var idToLookFor = elSel.options[i].value;
+			var found = false;
+			for(var j=wfsFeatures.length-1; j>=0; j--) 
+			{
+				feat2 = wfsFeatures[j];                       
+				if (idToLookFor == feat2.attributes[location_id_field])
 				{
-                    feat2 = wfsFeatures[j];                       
-                    if (idToLookFor == feat2.attributes[location_id_field])
-                    {
-                        found=true;
-						map.zoomToExtent (feat2.geometry.getBounds(),true);
-                       break;
-                    }
-                }
-                break;
-             }
-    	}
+					found=true;
+					map.zoomToExtent (feat2.geometry.getBounds(),true);
+					break;
+				}
+			}
+			break;
+		    }
+		}
 	}
 		</script>
 		<?php	
