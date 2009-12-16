@@ -112,15 +112,19 @@ if ($curstep == "2")
 			if (perimId == '<?php echo $bufferRow->perimeter_id ?>')
 			{
 				document.getElementById('bufferValue').disabled=false;
+				document.getElementById('bufferValue').style.display = 'inline';
+				document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?>';
+
 				return ;
 			}
 			<?php 
 			}
 			?>
 			document.getElementById('bufferValue').disabled=true;
+			document.getElementById('bufferValue').style.display = 'none';
+			document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNAVAILABLE"); ?>';
+			
 		}
-
-
 
 
 		function selectPerimeter(perimListName, bFromZoomEnd)
@@ -244,8 +248,10 @@ if ($curstep == "2")
 		<td></td>
 		</tr>
 		<tr>
-		<td><?php echo JText::_("EASYSDI_BUFFER"); ?>
-		<input type="text" id="bufferValue" size="10" value="<?php echo $mainframe->getUserState('bufferValue') ;?>" onchange="checkBufferValue()"><?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?></td>
+		<td>
+		<?php echo JText::_("EASYSDI_BUFFER");?>
+		<input type="text" id="bufferValue" size="10" value="<?php echo $mainframe->getUserState('bufferValue') ;?>" onchange="checkBufferValue()">
+		<span id="bufferValueSuffix"><?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?></span></td>
 		</tr>
 		</table>
 		<br>
