@@ -76,6 +76,7 @@ class HTML_catalog{
 			<input type="hidden" name="tabIndex" id="tabIndex" value="" />
 			<input type="hidden" name="simulatedTabIndex" id ="simulatedTabIndex" value ="<?php echo JRequest::getVar('simulatedTabIndex');?>" />
 			<input type="hidden" name="advancedSrch" id ="advancedSrch" value ="<?php echo JRequest::getVar('advancedSrch', 0);?>" />
+			<input type="hidden" name="firstload" id="limitstart" value="1" />
 			
 			
 			<script  type="text/javascript">

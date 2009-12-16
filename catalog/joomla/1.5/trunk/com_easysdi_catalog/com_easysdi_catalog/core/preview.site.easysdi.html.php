@@ -26,13 +26,8 @@ class HTML_preview{
 function previewProduct($id){
 	?>
 		
-	<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-	
-	<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
 	
 	<?php	
 	global  $mainframe;
