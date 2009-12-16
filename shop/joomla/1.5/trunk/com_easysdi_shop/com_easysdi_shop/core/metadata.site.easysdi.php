@@ -790,7 +790,6 @@ class SITE_metadata {
 			   $strResponse .= fgets($fp, 128);
 			}
 			$out = strstr($strResponse, '<?xml');
-			
 			fclose ($fp);
 		}
 		return $out;

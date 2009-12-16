@@ -29,7 +29,10 @@ class HTML_shop {
 		$db =& JFactory::getDBO();
 		$id = JRequest::getVar('prodId');
 		$option = JRequest::getVar('option');
-
+		$itemId = JRequest::getVar('Itemid');
+		$lang = JRequest::getVar('lang');
+		$step = JRequest::getVar('step');
+		
 		$productList = $mainframe->getUserState('productList');
 		$newProductList = array ();
 		
@@ -89,22 +92,23 @@ class HTML_shop {
 			$mainframe->setUserState('previousExtent','');
 		}
 		$mainframe->setUserState('productList',$newProductList);
-
+		$mainframe->redirect("index.php?option=$option&view=shop&task=&Itemid=$itemId&step=$step&lang=$lang" );
 	}
 
 	function orderPerimeter ($cid){
 		global  $mainframe;
 	
 	?>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/lib/OpenLayers/Control/LoadingPanel.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers/Control/LoadingPanel.js"></script>
 	
 	<script>
 	var map;
 	var loadingpanel;
-	var wfs=null;
+	var wfs = null;
 	var wfs3=null;
+	var wfs5=null;
 	var vectors;
 	var nameField;
 	var idField;
@@ -177,66 +181,80 @@ class HTML_shop {
 	*/
 	function addLayerWfs (layerUrl, count)
 	{
-		if (!wfs) 
-		{				
-			//	wfs.destroy();
+		//wfs is the OL vector with already selected features
+	        //wfs2 is the OL vector with new selected feature
+		if (!wfs)
+		{
+		//	wfs.destroy();
 	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: layerUrl,
                         format: new OpenLayers.Format.GML()
                     })
-                });		
-			 wfsRegisterEvents(count);
-			 map.addLayer(wfs);		
+                });
+		wfsRegisterEvents(wfs, count);
+		map.addLayer(wfs);
 		}
 		else
 		{
-			    
-			  wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
+		    wfs2 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: layerUrl,
                         format: new OpenLayers.Format.GML()                                                
-                    })});	
+                    })});
                 
               wfs2.events.register("featureadded", null, 
-		      function(myEvent) { 
+		      function(myEvent) {
 			      loadingpanel.decreaseCounter();
 			      if(count == 1)
 				      loadingpanel.decreaseCounter();
 		      });
-	      
-              wfs2.events.register("featureadded", null, 
-              						function(myEvent) { 
-														loadingpanel.decreaseCounter();
-														removeSelection();
-														var wfsFeatures = wfs.features;
-
-														// look for a feature with the same id
-														var idToLookFor = myEvent.feature.attributes[idField];
-														var found = false;
-														for(var j=wfsFeatures.length-1; j>=0; j--) 
-														{
-										                    feat2 = wfsFeatures[j];                       
-										                    if (idToLookFor == feat2.attributes[idField])
-										                    {
-										                       	found=true;
-										                       	wfs.removeFeatures([wfsFeatures[j]]);
-										                       	break;
-										                    }
-										                 }
-										                 if (!found)
-										                 {
-										                 	wfs.addFeatures([myEvent.feature]);
-										                 }
-													}
-									);
-					
-           		map.addLayer(wfs2);		
-	            map.removeLayer(wfs2);    
+              	      wfs2.events.register("featuresadded", null, 
+              				function(myEvent) { 
+							loadingpanel.decreaseCounter();
+							removeSelection();
+							var wfsFeatures = wfs.features;
+							//loop each feature in new selection
+							for(var k=0; k<myEvent.features.length; k++){
+								// look for a feature with the same id
+								var idToLookFor = myEvent.features[k].attributes[idField];
+								var found = false;
+								for(var j=wfsFeatures.length-1; j>=0; j--) 
+								{
+									feat2 = wfsFeatures[j];                       
+									if (idToLookFor == feat2.attributes[idField])
+									{       
+										found=true;
+										wfs2.removeFeatures(new Array(myEvent.features[k]));
+										wfs.removeFeatures([wfsFeatures[j]]);
+										break;
+									}
+								}
+								if (!found)
+								{
+									wfs.addFeatures([myEvent.features[k].clone()]);
+									wfs2.removeFeatures(new Array(myEvent.features[k]));
+								}
+							}
+							
+							map.removeLayer(wfs2);
+					}
+				);
+			//Don't remove a layer before beeing sure it is loaded...
+	      		
+           		map.addLayer(wfs2);
+			
 			}
 	 
+	}
+	
+	function refreshWfsOnce()
+	{
+		map.removeLayer(wfs2);
+		wfs2.events.unregister('loadend', null, refreshWfsOnce);
+		//map.addLayer(wfs2);
 	}
 	
 	/**
@@ -480,7 +498,6 @@ function setAlpha(imageformat)
 						if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
 				    ?>
 	            });
-					  
 					map.addControl(new OpenLayers.Control.MousePosition({ 
 					div: document.getElementById("mouseposition"),
 					prefix: '', 
@@ -493,15 +510,9 @@ function setAlpha(imageformat)
 					div: document.getElementById("loadingPanelPosition")
 					});
 					map.addControl(loadingpanel);
-					
-					
-					 baseLayerVector = new OpenLayers.Layer.Vector(
-	                "BackGround",
-	                {isBaseLayer: true,transparent: "true"}
-	            );
+					baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true, transparent: true});
 		   
-		map.addLayer(baseLayerVector);
-	
+					map.addLayer(baseLayerVector);
 	
 	<?php
 	
@@ -611,28 +622,27 @@ function setAlpha(imageformat)
 	}
 	
 	?>                    
-				 
-					map.events.register("zoomend", null, 
-										function() { 
-													fromZoomEnd = true;
-													document.getElementById('previousExtent').value = map.getExtent().toBBOX();
-													$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
-													//$("scale").innerHTML = document.getElementById('previousExtent').value ;
-													 text = "";
-								
-													for (i=0; i<map.layers.length ;i++){
-															//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
-															if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
-															 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
-															} 
-														}
-														$("shopWarnLogo").className = 'shopWarnLogoActive';
-														$("scaleStatus").innerHTML = text;
-														selectPerimeter('perimeterList', true);
-													}
-										)
-	                                         
-	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: "true"});
+			
+	
+			map.events.register("zoomend", null, function(){
+				fromZoomEnd = true;
+				document.getElementById('previousExtent').value = map.getExtent().toBBOX();
+				$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+				//$("scale").innerHTML = document.getElementById('previousExtent').value ;
+				 text = "";
+				
+				for (i=0; i<map.layers.length ;i++){
+						//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+						if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
+						 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+						} 
+					}
+				$("shopWarnLogo").className = 'shopWarnLogoActive';
+				$("scaleStatus").innerHTML = text;
+				selectPerimeter('perimeterList', true);
+				});
+			
+	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
 	                map.addLayer(vectors);
 					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 					
@@ -903,56 +913,60 @@ function setAlpha(imageformat)
 	}
 	
 	
-	function wfsRegisterEvents(count)			
+	function wfsRegisterEvents(wfsObj, count)
 	 {
-	 
-	 			wfs.events.register("featureremoved",null,function(event)
+		 if(wfsObj == null){
+			wfsObj = wfs;
+			count = 0;
+		 }
+	 			wfsObj.events.register("featureremoved",null,function(event)
 	 			{
-					//Selected features just removed from wfs
+					//Selected features just removed from wfsObj
 					loadingpanel.decreaseCounter();
 					//If the call results from a zoom on the map, do not remove selected features
+					
 					if(fromZoomEnd == false)
 					{
-				        feat2 = event.feature;
-	                    var name = feat2.attributes[nameField];
-	                    //var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
-	                    var id = feat2.attributes[idField];   
-	            		var area = feat2.attributes[areaField];
-	            		var featArea = 0;	
-	            		if (areaField.length > 0 && area)
-	            		{
-	            			featArea = area; 
-	            		}
-	            		else 
-	            		{
-	            			featArea = feat2.geometry.getArea();
-	            		}
-				
-						var found = -1;
-												
-						for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--)
+				        	feat2 = event.feature;
+						var name = feat2.attributes[nameField];
+						//var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
+						var id = feat2.attributes[idField];   
+						var area = feat2.attributes[areaField];
+						var featArea = 0;	
+	            				if (areaField.length > 0 && area)
 						{
-							if (document.getElementById("selectedSurface").options[k].value ==  id)
+							featArea = area; 
+						}
+						else 
+						{
+							featArea = feat2.geometry.getArea();
+						}
+				        	
+							var found = -1;
+													
+							for (var k=document.getElementById("selectedSurface").options.length-1;k>=0;k--)
 							{
-								//Remove the value							
-								document.getElementById("selectedSurface").remove(k);								
-								document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-								document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
-								document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
-																								
-								found=k;																			
-							}            				
-						}			
+								if (document.getElementById("selectedSurface").options[k].value ==  id)
+								{
+									//Remove the value							
+									document.getElementById("selectedSurface").remove(k);								
+									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
+									document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+									document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+																									
+									found=k;																			
+								}            				
+							}			
 					}		                
-	            }
-				);
+				});
 				
-				wfs.events.register("featureadded", null, function(event) 
+				wfsObj.events.register("featureadded", null, function(event) 
 				{ 
-					//Selected features just loaded from wfs
+					//Selected features just loaded from wfsObj
 					loadingpanel.decreaseCounter();
-					if(count == 1)
-						loadingpanel.decreaseCounter();
+					if(count != null)
+						for(var i=0; i<count; i++)
+							loadingpanel.decreaseCounter();
 					removeSelection();
 					    		
 					feat2 = event.feature;
@@ -989,7 +1003,7 @@ function setAlpha(imageformat)
 			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 			   		    		//Add the new value
 		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+							document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
 							document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    
 			   		    	}
@@ -999,15 +1013,13 @@ function setAlpha(imageformat)
 		   		    else
 		   		    {
 			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
-		   		//Add the new value
-		            	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-		            	document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
-				document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
-		   		    
+					    //Add the new value
+					    document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
+					    document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+					    document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    }
 		   		    
-	           }
-			);
+			});
 	 }
 	 
 	var oldLoad = window.onload;
@@ -1143,11 +1155,11 @@ function setAlpha(imageformat)
 	 { 	
 	 	var selectedSurface = document.getElementById('selectedSurface');
 	 	
-	 	if (document.getElementById('step').value == 3 && isSelfIntersect()==true)
+		if (document.getElementById('step').value == 3 && isSelfIntersect()==true)
 	 	{
 	 		return ;
 	 	}
-	 	 		
+ 		
 		 if (selectedSurface.options.length>0)
 		 {	  	
 		 	var replicSelectedSurface = document.getElementById('replicSelectedSurface');
@@ -1165,15 +1177,22 @@ function setAlpha(imageformat)
 			document.getElementById('totalArea').value=document.getElementById('totalSurface').value;
 		 	
 		 	var totalArea = document.getElementById('totalArea').value;
-		 	var selectedSurfaceMin = document.getElementById('totalSurfaceMin').value;
+			var selectedSurfaceMin = document.getElementById('totalSurfaceMin').value;
 		 	var selectedSurfaceMax = document.getElementById('totalSurfaceMax').value;
-		 	 
-		 	if ( (parseFloat(totalArea) > parseFloat(selectedSurfaceMax))|| (parseFloat(totalArea) < parseFloat(selectedSurfaceMin)))
-		 	{
-		 		alert("<?php echo JText::_("EASYSDI_BAD_AREA"); ?>");
-		 		return ;
+		 	if(!(document.getElementById('step').value <= document.getElementById('fromStep').value) && document.forms['orderForm'].elements['task'].value != 'deleteProduct'){
+				if ((parseFloat(totalArea) > parseFloat(selectedSurfaceMax)))
+		 		{
+		 			alert("<?php echo JText::_("EASYSDI_SELECTED_SURFACE_ABOVE_MAX"); ?>");
+					document.getElementById('step').value = document.getElementById('fromStep').value;
+		 			return ;
+		 		}
+				if ((parseFloat(totalArea) < parseFloat(selectedSurfaceMin)))
+		 		{
+		 			alert("<?php echo JText::_("EASYSDI_SELECTED_SURFACE_BELLOW_MIN"); ?>");
+					document.getElementById('step').value = document.getElementById('fromStep').value;
+		 			return ;
+		 		}
 		 	}
-		 	
 		 	var bufferValue = document.getElementById('bufferValue').value;
 			if( parseFloat(bufferValue) < 0)
 			{
@@ -1887,7 +1906,6 @@ if (count($rows)>0){
 			
 			echo $row->text;
 			
-			
 			?>
 		        </table>
 				<input
@@ -2470,7 +2488,8 @@ function validateForm(toStep, fromStep){
 	//Causes bug (selected perimeter not saved)
 	if(toStep == 3 && fromStep == 2){
 		if(loadingpanel.maximized){
-			//register an event to the loading panel to do this clear.			return false;
+			//register an event to the loading panel to do this clear
+			return false;
 		}
 	}
 	
@@ -3064,7 +3083,7 @@ function validateForm(toStep, fromStep){
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
 	$i=0;
-	if(count($rows) == 0 && !userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL")){
+	if(count($rows) == 0 && !$user->guest && !userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL")){
 		?>
 		<tr>
 			<td colspan="2">

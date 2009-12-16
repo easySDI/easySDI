@@ -97,9 +97,9 @@ class SITE_product {
 		}
 		$doc=$doc."</gmd:MD_Metadata>";
 
-		$f = fopen('c:\\doc.xml', 'w');
-		fwrite($f, $doc);
-		fclose($f);
+		//$f = fopen('c:\\doc.xml', 'w');
+		//fwrite($f, $doc);
+		//fclose($f);
 		
 		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 		<csw:Transaction service=\"CSW\"
@@ -303,24 +303,41 @@ class SITE_product {
 					</gmd:MD_Metadata>
 				</csw:Insert>
 			</csw:Transaction>";
-			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
 			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			//echo htmlentities($result)."<br>";
-			$insertResults = DOMDocument::loadXML($result);
-			
-			$xpathInsert = new DOMXPath($insertResults);
-			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-			
-			if ($inserted <> 1)
+			//Look for and exception and clean response
+			$pos = strripos($result, "</ows:ExceptionReport>");
+			if ($pos === false) {
+				//No exception
+				$pos = strripos($result, "</csw:TransactionResponse>");
+				$result = substr($result, 0, $pos+26);
+				$insertResults = DOMDocument::loadXML($result);
+				$xpathInsert = new DOMXPath($insertResults);
+				$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+				$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+				
+				if ($inserted <> 1)
+				{
+					$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+				}
+			}
+			else
 			{
-				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+				//treat exception report
+				$exception = substr($result, 0, $pos+22);
+				$docException = DOMDocument::loadXML($exception);
+				$xpathExcText = new DOMXPath($docException);
+				$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
+				$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
+				$mainframe->enqueueMessage('OGC error on metadata insert:'.$excText,"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();
 			}
+			
 		}
 		
 		if (!$rowProduct->store()) {
@@ -329,7 +346,6 @@ class SITE_product {
 			exit();
 		}
 
-		
 		
 		$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$rowProduct->id;
 		$database->setQuery( $query );
@@ -409,6 +425,7 @@ class SITE_product {
 		 //SITE_product::SaveMetadata();
 		 
 		if ($returnList == true) {
+			$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$mainframe->redirect("index.php?option=$option&task=listProduct");
 		}	
 	}

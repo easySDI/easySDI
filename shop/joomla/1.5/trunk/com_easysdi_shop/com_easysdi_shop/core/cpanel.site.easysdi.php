@@ -1066,8 +1066,8 @@ class SITE_cpanel {
 			echo $db->getErrorMsg();
 			echo "</div>";
 		}
-
-		$orderQuery = "SELECT distinct product_id FROM #__easysdi_order_product_list WHERE order_id = $order_id";
+		//Filter out the products that are free, they should not be notificated
+		$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__easysdi_order_product_list l WHERE l.product_id = p.id AND p.is_free=0 AND order_id = $order_id";
 		$db->setQuery($orderQuery);
 		$cid = $db->loadResultArray();
 		if ($db->getErrorNum()) {
