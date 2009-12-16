@@ -1066,8 +1066,21 @@ class SITE_cpanel {
 			echo $db->getErrorMsg();
 			echo "</div>";
 		}
-		//Filter out the products that are free, they should not be notificated
-		$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__easysdi_order_product_list l WHERE l.product_id = p.id AND p.is_free=0 AND order_id = $order_id";
+		
+		$queryOrderType = "SELECT l.code FROM #__easysdi_order o, #__easysdi_order_type_list l WHERE o.type = l.id and order_id = $order_id";
+		$db->setQuery($queryOrderType);
+		$order_type = $db->loadResult();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo $db->getErrorMsg();
+			echo "</div>";
+		}
+		
+		$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__easysdi_order_product_list l WHERE l.product_id = p.id AND order_id = $order_id";
+		if($order_type == "D")
+			//Filter out the products that are free if it is a devis, they should not be notificated
+			$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__easysdi_order_product_list l WHERE l.product_id = p.id AND p.is_free=0 AND order_id = $order_id";
+			
 		$db->setQuery($orderQuery);
 		$cid = $db->loadResultArray();
 		if ($db->getErrorNum()) {
@@ -1075,6 +1088,7 @@ class SITE_cpanel {
 			echo $db->getErrorMsg();
 			echo "</div>";
 		}
+		
 
 		$productList = "";
 		foreach ($cid as $product_id )
