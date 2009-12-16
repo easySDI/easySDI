@@ -407,17 +407,35 @@ class ADMIN_product {
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'metadata.admin.easysdi.php');
+			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 			
-			$deleteResults = DOMDocument::loadXML($result);
-			
-			$xpathDelete = new DOMXPath($deleteResults);
-			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-			
-			if ($deleted <> 1)
+			//Look for and exception and clean response
+			$pos = strripos($result, "</ows:ExceptionReport>");
+			if ($pos === false) {
+				//No exception
+				$pos = strripos($result, "</csw:TransactionResponse>");
+				$result = substr($result, 0, $pos+26);
+				$deleteResults = DOMDocument::loadXML($result);
+				$xpathDelete = new DOMXPath($deleteResults);
+				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				if ($deleted <> 1)
+				{
+					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+				}
+			}
+			else
 			{
-				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+				//treat exception report
+				$exception = substr($result, 0, $pos+22);
+				$docException = DOMDocument::loadXML($exception);
+				$xpathExcText = new DOMXPath($docException);
+				$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
+				$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
+				$mainframe->enqueueMessage('OGC error on metadata delete:'.$excText,"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();
 			}
