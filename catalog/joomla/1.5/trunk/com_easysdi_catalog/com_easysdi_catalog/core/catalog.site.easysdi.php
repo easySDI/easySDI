@@ -38,6 +38,7 @@ class SITE_catalog {
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', $MDPag );
 		$limitstart = JRequest::getVar('limitstart', 0 );
+		$firstload = JRequest::getVar('firstload', "");
 	//	$filterfreetextcriteria = JRequest::getVar('filterfreetextcriteria');
 		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 		$minX = JRequest::getVar('bboxMinX', "-180" );
@@ -77,7 +78,7 @@ class SITE_catalog {
 		//print_r($_GET);
 		//echo "<br><br>";
 		$display_internal_orderable = false;
-		if(isset($_GET['simple_search_button']) || isset($_GET['limitstart'])){
+		if(isset($_GET['simple_search_button']) || isset($_GET['firstload'])){
 			$filter = "";
 			if($partner->partner_id == 0)
 			{
