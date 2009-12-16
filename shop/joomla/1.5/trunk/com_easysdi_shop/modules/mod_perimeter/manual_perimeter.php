@@ -176,7 +176,7 @@ $db =& JFactory::getDBO();
 	 			if (document.getElementById(filterId)==null || document.getElementById(filterId).value.length==0){
 	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 		 	}else{
-	 		 		filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+	 		 		filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 	 		 	}
 	 		 	<?php /*}*/
 	 		 	
@@ -306,69 +306,89 @@ $db =& JFactory::getDBO();
                         url: wfsUrlWithBBox,
                         format: new OpenLayers.Format.GML()                        
                     })
-                });		    	            
-		wfs4.events.register("featureadded", null, function(event) {
+                });
 		var elSel = document.getElementById(perimetersListPerimeterId);
+		wfs4.events.register("loadend", null, function(event) {
+			if(wfs4.features.length == 0)
+			{
+				elSel.remove(0);
+				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_MANUAL_PERIMETER_NO_FEATURE");?>","");
+				loadingPerimeter=false;
+			}
+		});
+		
+		wfs4.events.register("featuresadded", null, function(event) {
 		//if (elSel.options[0].value==""){
 		if (loadingPerimeter==true){
-				
 				elSel.remove(0);
 				elSel.options[0] =  new Option("- "+perimeter_perimeter_name+" -","-1");
 				loadingPerimeter=false;
 		}
-				
-		var feat2 = event.feature;
 		
 		var perim = document.getElementById(perimetersListPerimeterId);
-		var id = feat2.attributes[perimeter_id_field_name];
-		var name = feat2.attributes[perimeter_name_field_name];		
-		perim.options[perim.options.length] =  new Option(name,id);
+		for(var k=0; k<event.features.length; k++){
+			var feat2 = event.features[k];
+			var id = feat2.attributes[perimeter_id_field_name];
+			var name = feat2.attributes[perimeter_name_field_name];		
+			perim.options[perim.options.length] =  new Option(name,id);
+		}
+		
 		if (isSort == 1) {
 			sortList(perimetersListPerimeterId);
 		}
+		map.removeLayer(wfs4);
               });              
              map.addLayer(wfs4);
-              map.removeLayer(wfs4);                  
             }
-            
             
 	function recenterOnPerimeterPerimeter(perimetersListPerimeterId)
 	{
 		var elSel = document.getElementById(perimetersListPerimeterId);
-			  for (i = elSel.length - 1; i>=0; i--) {
-			    if (elSel.options[i].selected) {			     	
-                    var wfsFeatures = wfs4.features;
-					var idToLookFor = elSel.options[i].value;
-					var found = false;
-					for(var j=wfsFeatures.length-1; j>=0; j--) {
-                    	feat2 = wfsFeatures[j];                       
-                      
-                       if (idToLookFor == feat2.attributes[perimeter_id_field]){
-                       		found=true;
-							map.zoomToExtent (feat2.geometry.getBounds(),true);
-							if (!wfs){                       		
-                       		  wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
-                    					strategies: [new OpenLayers.Strategy.Fixed()],
-                    					  protocol: new OpenLayers.Protocol.HTTP({
-                      					 	
-                        					format: new OpenLayers.Format.GML()                        
-                    						})                    				
-                				}
-                				                				 		                			
-                				);
-                				wfsRegisterEvents();
-                				map.addLayer(wfs);		                                                       
-                       		}
-                       		     		wfs.addFeatures([wfsFeatures[j]])
-                       		     		
-                       		break;
-                       }
-                       }                       
-                       break;
-                       }                       
-			     	}		  	       		
-		}				
-		</script>				
-		<?php	
+		for (i = elSel.length - 1; i>=0; i--) {
+			if (elSel.options[i].selected) 
+			{			     	
+				var wfsFeatures = wfs4.features;
+				var idToLookFor = elSel.options[i].value;
+				var found = false;
+				for(var j=wfsFeatures.length-1; j>=0; j--) 
+				{
+					feat2 = wfsFeatures[j];                       
+					if (idToLookFor == feat2.attributes[perimeter_id_field]){
+						found=true;
+						map.zoomToExtent (feat2.geometry.getBounds(),true);
+						//Check if the feature is already in the list before add it to the wfs
+						var fnd = false;
+						for (var l=document.getElementById("selectedSurface").options.length-1;l>=0;l--)
+						{
+							if (document.getElementById("selectedSurface").options[l].value ==  idToLookFor)
+							{
+								fnd = true;
+								break;
+							}
+						}
+						if(fnd == false){						
+							if (!wfs5)
+							{
+								wfs5 = new OpenLayers.Layer.Vector("selectedFeatures");
+								map.addLayer(wfs5);
+								var opt = {
+									strategies: [new OpenLayers.Strategy.Fixed({preload:false})],
+									protocol: new OpenLayers.Protocol.HTTP({                      					 	
+                        						format: new OpenLayers.Format.GML()})
+								}
+								wfsRegisterEvents(wfs5, 0);
+							}
+							
+							wfs5.addFeatures([wfsFeatures[j].clone()])
+						}
+						break;
+					}
+				}                       
+				break;
+			}
+		}
+	}				
+	</script>				
+<?php	
 }
 ?>
