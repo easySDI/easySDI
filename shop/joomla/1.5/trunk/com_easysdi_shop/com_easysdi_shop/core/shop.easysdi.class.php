@@ -1069,13 +1069,13 @@ function setAlpha(imageformat)
 	 <tr>
 	 <td colspan="4">
 	
-	 <table width="100%"> 
+	 <table class="infoShop" width="100%"> 
 	 <tr class="shopFooter">
 	  <td class="scaleContainer">
 	     <div id="scale"/>
 	  </td>
-	  <td width="45%">&nbsp;</td>
-	  <td class="ccordinateTextHolder"><?php echo JText::_("EASYSDI_MAP_COORDINATE") ?></td>
+	  <td class="beforeCoordinateTextHolder">&nbsp;</td>
+	  <td class="coordinateTextHolder"><?php echo JText::_("EASYSDI_MAP_COORDINATE") ?></td>
 	  <td class="coordinateContainer">
 	    <div id="mouseposition"></div>
 	  </td>
@@ -1086,14 +1086,8 @@ function setAlpha(imageformat)
 	 </tr>
 	</table>
 	
-	
-	
-	
 	<div id="docs"></div>
-	<br>
 	<div id="panelDiv" class="historyContent"></div>
-	
-	<br>
 	
 	<?php 	$step = JRequest::getVar('step',"2");
 	$option = JRequest::getVar('option');
@@ -2482,13 +2476,15 @@ if (count($rows)>0){
 		?>
 <h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
 <script>
+var tries = 1;
 function validateForm(toStep, fromStep){
 	
 	//Do not allow to go before the perimeter are loaded.
 	//Causes bug (selected perimeter not saved)
 	if(toStep == 3 && fromStep == 2){
-		if(loadingpanel.maximized){
+		if(loadingpanel.maximized && tries == 1){
 			//register an event to the loading panel to do this clear
+			tries--;
 			return false;
 		}
 	}
@@ -2670,16 +2666,15 @@ function validateForm(toStep, fromStep){
 
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		if (!$catalogUrlBase) $catalogUrlBase ="http://localhost:8081/proxy/ogc/geonetwork";
-		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.1&resultType=results&namespace=csw%3Ahttp%3A%2F%2Fwww.opengis.net%2Fcat%2Fcsw&outputSchema=csw%3AIsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
+		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&typeNames=csw:Record&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
-
 		$cswResults= simplexml_load_file($catalogUrlGetRecordsCount);
-
 		if ($cswResults !=null){
 			$countMD = 0;
-			foreach($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->attributes() as $a => $b) {
+			foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) {
 				if ($a=='numberOfRecordsMatched'){
 					$countMD = $b;
+					echo $b;
 				}
 			}
 			$db =& JFactory::getDBO();
@@ -2690,8 +2685,7 @@ function validateForm(toStep, fromStep){
 				//for ($i=1; $i<=1;$i=$i+$inc){
 				$catalogUrlGetRecordsMD =  $catalogUrlGetRecords . "&startPosition=".$i."&maxRecords=".$inc;
 				$cswResults= simplexml_load_file($catalogUrlGetRecordsMD);
-				echo $catalogUrlGetRecordsMD."<br>";
-				foreach ($cswResults->children("http://www.opengis.net/cat/csw")->SearchResults->children("http://www.isotc211.org/2005/gmd")->MD_Metadata as $metadata){
+				foreach ($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->children("http://www.isotc211.org/2005/gmd")->MD_Metadata as $metadata){
 
 					$md = new geoMetadata($metadata);
 

@@ -662,23 +662,39 @@ class SITE_metadata {
 		
 		$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 		
-		$deleteResults = DOMDocument::loadXML($result);
-		$xpathDelete = new DOMXPath($deleteResults);
-		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		$errorMsg = "";
-		if ($deleted <> 1)
+		//Look for and exception and clean response
+		$pos = strripos($result, "</ows:ExceptionReport>");
+		if ($pos === false) {
+			//No exception
+			$pos = strripos($result, "</csw:TransactionResponse>");
+			$result = substr($result, 0, $pos+26);
+			$deleteResults = DOMDocument::loadXML($result);
+			$xpathDelete = new DOMXPath($deleteResults);
+			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			$errorMsg = "";
+			if ($deleted <> 1)
+			{
+				$errorMsg = "Metadata has not been deleted. ";
+				/* $response = '{
+					    		success: false,
+							    errors: {
+							        xml: "'.$errorMsg.'"
+							    }
+							}';
+				print_r($response);
+				die();*/ 
+			}
+		}
+		else
 		{
-			$errorMsg = "Metadata has not been deleted. ";
-			/* $response = '{
-				    		success: false,
-						    errors: {
-						        xml: "'.$errorMsg.'"
-						    }
-						}';
-			print_r($response);
-			die();*/ 
+			//treat exception report
+			$exception = substr($result, 0, $pos+22);
+			$docException = DOMDocument::loadXML($exception);
+			$xpathExcText = new DOMXPath($docException);
+			$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
+			$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
+			$errorMsg = $excText;
 		}
 		
 		// Ins�rer dans Geonetwork la nouvelle version de la m�tadonn�e
@@ -699,44 +715,66 @@ class SITE_metadata {
 		fclose($fh);	
 		*/
 		$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		//echo $result;
-		$insertResults = DOMDocument::loadXML($result);
-		
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		
-		if ($inserted <> 1)
+		$pos = strripos($result, "</ows:ExceptionReport>");
+		if ($pos === false) {
+			//No exception
+			$pos = strripos($result, "</csw:TransactionResponse>");
+			$result = substr($result, 0, $pos+26);
+			$insertResults = DOMDocument::loadXML($result);
+			$xpathInsert = new DOMXPath($insertResults);
+			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			
+			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+			
+			if ($inserted <> 1)
+			{
+				$errorMsg .= "Metadata has not been inserted.";
+				$response = '{
+					    		success: false,
+							    errors: {
+							        xml: "'.$errorMsg.'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+			else
+			{
+				//update timestamp of the metadata file
+				$query = "UPDATE #__easysdi_product SET metadata_update_date=now() WHERE id =". $product_id;
+				$database->setQuery( $query );
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+					exit();			
+				}
+				
+				//$result="";
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//SITE_metadata::cswTest($xmlstr);
+				$response = '{
+					    		success: true,
+							    errors: {
+							        xml: "OK"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+		}
+		else
 		{
+			//treat exception report
+			$exception = substr($result, 0, $pos+22);
+			$docException = DOMDocument::loadXML($exception);
+			$xpathExcText = new DOMXPath($docException);
+			$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
+			$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
 			$errorMsg .= "Metadata has not been inserted.";
 			$response = '{
 				    		success: false,
 						    errors: {
-						        xml: "'.$errorMsg.'"
-						    }
-						}';
-			print_r($response);
-			die();
-		}
-		else
-		{
-			//update timestamp of the metadata file
-			$query = "UPDATE #__easysdi_product SET metadata_update_date=now() WHERE id =". $product_id;
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
-				exit();			
-			}
-			
-			//$result="";
-			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			//SITE_metadata::cswTest($xmlstr);
-			$response = '{
-				    		success: true,
-						    errors: {
-						        xml: "OK"
+						        xml: "'.$excText.'"
 						    }
 						}';
 			print_r($response);
