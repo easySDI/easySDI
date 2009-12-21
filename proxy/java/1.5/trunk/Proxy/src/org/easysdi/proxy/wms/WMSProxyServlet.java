@@ -24,10 +24,14 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -53,6 +57,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.media.jai.GeometricOpImage;
 import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
@@ -376,18 +381,20 @@ public class WMSProxyServlet extends ProxyServlet {
 		    Transformer transformer = null;
 		    TransformerFactory tFactory = TransformerFactory.newInstance();
 		    
-		    File tempFile = null;
-		    if (isXML(responseContentType))
-		    	{			    
-		    	tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));			
-		    	}
-		    else
-		    	{
-				if (filePathList.size()>0)
-					{
-				    if(filePathList.get(0)!=null) tempFile = new File(filePathList.get(0));
-					}
-		    	}
+//Debug tb 21.12.2009	
+		    ByteArrayOutputStream tempOut = null; // Remplace l'utilisation de tempFile!!!
+//    		File tempFile = null;
+//		    if (isXML(responseContentType))
+//		    	{			    
+//		    	//tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));			
+//		    	}
+//		    else
+//		    	{
+//				if (filePathList.size()>0)
+//					{
+//				    if(filePathList.get(0)!=null) tempFile = new File(filePathList.get(0));
+//					}
+//		    	}
 		    
 		    //********************************************************************************************************************
 		    // Postraitement des réponses à la requête contenue dans les fichiers filePathList.get(i)
@@ -422,9 +429,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				    		xmlReader.setEntityResolver(rr);
 				    		}
 				    	// END Added to hook in my EntityResolver		     
-				    	SAXSource saxSource = new SAXSource(xmlReader,inputSource);
-		
-				    	//StreamSource ss = new StreamSource(xml);		    
+				    	SAXSource saxSource = new SAXSource(xmlReader,inputSource);	    
 		
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
 		
@@ -440,7 +445,8 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 				    //Merge the results of all the capabilities and return it into a single file
 				    dump("transform begin mergeCapabilities");
-				    tempFile = mergeCapabilities(tempFileCapa);
+				    tempOut = mergeCapabilities(tempFileCapa);
+//				    tempFile = mergeCapabilities(tempFileCapa);
 				    dump("transform end mergeCapabilities");
 				    
 				    dump("transform end GetCapabilities operation");
@@ -475,6 +481,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
 //Fin de Debug
 						    	if (image !=null) g.drawImage(image, null, 0, 0);
+						    	g.dispose();
 						    	dump("transform end filterImage to layer "+iFilePath);
 						    	}
 							}
@@ -487,19 +494,22 @@ public class WMSProxyServlet extends ProxyServlet {
 						}
 //Fin de Debug
 		
+					//Etape nécessaire car "resp.getOutputStream()" ne peux pas lire directement le flux d' "imageSource"
 					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
-		
 					if (iter.hasNext()) 
 						{
 					    ImageWriter writer = (ImageWriter)iter.next();
-		
-					    tempFile = createTempFile("transform_GetMap_"+UUID.randomUUID().toString(), getExtension(responseContentType));
-					    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 
-					    writer.setOutput(output);
+					    tempOut = new ByteArrayOutputStream();
+//						tempFile = createTempFile("transform_GetMap_"+UUID.randomUUID().toString(), getExtension(responseContentType));
+//					    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 		
+					    writer.setOutput(new MemoryCacheImageOutputStream(tempOut));
+//						writer.setOutput(output);
+					    dump("transform begin write tempOut");
 					    writer.write(imageSource);
-//Debug tb 06.07.2009						
-					    output.flush();
-					    output.close();
+//Debug tb 06.07.2009	
+					    dump("transform end write tempOut");
+//					    output.flush();
+//					    output.close();
 //Fin de Debug
 						}
 					dump("transform end GetMap operation");
@@ -528,6 +538,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						    	dump("transform begin add Legend Image "+iFilePath);
 						    	BufferedImage image = ImageIO.read(new File(filePathList.get(iFilePath)));
 						    	if (image !=null) g.drawImage(image, null, 0, imageSource.getHeight());
+						    	g.dispose();
 						    	dump("transform end add Legend Image "+iFilePath);
 						    	}
 							}
@@ -538,18 +549,20 @@ public class WMSProxyServlet extends ProxyServlet {
 						imageSource = ImageIO.read(new File(filePathList.get(0)));
 						}
 		
+					//Etape nécessaire car "resp.getOutputStream()" ne peux pas lire directement le flux d' "imageSource"
 					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 		
 					if (iter.hasNext()) 
 						{
 					    ImageWriter writer = (ImageWriter)iter.next();
-		
-					    tempFile = createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(), getExtension(responseContentType));
-					    FileImageOutputStream output = new FileImageOutputStream(tempFile);			 
-					    writer.setOutput(output);
+					    tempOut = new ByteArrayOutputStream();
+//					    tempFile = createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(), getExtension(responseContentType));
+//					    FileImageOutputStream output = new FileImageOutputStream(tempFile);
+					    writer.setOutput(tempOut);
+					    //writer.setOutput(output);
 					    writer.write(imageSource);					
-					    output.flush();
-					    output.close();
+					    //output.flush();
+					    //output.close();
 //Fin de Debug
 						}
 					dump("transform end GetLegendGraphic operation");
@@ -564,10 +577,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		    	dump("transform begin userTransform xslt");
 		    	
 		    	PrintWriter out = resp.getWriter();
-		    	transformer = tFactory.newTransformer(new StreamSource(xsltFile));		    
-		    	transformer.transform(new StreamSource(tempFile), new StreamResult(out));
-		    	//delete the temporary file
-		    	tempFile.delete();
+		    	transformer = tFactory.newTransformer(new StreamSource(xsltFile));		
+		    	ByteArrayInputStream is = new ByteArrayInputStream(tempOut.toByteArray());
+		    	tempOut = new ByteArrayOutputStream();
+		    	transformer.transform(new StreamSource(is), new StreamResult(out));
+//		    	transformer.transform(new StreamSource(tempFile), new StreamResult(out));
+//		    	delete the temporary file
+//		    	tempFile.delete();
 		    	out.close();
 		    	
 		    	dump("transform end userTransform xslt");
@@ -577,32 +593,45 @@ public class WMSProxyServlet extends ProxyServlet {
 	
 		    // Ou Ecriture du résultat final dans resp de httpServletResponse*****************************************************
 		    //No post rule to apply. Copy the file result on the output stream
-		    OutputStream os = resp.getOutputStream();
+		    BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 		    resp.setContentType(responseContentType);
-		    InputStream is = new FileInputStream(tempFile);
-		    int byteRead;
+//		    BufferedInputStream is = new BufferedInputStream(new FileInputStream(tempFile));
+
+//Debug tb 06.12.2009
+
+		    //Pour une bonne performances en écriture
+//   		byte[] data = new byte[131072];	    
+//		    int byteRead;
 		    try {
-		    	while((byteRead = is.read()) != -1) 
-					{  
-		    		os.write(byteRead);
-					}
-		    	} 
+			    dump("transform begin response writting");
+			    os.write(tempOut.toByteArray());
+//		    	while((byteRead = is.read()) != -1) 
+//	    		while((byteRead = is.read(data)) != -1) 
+//					{
+//		    		os.write(byteRead);
+//	    			os.write(data);
+//	    			os.flush();
+//					}
+	    		dump("transform end response writting");
+		    	}
 		    finally
-		    	{		
+		    	{
 		    	os.flush();
 		    	os.close();		
-		    	is.close();
+//		    	is.close();
+//Fin de Debug
 		    	
 		    	//Log le résultat et supprime les fichiers temporaires
 		    	DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 		    	Date d = new Date();	
 		    	dump("SYSTEM","ClientResponseDateTime",dateFormat.format(d));		
-	
-		    	if (tempFile !=null) 
-		    		{
-		    		dump("SYSTEM","ClientResponseLength",tempFile.length());
-		    		tempFile.delete();	
-		    		}
+	    		dump("SYSTEM","ClientResponseLength",tempOut.size());
+//    			if (tempFile !=null) 
+//		    		{
+//		    		dump("SYSTEM","ClientResponseLength",tempFile.length());
+//  				tempFile.delete();	
+//		    		}
+//Fin de Debug
 		    	}
 		    
 		    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
@@ -675,7 +704,8 @@ public class WMSProxyServlet extends ProxyServlet {
      * @param tempFileCapa
      * @return
      */
-    private File mergeCapabilities(List<File> tempFileCapa) 
+    private ByteArrayOutputStream mergeCapabilities(List<File> tempFileCapa) 
+//	private File mergeCapabilities(List<File> tempFileCapa) 
     	{
 
     	if (tempFileCapa.size() == 0) return null;
@@ -701,7 +731,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		    if(implLS == null)
 		    	{
 				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-				return fMaster;
+//				return fMaster;
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				FileInputStream reader = new FileInputStream(fMaster);
+				byte[] data = new byte[reader.available()];
+				out.write(reader.read(data));
+				reader.close();
+				return out;
 		    	}
 	
 		    for (int i=1;i<tempFileCapa.size();i++)
@@ -712,20 +748,21 @@ public class WMSProxyServlet extends ProxyServlet {
 				Node ItemMaster = nlMaster.item(0);
 				ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
 			    }	        	        	        	        
-	
-		    File f = createTempFile(UUID.randomUUID().toString(),".xml");
-		    //System.out.println(f.toURI());
-		    FileOutputStream fluxSortie = new FileOutputStream(f);
+
+		    ByteArrayOutputStream out = new ByteArrayOutputStream();
+//		    File f = createTempFile(UUID.randomUUID().toString(),".xml");
+//		    FileOutputStream fluxSortie = new FileOutputStream(f);
 		    LSSerializer serialiseur = implLS.createLSSerializer();
 		    LSOutput sortie = implLS.createLSOutput();
 		    sortie.setEncoding("UTF-8");
-		    sortie.setSystemId(f.toString());
-		    sortie.setByteStream(fluxSortie);
+//		    sortie.setSystemId(f.toString());
+//		    sortie.setByteStream(fluxSortie);
+		    sortie.setByteStream(out);
 		    serialiseur.write(documentMaster, sortie);
-		    fluxSortie.flush();
-		    fluxSortie.close();
+//		    fluxSortie.flush();
+//		    fluxSortie.close();
 	
-		    return f;
+		    return out;
     		}
     	catch(Exception e)
     		{
