@@ -558,7 +558,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					    tempOut = new ByteArrayOutputStream();
 //					    tempFile = createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(), getExtension(responseContentType));
 //					    FileImageOutputStream output = new FileImageOutputStream(tempFile);
-					    writer.setOutput(tempOut);
+					    writer.setOutput(new MemoryCacheImageOutputStream(tempOut));
 					    //writer.setOutput(output);
 					    writer.write(imageSource);					
 					    //output.flush();
@@ -731,13 +731,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		    if(implLS == null)
 		    	{
 				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-//				return fMaster;
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				FileInputStream reader = new FileInputStream(fMaster);
 				byte[] data = new byte[reader.available()];
 				out.write(reader.read(data));
 				reader.close();
 				return out;
+//				return fMaster;
 		    	}
 	
 		    for (int i=1;i<tempFileCapa.size();i++)
