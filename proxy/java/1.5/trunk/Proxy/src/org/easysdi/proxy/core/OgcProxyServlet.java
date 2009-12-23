@@ -35,6 +35,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
@@ -56,12 +57,11 @@ public class OgcProxyServlet extends HttpServlet {
     public static HashMap executionCount = new HashMap();
 
     public void init(ServletConfig config) throws ServletException {
-	// Debug tb 28.09.2009
-	super.init(config);
-	// Fin de Debug
-	configFile = getInitParameter("configFile");
-	config.getInitParameter("");
-	System.setProperty("org.geotools.referencing.forceXY", "true");
+    // Debug tb 28.09.2009
+    	super.init(config);
+    // Fin de Debug
+    	configFile = config.getServletContext().getInitParameter("configFile");
+    	System.setProperty("org.geotools.referencing.forceXY", "true");
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

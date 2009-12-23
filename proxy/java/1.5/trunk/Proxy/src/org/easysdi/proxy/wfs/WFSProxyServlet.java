@@ -68,6 +68,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Server;
@@ -606,6 +607,15 @@ public class WFSProxyServlet extends ProxyServlet {
 	// Fin du post traitement
 
 		}
+	catch (AvailabilityPeriodException e) {
+		dump("ERROR",e.getMessage());
+		resp.setStatus(401);
+		try {
+			resp.getWriter().println(e.getMessage());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
 	catch (Exception e)
 		{
 	    e.printStackTrace();
@@ -1067,6 +1077,15 @@ public class WFSProxyServlet extends ProxyServlet {
 //		    }
 //Fin de Debug
 		}
+	catch (AvailabilityPeriodException e) {
+		dump("ERROR",e.getMessage());
+		resp.setStatus(401);
+		try {
+			resp.getWriter().println(e.getMessage());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}	
 	catch(Exception e)
 		{
 	    e.printStackTrace();

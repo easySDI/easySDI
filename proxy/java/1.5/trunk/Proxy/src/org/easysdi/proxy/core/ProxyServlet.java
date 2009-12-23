@@ -58,6 +58,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.AvailabilityPeriod;
 import org.easysdi.proxy.policy.FeatureType;
@@ -1392,7 +1393,8 @@ public abstract class ProxyServlet extends HttpServlet {
      */
     protected boolean isDateAvaillable(AvailabilityPeriod p) {
 	if (policy == null)
-	    return false;
+		throw new AvailabilityPeriodException(AvailabilityPeriodException.SERVICE_IS_NULL);
+//	    return false;
 	SimpleDateFormat sdf = new SimpleDateFormat(p.getMask());
 	Date fromDate = null;
 	Date toDate = null;
@@ -1403,16 +1405,19 @@ public abstract class ProxyServlet extends HttpServlet {
 		toDate = sdf.parse(p.getTo().getDate());
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    return false;
+	    throw new AvailabilityPeriodException(AvailabilityPeriodException.SERVICE_DATES_PARSE_ERROR);
+//	    return false;
 	}
 	Date currentDate = new Date();
 	if (fromDate != null)
 	    if (currentDate.before(fromDate))
-		return false;
+	    	throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_BEFORE_SERVICE_FROM_DATE);
+//		return false;
 
 	if (toDate != null)
 	    if (!currentDate.before(toDate))
-		return false;
+	    	throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_AFTER_SERVICE_TO_DATE);
+//		return false;
 
 	return true;
     }

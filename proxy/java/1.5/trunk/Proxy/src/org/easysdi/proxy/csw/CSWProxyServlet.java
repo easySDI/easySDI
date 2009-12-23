@@ -60,6 +60,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpURL;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.ConfigFileHandler;
 import org.easysdi.xml.handler.CswRequestHandler;
@@ -739,7 +740,18 @@ public class CSWProxyServlet extends ProxyServlet {
 		filePathList.add(filePath);
 		transform(version,currentOperation,req, resp, filePathList);
 	    }
-	}catch(Exception e){e.printStackTrace();
+	}
+	catch (AvailabilityPeriodException e) {
+		dump("ERROR",e.getMessage());
+		resp.setStatus(401);
+		try {
+			resp.getWriter().println(e.getMessage());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+	catch(Exception e){
+		e.printStackTrace();
 	dump("ERROR",e.getMessage());}
     }
 

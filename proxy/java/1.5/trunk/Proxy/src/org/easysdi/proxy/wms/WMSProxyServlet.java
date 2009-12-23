@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -72,6 +73,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.xerces.parsers.XMLParser;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.PolicyHandler;
@@ -1416,6 +1418,15 @@ public class WMSProxyServlet extends ProxyServlet {
 			//*****************************************************************************************************************************
 			// Fin du post traitement
 			}
+		catch (AvailabilityPeriodException e) {
+			dump("ERROR",e.getMessage());
+			resp.setStatus(401);
+			try {
+				resp.getWriter().println(e.getMessage());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 		catch(Exception e)
 			{
 		    e.printStackTrace();
