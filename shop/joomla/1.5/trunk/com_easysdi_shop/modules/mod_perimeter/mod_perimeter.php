@@ -357,7 +357,7 @@ if ($curstep == "2")
 						for (i = elSel.length - 1; i>=0; i--) {
 							if (elSel.options[i].selected) {
 								var idToLookFor =  elSel.options[i].value;
-								var wfsFeatures = wfs5.features;
+								var wfsFeatures = wfs.features;
 								// look for a feature with the same id
 								var found = false;
 
@@ -367,7 +367,7 @@ if ($curstep == "2")
 									if (idToLookFor ==  feat2.attributes[idField]){
 										found=true;
 
-										wfs5.removeFeatures([wfsFeatures[j]]);
+										wfs.removeFeatures([wfsFeatures[j]]);
 										break;
 									}
 								}
