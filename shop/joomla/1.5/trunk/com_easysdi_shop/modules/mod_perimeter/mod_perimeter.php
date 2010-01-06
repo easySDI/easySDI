@@ -256,17 +256,22 @@ if ($curstep == "2")
 		</table>
 		<br>
 		<?php
-				$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
+		//$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
+		$querySurfaceMax = "SELECT min(surface_max) as surface_max FROM #__easysdi_product  WHERE id in (";
+		$querySurfaceMin = "SELECT max(surface_min) as surface_min FROM #__easysdi_product  WHERE id in (";
+		
 		foreach( $cid as $id )
 		{
-			$query = $query.$id."," ;
+			$querySurfaceMax = $querySurfaceMax.$id."," ;
+			$querySurfaceMin = $querySurfaceMin.$id."," ;
 		}
-		$query  = substr($query , 0, -1);
-		$query = $query.")";
-		$querySurfaceMax = $query." having min(surface_max)";
-		$querySurfaceMin = $query." having max(surface_min)";
-
-		$db->setQuery( $querySurfaceMax);
+		$querySurfaceMax  = substr($querySurfaceMax , 0, -1);
+		$querySurfaceMin  = substr($querySurfaceMin , 0, -1);
+		$querySurfaceMax = $querySurfaceMax.")";
+		$querySurfaceMin = $querySurfaceMin.")";
+		//$querySurfaceMax = $query." having min(surface_max)";
+		//$querySurfaceMin = $query." having max(surface_min)";
+		$db->setQuery( $querySurfaceMin);
 		$rowsSurfaceMin = $db->loadObjectList();
 		foreach( $rowsSurfaceMin as $surfaceMin )
 		{
