@@ -2497,7 +2497,8 @@ function validateForm(toStep, fromStep){
 		//
 		//select
 		//
-		var aSel = $('fieldset_properties').getElementsByTagName("select");
+		
+		var aSel = $('orderForm').getElementsByTagName("select");
 		for(var i=0;i<aSel.length;i++){
 			
 			//Is the property mandatory?
@@ -2528,7 +2529,7 @@ function validateForm(toStep, fromStep){
 		//
 		//input
 		//
-		var aSel = $('fieldset_properties').getElementsByTagName("input");
+		var aSel = $('orderForm').getElementsByTagName("input");
 		for(var i=0;i<aSel.length;i++){
 			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
 				//text
@@ -2544,7 +2545,7 @@ function validateForm(toStep, fromStep){
 		//
 		//textArea
 		//
-		var aSel = $('fieldset_properties').getElementsByTagName("textarea");
+		var aSel = $('orderForm').getElementsByTagName("textarea");
 		for(var i=0;i<aSel.length;i++){
 			if(aSel[i].className.indexOf("mdtryElem",0) != -1){
 				if(aSel[i].value.length < 1){
@@ -2789,14 +2790,15 @@ function validateForm(toStep, fromStep){
 		}
 		
 		if ($filter_date && $filter_date_comparator){
+			$filter_date_esc = $db->quote( $db->getEscaped( $filter_date."%" ), false );
 			if($filter_date_comparator == "equal")
-				$filter = $filter." AND update_date like '".$filter_date."%' "; 
+				$filter = $filter." AND update_date like ".$filter_date_esc;
 			if($filter_date_comparator == "different")
-				$filter = $filter." AND update_date not like '".$filter_date."%' "; 
+				$filter = $filter." AND update_date not like ".$filter_date_esc;
 			if($filter_date_comparator == "greaterorequal")
-				$filter = $filter." AND (update_date >= '".$filter_date."' OR update_date like '".$filter_date."%') "; 
+				$filter = $filter." AND (update_date >= ".$filter_date_esc." OR update_date like ".$filter_date_esc.") "; 
 			if($filter_date_comparator == "smallerorequal")
-				$filter = $filter." AND (update_date <= '".$filter_date."' OR update_date like '".$filter_date."%') "; 
+				$filter = $filter." AND (update_date <= ".$filter_date_esc." OR update_date like ".$filter_date_esc.") "; 
 		}
 		
 		$user = JFactory::getUser();
