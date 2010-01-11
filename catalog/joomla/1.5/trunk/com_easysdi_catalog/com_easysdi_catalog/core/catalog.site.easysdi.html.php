@@ -389,7 +389,7 @@ class HTML_catalog{
 			
 			?>
 			 
-	  <td valign="top" rowspan=3>
+	  <td class="imgHolder" rowspan="3">
 	 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 	  </td>
 	  <td colspan="3"><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></span>
@@ -417,20 +417,21 @@ class HTML_catalog{
 		    href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 		 </a>
 	 --> 
-	  <td><span class="mdviewfile">
+	  <td class="mdActionViewFile"><span class="mdviewfile">
 	  	<a class="modal"
 				title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
 				rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
 			</a></span>
 	  </td>
-	  	<?php if ($hasPreview > 0){ ?>
-	  <td><span class="mdviewproduct">
+	  <td class="mdActionViewProduct">
+	  <?php if ($hasPreview > 0){ ?>
+	  <span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
 			rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
-      </td>
-		<?php } ?>
-	  <td>&nbsp;</td>
+      	<?php } ?>
+	</td>
+	  <td class="catNoAction">&nbsp;</td>
 	 </tr>
 	 <tr>
 	   <td colspan="5" halign="middle"><div class="separator" /></td>
