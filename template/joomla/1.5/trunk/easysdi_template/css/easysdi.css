@@ -4,6 +4,26 @@
 /********************************************************/
 /*** EasySDI Metadata                                 ***/
 /********************************************************/
+.imgHolder{
+	 vertical-align:top;
+	 width:100px;
+}
+
+.mdActionViewFile
+{
+	width:95px;
+}
+
+.mdActionViewProduct
+{
+	width:145px;
+}
+
+.mdActionAddToCart
+{
+	width:125px;
+}
+
 #metadata .furnisherTitle{
 	font-weight:bold;
 	font-size:14px;
@@ -189,14 +209,31 @@ div .easysdi_product_does_not_exist{
 	height:15px;
 	}
 
-.infoShop .shopHeader, .infoShop .shopFooter{
-	border=0;
+.infoShop{
+	border:0px;
 	border-collapse:collapse;
+}
+	
+.infoShop .shopHeader, .infoShop .shopFooter{
+	font-size:0.92em;
+	line-height:13px;
+	/*background-color:#ddd;*/
+}
+
+.infoShop .shopHeader td, .infoShop .shopFooter td{
+	line-height:16px;
+	padding-left:5px;
+	padding-right:5px;
+	/*border: 1px dashed #747373;*/
+}
+
+.infoShop .shopHeader div, .infoShop .shopFooter div{
+	height:15px;
 }
 
 
 .shopInfoLogo{
-	background:url(../icons/silk/information.png);
+	background:url(../images/fff/silk/information.png);
 	width:16px;
 	height:16px;
 	background-color:transparent;
@@ -209,6 +246,9 @@ div .easysdi_product_does_not_exist{
 }
 
 .scaleStatusContainer{
+	font-size:0.92em;
+	line-height:13px;
+	color:red;
 }
 
 .shopWarnLogoInactive{
@@ -247,6 +287,10 @@ div .easysdi_product_does_not_exist{
 .ccordinateTextHolder{
 	width:75px;
 	text-align:left;
+}
+
+.beforeCoordinateTextHolder{
+	width:240px;
 }
 
 .coordinateContainer{
@@ -1355,7 +1399,7 @@ div .orderDate{
 	width:16px;
 }
 
-div .savedOrderArchive:hover, div .savedOrderOrder:hover, div .savedOrderSuppress:hover{
+div .savedOrderArchive:hover, div .savedOrderOrder:hover, div .savedOrderSuppress:hover, div .savedOrderCopy:hover{
 	background-color:transparent;
 	background-position:center;
 	background-repeat:no-repeat;
@@ -1398,6 +1442,15 @@ div .savedOrderOrder{
 	height:16px;
 	width:16px;
 	background-image:url(../icons/silk/basket_put.png);
+}
+
+div .savedOrderCopy{
+	background-color:transparent;
+	background-position:center;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	background-image:url(../icons/silk/page_copy.png);
 }
 
 /********************************************************/
