@@ -3130,10 +3130,10 @@ function validateForm(toStep, fromStep){
 		}
 		?>
 <tr>
-	 <td valign="top" rowspan=3>
+	 <td class="imgHolder" rowspan=3>
 	 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 	  </td>
-	  <td colspan=3><span class="mdtitle"><a><?php echo $row->data_title; ?></a></span>
+	  <td colspan=3><span class="mdtitle"><?php echo $row->data_title; ?></span>
 	  </td>
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
@@ -3150,18 +3150,26 @@ function validateForm(toStep, fromStep){
 	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_name;?></span></td>
 	 </tr>
      <tr>
-	  <td><span class="mdviewfile">
+     	<td class="mdActionViewFile"><span class="mdviewfile">
+	  	<a class="modal"
+				title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
+				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
+				rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
+			</a></span>
+	  </td>
+	  <td class="mdActionAddToCart"><span class="mdviewfile">
 	  	<a title="<?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>"
 				href="#" onclick="addOrder(<?php echo $row->id.",".$i; ?>)"><?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>
 			</a></span>
 	  </td>
-	  	<?php if ($hasPreview > 0){ ?>
-	  <td><span class="mdviewproduct">
+	  <td class="mdActionViewProduct">
+	  <?php if ($hasPreview > 0){ ?>
+	    <span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
 	    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+	    <?php } ?>
       </td>
-		<?php } ?>
-	  <td>&nbsp;</td>
+	  <td class="shopNoAction">&nbsp;</td>
 	 </tr>
 	 <tr>
 	    <td colspan="5" halign="middle"><div class="separator" /></td>
@@ -3183,7 +3191,7 @@ function validateForm(toStep, fromStep){
 		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
 	   </tr>
 	</table>
-	
+	<input type="hidden" name="limitstart" value="<?php echo $limitstart;?>">
 	<input type="hidden" name="countMD" value="<?php echo $countMD;?>">
 </span></form>
 </div>

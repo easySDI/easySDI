@@ -135,6 +135,134 @@ class SITE_cpanel {
 			}
 		}
 	}
+	
+	function copyOrder(){
+		global  $mainframe;
+		$option=JRequest::getVar("option");
+		$order_id=JRequest::getVar("order_id",0);
+		$order_copy_id="";
+		if ($order_id == 0){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo "</div>";
+		}else {
+			$database =& JFactory::getDBO();
+			$user = JFactory::getUser();
+
+			$rootPartner = new partnerByUserId($database);
+			$rootPartner->load($user->id);
+			
+			$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
+			$database->setQuery($queryStatus);
+			$await = $database->loadResult();
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
+			$database->setQuery($queryStatus);
+			$saved = $database->loadResult();
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+			$database->setQuery($queryStatus);
+			$finish = $database->loadResult();
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+			$database->setQuery($queryStatus);
+			$archived = $database->loadResult();
+			
+			$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
+			$database->setQuery($queryStatus);
+			$historized = $database->loadResult();
+			
+			jimport("joomla.utilities.date");
+			$date = new JDate();
+			
+			$query_order_status = "select status from #__easysdi_order where user_id = ".$user->id." AND ORDER_ID =".$order_id;
+			$database->setQuery($query_order_status);
+			$order_status = $database->loadResult();
+			
+			//User must own this order to copy it
+			if ($order_status == ""){
+				echo "<div class='alert'>";
+				echo JText::_("EASYSDI_ERROR_NO_SUCH_ORDER_FOR_USER");
+				echo "</div>";
+			}
+			
+			//Only finish, historized and archived are permitted for copy
+			if ($order_status != $finish && $order_status != $archived && $order_status != $historized){
+				echo "<div class='alert'>";
+				echo JText::_("EASYSDI_ERROR_TRY_COPY_ORDER_WITH_UNALLOWEDSTATUS");
+				echo "</div>";
+			}
+			
+			//Do the copy
+			$query = "SELECT * FROM jos_easysdi_order where order_id=".$order_id;
+			$database->setQuery($query);
+			$currentOrder = $database->loadObjectList();
+			$currentOrder = $currentOrder[0];
+			//insert new order
+			$order_name=$currentOrder->name.JText::_("EASYSDI_TEXT_COPY");
+			$query = "insert into #__easysdi_order (remark, provider_id, name, type, status, third_party, user_id, buffer, order_date, surface) ";
+			$query .= "values('$currentOrder->remark', $currentOrder->provider_id, '$order_name', $currentOrder->type, $saved, $currentOrder->third_party, $currentOrder->user_id, $currentOrder->buffer, now(), $currentOrder->surface)";
+			$database->setQuery($query);
+			if (!$database->query()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+				exit;
+			}			
+			$order_copy_id = mysql_insert_id();
+			
+			//fill in dependency tables
+			$query = "SELECT * FROM #__easysdi_order_product_list where order_id=".$order_id;
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			foreach ($rows as $row)
+			{
+				$query = "insert into #__easysdi_order_product_list (product_id, order_id, status) ";
+				$query .= "values($row->product_id, $order_copy_id, $await)";
+				$database->setQuery($query);
+				if (!$database->query()) {
+					echo "<div class='alert'>";
+					echo $database->getErrorMsg();
+					echo "</div>";
+					exit;
+				}
+				$list_copy_id = mysql_insert_id();
+				$query = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id=".$row->id;
+				$database->setQuery($query);
+				$rows1 = $database->loadObjectList();
+				foreach ($rows1 as $row1)
+				{
+					$query = "insert into #__easysdi_order_product_properties (order_product_list_id, property_id, property_value, code) ";
+					$query .= "values($list_copy_id, $row1->property_id, '$row1->property_value', '$row1->code')";
+					$database->setQuery($query);
+					if (!$database->query()) {
+						echo "<div class='alert'>";
+						echo $database->getErrorMsg();
+						echo "</div>";
+						exit;
+					}
+				}
+			}
+			
+			$query = "SELECT * FROM #__easysdi_order_product_perimeters where order_id=".$order_id;
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			foreach ($rows as $row)
+			{
+				$query = "insert into #__easysdi_order_product_perimeters (perimeter_id, order_id, value, text) ";
+				$query .= "values($row->perimeter_id, $order_copy_id, '$row->value', '$row->text')";
+				$database->setQuery($query);
+				if (!$database->query()) {
+					echo "<div class='alert'>";
+					echo $database->getErrorMsg();
+					echo "</div>";
+					exit;
+				}
+			}
+			
+			
+		}
+	}
 
 	function listOrdersForProvider(){
 

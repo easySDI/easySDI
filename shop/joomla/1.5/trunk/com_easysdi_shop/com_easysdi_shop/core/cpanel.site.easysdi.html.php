@@ -32,6 +32,14 @@ class HTML_cpanel {
 		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
 		$db->setQuery($queryStatus);
 		$finish = $db->loadResult();
+		
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$db->setQuery($queryStatus);
+		$archived = $db->loadResult();
+		
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
+		$db->setQuery($queryStatus);
+		$historized = $db->loadResult();
 	?>	
 	<script>
 	
@@ -136,6 +144,7 @@ class HTML_cpanel {
 	<th class="logo"></th>
 	<th class="logo"></th>
 	<th class="logo"></th>
+	<th class="logo"></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -181,6 +190,7 @@ class HTML_cpanel {
 				</span><br></td>
 			<td align="center"><?php echo JText::_($row->status_translation) ;?></td>
 			<?php
+				//Draft
 				if($saved == $row->status)
 				{	?>
 					<td class="logo">
@@ -206,6 +216,7 @@ class HTML_cpanel {
 					</td>
 					<?php 
 				}
+				//finished
 				else if($finish == $row->status)
 				{
 					?>
@@ -214,6 +225,10 @@ class HTML_cpanel {
 					<div class="particular-order-link">
 					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
 					</div>
+					</td>
+					<td class="logo">
+					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<td class="logo">
 					<div class="savedOrderArchive" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ARCHIVE") ?>"
@@ -237,6 +252,22 @@ class HTML_cpanel {
 					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
+					
+					<?php 
+					if($archived == $row->status || $historized == $row->status){
+					?>
+					<td class="logo">
+					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
+					</td>
+					<?php 
+					}else{ 
+					?>
+					<td class="logo"><div class="noLogo"></td>
+					<?php
+					}
+					?>
+					
 					<td class="logo"><div class="noLogo"></td>
 					<?php 
 				}
