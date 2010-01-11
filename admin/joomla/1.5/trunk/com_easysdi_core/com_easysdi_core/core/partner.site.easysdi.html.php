@@ -944,7 +944,8 @@ class HTML_partner
 		 
 		$countryContact = $database->loadResult() ;
 ?>
-	
+		<div class="contentin">
+		<h2 class="contentheading"> <?php echo JText::_("EASYSDI_ACCOUNT_TITLE"); ?></h2>
 <?php
 		echo $tabs->startPane("affiliatePane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"affiliatePane");
@@ -1085,7 +1086,8 @@ class HTML_partner
 		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editAffiliatePartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
 		<?php
 		} ?>				
-	</form>	
+	</form>
+	</div>
 <?php
 	}
 
