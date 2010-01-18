@@ -483,10 +483,10 @@ public class WMSProxyServlet extends ProxyServlet {
 						    	BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath),layerFilePathList.get(iFilePath)),filePathList.get(iFilePath),isTransparent);
 //Fin de Debug
 						    	if (image !=null) g.drawImage(image, null, 0, 0);
-						    	g.dispose();
 						    	dump("transform end filterImage to layer "+iFilePath);
 						    	}
 							}
+						g.dispose();
 //Debug tb 11.08.2009
 						}
 					//Si aucune requête n'a été envoyé au serveur, retourne: empty image
@@ -568,6 +568,28 @@ public class WMSProxyServlet extends ProxyServlet {
 //Fin de Debug
 						}
 					dump("transform end GetLegendGraphic operation");
+				    }
+
+		    	else if (currentOperation.equalsIgnoreCase("GetFeatureInfo")) 
+	    			{
+	    			dump("transform begin GetFeatureInfo operation");
+	    			//resp.setHeader("Content-Encoding", "gzip");
+	    	
+	    			tempOut = new ByteArrayOutputStream();
+	    			FileInputStream reader = null;
+					
+					//Boucle sur les fichiers réponses
+				    for (int iFilePath = 0;iFilePath<filePathList.size();iFilePath++)
+				    	{
+						reader = new FileInputStream(filePathList.get(iFilePath));
+						byte[] data = new byte[reader.available()];
+						reader.read(data, 0, reader.available());
+						tempOut.write(data);
+						tempOut.flush();
+						reader.close();
+				    	}
+	    			
+					dump("transform end GetFeatureInfo operation");
 				    }
 			    }
 	
@@ -736,7 +758,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				FileInputStream reader = new FileInputStream(fMaster);
 				byte[] data = new byte[reader.available()];
-				out.write(reader.read(data));
+				reader.read(data, 0, reader.available());
+				out.write(data);
 				reader.close();
 				return out;
 //				return fMaster;
@@ -793,6 +816,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		    String version = "000";
 		    String service = "";
 		    String layer = ""; // Pour l'opération GetLegendGraphic seulement
+		    String queryLayers = ""; // Pour l'opération GetFeatureInfo seulement
 		    String width = "1";
 		    String height ="1";
 		    String format ="";
@@ -810,7 +834,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		    	{
 				String key = (String) parameterNames.nextElement();
 				String value="";
-				if (key.equalsIgnoreCase("LAYER") || key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS")||key.equalsIgnoreCase("CRS") )
+				if (key.equalsIgnoreCase("LAYER") || key.equalsIgnoreCase("QUERY_LAYERS") || key.equalsIgnoreCase("LAYERS") ||key.equalsIgnoreCase("STYLES")||key.equalsIgnoreCase("BBOX")||key.equalsIgnoreCase("SRS")||key.equalsIgnoreCase("CRS") )
 					{
 				    value  = req.getParameter(key); 
 					}
@@ -820,8 +844,10 @@ public class WMSProxyServlet extends ProxyServlet {
 					}
 	
 				//String value = req.getParameter(key);
-				if (!key.equalsIgnoreCase("LAYERS"))
-				    if (!key.equalsIgnoreCase("STYLES")) paramUrlBase = paramUrlBase + key + "=" + value + "&";
+				if (!key.equalsIgnoreCase("QUERY_LAYERS") && !key.equalsIgnoreCase("LAYERS") && !key.equalsIgnoreCase("STYLES"))
+					{
+				    paramUrlBase = paramUrlBase + key + "=" + value + "&";
+					}
 	
 				if (key.equalsIgnoreCase("Request")) 
 					{
@@ -871,8 +897,16 @@ public class WMSProxyServlet extends ProxyServlet {
 				    // Gets the requested layer -> GetLegendGraphic only
 					layer = value;
 					}
+//Debug tb 18.01.2010
+				else if (key.equalsIgnoreCase("QUERY_LAYERS")) 
+					{
+					//Gets the requested querylayers -> GetFeatureInfo
+					queryLayers = value;
+				    }
+//Fin de Debug
 				else if (key.equalsIgnoreCase("LAYERS")) 
 					{
+					//Gets the requested layers -> GetMap
 					layers = value;
 				    }
 				else if (key.equalsIgnoreCase("STYLES")) 
@@ -892,7 +926,15 @@ public class WMSProxyServlet extends ProxyServlet {
 					format= value;
 				    } 
 		    	}
-	
+
+//Debug tb 18.01.2010
+		    // Pour éviter le cas où "layers" est absent de la requête GetFeatureInfo
+		    if(!queryLayers.equalsIgnoreCase(""))
+		    	{
+		    	layers = queryLayers;
+		    	}
+//Fin de Debug
+
 		    String user="";
 		    if(req.getUserPrincipal() != null)
 		    	{
@@ -1212,6 +1254,41 @@ public class WMSProxyServlet extends ProxyServlet {
 								}
 							}
 //Fin de Debug
+//Debug tb 15.01.2010
+		    			else if("GetFeatureInfo".equalsIgnoreCase(operation))
+							{
+//Debug tb 18.01.2010
+		    				String queryLayersUrl = "QUERY_LAYERS="+layerToKeepList.get(0);
+		    				String layersUrl = "LAYERS="+layerToKeepList.get(0);
+		    				for(int n=1;n<layerToKeepList.size();n++)
+		    					{
+		    					queryLayersUrl = queryLayersUrl+","+layerToKeepList.get(n);
+		    					layersUrl = layersUrl+","+layerToKeepList.get(n);
+		    					}
+		    				String stylesUrl = "STYLES="+stylesToKeepList.get(0);
+		    				for(int n=1;n<stylesToKeepList.size();n++)
+		    					{
+		    					stylesUrl = stylesUrl+","+stylesToKeepList.get(n);
+		    					}
+		    				
+		    				String filePath  = sendData("GET", getRemoteServerUrl(j), paramUrlBase+queryLayersUrl+"&"+layersUrl+"&"+stylesUrl);
+//Fin de Debug
+							synchronized (filePathList) 
+								{
+								synchronized (layerFilePathList)
+									{
+									synchronized (serverUrlPerfilePathList)
+										{
+										// Insert les réponses
+										dump("requestPreTraitementGET save response GetFeatureInfo from thread server "+getRemoteServerUrl(j));
+									    layerFilePathList.add("");
+										serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+									    filePathList.add(filePath);
+										}
+									}
+								}
+							}
+//Fin de Debug
 						dump("DEBUG","Thread Server: "+getRemoteServerUrl(j)+" work finished");
 		    			}
 		    		catch(Exception e)
@@ -1396,27 +1473,36 @@ public class WMSProxyServlet extends ProxyServlet {
 			    // les réponses ont été insérées, par les threads servers, dans filePathList;
 				// layerFilePathList-> layer names et serverUrlPerFilePathList-> url server, ont aussi été mis à jour en conséquence			    					   
 				}
-			
+
+//Debug tb 15.01.2010
 			// Si aucun des layerThread n'a passé de requête, car policy filter et req bbox incompatibles
-			if(filePathList.size()<=0)
-				{
-				sendRequest=true;
-				dump("requestPreTraitementGET save response servers: emptyImage");
-				generateEmptyImage(width,height,format,true);
-				}
+//			if(filePathList.size()<=0 && ("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation)))
+//				{
+//				sendRequest=true;
+//				dump("requestPreTraitementGET save response servers: emptyImage");
+//				generateEmptyImage(width,height,format,true);
+//				}
 			//Fin de la phase de reconstruction de la requête: filePathList contient les réponses de chaque serveur (une par serveur)     
 			//*****************************************************************************************************************************
 			
 			
 			//*****************************************************************************************************************************
-			// Lancement du post traitement
-		    version = version.replaceAll("\\.", "");
-	
-		    dump("requestPreTraitementGET begin transform");
-		    transform(version,operation,req, resp);
-		    dump("requestPreTraitementGET end transform");
+			if(filePathList.size()>0)
+				{
+				// Lancement du post traitement
+			    version = version.replaceAll("\\.", "");
+		
+			    dump("requestPreTraitementGET begin transform");
+			    transform(version,operation,req, resp);
+			    dump("requestPreTraitementGET end transform");
+			    // Fin du post traitement
 			//*****************************************************************************************************************************
-			// Fin du post traitement
+				}
+			else
+				{
+				dump("ERROR","This request has no authorized results!");
+				}
+//Fin de Debug
 			}
 		catch (AvailabilityPeriodException e) {
 			dump("ERROR",e.getMessage());
