@@ -339,7 +339,13 @@ public abstract class ProxyServlet extends HttpServlet {
 	    sb.append("\"");
 	}
 	sb.append(">");
+//Debug tb 07.01.2010
+	sb.append("<![CDATA[");
+//Fin de debug
 	sb.append(s);
+//Debug tb 07.01.2010
+	sb.append("]]>");
+//Fin de debug
 	sb.append("</logEntry>");
 
 	synchronized (lLogs) {
@@ -736,7 +742,7 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     protected boolean isAcceptingTransparency(String responseContentType) {
-	boolean isTransparent = true;
+	boolean isTransparent = false;
 	if (responseContentType == null)
 	    return true;
 	if (isXML(responseContentType)) {
