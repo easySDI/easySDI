@@ -501,6 +501,7 @@ class SITE_cpanel {
 		foreach ($products_id as $product_id)
 		{
 			$remark = JRequest::getVar("remark".$product_id);
+			$remark = $database->quote( $database->getEscaped($remark), false );
 			$price = JRequest::getVar("price".$product_id,"0");
 			if (strlen($price)!=0)
 			{
@@ -508,10 +509,9 @@ class SITE_cpanel {
 				$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
 				$database->setQuery($queryStatus);
 				$status_id = $database->loadResult();
-
+				
 				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= ".$remark.",price = $price ";
-					
-				 $fileName = $_FILES['file'.$product_id]["name"];
+				$fileName = $_FILES['file'.$product_id]["name"];
 			 	if (strlen($fileName)>0)
 			 	{
 				 	$tmpName =  $_FILES['file'.$product_id]["tmp_name"];

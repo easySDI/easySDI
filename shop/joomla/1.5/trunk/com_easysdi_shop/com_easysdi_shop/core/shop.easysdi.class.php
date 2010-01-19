@@ -1436,9 +1436,11 @@ if (count($rows)>0){
 					if ($valueText){
 						$selected = $valueText;
 					}else{
-						$selected = $rowValue->val_trans;
+						$selected = "";
+						//$selected = $rowValue->val_trans;
 					}
 					echo "<table><tr><td>";
+					//value: 
 					echo "<input class=\"msgProperty$isMandatoryClass\" type='text' name='".$row->code."_text_property_".$product->id."' id='".$row->code."_text_property_".$product->id."' value='".JText::_($selected)."' />";
 					echo "</td><td>";
 					if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
@@ -1462,7 +1464,8 @@ if (count($rows)>0){
 					if (count($selProduct)>0){
 						$selected = $selProduct[0];
 					}else{
-						$selected = $rowValue->val_trans;
+						$selected = "";
+						//$selected = $rowValue->val_trans;
 					}
 					echo "<table><tr><td>";
 					echo "<TEXTAREA class='".$isMandatoryClass."' rows=3 COLS=62 name='".$row->code."_textarea_property_".$product->id."[]' id='".$row->code."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
@@ -1888,7 +1891,7 @@ if (count($rows)>0){
 			//article you would like to call.
 			//
 			?>
-			<table id="generalConditions">
+			<table width="100%" id="generalConditions">
 			<?php
 			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
 			$args = array( 1,&$row,&$params);
@@ -2837,37 +2840,6 @@ function validateForm(toStep, fromStep){
 				else
 				{
 					$filter .= " AND (p.EXTERNAL=1) ";
-					
-					/*
-					$queryRoot = "SELECT root_id from #__easysdi_community_partner where partner_id = $partner->partner_id";
-					$db->setQuery( $queryRoot);
-					$result = $db->loadResult();
-					
-					if($result)
-					{
-						$filter .= " AND (p.EXTERNAL=1 AND 
-						(p.partner_id <>  $partner->partner_id
-						AND
-						p.partner_id <> (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-						AND 
-						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-						AND
-						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-						
-						)
-						) ";
-					}
-					else
-					{
-						$filter .= " AND (p.EXTERNAL=1 AND 
-						(p.partner_id <>  $partner->partner_id
-						AND
-						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-						AND
-						p.partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-						)) ";
-					}
-					*/
 				}
 			}
 			else

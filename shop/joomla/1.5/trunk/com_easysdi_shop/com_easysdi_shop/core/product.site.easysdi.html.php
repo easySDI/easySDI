@@ -17,7 +17,6 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-
 class HTML_product{
 	
 	function editProduct( $rowProduct,$id, $option ){
@@ -462,9 +461,9 @@ class HTML_product{
 						
 					case "text":
 					if ($curProperty->mandatory == 0 ){
-						$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
-							
+						$propertiesTemp1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
+						$propertiesTemp2[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
+						$propertiesValueList = array_merge( $propertiesTemp1 , $propertiesTemp2);
 						}
 						?>
 						<tr><td>
@@ -478,8 +477,10 @@ class HTML_product{
 						
 					case "textarea":
 					if ($curProperty->mandatory == 0 ){
-						$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-						$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList2  );
+						$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
+						$propertiesValueList3[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
+						
+						$propertiesValueList = array_merge( $propertiesValueList2 , $propertiesValueList3);
 							
 						}
 						?>
@@ -620,6 +621,17 @@ class HTML_product{
 		</div>
 		</div>
 	<?php
+	}
+	
+	function valueInArray( $value,$array ){
+		$ret = false;
+		
+		foreach($array as $val){
+			if($val->value == $value->value)
+				$ret=true;
+		}
+		
+		return $ret;
 	}
 	
 	function editMetadata( $rowProduct,$id, $option ){

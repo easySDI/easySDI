@@ -425,7 +425,8 @@ class SITE_product {
 		 //SITE_product::SaveMetadata();
 		 
 		if ($returnList == true) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
+			if ($rowProduct->id == 0)
+				$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$mainframe->redirect("index.php?option=$option&task=listProduct");
 		}	
 	}
