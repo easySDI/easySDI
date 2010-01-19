@@ -23,7 +23,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <table class="descr" id="metadataTitle">
  <tr>
  	<td rowspan="2">__ref_1$s</td>
-	<td class="furnisherTitle">Fournisseur: __ref_2$s</td>
+	<td>Fournisseur: __ref_2$s</td>
  </tr>
  <tr>
  	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
@@ -34,10 +34,8 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-<br/>
-<div id="message" class="info"/>
+
 <table class="descr">
-<tr><td colspan="2"><div style="display:none;" id="message" class="info"/></td></tr>
 <xsl:for-each select="./Property">
 	<tr><td class="title" valign="top"><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
 	<table >

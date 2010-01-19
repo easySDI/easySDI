@@ -432,7 +432,80 @@ class displayManager{
 			$db->setQuery($query);
 			$temp = $db->loadResult();
 			$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
-
+		
+		
+		//define an array of orderable associated product for the current user
+		$orderableProductsMd = null;
+		$filter = "";
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($db);
+		if (!$user->guest){
+			$partner->load($user->id);
+		}else{
+			$partner->partner_id = 0;
+		}
+        	
+		if($partner->partner_id == 0)
+		{
+			//No user logged, display only external products
+			$filter .= " AND (EXTERNAL=1) ";
+		}
+		else
+		{
+			//User logged, display products according to users's rights
+			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.EXTERNAL=1
+					OR
+					(p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					
+					))) ";
+				}
+				else
+				{
+					$filter .= " AND (p.EXTERNAL=1) ";
+				}
+			}
+			else
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					)) ";
+									
+				}
+				else
+				{
+					//no command right
+					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
+				}
+			}
+		}
+		$query  = "SELECT metadata_id FROM #__easysdi_product p where published=1 and orderable = 1 ".$filter;
+		$db->setQuery($query);
+		$orderableProductsMd = $db->loadResultArray();
+		if ($db->getErrorNum()) {						
+					echo "<div class='alert'>";			
+					echo 			$db->getErrorMsg();
+					echo "</div>";
+		}
+	
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
@@ -459,13 +532,18 @@ class displayManager{
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		$myHtml;
+		//Defines if the corresponding product is orderable.
+		$hasOrderableProduct = false;
+		if (in_array($id, $orderableProductsMd))
+			$hasOrderableProduct = true;
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
 				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>
-				</td></tr></table>";		
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
+					if($hasOrderableProduct)
+						$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>";
+					$buttonsHtml .= "</td></tr></table>";		
 		}
 		if ($print ==1 ){
 			$myHtml .= "<script>window.addEvent('domready', function() {window.print();});</script>";
@@ -488,10 +566,12 @@ class displayManager{
 		//Define links for onclick event
 		$myHtml .= "<script>\n";
 		
+		$db->setQuery("SELECT * FROM #__menu where name='GEOCommande'");
+		$shopitemId = $db->loadResult();
 		
 		//Manage display class
-		
-		$myHtml .= "window.addEvent('domready', function() {
+		$myHtml .= "
+		window.addEvent('domready', function() {
 		
 		$('catalogPanel1').addEvent( 'click' , function() { 
 			window.open('./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=$id&type=abstract', '_self');
@@ -511,10 +591,16 @@ class displayManager{
 		$('printMetadata').addEvent( 'click' , function() { 
 			window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
 		});
+		";
+		if($hasOrderableProduct){
+			$db->setQuery("select id from #__easysdi_product where metadata_id = '".$id."'");
+			$productId = $db->loadResult();
+			$myHtml .= "
 		$('orderProduct').addEvent( 'click' , function() { 
-			window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
-		});
-
+			window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=$shopitemId&firstload=1&fromStep=1&cid[]=$productId', '_main');
+		});";
+		}
+		$myHtml .= "
 		task = '$task';
 		type = '$type';
 		

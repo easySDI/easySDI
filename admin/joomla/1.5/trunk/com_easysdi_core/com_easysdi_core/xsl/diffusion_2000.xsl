@@ -23,7 +23,7 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 <table class="descr" id="metadataTitle">
  <tr>
  	<td rowspan="2">__ref_1$s</td>
-	<td>Fournisseur: __ref_2$s</td>
+	<td class="furnisherTitle">Fournisseur: __ref_2$s</td>
  </tr>
  <tr>
  	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
