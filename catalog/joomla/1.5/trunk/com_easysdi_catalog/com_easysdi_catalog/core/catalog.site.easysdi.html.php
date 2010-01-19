@@ -77,10 +77,9 @@ class HTML_catalog{
 			<input type="hidden" name="simulatedTabIndex" id ="simulatedTabIndex" value ="<?php echo JRequest::getVar('simulatedTabIndex');?>" />
 			<input type="hidden" name="advancedSrch" id ="advancedSrch" value ="<?php echo JRequest::getVar('advancedSrch', 0);?>" />
 			<input type="hidden" name="firstload" id="limitstart" value="1" />
-			
+			<input type="hidden" name="fromStep" id="fromStep" value="1" />
 			
 			<script  type="text/javascript">
-			
 				window.addEvent('domready', function() {
 				/*
 				* Register event handlers
@@ -146,7 +145,7 @@ class HTML_catalog{
 					 document.getElementById("bboxMaxX").value ="180"; 	
 					 document.getElementById("bboxMaxY").value ="90";
 				}
-				
+				 
 			</script>
 			
 			<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
@@ -302,13 +301,10 @@ class HTML_catalog{
 	$i=0;
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
-
-
-
 	$xpath = new DomXPath($cswResults);
 	$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 	$nodes = $xpath->query('//gmd:MD_Metadata');
-
+	
 	foreach($nodes  as $metadata){
 			
 		$i++;
@@ -343,7 +339,6 @@ class HTML_catalog{
 			$hasPreview = $db->loadResult();
 			if ($db->getErrorNum()) {
 				$hasPreview = 0;
-
 			}
 
 			$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
@@ -385,7 +380,6 @@ class HTML_catalog{
 				$isMdPublic = true;
 			}
 			//}
-			
 			
 			?>
 			 
@@ -429,10 +423,10 @@ class HTML_catalog{
 	  <span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
 			rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
-      	<?php } ?>
-	</td>
-	  <td class="catNoAction">&nbsp;</td>
-	 </tr>
+      	  <?php } ?>
+	  </td>
+	  <td class="mdNoAction"></td>
+	  </tr>
 	 <tr>
 	   <td colspan="5" halign="middle"><div class="separator" /></td>
 	 </tr>
