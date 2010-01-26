@@ -23,6 +23,7 @@ class SITE_catalog {
 
 	function listCatalogContent(){
 		global $mainframe;
+		$db =& JFactory::getDBO();
 		$empty = true;
 		
 		$maxDescr = config_easysdi::getValue("description_length");
@@ -50,6 +51,7 @@ class SITE_catalog {
 		$filter_visible = JRequest::getVar('filter_visible');
 		$filter_orderable = JRequest::getVar('filter_orderable');
 		$filter_date = JRequest::getVar('update_cal');
+		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
 		$filter_date_comparator = JRequest::getVar('update_select');
 		/* Todo, push the date format in EasySDI config and
 		set it here accordingly */
