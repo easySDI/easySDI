@@ -2731,8 +2731,10 @@ function validateForm(toStep, fromStep){
 		$freetextcriteria = JRequest::getVar('freetextcriteria','');
 		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
 		$partner_id = JRequest::getVar('partner_id');
+		$partner_id = $db->getEscaped( trim( strtolower( $partner_id ) ) );		
 		$filter_visible=JRequest::getVar('filter_visible');
 		$filter_date = JRequest::getVar('update_cal');
+		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
 		$filter_date_comparator = JRequest::getVar('update_select');
 		
 		
@@ -2785,7 +2787,7 @@ function validateForm(toStep, fromStep){
 		}
 		
 		if ($partner_id){
-			$filter = $filter." and partner_id = ".$partner_id;
+			$filter = $filter." and partner_id = '".$partner_id."'";
 		}
 		
 		if ($filter_visible){
@@ -2970,7 +2972,7 @@ function validateForm(toStep, fromStep){
 				</tr>
 				<tr>
 					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_PARTNER");?></td>
-					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('partner_id')); ?></td>
+					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', $partner_id); ?></td>
 					<td>&nbsp;</td>		
 				</tr>
 				<tr>

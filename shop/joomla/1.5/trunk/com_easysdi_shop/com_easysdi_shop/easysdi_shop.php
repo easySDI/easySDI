@@ -710,7 +710,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::sendOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "orderDraft":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -792,7 +792,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::archiveOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "copyOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -833,7 +833,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::copyOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "suppressOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -875,7 +875,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::suppressOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;	
 	case "saveOrdersForProvider":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -917,7 +917,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::saveOrdersForProvider();
-		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "processOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1084,7 +1084,7 @@ switch($task){
 			
 			
 		HTML_shop::saveOrder("SENT");
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 
 	case "saveOrder":
@@ -1126,7 +1126,7 @@ switch($task){
 			
 			
 		HTML_shop::saveOrder("SAVED");
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 		/*
 		 * Properties
@@ -1169,7 +1169,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProperties" );
+		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "saveProperties":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1210,7 +1210,7 @@ switch($task){
 			
 			
 		SITE_properties::saveProperties($option);
-		$mainframe->redirect("index.php?option=$option&task=listProperties" );
+		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "editProperties":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1412,7 +1412,7 @@ switch($task){
 			
 			
 		$properties_id = JRequest::getVar('properties_id');
-		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id );
 
 	case "savePropertiesValues":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1455,7 +1455,7 @@ switch($task){
 		SITE_properties::savePropertiesValues($option);
 
 		$properties_id = JRequest::getVar('properties_id');
-		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id );
 		break;
 	case "deletePropertiesValues":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1699,7 +1699,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProductMetadata" );
+		$mainframe->redirect("index.php?option=$option&task=listProductMetadata&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "editMetadata":
 		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php'); 		
@@ -1853,7 +1853,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "saveProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1891,7 +1891,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 		
 		SITE_product::saveProduct(true, $option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "newProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1974,7 +1974,7 @@ switch($task){
 		if (JRequest::getVar('id',-1) !=-1 ){
 			SITE_product::editProduct();
 		}else{
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 		}
 		break;
 	case "suppressProduct":
@@ -2016,7 +2016,6 @@ switch($task){
 			
 			
 		SITE_product::suppressProduct($cid,$option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		break;
 	case "listProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -2382,7 +2381,7 @@ switch($task){
 			
 			
 		SITE_metadata::saveMDStandard($option);
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "cancelStandardClass":
 	case "cancelStandard":
@@ -2423,7 +2422,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
 		break;
 	case "saveStandardClass":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -2464,7 +2463,7 @@ switch($task){
 			
 			
 		SITE_metadata::saveMDStandardClasses($option);
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
 
 		break;
 

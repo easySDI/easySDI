@@ -291,7 +291,10 @@ class HTML_cpanel {
 			<input type="hidden" name="Itemid" id="Itemid" value="">
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
+			<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
+			
 			<!--  <button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
 			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>-->
 		</form>
@@ -424,6 +427,8 @@ class HTML_cpanel {
 		<input type="hidden" id="orderStatus" name="orderStatus" value="<?php echo JRequest::getVar("orderStatus",""); ?>" />
 		<input type="hidden" id="order_id" name="order_id" value="<?php echo $rowOrder->order_id;?>">
 		<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
+		<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
+		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
 		
 		<table width="100%">
 		<tr><td align="right">
@@ -610,6 +615,7 @@ class HTML_cpanel {
 			<input type="hidden" id="product_list_id" name="product_list_id" value=""/>
 			<input type="hidden" name="option" value="<?php echo $option; ?>"/>
 			<input type="hidden" id="task" name="task" value="listOrdersForProvider"/>
+			<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
 		</form>
 		</div>
 		</div>
