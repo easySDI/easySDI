@@ -9,6 +9,10 @@
 	 width:100px;
 }
 
+.mdActionOrder{
+	width:95px;
+}
+
 .mdActionViewFile
 {
 	width:95px;
@@ -284,17 +288,17 @@ div .easysdi_product_does_not_exist{
 }
 
 /*coordinate container*/
-.ccordinateTextHolder{
+.coordinateTextHolder{
 	width:75px;
 	text-align:left;
 }
 
 .beforeCoordinateTextHolder{
-	width:240px;
+	width:220px;
 }
 
 .coordinateContainer{
-	width:150px;
+	width:120px;
 	text-align:right;
 }
 
@@ -617,11 +621,14 @@ div.olLayerDiv {
     bottom: 15px;   
 }
 .olControlAttribution {
-    font-size: smaller; 
-    right: 3px; 
-    bottom: 4.5em; 
-    position: absolute; 
-    display: block;
+    bottom:4.5em;
+    display:block;
+    font-size:smaller;
+    font-weight:bold;
+    left:3px;
+    position:absolute;
+    text-shadow:-1px -1px #FFFFFF, 1px 1px #FFFFFF;
+    top:3px;
 }
 .olControlScale {
     right: 3px;
