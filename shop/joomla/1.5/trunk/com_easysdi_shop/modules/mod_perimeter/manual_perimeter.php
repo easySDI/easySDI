@@ -176,8 +176,15 @@ $db =& JFactory::getDBO();
 	 			if (document.getElementById(filterId)==null || document.getElementById(filterId).value.length==0){
 	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 		 	}else{
-	 		 		filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-	 		 	}
+					//Only one occurence
+	 		 		<?php if($row->allowMultipleSelection == 0) {?>
+						filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+					<?php } 
+					//several occurences
+					else {?>	
+						filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+					<?php } ?>
+				}
 	 		 	<?php /*}*/
 	 		 	
 	 		 	
@@ -337,6 +344,15 @@ $db =& JFactory::getDBO();
 			sortList(perimetersListPerimeterId);
 		}
 		map.removeLayer(wfs4);
+		
+		
+		//If only one occurence (title + choice = 2), then autoselect it directly and trigger the onchange event
+		//recenterOnPerimeterPerimeter
+		if(perim.length == 2){
+			perim.options[1].selected = true;
+			recenterOnPerimeterPerimeter(perim.id);
+		}
+		
               });              
              map.addLayer(wfs4);
             }
