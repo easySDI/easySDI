@@ -51,6 +51,7 @@ class basemap_content extends JTable
 	var $maxExtent=null;
 	var $layers=null;
 	var $name=null;
+	var $attribution=null;
 	var $img_format=null;
 	var $ordering = 0;
 	var $user = null;

@@ -81,6 +81,7 @@ class perimeter extends JTable
 	var $is_localisation=0;
 	var $maxfeatures=-1;
 	var $searchbox=0;
+	var $allowMultipleSelection=1;
 	var $sort=0;
 	var $img_format=null;
 	var $user=null;
@@ -112,6 +113,7 @@ class location extends JTable
 	var $is_localisation=0;
 	var $maxfeatures=-1;
 	var $searchbox=0;
+	var $allowMultipleSelection=1;
 	var $sort=0;
 	var $user=null;
 	var $password=null;

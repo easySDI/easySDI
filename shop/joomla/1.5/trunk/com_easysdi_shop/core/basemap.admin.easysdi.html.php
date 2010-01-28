@@ -137,6 +137,11 @@ class HTML_basemap {
 								<td><?php echo JText::_("EASYSDI_BASEMAP_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>							
 							</tr>
+							<tr>
+							
+								<td><?php echo JText::_("EASYSDI_BASEMAP_ATTRIBUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="attribution" value="<?php echo $rowBasemap->attribution; ?>" /></td>							
+							</tr>
 							<br>
 							<tr>
 							<td colspan ="3">

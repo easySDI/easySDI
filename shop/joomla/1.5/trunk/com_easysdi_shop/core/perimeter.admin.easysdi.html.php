@@ -212,10 +212,16 @@ class HTML_perimeter {
 							?>
 							</tr>
 							
-						<tr>
+							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX"); ?> : </td>
 							<td><select name="searchbox" > <option value="1" <?php if($rowPerimeter->searchbox == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
 								<option value="0" <?php if($rowPerimeter->searchbox == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+							</td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX_ALLOW_MULTIPLE_OCCURENCES"); ?> : </td>
+							<td><select name="allowMultipleSelection" > <option value="1" <?php if($rowPerimeter->allowMultipleSelection == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowPerimeter->allowMultipleSelection == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							<tr>

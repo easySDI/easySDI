@@ -183,6 +183,12 @@ class HTML_location {
 							</td>
 							</tr>
 							<tr>
+							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX_ALLOW_MULTIPLE_OCCURENCES"); ?> : </td>
+							<td><select name="allowMultipleSelection" > <option value="1" <?php if($rowLocation->allowMultipleSelection == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowLocation->allowMultipleSelection == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+							</td>
+							</tr>
+							<tr>
 							<td><?php echo JText::_("EASYSDI_LOCATION_MAXFEATURES"); ?> : </td>
 							<td><input type name="maxfeatures"  value="<?php echo $rowLocation->maxfeatures ?>"> 
 							</td>

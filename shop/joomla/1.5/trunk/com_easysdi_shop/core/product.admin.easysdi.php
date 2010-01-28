@@ -467,10 +467,9 @@ class ADMIN_product {
 			
 
 		}
-
-
-
-		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+		$limitstart = JRequest::getVar("limitstart");
+		$limit = JRequest::getVar("limit");
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 	}
 
 	function deleteMetadata($metadata_id){
