@@ -217,8 +217,16 @@ if ($curstep == "2")
 	 			?>
 	 				if (document.getElementById(filterId)!=null && document.getElementById(filterId).value.length>0)
 	 				{
-	 					filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-		 		 	}
+	 					//filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						//Only one occurence
+	 		 			<?php if($row->allowMultipleSelection == 0) {?>
+							filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						<?php } 
+						//several occurences
+						else {?>	
+							filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						<?php } ?>
+					}
 		 		 	else
 		 		 	{
 		 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
@@ -402,6 +410,14 @@ if ($curstep == "2")
 							}
 							
 							map.removeLayer(wfs4);
+							
+							
+							//If only one occurence (title + choice = 2), then autoselect it directly and trigger the onchange event
+							//recenterOnLocationLocation
+							if(perim.length == 2){
+								perim.options[1].selected = true;
+								recenterOnLocationLocation(perim.id);
+							}
 							
 					              });              
 		map.addLayer(wfs4);
