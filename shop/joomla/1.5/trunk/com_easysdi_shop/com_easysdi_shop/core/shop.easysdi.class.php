@@ -511,7 +511,7 @@ function setAlpha(imageformat)
 					});
 					map.addControl(loadingpanel);
 					baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true, transparent: true});
-		   
+					map.addControl(new OpenLayers.Control.Attribution());
 					map.addLayer(baseLayerVector);
 	
 	<?php
@@ -543,8 +543,11 @@ function setAlpha(imageformat)
 				}					
 				?>
 				
-                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-                    <?php if($row->singletile == 1){ ?>
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},
+		    <?php if (strlen($row->attribution)>0){?>
+		    {attribution: '<?php echo $row->attribution; ?>'},
+		    <?php }?>
+		    <?php if($row->singletile == 1){ ?>
 		    {singleTile: <?php echo $row->singletile; ?>,
 		     ratio: 1},
 		     <?php }else{ ?>
