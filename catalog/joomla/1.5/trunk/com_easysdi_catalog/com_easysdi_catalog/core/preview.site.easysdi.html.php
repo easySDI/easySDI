@@ -122,8 +122,11 @@ foreach ($rows as $row){
 		}					
 		?>
 		
-		   {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
-                     {singleTile: <?php echo $row->singletile; ?>},                                                    
+		     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                     <?php if (strlen($row->attribution)>0){?>
+		     {attribution: '<?php echo $row->attribution; ?>'},
+		     <?php }?>
+		     {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
