@@ -2185,6 +2185,36 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	 if ($version == "0.999991")
+	 {
+		$query="ALTER TABLE #__easysdi_basemap_content add column attribution varchar(100) NOT NULL default '' ";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column allowMultipleSelection tinyint(1) NOT NULL default '1'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__easysdi_location_definition add column allowMultipleSelection tinyint(1) NOT NULL default '1'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	 	//Update component version
+		$version = "0.999992";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 	 
 	/**
 	 * Menu creation
