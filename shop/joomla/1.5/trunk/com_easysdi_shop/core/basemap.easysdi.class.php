@@ -30,6 +30,14 @@ class basemap extends JTable
 	var $def=null;
 	var $alias=null;
 	var $decimalPrecisionDisplayed=null;
+	var $dflt_fillcolor=null;
+	var $dflt_strkcolor=null;
+	var $dflt_strkwidth=null;
+	var $select_fillcolor=null;
+	var $select_strkcolor=null;
+	var $temp_fillcolor=null;
+	var $temp_strkcolor=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{

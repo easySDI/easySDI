@@ -414,7 +414,43 @@ class HTML_basemap {
 					</fieldset>
 				</td>
 			</tr>
-			
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_TEXT_BASEMAP_STYLE"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_FILLCOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_fillcolor" value="<?php echo $rowBasemap->dflt_fillcolor; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_STROKECOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_strkcolor" value="<?php echo $rowBasemap->dflt_strkcolor; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_STROKEWIDTH"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_strkwidth" value="<?php echo $rowBasemap->dflt_strkwidth; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_SELECT_FILLCOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="select_fillcolor" value="<?php echo $rowBasemap->select_fillcolor; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_SELECT_STROKECOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="select_strkcolor" value="<?php echo $rowBasemap->select_strkcolor; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_TEMP_FILLCOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="temp_fillcolor" value="<?php echo $rowBasemap->temp_fillcolor; ?>" /></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_TEMP_STROKECOLOR"); ?> : </td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="temp_strkcolor" value="<?php echo $rowBasemap->temp_strkcolor; ?>" /></td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
 		</table>
 		
 		
