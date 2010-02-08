@@ -111,7 +111,7 @@ if (!$user->guest)
 			{
 				?>
 				<li <?php if( $task == "listOrders")echo"class=\"mod_menu_item_active\"";?>>
-				<a href ="./index.php?option=com_easysdi_shop&task=listOrders"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYORDERS"); ?></span></a>
+				<a href ="./index.php?option=com_easysdi_shop&task=listOrders&limit=20&limitstart=0"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYORDERS"); ?></span></a>
 				</li>
 				<?php
 			}
