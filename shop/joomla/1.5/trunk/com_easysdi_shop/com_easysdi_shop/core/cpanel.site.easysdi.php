@@ -1165,16 +1165,21 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 		
-		$db->setQuery("SELECT o.name as order_name, u.email as email FROM #__easysdi_order o, #__users u where o.user_id = u.id and order_id=".$order_id);
+		$db->setQuery("SELECT o.name as order_name, u.id as user_id, u.email as email FROM #__easysdi_order o, #__users u where o.user_id = u.id and order_id=".$order_id);
 		$results = $db->loadObjectList();
 		$order_name = $results[0]->order_name;
 		$email = $results[0]->email;
+		$usr_id = $results[0]->user_id;
 		
-		if ($total ==0)
+		//verify the notification is active.
+		$queryNot = "SELECT p.notify_order_ready FROM #__easysdi_community_partner p, #__users u WHERE u.id = p.user_id and p.user_id = $usr_id";
+		$db->setQuery($queryNot);
+		$not = $db->loadResult();
+		if ($total ==0 && $not == 1)
 		{
 			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
-		else if ($total == $totalProduct -1)
+		else if ($total == $totalProduct -1 && $not == 1)
 		{
 			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}

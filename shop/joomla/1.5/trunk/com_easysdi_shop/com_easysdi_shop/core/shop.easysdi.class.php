@@ -482,8 +482,30 @@ function setAlpha(imageformat)
 	}
 	
 	$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
-	?>
-					map = new OpenLayers.Map('map', {
+	
+	
+			//default style for manually drawed object and selected
+			if($rows[0]->dflt_fillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rows[0]->dflt_fillcolor."';\n";
+			if($rows[0]->dflt_strkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rows[0]->dflt_strkcolor."';\n";
+			if($rows[0]->dflt_strkwidth != '')
+			echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rows[0]->dflt_strkwidth."';\n";
+			
+			//style for polygon edition
+			if($rows[0]->select_fillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rows[0]->select_fillcolor."';\n";
+			if($rows[0]->select_strkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rows[0]->select_strkcolor."';\n";
+			
+			//default style for object being drawn
+			if($rows[0]->temp_fillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rows[0]->temp_fillcolor."';\n";
+			if($rows[0]->temp_strkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rows[0]->temp_strkcolor."';\n";
+			?>
+			
+			map = new OpenLayers.Map('map', {
 	                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
 					displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
 	                units: "<?php echo $rows[0]->unit; ?>",
@@ -544,15 +566,19 @@ function setAlpha(imageformat)
 				?>
 				
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},
-		    <?php if (strlen($row->attribution)>0){?>
-		    {attribution: '<?php echo $row->attribution; ?>'},
-		    <?php }?>
-		    <?php if($row->singletile == 1){ ?>
+		    
+		    <?php if($row->singletile == 1 && strlen($row->attribution)>0){ ?>
 		    {singleTile: <?php echo $row->singletile; ?>,
+		     ratio: 1,
+		     attribution: '<?php echo $row->attribution; ?>'},
+		     <?php }else if($row->singletile == 1 && !strlen($row->attribution)>0){ ?>
+	             {singleTile: <?php echo $row->singletile; ?>,
 		     ratio: 1},
-		     <?php }else{ ?>
-	             {singleTile: <?php echo $row->singletile; ?>},
-	             <?php }?>
+		     <?php }else if($row->singletile == 0 && strlen($row->attribution)>0){?>
+		     {attribution: '<?php echo $row->attribution; ?>'},
+		     <?php }else{?>
+		     {singleTile: <?php echo $row->singletile; ?>},
+		     <?php }?>
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
                       minScale: <?php echo $row->minResolution; ?>,
@@ -646,6 +672,7 @@ function setAlpha(imageformat)
 				});
 			
 	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
+			
 	                map.addLayer(vectors);
 					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 					
@@ -761,16 +788,15 @@ function setAlpha(imageformat)
 				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
 	         
 				//Modify feature shape  
-	            modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});
+				modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});				
 				modifyFeatureControl.title = '<?php echo JText::_("EASYSDI_TOOL_MODFEATURE_HINT") ?>';
 				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				vectors.events.on({
-	                "afterfeaturemodified": intersect                
-	            });
-	
-	
-	            /*
+						"afterfeaturemodified": intersect                
+				});
+				
+				/*
 					Container panel for standard controls
 				*/
 				var panelEdition;
@@ -1305,6 +1331,23 @@ function setAlpha(imageformat)
 
 
 <script>
+
+var initFields = false;
+
+window.addEvent('domready', function() {
+ // select automatically properties that have only one choice
+ if(initFields == false){
+	var aSel = $('orderForm').getElementsByTagName("select");
+	for(var i=0;i<aSel.length;i++){
+		if(aSel[i].options.length == 3){
+			aSel[i].options[2].selected = true;
+		}
+	}
+	initFields = true;
+ }
+});
+
+
  function submitOrderForm(){
  	document.getElementById('orderForm').submit();
  }
@@ -2277,12 +2320,17 @@ if (count($rows)>0){
 					
 			}
 			
-			//Send an email to the customer to inform that his order has been received
+			//Send an email to the customer to inform that his order has been sent
 			//only if status is SENT
 			
 			if($order_status_value == "SENT")
 			{
-				SITE_product::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
+				//verify the notification is active.
+				$queryNot = "SELECT p.notify_order_ready FROM #__easysdi_community_partner p, #__users u WHERE u.id = p.user_id and p.user_id = $user->id";
+				$db->setQuery($queryNot);
+				$not = $db->loadResult();
+				if($not == 1)
+					SITE_product::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
 			}
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
@@ -2483,6 +2531,7 @@ if (count($rows)>0){
 <h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
 <script>
 var tries = 1;
+
 function validateForm(toStep, fromStep){
 	
 	//Do not allow to go before the perimeter are loaded.
@@ -2493,6 +2542,7 @@ function validateForm(toStep, fromStep){
 			tries--;
 			return false;
 		}
+		
 	}
 	
 	//check that all properties were filled in
@@ -2664,7 +2714,8 @@ function validateForm(toStep, fromStep){
 		</td>
 	</tr>
 </table>
-		<?php
+
+	<?php
 	}
 
 	function importProduct(){

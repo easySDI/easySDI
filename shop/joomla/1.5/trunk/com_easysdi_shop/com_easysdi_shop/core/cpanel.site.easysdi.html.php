@@ -291,8 +291,11 @@ class HTML_cpanel {
 			<input type="hidden" name="Itemid" id="Itemid" value="">
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
-			<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
+			<!--
+			<input type="hidden" name="limit" value="<?php echo JRequest::getVar("limit",20); ?>">
+			-->
+			<input type="hidden" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
+			
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
 			
 			<!--  <button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
