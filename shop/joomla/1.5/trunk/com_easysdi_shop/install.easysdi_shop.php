@@ -2215,6 +2215,61 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	 if ($version == "0.999992")
+	 {
+		$query="ALTER TABLE #__easysdi_basemap_definition add column dflt_fillcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column dflt_strkcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column dflt_strkwidth varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column select_fillcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column select_strkcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column temp_fillcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__easysdi_basemap_definition add column temp_strkcolor varchar(10) NOT NULL default ''";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			//The table does not exists then create it
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	//Update component version
+		$version = "0.999993";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
+	 
+	 
+	 
 	 
 	/**
 	 * Menu creation
