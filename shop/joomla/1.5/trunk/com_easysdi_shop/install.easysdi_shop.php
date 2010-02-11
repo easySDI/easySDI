@@ -2267,9 +2267,40 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
-	 
-	 
-	 
+	  if ($version == "0.999993")
+	 {
+		$query = "insert  into #__easysdi_config (thekey, value) values('ENABLE_FAVORITES','1')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_config (thekey, value) values('FAVORITE_ARTICLE_TOP','')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_config (thekey, value) values('MOD_PERIM_AREA_PRECISION','1')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query = "insert  into #__easysdi_config (thekey, value) values('MOD_PERIM_METERTOKILOMETERLIMIT','1000000')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 	//Update component version
+		$version = "0.999994";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 	 
 	/**
 	 * Menu creation
