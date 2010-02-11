@@ -51,10 +51,6 @@ function manageFavoriteProduct ( $orderable = 1)
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','');
-		$freetextcriteria = JRequest::getVar('freetextcriteria','');
-		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
-		$myFavoritesFirst = JRequest::getVar('myFavoritesFirst','');		
-		$furnisher_id= JRequest::getVar('furnisher_id');
 		
 		//load favorite product_id
 		$query = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
@@ -69,80 +65,17 @@ function manageFavoriteProduct ( $orderable = 1)
 		//Free text filter
 		$filter = "";
 		$display_internal_orderable = false;
+		/*
 		if ($freetextcriteria){
 			$filter = $filter." AND (p.DATA_TITLE like '%".$freetextcriteria."%' ";
 			$filter = $filter." OR p.METADATA_ID = '$freetextcriteria')";
 		}			      
-		
-		if ($furnisher_id != ""){
-			$filter = $filter." AND (p.PARTNER_ID = $furnisher_id)";
-		}	
-		
-		//Display products according to users's rights
-		//Same as catalog
-		if($partner->partner_id == 0)
-		{
-			//No user logged, display only external products
-			$filter .= " AND (metadata_external=1) ";
-		}
-		else
-		{
-			// User logged in. (Return also products of the root's current account)
-			$filter .= " AND (metadata_external=1
-					OR
-					(metadata_internal =1 AND
-					(p.partner_id =  $partner->partner_id
-					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner c WHERE c.partner_id = $partner->partner_id )
-					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					
-					))) ";
-					$display_internal_orderable =true;
-		}
-		
-		
-		/*if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
-		{
-			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
-			{
-				$filter .= " AND (p.EXTERNAL=1 
-							 OR 
-							 	(p.INTERNAL =1 AND 
-							 	(p.partner_id =  $partner->partner_id 
-							 		OR
-							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-							 	 	))) ";
-			}
-			else
-			{
-				$filter .= " AND (EXTERNAL=1) ";
-			}
-		}
-		else
-		{
-			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
-			{
-				$filter .= " AND (p.INTERNAL =1 AND 
-							 	(p.partner_id =  $partner->partner_id 
-							 		OR
-							 	 p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-							 	 	))) ";
-			}
-			else
-			{
-				//no command right
-				$filter .= " AND (EXTERNAL = 10) ";
-			}
-		}
 		*/
 		
-		//$filter .= " AND (p.EXTERNAL=1 OR (p.INTERNAL =1 AND p.PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
-				
-		//Load products count
-		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
+		//Load products count, only favorites
+		$query = "SELECT COUNT(*) FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
+		//old query -> all product lime in shop
+		//$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
 		$query  = $query .$filter ;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
@@ -151,14 +84,7 @@ function manageFavoriteProduct ( $orderable = 1)
 		$simpleSearchFilter = "";
 	
 		//Search criteria filter
-		if($myFavoritesFirst == 1)
-		{
-			$simpleSearchFilter  = " order by f.partner_id DESC, ";
-		}
-		else
-		{
-			$simpleSearchFilter  = " order by ";
-		}
+		$simpleSearchFilter  = " order by ";
 		if ($simpleSearchCriteria == "moreConsultedMD"){
 					$simpleSearchFilter  = $simpleSearchFilter ."p.weight DESC";
 		}
@@ -171,13 +97,14 @@ function manageFavoriteProduct ( $orderable = 1)
 		if ($simpleSearchCriteria == ""){
 					$simpleSearchFilter  = $simpleSearchFilter ."p.data_title ASC";
 		}
-			
-		$query  = "SELECT * FROM #__easysdi_product p LEFT OUTER JOIN (SELECT partner_id, product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) f  ON p.id = f.product_id  where  p.published=1 and  p.orderable = ".$orderable;
+		
+		$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1 and  p.orderable = ".$orderable;
+		//old query
+		//$query  = "SELECT * FROM #__easysdi_product p LEFT OUTER JOIN (SELECT partner_id, product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) f  ON p.id = f.product_id  where  p.published=1 and  p.orderable = ".$orderable;
 		$query  = $query .$filter ;
 		$query = $query .$simpleSearchFilter;		
 		$db->setQuery( $query,$limitstart,$limit);
-		$rows = $db->loadObjectList();
-		
+		$rows = $db->loadObjectList();		
 		
 		if ($db->getErrorNum()) 
 		{
@@ -206,48 +133,46 @@ function manageFavoriteProduct ( $orderable = 1)
 			echo 	$db->getErrorMsg();
 			echo "</div>";
 		}
-		
+		$db->setQuery("SELECT * FROM #__menu where name='GEOCommande'");
+		$shopitemId = $db->loadResult();
+		if ($db->getErrorNum()) 
+		{
+			echo "<div class='alert'>";
+			echo 	$db->getErrorMsg();
+			echo "</div>";
+		}
 		?>
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_FAVORITE_TITLE"); ?></h2>
 		<div class="contentin">
-		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+		<!--
+			//Call here the include content item plugin, or a specific article.
+			//Insert into the EasySDI config a key FAVORITE_ARTICLE_TOP with
+			//the value like {include_content_item 148} refering to the plugin and
+			//article you would like to call.
+			//-->       
+		
+			<table id="infoStep4">
+				<?php
+				$row->text = config_easysdi::getValue("FAVORITE_ARTICLE_TOP");
+				$args = array( 1,&$row,&$params);
+				JPluginHelper::importPlugin( 'content' );
+				$dispatcher =& JDispatcher::getInstance();
+				//$params = & new JParameter('');
+				$results = $dispatcher->trigger('onPrepareContent', 
+				array(&$row,&$params,0));
+				echo $row->text;
+				?>
+			</table>
 			<script>
-		 		function submitOrderForm()
+				function submitOrderForm()
 		 		{
 		 			document.getElementById('orderForm').submit();
 		 		}
-		 	</script>		
+		 	</script>
+			
 			<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
-				<table class="favoritePanContent" width="100%">
-				<tr>
-					<td align="left"><b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
-					<td align="left"><input type="text" id="freetextcriteria"  name="freetextcriteria" value="<?php echo $freetextcriteria; ?>" class="inputbox" /></td>
-	
-					<td class="catalog_controls">
-						<button type="submit" class="searchButton" onClick="document.getElementById('task').value='manageFavoriteProduct';submitOrderForm();"> <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-					</td>
-				</tr>
-				<tr>
-					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_PARTNER");?></td>
-					<td><?php echo JHTML::_("select.genericlist", $partners, 'furnisher_id', 'size="1" class="inputbox" onchange="this.form.submit()"', 'value', 'text', JRequest::getVar('furnisher_id')); ?></td>
-					<td>&nbsp;</td>		
-				</tr>
-				<tr>
-					<td><?php echo JText::_("EASYSDI_PRODUCT_MY_FAVORITE_FIRST"); ?></td>
-					<td align="left"><input type="checkbox" name="myFavoritesFirst" value="1" onchange="this.form.submit()" <?php if ($myFavoritesFirst == "1") echo "checked";?> /></td>
-					<td>&nbsp;</td>		
-				</tr>
-				</table>
 
-				<!--
-				<span class="searchCriteria">
-					<input name="freetextcriteria" type="text" value="<?php echo $freetextcriteria; ?>"><br>
-				 	<input type="radio" name="simpleSearchCriteria" value="lastAddedMD" <?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?> /> <?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?><br>
-				 	<input type="radio" name="simpleSearchCriteria" value="moreConsultedMD" <?php if ($simpleSearchCriteria == "moreConsultedMD") echo "checked";?> /> <?php echo JText::_("EASYSDI_MORECONSULTED_MD"); ?><br>
-					<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD" <?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?> /> <?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?><br>				 	
-			 	</span>
-				-->
 				<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 				<br/>
 				<table width="100%">
@@ -259,7 +184,7 @@ function manageFavoriteProduct ( $orderable = 1)
 						<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 					</tr>
 				</table>
-			 	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+			 	<h3><?php echo JText::_("EASYSDI_FAVORITE_RESOURCE_TITLE"); ?></h3>
 						 			 
 				<input type='hidden' name='option' value='<?php echo $option;?>'>
 				<input type='hidden' id ="task" name='task' value='manageFavoriteProduct'>
@@ -282,6 +207,7 @@ function manageFavoriteProduct ( $orderable = 1)
 							<th class="ptitle"><?php echo JText::_("EASYSDI_PRODUCT_TITLE"); ?></th>
 							<th class="logo">&nbsp;</th>
 							<th class="logo">&nbsp;</th>
+							<th class="logo">&nbsp;</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -292,9 +218,16 @@ function manageFavoriteProduct ( $orderable = 1)
 					//Display all the products 
 					foreach ($rows  as $row)
 					{
+					
 					$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$row->admin_partner_id;
 					$db->setQuery($queryPartnerLogo);
 					$partner_logo = $db->loadResult();
+					
+					$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$row->metadata_id."'";
+					//$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
+					$db->setQuery( $query);
+					$hasPreview = $db->loadResult();
+					
 					?>
 	
 							<tr>		
@@ -312,8 +245,19 @@ function manageFavoriteProduct ( $orderable = 1)
 									<span class="mdsupplier" ><?php echo $row->supplier_name;?></span>
 								</td>
 								-->
-								<td class="logo"><div title="<?php if ( in_array($row->id,$productList)) echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); else echo JText::_('EASYSDI_ADD_TO_FAVORITE'); ?>" class="<?php if ( in_array($row->id,$productList)) echo "pdFavorite"; else echo "pdNotFavorite"; ?>" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$productList)) echo "remove"; else echo "add"; ?>Favorite'; submitOrderForm();"/></td>
+								<td class="logo"><div title="<?php echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); ?>" class="pdFavorite" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='removeFavorite'; submitOrderForm();"/></td>
 								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
+								<td class="logo"><div title="<?php echo JText::_('EASYSDI_ADD_TO_CART'); ?>" class="savedOrderOrder" onClick="window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=<?php echo $shopitemId?>&firstload=1&fromStep=1&cid[]=<?php echo $row->id ?>', '_main');"/></td>
+								<?php if($hasPreview){?>
+								<td align="center" class="logo">
+								<div class="particular-view-product-link">
+								<a  title="<?php echo JText::_('EASYSDI_PREVIEW_PRODUCT');?>" id="productLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:565,y:450}}" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>" class="modal">&nbsp;</a>
+								</div>
+								</td>
+								
+								<?php }else{ ?>
+								<td class="nologo">&nbsp;</td>
+								<?php } ?>
 							</tr>
 					<?php
 						$i=$i+1;

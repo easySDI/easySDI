@@ -1126,12 +1126,12 @@ function setAlpha(imageformat)
 	<script>
 	
 	function isSelfIntersect(){
-	 var features = vectors.features;
-	 if (features.length == 0) {
-				 return;
-		} 
-	  var feature= features[features.length-1];
-	  var lines = new Array();
+	var features = vectors.features;
+	if (features.length == 0) {
+			 return;
+	} 
+	var feature= features[features.length-1];
+	var lines = new Array();
 				  	
 	   
 	  if (feature.geometry instanceof OpenLayers.Geometry.Polygon){
@@ -1178,6 +1178,22 @@ function setAlpha(imageformat)
 	 { 	
 	 	var selectedSurface = document.getElementById('selectedSurface');
 	 	
+		//If feature edition is active, ask the user if he whants to leave edition
+		if(modifyFeatureControl.active == true){
+			if (confirm("<?php echo JText::_("EASYSDI_QUIT_AND_SAVE_EDITION"); ?>")){
+				try
+				{
+					modifyFeatureControl.deactivate();
+				}
+				catch (err)
+				{
+				}
+			}
+			else{
+				return;
+			}
+		}
+		
 		if (document.getElementById('step').value == 3 && isSelfIntersect()==true)
 	 	{
 	 		return ;
@@ -3170,6 +3186,9 @@ function validateForm(toStep, fromStep){
 		  </tr>
 		  <tr>
 		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
+		  </tr>
+		  <tr>
+		  	<td>&nbsp;</td>
 		  </tr>
 		</table>
 	  </td>
