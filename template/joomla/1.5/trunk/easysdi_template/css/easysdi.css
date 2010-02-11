@@ -57,7 +57,7 @@ div .privateMd{
 	background-image:url(../icons/silk/lock.png);
 }
 
-div .publicMd{
+#manageMetadata .publicMd{
 	background-image:url(../icons/silk/lock_open.png);
 }
 
@@ -81,8 +81,52 @@ div .easysdi_product_does_not_exist{
 	background-image:url(../images/cart_disabled.png);
 }
 
+/* Buttons in the metadata view  */
 
+div#addToFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
 
+div#exportPdf{
+	background-color:transparent;
+	background-image:url(../../../components/com_easysdi_core/img/pdfButton.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#printMetadata{
+	background-color:transparent;
+	background-image:url(../../../components/com_easysdi_core/img/printButton.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#exportXml{
+	background-color:transparent;
+	background-image:url(../../../components/com_easysdi_core/img/xmlButton.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#orderProduct{
+	background-color:transparent;
+	background-image:url(../../../components/com_easysdi_core/img/orderProduct.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
 
 
 /********************************************************/
@@ -210,7 +254,6 @@ div .easysdi_product_does_not_exist{
         background-position:center;
         background-repeat:no-repeat;
 	width:16px;
-	height:15px;
 	}
 
 .infoShop{
@@ -275,15 +318,15 @@ div .easysdi_product_does_not_exist{
 
 
 .shopInfoLogoContainer{
-	width:30px;
+	width:16px;
 }
 
 .shopInfoMessageContainer{
-	width:425px;
+	width:429px;
 }
 
 .toolsStatusContainer{
-	width:200px;
+	width:120px;
 	text-align:right;
 }
 
@@ -629,6 +672,8 @@ div.olLayerDiv {
     position:absolute;
     text-shadow:-1px -1px #FFFFFF, 1px 1px #FFFFFF;
     top:3px;
+    width:150px;
+    height:20px;
 }
 .olControlScale {
     right: 3px;
@@ -1350,28 +1395,33 @@ div .reqUser{
 	background-image:url(../icons/silk/user.png);
 }
 
+.particular-view-product-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/page.png) no-repeat scroll center center; 
+                   text-align: center;
+                   line-height: 16px; } 
+
 .particular-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
                    background: transparent url(../icons/silk/user.png) top left no-repeat; 
                    text-align: center;
                    line-height: 16px; } 
 
 .particular-order-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
-                   background: transparent url(../images/btn_visualiser_1.png) no-repeat scroll center center; 
+                   background: transparent url(../icons/silk/cart.png) no-repeat scroll center center; 
                    text-align: center;
                    line-height: 16px;
 }
 		   
-.particular-link, .particular-order-link{
-	height:16px;
-	width:16px;
+.particular-view-product-link, .particular-link, .particular-order-link{
+	height:18px;
+	width:18px;
 }
 
 #reqTreatTable .infoLogo, #orderList .infoLogo{
-	width:25px;
+	width:38px;
 }
 
 #reqTreatTable .logo, #orderList .logo{
-	width:25px;
+	width:16px;
 }
 
 #reqTreatTable .reqName{
