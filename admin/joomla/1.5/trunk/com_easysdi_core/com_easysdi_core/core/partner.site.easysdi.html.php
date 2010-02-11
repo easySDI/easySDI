@@ -1083,7 +1083,7 @@ class HTML_partner
 		<input type="hidden" id="task" name="task" value="" />
 		<?php if ($hasTheRightToManageHisOwnAffiliates)
 		{ ?>					
-		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editAffiliatePartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
+		<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='editPartner';form.submit();" ><?php echo JText::_("EASYSDI_EDIT_PARTNER"); ?></button>
 		<?php
 		} ?>				
 	</form>

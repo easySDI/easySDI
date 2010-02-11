@@ -78,8 +78,7 @@ switch($task){
 		break;
 	case "editAffiliateById":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
-		$affiliate_id = JRequest::getVar('affiliate_id');
-		SITE_partner::editAffiliatePartner($affiliate_id);
+		SITE_partner::editAffiliatePartner();
 		break;
 	case "deleteAffiliate":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
