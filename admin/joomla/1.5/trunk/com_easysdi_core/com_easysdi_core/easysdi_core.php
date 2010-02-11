@@ -95,7 +95,9 @@ switch($task){
 		break;
 	case "editAffiliatePartner":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
-		SITE_partner::editAffiliatePartner();
+		$user = JFactory::getUser();
+		$affiliate_id =  $user->id;
+		SITE_partner::editAffiliatePartner($affiliate_id);
 		break;	
 	case "savePartner":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');

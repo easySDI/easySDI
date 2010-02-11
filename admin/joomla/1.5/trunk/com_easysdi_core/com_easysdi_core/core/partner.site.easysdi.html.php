@@ -1331,6 +1331,9 @@ class HTML_partner
 			
 			
 			$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
+			$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+			if($enableFavorites != 1)
+				$query .= " AND role_code !='FAVORITE' ";
 			$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
 			$query .= " ORDER BY role_name";
 			$database->setQuery( $query );

@@ -397,6 +397,7 @@ class displayManager{
 	
 	function DisplayMetadata ($xslStyle, $xml, $message)
 	{
+		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -534,11 +535,34 @@ class displayManager{
 		$myHtml;
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
+		$productId;
 		if (in_array($id, $orderableProductsMd))
 			$hasOrderableProduct = true;
+		//load favorites
+		$optionFavorite;
+		$productListArray = array();
+		if($partner->partner_id == 0)
+			$optionFavorite = false;
+		else if ($enableFavorites == 1){
+			$query = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
+			$db->setQuery($query);
+			$productListArray = $db->loadResultArray();
+			if ($db->getErrorNum()) {						
+						echo "<div class='alert'>";			
+						echo 			$db->getErrorMsg();
+						echo "</div>";
+			}
+		}
+		if($hasOrderableProduct){
+			$db->setQuery("select id from #__easysdi_product where metadata_id = '".$id."'");
+			$productId = $db->loadResult();
+		}
 		if ($toolbar==1){
-			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
-				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
+			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
+			if(!in_array($productId, $productListArray) && $enableFavorites == 1)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"addToFavorite\"/></td>";
+			
+			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
 					if($hasOrderableProduct)
@@ -593,11 +617,15 @@ class displayManager{
 		});
 		";
 		if($hasOrderableProduct){
-			$db->setQuery("select id from #__easysdi_product where metadata_id = '".$id."'");
-			$productId = $db->loadResult();
 			$myHtml .= "
 		$('orderProduct').addEvent( 'click' , function() { 
 			window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=$shopitemId&firstload=1&fromStep=1&cid[]=$productId', '_main');
+		});";
+		}
+		if(!in_array($productId, $productListArray) && $enableFavorites == 1){
+			$myHtml .= "
+		$('addToFavorite').addEvent( 'click' , function() { 
+			window.open('./index.php?option=com_easysdi_shop&task=addFavorite&view=&productId=$productId', '_main');
 		});";
 		}
 		$myHtml .= "
