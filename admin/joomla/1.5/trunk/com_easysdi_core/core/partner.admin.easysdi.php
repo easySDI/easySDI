@@ -523,7 +523,7 @@ class ADMIN_partner {
 		$profile_id_list ="";
 		if(isset($_POST['profile_id']))
 		{
-			if (count ($_POST['profile_id'] )>0)
+			if (count ($_POST['profile_id'] )>1)
 			{
 				foreach( $_POST['profile_id'] as $profile_id )
 				{
@@ -537,6 +537,15 @@ class ADMIN_partner {
 					$profile_id_list .= $profile_id;
 					$profile_id_list .= ",";
 				}
+			}else{
+				$database->setQuery( "INSERT INTO #__easysdi_community_partner_profile (profile_id, partner_id) VALUES (".$_POST['profile_id'].",".$rowPartner->partner_id.")" );
+				if (!$database->query()) 
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listPartner" );
+					exit();
+				}
+				$profile_id_list .= $profile_id;
 			}
 		}
 		if($profile_id_list )

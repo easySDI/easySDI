@@ -19,6 +19,7 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.config.php');
 
 class HTML_partner {
 	
@@ -593,7 +594,12 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 							<tr>
 <?php
 			$rights = array();
-			$database->setQuery( "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id." ORDER BY role_name" );
+			$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
+			$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+			if($enableFavorites != 1)
+				$query .= " AND role_code !='FAVORITE' ";
+			$query .= " ORDER BY role_name";
+			$database->setQuery( $query );
 			$rights = array_merge( $rights, $database->loadObjectList() );
 			HTML_partner::alter_array_value_with_Jtext($rights);
 			$selected = array();
@@ -972,6 +978,9 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 			$rights = array();
 			if ($rowPartner->root_id) {
 				$query = "SELECT role_id AS value, role_name AS text FROM #__easysdi_community_role WHERE type_id=".$row->type_id;
+				$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+				if($enableFavorites != 1)
+					$query .= " AND role_code !='FAVORITE' ";
 				$query .= " AND role_id IN (SELECT role_id FROM #__easysdi_community_actor WHERE partner_id=".$rowPartner->parent_id.")";
 				$query .= " ORDER BY role_name";
 				$database->setQuery( $query );

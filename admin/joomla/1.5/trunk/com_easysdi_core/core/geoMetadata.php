@@ -397,7 +397,7 @@ function getPocEmail(){
 
 	function getDataIdentificationTitle($lang="fr"){
 		if ($this->metadata){	 												
-				$nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString');
+				$nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString');
 				return $nodes ->item(0)->nodeValue;
 			}
 				return "";					
@@ -405,7 +405,7 @@ function getPocEmail(){
 
 	function getDescription($lang="fr") {			
 		
-		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString');
+		if ($this->metadata){	 $nodes = $this->xpath->query('//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString');
 		return $nodes ->item(0)->nodeValue;
 		}return "";		
 								
