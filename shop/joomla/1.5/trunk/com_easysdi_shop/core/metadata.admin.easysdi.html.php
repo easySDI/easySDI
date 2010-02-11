@@ -44,15 +44,15 @@ class HTML_metadata {
 
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 
-						$user =& JFactory::getUser();
-						$user_id = $user->get('id');
-				
-						$this->javascript = "";
-						
-						$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user_id." ORDER BY b.name" );
-						$partner_id = $database->loadResult();
-						if ($partner_id == null)
-						$partner_id = $user_id;
+		$user =& JFactory::getUser();
+		$user_id = $user->get('id');
+
+		$this->javascript = "";
+		
+		$database->setQuery( "SELECT a.root_id FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id and b.id=".$user_id." ORDER BY b.name" );
+		$partner_id = $database->loadResult();
+		if ($partner_id == null)
+		$partner_id = $user_id;
 
 		?>
 <!-- Pour permettre le retour � la liste des produits depuis la toolbar Joomla -->
@@ -319,7 +319,7 @@ class HTML_metadata {
 			}
 				
 				
-			// Ajout d'une occurence de cr�ation si l'attribut est obligatoire
+			// Ajout d'une occurence de cr�ation si la classe est obligatoire
 			// et qu'il n'y a aucune occurence de celle-ci dans le XML
 			if ($node->length==0 and $child->lowerbound>=0)
 			{
