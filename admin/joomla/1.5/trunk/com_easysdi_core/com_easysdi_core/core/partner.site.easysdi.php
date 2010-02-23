@@ -347,7 +347,8 @@ class SITE_partner {
 
 
 	function showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates)
-	{	global  $mainframe;
+	{	
+	global  $mainframe;
 	$user = JFactory::getUser();
 	if ($user->guest)
 	{
@@ -378,7 +379,34 @@ class SITE_partner {
 
 	$rowContact = new address( $database );
 	$rowContact->load( $contact_id );
+	
+	$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=2" );
+	$subscription_id = $database->loadResult();
+	if ($database->getErrorNum()) {
+		echo "<div class='alert'>";
+		echo 			$database->getErrorMsg();
+		echo "</div>";
+	}
 
+	$rowSubscription = new address( $database );
+	$rowSubscription->load( $subscription_id );
+
+	$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=3" );
+	$delivery_id = $database->loadResult();
+	if ($database->getErrorNum()) {
+		echo "<div class='alert'>";
+		echo 			$database->getErrorMsg();
+		echo "</div>";
+	}
+
+	$rowDelivery = new address( $database );
+	$rowDelivery->load( $delivery_id );
+	if ($database->getErrorNum()) {
+		echo "<div class='alert'>";
+		echo 			$database->getErrorMsg();
+		echo "</div>";
+	}
+	
 	$rowUser =&	 new JTableUser($database);
 	$rowUser->load( $rowPartner->user_id );
 
@@ -390,7 +418,7 @@ class SITE_partner {
 		$rowUser->gid=18;
 	}
 
-	HTML_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowPartner, $rowContact, $option );
+	HTML_partner::showAffiliatePartner($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option );
 
 	}
 
