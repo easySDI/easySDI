@@ -22,6 +22,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 
 $user = JFactory::getUser();
 $task = JRequest::getVar("task");
+$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 if (!$user->guest)
 {
 	?>
@@ -160,7 +161,7 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE"))
+			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE") && $enableFavorites == 1)
 			{
 				?>
 				<li <?php if( $task == "manageFavorite")echo"class=\"mod_menu_item_active\"";?>>
