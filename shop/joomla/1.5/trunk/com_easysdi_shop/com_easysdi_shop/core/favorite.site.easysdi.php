@@ -73,7 +73,9 @@ function manageFavoriteProduct ( $orderable = 1)
 		*/
 		
 		//Load products count, only favorites
-		$query = "SELECT COUNT(*) FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
+		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1 and  p.orderable = ".$orderable;
+		//wrong query
+		//$query = "SELECT COUNT(*) FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
 		//old query -> all product lime in shop
 		//$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
 		$query  = $query .$filter ;

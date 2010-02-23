@@ -302,17 +302,23 @@ class SITE_cpanel {
 		
 		//Build the query on Order status
 		$orderStatusQuery = "";
-		$orderStatus = JRequest::getVar("orderStatus","");
+		
+		$q = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
+		$database->setQuery($q);
+		$dfltStatus = $database->loadResult();
+		
+		$orderStatus = JRequest::getVar("orderStatus",$dfltStatus);
 		if($orderStatus != "")
 		{
-			$orderStatusQuery = " AND o.status='$orderStatus' ";
+			$orderStatusQuery = " AND psl.id='$orderStatus' ";
 		}
 		else
 		{
 			//All except SAVED, FINISH, ARCHIVED and HISTORIZED
-			$queryOrderStatus = "select id from #__easysdi_order_status_list where code IN ('SAVED','FINISH','ARCHIVED','HISTORIZED')";
+			$queryOrderStatus = "select id from #__easysdi_order_product_status_list;";
 			$database->setQuery($queryOrderStatus);
 			$orderStatusList = $database->loadObjectList();
+			/*
 			$orderStatusQuery = " AND o.status NOT IN (";
 			foreach ($orderStatusList as $status)
 			{
@@ -320,6 +326,7 @@ class SITE_cpanel {
 			}
 			$orderStatusQuery = substr ($orderStatusQuery,0,-1);
 			$orderStatusQuery .= ")";
+			*/
 		}
 		
 		//Get the id of product status AWAIT to get only order with product not already AVAILAIBLE to costumer
@@ -341,7 +348,7 @@ class SITE_cpanel {
 		if (count($filterList)==1)
 		$filter = " AND ".$filterList[0];
 			
-		$queryStatus = "select * from #__easysdi_order_status_list where code NOT IN ('SAVED','FINISH','ARCHIVED','HISTORIZED')";
+		$queryStatus = "select * from #__easysdi_order_product_status_list";
 		$database->setQuery($queryStatus);
 		$productStatusFilter = $database->loadObjectList();
 
@@ -356,6 +363,7 @@ class SITE_cpanel {
 		
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
 		$query = "SELECT o.order_id as order_id, 
+						 p.metadata_id as metadata_id,
 						 p.data_title as productName,
 						 opl.id as product_list_id,
 					     uClient.name as username,
@@ -367,12 +375,13 @@ class SITE_cpanel {
 					     o.RESPONSE_SEND as RESPONSE_SEND,
 					     o.RESPONSE_DATE as RESPONSE_DATE,
 					     o.type as type, 
-					     o.status as status, 
+					     opl.status as status, 
 					     osl.code as code, 
-					     osl.translation as status_translation, 
+					     psl.translation as status_translation, 
 					     tl.translation as type_translation
 				  FROM  #__easysdi_order o, 
 				  		#__easysdi_order_product_list opl, 
+						#__easysdi_order_product_status_list psl, 
 				  		#__easysdi_product p, 
 				  		#__easysdi_community_partner pa, 
 				  		#__users u, 
@@ -383,6 +392,7 @@ class SITE_cpanel {
 				  and pa.user_id = u.id 
 				  and o.order_id = opl.order_id 
 				  and opl.product_id = p.id 
+				  and psl.id = opl.status 
 				  and p.diffusion_partner_id = pa.partner_id 
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
@@ -424,8 +434,10 @@ class SITE_cpanel {
 					         #__easysdi_product p,
 					         #__easysdi_community_partner pa , 
 					         #__users u, 
-					         #__easysdi_order_status_list osl 
-					   WHERE pa.user_id = u.id 
+					         #__easysdi_order_status_list osl, 
+						 #__easysdi_order_product_status_list psl 
+					   WHERE opl.status=psl.id 
+					   AND pa.user_id = u.id 
 					   AND  o.status=osl.id 
 					   AND  o.order_id = opl.order_id 
 					   AND  opl.product_id = p.id 
@@ -648,7 +660,8 @@ class SITE_cpanel {
 						 o.name as name,
 						 o.type as type, 
 						 opl.status as status,
-						 otl.translation as type_translation 
+						 otl.translation as type_translation,
+						 o.order_send_date as order_send_date
 				  FROM  #__easysdi_order o, 
 				  		#__easysdi_order_status_list osl, 
 				  		#__easysdi_order_product_list opl, 
