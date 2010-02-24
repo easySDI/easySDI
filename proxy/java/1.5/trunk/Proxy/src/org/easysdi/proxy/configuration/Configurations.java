@@ -350,6 +350,8 @@ public class Configurations {
         protected List<Configurations.Config.XsltPath> xsltPath;
         @XmlAttribute
         protected String id;
+        @XmlAttribute
+        protected boolean grouping;
 
         /**
          * Gets the value of the servletClass property.
@@ -561,6 +563,29 @@ public class Configurations {
          */
         public void setId(String value) {
             this.id = value;
+        }
+        /**
+         * Gets the value of the grouping property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public boolean isGrouping() {
+        	return grouping;
+        }
+        
+        /**
+         * Sets the value of the grouping property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setGrouping(boolean value) {
+        	this.grouping = value;
         }
 
 

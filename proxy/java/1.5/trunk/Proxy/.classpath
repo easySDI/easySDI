@@ -74,7 +74,7 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath-1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.xerces_2.8.0.v200705301630.jar"/>
-	<classpathentry kind="lib" path="lib/jetty-6.1.20.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-6.1.20.jar" sourcepath="C:/Documents and Settings/HVH/.m2/repository/org/mortbay/jetty/jetty/6.1.20/jetty-6.1.20-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-embedded-6.1.20.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-sslengine-6.1.20.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.20.jar"/>

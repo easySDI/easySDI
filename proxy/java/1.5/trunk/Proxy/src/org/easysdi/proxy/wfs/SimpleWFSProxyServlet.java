@@ -406,7 +406,7 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 
 	    }
 	    if (send) filePath = sendData("POST", getRemoteServerUrl(iServer), param);
-	    filePathList.add(filePath);		
+	    filePathList.put(iServer,filePath);		
 
 	    version=version.replaceAll("\\.", "");   
 	    transform(version, currentOperation,req,resp);	    
@@ -641,11 +641,11 @@ public class SimpleWFSProxyServlet extends ProxyServlet {
 		    }
 
 		    if(send) filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
-		    filePathList.add(filePath);
+		    filePathList.put(iServer,filePath);
 
 		}else{
 		    String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
-		    filePathList.add(filePath);			
+		    filePathList.put(iServer,filePath);			
 		}
 	    }
 	    version=version.replaceAll("\\.", "");   
