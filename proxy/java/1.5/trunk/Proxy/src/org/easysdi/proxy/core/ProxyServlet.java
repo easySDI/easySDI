@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -96,7 +97,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String responseContentType = null;
 	protected String bbox = null;
 	protected String srsName = null;
-	protected Map<Integer, String> filePathList = new HashMap<Integer, String>(20); // Contient
+	protected Map<Integer, String> filePathList = new TreeMap<Integer, String>(); // Contient
 	// une liste
 	// des
 	// fichiers
@@ -105,7 +106,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	// chaque
 	// serveur
 	// WFS.
-	protected Vector<String> layerFilePathList = new Vector<String>();
+	protected Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
 	protected Vector<String> featureTypePathList = new Vector<String>(); // Contient
 	// le
 	// featureTypetoKeep.get(0)
@@ -445,7 +446,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 
-	protected String sendData(String method, String urlstr, String parameters) {
+	public String sendData(String method, String urlstr, String parameters) {
 		try {
 			if (urlstr != null) {
 				if (urlstr.endsWith("?")) {

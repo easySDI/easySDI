@@ -35,7 +35,7 @@ public class Config {
 	private double maxRequestNumber = -1;
 	private String hostTranslator = "";
 	private String toleranceDistance = "0";
-	private boolean grouping = false;
+	private boolean grouping = true;
 
 	public String getToleranceDistance() {
 		return toleranceDistance;

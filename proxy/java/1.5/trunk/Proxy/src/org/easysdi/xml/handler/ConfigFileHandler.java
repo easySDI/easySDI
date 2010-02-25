@@ -32,7 +32,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private org.easysdi.xml.documents.Config config;
 	private String data = "";
 	private String id = null;
-	private boolean grouping = false;
+	private boolean grouping = true;
 	private List<RemoteServerInfo> remoteServer = null;
 	private String policyFile = null;
 	private String loginService = null;
@@ -107,7 +107,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				isTheGoodId = true;
 			}
 			String sgrouping = attr.getValue("grouping");
-			grouping = Boolean.parseBoolean(sgrouping);
+			grouping = (sgrouping == null) ? true : Boolean.parseBoolean(sgrouping);
 
 		}
 

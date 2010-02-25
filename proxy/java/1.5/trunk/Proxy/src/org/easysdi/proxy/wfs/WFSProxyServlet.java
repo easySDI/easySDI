@@ -19,24 +19,19 @@ package org.easysdi.proxy.wfs;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -48,6 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import javax.naming.NoPermissionException;
@@ -60,26 +60,24 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
-import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.Operation;
-import org.easysdi.proxy.policy.Server;
-import org.easysdi.proxy.wfs.WFSProxyGeomAttributes;
 import org.easysdi.xml.handler.RequestHandler;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.FeatureSetDescription;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.FeatureType;
 import org.geotools.filter.Filter;
 import org.geotools.filter.FilterDOMParser;
 import org.geotools.gml.producer.FeatureTransformer;
@@ -87,7 +85,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.renderer.shape.FilterTransformer;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.XSISAXHandler;
-import org.geotools.xml.gml.GMLComplexTypes;
 import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
 import org.geotools.xml.schema.Schema;
@@ -326,7 +323,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 				param = paramOrig;
 
-				List<String> featureTypeListToKeep = new Vector<String>();
+				Vector<String> featureTypeListToKeep = new Vector<String>();
 				// Debug tb 12.05.2009
 				List<String> attributeListToKeepPerFT = new Vector<String>(); // see
 				// the
@@ -351,192 +348,246 @@ public class WFSProxyServlet extends ProxyServlet {
 				// Attention: dans le cas où la requête utiliseur GetFeature
 				// comporte plusieurs Query (typeName), ->
 				// featureTypeListToKeep.length()>1
+				String filePath = "";
 				if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
+					ExecutorService pool = Executors.newFixedThreadPool(5);
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = factory.newDocumentBuilder();
+					TransformerFactory tFactory = TransformerFactory.newInstance();
+					Transformer transformer = tFactory.newTransformer();
+					XPathFactory xpathFactory = XPathFactory.newInstance();
+					XPath xpath = xpathFactory.newXPath();
+
 					Object[] fields = (Object[]) rh.getTypeName().toArray();
-					if (hasPolicy) {
-						int ii = 0; // Authorized FeatureType counter
-						attributeListToKeepNbPerFT.add(0);
+					int iii = 0;
+					for (Object o : fields) {
+/*						featureTypeListToKeep = new Vector<String>();
+						attributeListToKeepPerFT = new Vector<String>();
+						attributeListToKeepNbPerFT = new Vector<Integer>();
+						attributeListToRemove = new Vector<String>();
+						featureTypeListToRemove = new Vector<String>();
+*/						Object[] hFields = new Object[] { o };
+						Document dQuery = builder.parse(new InputSource(new StringReader(paramOrig)));
+						String xpathStr = "//*[local-name()='Query'][" + (iii + 1) + "]/@typeName";
+						XPathExpression typeNameExp = xpath.compile(xpathStr);
+						String typeName = (String) typeNameExp.evaluate(dQuery, XPathConstants.STRING);
+						XPathExpression expr = xpath.compile("//*[local-name()='Query'][@typeName!='" + typeName + "']");
+						NodeList nodes = (NodeList) expr.evaluate(dQuery, XPathConstants.NODESET);
+						for (int ni = 0; ni < nodes.getLength(); ni++) {
+							Node n = nodes.item(ni);
+							n.getParentNode().removeChild(n);
+						}
+						StringWriter sw = new StringWriter();
+						transformer.transform(new DOMSource(dQuery), new StreamResult(sw));
+						param = sw.toString();
+						if (hasPolicy) {
+							int ii = 0; // Authorized FeatureType counter
+							attributeListToKeepNbPerFT.add(0);
 
-						for (int i = 0; i < fields.length; i++) {
-							// Proxy est non compatible avec les multi Query
-							// dans les requêtes GetFeature!
-							if (currentOperation.equalsIgnoreCase("GetFeature") && i > 0) {
-								break;
-							}
-
-							String tmpFT = fields[i].toString();
-							if (tmpFT != null) {
-								String[] s = tmpFT.split(":");
-								tmpFT = s[s.length - 1];
-								// Debug tb 03.07.2009
-								// Fait doublon avec split":"
-								// }
-								// if
-								// (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0)
-								// {
-								if (!tmpFT.equals("")) {
-									// tmpFT =
-									// tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
-									// Fin de Debug
-									if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
-										featureTypeListToKeep.add(tmpFT);
-										// Debug tb 04.06.2009
-										// Filtrage des attributs autorisés
-										if (currentOperation.equalsIgnoreCase("GetFeature")) {
-											Object[] fieldsAttribute = (Object[]) rh.getPropertyName().toArray(); // Si
-											// req
-											// PropertyNames
-											// non
-											// défini
-											// ->
-											// RequestHandler
-											// retourne
-											// un
-											// élément
-											// avec
-											// ""
-
-											// Au cas: req PropertyNames défini
-											// et [Policy Attributs sur ALL ou
-											// sur sous ensemble limité]
-											// ou
-											// req PropertyNames non défini et
-											// Policy Attributs sur sous
-											// ensemble limité
-											// ou
-											// req PropertyNames non défini et
-											// Policy Attributs sur All
-											for (int k = 0; k < fieldsAttribute.length; k++) //
-											{
-												String tmpFA = fieldsAttribute[k].toString();
-												if (tmpFA != null) {
-													String[] ss = tmpFA.split(":");
-													tmpFA = ss[ss.length - 1];
-												}
-												// Comparaison avec le contenu
-												// de la Policy
-												// Si attributs dans req et
-												// aussi dans Policy->
-												// isAttributeAllowed retourne
-												// vrai pour l'attribut en
-												// cours: tmpFA =
-												// AttributFromReq
-												// Si pas d'attributs dans req
-												// et Policy sur All ->
-												// isAttributeAllowed edit
-												// attributeListToKeepNbPerFT=0
-												// et retourne vrai: pour
-												// l'attribut en cours: tmpFA =
-												// ""
-												// Si attributs dans req mais
-												// pas dans Policy->
-												// isAttributeAllowed retourne
-												// faux pour l'attribut en
-												// cours: tmpFA =
-												// AttributFromReq
-												// Si pas d'attributs dans req
-												// -> isAttributeAllowed ajoute
-												// ceux de la policy dans la
-												// globale var
-												// policyAttributeListToKeepPerFT
-												// et retourne faux pour
-												// l'attribut en cours: tmpFA =
-												// ""
-												if (isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, tmpFA)) {
-													if (!fieldsAttribute[k].toString().equals("")) // au
-													// cas:
-													// req
-													// PropertyNames
-													// défini
-													// et
-													// aussi
-													// dans
-													// Policy
-													{
-														attributeListToKeepPerFT.add(tmpFA); // Without
-														// namespace
-														attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii) + 1);
-													} else // au cas: req
-													// PropertyNames non
-													// défini et Policy
-													// sur All
-													{
-														attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
-													}
-												} else {
-													if (!fieldsAttribute[k].toString().equals("")) // au
-													// cas:
-													// req
-													// PropertyNames
-													// défini
-													// mais
-													// pas
-													// dans
-													// Policy
-													{
-														attributeListToRemove.add(tmpFA); // Without
-														// namespace
-													} else if (fieldsAttribute[k].toString().equals("")) // au
-													// cas:
-													// req
-													// PropertyNames
-													// non
-													// défini,
-													// ajout
-													// de
-													// ceux
-													// de
-													// la
-													// policy
-													{
-														attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
-														attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
-													}
-												}
-											}
-											// Au cas: Aucun attribut demandé
-											// dans req n'est autorisé dans
-											// Policy
-											// -> isAttributeAllowed à ajouté
-											// ceux de la policy à la globale
-											// var
-											// policyAttributeListToKeepPerFT
-											if (attributeListToKeepNbPerFT.get(ii) == 0 && !fieldsAttribute[0].toString().equals("")) // ajout
-											// de
-											// ceux
-											// de
-											// la
-											// policy
-											{
-												isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, "");
-												attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
-												attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
-											}
-										}
-										// Fin de Debug
-									} else {
-										featureTypeListToRemove.add(tmpFT);
-									}
+							for (int i = 0; i < hFields.length; i++) {
+								// Proxy est non compatible avec les multi Query
+								// dans les requêtes GetFeature!
+								if (currentOperation.equalsIgnoreCase("GetFeature") && i > 0) {
+									break;
 								}
-								// Debug tb 08.06.2009
-								ii += 1;
-								attributeListToKeepNbPerFT.add(0);
-								// Fin de Debug
-							} else {
-								if (tmpFT.equals("")) {
-									featureTypeListToKeep.add("");
+
+								String tmpFT = hFields[i].toString();
+								if (tmpFT != null) {
+									String[] s = tmpFT.split(":");
+									tmpFT = s[s.length - 1];
+									// Debug tb 03.07.2009
+									// Fait doublon avec split":"
+									// }
+									// if
+									// (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix())||getRemoteServerInfo(iServer).getPrefix().length()==0)
+									// {
+									if (!tmpFT.equals("")) {
+										// tmpFT =
+										// tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+										// Fin de Debug
+										if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
+											featureTypeListToKeep.add(tmpFT);
+											// Debug tb 04.06.2009
+											// Filtrage des attributs autorisés
+											if (currentOperation.equalsIgnoreCase("GetFeature")) {
+												Object[] fieldsAttribute = (Object[]) rh.getPropertyName().toArray(); // Si
+												// req
+												// PropertyNames
+												// non
+												// défini
+												// ->
+												// RequestHandler
+												// retourne
+												// un
+												// élément
+												// avec
+												// ""
+
+												// Au cas: req PropertyNames
+												// défini
+												// et [Policy Attributs sur ALL
+												// ou
+												// sur sous ensemble limité]
+												// ou
+												// req PropertyNames non défini
+												// et
+												// Policy Attributs sur sous
+												// ensemble limité
+												// ou
+												// req PropertyNames non défini
+												// et
+												// Policy Attributs sur All
+												for (int k = 0; k < fieldsAttribute.length; k++) //
+												{
+													String tmpFA = fieldsAttribute[k].toString();
+													if (tmpFA != null) {
+														String[] ss = tmpFA.split(":");
+														tmpFA = ss[ss.length - 1];
+													}
+													// Comparaison avec le
+													// contenu
+													// de la Policy
+													// Si attributs dans req et
+													// aussi dans Policy->
+													// isAttributeAllowed
+													// retourne
+													// vrai pour l'attribut en
+													// cours: tmpFA =
+													// AttributFromReq
+													// Si pas d'attributs dans
+													// req
+													// et Policy sur All ->
+													// isAttributeAllowed edit
+													// attributeListToKeepNbPerFT=0
+													// et retourne vrai: pour
+													// l'attribut en cours:
+													// tmpFA =
+													// ""
+													// Si attributs dans req
+													// mais
+													// pas dans Policy->
+													// isAttributeAllowed
+													// retourne
+													// faux pour l'attribut en
+													// cours: tmpFA =
+													// AttributFromReq
+													// Si pas d'attributs dans
+													// req
+													// -> isAttributeAllowed
+													// ajoute
+													// ceux de la policy dans la
+													// globale var
+													// policyAttributeListToKeepPerFT
+													// et retourne faux pour
+													// l'attribut en cours:
+													// tmpFA =
+													// ""
+													if (isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, tmpFA)) {
+														if (!fieldsAttribute[k].toString().equals("")) // au
+														// cas:
+														// req
+														// PropertyNames
+														// défini
+														// et
+														// aussi
+														// dans
+														// Policy
+														{
+															attributeListToKeepPerFT.add(tmpFA); // Without
+															// namespace
+															attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii) + 1);
+														} else // au cas: req
+														// PropertyNames non
+														// défini et Policy
+														// sur All
+														{
+															attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+														}
+													} else {
+														if (!fieldsAttribute[k].toString().equals("")) // au
+														// cas:
+														// req
+														// PropertyNames
+														// défini
+														// mais
+														// pas
+														// dans
+														// Policy
+														{
+															attributeListToRemove.add(tmpFA); // Without
+															// namespace
+														} else if (fieldsAttribute[k].toString().equals("")) // au
+														// cas:
+														// req
+														// PropertyNames
+														// non
+														// défini,
+														// ajout
+														// de
+														// ceux
+														// de
+														// la
+														// policy
+														{
+															attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+															attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+														}
+													}
+												}
+												// Au cas: Aucun attribut
+												// demandé
+												// dans req n'est autorisé dans
+												// Policy
+												// -> isAttributeAllowed à
+												// ajouté
+												// ceux de la policy à la
+												// globale
+												// var
+												// policyAttributeListToKeepPerFT
+												if (attributeListToKeepNbPerFT.get(ii) == 0 && !fieldsAttribute[0].toString().equals("")) // ajout
+												// de
+												// ceux
+												// de
+												// la
+												// policy
+												{
+													isAttributeAllowed(getRemoteServerUrl(iServer), tmpFT, "");
+													attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
+													attributeListToKeepPerFT.addAll(policyAttributeListToKeepPerFT);
+												}
+											}
+											// Fin de Debug
+										} else {
+											featureTypeListToRemove.add(tmpFT);
+										}
+									}
+									// Debug tb 08.06.2009
+									ii += 1;
+									attributeListToKeepNbPerFT.add(0);
+									// Fin de Debug
+								} else {
+									if (tmpFT.equals("")) {
+										featureTypeListToKeep.add("");
+									}
 								}
 							}
 						}
-					}
-					// Suppression des features type non autorisés et
-					// Suppression des Attributs respectifs
-					param = removeTypesFromPOSTUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, param, iServer,
-							currentOperation);
-				}
+						// Suppression des features type non autorisés et
+						// Suppression des Attributs respectifs
+						param = removeTypesFromPOSTUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, param, iServer,
+								currentOperation);
 
-				boolean send = true;
-				String filePath = "";
+						if (param != null) {
+							WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this, serversIndex, filePathList,
+									iServer, iii);
+							pool.execute(r);
+							iii++;
+						}
+					}
+					pool.shutdown();
+					pool.awaitTermination(120L,TimeUnit.SECONDS);
+				}
+				boolean send = false;
 
 				// Debug tb 23.06.2009
 				// Vérifier que la requête avec opération DescribeFeatureType
@@ -607,7 +658,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 					if (featureTypeListToKeep.size() > 0) {
 						userFilter = getFeatureTypeRemoteFilter(getRemoteServerUrl(iServer), featureTypeListToKeep.get(0));
-						featureTypePathList.add(featureTypeListToKeep.get(0));
+						featureTypePathList = featureTypeListToKeep;
 					}
 
 					// Modification de la requête user avec le remoteFilter
@@ -1317,221 +1368,221 @@ public class WFSProxyServlet extends ProxyServlet {
 				// Fin de Debug
 
 				// A) Recherche des FeaturesTypes autorisés
-				for (int i = 0; i < nl.getLength(); i++) {
-					boolean isInList = false;
-					for (int j = 0; j < featureTypeListToKeep.size(); j++) {
-						// Recherche le nom de l'authorized featureType courant
-						String tmpFT = nl.item(i).getAttributes().getNamedItem("typeName").getTextContent();
-						if (tmpFT != null) {
-							String[] s = tmpFT.split(":");
-							tmpFT = s[s.length - 1];
+				// for (int i = 0; i < nl.getLength(); i++) {
+				boolean isInList = false;
+				for (int j = 0; j < featureTypeListToKeep.size(); j++) {
+					// Recherche le nom de l'authorized featureType courant
+					String tmpFT = nl.item(0).getAttributes().getNamedItem("typeName").getTextContent();
+					if (tmpFT != null) {
+						String[] s = tmpFT.split(":");
+						tmpFT = s[s.length - 1];
+					}
+					// Debug tb 03.07.2009
+					// Fait doublon avec split":"
+					// if
+					// (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()))
+					// {
+					// tmpFT =
+					// tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+					// }
+					// Fin de Debug
+
+					if (tmpFT.equals(featureTypeListToKeep.get(j))) {
+						// Debug tb 05.06.2009
+						// Edit l'attribut typeName de <wfs:Query
+						// typeName="tmpFT"> avec tmpFT
+						// nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT);
+						// // Non nécessaire de réécrire ce qui est déjà
+						// présent
+						NodeList antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
+						// Debug tb 29.09.2009
+						// Pour établir la liste des noeuds PropertyName
+						// directement sous la balise <Query> tiré de la
+						// requête user
+						for (int k = 0; k < antltemp.getLength(); k++) {
+							Node node = (Node) antltemp.item(k);
+							// renommer les noeuds "PropertyName" autre que
+							// ceux directement et uniquement sous <Query>:
+							// ex ceux de <Filter>
+							if (!"Query".equals(node.getParentNode().getLocalName())) {
+								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "MyFilterPropertyName");
+							}
 						}
-						// Debug tb 03.07.2009
-						// Fait doublon avec split":"
-						// if
-						// (tmpFT.startsWith(getRemoteServerInfo(iServer).getPrefix()))
+						NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
+
+						// XPathFactory factory =
+						// XPathFactory.newInstance();
+						// XPath xPath = factory.newXPath();
+						// NodeList shows = (NodeList)
+						// xPath.evaluate("GetFeature/Query/PropertyName",
+						// documentMaster, XPathConstants.NODESET);
+						// Integer nbn = shows.getLength();
+						// shows.item(0).getTextContent();
+						// for (int k=0;k<atnl.getLength();k++)
 						// {
-						// tmpFT =
-						// tmpFT.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+						// Node node = atnl.item(k);
+						// if(!"Query".equals(node.getParentNode().getLocalName()))
+						// {
+						// node.getParentNode().removeChild(node);
+						// }
 						// }
 						// Fin de Debug
 
-						if (tmpFT.equals(featureTypeListToKeep.get(j))) {
-							// Debug tb 05.06.2009
-							// Edit l'attribut typeName de <wfs:Query
-							// typeName="tmpFT"> avec tmpFT
-							// nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT);
-							// // Non nécessaire de réécrire ce qui est déjà
-							// présent
-							NodeList antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
-							// Debug tb 29.09.2009
-							// Pour établir la liste des noeuds PropertyName
-							// directement sous la balise <Query> tiré de la
-							// requête user
-							for (int k = 0; k < antltemp.getLength(); k++) {
-								Node node = (Node) antltemp.item(k);
-								// renommer les noeuds "PropertyName" autre que
-								// ceux directement et uniquement sous <Query>:
-								// ex ceux de <Filter>
-								if (!"Query".equals(node.getParentNode().getLocalName())) {
-									documentMaster.renameNode(node, "http://www.opengis.net/ogc", "MyFilterPropertyName");
-								}
-							}
-							NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
-
-							// XPathFactory factory =
-							// XPathFactory.newInstance();
-							// XPath xPath = factory.newXPath();
-							// NodeList shows = (NodeList)
-							// xPath.evaluate("GetFeature/Query/PropertyName",
-							// documentMaster, XPathConstants.NODESET);
-							// Integer nbn = shows.getLength();
-							// shows.item(0).getTextContent();
-							// for (int k=0;k<atnl.getLength();k++)
-							// {
-							// Node node = atnl.item(k);
-							// if(!"Query".equals(node.getParentNode().getLocalName()))
-							// {
-							// node.getParentNode().removeChild(node);
-							// }
-							// }
-							// Fin de Debug
-
-							// Au cas: PropertyNames dans req utilisateur, et
-							// restriction dans Policy Attributes
-							// A') Recherche des attibuts autorisés pour le
-							// FeatureType courant
-							if (atnl.getLength() != 0) {
-								for (int k = 0; k < atnl.getLength(); k++) {
-									boolean isAtInList = false;
-									for (int l = 0; l < attributeListToKeepNbPerFT.get(j); l++) {
-										String tmpFTA = atnl.item(k).getTextContent();
-										if (tmpFTA != null) {
-											String[] s = tmpFTA.split(":");
-											tmpFTA = s[s.length - 1];
-										}
-										// Debug tb 03.07.2009
-										// Fait doublon avec split":"
-										// if
-										// (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix())
-										// ||
-										// getRemoteServerInfo(iServer).getPrefix().length()==0)
-										// {
-										// tmpFTA =
-										// tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());
-										// }
-										// Fin de Debug
-										if (tmpFTA.equals(attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + l))) {
-											// atnl.item(k).setTextContent(tmpFTA);
-											// // Non nécessaire de réécrire ce
-											// qui est déjà présent
-											isAtInList = true;
-										}
+						// Au cas: PropertyNames dans req utilisateur, et
+						// restriction dans Policy Attributes
+						// A') Recherche des attibuts autorisés pour le
+						// FeatureType courant
+						if (atnl.getLength() != 0) {
+							for (int k = 0; k < atnl.getLength(); k++) {
+								boolean isAtInList = false;
+								for (int l = 0; l < attributeListToKeepNbPerFT.get(j); l++) {
+									String tmpFTA = atnl.item(k).getTextContent();
+									if (tmpFTA != null) {
+										String[] s = tmpFTA.split(":");
+										tmpFTA = s[s.length - 1];
 									}
-									if (!isAtInList) {
-										// Attribut présent dans la requête,
-										// mais non-autorisés
-										nodeAttributeListToRemove.add(atnl.item(k));
-									}
-								}
-
-								// B') Supressions des Attribut non-autorisés
-								// présents dans la requête
-								for (int m = 0; m < nodeAttributeListToRemove.size(); m++) {
-									nodeAttributeListToRemove.get(m).getParentNode().removeChild(nodeAttributeListToRemove.get(m));
-								}
-							}
-
-							// Traitement des cas de l'attribut géométrique de
-							// localFilter
-							String geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
-							Boolean hasGeomAttribut = false;
-
-							// Au cas: pas de PropertyName dans req utilisateur
-							// ou tous retirés par le if() précédent, mais
-							// restriction dans Policy Attributes
-							// A') Ajoute des attibuts autorisés de Policy pour
-							// le FeatureType courant
-							// ou ne fait rien dans le cas ou Attributs
-							// autorisée de Policy sur All
-							// (attributeListToKeepNbPerFT.get(j)=0)
-							if (atnl.getLength() == 0) {
-								for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
-									// Debug tb 16.10.2009
-									// Si le namespace ogc n'est pas déclaré
-									// dans la balise Query de la requete user
-									// GetFeature
-									// Element docElem =
-									// documentMaster.createElement("ogc:PropertyName");
-									Element docElem = documentMaster.createElement("PropertyName");
+									// Debug tb 03.07.2009
+									// Fait doublon avec split":"
+									// if
+									// (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix())
+									// ||
+									// getRemoteServerInfo(iServer).getPrefix().length()==0)
+									// {
+									// tmpFTA =
+									// tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+									// }
 									// Fin de Debug
-									docElem.setTextContent(policyServerPrefix + ":" + attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + k));
-									nl.item(i).insertBefore(docElem, nl.item(i).getFirstChild());
-									if (geomAttribut.equalsIgnoreCase(attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + k))) {
+									if (tmpFTA.equals(attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + l))) {
+										// atnl.item(k).setTextContent(tmpFTA);
+										// // Non nécessaire de réécrire ce
+										// qui est déjà présent
+										isAtInList = true;
+									}
+								}
+								if (!isAtInList) {
+									// Attribut présent dans la requête,
+									// mais non-autorisés
+									nodeAttributeListToRemove.add(atnl.item(k));
+								}
+							}
+
+							// B') Supressions des Attribut non-autorisés
+							// présents dans la requête
+							for (int m = 0; m < nodeAttributeListToRemove.size(); m++) {
+								nodeAttributeListToRemove.get(m).getParentNode().removeChild(nodeAttributeListToRemove.get(m));
+							}
+						}
+
+						// Traitement des cas de l'attribut géométrique de
+						// localFilter
+						String geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
+						Boolean hasGeomAttribut = false;
+
+						// Au cas: pas de PropertyName dans req utilisateur
+						// ou tous retirés par le if() précédent, mais
+						// restriction dans Policy Attributes
+						// A') Ajoute des attibuts autorisés de Policy pour
+						// le FeatureType courant
+						// ou ne fait rien dans le cas ou Attributs
+						// autorisée de Policy sur All
+						// (attributeListToKeepNbPerFT.get(j)=0)
+						if (atnl.getLength() == 0) {
+							for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
+								// Debug tb 16.10.2009
+								// Si le namespace ogc n'est pas déclaré
+								// dans la balise Query de la requete user
+								// GetFeature
+								// Element docElem =
+								// documentMaster.createElement("ogc:PropertyName");
+								Element docElem = documentMaster.createElement("PropertyName");
+								// Fin de Debug
+								docElem.setTextContent(policyServerPrefix + ":" + attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + k));
+								nl.item(0).insertBefore(docElem, nl.item(0).getFirstChild());
+								if (geomAttribut.equalsIgnoreCase(attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + k))) {
+									hasGeomAttribut = true;
+								}
+							}
+						}
+
+						// Au cas: localFilter is Set et geom Attribut
+						// absent de attributeListToKeepPerFT
+						// A') Ajoute l'attribut geom pour le FeatureType
+						// courant,
+						// -> ce dernier devra ensuite être retiré par XSLT
+						// au moment de transform()!!!
+						// ou ne s'applique pas dans le cas ou Attributs
+						// autorisée de Policy sur All
+						// (attributeListToKeepNbPerFT.get(j)=0)
+						if (!geomAttribut.equals("") && attributeListToKeepNbPerFT.get(j) != 0) {
+							if (atnl.getLength() != 0) {
+								for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
+									String tmpFTA = atnl.item(k).getTextContent();
+									if (tmpFTA != null) {
+										String[] s = tmpFTA.split(":");
+										tmpFTA = s[s.length - 1];
+									}
+									// Debug tb 03.07.2009
+									// Fait doublon avec split":"
+									// if
+									// (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix())
+									// ||
+									// getRemoteServerInfo(iServer).getPrefix().length()==0)
+									// {
+									// tmpFTA =
+									// tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());
+									// }
+									// Fin de Debug
+									if (tmpFTA.equals(geomAttribut)) {
 										hasGeomAttribut = true;
 									}
 								}
 							}
+							if (!hasGeomAttribut) {
+								// Contient tout les liens
+								// Server-Prefix-Namespace-AuthorizedFeature-GeomAttribute
+								WFSProxyGeomAttributes geomAttributesObj = new WFSProxyGeomAttributes(iServer, policyServerPrefix, policyServerNamespace);
+								geomAttributesObj.setFeatureTypeName(featureTypeListToKeep.get(j));
+								geomAttributesObj.setGeomAttributName(geomAttribut);
+								WFSProxyGeomAttributesList.add(geomAttributesObj);
 
-							// Au cas: localFilter is Set et geom Attribut
-							// absent de attributeListToKeepPerFT
-							// A') Ajoute l'attribut geom pour le FeatureType
-							// courant,
-							// -> ce dernier devra ensuite être retiré par XSLT
-							// au moment de transform()!!!
-							// ou ne s'applique pas dans le cas ou Attributs
-							// autorisée de Policy sur All
-							// (attributeListToKeepNbPerFT.get(j)=0)
-							if (!geomAttribut.equals("") && attributeListToKeepNbPerFT.get(j) != 0) {
-								if (atnl.getLength() != 0) {
-									for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
-										String tmpFTA = atnl.item(k).getTextContent();
-										if (tmpFTA != null) {
-											String[] s = tmpFTA.split(":");
-											tmpFTA = s[s.length - 1];
-										}
-										// Debug tb 03.07.2009
-										// Fait doublon avec split":"
-										// if
-										// (tmpFTA.startsWith(getRemoteServerInfo(iServer).getPrefix())
-										// ||
-										// getRemoteServerInfo(iServer).getPrefix().length()==0)
-										// {
-										// tmpFTA =
-										// tmpFTA.substring((getRemoteServerInfo(iServer).getPrefix()).length());
-										// }
-										// Fin de Debug
-										if (tmpFTA.equals(geomAttribut)) {
-											hasGeomAttribut = true;
-										}
-									}
-								}
-								if (!hasGeomAttribut) {
-									// Contient tout les liens
-									// Server-Prefix-Namespace-AuthorizedFeature-GeomAttribute
-									WFSProxyGeomAttributes geomAttributesObj = new WFSProxyGeomAttributes(iServer, policyServerPrefix, policyServerNamespace);
-									geomAttributesObj.setFeatureTypeName(featureTypeListToKeep.get(j));
-									geomAttributesObj.setGeomAttributName(geomAttribut);
-									WFSProxyGeomAttributesList.add(geomAttributesObj);
-
-									// Ajoute l'attribut géométrique à la
-									// requête utilisateur
-									// Debug tb 16.10.2009
-									// Si le namespace ogc n'est pas déclaré
-									// dans la balise Query de la requete user
-									// GetFeature
-									// Element docElem =
-									// documentMaster.createElement("ogc:PropertyName");
-									Element docElem = documentMaster.createElement("PropertyName");
-									// Fin de Debug
-									docElem.setTextContent(policyServerPrefix + ":" + geomAttribut);
-									nl.item(i).insertBefore(docElem, nl.item(i).getFirstChild());
-								}
+								// Ajoute l'attribut géométrique à la
+								// requête utilisateur
+								// Debug tb 16.10.2009
+								// Si le namespace ogc n'est pas déclaré
+								// dans la balise Query de la requete user
+								// GetFeature
+								// Element docElem =
+								// documentMaster.createElement("ogc:PropertyName");
+								Element docElem = documentMaster.createElement("PropertyName");
+								// Fin de Debug
+								docElem.setTextContent(policyServerPrefix + ":" + geomAttribut);
+								nl.item(0).insertBefore(docElem, nl.item(0).getFirstChild());
 							}
-							// Fin de Debug
-							// Debug tb 29.09.2009
-							// Pour rétablir la liste des noeuds PropertyName de
-							// la requête user
-							// renommer les noeuds "PropertyName" autre que ceux
-							// directement et uniquement sous <Query>: ex ceux
-							// de <Filter>
-							antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "MyFilterPropertyName");
-							for (int k = 0; k < antltemp.getLength(); k++) {
-								Node node = (Node) antltemp.item(k);
-								if (!"Query".equals(node.getParentNode().getLocalName())) {
-									documentMaster.renameNode(node, "http://www.opengis.net/ogc", "PropertyName");
-								}
-							}
-							// Fin de Debug
-							isInList = true;
 						}
-					}
-					if (!isInList) {
-						// FeatureType présent dans la requête, mais
-						// non-autorisés
-						nodeListToRemove.add(nl.item(i));
+						// Fin de Debug
+						// Debug tb 29.09.2009
+						// Pour rétablir la liste des noeuds PropertyName de
+						// la requête user
+						// renommer les noeuds "PropertyName" autre que ceux
+						// directement et uniquement sous <Query>: ex ceux
+						// de <Filter>
+						antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "MyFilterPropertyName");
+						for (int k = 0; k < antltemp.getLength(); k++) {
+							Node node = (Node) antltemp.item(k);
+							if (!"Query".equals(node.getParentNode().getLocalName())) {
+								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "PropertyName");
+							}
+						}
+						// Fin de Debug
+						isInList = true;
 					}
 				}
+				if (!isInList) {
+					// FeatureType présent dans la requête, mais
+					// non-autorisés
+					nodeListToRemove.add(nl.item(0));
+				}
+				// }
 
 				// B) Supressions des FeaturesTypes non-autorisés présents dans
 				// la requête
@@ -1985,7 +2036,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						}
 						// Colle les "tempFile" en un résultat: Util si
 						// filePathList.size()>1
-						if(filePathList.size()>1) tempFile = mergeDescribeFeatureType(tempFileDescribeType);
+						if (filePathList.size() > 1)
+							tempFile = mergeDescribeFeatureType(tempFileDescribeType);
 					}
 				} else if (currentOperation.equalsIgnoreCase("GetFeature")) {
 					if (hasPolicy) {

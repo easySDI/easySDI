@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -55,7 +56,6 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.naming.NoPermissionException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -123,7 +123,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 	// Debug tb 08.07.2009
-	private Vector<String> serverUrlPerfilePathList = new Vector<String>(); // Url
+	private Map<Integer, String> serverUrlPerfilePathList = new TreeMap<Integer, String>(); // Url
 	// du
 	// serveur
 	// ayant
@@ -416,29 +416,34 @@ public class WMSProxyServlet extends ProxyServlet {
 
 					dump("transform begin filterImage to layer " + 0);
 					// Debug tb 08.07.2009
-					BufferedImage imageSource;
+					BufferedImage imageSource = null;
 					// Si les threads ont renvoyés une réponse
 					if (serverUrlPerfilePathList.size() > 0) {
-						imageSource = filterImage(getLayerFilter(serverUrlPerfilePathList.get(0), layerFilePathList.get(0)), filePathList.get(0), isTransparent);
+						// imageSource =
+						// filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),
+						// layerFilePathList.get(0)), filePathList.get(0),
+						// isTransparent);
 						// Fin de Debug
-						Graphics2D g = imageSource.createGraphics();
+						Graphics2D g = null;
 						dump("transform end filterImage to layer " + 0);
 
 						// Boucle sur les fichiers réponses
-						for (int iFilePath = 1; iFilePath < filePathList.size(); iFilePath++) {
+						for(Map.Entry<Integer, String> e : filePathList.entrySet()){
 							// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
-							if (layerFilePathList.get(iFilePath) != null) {
+							int iFilePath = e.getKey();
 								dump("transform begin filterImage to layer " + iFilePath);
 								// Debug tb 08.07.2009
 								BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath), layerFilePathList.get(iFilePath)),
 										filePathList.get(iFilePath), isTransparent);
 								// Fin de Debug
-								if (image != null)
+								if (g == null) {
+									imageSource = image;
+									g = imageSource.createGraphics();
+								} else if (image != null)
 									g.drawImage(image, null, 0, 0);
 								dump("transform end filterImage to layer " + iFilePath);
-							}
 						}
-						g.dispose();
+						if(g != null) g.dispose();
 						// Debug tb 11.08.2009
 					}
 					// Si aucune requête n'a été envoyé au serveur, retourne:
@@ -675,8 +680,16 @@ public class WMSProxyServlet extends ProxyServlet {
 				// final WorldFileReader reader = new WorldFileReader(new
 				// File(filePath));
 
-				BufferedImage imageSource = ImageIO.read(new File(fileName));
-				BufferedImage imageOut = imageFiltering(imageSource, bbox, polygon, isTransparent);
+				BufferedImage image = ImageIO.read(new File(fileName));
+				int type = BufferedImage.TYPE_INT_BGR;
+				if (image.getTransparency() == Transparency.BITMASK)
+					type = BufferedImage.BITMASK;
+				else if (image.getTransparency() == Transparency.TRANSLUCENT)
+					type = BufferedImage.TRANSLUCENT;
+				BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
+				canvas.getGraphics().drawImage(image, 0, 0, null);
+				BufferedImage imageOut = imageFiltering(canvas, bbox, polygon, isTransparent);
+
 				return imageOut;
 			} else {
 				if (fileName != null) {
@@ -1125,8 +1138,8 @@ public class WMSProxyServlet extends ProxyServlet {
 										synchronized (layerFilePathList) {
 											synchronized (serverUrlPerfilePathList) {
 												// Insert les réponses
-												layerFilePathList.add(serverLayerFilePathList.get(i));
-												serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+												layerFilePathList.put(layerOrder, serverLayerFilePathList.get(i));
+												serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
 												filePathList.put(layerOrder, serverFilePathList.get(i));
 											}
 										}
@@ -1143,8 +1156,8 @@ public class WMSProxyServlet extends ProxyServlet {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response capabilities from thread server " + getRemoteServerUrl(j));
-										layerFilePathList.add("");
-										serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+										layerFilePathList.put(layerOrder, "");
+										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
 										filePathList.put(layerOrder, filePath);
 									}
 								}
@@ -1159,8 +1172,8 @@ public class WMSProxyServlet extends ProxyServlet {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response legendGraphic from thread server " + getRemoteServerUrl(j));
-										layerFilePathList.add("");
-										serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+										layerFilePathList.put(layerOrder, "");
+										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
 										filePathList.put(layerOrder, filePath);
 									}
 								}
@@ -1188,8 +1201,8 @@ public class WMSProxyServlet extends ProxyServlet {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response GetFeatureInfo from thread server " + getRemoteServerUrl(j));
-										layerFilePathList.add("");
-										serverUrlPerfilePathList.add(getRemoteServerUrl(j));
+										layerFilePathList.put(layerOrder, "");
+										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
 										filePathList.put(layerOrder, filePath);
 									}
 								}
@@ -1370,7 +1383,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							layersTab.add((layerNameFinal.length > 1) ? layerNameFinal[1] : layerNameFinal[0]);
 						}
 
-						if (configuration.isGrouping() && layerToKeepList.size() > 0) {
+						if (!configuration.isGrouping() && layerToKeepList.size() > 0) {
 							for (String layerToKeepElement : layerToKeepList) {
 								List<String> singleLayerList = new ArrayList<String>();
 								singleLayerList.add(layerToKeepElement);
@@ -1494,7 +1507,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				writer.write(imgOut);
 				String filePath = tempFile.getPath();
 				filePathList.put(j, filePath);
-				layerFilePathList.add("");
+				layerFilePathList.put(j, "");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -59,11 +59,7 @@ public class JoomlaProvider extends AbstractUserDetailsAuthenticationProvider {
 	source.addValue("username", username);
 	SimpleJdbcTemplate sjt = new SimpleJdbcTemplate(dataSource);
 	JoomlaUser user = null;
-	try {
 	    user = sjt.queryForObject(sql, new UserMapper(), source);
-	} catch (DataAccessException e) {
-	    e.printStackTrace();
-	}
 //	if (user == null) {
 //	    user = new JoomlaUser("spring2a2d595e6ed9a0b24f027f2b63b134d6", "anonymous", null, new GrantedAuthority[] { new GrantedAuthorityImpl("anonymous") }, true, true, true, true);
 //	}
