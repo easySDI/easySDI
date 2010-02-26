@@ -38,6 +38,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -72,7 +75,6 @@ import javax.xml.xpath.XPathFactory;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Operation;
-import org.easysdi.proxy.policy.Server;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
@@ -224,8 +226,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
 				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-				WMSCapabilities capa = (WMSCapabilities) DocumentFactory.getInstance(new File(filePathList.get(remoteServerIndex)).toURI(), hints,
-						Level.WARNING);
+				WMSCapabilities capa = (WMSCapabilities) DocumentFactory.getInstance(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0])
+						.toURI(), hints, Level.WARNING);
 
 				// Filtrage xsl des layers
 				if (hasPolicy) {
@@ -329,7 +331,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			// Transforms the results using a xslt before sending the response
 			// back
-			// InputStream xml = new FileInputStream(filePathList.get(0));
+			// InputStream xml = new FileInputStream(wmsFilePathList.get(0));
 			Transformer transformer = null;
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
@@ -344,10 +346,10 @@ public class WMSProxyServlet extends ProxyServlet {
 			// }
 			// else
 			// {
-			// if (filePathList.size()>0)
+			// if (wmsFilePathList.size()>0)
 			// {
-			// if(filePathList.get(0)!=null) tempFile = new
-			// File(filePathList.get(0));
+			// if(wmsFilePathList.get(0)!=null) tempFile = new
+			// File(wmsFilePathList.get(0));
 			// }
 			// }
 
@@ -365,14 +367,14 @@ public class WMSProxyServlet extends ProxyServlet {
 					List<File> tempFileCapa = new Vector<File>();
 
 					// Boucle sur les fichiers réponses
-					for (int iFilePath = 0; iFilePath < filePathList.size(); iFilePath++) {
+					for (int iFilePath = 0; iFilePath < wmsFilePathList.size(); iFilePath++) {
 						tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
 						FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
 
 						StringBuffer sb = buildCapabilitiesXSLT(req, iFilePath, version);
 						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 
-						InputSource inputSource = new InputSource(new FileInputStream(filePathList.get(iFilePath)));
+						InputSource inputSource = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
 
 						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 
@@ -421,35 +423,37 @@ public class WMSProxyServlet extends ProxyServlet {
 					if (serverUrlPerfilePathList.size() > 0) {
 						// imageSource =
 						// filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),
-						// layerFilePathList.get(0)), filePathList.get(0),
+						// layerFilePathList.get(0)), wmsFilePathList.get(0),
 						// isTransparent);
 						// Fin de Debug
 						Graphics2D g = null;
 						dump("transform end filterImage to layer " + 0);
 
 						// Boucle sur les fichiers réponses
-						for(Map.Entry<Integer, String> e : filePathList.entrySet()){
+						TreeMap<Integer,Collection<String>> tm = new TreeMap<Integer,Collection<String>>(wmsFilePathList.asMap()); 
+						for (Map.Entry<Integer, Collection<String>> e : tm.entrySet()) {
 							// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
 							int iFilePath = e.getKey();
-								dump("transform begin filterImage to layer " + iFilePath);
-								// Debug tb 08.07.2009
-								BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath), layerFilePathList.get(iFilePath)),
-										filePathList.get(iFilePath), isTransparent);
-								// Fin de Debug
-								if (g == null) {
-									imageSource = image;
-									g = imageSource.createGraphics();
-								} else if (image != null)
-									g.drawImage(image, null, 0, 0);
-								dump("transform end filterImage to layer " + iFilePath);
+							dump("transform begin filterImage to layer " + iFilePath);
+							// Debug tb 08.07.2009
+							BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath), layerFilePathList.get(iFilePath)),
+									wmsFilePathList.get(iFilePath), isTransparent);
+							// Fin de Debug
+							if (g == null) {
+								imageSource = image;
+								g = imageSource.createGraphics();
+							} else if (image != null)
+								g.drawImage(image, null, 0, 0);
+							dump("transform end filterImage to layer " + iFilePath);
 						}
-						if(g != null) g.dispose();
+						if (g != null)
+							g.dispose();
 						// Debug tb 11.08.2009
 					}
 					// Si aucune requête n'a été envoyé au serveur, retourne:
 					// empty image
 					else {
-						imageSource = ImageIO.read(new File(filePathList.get(0)));
+						imageSource = ImageIO.read(new File(wmsFilePathList.get(0).toArray(new String[1])[0]));
 					}
 					// Fin de Debug
 
@@ -486,28 +490,45 @@ public class WMSProxyServlet extends ProxyServlet {
 					// isAcceptingTransparency(responseContentType);
 
 					dump("transform begin add Legend Image " + 0);
-					BufferedImage imageSource = ImageIO.read(new File(filePathList.get(0)));
-					// Si les threads ont renvoyés une réponse
-					if (serverUrlPerfilePathList.size() > 0) {
-						Graphics2D g = imageSource.createGraphics();
-						dump("transform end add Legend Image " + 0);
+					Graphics2D g = null;
+					dump("transform end filterImage to layer " + 0);
+					boolean isTransparent = isAcceptingTransparency(responseContentType);
+					// Boucle sur les fichiers réponses
 
-						// Boucle sur les fichiers réponses
-						for (int iFilePath = 1; iFilePath < filePathList.size(); iFilePath++) {
-							if (layerFilePathList.get(iFilePath) != null) {
-								dump("transform begin add Legend Image " + iFilePath);
-								BufferedImage image = ImageIO.read(new File(filePathList.get(iFilePath)));
-								if (image != null)
-									g.drawImage(image, null, 0, imageSource.getHeight());
-								g.dispose();
-								dump("transform end add Legend Image " + iFilePath);
-							}
+					BufferedImage imageSource = null;
+
+					for (Map.Entry<Integer, String> e : wmsFilePathList.entries()) {
+						// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
+						int iFilePath = e.getKey();
+						dump("transform begin Legend Image " + iFilePath);
+						// Debug tb 08.07.2009
+
+						BufferedImage image = ImageIO.read(new File(e.getValue()));
+						if (image != null) {
+							int type = BufferedImage.TYPE_INT_BGR;
+							if (image.getTransparency() == Transparency.BITMASK)
+								type = BufferedImage.BITMASK;
+							else if (image.getTransparency() == Transparency.TRANSLUCENT)
+								type = BufferedImage.TRANSLUCENT;
+							BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
+							canvas.getGraphics().drawImage(image, 0, 0, null);
+
+							// Fin de Debug
+							if (g == null) {
+								imageSource = canvas;
+								g = imageSource.createGraphics();
+							} else if (image != null)
+								g.drawImage(canvas, null, 0, 0);
+							dump("transform end add Legend Image " + iFilePath);
 						}
 					}
+					if (g != null)
+						g.dispose();
+
 					// Si aucune requête n'a été envoyé au serveur, retourne:
 					// empty image
 					else {
-						imageSource = ImageIO.read(new File(filePathList.get(0)));
+						imageSource = ImageIO.read(new File(wmsFilePathList.get(0).toArray(new String[1])[0]));
 					}
 
 					// Etape nécessaire car "resp.getOutputStream()" ne peux pas
@@ -546,7 +567,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					XPathExpression expr = xpath.compile("/FeatureCollection");
 					Element rootNode = null;
 
-					for (String path : filePathList.values()) {
+					for (String path : wmsFilePathList.values()) {
 						Document resultDoc = builder.parse(new File(path));
 						if (rootNode == null) {
 							Node result = (Node) expr.evaluate(resultDoc, XPathConstants.NODE);
@@ -655,6 +676,23 @@ public class WMSProxyServlet extends ProxyServlet {
 	/**
 	 * @return
 	 */
+	private BufferedImage filterImage(String filter, Collection<String> fileNames, boolean isTransparent) {
+		BufferedImage imageSource = null;
+		Graphics2D g = null;
+		for (String fileName : fileNames) {
+			BufferedImage image = filterImage(filter, fileName, isTransparent);
+			if (g == null) {
+				imageSource = image;
+				g = imageSource.createGraphics();
+			} else if (image != null)
+				g.drawImage(image, null, 0, 0);
+		}
+		if (g != null)
+
+			g.dispose();
+		return imageSource;
+	}
+
 	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent) {
 		try {
 			String[] s = bbox.split(",");
@@ -1134,13 +1172,13 @@ public class WMSProxyServlet extends ProxyServlet {
 								// Si une réponse a bien été renvoyée par le
 								// thread i
 								if (!((String) serverFilePathList.get(i)).equals("")) {
-									synchronized (filePathList) {
+									synchronized (wmsFilePathList) {
 										synchronized (layerFilePathList) {
 											synchronized (serverUrlPerfilePathList) {
 												// Insert les réponses
 												layerFilePathList.put(layerOrder, serverLayerFilePathList.get(i));
 												serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-												filePathList.put(layerOrder, serverFilePathList.get(i));
+												wmsFilePathList.put(layerOrder, serverFilePathList.get(i));
 											}
 										}
 									}
@@ -1151,14 +1189,14 @@ public class WMSProxyServlet extends ProxyServlet {
 								paramUrlBase += "&SERVICE=WMS";
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
 
-							synchronized (filePathList) {
+							synchronized (wmsFilePathList) {
 								synchronized (layerFilePathList) {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response capabilities from thread server " + getRemoteServerUrl(j));
 										layerFilePathList.put(layerOrder, "");
 										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-										filePathList.put(layerOrder, filePath);
+										wmsFilePathList.put(layerOrder, filePath);
 									}
 								}
 							}
@@ -1167,14 +1205,14 @@ public class WMSProxyServlet extends ProxyServlet {
 						else if ("GetLegendGraphic".equalsIgnoreCase(operation)) {
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
 
-							synchronized (filePathList) {
+							synchronized (wmsFilePathList) {
 								synchronized (layerFilePathList) {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response legendGraphic from thread server " + getRemoteServerUrl(j));
 										layerFilePathList.put(layerOrder, "");
 										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-										filePathList.put(layerOrder, filePath);
+										wmsFilePathList.put(layerOrder, filePath);
 									}
 								}
 							}
@@ -1196,14 +1234,14 @@ public class WMSProxyServlet extends ProxyServlet {
 
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
 							// Fin de Debug
-							synchronized (filePathList) {
+							synchronized (wmsFilePathList) {
 								synchronized (layerFilePathList) {
 									synchronized (serverUrlPerfilePathList) {
 										// Insert les réponses
 										dump("requestPreTraitementGET save response GetFeatureInfo from thread server " + getRemoteServerUrl(j));
 										layerFilePathList.put(layerOrder, "");
 										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-										filePathList.put(layerOrder, filePath);
+										wmsFilePathList.put(layerOrder, filePath);
 									}
 								}
 							}
@@ -1225,206 +1263,286 @@ public class WMSProxyServlet extends ProxyServlet {
 			List<RemoteServerInfo> grsiList = getRemoteServerInfoList();
 			List<SendServerThread> serverThreadList = new Vector<SendServerThread>();
 
-			for (int j = 0; j < grsiList.size(); j++) {
-				boolean serverOK = false;
-				if (policy != null) {
-					for (Server server : policy.getServers().getServer()) {
-						if (getRemoteServerUrl(j).equalsIgnoreCase(server.getUrl())) {
-							List<org.easysdi.proxy.policy.Layer> layerList = server.getLayers().getLayer();
-							for (org.easysdi.proxy.policy.Layer _layer : layerList) {
-								if (layer.equals(_layer.getName()))
-									serverOK = true;
-								break;
-							}
-						}
-						if (serverOK)
-							break;
-					}
+			List<String> layerArray = null;
+			if (layer != null && layers == null)
+				layers = layer;
+			if (layers != null)
+				layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(layers.split(","))));
+			int layerOrder = 0;
+			String lastServerURL = null;
+			String newServerURL = null;
+			String cpOperation = new String(operation);
+			String cpParamUrl = "";
+			String cpParamUrlBase = new String(paramUrlBase);
+			String cpWidth = new String(width);
+			String cpHeight = new String(height);
+			String cpFormat = new String(format);
+			String filter = null;
+			if (operation.equalsIgnoreCase("getcapabilities")) {
+				for (int jj = 0; jj < grsiList.size(); jj++) {
+					SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, null, serverThreadList.size(), null, cpParamUrlBase, jj, cpWidth,
+							cpHeight, cpFormat);
+
+					s.layerOrder = jj;
+					s.start();
+					serverThreadList.add(s);
 				}
 
-				String paramUrl = "";
-				List<String> layerToKeepList = new Vector<String>();
-				List<String> stylesToKeepList = new Vector<String>();
+			} else {
+				while (layerArray.size() > 0) {
+					List<String> layerToKeepList = new Vector<String>();
+					List<String> stylesToKeepList = new Vector<String>();
+					int j = 0;
+					if (policy != null) {
+						if (hasPolicy) {
+							// Vérfication de la taille image req VS policy ->
+							// si vrai:
+							// la requête n'est pas envoyée
+							sendRequest = true;
+							if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation)) || "getfeatureinfo".equalsIgnoreCase(operation)) {
+								if (!isSizeInTheRightRange(Integer.parseInt(width), Integer.parseInt(height))) {
+									dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
+									sendRequest = false;
+								}
+								
 
-				if (hasPolicy) {
-					// Vérfication de la taille image req VS policy -> si vrai:
-					// la requête n'est pas envoyée
-					if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation))
-							&& !isSizeInTheRightRange(Integer.parseInt(width), Integer.parseInt(height))) {
-						dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
-						sendRequest = false;
-					}
+								// Vérification de la présence du pramètre
+								// "LAYERS"
+								// dans la
+								// requête -> si vrai: recherche des layers
+								// autorisées et
+								// styles correspondant
+								// Permet la réécriture des paramètres "LAYERS"
+								// et
+								// "STYLES"
+								// de la requête
+								if (sendRequest && layers != null && layers.length() > 0) {
 
-					// Vérification de la présence du pramètre "LAYERS" dans la
-					// requête -> si vrai: recherche des layers autorisées et
-					// styles correspondant
-					// Permet la réécriture des paramètres "LAYERS" et "STYLES"
-					// de la requête
-					if (sendRequest && layers != null && layers.length() > 0) {
-						String[] layerArray = layers.split(",");
-						// Debug tb 09.07.2009
-						String[] layerStyleArray;
-						if (styles != null) {
-							layerStyleArray = styles.split(",");
-						} else {
-							styles = "";
-							layerStyleArray = styles.split(",");
-						}
+									// Debug tb 09.07.2009
+									String[] layerStyleArray;
+									if (styles != null) {
+										layerStyleArray = styles.split(",");
+									} else {
+										styles = "";
+										layerStyleArray = styles.split(",");
+									}
 
-						// Le paramètre style est obligatoire par couche, mais
-						// on l'émule s'il n'est pas présent
-						if (layerStyleArray.length < layerArray.length) {
-							int diffSize = layerArray.length - layerStyleArray.length;
-							for (int i = 0; i < diffSize; i++) {
-								styles = styles + ",";
-							}
-						}
-						// Fin de Debug
-						layerStyleArray = styles.split(",");
+									// Le paramètre style est obligatoire par
+									// couche, mais
+									// on l'émule s'il n'est pas présent
+									if (layerStyleArray.length < layerArray.size()) {
+										int diffSize = layerArray.size() - layerStyleArray.length;
+										for (int i = 0; i < diffSize; i++) {
+											styles = styles + ",";
+										}
+									}
+									// Fin de Debug
+									layerStyleArray = styles.split(",");
 
-						// Vérification des couches autorisées
-						// *********************************
-						for (int i = 0; i < layerArray.length; i++) {
-							// Debug tb 03.07.2009
-							String tmpFT = layerArray[i];
-							if (tmpFT != null) {
-								String[] s = tmpFT.split(":");
-								tmpFT = s[s.length - 1];
-								layerArray[i] = tmpFT;
-								// Fin de Debug
+									// Vérification des couches autorisées
+									// *********************************
+									int li = 0;
+									boolean serverOK = false;
+									String tmpFT = null;
+									boolean cnt = true;
+									boolean found = false;
+									for (int jj = 0; jj < grsiList.size(); jj++) {
+										for (int i = 0; i <= layerArray.size(); i++) {
+											if(layerArray.size() == 0){
+												cnt = false;
+												break;
+											}
+											tmpFT = layerArray.get(li);
+											int sindex = tmpFT.indexOf(":") + 1;
+											tmpFT = tmpFT.substring(sindex);
+
+											if (layerToKeepList.size() > 0) {
+												if (filter != null) {
+													filter = null;
+													cnt = false;
+													break;
+												}
+												filter = getLayerFilter(getRemoteServerUrl(j), tmpFT);
+												if (filter != null) {
+													cnt = false;
+													break;
+												}
+											}
+
+											// Debug tb 03.07.2009
+											newServerURL = grsiList.get(jj).getUrl();
+											serverOK = isLayerAllowed(tmpFT, newServerURL);
+											if (serverOK && tmpFT != null) {
+
+												// Fin de Debug
+												// Vérification que la couche de
+												// la
+												// req
+												// est
+												// autorisée par Policy
+
+												String[] c = bbox.split(",");
+
+												ReferencedEnvelope re = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double
+														.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(srsName));
+
+												// Vérification que l'échelle de
+												// la
+												// requête est
+												// autorisée
+												if (isLayerInScale(tmpFT, newServerURL, RendererUtilities.calculateOGCScale(re, Integer.parseInt(width), null))) {
+													serverOK = true;
+												} else {
+													dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
+													serverOK = false;
+													layerArray.remove(li);
+
+												}
+
+												// Ajout de la couche et de son
+												// sytle
+												// associé,
+												// si cette dernière est
+												// autorisée
+												// par
+												// Policy
+												if (serverOK) {
+													if (layerStyleArray.length > i) {
+														stylesToKeepList.add(layerStyleArray[i]);
+													} else {
+														stylesToKeepList.add("");
+													}
+													layerArray.remove(li);
+													layerToKeepList.add(tmpFT);
+													found = true;
+													j = jj;
+													lastServerURL = newServerURL;
+													i--;
+												}
+											}
+
+											if ((layerToKeepList.size() > 0 && !serverOK && (newServerURL.equals(lastServerURL)))) {
+												cnt = false;
+												break;
+											}
+										}
+										if (!cnt || layerArray.size() == 0)
+											break;
+									}
+									if (!found) {
+										layerArray.remove(li);
+									}
+									// Vérfication de l'absence de "LAYER"
+									// autorisées
+									// restantes -> si vrai: la requête n'est
+									// pas
+									// envoyée
+									if (layerToKeepList.size() <= 0) {
+										sendRequest = false;
+									}
+									// Fin de Debug
+								}
+								// Debug tb 04.09.2009
+								// Vérification de l'authorisation policy pour
+								// la
+								// couche
+								// "LAYER" de l'opération GetLegendGraphic
+							} else if ("GetLegendGraphic".equalsIgnoreCase(operation)) {
 								// Vérification que la couche de la req est
-								// autorisée par Policy
-								boolean isLayerTypePermited = isLayerAllowed(layerArray[i], getRemoteServerUrl(j));
-
-								String[] c = bbox.split(",");
-
-								ReferencedEnvelope re = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]),
-										Double.parseDouble(c[3]), CRS.decode(srsName));
-
-								// Vérification que l'échelle de la requête est
 								// autorisée
-								if (isLayerTypePermited) {
-									if (isLayerInScale(layerArray[i], getRemoteServerUrl(j), RendererUtilities.calculateOGCScale(re, Integer.parseInt(width),
-											null))) {
-										isLayerTypePermited = true;
+								// par Policy
+								String tmpFT = "";
+								String[] s = layerArray.get(0).split(":");
+								tmpFT = s[s.length - 1];
+								layerArray.remove(0);
+								for (int jj = 0; jj < grsiList.size(); jj++) {
+									j = jj;
+									boolean isLayerTypePermited = isLayerAllowed(tmpFT, getRemoteServerUrl(j));
+									if (!isLayerTypePermited) {
+										dump("requestPreTraitementGET says: GetLegendGraphic request Layer is not allowed by policy");
+										sendRequest = isLayerTypePermited;
 									} else {
-										dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
-										isLayerTypePermited = false;
+										SendServerThread glgs = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(),
+												stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+
+										glgs.layerOrder = jj;
+										glgs.start();
+										serverThreadList.add(glgs);
+
 									}
 								}
 
-								// Ajout de la couche et de son sytle associé,
-								// si cette dernière est autorisée par Policy
-								if (isLayerTypePermited) {
-									if (layerStyleArray.length > i) {
-										stylesToKeepList.add(layerStyleArray[i]);
-									} else {
-										stylesToKeepList.add("");
+								// Fin de Debug
+							}
+
+							// Si pas de fichier Policy défini, envoi direct de
+							// la
+							// requête
+							// sur le serveur j
+							// else
+							// {
+							// //@TODO:Manage multiple servers when no policy is
+							// existing.
+							// if (layers!=null && layers.length()>0)
+							// {
+							// paramUrl="LAYERS="+layers+"&STYLES="+styles;
+							// }
+							// }
+
+							// Si requête à envoyer sur serveur j
+							if (sendRequest) {
+								// Debug tb 08.07.2009
+								// Nouvelle version des threads -> par serveur
+								// ->
+								// par couche
+								// Création et lancement du thread sur serveur j
+								// Copie des strings pour utlisation dans
+								// threads.
+								// Originales rééctrites dans boucle serveur
+								// courante!
+								if (layers != null && operation.equalsIgnoreCase("getmap") || operation.equalsIgnoreCase("getfeatureinfo")) {
+									List<String> layersTabWithNS = Arrays.asList(layers.split(","));
+									List<String> layersTab = new ArrayList<String>();
+									for (String layerName : layersTabWithNS) {
+										String[] layerNameFinal = layerName.split(":", 2);
+										layersTab.add((layerNameFinal.length > 1) ? layerNameFinal[1] : layerNameFinal[0]);
 									}
-									layerToKeepList.add(layerArray[i]);
+
+									if (!configuration.isGrouping() && layerToKeepList.size() > 0) {
+										for (String layerToKeepElement : layerToKeepList) {
+											List<String> singleLayerList = new ArrayList<String>();
+											singleLayerList.add(layerToKeepElement);
+											SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, singleLayerList, serverThreadList.size(),
+													stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+											s.layerOrder = layersTab.indexOf(layerToKeepElement);
+
+											s.start();
+											serverThreadList.add(s);
+
+										}
+									} else {
+										SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(),
+												stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+
+										s.layerOrder = layerOrder;
+										layerOrder++;
+										s.start();
+										serverThreadList.add(s);
+
+									}
 								}
 							}
 						}
-
-						// Vérfication de l'absence de "LAYER" autorisées
-						// restantes -> si vrai: la requête n'est pas envoyée
-						if (layerToKeepList.size() <= 0) {
-							sendRequest = false;
-						}
-						// Fin de Debug
-					}
-					// Debug tb 04.09.2009
-					// Vérification de l'authorisation policy pour la couche
-					// "LAYER" de l'opération GetLegendGraphic
-					if ("GetLegendGraphic".equalsIgnoreCase(operation)) {
-						// Vérification que la couche de la req est autorisée
-						// par Policy
-						String tmpFT = "";
-						String[] s = layer.split(":");
-						tmpFT = s[s.length - 1];
-						boolean isLayerTypePermited = isLayerAllowed(tmpFT, getRemoteServerUrl(j));
-						if (!isLayerTypePermited) {
-							dump("requestPreTraitementGET says: GetLegendGraphic request Layer is not allowed by policy");
-							sendRequest = isLayerTypePermited;
-						}
-					}
-					// Fin de Debug
-				}
-
-				// Si pas de fichier Policy défini, envoi direct de la requête
-				// sur le serveur j
-				// else
-				// {
-				// //@TODO:Manage multiple servers when no policy is existing.
-				// if (layers!=null && layers.length()>0)
-				// {
-				// paramUrl="LAYERS="+layers+"&STYLES="+styles;
-				// }
-				// }
-
-				// Si requête à envoyer sur serveur j
-				if (sendRequest) {
-					// Debug tb 08.07.2009
-					// Nouvelle version des threads -> par serveur -> par couche
-					// Création et lancement du thread sur serveur j
-					// Copie des strings pour utlisation dans threads.
-					// Originales rééctrites dans boucle serveur courante!
-					String cpOperation = new String(operation);
-					String cpParamUrl = new String(paramUrl);
-					String cpParamUrlBase = new String(paramUrlBase);
-					String cpWidth = new String(width);
-					String cpHeight = new String(height);
-					String cpFormat = new String(format);
-					if (layers != null && operation.equalsIgnoreCase("getmap")) {
-						List<String> layersTabWithNS = Arrays.asList(layers.split(","));
-						List<String> layersTab = new ArrayList<String>();
-						for (String layerName : layersTabWithNS) {
-							String[] layerNameFinal = layerName.split(":", 2);
-							layersTab.add((layerNameFinal.length > 1) ? layerNameFinal[1] : layerNameFinal[0]);
-						}
-
-						if (!configuration.isGrouping() && layerToKeepList.size() > 0) {
-							for (String layerToKeepElement : layerToKeepList) {
-								List<String> singleLayerList = new ArrayList<String>();
-								singleLayerList.add(layerToKeepElement);
-								SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, singleLayerList, serverThreadList.size(), stylesToKeepList,
-										cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
-								s.layerOrder = layersTab.indexOf(layerToKeepElement);
-
-								s.start();
-								serverThreadList.add(s);
-
+						// Si pas de requête à envoyer sur serveur j:
+						// sendRequest=false
+						else {
+							sendRequest = true;
+							if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation) || "GetLegendGraphic".equalsIgnoreCase(operation))) {
+								dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
+										+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
+								generateEmptyImage(width, height, format, true, j);
 							}
 						}
-
-					} else if (operation.equalsIgnoreCase("GetLegendGraphic")) {
-						SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(), stylesToKeepList,
-								cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
-
-						s.layerOrder = 0;
-						s.start();
-						serverThreadList.add(s);
-
-					} else {
-						SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(), stylesToKeepList,
-								cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
-
-						s.layerOrder = j;
-						s.start();
-						serverThreadList.add(s);
-
-					}
-
-				}
-
-				// Si pas de requête à envoyer sur serveur j: sendRequest=false
-				else {
-					sendRequest = true;
-					if (serverOK
-							&& ("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation) || "GetLegendGraphic".equalsIgnoreCase(operation))) {
-						dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
-								+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
-						generateEmptyImage(width, height, format, true, j);
 					}
 				}
 			}
@@ -1437,7 +1555,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				serverThreadList.get(i).join();
 
 				// les réponses ont été insérées, par les threads servers, dans
-				// filePathList;
+				// wmsFilePathList;
 				// layerFilePathList-> layer names et serverUrlPerFilePathList->
 				// url server, ont aussi été mis à jour en conséquence
 			}
@@ -1445,7 +1563,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			// Debug tb 15.01.2010
 			// Si aucun des layerThread n'a passé de requête, car policy filter
 			// et req bbox incompatibles
-			// if(filePathList.size()<=0 &&
+			// if(wmsFilePathList.size()<=0 &&
 			// ("GetMap".equalsIgnoreCase(operation) ||
 			// "map".equalsIgnoreCase(operation)))
 			// {
@@ -1453,12 +1571,12 @@ public class WMSProxyServlet extends ProxyServlet {
 			// dump("requestPreTraitementGET save response servers: emptyImage");
 			// generateEmptyImage(width,height,format,true);
 			// }
-			// Fin de la phase de reconstruction de la requête: filePathList
+			// Fin de la phase de reconstruction de la requête: wmsFilePathList
 			// contient les réponses de chaque serveur (une par serveur)
 			// *****************************************************************************************************************************
 
 			// *****************************************************************************************************************************
-			if (filePathList.size() > 0) {
+			if (wmsFilePathList.size() > 0) {
 				// Lancement du post traitement
 				version = version.replaceAll("\\.", "");
 
@@ -1506,7 +1624,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				writer.setOutput(output);
 				writer.write(imgOut);
 				String filePath = tempFile.getPath();
-				filePathList.put(j, filePath);
+				wmsFilePathList.put(j, filePath);
 				layerFilePathList.put(j, "");
 			}
 		} catch (Exception e) {

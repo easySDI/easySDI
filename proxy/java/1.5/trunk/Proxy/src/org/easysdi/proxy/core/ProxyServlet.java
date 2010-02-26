@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -72,6 +73,9 @@ import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public abstract class ProxyServlet extends HttpServlet {
 
@@ -97,7 +101,8 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String responseContentType = null;
 	protected String bbox = null;
 	protected String srsName = null;
-	protected Map<Integer, String> filePathList = new TreeMap<Integer, String>(); // Contient
+	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
+	protected Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
 	// une liste
 	// des
 	// fichiers

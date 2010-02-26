@@ -212,7 +212,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				Map hints = new HashMap();
 				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-				org.geotools.data.ows.WFSCapabilities doc = (org.geotools.data.ows.WFSCapabilities) DocumentFactory.getInstance(new File(filePathList
+				org.geotools.data.ows.WFSCapabilities doc = (org.geotools.data.ows.WFSCapabilities) DocumentFactory.getInstance(new File(wfsFilePathList
 						.get(remoteServerIndex)).toURI(), hints, Level.WARNING);
 				if (doc != null) {
 					List<FeatureSetDescription> l = doc.getFeatureTypes();
@@ -578,7 +578,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								currentOperation);
 
 						if (param != null) {
-							WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this, serversIndex, filePathList,
+							WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this, serversIndex, wfsFilePathList,
 									iServer, iii);
 							pool.execute(r);
 							iii++;
@@ -731,16 +731,16 @@ public class WFSProxyServlet extends ProxyServlet {
 				if (send) {
 					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
 					serversIndex.add(iServer);
-					filePathList.put(iServer, filePath);
+					wfsFilePathList.put(iServer, filePath);
 				}
 			}
-			// Fin de la phase de reconstruction de la requête: filePathList
+			// Fin de la phase de reconstruction de la requête: wfsFilePathList
 			// contient les réponses de chaque serveur (une par serveur)
 			// *****************************************************************************************************************************
 
 			// *****************************************************************************************************************************
 			// Lancement du post traitement
-			if (filePathList.size() > 0) {
+			if (wfsFilePathList.size() > 0) {
 				version = version.replaceAll("\\.", "");
 				if (version.equalsIgnoreCase("100")) {
 					transform(version, currentOperation, req, resp);
@@ -1232,7 +1232,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Debug tb 24.06.2009
 							serversIndex.add(iServer);
 							// Fin de Debug
-							filePathList.put(iServer, filePath);
+							wfsFilePathList.put(iServer, filePath);
 							// Debug tb 24.06.2009
 						}
 						// Fin de Debug
@@ -1245,20 +1245,20 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Debug tb 24.06.2009
 						serversIndex.add(iServer);
 						// Fin de Debug
-						filePathList.put(iServer, filePath);
+						wfsFilePathList.put(iServer, filePath);
 					}
 				}
 				// Debug tb 24.06.2009
 			}
 			// Fin de Debug
-			// Fin de la phase de reconstruction de la requête: filePathList
+			// Fin de la phase de reconstruction de la requête: wfsFilePathList
 			// contient les réponses de chaque serveur (une par serveur)
 			// *****************************************************************************************************************************
 
 			// *****************************************************************************************************************************
 			// Lancement du post traitement
 			// Debug tb 24.06.2009
-			if (filePathList.size() > 0) {
+			if (wfsFilePathList.size() > 0) {
 				// Fin de Debug
 				version = version.replaceAll("\\.", "");
 				if (version.equalsIgnoreCase("100")) {
@@ -1847,7 +1847,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Transforms the results using a xslt before sending the response
 			// back
 
-			InputStream xml = null;// new FileInputStream(filePathList.get(0));
+			InputStream xml = null;// new FileInputStream(wfsFilePathList.get(0));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
 			File tempFile = null;
@@ -1862,8 +1862,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					List<File> tempFileCapaList = new Vector<File>();
 
 					// Posttraitement par Server intérrogé ->
-					// filePathList.get(i) contient le fichier réponse *******
-					for (int i = 0; i < filePathList.size(); i++) {
+					// wfsFilePathList.get(i) contient le fichier réponse *******
+					for (int i = 0; i < wfsFilePathList.size(); i++) {
 
 						tempFile = createTempFile("transform_GetCapabilities" + UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
@@ -1874,7 +1874,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
 						// Write the result in a temporary file
-						xml = new BufferedInputStream(new FileInputStream(filePathList.get(i)));
+						xml = new BufferedInputStream(new FileInputStream(wfsFilePathList.get(i)));
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
 						tempFileCapaList.add(tempFile);
@@ -1885,12 +1885,12 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (hasPolicy) {
 						List<File> tempFileDescribeType = new Vector<File>(); // Utile
 						// si
-						// filePathList.size()>1
+						// wfsFilePathList.size()>1
 
 						// Posttraitement par Server intérrogé ->
-						// filePathList.get(i) contient le fichier réponse
+						// wfsFilePathList.get(i) contient le fichier réponse
 						// ********************
-						for (int j = 0; j < filePathList.size(); j++) {
+						for (int j = 0; j < wfsFilePathList.size(); j++) {
 							// Debug tb 12.05.2009
 							Boolean isWFSDescribeFeatureTypeEdit = false;
 							// Fin de Debug
@@ -1898,7 +1898,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							WFSDescribeFeatureType
 									.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 							// On récupère le gml
-							InputStream dataSourceInputStream = new FileInputStream(filePathList.get(j));
+							InputStream dataSourceInputStream = new FileInputStream(wfsFilePathList.get(j));
 							// PBM à la Ligne suivante: attention "schema" est
 							// un singleton: n'est pas cleaner entre chaque
 							// appel sur les servlets!
@@ -1992,7 +1992,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								Date d = new Date();
 								dump("SYSTEM", "DescribeFeatureTypeBeginTransfoDateTime", dateFormat.format(d));
 								// Fin de debug
-								xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
+								xml = new BufferedInputStream(new FileInputStream(wfsFilePathList.get(j)));
 								tempFile = createTempFile("transform_DescribeFeatureType" + UUID.randomUUID().toString(), ".xml");
 								tempFos = new FileOutputStream(tempFile);
 								ByteArrayInputStream xslt = null;
@@ -2009,7 +2009,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								// Fin de debug
 								// Debug tb 12.05.2009
 							} else {
-								xml = new BufferedInputStream(new FileInputStream(filePathList.get(j)));
+								xml = new BufferedInputStream(new FileInputStream(wfsFilePathList.get(j)));
 								tempFile = createTempFile("transform_DescribeFeatureType" + UUID.randomUUID().toString(), ".xml");
 								tempFos = new FileOutputStream(tempFile);
 								BufferedOutputStream BufTempFos = new BufferedOutputStream(tempFos);
@@ -2035,8 +2035,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Fin de Debug
 						}
 						// Colle les "tempFile" en un résultat: Util si
-						// filePathList.size()>1
-						if (filePathList.size() > 1)
+						// wfsFilePathList.size()>1
+						if (wfsFilePathList.size() > 1)
 							tempFile = mergeDescribeFeatureType(tempFileDescribeType);
 					}
 				} else if (currentOperation.equalsIgnoreCase("GetFeature")) {
@@ -2044,10 +2044,10 @@ public class WFSProxyServlet extends ProxyServlet {
 						List<File> tempGetFeatureFile = new Vector();
 
 						// Posttraitement par Server intérrogé ->
-						// filePathList.get(i) contient le fichier réponse
+						// wfsFilePathList.get(i) contient le fichier réponse
 						// ***********************
 						// Voir dans la Policy <server>
-						for (int iFileServer = 0; iFileServer < filePathList.size(); iFileServer++) {
+						for (int iFileServer = 0; iFileServer < wfsFilePathList.size(); iFileServer++) {
 
 							// Debug tb 07.05.2009
 							// On récupère le srs de la réponse -> srsSource
@@ -2062,7 +2062,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// La fonction de remplacement lit progressivement
 							// le fichier (buffer de 512 caractères) afin de
 							// retourner la valeur du "srsName"
-							BufferedReader dis = new BufferedReader(new FileReader(filePathList.get(iFileServer)));
+							BufferedReader dis = new BufferedReader(new FileReader(wfsFilePathList.get(iFileServer)));
 							boolean breakOut = false;
 							int bufSize = 512;
 							int srsIndex = 1;
@@ -2167,7 +2167,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								xmlReader.setEntityResolver(rr);
 							}
 
-							xml = new BufferedInputStream(new FileInputStream(filePathList.get(iFileServer)));
+							xml = new BufferedInputStream(new FileInputStream(wfsFilePathList.get(iFileServer)));
 							BufferedOutputStream BufTempFos = new BufferedOutputStream(tempFos);
 
 							// Write the result in a temporary file
@@ -2364,7 +2364,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Debug tb 13.05.2009
 						// Au cas où il exite plus d'un serveur qui donne
 						// réponse: isWFSGetFeatureRenameFtEdit = true
-						if (filePathList.size() > 1) {
+						if (wfsFilePathList.size() > 1) {
 							// Fin de Debug
 							dump("GetFeature begin to merge servers Results");
 							// Appel à la fonction d'application de la
@@ -2407,10 +2407,10 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (tempFile != null)
 						transformer.transform(new StreamSource(tempFile), new StreamResult(out));
 					// Pourquoi le fichier du premier serveur??? ->
-					// filePathList.get(0) et pas le résultat joint des
+					// wfsFilePathList.get(0) et pas le résultat joint des
 					// transformations sur les serveur: TempFile
 					else
-						transformer.transform(new StreamSource(filePathList.get(0)), new StreamResult(out));
+						transformer.transform(new StreamSource(wfsFilePathList.get(0)), new StreamResult(out));
 					// delete the temporary file
 					tempFile.delete();
 					out.close();
@@ -2427,8 +2427,8 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			InputStream is = null;
 			if (tempFile == null) {
-				is = new FileInputStream(filePathList.get(0));
-				resp.setContentLength((int) new File(filePathList.get(0)).length());
+				is = new FileInputStream(wfsFilePathList.get(0));
+				resp.setContentLength((int) new File(wfsFilePathList.get(0)).length());
 			} else {
 				is = new FileInputStream(tempFile);
 				resp.setContentLength((int) tempFile.length());
