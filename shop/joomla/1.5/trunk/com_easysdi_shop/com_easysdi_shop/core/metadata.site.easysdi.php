@@ -745,7 +745,7 @@ class SITE_metadata {
 				$database->setQuery( $query );
 				if (!$database->query()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );	
 					exit();			
 				}
 				

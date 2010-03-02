@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class SITE_favorite {
 	
-function manageFavoriteProduct ( $orderable = 1)
+function manageFavoriteProduct ()
 {
 	global $mainframe;
 	//Allows Pathway with mod_menu_easysdi
@@ -73,7 +73,7 @@ function manageFavoriteProduct ( $orderable = 1)
 		*/
 		
 		//Load products count, only favorites
-		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1 and  p.orderable = ".$orderable;
+		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
 		//wrong query
 		//$query = "SELECT COUNT(*) FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
 		//old query -> all product lime in shop
@@ -100,7 +100,7 @@ function manageFavoriteProduct ( $orderable = 1)
 					$simpleSearchFilter  = $simpleSearchFilter ."p.data_title ASC";
 		}
 		
-		$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1 and  p.orderable = ".$orderable;
+		$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
 		//old query
 		//$query  = "SELECT * FROM #__easysdi_product p LEFT OUTER JOIN (SELECT partner_id, product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) f  ON p.id = f.product_id  where  p.published=1 and  p.orderable = ".$orderable;
 		$query  = $query .$filter ;
@@ -143,6 +143,79 @@ function manageFavoriteProduct ( $orderable = 1)
 			echo 	$db->getErrorMsg();
 			echo "</div>";
 		}
+		
+		//define an array of orderable associated product for the current user
+		$orderableProductsMd = null;
+		$filter = "";
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($db);
+		if (!$user->guest){
+			$partner->load($user->id);
+		}else{
+			$partner->partner_id = 0;
+		}
+        	
+		if($partner->partner_id == 0)
+		{
+			//No user logged, display only external products
+			$filter .= " AND (EXTERNAL=1) ";
+		}
+		else
+		{
+			//User logged, display products according to users's rights
+			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.EXTERNAL=1
+					OR
+					(p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					
+					))) ";
+				}
+				else
+				{
+					$filter .= " AND (p.EXTERNAL=1) ";
+				}
+			}
+			else
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					)) ";
+									
+				}
+				else
+				{
+					//no command right
+					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
+				}
+			}
+		}
+		$query  = "SELECT metadata_id FROM #__easysdi_product p where published=1 and orderable = 1 ".$filter;
+		$db->setQuery($query);
+		$orderableProductsMd = $db->loadResultArray();
+		if ($db->getErrorNum()) {						
+					echo "<div class='alert'>";			
+					echo 			$db->getErrorMsg();
+					echo "</div>";
+		}
+		
 		?>
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_FAVORITE_TITLE"); ?></h2>
@@ -230,6 +303,10 @@ function manageFavoriteProduct ( $orderable = 1)
 					$db->setQuery( $query);
 					$hasPreview = $db->loadResult();
 					
+					$hasOrderableProduct = false;
+					if (in_array($row->metadata_id, $orderableProductsMd))
+						$hasOrderableProduct = true;
+					
 					?>
 	
 							<tr>		
@@ -249,7 +326,13 @@ function manageFavoriteProduct ( $orderable = 1)
 								-->
 								<td class="logo"><div title="<?php echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); ?>" class="pdFavorite" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='removeFavorite'; submitOrderForm();"/></td>
 								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
+								
+								<?php if($hasOrderableProduct){?>
 								<td class="logo"><div title="<?php echo JText::_('EASYSDI_ADD_TO_CART'); ?>" class="savedOrderOrder" onClick="window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=<?php echo $shopitemId?>&firstload=1&fromStep=1&cid[]=<?php echo $row->id ?>', '_main');"/></td>
+								<?php }else{ ?>
+								<td class="nologo">&nbsp;</td>
+								<?php } ?>
+								
 								<?php if($hasPreview){?>
 								<td align="center" class="logo">
 								<div class="particular-view-product-link">

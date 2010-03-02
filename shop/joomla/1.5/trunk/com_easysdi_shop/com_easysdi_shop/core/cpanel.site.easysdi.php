@@ -746,10 +746,16 @@ class SITE_cpanel {
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		//Automatic Archive and/or Historize of the orders
 		//Get the delays in days unit
-		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY");
-		$history_delay = config_easysdi::getValue("HISTORY_DELAY") - $archive_delay;
-
-		if ($archive_delay == null) $archive_delay=30;
+		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY", 30);
+		$history_delay = config_easysdi::getValue("HISTORY_DELAY", 60);
+		
+		if($history_delay <= $archive_delay){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_HISTORY_ARCHIVE_DELAYS_ERROR");
+			echo "</div>";
+		}
+		
+		//Archive
 		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
 		$database->setQuery($queryStatus);
 		$status_id = $database->loadResult();
@@ -768,8 +774,8 @@ class SITE_cpanel {
 			echo "</div>";
 			exit;
 		}
-
-		if ($history_delay == null) $history_delay=60- $archive_delay;
+		
+		//History
 		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
 		$database->setQuery($queryStatus);
 		$history = $database->loadResult();
@@ -783,6 +789,7 @@ class SITE_cpanel {
 		$toUpdate = $database->loadResultArray();
 
 		$query = "update #__easysdi_order set status=".$history.", ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $history_delay AND (STATUS = ".$archive." OR STATUS = ".$status_id.")";
+		
 		$database->setQuery($query);
 
 		if (!$database->query()) {

@@ -658,7 +658,7 @@ function setAlpha(imageformat)
 				document.getElementById('previousExtent').value = map.getExtent().toBBOX();
 				$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 				//$("scale").innerHTML = document.getElementById('previousExtent').value ;
-				 text = "";
+				text = "";
 				
 				for (i=0; i<map.layers.length ;i++){
 						//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
@@ -666,14 +666,16 @@ function setAlpha(imageformat)
 						 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 						} 
 					}
-				$("shopWarnLogo").className = 'shopWarnLogoActive';
+				//$("shopWarnLogo").className = 'shopWarnLogoActive';
+				$("shopWarnLogo").className = 'shopWarnLogoInactive';
 				$("scaleStatus").innerHTML = text;
-				selectPerimeter('perimeterList', true);
-				});
+				//Reinits the manual selection, we don't want that here!
+				//selectPerimeter('perimeterList', true);
+			});
 			
-	            	vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
+				vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
 			
-	                map.addLayer(vectors);
+				map.addLayer(vectors);
 					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 					
 					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
@@ -2166,7 +2168,7 @@ if (count($rows)>0){
 					foreach($rows as $row)
 					{
 						$productProperties  = $mainframe->getUserState($row->code."_list_property_".$product_id);
-						print_r($productProperties);
+						//print_r($productProperties);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_list_property_'.$product_id,null);

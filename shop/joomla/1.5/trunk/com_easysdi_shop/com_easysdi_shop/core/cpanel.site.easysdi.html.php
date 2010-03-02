@@ -708,11 +708,6 @@ class HTML_cpanel {
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$print = JRequest::getVar('print');
-				if ($print ==1 ){
-			?>
-			<script>window.print();</script> 
-			<?php
-		}
 		
 		?>
 		<script>
@@ -1212,6 +1207,7 @@ function initMap()
 	baseLayerVector = new OpenLayers.Layer.Vector("BackGround",{isBaseLayer: true,transparent: "true"}); 
 	map.addLayer(baseLayerVector);
 <?php
+$print = JRequest::getVar('print');
 
 $query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
 $db->setQuery( $query);
@@ -1261,7 +1257,8 @@ foreach ($rows as $row){
                     	<?php
                     } 
                     ?>
-                 map.addLayer(layer<?php echo $i; ?>);
+		    layer<?php echo $i; ?>.events.register('loadend', this, layerloadend);
+		    map.addLayer(layer<?php echo $i; ?>);
 <?php 
 $i++;
 } ?>                   
@@ -1362,12 +1359,22 @@ $i++;
 		
                                                             
 }
-
 var oldLoad = window.onload;
+//print if needed
+var layersReady = <?php echo count($rows);?>;
+var printWin = <?php if($print == 1) echo "true;\n"; else echo "false;\n"; ?>
+
 window.onload=function(){
-initMap();
-if (oldLoad) oldLoad();
-}                       
+	initMap(); 
+	if (oldLoad) oldLoad();
+}
+
+function layerloadend(){
+	layersReady --;
+	if(layersReady == 0 && printWin == true)
+	       window.print();
+}
+
 </script>   
 	
 	<div id="map" class="tinymap"></div>
