@@ -544,7 +544,7 @@ class displayManager{
 		if($partner->partner_id == 0)
 			$optionFavorite = false;
 		else if ($enableFavorites == 1){
-			$query = "SELECT id FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1 and  p.orderable = 1";
+			$query = "SELECT id FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
 			//$query = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
 			$db->setQuery($query);
 			$productListArray = $db->loadResultArray();
@@ -554,13 +554,13 @@ class displayManager{
 						echo "</div>";
 			}
 		}
-		if($hasOrderableProduct){
-			$db->setQuery("select id from #__easysdi_product where metadata_id = '".$id."'");
-			$productId = $db->loadResult();
-		}
+		
+		$db->setQuery("select id from #__easysdi_product where metadata_id = '".$id."'");
+		$productId = $db->loadResult();
+		
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-			if(!in_array($productId, $productListArray) && $enableFavorites == 1 && $hasOrderableProduct)
+			if(!in_array($productId, $productListArray) && $enableFavorites == 1)
 				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"addToFavorite\"/></td>";
 			
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
@@ -623,7 +623,7 @@ class displayManager{
 			window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=$shopitemId&firstload=1&fromStep=1&cid[]=$productId', '_main');
 		});";
 		}
-		if(!in_array($productId, $productListArray) && $enableFavorites == 1  && $hasOrderableProduct){
+		if(!in_array($productId, $productListArray) && $enableFavorites == 1){
 			$myHtml .= "
 		$('addToFavorite').addEvent( 'click' , function() { 
 			window.open('./index.php?option=com_easysdi_shop&task=addFavorite&view=&productId=$productId', '_main');
