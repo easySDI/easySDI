@@ -323,6 +323,28 @@ if ($curstep == "2")
 
 
 				<script><!--
+				
+				window.addEvent('domready', function() {
+					$('xText').addEvent('keydown', function(event){
+					    //catch enter key
+					    if (event.keyCode == '13'){
+						    //event.stop(); //Prevents the browser from following the link.
+						    modifyGeometryPerimeter();
+						    document.getElementById('xText').value='';
+						    document.getElementById('yText').value='';
+					    }
+					});
+					
+					$('yText').addEvent('keydown', function(event){
+					    //catch enter key
+					    if (event.keyCode == '13'){
+						    //event.stop(); //Prevents the browser from following the link.
+						    modifyGeometryPerimeter();
+						    document.getElementById('xText').value='';
+						    document.getElementById('yText').value='';
+					    }
+					});
+				});
 
 
 				function checkBufferValue()
@@ -359,20 +381,36 @@ if ($curstep == "2")
 						for (i = elSel.length - 1; i>=0; i--) {
 							if (elSel.options[i].selected) {
 								var idToLookFor =  elSel.options[i].value;
-								var wfsFeatures = wfs5.features;
-								// look for a feature with the same id
-								var found = false;
-
-								for(var j=wfsFeatures.length-1; j>=0; j--) {
-									feat2 = wfsFeatures[j];                       
-
-									if (idToLookFor ==  feat2.attributes[idField]){
-										found=true;
-
-										wfs5.removeFeatures([wfsFeatures[j]]);
-										break;
+								//Search in wfs5
+								var wfsFeatures = null;
+								var found =false;
+								if(wfs5 != null){
+									wfsFeatures = wfs5.features;
+									for(var j=wfsFeatures.length-1; j>=0; j--) {
+										feat2 = wfsFeatures[j];                       
+                                                                	
+										if (idToLookFor ==  feat2.attributes[idField]){
+											found=true;
+                                                                	
+											wfs5.removeFeatures([wfsFeatures[j]]);
+											break;
+										}
 									}
 								}
+								//Search in wfs
+								if(wfs != null && found == false){
+									wfsFeatures = wfs.features;
+									for(var j=wfsFeatures.length-1; j>=0; j--) {
+										feat2 = wfsFeatures[j];                       
+                                                                	
+										if (idToLookFor ==  feat2.attributes[idField]){
+											found=true;
+											wfs.removeFeatures([wfsFeatures[j]]);
+											break;
+										}
+									}
+								}
+								
 
 							}
 						}
