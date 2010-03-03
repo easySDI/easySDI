@@ -227,7 +227,7 @@ function manageFavoriteProduct ()
 			//article you would like to call.
 			//-->       
 		
-			<table id="infoStep4">
+			<table width="100%" id="infoStep4">
 				<?php
 				$row->text = config_easysdi::getValue("FAVORITE_ARTICLE_TOP");
 				$args = array( 1,&$row,&$params);

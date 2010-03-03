@@ -324,7 +324,9 @@ class HTML_shop {
 		
 		document.getElementById('perimeter_id').value = perimId;
 		//freeSelectPerimeter();
-		document.getElementById('manualPerimDivId').style.display='none';
+		//Hides the manual selection, we don't want that here!
+		//document.getElementById('manualPerimDivId').style.display='none';
+		//hide the x,y fields
 		document.getElementById('manualAddGeometry').style.display='none';
 		
 			
@@ -669,8 +671,7 @@ function setAlpha(imageformat)
 				//$("shopWarnLogo").className = 'shopWarnLogoActive';
 				$("shopWarnLogo").className = 'shopWarnLogoInactive';
 				$("scaleStatus").innerHTML = text;
-				//Reinits the manual selection, we don't want that here!
-				//selectPerimeter('perimeterList', true);
+				selectPerimeter('perimeterList', true);
 			});
 			
 				vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
@@ -1732,7 +1733,7 @@ if (count($rows)>0){
 			//article you would like to call.
 			//-->       
 		
-			<table id="infoStep4">
+			<table width="100%" id="infoStep4">
 			<?php
 
 			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP4");
@@ -2053,7 +2054,6 @@ if (count($rows)>0){
 			}
 			
 			$cid = $mainframe->getUserState('productList');
-
 			$order_status_value = $orderStatus;
 			$option = JRequest::getVar('option');
 			$task = JRequest::getVar('task');
@@ -2064,8 +2064,6 @@ if (count($rows)>0){
 			$bufferValue = $mainframe->getUserState('bufferValue');
 			$totalArea = $mainframe->getUserState('totalArea');
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
-			
-			
 
 			//jimport("joomla.utilities.date");
 			//$date = new JDate();
@@ -2168,7 +2166,6 @@ if (count($rows)>0){
 					foreach($rows as $row)
 					{
 						$productProperties  = $mainframe->getUserState($row->code."_list_property_".$product_id);
-						//print_r($productProperties);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_list_property_'.$product_id,null);
@@ -2187,7 +2184,6 @@ if (count($rows)>0){
 						}
 	
 						$productProperties  = $mainframe->getUserState($row->code."_mlist_property_".$product_id);
-						print_r($productProperties);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_mlist_property_'.$product_id,null);
@@ -2205,7 +2201,6 @@ if (count($rows)>0){
 						
 						
 						$productProperties  = $mainframe->getUserState($row->code."_cbox_property_".$product_id);
-						print_r($productProperties);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_cbox_property_'.$product_id,null);
@@ -2256,7 +2251,6 @@ if (count($rows)>0){
 						}
 						
 						$productProperties  = $mainframe->getUserState($row->code."_textarea_property_".$product_id);
-						print_r($productProperties);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_textarea_property_'.$product_id,null);
@@ -2352,7 +2346,7 @@ if (count($rows)>0){
 			}
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
-
+			
 			$mainframe->setUserState('productList',null);
 			$mainframe->setUserState('order_type',null);
 			$mainframe->setUserState('order_name',null);
@@ -2373,6 +2367,7 @@ if (count($rows)>0){
 			<div class="alert"><?php echo JText::_("EASYSDI_NOT_ALLOWED"); ?></div>
 			<?php
 		}
+		
 	}
 
 	function manageSession(){
@@ -2396,7 +2391,7 @@ if (count($rows)>0){
 			{
 				foreach ($cid as $key => $value)
 				{
-					if(array_key_exists($value , $productList))
+					if(in_array($value , $productList))
 					{
 						
 					}
@@ -2982,7 +2977,7 @@ function validateForm(toStep, fromStep){
 		}
 		$db->setQuery( $query,$limitstart,$limit);
 		$rows = $db->loadObjectList();
-			
+		
 		if ($db->getErrorNum()) {
 			echo "<div class='alert'>";
 			echo 	$db->getErrorMsg();
@@ -2999,13 +2994,10 @@ function validateForm(toStep, fromStep){
  function addOrder(cid, id){
  	var form = document.getElementById('orderForm');
 	var elem = document.createElement('input');
-	elem.setAttribute('type', 'checkbox');
-	elem.setAttribute('id', 'ch'+id);
+	elem.setAttribute('type', 'hidden');
 	elem.setAttribute('name', 'cid[]');
 	elem.setAttribute('value', cid);
 	form.appendChild(elem);
-	elem.style.visibility = "hidden"; 
-	elem.checked=true;
 	form.submit();
  }
  </script>
