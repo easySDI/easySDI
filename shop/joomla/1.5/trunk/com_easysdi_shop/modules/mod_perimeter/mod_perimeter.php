@@ -328,7 +328,6 @@ if ($curstep == "2")
 					$('xText').addEvent('keydown', function(event){
 					    //catch enter key
 					    if (event.keyCode == '13'){
-						    //event.stop(); //Prevents the browser from following the link.
 						    modifyGeometryPerimeter();
 						    document.getElementById('xText').value='';
 						    document.getElementById('yText').value='';
@@ -338,7 +337,6 @@ if ($curstep == "2")
 					$('yText').addEvent('keydown', function(event){
 					    //catch enter key
 					    if (event.keyCode == '13'){
-						    //event.stop(); //Prevents the browser from following the link.
 						    modifyGeometryPerimeter();
 						    document.getElementById('xText').value='';
 						    document.getElementById('yText').value='';
