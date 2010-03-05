@@ -946,8 +946,10 @@ class displayManager{
 		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
 
 		//fwrite($timer, "Après accès base de données : ".date("H:i:s")."\n");
-		
 		//fwrite($timer, "Avant application xhtml to xslfo : ".date("H:i:s")."\n");
+		
+		if($myHtml == "")
+			$myHtml = "<div/>";
 		
 		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
@@ -960,172 +962,62 @@ class displayManager{
 		$pageDom = new DomDocument();
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
 		@$pageDom->loadHTML($searchPage);
-		$result = $processor->transformToXml($pageDom);    	
+		$result = $processor->transformToXml($pageDom);
 		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 		//$fop_url = config_easysdi::getValue("FOP_URL");
 	 
 		if ($bridge_url ){ 
 			require_once($bridge_url);
-			/*if ($fop_url )
-			{ 
-				//version FOP 0.95
-				$tmp = uniqid();
-				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
-				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
-				$fopxsl = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xsl';
-				$fopfo = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.fo';
-				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
-				
-				try {
-					// Ecrire le xml temporaire
-					$fp = fopen ($fopxml, 'w');
-					fwrite($fp, $pageDom->saveXML());
-					fclose ($fp);
-					
-					// Ecrire le xslt temporaire
-					$fp = fopen ($fopxsl, 'w');
-					fwrite($fp, $document->saveXML());
-					fclose ($fp);
-					
-					// Usefull FOP libraries
-					java_require("$fop_url/build/fop.jar;
-								  $fop_url/lib/xmlgraphics-commons-1.3.1.jar;
-								  $fop_url/lib/batik-all-1.7.jar;
-								  $fop_url/lib/avalon-framework-4.2.0.jar;
-								  $fop_url/lib/xml-apis-1.3.04.jar;
-								  $fop_url/lib/commons-io-1.3.1.jar;
-								  $fop_url/lib/commons-logging-1.0.4.jar");
-										
-					//Create the PDF file based on the FO file
+			//$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
+			// version FOP 0.93 
+			$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+			$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+			
+			$tmp = uniqid();
+			$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
+			$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
+			$fopfotmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.fo';
+			//Check foptmp against the schema before processing
+			//avoid JavaBrigde to fail
+			
+			file_put_contents($fopfotmp, $result);
 
-					//fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
-		
-					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo); //, $timer);
-
-					//fwrite($timer, "Après convertXML2FO : ".date("H:i:s")."\n");
-					//fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
-					
-					displayManager::convertFO2PDF($fopfo, $foptmp); //, $timer);
-					//fwrite($timer, "Après convertFO2PDF : ".date("H:i:s")."\n");
-					
-					if (file_exists($foptmp)) {
-						//fwrite($timer, "Avant download PDF : ".date("H:i:s")."\n");
-					
-						ob_end_clean();
-						@java_reset();
-						
-						error_reporting(0);
-						ini_set('zlib.output_compression', 0);
-						
-					    header('Content-Description: File Transfer');
-					    header('Content-Type: application/octet-stream');
-					    header('Content-Disposition: attachment; filename=metadata.pdf');
-					    header('Content-Transfer-Encoding: binary');
-					    header('Expires: 0');
-					    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-					    header('Pragma: public');
-					    header('Content-Length: ' . filesize($foptmp));
-					    
-					    @readfile($foptmp);
-					    
-					    //fwrite($timer, "Après download PDF : ".date("H:i:s")."\n");
-					}
-					
-					//fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
-					
-					// Remove temporaries files
-					unlink($fopxml);
-					unlink($fopxsl);
-					unlink($fopfo);
-				    unlink($foptmp);
-					
-				    //fwrite($timer, "Après suppression temp files : ".date("H:i:s")."\n");
-					//fclose($timer);
-					/*					
-					@java_reset();
-						
-				 	error_reporting(0);
-					ini_set('zlib.output_compression', 0);
-					
-					header('Pragma: public');
-					header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-					header('Content-Transfer-Encoding: binary');
-					header('Content-type: application/pdf');
-					header('Content-Disposition: attachement; filename="metadata.pdf"');
-					header("Expires: 0"); 
-					header("Content-Length: ".filesize($foptmp));
-					
-					ob_clean();
-				    flush();
-				    @readfile($foptmp);
-					*/
-					
-				/*}
-				catch (JavaException $ex) {
-					echo "An exception occured: "; echo $ex; echo "<br>\n";
-				}
+			//java -jar JavaBridge.jar SERVLET:8080 3 JavaBridge.log
+			
+			java_require($java_library_path);
+			$j_fw = new Java("FOPWrapper");
+			//Génération du document PDF sous forme de fichier
+			
+			try{
+				$j_fw->convert($fopcfg,$fopfotmp,$foptmp);
+			}catch (JavaException $ex) {
+				echo "Cause 1: ".$ex->getCause()."\n";
+				echo "Message 1: ".$ex->getMessage()."\n";
+				$trace = new Java("java.io.ByteArrayOutputStream");
+				$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
+				print $trace;
 			}
-			else {*/
-				//$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
-				
-				// version FOP 0.93 
-				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
-				
-				$tmp = uniqid();
-				$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
-				$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
-				
-				@java_reset();		
-				
-				java_require($java_library_path);
-				$j_fw = new Java("FOPWrapper");
-				$version = $j_fw->FOPVersion();
-				//Génération du document PDF sous forme de fichier
-				$j_fw->convert($fopcfg,$result,$foptmp);
-				/*
-				@java_reset();
-						
-			 	ob_end_clean();
-			    error_reporting(0);
-				ini_set('zlib.output_compression', 0);
-				
-				header('Pragma: public');
-				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-				header('Content-Transfer-Encoding: binary');
-				header('Content-type: application/pdf');
-				header('Content-Disposition: attachement; filename="metadata.pdf"');
-				header("Expires: 0"); 
-				header("Content-Length: ".filesize($foptmp));
-				
-				//flush();
-			    readfile($foptmp);
-				
-			    //echo $result;
-			    */
-			    @java_reset();
-						
-				$fp = fopen ($foptmp, 'r');
-				$result = fread($fp, filesize($foptmp));
-				fclose ($fp);
-			 	//ob_end_clean();
-				error_reporting(0);
-				ini_set('zlib.output_compression', 0);
+			
+			//Avoid JVM class caching while testing DO NOT LET THIS FOR PRODUCTION USE!!!!
+			//@java_reset();
+					
+			$fp = fopen ($foptmp, 'r');
+			$result = fread($fp, filesize($foptmp));
+			fclose ($fp);
+				//ob_end_clean();
+			error_reporting(0);
+			ini_set('zlib.output_compression', 0);
 
-				header('Content-type: application/pdf');
-				header('Content-Disposition: attachement; filename="metadata.pdf"');
-				header('Content-Transfer-Encoding: binary');
-				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-				header('Pragma: public');
-				header("Expires: 0"); 
-				header("Content-Length: ".filesize($foptmp));
-				
-				
-				//flush();
-				//readfile($foptmp);
-				echo $result;
-			    die();
-		/*	}*/
+			header('Content-type: application/pdf');
+			header('Content-Disposition: attachement; filename="metadata.pdf"');
+			header('Content-Transfer-Encoding: binary');
+			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+			header('Pragma: public');
+			header("Expires: 0"); 
+			header("Content-Length: ".filesize($foptmp));
+			
+			echo $result;
+			die();
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
 		}
