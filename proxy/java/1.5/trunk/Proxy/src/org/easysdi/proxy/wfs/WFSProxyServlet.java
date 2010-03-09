@@ -319,6 +319,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// ATTENTION: Dans cette fonction iServer == à l'index du serveur
 			// défini dans CONFIG
 			// L'ordre des balises <server> dans POLICY doit être le même!!!
+			int queryCount = 0;
 			for (int iServer = 0; iServer < getRemoteServerInfoList().size(); iServer++) {
 
 				param = paramOrig;
@@ -361,12 +362,13 @@ public class WFSProxyServlet extends ProxyServlet {
 					Object[] fields = (Object[]) rh.getTypeName().toArray();
 					int iii = 0;
 					for (Object o : fields) {
-/*						featureTypeListToKeep = new Vector<String>();
-						attributeListToKeepPerFT = new Vector<String>();
-						attributeListToKeepNbPerFT = new Vector<Integer>();
-						attributeListToRemove = new Vector<String>();
-						featureTypeListToRemove = new Vector<String>();
-*/						Object[] hFields = new Object[] { o };
+						/*
+						 * featureTypeListToKeep = new Vector<String>();
+						 * attributeListToKeepPerFT = new Vector<String>();
+						 * attributeListToKeepNbPerFT = new Vector<Integer>();
+						 * attributeListToRemove = new Vector<String>();
+						 * featureTypeListToRemove = new Vector<String>();
+						 */Object[] hFields = new Object[] { o };
 						Document dQuery = builder.parse(new InputSource(new StringReader(paramOrig)));
 						String xpathStr = "//*[local-name()='Query'][" + (iii + 1) + "]/@typeName";
 						XPathExpression typeNameExp = xpath.compile(xpathStr);
@@ -440,7 +442,7 @@ public class WFSProxyServlet extends ProxyServlet {
 												for (int k = 0; k < fieldsAttribute.length; k++) //
 												{
 													String tmpFA = fieldsAttribute[k].toString();
-													if (tmpFA != null) {
+													if (!"".equals(tmpFA) && tmpFA != null) {
 														String[] ss = tmpFA.split(":");
 														tmpFA = ss[ss.length - 1];
 													}
@@ -557,14 +559,31 @@ public class WFSProxyServlet extends ProxyServlet {
 												}
 											}
 											// Fin de Debug
+											// Debug tb 08.06.2009
+											ii += 1;
+											attributeListToKeepNbPerFT.add(0);
+											// Fin de Debug
+											// Suppression des features type non
+											// autorisés
+											// et
+											// Suppression des Attributs
+											// respectifs
+											param = removeTypesFromPOSTUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, param,
+													iServer, currentOperation);
+
+											if (param.indexOf("Query") < 0)
+												param = null;
+											if (param != null) {
+												WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this,
+														serversIndex, wfsFilePathList, iServer, queryCount);
+												pool.execute(r);
+												iii++;
+												queryCount++;
+											}
 										} else {
 											featureTypeListToRemove.add(tmpFT);
 										}
 									}
-									// Debug tb 08.06.2009
-									ii += 1;
-									attributeListToKeepNbPerFT.add(0);
-									// Fin de Debug
 								} else {
 									if (tmpFT.equals("")) {
 										featureTypeListToKeep.add("");
@@ -572,20 +591,9 @@ public class WFSProxyServlet extends ProxyServlet {
 								}
 							}
 						}
-						// Suppression des features type non autorisés et
-						// Suppression des Attributs respectifs
-						param = removeTypesFromPOSTUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, param, iServer,
-								currentOperation);
-
-						if (param != null) {
-							WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this, serversIndex, wfsFilePathList,
-									iServer, iii);
-							pool.execute(r);
-							iii++;
-						}
 					}
 					pool.shutdown();
-					pool.awaitTermination(120L,TimeUnit.SECONDS);
+					pool.awaitTermination(120L, TimeUnit.SECONDS);
 				}
 				boolean send = false;
 
@@ -730,8 +738,6 @@ public class WFSProxyServlet extends ProxyServlet {
 				// plus d'une fois!!!
 				if (send) {
 					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
-					serversIndex.add(iServer);
-					wfsFilePathList.put(iServer, filePath);
 				}
 			}
 			// Fin de la phase de reconstruction de la requête: wfsFilePathList
@@ -1570,7 +1576,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						for (int k = 0; k < antltemp.getLength(); k++) {
 							Node node = (Node) antltemp.item(k);
 							if (!"Query".equals(node.getParentNode().getLocalName())) {
-								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "PropertyName");
+								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "ogc:PropertyName");
 							}
 						}
 						// Fin de Debug
@@ -1847,7 +1853,8 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Transforms the results using a xslt before sending the response
 			// back
 
-			InputStream xml = null;// new FileInputStream(wfsFilePathList.get(0));
+			InputStream xml = null;// new
+			// FileInputStream(wfsFilePathList.get(0));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
 			File tempFile = null;
@@ -1862,7 +1869,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					List<File> tempFileCapaList = new Vector<File>();
 
 					// Posttraitement par Server intérrogé ->
-					// wfsFilePathList.get(i) contient le fichier réponse *******
+					// wfsFilePathList.get(i) contient le fichier réponse
+					// *******
 					for (int i = 0; i < wfsFilePathList.size(); i++) {
 
 						tempFile = createTempFile("transform_GetCapabilities" + UUID.randomUUID().toString(), ".xml");
@@ -2199,7 +2207,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							if (featureTypePathList.size() > 0) {
 								// Si localFilter est actif mais not Set ->
 								// filter = ""
-								filter = getFeatureTypeLocalFilter(getRemoteServerUrl(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
+								if (serversIndex.contains(iFileServer) && featureTypePathList.contains(iFileServer))
+									filter = getFeatureTypeLocalFilter(getRemoteServerUrl(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
 							}
 							// Debug tb 15.06.2009
 							// Si un localFilter est défini
