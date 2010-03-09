@@ -430,7 +430,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						dump("transform end filterImage to layer " + 0);
 
 						// Boucle sur les fichiers réponses
-						TreeMap<Integer,Collection<String>> tm = new TreeMap<Integer,Collection<String>>(wmsFilePathList.asMap()); 
+						TreeMap<Integer, Collection<String>> tm = new TreeMap<Integer, Collection<String>>(wmsFilePathList.asMap());
 						for (Map.Entry<Integer, Collection<String>> e : tm.entrySet()) {
 							// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
 							int iFilePath = e.getKey();
@@ -492,11 +492,10 @@ public class WMSProxyServlet extends ProxyServlet {
 					dump("transform begin add Legend Image " + 0);
 					Graphics2D g = null;
 					dump("transform end filterImage to layer " + 0);
-					boolean isTransparent = isAcceptingTransparency(responseContentType);
 					// Boucle sur les fichiers réponses
 
 					BufferedImage imageSource = null;
-
+					String format = "jpeg";
 					for (Map.Entry<Integer, String> e : wmsFilePathList.entries()) {
 						// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
 						int iFilePath = e.getKey();
@@ -504,12 +503,16 @@ public class WMSProxyServlet extends ProxyServlet {
 						// Debug tb 08.07.2009
 
 						BufferedImage image = ImageIO.read(new File(e.getValue()));
-						if (image != null) {
+						if (image != null && image.getWidth() > 1) {
 							int type = BufferedImage.TYPE_INT_BGR;
-							if (image.getTransparency() == Transparency.BITMASK)
+							if (image.getTransparency() == Transparency.BITMASK) {
 								type = BufferedImage.BITMASK;
-							else if (image.getTransparency() == Transparency.TRANSLUCENT)
+								format = "png";
+							} else if (image.getTransparency() == Transparency.TRANSLUCENT){
 								type = BufferedImage.TRANSLUCENT;
+								format = "png";
+
+							}
 							BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
 							canvas.getGraphics().drawImage(image, 0, 0, null);
 
@@ -528,28 +531,33 @@ public class WMSProxyServlet extends ProxyServlet {
 					// Si aucune requête n'a été envoyé au serveur, retourne:
 					// empty image
 					else {
-						imageSource = ImageIO.read(new File(wmsFilePathList.get(0).toArray(new String[1])[0]));
+						format = "png";
+						imageSource = new BufferedImage(32, 32, BufferedImage.TRANSLUCENT);
 					}
+					tempOut = new ByteArrayOutputStream();
+					ImageIO.write(imageSource, format, tempOut);
 
 					// Etape nécessaire car "resp.getOutputStream()" ne peux pas
 					// lire directement le flux d' "imageSource"
-					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+					// Iterator<ImageWriter> iter =
+					// ImageIO.getImageWritersByMIMEType(responseContentType);
 
-					if (iter.hasNext()) {
-						ImageWriter writer = (ImageWriter) iter.next();
-						tempOut = new ByteArrayOutputStream();
-						// tempFile =
-						// createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(),
-						// getExtension(responseContentType));
-						// FileImageOutputStream output = new
-						// FileImageOutputStream(tempFile);
-						writer.setOutput(new MemoryCacheImageOutputStream(tempOut));
-						// writer.setOutput(output);
-						writer.write(imageSource);
-						// output.flush();
-						// output.close();
-						// Fin de Debug
-					}
+					// if (iter.hasNext()) {
+					// ImageWriter writer = (ImageWriter) iter.next();
+
+					// tempFile =
+					// createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(),
+					// getExtension(responseContentType));
+					// FileImageOutputStream output = new
+					// FileImageOutputStream(tempFile);
+					// writer.setOutput(new
+					// MemoryCacheImageOutputStream(tempOut));
+					// writer.setOutput(output);
+					// writer.write(imageSource);
+					// output.flush();
+					// output.close();
+					// Fin de Debug
+					// }
 					dump("transform end GetLegendGraphic operation");
 				}
 
@@ -651,7 +659,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
 				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-				dump("SYSTEM", "ClientResponseLength", tempOut.size());
+				if (tempOut != null)
+					dump("SYSTEM", "ClientResponseLength", tempOut.size());
 				// if (tempFile !=null)
 				// {
 				// dump("SYSTEM","ClientResponseLength",tempFile.length());
@@ -1303,8 +1312,8 @@ public class WMSProxyServlet extends ProxyServlet {
 								if (!isSizeInTheRightRange(Integer.parseInt(width), Integer.parseInt(height))) {
 									dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
 									sendRequest = false;
+									layerArray.remove(0);
 								}
-								
 
 								// Vérification de la présence du pramètre
 								// "LAYERS"
@@ -1348,7 +1357,7 @@ public class WMSProxyServlet extends ProxyServlet {
 									boolean found = false;
 									for (int jj = 0; jj < grsiList.size(); jj++) {
 										for (int i = 0; i <= layerArray.size(); i++) {
-											if(layerArray.size() == 0){
+											if (layerArray.size() == 0) {
 												cnt = false;
 												break;
 											}
@@ -1463,7 +1472,7 @@ public class WMSProxyServlet extends ProxyServlet {
 										sendRequest = isLayerTypePermited;
 									} else {
 										SendServerThread glgs = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(),
-												stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+												stylesToKeepList, cpParamUrlBase, j, null, null, cpFormat);
 
 										glgs.layerOrder = jj;
 										glgs.start();
@@ -1532,15 +1541,16 @@ public class WMSProxyServlet extends ProxyServlet {
 									}
 								}
 							}
-						}
-						// Si pas de requête à envoyer sur serveur j:
-						// sendRequest=false
-						else {
-							sendRequest = true;
-							if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation) || "GetLegendGraphic".equalsIgnoreCase(operation))) {
-								dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
-										+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
-								generateEmptyImage(width, height, format, true, j);
+							// Si pas de requête à envoyer sur serveur j:
+							// sendRequest=false
+							else {
+								sendRequest = true;
+								if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation) || "GetLegendGraphic"
+										.equalsIgnoreCase(operation))) {
+									dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
+											+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
+									generateEmptyImage(width, height, format, true, j);
+								}
 							}
 						}
 					}
