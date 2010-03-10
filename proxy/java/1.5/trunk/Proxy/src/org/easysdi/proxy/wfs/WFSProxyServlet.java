@@ -1411,7 +1411,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							// ceux directement et uniquement sous <Query>:
 							// ex ceux de <Filter>
 							if (!"Query".equals(node.getParentNode().getLocalName())) {
-								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "MyFilterPropertyName");
+								String prefix = (node.getPrefix() != null && !"".equals(node.getPrefix())) ? node.getPrefix() + ":" : "";
+								documentMaster.renameNode(node, node.getNamespaceURI(), prefix + "MyFilterPropertyName");
 							}
 						}
 						NodeList atnl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
@@ -1576,7 +1577,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						for (int k = 0; k < antltemp.getLength(); k++) {
 							Node node = (Node) antltemp.item(k);
 							if (!"Query".equals(node.getParentNode().getLocalName())) {
-								documentMaster.renameNode(node, "http://www.opengis.net/ogc", "ogc:PropertyName");
+								String prefix = (node.getPrefix() != null && !"".equals(node.getPrefix())) ? node.getPrefix() + ":" : "";
+								documentMaster.renameNode(node, node.getNamespaceURI(), prefix + "PropertyName");
 							}
 						}
 						// Fin de Debug
