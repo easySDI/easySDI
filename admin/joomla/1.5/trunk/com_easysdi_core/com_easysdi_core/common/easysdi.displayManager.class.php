@@ -192,6 +192,7 @@ class displayManager{
 			//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 			*/
 			$xml = displayManager::getCSWresult();
+			
 			displayManager::DisplayMetadata($style,$xml,"");
 		}
 		else if ($type == "complete")
@@ -294,6 +295,7 @@ class displayManager{
 		
 	}
 	
+	/*
 	function showAbstractMetadata()
 	{	
 		$user =& JFactory::getUser();
@@ -307,6 +309,7 @@ class displayManager{
 		}
 		//$style->load(dirname(__FILE__).'/../xsl/iso19115_abstract.xsl');
 		$xml = displayManager::getCSWresult();
+		
 		displayManager::DisplayMetadata($style,$xml,"");
 	}
 	function showCompleteMetadata ()
@@ -394,6 +397,7 @@ class displayManager{
 		
 		displayManager::DisplayMetadata($style,$document,"");
 	}
+	*/
 	
 	function DisplayMetadata ($xslStyle, $xml, $message)
 	{
@@ -560,9 +564,8 @@ class displayManager{
 		
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-			if(!in_array($productId, $productListArray) && $enableFavorites == 1)
+			if(!in_array($productId, $productListArray) && $enableFavorites == 1 && !$user->guest)
 				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"addToFavorite\"/></td>";
-			
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
@@ -623,7 +626,7 @@ class displayManager{
 			window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=$shopitemId&firstload=1&fromStep=1&cid[]=$productId', '_main');
 		});";
 		}
-		if(!in_array($productId, $productListArray) && $enableFavorites == 1){
+		if(!in_array($productId, $productListArray) && $enableFavorites == 1 && !$user->guest){
 			$myHtml .= "
 		$('addToFavorite').addEvent( 'click' , function() { 
 			window.open('./index.php?option=com_easysdi_shop&task=addFavorite&view=&productId=$productId', '_main');
@@ -963,15 +966,15 @@ class displayManager{
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
 		@$pageDom->loadHTML($searchPage);
 		$result = $processor->transformToXml($pageDom);
-		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
+		$exportpdf_url = config_easysdi::getValue("EXPORT_PDF_URL");
 		//$fop_url = config_easysdi::getValue("FOP_URL");
 	 
-		if ($bridge_url ){ 
-			require_once($bridge_url);
+		if ($exportpdf_url ){ 
+			//require_once($bridge_url);
 			//$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
 			// version FOP 0.93 
-			$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-			$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
+			//$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
+			//$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
 			
 			$tmp = uniqid();
 			$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
@@ -984,10 +987,19 @@ class displayManager{
 
 			//java -jar JavaBridge.jar SERVLET:8080 3 JavaBridge.log
 			
-			java_require($java_library_path);
-			$j_fw = new Java("FOPWrapper");
+			//java_require($java_library_path);
+			//$j_fw = new Java("FOPWrapper");
 			//Génération du document PDF sous forme de fichier
-			
+			$res = "";
+			//Url to the export pdf servlet
+			$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
+			//echo $url;
+			$fp = fopen($url,"r");
+			while (!feof($fp)) {
+				$res .= fgets($fp, 4096);
+			}
+			//echo $res;
+			/*
 			try{
 				$j_fw->convert($fopcfg,$fopfotmp,$foptmp);
 			}catch (JavaException $ex) {
@@ -997,30 +1009,52 @@ class displayManager{
 				$ex->printStackTrace(new Java("java.io.PrintStream", $trace));
 				print $trace;
 			}
+			*/
+			
 			
 			//Avoid JVM class caching while testing DO NOT LET THIS FOR PRODUCTION USE!!!!
 			//@java_reset();
-					
-			$fp = fopen ($foptmp, 'r');
-			$result = fread($fp, filesize($foptmp));
-			fclose ($fp);
-				//ob_end_clean();
-			error_reporting(0);
-			ini_set('zlib.output_compression', 0);
-
-			header('Content-type: application/pdf');
-			header('Content-Disposition: attachement; filename="metadata.pdf"');
-			header('Content-Transfer-Encoding: binary');
-			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-			header('Pragma: public');
-			header("Expires: 0"); 
-			header("Content-Length: ".filesize($foptmp));
-			
-			echo $result;
-			die();
+			if(substr(strtoupper($res),0,7) == "SUCCESS"){
+				$fp = fopen ($foptmp, 'r');
+				$result = fread($fp, filesize($foptmp));
+				fclose ($fp);
+					//ob_end_clean();
+				error_reporting(0);
+				ini_set('zlib.output_compression', 0);
+                        	
+				header('Content-type: application/pdf');
+				header('Content-Disposition: attachement; filename="metadata.pdf"');
+				header('Content-Transfer-Encoding: binary');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Pragma: public');
+				header("Expires: 0"); 
+				header("Content-Length: ".filesize($foptmp));
+				
+				echo $result;
+				die();
+			}else
+			{
+				//If there was an error when generating the pdf, write it.
+				$mainframe->redirect("index.php?option=com_easysdi_core&tmpl=component&task=reportPdfError&res=".urlencode($res));
+			}
 		}else {
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
 		}
+	}
+	
+	function reportPdfError() //, $timer)
+	{
+		$res = urldecode(JRequest::getVar('res'));
+		
+		echo '<div id="metadata" class="contentin">';
+		echo '<h2 class="contentheading">'.JText::_('EASYSDI_ERROR_PDF_TITLE').'</h2>';
+		echo '<table class="descr">';
+		echo '<tr><td>&nbsp;</td></tr>';
+		echo '<tr><td>'.JText::_('EASYSDI_ERROR_PDF_DETAIL').'</td><td>'.$res.'</td></tr>';
+		echo '<tr><td>&nbsp;</td></tr>';
+		echo '<tr><td colspan="2">'.JText::_('EASYSDI_ERROR_PDF_REPORT').'</td></tr>';
+		echo '</table>';
+		echo '</div>';
 	}
 	
 	function convertXML2FO($xml, $xslt, $fo) //, $timer)
