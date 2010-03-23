@@ -107,7 +107,9 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
 		SITE_partner::editPartner();
 		break;
-	
+	case "reportPdfError"	:
+		displayManager::reportPdfError();
+		break;	
 	case "showMetadata"	:
 		displayManager::showMetadata();
 		break;
