@@ -32,7 +32,7 @@ public class Launcher {
 	
 	Server jetty = new Server();
 	Connector connector = new SelectChannelConnector();
-	connector.setPort(8081);
+	connector.setPort(8070);
 	jetty.setConnectors(new Connector[] { connector });
 	WebAppContext appContext = new WebAppContext();
 	appContext.setContextPath("/proxy");

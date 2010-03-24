@@ -17,13 +17,18 @@
 
 package org.easysdi.xml.documents;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Administrateur
  * 
  */
-public class Config {
+public class Config implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4599947106473181240L;
 	private static String DEFAULT_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 	private String id;
 	private List<RemoteServerInfo> remoteServer;

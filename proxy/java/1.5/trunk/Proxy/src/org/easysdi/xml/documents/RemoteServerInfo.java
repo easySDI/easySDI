@@ -16,11 +16,17 @@
  */
 package org.easysdi.xml.documents;
 
+import java.io.Serializable;
+
 /**
  * @author Administrateur
  *
  */
-public class RemoteServerInfo {
+public class RemoteServerInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1522579526391545420L;
 	private String url;
 	private String user;
 	private String password;
@@ -77,9 +83,9 @@ public class RemoteServerInfo {
 	    this.maxRecords = maxRecords;
 	    this.loginService = loginService;
 //Debug tb 02.07.2009
-	    // Le problème avec cette ligne, c'est que WFSProxyServlet a été corrigé sur la base du bug existant
+	    // Le problï¿½me avec cette ligne, c'est que WFSProxyServlet a ï¿½tï¿½ corrigï¿½ sur la base du bug existant
 	    //-> getPrefix ne retournais rien, donc c'est un splite sur ":" qui s'en charge maintenant.
-	    //Sauf les méthodes de postraitement builtCapabilitiesXSLT et mergeDescribeFeatureTypes
+	    //Sauf les mï¿½thodes de postraitement builtCapabilitiesXSLT et mergeDescribeFeatureTypes
 	    this.prefix = preifx;
 //Fin de Debug
 	    this.transaction = transaction;

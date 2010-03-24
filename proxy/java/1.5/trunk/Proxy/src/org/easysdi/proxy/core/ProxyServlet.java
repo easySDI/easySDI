@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -107,7 +106,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	// des
 	// fichiers
 	// (sendData)
-	// réponse de
+	// rï¿½ponse de
 	// chaque
 	// serveur
 	// WFS.
@@ -524,7 +523,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			int input;
 
-			responseContentType = hpcon.getContentType();
+			responseContentType = hpcon.getContentType().split(";")[0];
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
 
@@ -890,11 +889,11 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (serverInfo.getUrl().equals(urlstr)) {
 				// Debug tb 28.09.2009
 				// Utilisation de la classe Java "Authenticator" qui ajoute
-				// l'authentication, selon les besoins, à la classe java
+				// l'authentication, selon les besoins, ï¿½ la classe java
 				// "URLConnection".
-				// Pour des raisons de vérification de schema xsd (requete
-				// DescribeFeatureType), la classe "DocumentFactory" nécessite
-				// l'authentication au cas où geoserver défini un compte de
+				// Pour des raisons de vï¿½rification de schema xsd (requete
+				// DescribeFeatureType), la classe "DocumentFactory" nï¿½cessite
+				// l'authentication au cas oï¿½ geoserver dï¿½fini un compte de
 				// service.
 				// Do not setCredentials if no account and password were
 				// supplied
@@ -1172,8 +1171,8 @@ public abstract class ProxyServlet extends HttpServlet {
 						// List d'attributs de Policy pour le featureType
 						// courant
 						List<Attribute> attributeList = ftList.get(j).getAttributes().getAttribute();
-						// Supprime les résultats, contenu dans la globale var,
-						// issus du précédent appel de la fonction courante
+						// Supprime les rï¿½sultats, contenu dans la globale var,
+						// issus du prï¿½cï¿½dent appel de la fonction courante
 						policyAttributeListToKeepPerFT.clear();
 						for (int k = 0; k < attributeList.size(); k++) {
 							// If attributes are listed in user req

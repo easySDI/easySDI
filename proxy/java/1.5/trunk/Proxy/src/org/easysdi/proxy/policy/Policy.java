@@ -8,6 +8,8 @@
 
 package org.easysdi.proxy.policy;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -51,7 +53,7 @@ import javax.xml.bind.annotation.XmlType;
     "subjects"
 })
 @XmlRootElement(name = "Policy")
-public class Policy {
+public class Policy implements Serializable{
 
     @XmlElement(name = "AvailabilityPeriod")
     protected AvailabilityPeriod availabilityPeriod;

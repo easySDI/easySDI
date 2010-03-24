@@ -125,7 +125,8 @@ public class Server {
      *     
      */
     public Layers getLayers() {
-        return layers;
+        if(layers == null) layers = new Layers();
+    	return layers;
     }
 
     /**

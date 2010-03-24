@@ -154,7 +154,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// WFSCapabilities100.append("<OnlineResource>");
 			WFSCapabilities100.append("<xsl:element name=\"OnlineResource\" namespace=\"http://www.opengis.net/wfs\">" + url + "</xsl:element>");
 			// Changer seulement la partie racine de l'URL, pas les
-			// param après '?'
+			// param aprÃ¨s '?'
 			WFSCapabilities100.append("</xsl:template>");
 			WFSCapabilities100.append("<xsl:template match=\"@onlineResource\">");
 			WFSCapabilities100.append("<xsl:param name=\"thisValue\">");
@@ -163,7 +163,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append("<xsl:attribute name=\"onlineResource\">");
 			WFSCapabilities100.append(url);
 			// Changer seulement la partie racine de l'URL, pas les
-			// param après '?'
+			// param aprÃ¨s '?'
 			WFSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
 			WFSCapabilities100.append("</xsl:attribute>");
 			WFSCapabilities100.append("</xsl:template>");
@@ -235,7 +235,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				}
 				// Debug tb 03.07.2009
 				// Add the prefix before the feature type: devenu inutile,
-				// FeatureType>Name contient déjà le préfix du serveur concerné
+				// FeatureType>Name contient dÃ©jÃ  le prÃ©fix du serveur concernÃ©
 				// if(getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0){
 				// WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType/wfs:Name\">");
 				// WFSCapabilities100.append("<Name>");
@@ -271,7 +271,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		try {
 
 			XMLReader xr = XMLReaderFactory.createXMLReader(); // Contient la
-			// requête
+			// requÃªte
 			// utilistateur
 			// sous forme
 			// d'un xml
@@ -281,7 +281,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			StringBuffer paramSB = new StringBuffer();
 
-			String param = ""; // Contient la requête utilistateur sous forme
+			String param = ""; // Contient la requÃªte utilistateur sous forme
 			// d'une string
 			String input;
 			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
@@ -312,13 +312,13 @@ public class WFSProxyServlet extends ProxyServlet {
 			String paramOrig = param;
 
 			// *****************************************************************************************************************************
-			// Construction des FeaturesTypes et Attributs associés authorisés
-			// -> modification de la requête utilisateur en conséquence
-			// Passage de la requête utilisateur à plusieurs serveurs si défini
+			// Construction des FeaturesTypes et Attributs associÃ©s authorisÃ©s
+			// -> modification de la requÃªte utilisateur en consÃ©quence
+			// Passage de la requÃªte utilisateur Ã  plusieurs serveurs si dÃ©fini
 			// dans Policy <server>!!!
-			// ATTENTION: Dans cette fonction iServer == à l'index du serveur
-			// défini dans CONFIG
-			// L'ordre des balises <server> dans POLICY doit être le même!!!
+			// ATTENTION: Dans cette fonction iServer == Ã  l'index du serveur
+			// dÃ©fini dans CONFIG
+			// L'ordre des balises <server> dans POLICY doit Ãªtre le mÃªme!!!
 			int queryCount = 0;
 			for (int iServer = 0; iServer < getRemoteServerInfoList().size(); iServer++) {
 
@@ -342,11 +342,11 @@ public class WFSProxyServlet extends ProxyServlet {
 				// Fin de debug
 				List<String> featureTypeListToRemove = new Vector<String>();
 
-				// Construcation de la liste des FeatureType autorisé ou non à
-				// partir de celles contenues dans la requête utilisateur
-				// Si le featureType est autorisé faire de même avec les
+				// Construcation de la liste des FeatureType autorisÃ© ou non Ã 
+				// partir de celles contenues dans la requÃªte utilisateur
+				// Si le featureType est autorisÃ© faire de mÃªme avec les
 				// attributs
-				// Attention: dans le cas où la requête utiliseur GetFeature
+				// Attention: dans le cas oÃ¹ la requÃªte utiliseur GetFeature
 				// comporte plusieurs Query (typeName), ->
 				// featureTypeListToKeep.length()>1
 				String filePath = "";
@@ -388,7 +388,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 							for (int i = 0; i < hFields.length; i++) {
 								// Proxy est non compatible avec les multi Query
-								// dans les requêtes GetFeature!
+								// dans les requÃªtes GetFeature!
 								if (currentOperation.equalsIgnoreCase("GetFeature") && i > 0) {
 									break;
 								}
@@ -410,33 +410,33 @@ public class WFSProxyServlet extends ProxyServlet {
 										if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
 											featureTypeListToKeep.add(tmpFT);
 											// Debug tb 04.06.2009
-											// Filtrage des attributs autorisés
+											// Filtrage des attributs autorisÃ©s
 											if (currentOperation.equalsIgnoreCase("GetFeature")) {
 												Object[] fieldsAttribute = (Object[]) rh.getPropertyName().toArray(); // Si
 												// req
 												// PropertyNames
 												// non
-												// défini
+												// dÃ©fini
 												// ->
 												// RequestHandler
 												// retourne
 												// un
-												// élément
+												// Ã©lÃ©ment
 												// avec
 												// ""
 
 												// Au cas: req PropertyNames
-												// défini
+												// dÃ©fini
 												// et [Policy Attributs sur ALL
 												// ou
-												// sur sous ensemble limité]
+												// sur sous ensemble limitÃ©]
 												// ou
-												// req PropertyNames non défini
+												// req PropertyNames non dÃ©fini
 												// et
 												// Policy Attributs sur sous
-												// ensemble limité
+												// ensemble limitÃ©
 												// ou
-												// req PropertyNames non défini
+												// req PropertyNames non dÃ©fini
 												// et
 												// Policy Attributs sur All
 												for (int k = 0; k < fieldsAttribute.length; k++) //
@@ -489,7 +489,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// cas:
 														// req
 														// PropertyNames
-														// défini
+														// dÃ©fini
 														// et
 														// aussi
 														// dans
@@ -500,7 +500,7 @@ public class WFSProxyServlet extends ProxyServlet {
 															attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii) + 1);
 														} else // au cas: req
 														// PropertyNames non
-														// défini et Policy
+														// dÃ©fini et Policy
 														// sur All
 														{
 															attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
@@ -510,7 +510,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// cas:
 														// req
 														// PropertyNames
-														// défini
+														// dÃ©fini
 														// mais
 														// pas
 														// dans
@@ -523,7 +523,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// req
 														// PropertyNames
 														// non
-														// défini,
+														// dÃ©fini,
 														// ajout
 														// de
 														// ceux
@@ -537,12 +537,12 @@ public class WFSProxyServlet extends ProxyServlet {
 													}
 												}
 												// Au cas: Aucun attribut
-												// demandé
-												// dans req n'est autorisé dans
+												// demandÃ©
+												// dans req n'est autorisÃ© dans
 												// Policy
-												// -> isAttributeAllowed à
-												// ajouté
-												// ceux de la policy à la
+												// -> isAttributeAllowed Ã 
+												// ajoutÃ©
+												// ceux de la policy Ã  la
 												// globale
 												// var
 												// policyAttributeListToKeepPerFT
@@ -564,7 +564,7 @@ public class WFSProxyServlet extends ProxyServlet {
 											attributeListToKeepNbPerFT.add(0);
 											// Fin de Debug
 											// Suppression des features type non
-											// autorisés
+											// autorisÃ©s
 											// et
 											// Suppression des Attributs
 											// respectifs
@@ -598,8 +598,8 @@ public class WFSProxyServlet extends ProxyServlet {
 				boolean send = false;
 
 				// Debug tb 23.06.2009
-				// Vérifier que la requête avec opération DescribeFeatureType
-				// comporte encore au moins 1 TypeName sinon voici la réponse à
+				// VÃ©rifier que la requÃªte avec opÃ©ration DescribeFeatureType
+				// comporte encore au moins 1 TypeName sinon voici la rÃ©ponse Ã 
 				// retourner
 				if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
 					if (featureTypeListToKeep.size() == 0) {
@@ -619,11 +619,11 @@ public class WFSProxyServlet extends ProxyServlet {
 				}
 				// Fin de Debug
 
-				// Ajout du remote filter (BBOX) à la requête utilisateur si
-				// opération GetFeature
+				// Ajout du remote filter (BBOX) Ã  la requÃªte utilisateur si
+				// opÃ©ration GetFeature
 				if ("GetFeature".equalsIgnoreCase(currentOperation)) {
-					// Si la requête modifiée ne comporte plus de TypeName voici
-					// la réponse à retourner
+					// Si la requÃªte modifiÃ©e ne comporte plus de TypeName voici
+					// la rÃ©ponse Ã  retourner
 					if (featureTypeListToKeep.size() == 0) {
 						String s = "<?xml version='1.0' encoding='utf-8' ?>"
 								+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
@@ -639,29 +639,29 @@ public class WFSProxyServlet extends ProxyServlet {
 						send = false;
 					}
 
-					// Ajouter le "remoteFilter" à la requête posée
+					// Ajouter le "remoteFilter" Ã  la requÃªte posÃ©e
 					// ********************************************
-					// Attention corr: le namespace est ajouté explicitement
+					// Attention corr: le namespace est ajoutÃ© explicitement
 					// Concernant les filtres spatiaux de la policy:
-					// RemoteFilter s'applique à la requête, LocalFilter
-					// s'applique à la réponse
+					// RemoteFilter s'applique Ã  la requÃªte, LocalFilter
+					// s'applique Ã  la rÃ©ponse
 					// Il existe les cas possibles suivants:
 					// Policy RemoteFilter is Not Set -> Policy Local Filter is
-					// Not Set -> L'attribut géom n'est pas obligatoire
+					// Not Set -> L'attribut gÃ©om n'est pas obligatoire
 					// Policy RemoteFilter is Set -> Policy Local Filter is Not
-					// Set -> L'attribut géom n'est pas obligatoire
+					// Set -> L'attribut gÃ©om n'est pas obligatoire
 					// Policy RemoteFilter is Set -> Policy Local Filter is Set
-					// -> L'attribut géom est OBLIGATOIRE
-					// ->Lecture de son nom dans RemoteFilter, vérification de
-					// sa présence dans attributeListToKeepPerFT
-					// -> Si présent: pas de modification de la requête
-					// -> Si absent: modification de la requête par ajout de
+					// -> L'attribut gÃ©om est OBLIGATOIRE
+					// ->Lecture de son nom dans RemoteFilter, vÃ©rification de
+					// sa prÃ©sence dans attributeListToKeepPerFT
+					// -> Si prÃ©sent: pas de modification de la requÃªte
+					// -> Si absent: modification de la requÃªte par ajout de
 					// <PropertyName>, puis suppression par filtrage du
-					// résultat!
+					// rÃ©sultat!
 					// 
 
 					// Recherche du remoteFilter dans la Policy et Ajout du
-					// FeatureType autorisé
+					// FeatureType autorisÃ©
 					String userFilter = null;
 
 					if (featureTypeListToKeep.size() > 0) {
@@ -669,7 +669,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						featureTypePathList = featureTypeListToKeep;
 					}
 
-					// Modification de la requête user avec le remoteFilter
+					// Modification de la requÃªte user avec le remoteFilter
 					// Debug tb 21.05.2009
 					// In case remoteFilter is activ but not Set
 					if (send && userFilter != null && !userFilter.equals(""))
@@ -733,15 +733,15 @@ public class WFSProxyServlet extends ProxyServlet {
 					// Fin d'ajout du "remoteFilter"
 				}
 
-				// Exécution de la requête utilisateur modifiée au serveur en
+				// ExÃ©cution de la requÃªte utilisateur modifiÃ©e au serveur en
 				// cours ->s'il y a plusieurs serveurs, alors cet appel se fait
 				// plus d'une fois!!!
 				if (send) {
 					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
 				}
 			}
-			// Fin de la phase de reconstruction de la requête: wfsFilePathList
-			// contient les réponses de chaque serveur (une par serveur)
+			// Fin de la phase de reconstruction de la requÃªte: wfsFilePathList
+			// contient les rÃ©ponses de chaque serveur (une par serveur)
 			// *****************************************************************************************************************************
 
 			// *****************************************************************************************************************************
@@ -791,14 +791,14 @@ public class WFSProxyServlet extends ProxyServlet {
 			String propertyName = "";
 			// Fin de Debug
 
-			// Récupération des valeurs des paramètres de la requête utilisateur
+			// RÃ©cupÃ©ration des valeurs des paramÃ¨tres de la requÃªte utilisateur
 			while (parameterNames.hasMoreElements()) {
 				String key = (String) parameterNames.nextElement();
 				String value = req.getParameter(key);
 
 				if (!key.equalsIgnoreCase("FILTER")) {
-					// Le FILTER sera ajouté par la suite s'il existe dans la
-					// requête utilisateur
+					// Le FILTER sera ajoutÃ© par la suite s'il existe dans la
+					// requÃªte utilisateur
 					paramUrl = paramUrl + key + "=" + value + "&";
 				}
 
@@ -842,12 +842,12 @@ public class WFSProxyServlet extends ProxyServlet {
 			}
 
 			// *****************************************************************************************************************************
-			// Construction des FeaturesTypes et Attributs associés authorisés
-			// -> modification de la requête utilisateur en conséquence
-			// Passage de la requête utilisateur à plusieurs serveurs si défini
+			// Construction des FeaturesTypes et Attributs associÃ©s authorisÃ©s
+			// -> modification de la requÃªte utilisateur en consÃ©quence
+			// Passage de la requÃªte utilisateur Ã  plusieurs serveurs si dÃ©fini
 			// dans Policy <server>!!!
-			// ATTENTION: Dans cette fonction iServer == à l'index du serveur
-			// défini dans CONFIG
+			// ATTENTION: Dans cette fonction iServer == Ã  l'index du serveur
+			// dÃ©fini dans CONFIG
 			for (int iServer = 0; iServer < getRemoteServerInfoList().size(); iServer++) {
 				// Reset the original request url
 				paramUrl = requestParamUrl;
@@ -882,10 +882,10 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Fin de Debug
 
 							// Passe en revue les typesName(=FeatureTypes) de la
-							// requête
+							// requÃªte
 							for (int i = 0; i < fields.length; i++) {
 								// Proxy est non compatible avec les multi Query
-								// dans les requêtes GetFeature!
+								// dans les requÃªtes GetFeature!
 								if (currentOperation.equalsIgnoreCase("GetFeature") && i > 0) {
 									break;
 								}
@@ -909,31 +909,31 @@ public class WFSProxyServlet extends ProxyServlet {
 										if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(iServer))) {
 											featureTypeListToKeep.add(tmpFT);
 											// Debug tb 25.06.2009
-											// Filtrage des attributs autorisés
+											// Filtrage des attributs autorisÃ©s
 											if (currentOperation.equalsIgnoreCase("GetFeature")) {
 												String[] fieldsAttribute = propertyName.split(","); // Si
 												// req
 												// PropertyNames
 												// non
-												// défini
+												// dÃ©fini
 												// ->
 												// Split
 												// retourne
 												// un
-												// élément
+												// Ã©lÃ©ment
 												// avec
 												// ""
 
 												// Au cas: req PropertyNames
-												// défini et [Policy Attributs
+												// dÃ©fini et [Policy Attributs
 												// sur ALL ou sur sous ensemble
-												// limité]
+												// limitÃ©]
 												// ou
-												// req PropertyNames non défini
+												// req PropertyNames non dÃ©fini
 												// et Policy Attributs sur sous
-												// ensemble limité
+												// ensemble limitÃ©
 												// ou
-												// req PropertyNames non défini
+												// req PropertyNames non dÃ©fini
 												// et Policy Attributs sur All
 												for (int k = 0; k < fieldsAttribute.length; k++) //
 												{
@@ -976,7 +976,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// cas:
 														// req
 														// PropertyNames
-														// défini
+														// dÃ©fini
 														// et
 														// aussi
 														// dans
@@ -987,7 +987,7 @@ public class WFSProxyServlet extends ProxyServlet {
 															attributeListToKeepNbPerFT.set(ii, attributeListToKeepNbPerFT.get(ii) + 1);
 														} else // au cas: req
 														// PropertyNames
-														// non défini et
+														// non dÃ©fini et
 														// Policy sur
 														// All
 														// (policyAttributeListNb
@@ -1000,7 +1000,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// cas:
 														// req
 														// PropertyNames
-														// défini
+														// dÃ©fini
 														// mais
 														// pas
 														// dans
@@ -1013,7 +1013,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// req
 														// PropertyNames
 														// non
-														// défini,
+														// dÃ©fini,
 														// ajout
 														// de
 														// ceux
@@ -1022,7 +1022,7 @@ public class WFSProxyServlet extends ProxyServlet {
 														// policy
 														{
 															// policyAttributeListNb
-															// est éditer par
+															// est Ã©diter par
 															// isAttributeAllowed
 															// dans ce cas
 															attributeListToKeepNbPerFT.set(ii, policyAttributeListNb);
@@ -1031,10 +1031,10 @@ public class WFSProxyServlet extends ProxyServlet {
 													}
 												}
 												// Au cas: Aucun attribut
-												// demandé dans req n'est
-												// autorisé dans Policy
-												// -> isAttributeAllowed à
-												// ajouté ceux de la policy à la
+												// demandÃ© dans req n'est
+												// autorisÃ© dans Policy
+												// -> isAttributeAllowed Ã 
+												// ajoutÃ© ceux de la policy Ã  la
 												// globale var
 												// policyAttributeListToKeepPerFT
 												if (attributeListToKeepNbPerFT.get(ii) == 0 && !fieldsAttribute[0].toString().equals("")) // ajout
@@ -1066,12 +1066,12 @@ public class WFSProxyServlet extends ProxyServlet {
 							}
 							if (!currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
 								// Recherche du remoteFilter dans la Policy et
-								// Modification de la requête user en
-								// conséquence **************
+								// Modification de la requÃªte user en
+								// consÃ©quence **************
 
-								// S'il n'y a pas de filtre dans la requête
+								// S'il n'y a pas de filtre dans la requÃªte
 								// utilisateur -> ajouter celui de la policy si
-								// défini
+								// dÃ©fini
 								if (filter == null) {
 									String userFilter = null;
 									if (featureTypeListToKeep.size() > 0) {
@@ -1089,9 +1089,9 @@ public class WFSProxyServlet extends ProxyServlet {
 										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(userFilter);
 									}
 								}
-								// S'il y a un filtre dans la requête
+								// S'il y a un filtre dans la requÃªte
 								// utilisateur -> ajouter ce dernier et ajouter
-								// celui de la policy si définie
+								// celui de la policy si dÃ©finie
 								else {
 									String userFilter = null;
 									if (featureTypeListToKeep.size() > 0) {
@@ -1172,11 +1172,11 @@ public class WFSProxyServlet extends ProxyServlet {
 										paramUrl = paramUrl + "FILTER=" + java.net.URLEncoder.encode(fluxSortie.toString());
 									}
 								}
-								// Fin de modification de la requête user avec
+								// Fin de modification de la requÃªte user avec
 								// RemoteFilter
 								// ***************************************
 							}
-							// Suppression des features type non autorisés et
+							// Suppression des features type non autorisÃ©s et
 							// Suppression des Attributs respectifs
 							// Debug tb 25.06.2009
 							paramUrl = removeTypesFromGetUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, paramUrl, iServer,
@@ -1190,9 +1190,9 @@ public class WFSProxyServlet extends ProxyServlet {
 						String filePath = "";
 
 						// Debug tb 23.06.2009
-						// Vérifier que la requête avec opération
+						// VÃ©rifier que la requÃªte avec opÃ©ration
 						// DescribeFeatureType comporte encore au moins 1
-						// TypeName sinon voici la réponse à retourner
+						// TypeName sinon voici la rÃ©ponse Ã  retourner
 						if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
 							if (featureTypeListToKeep.size() == 0) {
 								String s = "<?xml version='1.0' encoding='utf-8' ?>"
@@ -1211,8 +1211,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Fin de Debug
 
 						if ("GetFeature".equalsIgnoreCase(currentOperation)) {
-							// Si la requête modifiée ne comporte plus de
-							// TypeName voici la réponse à retourner
+							// Si la requÃªte modifiÃ©e ne comporte plus de
+							// TypeName voici la rÃ©ponse Ã  retourner
 							if (featureTypeListToKeep.size() == 0) {
 								String s = "<?xml version='1.0' encoding='utf-8' ?>"
 										+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
@@ -1227,7 +1227,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								send = false;
 							}
 						}
-						// Exécution de la requête utilisateur modifiée au
+						// ExÃ©cution de la requÃªte utilisateur modifiÃ©e au
 						// serveur en cours ->s'il y a plusieurs serveurs, alors
 						// cet appel se fait plus d'une fois!!!
 						if (send)
@@ -1244,7 +1244,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Fin de Debug
 					}
 
-					// Si l'opération courante est différente de DescribeFeature
+					// Si l'opÃ©ration courante est diffÃ©rente de DescribeFeature
 					// ou GetFeature
 					else {
 						String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
@@ -1257,8 +1257,8 @@ public class WFSProxyServlet extends ProxyServlet {
 				// Debug tb 24.06.2009
 			}
 			// Fin de Debug
-			// Fin de la phase de reconstruction de la requête: wfsFilePathList
-			// contient les réponses de chaque serveur (une par serveur)
+			// Fin de la phase de reconstruction de la requÃªte: wfsFilePathList
+			// contient les rÃ©ponses de chaque serveur (une par serveur)
 			// *****************************************************************************************************************************
 
 			// *****************************************************************************************************************************
@@ -1298,7 +1298,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 	// Debug tb 10.06.2009
-	// Retourne l'attribut géométrique de localFilter
+	// Retourne l'attribut gÃ©omÃ©trique de localFilter
 	private String getLocalFilterGeomAttribut(int iServer, String featureTypeToKeep) {
 		String geomAttributName = "";
 		try {
@@ -1307,7 +1307,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			localFilter = getFeatureTypeLocalFilter(getRemoteServerUrl(iServer), featureTypeToKeep);
 
-			// Récupération de l'attribut geom du localFilter
+			// RÃ©cupÃ©ration de l'attribut geom du localFilter
 			// In case localFilter is activ but not Set
 			if (localFilter != null && !localFilter.equals("")) {
 				InputStream isLocalFilter = new ByteArrayInputStream(localFilter.getBytes());
@@ -1346,7 +1346,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			List<Node> nodeListToRemove = new Vector<Node>();
 			List<Node> nodeAttributeListToRemove = new Vector<Node>();
 
-			// lecture du contenu de la requête utilisateur (paramUrl) dans un
+			// lecture du contenu de la requÃªte utilisateur (paramUrl) dans un
 			// document
 			InputStream is = new ByteArrayInputStream(paramUrl.getBytes());
 			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
@@ -1361,7 +1361,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
 			}
 
-			// Dans le cas d'un requête portant sur une opération GetFeature
+			// Dans le cas d'un requÃªte portant sur une opÃ©ration GetFeature
 			if ("GetFeature".equalsIgnoreCase(operation)) {
 				NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "Query");
 
@@ -1373,7 +1373,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				policyServersNamespace.add(policyServerNamespace);
 				// Fin de Debug
 
-				// A) Recherche des FeaturesTypes autorisés
+				// A) Recherche des FeaturesTypes autorisÃ©s
 				// for (int i = 0; i < nl.getLength(); i++) {
 				boolean isInList = false;
 				for (int j = 0; j < featureTypeListToKeep.size(); j++) {
@@ -1398,13 +1398,13 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Edit l'attribut typeName de <wfs:Query
 						// typeName="tmpFT"> avec tmpFT
 						// nl.item(i).getAttributes().getNamedItem("typeName").setTextContent(tmpFT);
-						// // Non nécessaire de réécrire ce qui est déjà
-						// présent
+						// // Non nÃ©cessaire de rÃ©Ã©crire ce qui est dÃ©jÃ 
+						// prÃ©sent
 						NodeList antltemp = documentMaster.getElementsByTagNameNS("http://www.opengis.net/ogc", "PropertyName");
 						// Debug tb 29.09.2009
-						// Pour établir la liste des noeuds PropertyName
-						// directement sous la balise <Query> tiré de la
-						// requête user
+						// Pour Ã©tablir la liste des noeuds PropertyName
+						// directement sous la balise <Query> tirÃ© de la
+						// requÃªte user
 						for (int k = 0; k < antltemp.getLength(); k++) {
 							Node node = (Node) antltemp.item(k);
 							// renommer les noeuds "PropertyName" autre que
@@ -1437,7 +1437,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 						// Au cas: PropertyNames dans req utilisateur, et
 						// restriction dans Policy Attributes
-						// A') Recherche des attibuts autorisés pour le
+						// A') Recherche des attibuts autorisÃ©s pour le
 						// FeatureType courant
 						if (atnl.getLength() != 0) {
 							for (int k = 0; k < atnl.getLength(); k++) {
@@ -1461,42 +1461,42 @@ public class WFSProxyServlet extends ProxyServlet {
 									// Fin de Debug
 									if (tmpFTA.equals(attributeListToKeepPerFT.get(j * attributeListToKeepNbPerFT.get(j) + l))) {
 										// atnl.item(k).setTextContent(tmpFTA);
-										// // Non nécessaire de réécrire ce
-										// qui est déjà présent
+										// // Non nÃ©cessaire de rÃ©Ã©crire ce
+										// qui est dÃ©jÃ  prÃ©sent
 										isAtInList = true;
 									}
 								}
 								if (!isAtInList) {
-									// Attribut présent dans la requête,
-									// mais non-autorisés
+									// Attribut prÃ©sent dans la requÃªte,
+									// mais non-autorisÃ©s
 									nodeAttributeListToRemove.add(atnl.item(k));
 								}
 							}
 
-							// B') Supressions des Attribut non-autorisés
-							// présents dans la requête
+							// B') Supressions des Attribut non-autorisÃ©s
+							// prÃ©sents dans la requÃªte
 							for (int m = 0; m < nodeAttributeListToRemove.size(); m++) {
 								nodeAttributeListToRemove.get(m).getParentNode().removeChild(nodeAttributeListToRemove.get(m));
 							}
 						}
 
-						// Traitement des cas de l'attribut géométrique de
+						// Traitement des cas de l'attribut gÃ©omÃ©trique de
 						// localFilter
 						String geomAttribut = getLocalFilterGeomAttribut(iServer, featureTypeListToKeep.get(j));
 						Boolean hasGeomAttribut = false;
 
 						// Au cas: pas de PropertyName dans req utilisateur
-						// ou tous retirés par le if() précédent, mais
+						// ou tous retirÃ©s par le if() prÃ©cÃ©dent, mais
 						// restriction dans Policy Attributes
-						// A') Ajoute des attibuts autorisés de Policy pour
+						// A') Ajoute des attibuts autorisÃ©s de Policy pour
 						// le FeatureType courant
 						// ou ne fait rien dans le cas ou Attributs
-						// autorisée de Policy sur All
+						// autorisÃ©e de Policy sur All
 						// (attributeListToKeepNbPerFT.get(j)=0)
 						if (atnl.getLength() == 0) {
 							for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
 								// Debug tb 16.10.2009
-								// Si le namespace ogc n'est pas déclaré
+								// Si le namespace ogc n'est pas dÃ©clarÃ©
 								// dans la balise Query de la requete user
 								// GetFeature
 								// Element docElem =
@@ -1515,10 +1515,10 @@ public class WFSProxyServlet extends ProxyServlet {
 						// absent de attributeListToKeepPerFT
 						// A') Ajoute l'attribut geom pour le FeatureType
 						// courant,
-						// -> ce dernier devra ensuite être retiré par XSLT
+						// -> ce dernier devra ensuite Ãªtre retirÃ© par XSLT
 						// au moment de transform()!!!
 						// ou ne s'applique pas dans le cas ou Attributs
-						// autorisée de Policy sur All
+						// autorisÃ©e de Policy sur All
 						// (attributeListToKeepNbPerFT.get(j)=0)
 						if (!geomAttribut.equals("") && attributeListToKeepNbPerFT.get(j) != 0) {
 							if (atnl.getLength() != 0) {
@@ -1552,10 +1552,10 @@ public class WFSProxyServlet extends ProxyServlet {
 								geomAttributesObj.setGeomAttributName(geomAttribut);
 								WFSProxyGeomAttributesList.add(geomAttributesObj);
 
-								// Ajoute l'attribut géométrique à la
-								// requête utilisateur
+								// Ajoute l'attribut gÃ©omÃ©trique Ã  la
+								// requÃªte utilisateur
 								// Debug tb 16.10.2009
-								// Si le namespace ogc n'est pas déclaré
+								// Si le namespace ogc n'est pas dÃ©clarÃ©
 								// dans la balise Query de la requete user
 								// GetFeature
 								// Element docElem =
@@ -1568,8 +1568,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						}
 						// Fin de Debug
 						// Debug tb 29.09.2009
-						// Pour rétablir la liste des noeuds PropertyName de
-						// la requête user
+						// Pour rÃ©tablir la liste des noeuds PropertyName de
+						// la requÃªte user
 						// renommer les noeuds "PropertyName" autre que ceux
 						// directement et uniquement sous <Query>: ex ceux
 						// de <Filter>
@@ -1586,20 +1586,20 @@ public class WFSProxyServlet extends ProxyServlet {
 					}
 				}
 				if (!isInList) {
-					// FeatureType présent dans la requête, mais
-					// non-autorisés
+					// FeatureType prÃ©sent dans la requÃªte, mais
+					// non-autorisÃ©s
 					nodeListToRemove.add(nl.item(0));
 				}
 				// }
 
-				// B) Supressions des FeaturesTypes non-autorisés présents dans
-				// la requête
+				// B) Supressions des FeaturesTypes non-autorisÃ©s prÃ©sents dans
+				// la requÃªte
 				for (int i = 0; i < nodeListToRemove.size(); i++) {
 					nodeListToRemove.get(i).getParentNode().removeChild(nodeListToRemove.get(i));
 				}
 			}
 
-			// Dans le cas d'un requête portant sur une opération
+			// Dans le cas d'un requÃªte portant sur une opÃ©ration
 			// DescribeFeatureType
 			if ("DescribeFeatureType".equalsIgnoreCase(operation)) {
 				NodeList nl = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "TypeName");
@@ -1639,7 +1639,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				}
 			}
 
-			// Ecriture de la requête utilisateur suite aux modifications
+			// Ecriture de la requÃªte utilisateur suite aux modifications
 			OutputStream fluxSortie = new ByteArrayOutputStream();
 			LSSerializer serialiseur = implLS.createLSSerializer();
 			LSOutput sortie = implLS.createLSOutput();
@@ -1669,17 +1669,17 @@ public class WFSProxyServlet extends ProxyServlet {
 		Boolean isPolicyAll = false;
 		if (attributeListToKeepNbPerFT.get(0) == 0) {
 			// Indique le fait que Policy est sur ALL pour la featureType
-			// courant et que tout les attributs sont demandés
+			// courant et que tout les attributs sont demandÃ©s
 			isPolicyAll = true;
 		}
 		// Fin de Debug
 
-		// A) Recherche des paramètres de la requête: TYPENAME->FeatureType et
+		// A) Recherche des paramÃ¨tres de la requÃªte: TYPENAME->FeatureType et
 		// PROPERTYNAME->Attributes
 		String[] paramFields = paramUrl.split("&");
 		for (int i = 0; i < paramFields.length; i++) {
 			String[] keyValue = paramFields[i].split("=");
-			// B) Ajout des FeaturesTypes autorisés
+			// B) Ajout des FeaturesTypes autorisÃ©s
 			if ("TYPENAME".equalsIgnoreCase(keyValue[0])) {
 				paramFields[i] = keyValue[0] + "=";
 				for (int j = 0; j < featureTypeListToKeep.size(); j++) {
@@ -1691,10 +1691,10 @@ public class WFSProxyServlet extends ProxyServlet {
 				// break;
 			}
 			// Debug tb 25.06.2009
-			// C) Ajout des Attributs autorisés
+			// C) Ajout des Attributs autorisÃ©s
 			if ("PROPERTYNAME".equalsIgnoreCase(keyValue[0])) // N'est vrai que
 			// si
-			// opération==GetFeature
+			// opÃ©ration==GetFeature
 			{
 				paramFields[i] = keyValue[0] + "=";
 				for (int j = 0; j < attributeListToKeepPerFT.size(); j++) {
@@ -1704,7 +1704,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				// Au cas: localFilter is Set et geom Attribut absent de
 				// attributeListToKeepPerFT
 				// D) Ajoute l'attribut geom pour le FeatureType courant,
-				// -> ce dernier devra ensuite être retiré par XSLT au moment de
+				// -> ce dernier devra ensuite Ãªtre retirÃ© par XSLT au moment de
 				// transform()!!!
 				int attributeIndex = 0;
 				for (int j = 0; j < featureTypeListToKeep.size(); j++) {
@@ -1731,7 +1731,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							geomAttributesObj.setGeomAttributName(geomAttribut);
 							WFSProxyGeomAttributesList.add(geomAttributesObj);
 
-							// Ajoute l'attribut géométrique à la requête
+							// Ajoute l'attribut gÃ©omÃ©trique Ã  la requÃªte
 							// utilisateur
 							paramFields[i] = paramFields[i] + policyServerPrefix + ":" + geomAttribut + ",";
 						}
@@ -1750,8 +1750,8 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		}
 		// Debug tb 25.06.2009
-		// C') Ajout des Attributs autorisés si pas de demande explicite dans la
-		// requête (absence de PROPERTYNAME)
+		// C') Ajout des Attributs autorisÃ©s si pas de demande explicite dans la
+		// requÃªte (absence de PROPERTYNAME)
 		// et si Policy Attributes != de ALL
 		String propertyNameParam = "propertyName=";
 		if (!hasPropertyName && "GetFeature".equalsIgnoreCase(operation) && !isPolicyAll) {
@@ -1762,7 +1762,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Au cas: localFilter is Set et geom Attribut absent de
 			// attributeListToKeepPerFT
 			// D') Ajoute l'attribut geom pour le FeatureType courant,
-			// -> ce dernier devra ensuite être retiré par XSLT au moment de
+			// -> ce dernier devra ensuite Ãªtre retirÃ© par XSLT au moment de
 			// transform()!!!
 			int attributeIndex = 0;
 			for (int j = 0; j < featureTypeListToKeep.size(); j++) {
@@ -1789,7 +1789,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						geomAttributesObj.setGeomAttributName(geomAttribut);
 						WFSProxyGeomAttributesList.add(geomAttributesObj);
 
-						// Ajoute l'attribut géométrique à la requête
+						// Ajoute l'attribut gÃ©omÃ©trique Ã  la requÃªte
 						// utilisateur
 						propertyNameParam = propertyNameParam + policyServerPrefix + ":" + geomAttribut + ",";
 					}
@@ -1805,7 +1805,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		}
 		// Fin de Debug
 
-		// Réécriture de la requête après modification
+		// RÃ©Ã©criture de la requÃªte aprÃ¨s modification
 		paramUrl = "";
 		for (int i = 0; i < paramFields.length; i++) {
 			paramUrl = paramUrl + paramFields[i] + "&";
@@ -1823,8 +1823,8 @@ public class WFSProxyServlet extends ProxyServlet {
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			// ******************************************************************************************
-			// Création d'un fichier XSLT correspondant à celui possiblement
-			// spécifié par l'utilisateur
+			// CrÃ©ation d'un fichier XSLT correspondant Ã  celui possiblement
+			// spÃ©cifiÃ© par l'utilisateur
 			String userXsltPath = getConfiguration().getXsltPath();
 
 			if (req.getUserPrincipal() != null) {
@@ -1837,7 +1837,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			File xsltFile = new File(userXsltPath);
 			boolean isPostTreat = false; // Devient vrai si un xslt user est
-			// défini! -> voir fin de la fct
+			// dÃ©fini! -> voir fin de la fct
 			// transform
 			if (!xsltFile.exists()) {
 				dump("User postreatment file " + xsltFile.toString() + " does not exist");
@@ -1864,14 +1864,14 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			Transformer transformer = null;
 
-			// Selon le choix de l'opération exécutée
+			// Selon le choix de l'opÃ©ration exÃ©cutÃ©e
 			// ***************************************************************
 			if (currentOperation != null) {
 				if (currentOperation.equalsIgnoreCase("GetCapabilities")) {
 					List<File> tempFileCapaList = new Vector<File>();
 
-					// Posttraitement par Server intérrogé ->
-					// wfsFilePathList.get(i) contient le fichier réponse
+					// Posttraitement par Server intÃ©rrogÃ© ->
+					// wfsFilePathList.get(i) contient le fichier rÃ©ponse
 					// *******
 					for (int i = 0; i < wfsFilePathList.size(); i++) {
 
@@ -1897,8 +1897,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						// si
 						// wfsFilePathList.size()>1
 
-						// Posttraitement par Server intérrogé ->
-						// wfsFilePathList.get(i) contient le fichier réponse
+						// Posttraitement par Server intÃ©rrogÃ© ->
+						// wfsFilePathList.get(i) contient le fichier rÃ©ponse
 						// ********************
 						for (int j = 0; j < wfsFilePathList.size(); j++) {
 							// Debug tb 12.05.2009
@@ -1907,13 +1907,13 @@ public class WFSProxyServlet extends ProxyServlet {
 							StringBuffer WFSDescribeFeatureType = new StringBuffer();
 							WFSDescribeFeatureType
 									.append("<xsl:stylesheet version=\"1.00\"  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-							// On récupère le gml
+							// On rÃ©cupÃ¨re le gml
 							InputStream dataSourceInputStream = new FileInputStream(wfsFilePathList.get(j));
-							// PBM à la Ligne suivante: attention "schema" est
+							// PBM Ã  la Ligne suivante: attention "schema" est
 							// un singleton: n'est pas cleaner entre chaque
 							// appel sur les servlets!
-							// Or, "SchemaFactory" merge chaque schéma lu s'il
-							// est différent des appels précédents
+							// Or, "SchemaFactory" merge chaque schÃ©ma lu s'il
+							// est diffÃ©rent des appels prÃ©cÃ©dents
 							// Schema schema =
 							// org.geotools.xml.SchemaFactory.getInstance(null,
 							// dataSourceInputStream);
@@ -1931,8 +1931,8 @@ public class WFSProxyServlet extends ProxyServlet {
 							// contentHandler);
 							//
 							// Schema schema = contentHandler.getSchema();
-							// "registerSchema" seulement nécessaire si appeler
-							// dans une autre méthode
+							// "registerSchema" seulement nÃ©cessaire si appeler
+							// dans une autre mÃ©thode
 							// URI targetNamespace=schema.getTargetNamespace();
 							// org.geotools.xml.SchemaFactory.registerSchema(targetNamespace,schema);
 							// Fin de Debug
@@ -1944,7 +1944,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 							for (int i = 0; i < ct.length; i++) {
 								// Debug tb 05.10.2009
-								// Préparation de tmpFT, récupération du nom du
+								// PrÃ©paration de tmpFT, rÃ©cupÃ©ration du nom du
 								// featureType: ComplexType.name correspondant
 								// au Element.name
 								String tmpFT = "";
@@ -1956,10 +1956,10 @@ public class WFSProxyServlet extends ProxyServlet {
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();
 									for (int k = 0; k < elem.length; k++) {
 										if (!isAttributeAllowed(getRemoteServerUrl(serversIndex.get(j)), tmpFT, elem[k].getName())) {
-											// Cela supprime, de la réponse, les
-											// Attributs non autorisés du
+											// Cela supprime, de la rÃ©ponse, les
+											// Attributs non autorisÃ©s du
 											// FeatureType courant qui est
-											// autorisé
+											// autorisÃ©
 											WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='" + ct[i].getName()
 													+ "']//xsd:element[@name='" + elem[k].getName() + "']\">");
 											WFSDescribeFeatureType.append("</xsl:template>");
@@ -1969,8 +1969,8 @@ public class WFSProxyServlet extends ProxyServlet {
 										}
 									}
 								} else {
-									// Cela supprime, de la réponse, le
-									// FeatureType courant qui est non autorisé
+									// Cela supprime, de la rÃ©ponse, le
+									// FeatureType courant qui est non autorisÃ©
 									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:complexType[@name ='" + ct[i].getName() + "']\">");
 									WFSDescribeFeatureType.append("</xsl:template>");
 									WFSDescribeFeatureType.append("<xsl:template match=\"//xsd:element[@name ='" + ct[i].getName() + "']\">");
@@ -1981,11 +1981,11 @@ public class WFSProxyServlet extends ProxyServlet {
 								}
 							}
 							// Debug tb 12.05.2009
-							// Si une transformation XSLT doit être éxecutée
+							// Si une transformation XSLT doit Ãªtre Ã©xecutÃ©e
 							if (isWFSDescribeFeatureTypeEdit) {
 								// Fin de Debug
 								// Cela applique une copie du contenu de la
-								// réponse
+								// rÃ©ponse
 								WFSDescribeFeatureType.append("  <!-- Whenever you match any node or any attribute -->");
 								WFSDescribeFeatureType.append("<xsl:template match=\"node()|@*\">");
 								WFSDescribeFeatureType.append("<!-- Copy the current node -->");
@@ -2013,7 +2013,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								tempFos.close();
 								tempFileDescribeType.add(tempFile);
 								// Debug de 15.06.2009
-								// Log le timing après transformation
+								// Log le timing aprÃ¨s transformation
 								d = new Date();
 								dump("SYSTEM", "DescribeFeatureTypeEndTransfoDateTime", dateFormat.format(d));
 								// Fin de debug
@@ -2044,7 +2044,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							}
 							// Fin de Debug
 						}
-						// Colle les "tempFile" en un résultat: Util si
+						// Colle les "tempFile" en un rÃ©sultat: Util si
 						// wfsFilePathList.size()>1
 						if (wfsFilePathList.size() > 1)
 							tempFile = mergeDescribeFeatureType(tempFileDescribeType);
@@ -2053,24 +2053,24 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (hasPolicy) {
 						List<File> tempGetFeatureFile = new Vector();
 
-						// Posttraitement par Server intérrogé ->
-						// wfsFilePathList.get(i) contient le fichier réponse
+						// Posttraitement par Server intÃ©rrogÃ© ->
+						// wfsFilePathList.get(i) contient le fichier rÃ©ponse
 						// ***********************
 						// Voir dans la Policy <server>
 						for (int iFileServer = 0; iFileServer < wfsFilePathList.size(); iFileServer++) {
 
 							// Debug tb 07.05.2009
-							// On récupère le srs de la réponse -> srsSource
+							// On rÃ©cupÃ¨re le srs de la rÃ©ponse -> srsSource
 							// ATTENTION: Cela ne retourne que le srsSource du
-							// premier featureType venu dans la réponse du
+							// premier featureType venu dans la rÃ©ponse du
 							// serveur courant
-							// DataInputStream est trop lent pour les réponses
-							// avec bcp d'entrées (>1000), cette lecture plante
+							// DataInputStream est trop lent pour les rÃ©ponses
+							// avec bcp d'entrÃ©es (>1000), cette lecture plante
 							// Tomcat
 							// lors de l'instruction readLine() -> pas de retour
-							// à la ligne trouvé
+							// Ã  la ligne trouvÃ©
 							// La fonction de remplacement lit progressivement
-							// le fichier (buffer de 512 caractères) afin de
+							// le fichier (buffer de 512 caractÃ¨res) afin de
 							// retourner la valeur du "srsName"
 							BufferedReader dis = new BufferedReader(new FileReader(wfsFilePathList.get(iFileServer)));
 							boolean breakOut = false;
@@ -2162,7 +2162,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// fin de Debug
 
 							// Remplissage de tempFile avec la
-							// réponse*******************************************
+							// rÃ©ponse*******************************************
 							dump("GetFeature begin to fill tempFile");
 							String tempFileName = "transform_GetFeature" + UUID.randomUUID().toString();
 							tempFile = createTempFile(tempFileName, ".xml");
@@ -2197,13 +2197,13 @@ public class WFSProxyServlet extends ProxyServlet {
 								dump("transform_GetFeature_BufferedOutputStream ERROR", e.toString());
 							}
 							dump("GetFeature end to fill tempFile");
-							// Fin de remplissage de tempFile avec la réponse
+							// Fin de remplissage de tempFile avec la rÃ©ponse
 
-							// Application du filtrage LocalFilter géométrique:
+							// Application du filtrage LocalFilter gÃ©omÃ©trique:
 							// polygon de
 							// droits*******************************************
 
-							// Récupération de localFilter
+							// RÃ©cupÃ©ration de localFilter
 							dump("GetFeature begin to apply localFilter");
 							String filter = null;
 							if (featureTypePathList.size() > 0) {
@@ -2213,18 +2213,18 @@ public class WFSProxyServlet extends ProxyServlet {
 									filter = getFeatureTypeLocalFilter(getRemoteServerUrl(serversIndex.get(iFileServer)), featureTypePathList.get(iFileServer));
 							}
 							// Debug tb 15.06.2009
-							// Si un localFilter est défini
+							// Si un localFilter est dÃ©fini
 							if (filter != null) {
 								if (!filter.equals("")) {
 									// Fin de Debug
-									// Création de "doc" -> un tempFile formaté
+									// CrÃ©ation de "doc" -> un tempFile formatÃ©
 									// en GMLFeatureCollection
 									Map hints = new HashMap();
 									hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-									GMLFeatureCollection doc = null; // Réutilise
+									GMLFeatureCollection doc = null; // RÃ©utilise
 									// le
-									// résultat
+									// rÃ©sultat
 									// TempFile
 									// Debug tb 28.09.2009
 									// if (user!=null && user.length()>0)
@@ -2235,13 +2235,13 @@ public class WFSProxyServlet extends ProxyServlet {
 									// else
 									// Utilisation de la classe Java
 									// "Authenticator" qui ajoute
-									// l'authentication, selon les besoins, à la
+									// l'authentication, selon les besoins, Ã  la
 									// classe java "URLConnection".
-									// Pour des raisons de vérification de
+									// Pour des raisons de vÃ©rification de
 									// schema xsd (requete DescribeFeatureType),
-									// la classe "DocumentFactory" nécessite
-									// l'authentication au cas où geoserver
-									// défini un compte de service.
+									// la classe "DocumentFactory" nÃ©cessite
+									// l'authentication au cas oÃ¹ geoserver
+									// dÃ©fini un compte de service.
 									// Voir ProxyServlet.getPassword
 									// org.easysdi.security.EasyAuthenticator.setCredientials(user,
 									// password);
@@ -2255,7 +2255,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									// doc =
 									// (GMLFeatureCollection)DocumentFactory.getInstance(tempFile.toURI(),hints,Level.WARNING);
 									doc = (GMLFeatureCollection) documentFactoryGetInstance(tempFile, user, password);
-									// Création du fichier résultat de la
+									// CrÃ©ation du fichier rÃ©sultat de la
 									// proachaine transformation
 									File tempFile2 = createTempFile("transform_GetFeature_2_" + UUID.randomUUID().toString(), ".xml");
 									tempFos = new FileOutputStream(tempFile2);
@@ -2264,32 +2264,32 @@ public class WFSProxyServlet extends ProxyServlet {
 									}
 
 									// Application du filtrage LocalFilter
-									// géométrique, il s'agit d'une
+									// gÃ©omÃ©trique, il s'agit d'une
 									// transformation
-									filterFC(tempFos, filter, doc, getServletUrl(req), srsSource, serversIndex.get(iFileServer)); // l'entrée
+									filterFC(tempFos, filter, doc, getServletUrl(req), srsSource, serversIndex.get(iFileServer)); // l'entrÃ©e
 									// "TempFile"
 									// a
-									// été
-									// 'copié'
+									// Ã©tÃ©
+									// 'copiÃ©'
 									// dans
 									// "doc"
 									// et
 									// la
 									// sortie
 									// "tempFos"
-									// édite
+									// Ã©dite
 									// "TempFile2"
 
-									// Copy du contenu transformé dans tempFile
+									// Copy du contenu transformÃ© dans tempFile
 									if (filter != null) {
 										tempFos.close();
 
 										if (tempFile != null)
 											tempFile.delete();
 										tempFile = tempFile2; // Copy du fichier
-										// suite à la
+										// suite Ã  la
 										// transformation
-										// géométrique
+										// gÃ©omÃ©trique
 									}
 									// Debug tb 15.06.2009
 								}
@@ -2298,28 +2298,28 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Fin de Debug
 
 							// Fin de l'application du filtrage LocalFilter
-							// géométrique: "TempFile" a été filtré une première
+							// gÃ©omÃ©trique: "TempFile" a Ã©tÃ© filtrÃ© une premiÃ¨re
 							// fois
-							// et est stocké dans "TempFile"
+							// et est stockÃ© dans "TempFile"
 
 							// Debug tb 10.06.2009
-							// Application du filtrage de l'attribut géom s'il
+							// Application du filtrage de l'attribut gÃ©om s'il
 							// existe et qu'a la base il n'est pas
-							// autorisé*******************************************
-							// Filtrage de l'attribut geom si ajouté uniquement
+							// autorisÃ©*******************************************
+							// Filtrage de l'attribut geom si ajoutÃ© uniquement
 							// pour les besoins de localFilter
 							for (int a = 0; a < WFSProxyGeomAttributesList.size(); a++) {
 								dump("GetFeature begin to apply geomRemover");
 								if (WFSProxyGeomAttributesList.get(a).getRequestServerIndex() == serversIndex.get(iFileServer)) {
-									// Le test qui suit n'a aucune utilité car
+									// Le test qui suit n'a aucune utilitÃ© car
 									// le proxy actuel ne prend pas en charge
-									// les multi featureType avec géométrie
-									// non-autorisée
+									// les multi featureType avec gÃ©omÃ©trie
+									// non-autorisÃ©e
 									// -> on parle en effet d'un LocalFilter par
-									// Server à l'étape précédente et l'algo de
+									// Server Ã  l'Ã©tape prÃ©cÃ©dente et l'algo de
 									// recherche srsName ne retourne que celui
 									// du premier featureType venu!
-									// Donc pour un serveur déterminé, il ne
+									// Donc pour un serveur dÃ©terminÃ©, il ne
 									// peut correspondre que un featureType dans
 									// ca cas
 									// Donc le test if Serveur n'est valable que
@@ -2331,14 +2331,14 @@ public class WFSProxyServlet extends ProxyServlet {
 										Date d = new Date();
 										dump("SYSTEM", "GetFeatureTypeGeomBeginTransfoDateTime", dateFormat.format(d));
 
-										// Création du fichier résultat de la
+										// CrÃ©ation du fichier rÃ©sultat de la
 										// prochaine transformation
 										File tempFile2 = createTempFile("transform_GetFeature_3_" + UUID.randomUUID().toString(), ".xml");
 										tempFos = new FileOutputStream(tempFile2);
 										ByteArrayInputStream xslt = null;
 
 										// Construction du fichier xslt:
-										// traitement intermédiaire indépendant
+										// traitement intermÃ©diaire indÃ©pendant
 										xslt = new ByteArrayInputStream(buildGetFeatureXSLT(a, a).toString().getBytes());
 
 										xml = new BufferedInputStream(new FileInputStream(tempFile));
@@ -2352,11 +2352,11 @@ public class WFSProxyServlet extends ProxyServlet {
 										if (tempFile != null)
 											tempFile.delete();
 										tempFile = tempFile2; // Copy du fichier
-										// suite à la
+										// suite Ã  la
 										// suppression
 										// de l'attribut
 										// geom
-										// Log le timing après transformation
+										// Log le timing aprÃ¨s transformation
 										d = new Date();
 										dump("SYSTEM", "GetFeatureTypeGeomEndTransfoDateTime", dateFormat.format(d));
 									}
@@ -2364,32 +2364,32 @@ public class WFSProxyServlet extends ProxyServlet {
 								dump("GetFeature end to apply geomRemover");
 							}
 							// Fin de l'application du filtrage de l'attribut
-							// géom: la réponse à la requête a été filtrée
-							// une deuxiême fois et est stocké dans "TempFile"
+							// gÃ©om: la rÃ©ponse Ã  la requÃªte a Ã©tÃ© filtrÃ©e
+							// une deuxiÃªme fois et est stockÃ© dans "TempFile"
 							tempGetFeatureFile.add(tempFile);
 						}
 						// Fin de Debug
 
 						// Construction du fichier xslt: phase 2, jointure des
-						// résultats des différents serveurs
+						// rÃ©sultats des diffÃ©rents serveurs
 						// Debug tb 13.05.2009
-						// Au cas où il exite plus d'un serveur qui donne
-						// réponse: isWFSGetFeatureRenameFtEdit = true
+						// Au cas oÃ¹ il exite plus d'un serveur qui donne
+						// rÃ©ponse: isWFSGetFeatureRenameFtEdit = true
 						if (wfsFilePathList.size() > 1) {
 							// Fin de Debug
 							dump("GetFeature begin to merge servers Results");
-							// Appel à la fonction d'application de la
+							// Appel Ã  la fonction d'application de la
 							// transformation XSLT finale (contenu de
 							// "WFSGetFeatureRenameFt")
 							// "tempGetFeatureFile" contient entre autre
 							// "TempFile" (en fait ici uniquement "TempFile"
-							// si seulement un serveur est appelé)
+							// si seulement un serveur est appelÃ©)
 							// Attention: filtrage LocalFilter rend impossible
 							// l'application de la nouvelle transformation xslt
-							// ci-après
+							// ci-aprÃ¨s
 							// Le fichier "tempFile" est devenu non
 							// utilisable!!! -> "internal serveur error" lorsque
-							// trop de résultats
+							// trop de rÃ©sultats
 							tempFile = mergeGetFeatures(tempGetFeatureFile, tFactory, transformer);
 							dump("GetFeature end to merge servers Results");
 							// Debug tb 13.05.2009
@@ -2398,8 +2398,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					}
 				}
 
-				// Envoie du résultat des traitements "TempFile" sur la réponse
-				// à la requête *******************************************
+				// Envoie du rÃ©sultat des traitements "TempFile" sur la rÃ©ponse
+				// Ã  la requÃªte *******************************************
 
 				/*
 				 * if a user xslt file exists then post-treat again "TempFile"
@@ -2418,7 +2418,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (tempFile != null)
 						transformer.transform(new StreamSource(tempFile), new StreamResult(out));
 					// Pourquoi le fichier du premier serveur??? ->
-					// wfsFilePathList.get(0) et pas le résultat joint des
+					// wfsFilePathList.get(0) et pas le rÃ©sultat joint des
 					// transformations sur les serveur: TempFile
 					else
 						transformer.transform(new StreamSource(wfsFilePathList.get(0)), new StreamResult(out));
@@ -2694,11 +2694,11 @@ public class WFSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 	/**
-	 * Construit le xslt du filtrage de l'attribut géométrique servant au
+	 * Construit le xslt du filtrage de l'attribut gÃ©omÃ©trique servant au
 	 * LocalFilter
 	 * 
 	 * @param int listIndex : index pointant l'item de la liste
-	 *        WFSProxyGeomAttributesList comportant l'attribut géom à retirer
+	 *        WFSProxyGeomAttributesList comportant l'attribut gÃ©om Ã  retirer
 	 * @param int iServer : index pointant le serveur courant
 	 * @return list<String> : code de la transformation XSLT
 	 */
@@ -2711,10 +2711,10 @@ public class WFSProxyServlet extends ProxyServlet {
 		String geomAttribut = WFSProxyGeomAttributesList.get(listIndex).getGeomAttributName();
 
 		String nameSpace = WFSProxyGeomAttributesList.get(iServer).getpolicyServerNamespace();
-		// On le considère ici indépendant de la requête utilisateur, à la seul
+		// On le considÃ¨re ici indÃ©pendant de la requÃªte utilisateur, Ã  la seul
 		// fin de satisfaire la contrainte xsl!!!
 		// Faux la transformation ne s'applique correctement que si nameSpace
-		// est défini en fonction de la requête d'origine...
+		// est dÃ©fini en fonction de la requÃªte d'origine...
 
 		WFSGetFeature
 				.append("<xsl:stylesheet version=\"1.00\" xmlns:ogcwfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\"  xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
@@ -2736,7 +2736,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 
-	// Applique le filtrage LocalFilter géométrique, il s'agit d'une
+	// Applique le filtrage LocalFilter gÃ©omÃ©trique, il s'agit d'une
 	// transformation
 	public void filterFC(OutputStream os, String customFilter, GMLFeatureCollection doc, String urlServlet, String srsDest, int iServer) {
 
@@ -2838,27 +2838,27 @@ public class WFSProxyServlet extends ProxyServlet {
 						}
 					}
 					Filter filter2 = (Filter) filter.accept(filterTransformer, null);
-					// Si filter à srsSource (de LocalFilter) != srsDest (de
-					// TempFile, la réponse du serveur courant) le contenu de
-					// doc est modfié selon filter2
+					// Si filter Ã  srsSource (de LocalFilter) != srsDest (de
+					// TempFile, la rÃ©ponse du serveur courant) le contenu de
+					// doc est modfiÃ© selon filter2
 					fc = doc.subCollection(filter2);
 				}
-				// Si filter à srsSource (de LocalFilter) == srsDest (de
-				// TempFile, la réponse du serveur courant) le contenu de doc
-				// est modfié selon filter
+				// Si filter Ã  srsSource (de LocalFilter) == srsDest (de
+				// TempFile, la rÃ©ponse du serveur courant) le contenu de doc
+				// est modfiÃ© selon filter
 				else {
 					fc = doc.subCollection(filter);
 				}
 			}
-			// filter est null, aucun changement n'est effectué sur le contenu
+			// filter est null, aucun changement n'est effectuÃ© sur le contenu
 			// de doc (-> TempFile)
 			else
 				fc = doc;
 
 			// Debug de 15.06.2009
-			// Construction des pramètres de ft afin de préparer la sortie du
-			// résultat filtré
-			// -> option désactivée: renomage du prefix
+			// Construction des pramÃ¨tres de ft afin de prÃ©parer la sortie du
+			// rÃ©sultat filtrÃ©
+			// -> option dÃ©sactivÃ©e: renomage du prefix
 			FeatureIterator it = fc.features();
 			int i = 0;
 			String lastTypeName = "";
@@ -2873,10 +2873,10 @@ public class WFSProxyServlet extends ProxyServlet {
 				}
 				i++;
 			}
-			// Ecriture du résultat dans le fichier pointé par os
+			// Ecriture du rÃ©sultat dans le fichier pointÃ© par os
 			ft.transform(fc, os);
 
-			// Log le timing après transformation
+			// Log le timing aprÃ¨s transformation
 			d = new Date();
 			dump("SYSTEM", "LocalFilterEndTransfoDateTime", dateFormat.format(d));
 			// Fin de debug

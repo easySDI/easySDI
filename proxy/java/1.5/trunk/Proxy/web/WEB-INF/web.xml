@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 	<jsp-config>
@@ -17,6 +16,10 @@
 	<servlet>
 		<servlet-name>ogc</servlet-name>
 		<servlet-class>org.easysdi.proxy.core.OgcProxyServlet</servlet-class>
+		<init-param>
+			<param-name>configFile</param-name>
+			<param-value>C:/url_to_config/config.xml</param-value>
+		</init-param>
 	</servlet>
 
 	<context-param>
@@ -24,24 +27,16 @@
 		<param-value>C:/url_to_config/config.xml</param-value>
 	</context-param>
 
-	<servlet-mapping>
-		<servlet-name>ogc</servlet-name>
-		<url-pattern>/ogc/*</url-pattern>
-	</servlet-mapping>
-
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-            /WEB-INF/spring/app-config.xml
-            /WEB-INF/spring/security-config.xml
-        </param-value>
-	</context-param>
-
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
 		<param-value>
             /WEB-INF/log4j.xml
         </param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/*.xml</param-value>
 	</context-param>
 
 	<filter>
@@ -61,6 +56,11 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+
+	<servlet-mapping>
+		<servlet-name>ogc</servlet-name>
+		<url-pattern>/ogc/*</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

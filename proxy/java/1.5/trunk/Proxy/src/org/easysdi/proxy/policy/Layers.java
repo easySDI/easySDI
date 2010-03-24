@@ -88,7 +88,8 @@ public class Layers {
      *     
      */
     public Boolean isAll() {
-        return all;
+        if(all == null) all = false;
+    	return all;
     }
 
     /**

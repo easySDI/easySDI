@@ -16,10 +16,10 @@
  */
 package org.easysdi.security;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * 
@@ -27,55 +27,61 @@ import org.springframework.security.userdetails.UserDetails;
  */
 public class JoomlaUser implements UserDetails {
 
-    private String username = null;
-    private String password = null;
-    private String salt = null;
-    private GrantedAuthority[] authorities = null;
-    private Boolean isAccountNonExpired = false;
-    private Boolean isAccountNonLocked = false;
-    private Boolean isCredentialsNonExpired = false;
-    private Boolean isEnabled = false;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2336166921935589321L;
 
-    public JoomlaUser(String username, String password, String salt, GrantedAuthority[] authorities, Boolean isAccountNonExpired, Boolean isAccountNonLocked, Boolean isCredentialsNonExpired, Boolean isEnabled) {
-	this.username = username;
-	this.password = password;
-	this.authorities = authorities;
-	this.isAccountNonExpired = isAccountNonExpired;
-	this.isAccountNonLocked = isAccountNonLocked;
-	this.isCredentialsNonExpired = isCredentialsNonExpired;
-	this.isEnabled = isEnabled;
-	this.salt = salt;
-    }
+	private String username = null;
+	private String password = null;
+	private String salt = null;
+	private Collection<GrantedAuthority> authorities = null;
+	private Boolean isAccountNonExpired = false;
+	private Boolean isAccountNonLocked = false;
+	private Boolean isCredentialsNonExpired = false;
+	private Boolean isEnabled = false;
 
-    public String getUsername() {
-	return username;
-    }
+	public JoomlaUser(String username, String password, String salt, Collection<GrantedAuthority> authorities, Boolean isAccountNonExpired,
+			Boolean isAccountNonLocked, Boolean isCredentialsNonExpired, Boolean isEnabled) {
+		this.username = username;
+		this.password = password;
+		this.authorities = authorities;
+		this.isAccountNonExpired = isAccountNonExpired;
+		this.isAccountNonLocked = isAccountNonLocked;
+		this.isCredentialsNonExpired = isCredentialsNonExpired;
+		this.isEnabled = isEnabled;
+		this.salt = salt;
+	}
 
-    public String getPassword() {
-	return password;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getSalt() {
-	return salt;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public GrantedAuthority[] getAuthorities() {
-	return authorities;
-    }
+	public String getSalt() {
+		return salt;
+	}
 
-    public boolean isAccountNonExpired() {
-	return isAccountNonExpired;
-    }
+	public Collection<GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
 
-    public boolean isAccountNonLocked() {
-	return isAccountNonLocked;
-    }
+	public boolean isAccountNonExpired() {
+		return isAccountNonExpired;
+	}
 
-    public boolean isCredentialsNonExpired() {
-	return isCredentialsNonExpired;
-    }
+	public boolean isAccountNonLocked() {
+		return isAccountNonLocked;
+	}
 
-    public boolean isEnabled() {
-	return isEnabled;
-    }
+	public boolean isCredentialsNonExpired() {
+		return isCredentialsNonExpired;
+	}
+
+	public boolean isEnabled() {
+		return isEnabled;
+	}
 }
