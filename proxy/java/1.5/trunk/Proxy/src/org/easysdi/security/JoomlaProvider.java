@@ -124,6 +124,9 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 				if (authentication.getCredentials().equals(user.getPassword())) {
 					token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
 							.getAuthorities());
+				} else if (authentication.getCredentials().toString().split(":")[0].equals(user.getPassword().split(":")[0])) {
+					token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
+							.getAuthorities());
 				} else {
 					java.security.MessageDigest msgDigest;
 					try {
