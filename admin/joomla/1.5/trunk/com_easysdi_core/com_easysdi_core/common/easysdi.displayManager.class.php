@@ -726,7 +726,6 @@ class displayManager{
 			$rootName = dirname(__FILE__).'/../xsl/complete-to-abstract_'.$standard_id.'_'.$root_id.'.xsl';
 			$langName = dirname(__FILE__).'/../xsl/complete-to-abstract_'.$standard_id.'_'.$root_id.'_'.$language.'.xsl';
 			//echo $baseName."<br>".$standardName."<br>".$rootName."<br>".$langName;
-			
 			$style = new DomDocument();
 			// Chargement du bon fichier de transformation XSL 
 			if (file_exists($langName))
@@ -783,28 +782,20 @@ class displayManager{
 			$xmlContent = $dom ->importNode($nodes->item(0),true);
 			$dom->appendChild($xmlContent);
 		}
-		/*
-		$xml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.'metadata.xml';
-		$file =fopen($xml, 'w');
-		fwrite($file, $dom->saveXML());
-		fclose($file);	
-		*/
+
+		$file = $dom->saveXML();
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
-		header('Pragma: public');
-		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-		//header('Content-Transfer-Encoding: binary');
-		header('Content-Tran§sfer-Encoding: none');
-		header('Content-Type: text/xml');
-		//header('Content-Type: application/force-download');		
+		header('Content-type: application/xml');
 		header('Content-Disposition: attachement; filename="metadata.xml"');
-		header("Content-Description: File Transfer" );
- 		//header("Expires: 0"); 
-		//header("Content-Length: ".filesize($file));
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Pragma: public');
+		header("Expires: 0"); 
+		header("Content-Length: ".filesize($file));
 		
-		//readfile($file);
-		
-		echo $dom->saveXML();
+		echo $file;
+		//Very important, if you don't call this, the content-type will have no effect
+		die();
 	}
 	
 	function exportPdf(){
@@ -1031,6 +1022,7 @@ class displayManager{
 				header("Content-Length: ".filesize($foptmp));
 				
 				echo $result;
+				//Very important, if you don't call this, the content-type will have no effect
 				die();
 			}else
 			{
