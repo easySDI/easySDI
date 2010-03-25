@@ -80,6 +80,8 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	<!-- Enlever toutes les balises de haut niveau qui ne contiennent pas des données qui nous intéressent -->
 	<xsl:template match="gmd:fileIdentifier">
 	</xsl:template>
+	<xsl:template match="gmd:language">
+	</xsl:template>
 	<xsl:template match="gmd:metadataExtensionInfo">
 	</xsl:template>
 	<xsl:template match="gmd:distributionInfo">
@@ -113,7 +115,8 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	
 	<xsl:template match="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileType">
 	</xsl:template>
-	
+	<xsl:template match="gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code">
+	</xsl:template>
 	<!-- 
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:LocalisedCharacterString"/>
 	<xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:LocalisedCharacterString"/>
