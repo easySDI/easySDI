@@ -99,7 +99,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 				Element e = userCache.get("com_easysdi_map");
 				if (e != null)
 					authenticationPair = (Map<String, Object>) e.getValue();
-				if (authenticationPair == null) {
+				if (authenticationPair == null || authenticationPair.get("username") == null) {
 					String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
 							+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join "
 							+ joomlaProvider.getPrefix() + "users u on (u.id = p.user_id) limit 1";
