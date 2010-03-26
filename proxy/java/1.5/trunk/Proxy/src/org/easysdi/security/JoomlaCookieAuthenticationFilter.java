@@ -62,109 +62,110 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 	}
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-		final boolean debug = logger.isDebugEnabled();
-		userCache = cacheManager.getCache("userCache");
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
-
-		String sessionKey = null;
-		Map<String, Object> authenticationPair = null;
-		Cookie[] cookies = request.getCookies();
-		String username = null, password = null;
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				Element e = userCache.get(cookie.getValue());
+		if (request.getHeader("Authorization") == null && request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map")) {
+			final boolean debug = logger.isDebugEnabled();
+			userCache = cacheManager.getCache("userCache");
+			String sessionKey = null;
+			Map<String, Object> authenticationPair = null;
+			Cookie[] cookies = request.getCookies();
+			String username = null, password = null;
+			if (cookies != null) {
+				for (Cookie cookie : cookies) {
+					Element e = userCache.get(cookie.getValue());
+					if (e != null)
+						authenticationPair = (Map<String, Object>) e.getValue();
+					if (authenticationPair == null) {
+						sessionKey = cookie.getValue();
+						if (sessionKey != null) {
+							String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join "
+									+ joomlaProvider.getPrefix() + "users u " + "on (u.username = s.username) where session_id = ? limit 1";
+							try {
+								authenticationPair = sjt.queryForMap(sql1, sessionKey);
+							} catch (EmptyResultDataAccessException er) {
+							}
+						}
+						if (authenticationPair != null && authenticationPair.size() > 0) {
+							if (authenticationPair.get("username") != null) {
+								userCache.put(new Element(cookie.getValue(), authenticationPair));
+								break;
+							}
+						}
+					}
+				}
+			}
+			if (authenticationPair == null || authenticationPair.get("username") == null) {
+				Element e = userCache.get("com_easysdi_map");
 				if (e != null)
 					authenticationPair = (Map<String, Object>) e.getValue();
 				if (authenticationPair == null) {
-					sessionKey = cookie.getValue();
-					if (sessionKey != null) {
-						String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join " + joomlaProvider.getPrefix()
-								+ "users u " + "on (u.username = s.username) where session_id = ? limit 1";
-						try {
-							authenticationPair = sjt.queryForMap(sql1, sessionKey);
-						} catch (EmptyResultDataAccessException er) {
+					String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
+							+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join "
+							+ joomlaProvider.getPrefix() + "users u on (u.id = p.user_id) limit 1";
+					try {
+						authenticationPair = sjt.queryForMap(sql2);
+						if (authenticationPair != null && authenticationPair.size() > 0) {
+							if (authenticationPair.get("username") != null) {
+								userCache.put(new Element("com_easysdi_map", authenticationPair));
+							}
 						}
-					}
-					if (authenticationPair != null && authenticationPair.size() > 0) {
-						if (authenticationPair.get("username") != null) {
-							userCache.put(new Element(cookie.getValue(), authenticationPair));
-							break;
-						}
+					} catch (EmptyResultDataAccessException er) {
 					}
 				}
+
 			}
-		}
-		if (request.getHeader("Authorization") == null && request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map") && (authenticationPair == null || authenticationPair.get("username") == null)) {
-			Element e = userCache.get("com_easysdi_map");
-			if (e != null)
-				authenticationPair = (Map<String, Object>) e.getValue();
-			if (authenticationPair == null) {
-				String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
-						+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join " + joomlaProvider.getPrefix()
-						+ "users u on (u.id = p.user_id) limit 1";
-				try {
-					authenticationPair = sjt.queryForMap(sql2);
-					if (authenticationPair != null && authenticationPair.size() > 0) {
-						if (authenticationPair.get("username") != null) {
-							userCache.put(new Element("com_easysdi_map", authenticationPair));
+
+			if (authenticationPair != null && authenticationPair.size() > 0) {
+				username = (String) authenticationPair.get("username");
+				password = (String) authenticationPair.get("password");
+			}
+
+			if (debug) {
+				logger.debug("Joomla Cookie header found for user '" + username + "'");
+			}
+
+			if (username != null) {
+				if (authenticationIsRequired(username)) {
+					UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+					authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
+
+					Authentication authResult;
+
+					try {
+						authResult = authenticationManager.authenticate(authRequest);
+					} catch (AuthenticationException failed) {
+						// Authentication failed
+						if (debug) {
+							logger.debug("Authentication request for user: " + username + " failed: " + failed.toString());
 						}
+
+						SecurityContextHolder.getContext().setAuthentication(null);
+
+						rememberMeServices.loginFail(request, response);
+
+						onUnsuccessfulAuthentication(request, response, failed);
+
+						if (ignoreFailure) {
+							chain.doFilter(request, response);
+						} else {
+							authenticationEntryPoint.commence(request, response, failed);
+						}
+
+						return;
 					}
-				} catch (EmptyResultDataAccessException er) {
-				}
-			}
 
-		}
-
-		if (authenticationPair != null && authenticationPair.size() > 0) {
-			username = (String) authenticationPair.get("username");
-			password = (String) authenticationPair.get("password");
-		}
-
-		if (debug) {
-			logger.debug("Joomla Cookie header found for user '" + username + "'");
-		}
-
-		if (username != null) {
-			if (authenticationIsRequired(username)) {
-				UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-				authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
-
-				Authentication authResult;
-
-				try {
-					authResult = authenticationManager.authenticate(authRequest);
-				} catch (AuthenticationException failed) {
-					// Authentication failed
+					// Authentication success
 					if (debug) {
-						logger.debug("Authentication request for user: " + username + " failed: " + failed.toString());
+						logger.debug("Authentication success: " + authResult.toString());
 					}
 
-					SecurityContextHolder.getContext().setAuthentication(null);
+					SecurityContextHolder.getContext().setAuthentication(authResult);
 
-					rememberMeServices.loginFail(request, response);
+					rememberMeServices.loginSuccess(request, response, authResult);
 
-					onUnsuccessfulAuthentication(request, response, failed);
-
-					if (ignoreFailure) {
-						chain.doFilter(request, response);
-					} else {
-						authenticationEntryPoint.commence(request, response, failed);
-					}
-
-					return;
+					onSuccessfulAuthentication(request, response, authResult);
 				}
-
-				// Authentication success
-				if (debug) {
-					logger.debug("Authentication success: " + authResult.toString());
-				}
-
-				SecurityContextHolder.getContext().setAuthentication(authResult);
-
-				rememberMeServices.loginSuccess(request, response, authResult);
-
-				onSuccessfulAuthentication(request, response, authResult);
 			}
 		}
 		chain.doFilter(request, response);
