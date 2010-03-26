@@ -132,6 +132,8 @@ public class MapToFop {
 		httpClient.getParams().setAuthenticationPreemptive(true);
 		httpClient.getState().setCredentials(AuthScope.ANY, credentials);
 		if (connectionParameters != null) {
+			connectionParameters.remove(WFSDataStoreFactory.USERNAME.key);
+			connectionParameters.remove(WFSDataStoreFactory.PASSWORD.key);
 			connectionParameters.put(WFSDataStoreFactory.USERNAME.key, username);
 			connectionParameters.put(WFSDataStoreFactory.PASSWORD.key, password);
 		}

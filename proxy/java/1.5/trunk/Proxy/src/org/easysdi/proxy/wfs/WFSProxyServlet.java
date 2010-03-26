@@ -222,8 +222,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						if (hasPolicy) {
 							String tmpFT = ftName;
 							if (tmpFT != null) {
-								String[] s = tmpFT.split(":");
-								tmpFT = s[s.length - 1];
+								//String[] s = tmpFT.split(":");
+								//tmpFT = s[s.length - 1];
 							}
 							if (!isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(remoteServerIndex))) {
 
@@ -395,8 +395,8 @@ public class WFSProxyServlet extends ProxyServlet {
 
 								String tmpFT = hFields[i].toString();
 								if (tmpFT != null) {
-									String[] s = tmpFT.split(":");
-									tmpFT = s[s.length - 1];
+									//String[] s = tmpFT.split(":");
+									//tmpFT = s[s.length - 1];
 									// Debug tb 03.07.2009
 									// Fait doublon avec split":"
 									// }
@@ -443,8 +443,8 @@ public class WFSProxyServlet extends ProxyServlet {
 												{
 													String tmpFA = fieldsAttribute[k].toString();
 													if (!"".equals(tmpFA) && tmpFA != null) {
-														String[] ss = tmpFA.split(":");
-														tmpFA = ss[ss.length - 1];
+														//String[] ss = tmpFA.split(":");
+														//tmpFA = ss[ss.length - 1];
 													}
 													// Comparaison avec le
 													// contenu
@@ -571,8 +571,7 @@ public class WFSProxyServlet extends ProxyServlet {
 											param = removeTypesFromPOSTUrl(featureTypeListToKeep, attributeListToKeepPerFT, attributeListToKeepNbPerFT, param,
 													iServer, currentOperation);
 
-											if (param.indexOf("Query") < 0)
-												param = null;
+											//if (param.indexOf("Query") < 0) param = null;
 											if (param != null) {
 												WFSGetFeatureRunnable r = new WFSGetFeatureRunnable("POST", getRemoteServerUrl(iServer), param, this,
 														serversIndex, wfsFilePathList, iServer, queryCount);
@@ -892,8 +891,8 @@ public class WFSProxyServlet extends ProxyServlet {
 
 								String tmpFT = fields[i];
 								if (tmpFT != null) {
-									String[] s = tmpFT.split(":");
-									tmpFT = s[s.length - 1];
+									//String[] s = tmpFT.split(":");
+									//tmpFT = s[s.length - 1];
 									// Debug tb 03.07.2009
 									// Fait doublon avec split":"
 									// }
@@ -939,8 +938,8 @@ public class WFSProxyServlet extends ProxyServlet {
 												{
 													String tmpFA = fieldsAttribute[k].toString();
 													if (tmpFA != null) {
-														String[] ss = tmpFA.split(":");
-														tmpFA = ss[ss.length - 1];
+														//String[] ss = tmpFA.split(":");
+														//tmpFA = ss[ss.length - 1];
 													}
 													// Comparaison avec le
 													// contenu de la Policy
@@ -1324,8 +1323,8 @@ public class WFSProxyServlet extends ProxyServlet {
 				// onOracle.
 				if (nlLocalFilter.getLength() > 0) {
 					String tmpFTA = nlLocalFilter.item(0).getTextContent();
-					String[] s = tmpFTA.split(":");
-					tmpFTA = s[s.length - 1];
+					//String[] s = tmpFTA.split(":");
+					//tmpFTA = s[s.length - 1];
 					geomAttributName = tmpFTA;
 				}
 			}
@@ -1380,8 +1379,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					// Recherche le nom de l'authorized featureType courant
 					String tmpFT = nl.item(0).getAttributes().getNamedItem("typeName").getTextContent();
 					if (tmpFT != null) {
-						String[] s = tmpFT.split(":");
-						tmpFT = s[s.length - 1];
+						//String[] s = tmpFT.split(":");
+						//tmpFT = s[s.length - 1];
 					}
 					// Debug tb 03.07.2009
 					// Fait doublon avec split":"
@@ -1445,8 +1444,8 @@ public class WFSProxyServlet extends ProxyServlet {
 								for (int l = 0; l < attributeListToKeepNbPerFT.get(j); l++) {
 									String tmpFTA = atnl.item(k).getTextContent();
 									if (tmpFTA != null) {
-										String[] s = tmpFTA.split(":");
-										tmpFTA = s[s.length - 1];
+										//String[] s = tmpFTA.split(":");
+										//tmpFTA = s[s.length - 1];
 									}
 									// Debug tb 03.07.2009
 									// Fait doublon avec split":"
@@ -1525,8 +1524,8 @@ public class WFSProxyServlet extends ProxyServlet {
 								for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
 									String tmpFTA = atnl.item(k).getTextContent();
 									if (tmpFTA != null) {
-										String[] s = tmpFTA.split(":");
-										tmpFTA = s[s.length - 1];
+										//String[] s = tmpFTA.split(":");
+										//tmpFTA = s[s.length - 1];
 									}
 									// Debug tb 03.07.2009
 									// Fait doublon avec split":"
@@ -1608,8 +1607,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					for (int j = 0; j < featureTypeListToKeep.size(); j++) {
 						String tmpFT = nl.item(i).getTextContent();
 						if (tmpFT != null) {
-							String[] s = tmpFT.split(":");
-							tmpFT = s[s.length - 1];
+							//String[] s = tmpFT.split(":");
+							//tmpFT = s[s.length - 1];
 						}
 						// Debug tb 03.07.2009
 						// Fait doublon avec split":"
@@ -1626,7 +1625,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						if (tmpFT.equals(featureTypeListToKeep.get(j))) {
 							String policyServerPrefix = getServerPrefix(getRemoteServerUrl(iServer));
 							policyServersPrefix.add(policyServerPrefix);
-							nl.item(i).setTextContent(policyServerPrefix + ":" + tmpFT);
+							//nl.item(i).setTextContent(policyServerPrefix + ":" + tmpFT);
+							nl.item(i).setTextContent(tmpFT);
 							isInList = true;
 						}
 					}
@@ -1715,8 +1715,8 @@ public class WFSProxyServlet extends ProxyServlet {
 						for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
 							String tmpFTA = attributeListToKeepPerFT.get(attributeIndex + k);
 							if (tmpFTA != null) {
-								String[] s = tmpFTA.split(":");
-								tmpFTA = s[s.length - 1];
+								//String[] s = tmpFTA.split(":");
+								//tmpFTA = s[s.length - 1];
 							}
 							if (tmpFTA.equals(geomAttribut)) {
 								hasGeomAttribut = true;
@@ -1773,8 +1773,8 @@ public class WFSProxyServlet extends ProxyServlet {
 					for (int k = 0; k < attributeListToKeepNbPerFT.get(j); k++) {
 						String tmpFTA = attributeListToKeepPerFT.get(attributeIndex + k);
 						if (tmpFTA != null) {
-							String[] s = tmpFTA.split(":");
-							tmpFTA = s[s.length - 1];
+							//String[] s = tmpFTA.split(":");
+							//tmpFTA = s[s.length - 1];
 						}
 						if (tmpFTA.equals(geomAttribut)) {
 							hasGeomAttribut = true;
@@ -1948,9 +1948,9 @@ public class WFSProxyServlet extends ProxyServlet {
 								// featureType: ComplexType.name correspondant
 								// au Element.name
 								String tmpFT = "";
-								tmpFT = el[i].getName();
-								String[] s = tmpFT.split(":");
-								tmpFT = s[s.length - 1];
+								tmpFT = schema.getPrefix()+":"+el[i].getName();
+								//String[] s = tmpFT.split(":");
+								//tmpFT = s[s.length - 1];
 								// Fin de Debug
 								if (isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(serversIndex.get(j)))) {
 									org.geotools.xml.schema.Element[] elem = ct[i].getChildElements();

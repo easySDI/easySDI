@@ -16,7 +16,6 @@
  */
 package org.easysdi.xml.handler;
 
-
 import java.util.List;
 import java.util.Vector;
 
@@ -26,170 +25,157 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class RequestHandler extends DefaultHandler {
 
-    private String operation = "";
-    private  String service = "";
-    private String version ="";
-    private boolean isFirst= true;
-    private String data ="";
-    private List typeName= new Vector();
-//Debug tb 11.09.2009
-    private Boolean isInFilterElement = false; // Pour être sur que le propertyName lu n'est pas celui de l'élément <Filter>, mais bien un attribut à renvoyer
-    private String elementQName = "";
-    private Boolean isElementQName = false; // To be sure to avoid "\t\t" characters 
-    private List propertyName= new Vector();
-//Fin de debug
-    private boolean hasFilter= false;
-    
-    public boolean hasRequestFilter(){
-		
-	return hasFilter;
-    }
-    
-    public String getVersion() {
-	return version;
-    }
+	private String operation = "";
+	private String service = "";
+	private String version = "";
+	private boolean isFirst = true;
+	private String data = "";
+	private List typeName = new Vector();
+	// Debug tb 11.09.2009
+	private Boolean isInFilterElement = false; // Pour ï¿½tre sur que le
+												// propertyName lu n'est pas
+												// celui de l'ï¿½lï¿½ment <Filter>,
+												// mais bien un attribut ï¿½
+												// renvoyer
+	private String elementQName = "";
+	private Boolean isElementQName = false; // To be sure to avoid "\t\t"
+											// characters
+	private List propertyName = new Vector();
+	// Fin de debug
+	private boolean hasFilter = false;
 
-    public void setVersion(String version) {
-	this.version = version;
-    }
+	public boolean hasRequestFilter() {
 
-    public String getOperation() {
-	return operation;
-    }
+		return hasFilter;
+	}
 
-    public void setOperation(String operation) {
-	this.operation = operation;
-    }
+	public String getVersion() {
+		return version;
+	}
 
-    public String getService() {
-	return service;
-    }
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
-    public void setService(String service) {
-	this.service = service;
-    }
+	public String getOperation() {
+		return operation;
+	}
 
-    public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException
-    	{
-//Debug tb 04.06.2009
-    	elementQName = qName; //Nécessaire pour utilsation dans la méthode "characters"
-    	isElementQName = false;
-//Fin de debug
-    
-		if (isFirst)
-			{
-		    operation=localName;
-		    service=attr.getValue("service");
-		    version=attr.getValue("version");
-		    isFirst= false;
-			}
-		
-		//Requested by the GetFeature operation	    
-		if (localName.equals("Query"))
-			{
-		    if ("GetFeature".equalsIgnoreCase(operation) && "WFS".equalsIgnoreCase(service))
-		    	{
-		    	String typeNameTemp =attr.getValue("typeName");
-		    	typeName.add( typeNameTemp.substring(typeNameTemp.indexOf(":") + 1));
-		    	}
-		    else
-		    	{
-				if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service))
-					{
-					String typeNameTemp =attr.getValue("typeNames");
-					String a[]=typeNameTemp.split(" ");
-					for (int i = 0 ;i<a.length;i++)
-						{		   
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
+	public void startElement(String nameSpace, String localName, String qName, Attributes attr) throws SAXException {
+		// Debug tb 04.06.2009
+		elementQName = qName; // Nï¿½cessaire pour utilsation dans la mï¿½thode
+								// "characters"
+		isElementQName = false;
+		// Fin de debug
+
+		if (isFirst) {
+			operation = localName;
+			service = attr.getValue("service");
+			version = attr.getValue("version");
+			isFirst = false;
+		}
+
+		// Requested by the GetFeature operation
+		if (localName.equals("Query")) {
+			if ("GetFeature".equalsIgnoreCase(operation) && "WFS".equalsIgnoreCase(service)) {
+				String typeNameTemp = attr.getValue("typeName");
+				typeName.add(typeNameTemp);
+				// typeName.add(
+				// typeNameTemp.substring(typeNameTemp.indexOf(":") + 1));
+			} else {
+				if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)) {
+					String typeNameTemp = attr.getValue("typeNames");
+					String a[] = typeNameTemp.split(" ");
+					for (int i = 0; i < a.length; i++) {
 						typeName.add(a[i]);
-						}
 					}
-		    	}
+				}
 			}
-		
-//Debug tb 11.09.2009
-		if (localName.equalsIgnoreCase("Filter"))
-			{
+		}
+
+		// Debug tb 11.09.2009
+		if (localName.equalsIgnoreCase("Filter")) {
 			isInFilterElement = true;
-			}
-//Fin de debug
-    	}
+		}
+		// Fin de debug
+	}
 
-    public void endElement(String nameSpace, String localName, String qName) throws SAXException
-    	{
-    	//Requested by the DescribeFeatureType
-    	if (localName.equals("TypeName"))
-    		{		
-    		typeName.add(data.substring(data.indexOf(":") + 1));
-    		}
-    	if (localName.equalsIgnoreCase("Filter"))
-    		{		
-    		hasFilter=true;
-//Debug tb 11.09.2009
-    		isInFilterElement = false;
-//Fin de debug
-    		}
-    	data = "";
-    	}
+	public void endElement(String nameSpace, String localName, String qName) throws SAXException {
+		// Requested by the DescribeFeatureType
+		if (localName.equals("TypeName")) {
+			typeName.add(data);
+			// typeName.add(data.substring(data.indexOf(":") + 1));
+		}
+		if (localName.equalsIgnoreCase("Filter")) {
+			hasFilter = true;
+			// Debug tb 11.09.2009
+			isInFilterElement = false;
+			// Fin de debug
+		}
+		data = "";
+	}
 
-    /**
-     * Actions à réaliser au début du document.
-     */
-    public void startDocument() {
+	/**
+	 * Actions ï¿½ rï¿½aliser au dï¿½but du document.
+	 */
+	public void startDocument() {
 
-    }
+	}
 
-    
-    /**
-     * Actions à réaliser lors de la fin du document XML.
-     */
-    public void endDocument()
-    	{
-//Debug tb 04.06.2009
-    	if(propertyName.size()==0)
-    		{
-    		propertyName.add("");
-    		}
-//Fin de debug
-    	}
+	/**
+	 * Actions ï¿½ rï¿½aliser lors de la fin du document XML.
+	 */
+	public void endDocument() {
+		// Debug tb 04.06.2009
+		if (propertyName.size() == 0) {
+			propertyName.add("");
+		}
+		// Fin de debug
+	}
 
-    
-    /**
-     * Actions à réaliser sur les données
-     */
-    public void characters(char[] caracteres, int debut, int longueur) throws SAXException
-    	{
-    	String donnees = new String(caracteres, debut, longueur);
-//Debug tb 11.09.2009
-		String [] s = elementQName.split(":");
-		String tmpFT = s[s.length-1];
-    	if(tmpFT.equals("PropertyName") && !isElementQName &&  !isInFilterElement)
-			{
+	/**
+	 * Actions ï¿½ rï¿½aliser sur les donnï¿½es
+	 */
+	public void characters(char[] caracteres, int debut, int longueur) throws SAXException {
+		String donnees = new String(caracteres, debut, longueur);
+		// Debug tb 11.09.2009
+		// String [] s = elementQName.split(":");
+		// String tmpFT = s[s.length-1];
+		String tmpFT = elementQName;
+		if (tmpFT.equals("PropertyName") && !isElementQName && !isInFilterElement) {
 			propertyName.add(donnees);
-    		isElementQName = true;
-			}
-//Fin de debug	
-    	if (data == null)
-    		data = donnees.trim();
-    	else
-    		data = data + donnees.trim();
-    	}
+			isElementQName = true;
+		}
+		// Fin de debug
+		if (data == null)
+			data = donnees.trim();
+		else
+			data = data + donnees.trim();
+	}
 
-    
-    public List getTypeName() {	    
-	return typeName;
-    }
+	public List getTypeName() {
+		return typeName;
+	}
 
-    public void setTypeName(List typeName) {
-	this.typeName = typeName;
-    }
-    
-//Debug tb 04.06.2009
-    public List getPropertyName()
-    	{
-    	return propertyName;
-        }
-//Fin de debug
+	public void setTypeName(List typeName) {
+		this.typeName = typeName;
+	}
+
+	// Debug tb 04.06.2009
+	public List getPropertyName() {
+		return propertyName;
+	}
+	// Fin de debug
 }
-
-
-

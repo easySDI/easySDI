@@ -296,7 +296,7 @@ public class OgcProxyServlet extends HttpServlet {
 			Principal principal = req.getUserPrincipal();
 			if (principal != null)
 				user = principal.getName();
-			Element policyE = configCache.get(user + "policyFile");
+			Element policyE = configCache.get(servletName + user + "policyFile");
 			if (policyE != null && policyE.getVersion() != plastmodified)
 				policyE = null;
 			if (policyE == null) {
@@ -311,7 +311,7 @@ public class OgcProxyServlet extends HttpServlet {
 				PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 				Policy policy = ph.getPolicy(user, req);
 				ps.setPolicy(policy);
-				policyE = new Element(user + "policyFile", policy);
+				policyE = new Element(servletName + user + "policyFile", policy);
 				policyE.setVersion(plastmodified);
 				configCache.put(policyE);
 			} else

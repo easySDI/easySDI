@@ -2,14 +2,12 @@ package org.easysdi.proxy.ehcache;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
@@ -25,9 +23,6 @@ import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilte
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.util.UrlUtils;
-
-import com.sun.jndi.toolkit.url.UrlUtil;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
@@ -42,7 +37,6 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	public void doInit(FilterConfig filterConfig) throws CacheException {
 		synchronized (this.getClass()) {
 			if (blockingCache == null) {
-				// setCacheNameIfAnyConfigured(filterConfig);
 				final String localCacheName = getCacheName();
 				Ehcache cache = getCacheManager().getEhcache(localCacheName);
 				if (!(cache instanceof BlockingCache)) {
