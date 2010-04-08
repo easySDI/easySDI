@@ -146,7 +146,7 @@ div#orderProduct{
 
 }
 
-.mdsearchresult .mdviewfile{
+.mdsearchresult .mdviewfile, .orderInfo .mdviewfile {
 	padding: 1px 3px;
 	border:1px solid #b9b9b9;
 	font-weight: bold;
@@ -1027,7 +1027,7 @@ font-size: 22px;
 
 }
 
-h1, h2, h3, h4, h5, h6 
+h1, h2, h3, h5, h6 
 
 {
 
@@ -1042,6 +1042,21 @@ margin-bottom: 5px;
 line-height: 100%;
 
 }
+
+h4
+{
+
+font-family: Arial,Helvetica,sans-serif;
+
+padding-bottom: 0px;
+
+margin-bottom: 5px;
+
+line-height: 100%;
+
+}
+
+
 h2 
 {
 font-size: 18px;
@@ -1142,6 +1157,11 @@ background-color: #e4e4e4;
 
 
 .product_proprety_message_title{
+	font-weight:normal;
+	width:500px;
+}
+
+.product_proprety_cbox_group{
 	font-weight:normal;
 	width:500px;
 }
@@ -1641,6 +1661,10 @@ padding:0;
 /********************************************************/
 /***              EasySDI Caddy                       ***/
 /********************************************************/
+.caddyError{
+	color:red;
+}
+
 .deleteProductCaddy { 
 	cursor:pointer;
 	background-image:url(../icons/silk/bin.png);
