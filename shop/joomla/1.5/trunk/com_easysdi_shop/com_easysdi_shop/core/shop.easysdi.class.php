@@ -35,7 +35,6 @@ class HTML_shop {
 		
 		$productList = $mainframe->getUserState('productList');
 		$newProductList = array ();
-		
 		if (is_array($productList))
 		{
 			foreach ($productList as $key => $value)
@@ -90,9 +89,13 @@ class HTML_shop {
 			$mainframe->setUserState('third_party','');
 			$mainframe->setUserState('order_type','');
 			$mainframe->setUserState('previousExtent','');
+			
+			//Unset the perimeter if no product left in caddy
+			$mainframe->setUserState('perimeter_id','');
 		}
 		$mainframe->setUserState('productList',$newProductList);
-		$mainframe->redirect("index.php?option=$option&view=shop&task=&Itemid=$itemId&step=$step&lang=$lang" );
+		if(count($newProductList)!= 0)
+			$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$itemId&step=$step&lang=$lang");
 	}
 
 	function orderPerimeter ($cid){
@@ -1470,13 +1473,13 @@ if (count($rows)>0){
 				echo "</td></tr></table>";
 				break;
 			case "cbox":
-				echo 	JText::_($row->translation).":&nbsp;&nbsp;";
-				
 				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
+				$html = "";
 				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
+				$html .= "<div class=\"product_proprety_cbox_group\">";
 				foreach ($rowsValue as $rowValue){
 					$selProduct = $mainframe->getUserState($row->code.'_cbox_property_'.$product->id);
 					$selected = "";
@@ -1484,9 +1487,14 @@ if (count($rows)>0){
 						if (in_array($rowValue->value,$selProduct)) $selected ="checked";
 					}
 					
-					echo "<input type='checkbox' class='".$isMandatoryClass."' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'> ". JText::_($rowValue->val_trans)."&nbsp;";
-					if($rowValue->mandatory == 1) echo "<span class=\"mdtyProperty\">*</span>&nbsp;&nbsp;"; else echo"&nbsp;";
+					$html .= "&nbsp;&nbsp;<input type='checkbox' class='".$isMandatoryClass."' name='".$row->code."_cbox_property_".$product->id."[]' id='".$row->code."_cbox_property_".$product->id."[]' ".$selected." value='".$rowValue->value."'/>&nbsp;". JText::_($rowValue->val_trans)."&nbsp;";
+					$html .="<br/>";
 				}
+				$html .= "</div>";
+				echo "<span id='".$row->code."_cbox_property_".$product->id."[]_label'>".JText::_($row->translation).": "."</span>";
+				if($rowValue->mandatory == 1) 
+					echo "<span id='".$row->code."_cbox_property_".$product->id."[]_group' class=\"mdtyProperty\">*</span><br/>";
+				echo $html;
 				break;
 			case "text":
 				echo "<div id='".$row->code."_text_property_".$product->id."_label'>".JText::_($row->translation).":</div>";
@@ -1541,7 +1549,7 @@ if (count($rows)>0){
 				}
 				break;
 			case "message":
-				echo JText::_($row->translation);
+				echo JText::_(trim($row->translation));
 				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, 
 							   pvd.text as value_text, 
 							   pvd.id as value, 
@@ -2547,6 +2555,12 @@ var tries = 1;
 
 function validateForm(toStep, fromStep){
 	
+	//Do not let order if products do not have at least 1 common perimeter
+	if(toStep == 2 && fromStep == 1){
+		if($('commonPerimCount').value < 1)
+			return false;
+	}
+	
 	//Do not allow to go before the perimeter are loaded.
 	//Causes bug (selected perimeter not saved)
 	if(toStep == 3 && fromStep == 2){
@@ -2607,6 +2621,28 @@ function validateForm(toStep, fromStep){
 						label = aSel[i].id+'_label';
 						errorMsg += "\r\n"+$(label).innerHTML.replace(":","");
 					}
+				}
+			}
+		}
+		
+		
+		//checkbox
+		var aSel = $('orderForm').getElementsByTagName("div");
+		for(var i=0;i<aSel.length;i++){
+			//Browse group
+			if(aSel[i].className == "product_proprety_cbox_group"){
+				var aCbox = aSel[i].getElementsByTagName("input");
+				var cont=false;
+				var label = "";
+				
+				for(var j=0;j<aCbox.length;j++){
+					//cont if at least one is checked
+					label = aCbox[j].id+'_label';
+					if(aCbox[j].checked)
+						cont = true;
+				}
+				if(!cont){
+					errorMsg += "\r\n"+"-"+$(label).innerHTML.replace(":","")+"-";
 				}
 			}
 		}
