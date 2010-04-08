@@ -171,19 +171,20 @@ if (!$user->guest)
 			}
 			?>
 		</ul>
-		<table class="easysdi_disconnect_table" width="100%">
-			<tr>
-			   <td>
-			    <button onclick="window.open('./index.php?option=com_user&task=logout&return=aW5kZXgucGhw', '_self');"
-				class="easysdi_disconnect_button" type="submit"><?php echo JText::_("EASYSDI_MENU_ITEM_LOGIN"); ?></button>
-			   </td>
-			 </tr>
-		</table>
 		<?php
 		}
 		
 	}
 	?>
+	<table class="easysdi_disconnect_table" width="100%">
+		<tr>
+		   <td>
+		    <button onclick="window.open('./index.php?option=com_user&task=logout&return=aW5kZXgucGhw', '_self');"
+			class="easysdi_disconnect_button" type="submit"><?php echo JText::_("EASYSDI_MENU_ITEM_LOGIN"); ?></button>
+		   </td>
+		 </tr>
+	</table>
+	
 		
 </div>
 </div>
