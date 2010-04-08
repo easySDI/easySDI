@@ -430,31 +430,56 @@ if ($curstep == "2")
 					var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
 					var elSel = document.getElementById('selectedSurface');
 					var features = vectors.features;
-					if (features.length == 0) 
+					if (features.length == 0 && elSel.options.length == 1) 
+					{
+						vectors.addFeatures([new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Point())]);
+					}
+					
+					else if (features.length == 0 && elSel.options.length > 1) 
 					{
 						vectors.addFeatures([new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon())]);
-					} 
+					}
+					
 					var feature= features[features.length-1];
 					var selectedComponents = new Array();
 					if (feature)
-					{				  
-						var newLinearRingComponents = new Array();
-						for (i = elSel.length - 1; i>=0; i--) 
-						{
-							var curValue = elSel.options[i].value;
+					{	
+						if(elSel.options.length == 1){
+							var curValue = elSel.options[0].value;
 							var x= curValue.substring(0,curValue .indexOf(" ", 0));
 							var y= curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
-							newLinearRingComponents.push (new OpenLayers.Geometry.Point(x,y));		     
-						}
-						var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
-						feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));									  			
-						vectors.removeFeatures(features);				
-						vectors.addFeatures([feature]);
-						vectors.drawFeature (feature);
+							var newPoint = new OpenLayers.Geometry.Point(x,y);
+							feature = new OpenLayers. Feature. Vector(newPoint);
 
-						if (feature.geometry.components[0].components.length > 2)
+						}
+						else if (elSel.options.length > 1) 
 						{
-							featureArea = feature.geometry.getArea();
+							var newLinearRingComponents = new Array();
+							for (i = elSel.length - 1; i>=0; i--) 
+							{
+								var curValue = elSel.options[i].value;
+								var x= curValue.substring(0,curValue .indexOf(" ", 0));
+								var y= curValue.substring(curValue .indexOf(" ", 0)+1,curValue .length);
+								newLinearRingComponents.push (new OpenLayers.Geometry.Point(x,y));		     
+							}
+							var newLinearRing = new OpenLayers.Geometry.LinearRing(newLinearRingComponents);
+							feature = new OpenLayers. Feature. Vector(new OpenLayers.Geometry.Polygon([newLinearRing]));
+						}
+															  			
+						vectors.removeFeatures(features);				
+						if(elSel.options.length != 0)
+							vectors.addFeatures([feature]);
+						if(feature.geometry.bounds && !fromZoomEnd)
+							map.zoomToExtent(feature.geometry.bounds); 
+						if(feature.geometry.components){
+							if (feature.geometry.components[0].components.length > 2)
+							{
+								featureArea = feature.geometry.getArea();
+							}
+							else
+							{
+								featureArea = 0;
+							}
 						}
 						else
 						{
