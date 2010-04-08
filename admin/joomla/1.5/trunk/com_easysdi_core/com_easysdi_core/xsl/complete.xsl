@@ -264,6 +264,7 @@ __ref_6$s
 			<xsl:with-param name="obligationCode" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:obligation/gmd:MD_ObligationCode"/>
 		</xsl:call-template>
 	 	 </td></tr>
+		 <tr><td></td></tr>
 	 	 </table>
  	</xsl:otherwise>
  </xsl:choose>
