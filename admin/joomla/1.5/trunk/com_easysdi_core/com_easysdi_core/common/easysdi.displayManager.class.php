@@ -670,7 +670,7 @@ class displayManager{
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
-		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$partner_logo.'">';
+		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$partner_logo.'"/>';
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
 		
 		/***Add consultation informations*/
@@ -918,21 +918,23 @@ class displayManager{
 			
 		$query = "select creation_date from #__easysdi_product where metadata_id = '".$id."'";
 			$db->setQuery($query);
-			$product_creation_date = $db->loadResult();
+			$temp = $db->loadResult();
+			$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
-		$query = "select update_date from #__easysdi_product where metadata_id = '".$id."'";
+		$query = "select metadata_update_date from #__easysdi_product where metadata_id = '".$id."'";
 			$db->setQuery($query);
-			$product_update_date = $db->loadResult();
-			
-		$temp = explode(" ", $product_creation_date);
-		$temp = explode("-", $temp[0]);
-		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		$temp = explode(" ", $product_update_date);
-		$temp = explode("-", $temp[0]);
-		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+			$temp = $db->loadResult();
+			$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
-
-		$myHtml = str_replace("__ref_1\$s", "", $myHtml);
+		$query = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
+			$db->setQuery($query);
+			$partner_logo = $db->loadResult();
+		
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");		
+		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.JPATH_BASE.DS.$partner_logo.'"/>';
+		
+		$myHtml = str_replace("__ref_1\$s", $img, $myHtml);
 		$myHtml = str_replace("__ref_2\$s", $supplier, $myHtml);
 		$myHtml = str_replace("__ref_3\$s", $product_creation_date, $myHtml);
 		$myHtml = str_replace("__ref_4\$s", $product_update_date, $myHtml);
@@ -944,6 +946,10 @@ class displayManager{
 		
 		if($myHtml == "")
 			$myHtml = "<div/>";
+		
+		$timer = fopen ('/home/sites/joomla.asitvd.ch/web/components/com_easysdi_core/tmp/my', 'w');
+		fwrite($timer, $myHtml);
+		fclose($timer);
 		
 		$document  = new DomDocument();	
 		$document ->load(dirname(__FILE__).'/../xsl/xhtml-to-xslfo.xsl');
