@@ -177,9 +177,14 @@ if ($curstep == "2")
 						//Free selection perimeter case
 						//Always display the button for manual perimeter
 						document.getElementById('addPerimeterButton').style.display='block';
+						//Hide manual 
+						document.getElementById('manualPerimDivId').style.display='none';
 					}
 					else
 					{
+						//hide freeselect
+						document.getElementById('manualAddGeometry').style.display='none';
+						
 						if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>)
 						{
 							text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->perimeter_name); ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
@@ -191,9 +196,10 @@ if ($curstep == "2")
 						if(<?php echo $row->is_localisation;?> == 0)
 						{
 							document.getElementById('addPerimeterButton').style.display='none';
+							document.getElementById('manualPerimDivId').style.display='none';
 						}
 						else
-						{
+						{	
 							document.getElementById('addPerimeterButton').style.display='block';
 						}
 					} 
@@ -328,18 +334,34 @@ if ($curstep == "2")
 					$('xText').addEvent('keydown', function(event){
 					    //catch enter key
 					    if (event.keyCode == '13'){
-						    modifyGeometryPerimeter();
-						    document.getElementById('xText').value='';
-						    document.getElementById('yText').value='';
+						    if(document.getElementById('selectedSurface').options.selectedIndex == -1){
+							    addGeometryPerimeter();
+							    document.getElementById('xText').value='';
+							    document.getElementById('yText').value='';
+						    }
+						    else
+						    {
+							    modifyGeometryPerimeter();
+							    document.getElementById('xText').value='';
+							    document.getElementById('yText').value='';
+						    }
 					    }
 					});
 					
 					$('yText').addEvent('keydown', function(event){
 					    //catch enter key
 					    if (event.keyCode == '13'){
-						    modifyGeometryPerimeter();
-						    document.getElementById('xText').value='';
-						    document.getElementById('yText').value='';
+						    if(document.getElementById('selectedSurface').options.selectedIndex == -1){
+							    addGeometryPerimeter();
+							    document.getElementById('xText').value='';
+							    document.getElementById('yText').value='';
+						    }
+						    else
+						    {
+							    modifyGeometryPerimeter();
+							    document.getElementById('xText').value='';
+							    document.getElementById('yText').value='';
+						    }
 					    }
 					});
 				});
