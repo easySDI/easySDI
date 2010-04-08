@@ -327,12 +327,13 @@ class HTML_shop {
 		
 		document.getElementById('perimeter_id').value = perimId;
 		//freeSelectPerimeter();
+		
 		//Hides the manual selection, we don't want that here!
 		//document.getElementById('manualPerimDivId').style.display='none';
-		//hide the x,y fields
-		document.getElementById('manualAddGeometry').style.display='none';
 		
-			
+		//hide the x,y fields
+		//document.getElementById('manualAddGeometry').style.display='none';
+		
 		//Delete the current selection
 		//only if the perimeter is different from the one register in the user session
 		//And if the call is not resulting from a zoom end event
@@ -674,7 +675,8 @@ function setAlpha(imageformat)
 				//$("shopWarnLogo").className = 'shopWarnLogoActive';
 				$("shopWarnLogo").className = 'shopWarnLogoInactive';
 				$("scaleStatus").innerHTML = text;
-				selectPerimeter('perimeterList', true);
+				
+				selectPerimeter('perimeterList', fromZoomEnd);
 			});
 			
 				vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
@@ -1218,8 +1220,8 @@ function setAlpha(imageformat)
 				 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
 				 replicSelectedSurface.options[i].selected=true;
 				 replicSelectedSurfaceName.options[i].selected=true;
-				 //Take care here to finish with the same point that the first.
-				 if(i == (selectedSurface.options.length - 1)){
+				 //Take care here to finish with the same point that the first for a free selection
+				 if(i == (selectedSurface.options.length - 1) && isFreeSelectionPerimeter){
 					 if(selectedSurface.options[i].value != selectedSurface.options[0].value){
 						 replicSelectedSurface.options[i+1] = new Option(selectedSurface.options[0].value,selectedSurface.options[0].value);
 						 replicSelectedSurfaceName.options[i+1] = new Option(selectedSurface.options[0].text,selectedSurface.options[0].text);
