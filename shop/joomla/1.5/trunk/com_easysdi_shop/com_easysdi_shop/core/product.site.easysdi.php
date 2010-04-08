@@ -705,13 +705,15 @@ class SITE_product {
 		
 		foreach( $_POST['properties_id'] as $properties_id )
 		{
-			$query = "INSERT INTO #__easysdi_product_property VALUES (0,".$rowProduct->id.",".$properties_id.")";
+			if($properties_id != -1){
+				$query = "INSERT INTO #__easysdi_product_property VALUES (0,".$rowProduct->id.",".$properties_id.")";
 			
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();				
+				$database->setQuery( $query );
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+						exit();				
+				}
 			}
 		}
 		
