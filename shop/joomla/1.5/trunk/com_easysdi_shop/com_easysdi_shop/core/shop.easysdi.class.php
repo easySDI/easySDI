@@ -1211,13 +1211,22 @@ function setAlpha(imageformat)
 		 	var replicSelectedSurfaceName = document.getElementById('replicSelectedSurfaceName');
 		 	 	
 		 
-			 var i=0; 
+			 var i=0;
 			 for (i=0;i<selectedSurface.options.length;i++)
 			 {  
 				 replicSelectedSurface.options[i] = new Option(selectedSurface.options[i].value,selectedSurface.options[i].value);
 				 replicSelectedSurfaceName.options[i] = new Option(selectedSurface.options[i].text,selectedSurface.options[i].text);
 				 replicSelectedSurface.options[i].selected=true;
-				 replicSelectedSurfaceName.options[i].selected=true;	 
+				 replicSelectedSurfaceName.options[i].selected=true;
+				 //Take care here to finish with the same point that the first.
+				 if(i == (selectedSurface.options.length - 1)){
+					 if(selectedSurface.options[i].value != selectedSurface.options[0].value){
+						 replicSelectedSurface.options[i+1] = new Option(selectedSurface.options[0].value,selectedSurface.options[0].value);
+						 replicSelectedSurfaceName.options[i+1] = new Option(selectedSurface.options[0].text,selectedSurface.options[0].text);
+						 replicSelectedSurface.options[i+1].selected=true;
+						 replicSelectedSurfaceName.options[i+1].selected=true;
+					 }
+				 }
 			 }
 			document.getElementById('totalArea').value=document.getElementById('totalSurface').value;
 		 	
@@ -1231,7 +1240,7 @@ function setAlpha(imageformat)
 					document.getElementById('step').value = document.getElementById('fromStep').value;
 		 			return ;
 		 		}
-				if ((parseFloat(totalArea) < parseFloat(selectedSurfaceMin)))
+				if ((parseFloat(totalArea) < parseFloat(selectedSurfaceMin)) || parseFloat(totalArea) <= 0 )
 		 		{
 		 			alert("<?php echo JText::_("EASYSDI_SELECTED_SURFACE_BELLOW_MIN"); ?>");
 					document.getElementById('step').value = document.getElementById('fromStep').value;
@@ -2426,7 +2435,7 @@ if (count($rows)>0){
 			 */
 			$selSurfaceList = JRequest::getVar ('replicSelectedSurface', array() );
 			$mainframe->setUserState('selectedSurfaces',$selSurfaceList);
-			
+			 
 			$selSurfaceListName = JRequest::getVar ('replicSelectedSurfaceName', array(0) );
 			$mainframe->setUserState('selectedSurfacesName',$selSurfaceListName);
 				
@@ -2569,7 +2578,6 @@ function validateForm(toStep, fromStep){
 			tries--;
 			return false;
 		}
-		
 	}
 	
 	//check that all properties were filled in
