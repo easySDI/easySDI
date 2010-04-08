@@ -407,7 +407,7 @@ class ADMIN_product {
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'metadata.site.easysdi.php');
 			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 			
 			//Look for and exception and clean response
