@@ -6,6 +6,9 @@ $db =& JFactory::getDBO();
 $cid = 	$mainframe->getUserState('productList');
 $curstep = JRequest::getVar('step',0);
 $currentPreview = JRequest::getVar('previewProductId');
+/* todo here, load and merge all perims from each product to see if there is a common one.
+otherwise do not let go to step 2.*/
+//$arCommonsPerim = Array();
 if (is_array(($cid)))
 {
 	// do something
@@ -27,7 +30,40 @@ if (is_array(($cid)))
 			echo "<b>".$db->getErrorMsg()."</b><br>";
 			echo "</div>";
 		}
-
+		
+		//load product common perimeters
+		$arCommonsPerim;
+		$i = 0;
+		foreach( $cid as $id )
+		{
+			$db->setQuery("SELECT pp.perimeter_id FROM #__easysdi_product_perimeter pp where product_id=".$id);
+			if($i == 0){
+				
+				$arCommonsPerim = $db->loadResultArray();
+			}
+			else
+			{
+				$arCommonsPerim = array_intersect($arCommonsPerim, $db->loadResultArray());
+			}
+			
+			if ($db->getErrorNum()) 
+			{
+				echo "<div class='alert'>";
+				echo "<b>".$db->getErrorMsg()."</b><br>";
+				echo "</div>";
+			}
+			
+			$i++;
+		}
+		
+		if(count($arCommonsPerim) < 1){
+			echo "<table><tr><td valign=\"top\"><div class='shopWarnLogoActive'/></td>";
+			echo "<td class=\"caddyError\">".JText::_("EASYSDI_SHOP_NO_COMMON_PERIMETER")."</td>";
+			echo"</tr></table>";
+		}
+		
+		echo "<input type=\"hidden\" id=\"commonPerimCount\" value=\"".count($arCommonsPerim)."\">";
+		
 		$param = array('size'=>array('x'=>800,'y'=>800) );
 		JHTML::_("behavior.modal","a.modal",$param);
 		if (is_array($rows))
