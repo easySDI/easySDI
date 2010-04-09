@@ -2834,7 +2834,11 @@ function validateForm(toStep, fromStep){
 		 $language->load('com_easysdi');*/
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',5);
-
+		
+		//reinit limistart to 0 if we want all records
+		if($limit == 0)
+			$limitstart=0;
+		
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$view = JRequest::getVar('view');
@@ -2895,6 +2899,8 @@ function validateForm(toStep, fromStep){
 		}
 
 		if ($freetextcriteria){
+			//replace space with wildcard for one character
+			$freetextcriteria = str_replace(" ", "_", $freetextcriteria);
 			$filter = $filter." AND (DATA_TITLE like '%".$freetextcriteria."%' ";
 			$filter = $filter." OR METADATA_ID = '$freetextcriteria')";
 		}
@@ -3006,7 +3012,7 @@ function validateForm(toStep, fromStep){
 		$total = $db->loadResult();
 
 		$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;
-		$query  = $query .$filter ;
+		$query  = $query .$filter;
 
 		if ($simpleSearchCriteria == "moreConsultedMD"){
 			$query  = $query." order by weight";
@@ -3021,9 +3027,9 @@ function validateForm(toStep, fromStep){
 		{
 			$query  = $query ." order by data_title";
 		}
-		$db->setQuery( $query,$limitstart,$limit);
-		$rows = $db->loadObjectList();
 		
+		$db->setQuery($query,$limitstart,$limit);
+		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			echo "<div class='alert'>";
 			echo 	$db->getErrorMsg();
