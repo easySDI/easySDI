@@ -2111,7 +2111,7 @@ if (count($rows)>0){
 				$totalArea = 0;
 			}
 			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
-						VALUES ($db->Quote($third_party) ,'$order_type',0,'$order_name','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
+						VALUES ($db->Quote($third_party) ,'$order_type',0,'".addslashes($order_name)."','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
 			$db->setQuery($query );
 			
 			if (!$db->query()) {
