@@ -456,17 +456,16 @@ class SITE_metadata {
 						//echo $nodeValue."\r\n";
 					}
 				}
-					
-				//echo "Value of ".$name.": ".$nodeValue." \r\n ";
-				$XMLNode = $XMLDoc->createElement($child->iso_key);
-				$xmlAttributeParent->appendChild($XMLNode);
 				
-				$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
+				$XMLNode = @$XMLDoc->createElement($child->iso_key);
+				$xmlAttributeParent->appendChild($XMLNode);
+				$nodeValue = str_replace("&", "&amp;", $nodeValue);
+				$XMLValueNode = @$XMLDoc->createElement($childType, $nodeValue);
 				$XMLNode->appendChild($XMLValueNode);
 				$xmlParent = $XMLValueNode;
 			}
+			
 		}
-		
 		// R�cup�ration des enfants du noeud
 		$rowClassChilds = array();
 		$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='class' and rel.classes_from_id=".$parent;
