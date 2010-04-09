@@ -19,7 +19,9 @@
 defined('_JEXEC') or die('Restricted access');
 		
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-
+//for debugging, use this!
+//JHTML::script('ext-base32-debug.js', 'administrator/components/com_easysdi_shop/ext/adapter/ext/');
+//JHTML::script('ext-all32-debug.js', 'administrator/components/com_easysdi_shop/ext/');
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_shop/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_shop/ext/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_shop/js/');
@@ -243,7 +245,7 @@ class HTML_Metadata {
 				 
 				//Ajout des listener pour les boutons Joomla
 				
-				window.addEvent('domready', function() {
+				Ext.onReady(function(){
 					$('submitSaveMd0').addEvent( 'click' , function() { 
 						submitHandler();
 					});
