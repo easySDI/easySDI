@@ -350,7 +350,7 @@ public class WPSServlet extends HttpServlet {
 			orderIdList.add(order_id);
 			String remark = rs.getString("remark");
 			String provider_id = rs.getString("provider_id");
-		
+			
 			String name = rs.getString("name");
 			int type = rs.getInt("type");
 			String order_update = rs.getString("order_update");
@@ -408,7 +408,7 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:TYPE>ORDER</easysdi:TYPE>\n");    
 			}
 			
-			res.append("<easysdi:NAME>"+name+"</easysdi:NAME>\n");
+			res.append("<easysdi:NAME>"+encodeSpecialChars(name)+"</easysdi:NAME>\n");
 			res.append("</easysdi:REQUEST>\n");
 			res.append("<easysdi:CLIENT>\n");
 			res.append("<easysdi:ID>"+partner_id+"</easysdi:ID>\n");
@@ -418,12 +418,12 @@ public class WPSServlet extends HttpServlet {
 			while(rsAddContact.next()){
 	
 			    res.append("<easysdi:CONTACTADDRESS>\n");
-			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+			    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+			    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+			    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+			    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+			    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 			    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 			    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -439,12 +439,12 @@ public class WPSServlet extends HttpServlet {
 			
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:INVOICEADDRESS>\n");
-			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+			    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+			    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+			    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+			    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+			    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 			    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 			    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -460,12 +460,12 @@ public class WPSServlet extends HttpServlet {
 				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+partner_id);
 			while(rsAddContact.next()){		     
 			    res.append("<easysdi:DELIVERYADDRESS>\n");
-			    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-			    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-			    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-			    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-			    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-			    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+			    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+			    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+			    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+			    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+			    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+			    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 			    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 			    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 			    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -479,7 +479,7 @@ public class WPSServlet extends HttpServlet {
 			
 			if (!third_party.equalsIgnoreCase("0")){
 				res.append("<easysdi:TIERCE>\n");
-				res.append("<easysdi:ID>"+third_party+"</easysdi:ID>\n");
+				res.append("<easysdi:ID>"+encodeSpecialChars(third_party)+"</easysdi:ID>\n");
 				Statement stmtTierce = conn.createStatement();
 			    
 				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
@@ -487,12 +487,12 @@ public class WPSServlet extends HttpServlet {
 				while(rsAddContact.next()){
 	
 				    res.append("<easysdi:CONTACTADDRESS>\n");
-				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -504,12 +504,12 @@ public class WPSServlet extends HttpServlet {
 				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_INVOICING' and a.partner_id = "+third_party);
 				while(rsAddContact.next()){		     
 				    res.append("<easysdi:INVOICEADDRESS>\n");
-				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -522,12 +522,12 @@ public class WPSServlet extends HttpServlet {
 				rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_DELIVERY' and a.partner_id = "+third_party);
 				while(rsAddContact.next()){		     
 				    res.append("<easysdi:DELIVERYADDRESS>\n");
-				    res.append("<easysdi:NAME1>"+rsAddContact.getString("address_corporate_name1")+"</easysdi:NAME1>\n");
-				    res.append("<easysdi:NAME2>"+rsAddContact.getString("address_corporate_name2")+"</easysdi:NAME2>\n");
-				    res.append("<easysdi:AGENTFIRSTNAME>"+rsAddContact.getString("address_agent_firstname")+"</easysdi:AGENTFIRSTNAME>\n") ;
-				    res.append("<easysdi:AGENTLASTNAME>"+rsAddContact.getString("address_agent_lastname")+"</easysdi:AGENTLASTNAME>\n") ;		
-				    res.append("<easysdi:ADDRESSSTREET1>"+rsAddContact.getString("address_street1")+"</easysdi:ADDRESSSTREET1>\n");
-				    res.append("<easysdi:ADDRESSSTREET2>"+rsAddContact.getString("address_street2")+"</easysdi:ADDRESSSTREET2>\n");
+				    res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+				    res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
+				    res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
+				    res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
+				    res.append("<easysdi:ADDRESSSTREET1>"+encodeSpecialChars(rsAddContact.getString("address_street1"))+"</easysdi:ADDRESSSTREET1>\n");
+				    res.append("<easysdi:ADDRESSSTREET2>"+encodeSpecialChars(rsAddContact.getString("address_street2"))+"</easysdi:ADDRESSSTREET2>\n");
 				    res.append("<easysdi:ZIP>"+rsAddContact.getString("address_postalcode")+"</easysdi:ZIP>\n");
 				    res.append("<easysdi:LOCALITY>"+rsAddContact.getString("address_locality")+"</easysdi:LOCALITY>\n");
 				    res.append("<easysdi:COUNTRY>"+rsAddContact.getString("country_code")+"</easysdi:COUNTRY>\n");
@@ -573,7 +573,7 @@ public class WPSServlet extends HttpServlet {
 			    }		 
 			    res.append("<easysdi:CODE>"+rsPerim.getString("perimeter_code")+"</easysdi:CODE>\n");
 			    do{							   		
-				res.append("<easysdi:CONTENT>"+rsPerim.getString("value")+"</easysdi:CONTENT>\n");
+				res.append("<easysdi:CONTENT>"+encodeSpecialChars(rsPerim.getString("value"))+"</easysdi:CONTENT>\n");
 			    }
 			    while(rsPerim.next());
 			}
@@ -591,7 +591,7 @@ public class WPSServlet extends HttpServlet {
 			    res.append("<easysdi:PRODUCT>\n");		
 			    res.append("<easysdi:METADATA_ID>"+rsProducts.getString("metadata_id")+"</easysdi:METADATA_ID>\n");
 			    res.append("<easysdi:ID>"+rsProducts.getString("product_id")+"</easysdi:ID>\n");
-			    res.append("<easysdi:NAME>"+rsProducts.getString("data_title")+"</easysdi:NAME>\n");
+			    res.append("<easysdi:NAME>"+encodeSpecialChars(rsProducts.getString("data_title"))+"</easysdi:NAME>\n");
 				
 				res.append("<easysdi:PROPERTIES>\n");
 	
@@ -603,7 +603,7 @@ public class WPSServlet extends HttpServlet {
 				    res.append("<easysdi:PROPERTY>\n");
 					    	 
 				    res.append("<easysdi:CODE>"+rsProp.getString("code")+"</easysdi:CODE>\n");
-				    res.append("<easysdi:VALUE>"+rsProp.getString("value")+"</easysdi:VALUE>\n");		    		    	    
+				    res.append("<easysdi:VALUE>"+encodeSpecialChars(rsProp.getString("value"))+"</easysdi:VALUE>\n");		    		    	    
 				    
 				    res.append("</easysdi:PROPERTY>\n");
 				}
@@ -710,8 +710,7 @@ public class WPSServlet extends HttpServlet {
 	this.platformName = platformName;
     }
 
-   
-    
+
     public static void main(String args[]) throws Exception{
 
 	try{
@@ -854,13 +853,33 @@ public class WPSServlet extends HttpServlet {
 			
 			rsTotalProduct.close();
 			stmtTotalProduct.close();
+			
+			Statement stmtRow = conn.createStatement();
+			ResultSet rsRow = stmtRow.executeQuery("SELECT o.user_id as user_id FROM "+getJoomlaPrefix()+"easysdi_order o,"+getJoomlaPrefix()+"users u WHERE o.user_id = u.id AND order_id="+order_id);
+			int user_id = 0;
+			while(rsRow.next()){
+				user_id = rsRow.getInt("user_id");
+			}	
+			rsRow.close();
+			stmtRow.close();
+
+			Statement stmtPartner = conn.createStatement();
+			ResultSet rsPartner = stmtPartner.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_partner WHERE user_id="+user_id);
+			
+			int notify_order_ready = 0;
+			while(rsPartner.next()){
+				notify_order_ready = rsPartner.getInt("notify_order_ready");
+			}
+			
+			rsPartner.close();
+			stmtPartner.close();
 			conn.close();
 			
-			if (total == 0)
+			if (total == 0 && notify_order_ready == 1)
 			{
 				notifyUserByEmail(Integer.decode(order_id), getLanguageValue(languageFile, "EASYSDI_CMD_READY_MAIL_SUBJECT"),getLanguageValue(languageFile, "EASYSDI_CMD_READY_MAIL_BODY"));
 			}
-			else if (total == totalProduct -1)
+			else if (total == totalProduct -1 && notify_order_ready == 1)
 			{
 				notifyUserByEmail(Integer.decode(order_id), getLanguageValue(languageFile, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_SUBJECT"), getLanguageValue(languageFile, "EASYSDI_CMD_FIRST_PROD_READY_MAIL_BODY"));
 			}
@@ -917,8 +936,8 @@ public class WPSServlet extends HttpServlet {
 		StringWriter sw = new StringWriter();
 	        PrintWriter pw = new PrintWriter(sw);
 	        e.printStackTrace(pw);
-	        File f = new File("/var/log/tomcat5/errorStream.txt");
-	        //File f = new File("errorStream.txt");
+	        File f = new File(System.getProperty("java.io.tmpdir")+"errorStream.txt");
+		System.out.println("Writing error file:"+System.getProperty("java.io.tmpdir")+"errorStream.txt");
 	        FileWriter fw = new FileWriter(f,true);
 	        fw.write(sw.toString());
 	        fw.write(e.getMessage());
@@ -941,6 +960,11 @@ public class WPSServlet extends HttpServlet {
 	return error ("ERROR","An error just occured");
     }
 
+    public static String encodeSpecialChars(String s){
+	s = s.replace("&", "&#38;");
+	return s;
+    }
+    
     private String getResourceAsString(String resourceName){
 	try{
 
