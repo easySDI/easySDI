@@ -401,7 +401,7 @@ class SITE_cpanel {
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
-				  and o.type <> $status_saved
+				  and o.status <> $status_saved
 				  and opl.status = $productOrderStatus 
 				  $orderStatusQuery 
 				  $treatmentTypeQuery
@@ -448,7 +448,7 @@ class SITE_cpanel {
 					   AND  opl.product_id = p.id 
 					   AND  p.diffusion_partner_id = pa.partner_id 
 					   AND  pa.user_id =".$user->id." 
-					   and o.type <> $status_saved
+					   and o.status <> $status_saved
 		 			   and opl.status = $productOrderStatus 
 					   $orderStatusQuery  
 					   $treatmentTypeQuery
