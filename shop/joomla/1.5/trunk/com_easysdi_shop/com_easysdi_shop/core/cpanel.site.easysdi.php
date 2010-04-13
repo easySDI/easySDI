@@ -360,8 +360,12 @@ class SITE_cpanel {
 		$database->setQuery($queryTreatment);
 		$treatmentList = $database->loadObjectList();
 		
+		$queryStatusSaved = "select id from #__easysdi_order_status_list where code ='SAVED'";
+		$database->setQuery($queryStatusSaved);
+		$status_saved = $database->loadResult();
 		
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
+		// Ni les requêtes de type brouillon
 		$query = "SELECT o.order_id as order_id, 
 						 p.metadata_id as metadata_id,
 						 p.data_title as productName,
@@ -397,6 +401,7 @@ class SITE_cpanel {
 				  and pa.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
+				  and o.type <> $status_saved
 				  and opl.status = $productOrderStatus 
 				  $orderStatusQuery 
 				  $treatmentTypeQuery
@@ -443,6 +448,7 @@ class SITE_cpanel {
 					   AND  opl.product_id = p.id 
 					   AND  p.diffusion_partner_id = pa.partner_id 
 					   AND  pa.user_id =".$user->id." 
+					   and o.type <> $status_saved
 		 			   and opl.status = $productOrderStatus 
 					   $orderStatusQuery  
 					   $treatmentTypeQuery
