@@ -428,6 +428,7 @@ class SITE_metadata {
 				*/
 				$nodeValue = $usefullVals[$pos-1];
 				
+				
 				// Traitement de chaque attribut
 				if ($type->default_value <> "" and $nodeValue == "")
 					$nodeValue = $type->default_value;
@@ -441,7 +442,12 @@ class SITE_metadata {
 						$nodeValue = date('Y-m-d');
 					$nodeValue = $nodeValue."T00:00:00";
 				}
-				
+				if ($type->is_date)
+				{
+					//$nodeValue = date_format(date_create($nodeValue), 'Y-m-d');
+					if ($nodeValue <> "")
+						$nodeValue = date('Y-m-d', strtotime($nodeValue));
+				}
 				if ($type->is_system)
 				{
 					if ($type->is_datetime)
