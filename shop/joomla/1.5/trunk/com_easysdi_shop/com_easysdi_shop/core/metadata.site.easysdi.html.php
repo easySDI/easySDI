@@ -37,15 +37,6 @@ class HTML_Metadata {
 	function cleanText($text)
 	{
 	  $text = utf8_decode($text);
-	   # Quotes cleanup ???
-	  $text = ereg_replace( chr(ord("`")), "'", $text );        # `
-	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
-	  $text = ereg_replace( chr(ord("„")), ",", $text );        # „
-	  $text = ereg_replace( chr(ord("`")), "'", $text );        # `
-	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
-	  $text = ereg_replace( chr(ord("“")), "\"", $text );        # “
-	  $text = ereg_replace( chr(ord("”")), "\"", $text );        # ”
-	  $text = ereg_replace( chr(ord("´")), "'", $text );        # ´
 	  $text = ereg_replace( chr(10), "\\n", $text );        # carriage return in plain text
 	  $text = ereg_replace( chr(13), "\\r", $text );        # carriage return in plain text
 	  $text = str_replace("\n","\\n",$text);
