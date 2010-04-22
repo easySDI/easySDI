@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurations>
-	<config id="geoserverwms">
+	<config id="metacarta">
 		<authorization>
-			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
+			<policy-file>C:\user\proxy\NewPolicy.xml
+			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\uri_to_log\PROXY_log</path>
+				<path>C:\tomcat6\logs</path>
 				<suffix>wms</suffix>
-				<prefix>_easi</prefix>
+				<prefix>metacarta</prefix>
 				<extension>log</extension>
 				<period>daily</period>
 			</file-structure>
-			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
 		</log-config>
 		<host-translator />
 		<remote-server-list>
 			<remote-server>
-				<user>service_user</user>
-				<url>http://localhost:8080/geoserver/wms</url>
-				<prefix>tiger</prefix>
-				<password>user_pass</password>
+				<user />
+				<url>http://labs.metacarta.com/wms/vmap0</url>
+				<password />
 			</remote-server>
 		</remote-server-list>
 	</config>
-	<config id="geoserverwfs">
+	<config id="gmap">
 		<authorization>
-			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
+			<policy-file>C:\user\proxy\NewPolicy.xml
+			</policy-file>
+		</authorization>
+		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>C:\tomcat6\logs</path>
+				<suffix>wms</suffix>
+				<prefix>gmap</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<host-translator />
+		<remote-server-list>
+			<remote-server>
+				<user />
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url>
+				<password />
+			</remote-server>
+		</remote-server-list>
+	</config>
+	<config id="mfwfs">
+		<authorization>
+			<policy-file>C:\user\proxy\NewPolicy.xml
+			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\uri_to_log\PROXY_log</path>
+				<path>C:\tomcat6\logs</path>
 				<suffix>wfs</suffix>
-				<prefix>easi_</prefix>
-				<extension>log</extension>
-				<period>daily</period>
-			</file-structure>
-			<date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
-		</log-config>
-		<host-translator />
-		<remote-server-list>
-			<remote-server>
-				<user>service_user</user>
-				<url>http://localhost:8080/geoserver/wfs</url>
-				<prefix>eai</prefix>
-				<password>user_pass</password>
-			</remote-server>
-		</remote-server-list>
-	</config>
-	<config id="geoserversimplewfs">
-		<authorization>
-			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
-		</authorization>
-		<servlet-class>org.easysdi.proxy.wfs.SimpleWFSProxyServlet
-		</servlet-class>
-		<log-config>
-			<file-structure>
-				<path>C:\uri_to_log\PROXY_log</path>
-				<suffix>simple_wfs</suffix>
-				<prefix>easi_</prefix>
+				<prefix>mfwfs</prefix>
 				<extension>log</extension>
 				<period>daily</period>
 			</file-structure>
@@ -70,41 +70,8 @@
 		<remote-server-list>
 			<remote-server>
 				<user></user>
-				<url>http://localhost:8080/geoserver/wfs</url>
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url>
 				<password></password>
-			</remote-server>
-		</remote-server-list>
-	</config>
-	<config id="geonetworkcsw">
-		<authorization>
-			<policy-file>C:\uri_to_policy\NewPolicy.xml</policy-file>
-		</authorization>
-		<servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
-		<log-config>
-			<file-structure>
-				<path>C:\uri_to_log\PROXY_log</path>
-				<suffix>log_csw</suffix>
-				<prefix>geonetwork</prefix>
-				<extension>log</extension>
-				<period>daily</period>
-			</file-structure>
-			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
-		</log-config>
-		<host-translator></host-translator>
-		<remote-server-list>
-			<remote-server>
-				<url>http://localhost:8080/geonetwork/srv/en/csw</url>
-				<user>service_user</user>
-				<password>user_pass</password>
-				<max-records>50</max-records>
-				<login-service>http://localhost:8080/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service>
-				<transaction>
-				<type>geonetwork</type>
-				<search-service-url>http://localhost:8080/geonetwork/srv/en/xml.search</search-service-url>
-				<delete-service-url>http://localhost:8080/geonetwork/srv/en/metadata.delete</delete-service-url>
-				<insert-service-url>http://localhost:8080/geonetwork/srv/en/mef.import</insert-service-url>
-				<update-service-url>http://localhost:8080/geonetwork/srv/en/metadata.update</update-service-url>
-				</transaction>
 			</remote-server>
 		</remote-server-list>
 	</config>
