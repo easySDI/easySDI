@@ -75,4 +75,29 @@
 			</remote-server>
 		</remote-server-list>
 	</config>
+<config id="geosignal">
+	<authorization>
+		<policy-file>C:\user\proxy\NewPolicy.xml
+		</policy-file>
+	</authorization>
+	<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
+	<log-config>
+		<file-structure>
+			<path>C:\tomcat6\logs</path>
+			<suffix>wms</suffix>
+			<prefix>geosignal</prefix>
+			<extension>log</extension>
+			<period>daily</period>
+		</file-structure>
+		<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+	</log-config>
+	<host-translator></host-translator>
+	<remote-server-list>
+		<remote-server>
+			<user></user>
+			<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
+			<password></password>
+		</remote-server>
+	</remote-server-list>
+</config>
 </configurations>
