@@ -1,0 +1,111 @@
+<project default="sync" basedir=".">
+
+	<property name="projet.out.dir" value="out" />
+
+	<target name="com_easysdi" depends="create-structure,compression" description="Main target">
+	</target>
+
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete failonerror="false">
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	<target name="compression" description="Compression" depends="create-structure">
+		<zip compress="true" destfile="${projet.out.dir}/com_easysdi_map.zip">
+			<zipfileset refid="fsbase" />
+			<zipfileset refid="fsadmin" prefix="administrator" />
+			<zipfileset refid="fscomp" prefix="components" />
+			<zipfileset refid="lafrFR" prefix="administrator/language" />
+			<zipfileset refid="laenGB" prefix="administrator/language" />
+			<zipfileset refid="lcfrFR" prefix="components/language" />
+			<zipfileset refid="lcenGB" prefix="components/language" />
+		</zip>
+	</target>
+
+	<fileset id="fsbase" dir=".">
+		<include name="*.php" />
+		<include name="*.xml" />
+		<exclude name="build.xml" />
+	</fileset>
+
+	<fileset id="fsadmin" dir="./administrator">
+		<include name="**/*.php" />
+		<include name="**/*.xsl" />
+		<include name="**/*.xslt" />
+		<include name="**/*.inc" />
+		<include name="**/*.jar" />
+		<include name="**/*.xml" />
+		<include name="**/*.png" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
+		<include name="**/*.ttf" />
+		<include name="**/*.txt" />
+		<include name="**/*.css" />
+		<include name="**/*.js" />
+	</fileset>
+
+	<fileset id="fscomp" dir="./components">
+		<include name="**/*.php" />
+		<include name="**/*.xsl" />
+		<include name="**/*.xslt" />
+		<include name="**/*.inc" />
+		<include name="**/*.jar" />
+		<include name="**/*.xml" />
+		<include name="**/*.png" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
+		<include name="**/*.ttf" />
+		<include name="**/*.txt" />
+		<include name="**/*.css" />
+		<include name="**/*.js" />
+		<exclude name="**/ext/build/**" />
+		<exclude name="**/ext/docs/**" />
+		<exclude name="**/ext/examples/**" />
+		<exclude name="**/ext/examples/**" />
+		<exclude name="**/geoext/build/**" />
+		<exclude name="**/geoext/examples/**" />
+		<exclude name="**/geoext/tests/**" />
+		<exclude name="**/OpenLayers-2.8/**" />
+	</fileset>
+
+	<fileset id="lafrFR" dir="./administrator/language">
+		<include name="**/fr-FR.com_easysdi_map.ini" />
+	</fileset>
+
+	<fileset id="laenGB" dir="./administrator/language">
+		<include name="**/en-GB.com_easysdi_map.ini" />
+	</fileset>
+
+	<fileset id="lcfrFR" dir="./components/language">
+		<include name="**/fr-FR.com_easysdi_map.ini" />
+	</fileset>
+
+	<fileset id="lcenGB" dir="./components/language">
+		<include name="**/en-GB.com_easysdi_map.ini" />
+	</fileset>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy todir="C:\www\Site\apem\administrator\components\com_easysdi_map" verbose="on">
+			<fileset refid="fsadmin" />
+		</copy>
+		<copy todir="C:\www\Site\apem\components\com_easysdi_map">
+			<fileset refid="fscomp" />
+		</copy>
+		<copy todir="C:\www\Site\apem\language\fr-FR">
+			<fileset refid="lcfrFR" />
+		</copy>
+		<copy todir="C:\www\Site\apem\language\en-GB">
+			<fileset refid="lcenGB" />
+		</copy>
+		<copy todir="C:\www\Site\apem\administrator\language\fr-FR">
+			<fileset refid="lafrFR" />
+		</copy>
+		<copy todir="C:\www\Site\joomla\administrator\language\en-GB">
+			<fileset refid="laenGB" />
+		</copy>
+	</target>
+
+</project>
