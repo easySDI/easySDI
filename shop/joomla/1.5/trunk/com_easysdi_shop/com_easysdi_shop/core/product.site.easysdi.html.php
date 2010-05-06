@@ -838,8 +838,9 @@ class HTML_product{
 		
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
-
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&id=".$rowProduct->metadata_id;
+	      //$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&id=".$id;
+	      	
 		
 		if ($_FILES)
 		 	$fileName = $_FILES['isoFile']["name"];
@@ -849,9 +850,10 @@ class HTML_product{
 			 	$catalogUrlGetRecordById =  $_FILES['isoFile']["tmp_name"];
 		
 		 }	 	
-				
+			
+
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
- 
+				
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
 		
 		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));

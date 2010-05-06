@@ -1659,6 +1659,11 @@ if (count($rows)>0){
 		 	alert("<?php echo JText::_("EASYSDI_ORDER_NAME_NOT_FILL") ?>");
 		 	return;
 		 }
+		 //Limit order name to 40 characters
+		 if(document.getElementById('order_name').value.length > 40){
+			alert('<?php echo JText::_("EASYSDI_SHOP_ORDER_NAME_TOO_LONG"); ?>');
+			return;
+		}
 	 }
  	document.getElementById('orderForm').submit();
  }
@@ -2679,6 +2684,7 @@ function validateForm(toStep, fromStep){
 			return false;
 		}
 	}
+
 	//All checks are ok
 	document.getElementById('step').value=toStep;
 	submitOrderForm();
@@ -3298,6 +3304,7 @@ function validateForm(toStep, fromStep){
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		$option = JRequest::getVar('option');
+		$devis_to_order = JRequest::getVar('devis_to_order',0);
 		//Order
 		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
 		$database->setQuery($query);
@@ -3309,12 +3316,16 @@ function validateForm(toStep, fromStep){
 		
 		//Order ID
 		$mainframe->setUserState('order_id',$order->order_id);
-		
+				
 		//Order type
 		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
 		$database->setQuery($queryType);
 		$type = $database->loadObject();
-		$mainframe->setUserState('order_type',$type->code );
+		
+		if($devis_to_order == 1)
+			$mainframe->setUserState('order_type','O');
+		else
+			$mainframe->setUserState('order_type',$type->code );
 		
 		//Products
 		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";

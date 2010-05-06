@@ -127,6 +127,7 @@ class HTML_cpanel {
 	
 	<?php
 	$param=JRequest::getVar("param");
+
 	JHTML::_("behavior.modal","a.modal",$param); 
 	?>
 	<?php
@@ -192,10 +193,28 @@ class HTML_cpanel {
 			<?php
 				//Draft
 				if($saved == $row->status)
-				{	?>
+				{	
+					//if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";
+					?>
+					<script>
+					function orderDraft(){
+						var type = <?php echo $row->type ;?>;
+						if(type == 1){
+							 if (confirm("<?php echo JText::_("EASYSDI_SHOP_DEVIS_TO_ORDER") ?>")) { 
+								 document.getElementById('devis_to_order').value=1;							
+							 }else{
+								 document.getElementById('devis_to_order').value=0;
+							 }
+						}
+							
+						document.getElementById('order_id').value='<?php echo $row->order_id ;?>';
+						document.getElementById('task<?php echo $option; ?>').value='orderDraft';
+						document.getElementById('ordersListForm').submit();
+					}
+					</script>
 					<td class="logo">
 					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderDraft';document.getElementById('ordersListForm').submit();"></div>
+					onClick="orderDraft();"></div>
 					</td>
 					<td class="logo">
 					<div class="particular-order-link">
@@ -288,6 +307,7 @@ class HTML_cpanel {
 		</tr>
 	</table>
 			<input type="hidden" name="order_id" id="order_id" value="">
+			<input type="hidden" name="devis_to_order" id="devis_to_order" value="0">
 			<input type="hidden" name="Itemid" id="Itemid" value="">
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
@@ -701,7 +721,7 @@ class HTML_cpanel {
 	<?php	
 	}
 	
-	function orderReportRecap ($id,$isfrontEnd, $isForProvider,$rows, $user_name="", $third_name="" , $rowsProduct)
+	function orderReportRecap ($id,$isfrontEnd, $isForProvider,$rowOrder, $perimeterRows, $user_name="", $third_name="" , $rowsProduct, $isInMemory)
 	{
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -718,7 +738,6 @@ class HTML_cpanel {
 		});
 		</script>
 		
-		
 		<div title ="<?php echo JText::_("EASYSDI_SHOP_PRINT"); ?>" id="printOrderRecap"></div>
 		<div id="divOrderRecap">
 		<h2 class="orderRecapTitle"><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h2>
@@ -733,7 +752,7 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?>
 		</td>
 		<td>
-		<?php echo $id; ?>
+		<?php echo $id == 0 ? JText::_("EASYSDI_RECAP_ORDER_NO_ID") : $id ?>
 		</td>
 		</tr>
 		<tr>
@@ -741,7 +760,7 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
 		</td>
 		<td>
-		<?php echo $rows[0]->order_name; ?>
+		<?php echo $rowOrder->order_name; ?>
 		</td>
 		</tr>
 		<tr>
@@ -749,12 +768,24 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?>
 		</td>
 		<td>
-		<?php echo JText::_($rows[0]->tlT); ?>
+		<?php echo JText::_($rowOrder->tlT); ?>
 		</td>
 		</tr>
-		
 		<?php 
-		if($rows[0]->order_send_date == "0000-00-00 00:00:00")
+		if($rowOrder->order_send_date == ""){
+			?>
+			<tr>
+			<td class="ortitle3">
+			<?php 
+			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
+			</td>
+			<td>
+			<?php echo "-" ?>
+			</td>
+			</tr>
+			<?php 
+		}
+		else if($rowOrder->order_send_date == "0000-00-00 00:00:00")
 		{
 			?>
 			<tr>
@@ -763,7 +794,7 @@ class HTML_cpanel {
 			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
 			</td>
 			<td>
-			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->order_date)); ?>
+			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->order_date)); ?>
 			</td>
 			</tr>
 			<?php 
@@ -777,7 +808,7 @@ class HTML_cpanel {
 			echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
 			</td>
 			<td>
-			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->order_send_date)); ?>
+			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->order_send_date)); ?>
 			</td>
 			</tr>
 			<tr>
@@ -787,11 +818,11 @@ class HTML_cpanel {
 			?>
 			</td>
 			<?php 
-			if($rows[0]->RESPONSE_DATE != "0000-00-00 00:00:00" && $rows[0]->RESPONSE_SEND == 1)
+			if($rowOrder->RESPONSE_DATE != "0000-00-00 00:00:00" && $rowOrder->RESPONSE_SEND == 1)
 			{
 				?>
 				<td>
-				<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rows[0]->RESPONSE_DATE)); ?>
+				<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->RESPONSE_DATE)); ?>
 				</td>
 				<?php 
 			}
@@ -807,7 +838,7 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>
 		</td>
 		<td>
-		<?php echo JText::_($rows[0]->slT); ?>
+		<?php echo $rowOrder->slT == "" ? "-" : JText::_($rowOrder->slT); ?>
 		</td>
 		</tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
@@ -844,7 +875,7 @@ class HTML_cpanel {
 		</td>
 		<td>
 		<?php
-		$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$rows[0]->perimeter_id;
+		$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$perimeterRows[0]->perimeter_id;
 		$db->setQuery($query );
 		$rowsPerimeter = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -852,7 +883,7 @@ class HTML_cpanel {
 			echo 			$db->getErrorMsg();
 			echo "</div>";
 		}
-		if ($rows[0]->perimeter_id > 0){
+		if ($rowOrder->perimeter_id > 0){
 			echo $rowsPerimeter[0]->perimeter_desc;
 			
 		}else
@@ -869,8 +900,8 @@ class HTML_cpanel {
 		<td>
 		<table width="100%">
 		<?php
-		$i=0;
-		foreach ($rows as $row){?>
+		$i=0;		
+		foreach ($perimeterRows as $row){?>
 			<tr>
 				<td width="10%" class="ornum"><?php echo ++$i; ?> - </td>
 				<td width="90%"><?php echo $row->text; ?><!--<br> [<?php echo $row->value;?>]</td>
@@ -885,9 +916,9 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_SURFACE"); ?>
 		</td>
 		<td>
-		<?php if($rows[0]->surface != 0)
+		<?php if($rowOrder->surface != 0)
 		{
-			echo ($rows[0]->surface)/1000000; 
+			echo ($rowOrder->surface)/1000000; 
 			echo JText::_("EASYSDI_RECAP_ORDER_KM2") ; 
 		}
 		?>
@@ -898,9 +929,9 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?>
 		</td>
 		<td>
-		<?php if($rows[0]->buffer != 0)
+		<?php if($rowOrder->buffer != 0)
 		{
-			echo $rows[0]->buffer; 
+			echo $rowOrder->buffer; 
 			echo JText::_("EASYSDI_RECAP_ORDER_METER") ; 
 		} 
 		else
@@ -916,7 +947,7 @@ class HTML_cpanel {
 		<?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?>
 		</td>
 		<td>
-		<?php HTML_cpanel::viewOrderRecapPerimeterExtent($rows[0]->order_id,$rows[0]->perimeter_id , $isfrontEnd); ?>
+		<?php HTML_cpanel::viewOrderRecapPerimeterExtent($rowOrder->order_id,$perimeterRows[0]->perimeter_id , $isfrontEnd, $isInMemory); ?>
 		</td>
 		</tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
@@ -931,7 +962,7 @@ class HTML_cpanel {
 		
 		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
 		$db->setQuery($queryStatus);
-		$status_id = $db->loadResult();
+		$status_available_id = $db->loadResult();
 				
 		foreach ($rowsProduct as $row){ ?>
 		<tr>
@@ -943,12 +974,12 @@ class HTML_cpanel {
 			<table >
 				<tr>
   				  <?php
-				/*	if ($row->status == $status_id){
+				/*	if ($row->status == $status_available_id){
 						$queryType = "select id from #__easysdi_order_type_list where code='O'";
 						$db->setQuery($queryType);
 						$type = $db->loadResult();
 					
-						if($rows[0]->type==$type){?>
+						if($rowOrder->type==$type){?>
 			
 					<td ><a target="RAW"
 						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
@@ -964,17 +995,105 @@ class HTML_cpanel {
 			</tr>
 			
 			<?php
+			
 			//Get product properties
-			$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
-			$db->setQuery($queryPropertiesCode);
-			$rowsPropertiesCode = $db->loadObjectList();
+			if(!$isInMemory){
+				$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
+				$db->setQuery($queryPropertiesCode);
+				$rowsPropertiesCode = $db->loadObjectList();
+			}else{
+				
+				$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
+						#__easysdi_product_properties_definition  as a ,
+						#__easysdi_product_properties_values_definition as c  
+						WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $row->id." order by a.order";
+				$db->setQuery($query);
+				$rowsPropertiesCode = $db->loadObjectList();
+			}
+			
 			
 			foreach($rowsPropertiesCode as $rowPropertyCode)
 			{
-			
-				$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
-				$db->setQuery($queryProductProperties);
-				$rowsProductProperties = $db->loadObjectList();
+				if(!$isInMemory){
+					$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
+					$db->setQuery($queryProductProperties);
+					$rowsProductProperties = $db->loadObjectList();
+				}else{
+					
+					$query = "SELECT b.property_value_id as property_id, c.value as property_value, a.code as code, a.type_code as type_code 
+						FROM #__easysdi_product_property b, 
+						#__easysdi_product_properties_definition a ,
+						#__easysdi_product_properties_values_definition c  
+						WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $row->id." 
+						 AND a.code = '$rowPropertyCode->code' order by a.order";
+					
+					$db->setQuery( $query );
+					$rowsProductProperties = $db->loadObjectList();
+					
+					//Filter out unselected options
+					$temp = Array();
+					foreach ($rowsProductProperties as $rowProductProperties)
+					{	
+						$propr = null;
+						switch($rowProductProperties->type_code)
+						{
+							case "message":
+								$temp[] = $rowProductProperties;
+								break;
+							case "list":
+								$propr  = $mainframe->getUserState($rowPropertyCode->code."_list_property_".$row->id);
+								if(count($propr)>0){
+									if($propr[0] == $rowProductProperties->property_id)
+										$temp[] = $rowProductProperties;
+								}
+								break;
+							case "text":
+								//$propr  = $mainframe->getUserState($rowPropertyCode->code."_text_property_".$row->id);
+								//echo $propr;
+								//print_r($rowProductProperties);
+								
+								$temp[] = $rowProductProperties;
+								break;
+							case "textarea":
+								$propr  = $mainframe->getUserState($rowPropertyCode->code."_textarea_property_".$row->id);
+								//Array ( [0] => my aire texte )
+								//print_r($propr);
+								$temp[] = $rowProductProperties;
+								break;
+							case "cbox":
+								$propr  = $mainframe->getUserState($rowPropertyCode->code."_cbox_property_".$row->id);
+								if(count($propr)>0){
+									for($i = 0; $i < count($propr); $i++){
+										if($propr[$i] == $rowProductProperties->property_id)
+											$temp[] = $rowProductProperties;
+									}
+								}
+								break;
+							case "mlist":
+								$propr  = $mainframe->getUserState($rowPropertyCode->code."_mlist_property_".$row->id);
+								if(count($propr)>0){
+									for($i = 0; $i < count($propr); $i++){
+										if($propr[$i] == $rowProductProperties->property_id)
+											$temp[] = $rowProductProperties;
+									}
+								}
+								break;
+								
+						}
+						//print_r ($propr);
+						
+					}
+					$rowsProductProperties = $temp;
+					//print_r($rowsProductProperties);
+					/*
+					echo $rowPropertyCode->code."_list_property_".$row->id;
+					$productProperties  = $mainframe->getUserState($rowPropertyCode->code."_list_property_".$row->id);
+					print_r($productProperties);
+					print_r($rowsProductProperties);
+					*/
+				}
+				//print_r($rowsProductProperties);
+				
 				?>
 				<tr>
 				<td class="ortitle4">
@@ -1009,10 +1128,27 @@ class HTML_cpanel {
 					}
 					else
 					{
-						$queryPropertyValue = "SELECT translation FROM #__easysdi_product_properties_values_definition WHERE id = $rowProductProperties->property_id";
-						$db->setQuery($queryPropertyValue);
-						$rowProperty = $db->loadResult();
-						echo JText::_($rowProperty);
+						$queryProperty = "SELECT c.translation as translation, a.type_code as type_code
+						FROM #__easysdi_product_property b,
+						#__easysdi_product_properties_definition a ,
+						#__easysdi_product_properties_values_definition c
+						WHERE a.id = c.properties_id and b.property_value_id = c.id and c.id = $rowProductProperties->property_id";
+						
+						$db->setQuery($queryProperty);
+						$rowProperty = $db->loadObject();
+						
+						//textarea
+						//text
+						if($isInMemory && $rowProperty->type_code == "text"){
+							echo $mainframe->getUserState($rowPropertyCode->code."_text_property_".$row->id);
+						}else if($isInMemory && $rowProperty->type_code == "textarea"){
+							$prop = $mainframe->getUserState($rowPropertyCode->code."_textarea_property_".$row->id);
+							for($i = 0; $i < count($propr); $i++)
+								echo $prop[$i];
+						}else{
+							echo JText::_($rowProperty->translation);
+						}
+						
 					}
 					?>
 					</td>
@@ -1025,7 +1161,8 @@ class HTML_cpanel {
 				</tr>
 				<?php
 			}
-			if ($row->status == $status_id)
+			
+			if ($row->status == $status_available_id)
 			{?>
 				<tr>
 				<td colspan=2>				
@@ -1094,7 +1231,7 @@ class HTML_cpanel {
 		<?php
 	}
 	
-	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd){
+	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd, $isInMemory){
 	if($isfrontEnd == true)
 	{
 	?>
@@ -1264,12 +1401,25 @@ $i++;
 } ?>                   
 		<?php
 		//Add the command perimeter
-		$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id";
-		$db->setQuery( $queryPerimeterValue);
-		$rowsPerimeterValue = $db->loadObjectList();
+		if(!$isInMemory){
+			$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id";
+			$db->setQuery( $queryPerimeterValue);
+			$rowsPerimeterValue = $db->loadObjectList();
+		}else{
+			$selSurfaceListValue = $mainframe->getUserState('selectedSurfaces');
+			$rowsPerimeterValue = Array();
+			if ($selSurfaceListValue!=null){
+				for ($i = 0; $i < count($selSurfaceListValue); $i ++){
+					$rowsPerimeterValue[] = (object)array (  
+						'value' => $selSurfaceListValue[$i]
+					);
+				}
+			}
+		}
+		
 		?>
 		
-	     <?php 
+		<?php 
 		if($isFreeSelectionPerimeter == true)
 		{
 			?>

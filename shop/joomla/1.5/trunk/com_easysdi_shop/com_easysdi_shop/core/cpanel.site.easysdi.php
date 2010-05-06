@@ -198,8 +198,28 @@ class SITE_cpanel {
 			$database->setQuery($query);
 			$currentOrder = $database->loadObjectList();
 			$currentOrder = $currentOrder[0];
+			//Do not give the same name twice and limit the name to 40 characters
+			$order_name="";
+			$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".$order_name."'";
+			$database->setQuery($query_count_name);
+			$order_occ = $database->loadResult();
+			$l = 1;
+			do{    
+				//truncate the name to have max 40 characters:
+				if(strlen($currentOrder->name) <= 31)
+					$order_name=$currentOrder->name.JText::_("EASYSDI_TEXT_COPY").$l;
+				else
+					$order_name=substr($currentOrder->name,0,31).JText::_("EASYSDI_TEXT_COPY").$l;
+				$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".$order_name."'";
+				$database->setQuery($query_count_name);
+				$order_occ = $database->loadResult();
+				$l++;
+				if($l == 11)
+					break;
+			}
+			while ($order_occ > 0);
+			
 			//insert new order
-			$order_name=$currentOrder->name.JText::_("EASYSDI_TEXT_COPY");
 			$query = "insert into #__easysdi_order (remark, provider_id, name, type, status, third_party, user_id, buffer, order_date, surface) ";
 			$query .= "values('$currentOrder->remark', $currentOrder->provider_id, '$order_name', $currentOrder->type, $saved, $currentOrder->third_party, $currentOrder->user_id, $currentOrder->buffer, now(), $currentOrder->surface)";
 			$database->setQuery($query);
@@ -328,11 +348,19 @@ class SITE_cpanel {
 			$orderStatusQuery .= ")";
 			*/
 		}
+					
 		
 		//Get the id of product status AWAIT to get only order with product not already AVAILAIBLE to costumer
 		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
 		$database->setQuery($queryStatus);
 		$productOrderStatus = $database->loadResult();
+		
+		//convenience var to list all request
+		$allorders=JRequest::getVar("allorders", 0);
+		if($allorders == 1){
+			$productOrderStatus=2;
+			$orderStatusQuery = " ";
+		}
 		
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
@@ -707,8 +735,8 @@ class SITE_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-
-		$query = "SELECT * FROM  #__users WHERE id=".$user->id;
+				
+		$query = "SELECT * FROM  #__users WHERE id=".$rowOrder->user_id;
 		$database->setQuery($query);
 		$partner = $database->loadObject();
 		if ($database->getErrorNum()) {
@@ -905,11 +933,17 @@ class SITE_cpanel {
 	
 		global $mainframe;
 		
+		$isInMemory = false;
+		if($id == 0){
+			$isInMemory = true;
+		}
+		
 		if($isForProvider == '')
 		{
 			$isForProvider == false;
 		}
-			$database =& JFactory::getDBO();
+		
+		$database =& JFactory::getDBO();
 		
 		//Get the current logged user
 		$u = JFactory::getUser();
@@ -936,17 +970,64 @@ class SITE_cpanel {
 		}
 		
 		$db =& JFactory::getDBO();
-		$query = "SELECT *, sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
-		$db->setQuery($query);
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+		
+		$rowOrder = null;
+		$perimeterRows = null;
+		
+		if(!$isInMemory){
+			//fetch order in database			
+			$query = "SELECT *, sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_status_list sl, #__easysdi_order_type_list tl where a.order_id = $id and tl.id = a.type and sl.id = a.status";
+			$db->setQuery($query);
+			$rowOrder = $db->loadObject();
+			
+			$query = "SELECT b.perimeter_id, b.text, b.value FROM  #__easysdi_order a, #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id;";
+			$db->setQuery($query);
+			$perimeterRows = $db->loadObjectList();
+			
+			if ($db->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+		}
+		else
+		{
+			//fetch order in memory
+			$queryTranslation = "SELECT translation from #__easysdi_order_type_list where code = '".$mainframe->getUserState('order_type')."'";
+			$db->setQuery($queryTranslation );
+			$translation = $db->loadResult();
+			$rowOrder = array (  
+				'order_name' => $mainframe->getUserState('order_name'),
+				'type' => $mainframe->getUserState('order_type'),
+				'third_party' => $mainframe->getUserState('third_party'),
+				'user_id' => $u->id,
+				'order_send_date' => '',
+				'buffer' => $mainframe->getUserState('bufferValue'),
+				'surface' =>  $mainframe->getUserState('totalArea'),
+				'tlT' => $translation,
+				'slT' => "",
+				'status' => ""
+			);
+			$rowOrder = (object) $rowOrder;  
+			
+			$perimeter_id = $mainframe->getUserState('perimeter_id');
+			$selSurfaceListValue = $mainframe->getUserState('selectedSurfaces');
+			$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
+			
+			$perimeterRows = Array();
+			if ($selSurfaceListName!=null){
+				for ($i = 0; $i < count($selSurfaceListName); $i ++){
+					$perimeterRows[] = (object)array (  
+						'perimeter_id' => $perimeter_id,
+						'text' => $selSurfaceListName[$i],
+						'value' => $selSurfaceListValue[$i]
+					);
+				}
+			}
 		}
 
 		//Customer name
-		$user =$rows[0]->user_id;
+		$user =$rowOrder->user_id;
 		
 		if($isfrontEnd == true && $isForProvider == false)
 		{
@@ -963,7 +1044,7 @@ class SITE_cpanel {
 		
 		$third_name ='';
 		//Third name
-		$third = $rows[0]->third_party; 
+		$third = $rowOrder->third_party; 
 		if( $third != 0)
 		{
 			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__easysdi_community_partner where partner_id= $third)";
@@ -971,32 +1052,47 @@ class SITE_cpanel {
 			$third_name =  $db->loadResult();
 		}
 		
-		$query = '';
-		if($isForProvider)
-		{
-			$query = "SELECT *, a.id as plId 
+		//Load the products
+		if(!$isInMemory){
+			$query = '';
+			if($isForProvider)
+			{
+				$query = "SELECT *, a.id as plId 
 					  FROM #__easysdi_order_product_list  a, 
 					  	   #__easysdi_product b 
 					  WHERE a.product_id  = b.id 
 					  AND order_id = $id 
 					  AND b.diffusion_partner_id = $rootPartner->partner_id";
-		}
-		else
-		{
-			$query = "SELECT *, a.id as plId 
+			}
+			else
+			{
+				$query = "SELECT *, a.id as plId 
 					  FROM #__easysdi_order_product_list  a, 
 					       #__easysdi_product b 
 					  WHERE a.product_id  = b.id 
 					  AND order_id = $id";
+			}
+			
+			$db->setQuery($query );
+			$rowsProduct = $db->loadObjectList();
+			if ($db->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo $database->getErrorMsg();
+				echo "</div>";
+			}
+		}else{
+			//Load product list in memory
+			$cid = $mainframe->getUserState('productList');
+			$rowsProduct = Array();
+			if (count($cid)>0){
+				for ($i = 0; $i < count($cid); $i ++){
+					$query = "SELECT * FROM #__easysdi_product WHERE id =".$cid[$i];
+					$db->setQuery($query );
+					$rowsProduct[] = $db->loadObject();
+				}
+			}
 		}
 		
-		$db->setQuery($query );
-		$rowsProduct = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}
 		if(count($rowsProduct) == 0)
 		{
 			//The connected user does not have any product to provide in this order
@@ -1006,7 +1102,7 @@ class SITE_cpanel {
 		}
 		
 	
-		HTML_cpanel::orderReportRecap($id,$isfrontEnd, $isForProvider, $rows, $user_name, $third_name,$rowsProduct);
+		HTML_cpanel::orderReportRecap($id, $isfrontEnd, $isForProvider, $rowOrder, $perimeterRows, $user_name, $third_name, $rowsProduct, $isInMemory);
 	}
 
 	/*

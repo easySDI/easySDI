@@ -90,6 +90,16 @@ class HTML_cpanel_partner {
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_SHOP_PARTNERLIST_ENTRYDATE") ?></td>
 		   <td><?php echo $displayEntryDate ?></td>
 		 </tr>
+		 <!-- Put this as a hack -->
+		  <?php
+		 $queryProfile = "SELECT profile_name FROM #__asitvd_community_profile p, #__asitvd_community_partner par where par.profile_id=p.profile_id AND par.partner_id=".$rows[0]->partner_id;
+		 $database->setQuery($queryProfile);
+		 $profile = $database->loadResult();
+		 ?>
+		 <tr>    
+		   <td class="ptitle" valign="top"><?php echo JText::_("SHOP_PARTNERLIST_PROFILE") ?></td>
+		   <td><?php echo JText::_($profile) ?></td>
+		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_CONTACT") ?></td>
 		   <td><?php echo $rows[0]->address_agent_firstname ?> <?php echo $rows[0]->address_agent_lastname ?></td>
