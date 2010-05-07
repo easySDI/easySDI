@@ -25,16 +25,23 @@ class SITE_cpanel {
 		$user = JFactory::getUser();
 		$order_id = JRequest::getVar('order_id');
 		$product_id = JRequest::getVar('product_id');
-
-		$query = "select count(*) from #__easysdi_order where order_id = $order_id AND user_id = $user->id";
+		
+		//retrieve granted user to download product: owner of the order and furnisher
+		$query = "select user_id from #__easysdi_order where order_id = ".$order_id;
 		$database->setQuery($query);
-		$total = $database->loadResult();
-		if ($total == 0) die;
+		$orderOwner = $database->loadResult();
+		
+		$query = "SELECT u.id FROM #__users u, #__easysdi_product p, #__easysdi_community_partner cp where u.id=cp.user_id and cp.partner_id=p.diffusion_partner_id and p.id=".$product_id;
+		$database->setQuery($query);
+		$productFurnisher = $database->loadResult();
+		
+		//restrict acces to order's owner and product's diffuser
+		if($user->id != $orderOwner && $user->id != $productFurnisher)
+			die();
 
 		$query = "SELECT data,filename FROM #__easysdi_order_product_list where product_id = $product_id AND order_id = $order_id";
 		$database->setQuery($query);
 		$row = $database->loadObject();
-
 
 		error_reporting(0);
 
