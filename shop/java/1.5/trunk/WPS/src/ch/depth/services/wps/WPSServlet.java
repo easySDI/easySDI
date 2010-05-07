@@ -562,7 +562,7 @@ public class WPSServlet extends HttpServlet {
 			}
 			
 			Statement stmtPerim = conn.createStatement();
-			ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id);
+			ResultSet rsPerim = stmtPerim.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_order_product_perimeters op, "+getJoomlaPrefix()+"easysdi_perimeter_definition pd where op.perimeter_id = pd.id and order_id = "+order_id+" order by op.id");
 	
 			res.append("<easysdi:PERIMETER>\n");
 			if (rsPerim.next()){
