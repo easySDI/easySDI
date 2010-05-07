@@ -264,7 +264,7 @@ class SITE_cpanel {
 				}
 			}
 			
-			$query = "SELECT * FROM #__easysdi_order_product_perimeters where order_id=".$order_id;
+			$query = "SELECT * FROM #__easysdi_order_product_perimeters where order_id=".$order_id." order by id";
 			$database->setQuery($query);
 			$rows = $database->loadObjectList();
 			foreach ($rows as $row)
@@ -980,7 +980,7 @@ class SITE_cpanel {
 			$db->setQuery($query);
 			$rowOrder = $db->loadObject();
 			
-			$query = "SELECT b.perimeter_id, b.text, b.value FROM  #__easysdi_order a, #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id;";
+			$query = "SELECT b.perimeter_id, b.text, b.value FROM  #__easysdi_order a, #__easysdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id order by b.id";
 			$db->setQuery($query);
 			$perimeterRows = $db->loadObjectList();
 			

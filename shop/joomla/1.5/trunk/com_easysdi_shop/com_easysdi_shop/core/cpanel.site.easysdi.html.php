@@ -1402,7 +1402,7 @@ $i++;
 		<?php
 		//Add the command perimeter
 		if(!$isInMemory){
-			$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id";
+			$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id order by id";
 			$db->setQuery( $queryPerimeterValue);
 			$rowsPerimeterValue = $db->loadObjectList();
 		}else{
