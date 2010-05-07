@@ -1108,7 +1108,6 @@ class SITE_cpanel {
 			return;
 		}
 		
-	
 		HTML_cpanel::orderReportRecap($id, $isfrontEnd, $isForProvider, $rowOrder, $perimeterRows, $user_name, $third_name, $rowsProduct, $isInMemory);
 	}
 

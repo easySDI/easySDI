@@ -883,9 +883,8 @@ class HTML_cpanel {
 			echo 			$db->getErrorMsg();
 			echo "</div>";
 		}
-		if ($rowOrder->perimeter_id > 0){
+		if ($perimeterRows[0]->perimeter_id > 0){
 			echo $rowsPerimeter[0]->perimeter_desc;
-			
 		}else
 		{
 			echo JText::_("EASYSDI_GEOMETRY_TEXT");
