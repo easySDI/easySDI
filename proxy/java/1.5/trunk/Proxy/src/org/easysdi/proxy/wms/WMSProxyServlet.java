@@ -140,7 +140,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 
-	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, int remoteServerIndex, String version) {
+	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) {
 
 		try {
 			String user = "";
@@ -279,6 +279,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return WMSCapabilities111;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				resp.setHeader("easysdi-proxy-error-occured", "true");
 				e.printStackTrace();
 				dump("ERROR", e.getMessage());
 			}
@@ -289,6 +290,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
@@ -370,7 +372,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
 						FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
 
-						StringBuffer sb = buildCapabilitiesXSLT(req, iFilePath, version);
+						StringBuffer sb = buildCapabilitiesXSLT(req, resp, iFilePath, version);
 						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 
 						InputSource inputSource = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
@@ -401,7 +403,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					// Merge the results of all the capabilities and return it
 					// into a single file
 					dump("transform begin mergeCapabilities");
-					tempOut = mergeCapabilities(tempFileCapa);
+					tempOut = mergeCapabilities(tempFileCapa, resp);
 					// tempFile = mergeCapabilities(tempFileCapa);
 					dump("transform end mergeCapabilities");
 
@@ -436,7 +438,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							dump("transform begin filterImage to layer " + iFilePath);
 							// Debug tb 08.07.2009
 							BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath), layerFilePathList.get(iFilePath)),
-									wmsFilePathList.get(iFilePath), isTransparent);
+									wmsFilePathList.get(iFilePath), isTransparent, resp);
 							// Fin de Debug
 							if (g == null) {
 								imageSource = image;
@@ -689,6 +691,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
 
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
@@ -699,11 +702,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	/**
 	 * @return
 	 */
-	private BufferedImage filterImage(String filter, Collection<String> fileNames, boolean isTransparent) {
+	private BufferedImage filterImage(String filter, Collection<String> fileNames, boolean isTransparent, HttpServletResponse resp) {
 		BufferedImage imageSource = null;
 		Graphics2D g = null;
 		for (String fileName : fileNames) {
-			BufferedImage image = filterImage(filter, fileName, isTransparent);
+			BufferedImage image = filterImage(filter, fileName, isTransparent, resp);
 			if (g == null) {
 				imageSource = image;
 				if (imageSource != null)
@@ -717,7 +720,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		return imageSource;
 	}
 
-	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent) {
+	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
 		try {
 			if (filter != null) {
 				String[] s = bbox.split(",");
@@ -750,7 +753,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					type = BufferedImage.TRANSLUCENT;
 				BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
 				canvas.getGraphics().drawImage(image, 0, 0, null);
-				BufferedImage imageOut = imageFiltering(canvas, bbox, polygon, isTransparent);
+				BufferedImage imageOut = imageFiltering(canvas, bbox, polygon, isTransparent, resp);
 
 				return imageOut;
 			} else {
@@ -769,6 +772,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			}
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 		}
 		return null;
@@ -780,7 +784,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param tempFileCapa
 	 * @return
 	 */
-	private ByteArrayOutputStream mergeCapabilities(List<File> tempFileCapa)
+	private ByteArrayOutputStream mergeCapabilities(List<File> tempFileCapa, HttpServletResponse resp)
 	// private File mergeCapabilities(List<File> tempFileCapa)
 	{
 
@@ -816,7 +820,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				NodeList nl = documentChild.getElementsByTagName("Layer");
 				NodeList nlMaster = documentMaster.getElementsByTagName("Layer");
 				Node ItemMaster = nlMaster.item(0);
-				ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
+				if (nl.item(0) != null)
+					ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
 			}
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -834,6 +839,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			return out;
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 			return null;
@@ -977,10 +983,11 @@ public class WMSProxyServlet extends ProxyServlet {
 				String format;
 				int j;
 				int layerOrder;
+				HttpServletResponse resp;
 
 				// **************************************************************************************
 				public SendServerThread(String pOperation, String pParamUrl, List pLayerToKeepList, int pIServer, List pStylesToKeepList, String pParamUrlBase,
-						int pJ, String pWidth, String pHeight, String pFormat) {
+						int pJ, String pWidth, String pHeight, String pFormat, HttpServletResponse res) {
 					operation = pOperation;
 					paramUrl = pParamUrl;
 					layerToKeepList = pLayerToKeepList;
@@ -991,6 +998,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					width = pWidth;
 					height = pHeight;
 					format = pFormat;
+					resp = res;
 				}
 
 				// **************************************************************************************
@@ -1011,6 +1019,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						String width;
 						String height;
 						String format;
+						HttpServletResponse resp;
 						int j;
 
 						// **************************************************************************************
@@ -1019,7 +1028,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						// pStylesToKeepList,String pParamUrlBase,int pJ,String
 						// pWidth,String pHeight,String pFormat)
 						public SendLayerThread(int pILayers, List pLayerToKeepList, List pStylesToKeepList, String pParamUrlBase, int pJ, String pWidth,
-								String pHeight, String pFormat) {
+								String pHeight, String pFormat, HttpServletResponse res) {
 							layerToKeepList = pLayerToKeepList;
 							iLayers = pILayers;
 							stylesToKeepList = pStylesToKeepList;
@@ -1028,6 +1037,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							width = pWidth;
 							height = pHeight;
 							format = pFormat;
+							resp = res;
 						}
 
 						// **************************************************************************************
@@ -1062,6 +1072,7 @@ public class WMSProxyServlet extends ProxyServlet {
 								}
 								dump("DEBUG", "Thread Layers group: " + layerToKeepList.get(0) + " work finished on server " + getRemoteServerUrl(j));
 							} catch (Exception e) {
+								resp.setHeader("easysdi-proxy-error-occured", "true");
 								dump("ERROR", "Server " + getRemoteServerUrl(j) + " Layers group Thread " + layerToKeepList.get(0) + " :" + e.getMessage());
 								e.printStackTrace();
 							}
@@ -1181,7 +1192,7 @@ public class WMSProxyServlet extends ProxyServlet {
 									// (à filtres identiques)
 									dump("requestPreTraitementGET send request multiLayer to thread server " + getRemoteServerUrl(j));
 									SendLayerThread th = new SendLayerThread(layerThreadList.size(), layerToKeepListPerThread, stylesToKeepListPerThread,
-											paramUrlBase, j, width, height, format);
+											paramUrlBase, j, width, height, format, resp);
 									th.start();
 									layerThreadList.add(th);
 								} else {
@@ -1275,6 +1286,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						// Fin de Debug
 						dump("DEBUG", "Thread Server: " + getRemoteServerUrl(j) + " work finished");
 					} catch (Exception e) {
+						resp.setHeader("easysdi-proxy-error-occured", "true");
 						dump("ERROR", "Server Thread " + getRemoteServerUrl(j) + " :" + e.getMessage());
 						e.printStackTrace();
 					}
@@ -1307,7 +1319,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if (operation.equalsIgnoreCase("getcapabilities")) {
 				for (int jj = 0; jj < grsiList.size(); jj++) {
 					SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, null, serverThreadList.size(), null, cpParamUrlBase, jj, cpWidth,
-							cpHeight, cpFormat);
+							cpHeight, cpFormat, resp);
 
 					s.layerOrder = jj;
 					s.start();
@@ -1489,7 +1501,7 @@ public class WMSProxyServlet extends ProxyServlet {
 										sendRequest = isLayerTypePermited;
 									} else {
 										SendServerThread glgs = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(),
-												stylesToKeepList, cpParamUrlBase, j, null, null, cpFormat);
+												stylesToKeepList, cpParamUrlBase, j, null, null, cpFormat, resp);
 
 										glgs.layerOrder = jj;
 										glgs.start();
@@ -1539,7 +1551,7 @@ public class WMSProxyServlet extends ProxyServlet {
 											List<String> singleLayerList = new ArrayList<String>();
 											singleLayerList.add(layerToKeepElement);
 											SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, singleLayerList, serverThreadList.size(),
-													stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+													stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat, resp);
 											s.layerOrder = layersTab.indexOf(layerToKeepElement);
 
 											s.start();
@@ -1548,7 +1560,7 @@ public class WMSProxyServlet extends ProxyServlet {
 										}
 									} else {
 										SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, layerToKeepList, serverThreadList.size(),
-												stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat);
+												stylesToKeepList, cpParamUrlBase, j, cpWidth, cpHeight, cpFormat, resp);
 
 										s.layerOrder = layerOrder;
 										layerOrder++;
@@ -1566,7 +1578,7 @@ public class WMSProxyServlet extends ProxyServlet {
 										.equalsIgnoreCase(operation))) {
 									dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
 											+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
-									generateEmptyImage(width, height, format, true, j);
+									generateEmptyImage(width, height, format, true, j, resp);
 								}
 							}
 						}
@@ -1617,14 +1629,17 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			dump("ERROR", e.getMessage());
 			resp.setStatus(401);
 			try {
 				resp.getWriter().println(e.getMessage());
 			} catch (IOException e1) {
+				resp.setHeader("easysdi-proxy-error-occured", "true");
 				e1.printStackTrace();
 			}
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
@@ -1632,7 +1647,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
 
-	private void generateEmptyImage(String width, String height, String format, boolean isTransparent, int j) {
+	private void generateEmptyImage(String width, String height, String format, boolean isTransparent, int j, HttpServletResponse resp) {
 		// In the case of a GetMap, it should returns an empty image
 		try {
 			BufferedImage imgOut = null;
@@ -1655,6 +1670,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				layerFilePathList.put(j, "");
 			}
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 		}
 	}
@@ -1664,7 +1680,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	/*
 	 * envelope contains the envelope of the whole image
 	 */
-	private BufferedImage imageFiltering(BufferedImage imageSource, CRSEnvelope envelope, Geometry polygonFilter, boolean isTransparent) {
+	private BufferedImage imageFiltering(BufferedImage imageSource, CRSEnvelope envelope, Geometry polygonFilter, boolean isTransparent,
+			HttpServletResponse resp) {
 		try {
 			System.setProperty("org.geotools.referencing.forceXY", "true");
 			// System.setProperty(
@@ -1689,6 +1706,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					}
 				}
 			} catch (Exception e) {
+				resp.setHeader("easysdi-proxy-error-occured", "true");
 				e.printStackTrace();
 			}
 
@@ -1738,6 +1756,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			// filtrée
 			return dimg;
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}

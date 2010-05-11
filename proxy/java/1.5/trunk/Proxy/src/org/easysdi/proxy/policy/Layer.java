@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -38,118 +41,115 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "name",
-    "scaleMin",
-    "scaleMax",
-    "filter"
-})
+@XmlType(name = "", propOrder = { "name", "scaleMin", "scaleMax", "filter" })
 @XmlRootElement(name = "Layer")
-public class Layer {
+public class Layer implements Serializable {
 
-    @XmlElement(name = "Name", required = true)
-    protected String name;
-    @XmlElement(name = "ScaleMin")
-    protected Double scaleMin;
-    @XmlElement(name = "ScaleMax")
-    protected Double scaleMax;
-    @XmlElement(name = "Filter")
-    protected Filter filter;
+	@XmlElement(name = "Name", required = true)
+	protected String name;
+	@XmlElement(name = "ScaleMin")
+	protected Double scaleMin;
+	@XmlElement(name = "ScaleMax")
+	protected Double scaleMax;
+	@XmlElement(name = "Filter")
+	protected Filter filter;
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (name != null)
+			hashCode += name.hashCode();
+		if (scaleMin != null)
+			hashCode += scaleMin.hashCode();
+		if (scaleMax != null)
+			hashCode += scaleMax.hashCode();
+		if (filter != null)
+			hashCode += filter.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Gets the value of the scaleMin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getScaleMin() {
-        return scaleMin;
-    }
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(String value) {
+		this.name = value;
+	}
 
-    /**
-     * Sets the value of the scaleMin property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setScaleMin(Double value) {
-        this.scaleMin = value;
-    }
+	/**
+	 * Gets the value of the scaleMin property.
+	 * 
+	 * @return possible object is {@link Double }
+	 * 
+	 */
+	public Double getScaleMin() {
+		return scaleMin;
+	}
 
-    /**
-     * Gets the value of the scaleMax property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getScaleMax() {
-        return scaleMax;
-    }
+	/**
+	 * Sets the value of the scaleMin property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Double }
+	 * 
+	 */
+	public void setScaleMin(Double value) {
+		this.scaleMin = value;
+	}
 
-    /**
-     * Sets the value of the scaleMax property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setScaleMax(Double value) {
-        this.scaleMax = value;
-    }
+	/**
+	 * Gets the value of the scaleMax property.
+	 * 
+	 * @return possible object is {@link Double }
+	 * 
+	 */
+	public Double getScaleMax() {
+		return scaleMax;
+	}
 
-    /**
-     * Gets the value of the filter property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Filter }
-     *     
-     */
-    public Filter getFilter() {
-        return filter;
-    }
+	/**
+	 * Sets the value of the scaleMax property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Double }
+	 * 
+	 */
+	public void setScaleMax(Double value) {
+		this.scaleMax = value;
+	}
 
-    /**
-     * Sets the value of the filter property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Filter }
-     *     
-     */
-    public void setFilter(Filter value) {
-        this.filter = value;
-    }
+	/**
+	 * Gets the value of the filter property.
+	 * 
+	 * @return possible object is {@link Filter }
+	 * 
+	 */
+	public Filter getFilter() {
+		return filter;
+	}
+
+	/**
+	 * Sets the value of the filter property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Filter }
+	 * 
+	 */
+	public void setFilter(Filter value) {
+		this.filter = value;
+	}
 
 }

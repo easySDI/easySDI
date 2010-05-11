@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -36,64 +39,64 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "minimum",
-    "maximum"
-})
+@XmlType(name = "", propOrder = { "minimum", "maximum" })
 @XmlRootElement(name = "ImageSize")
-public class ImageSize {
+public class ImageSize implements Serializable {
 
-    @XmlElement(name = "Minimum")
-    protected Minimum minimum;
-    @XmlElement(name = "Maximum")
-    protected Maximum maximum;
+	@XmlElement(name = "Minimum")
+	protected Minimum minimum;
+	@XmlElement(name = "Maximum")
+	protected Maximum maximum;
 
-    /**
-     * Gets the value of the minimum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Minimum }
-     *     
-     */
-    public Minimum getMinimum() {
-        return minimum;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (minimum != null)
+			hashCode += minimum.hashCode();
+		if (maximum != null)
+			hashCode += maximum.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the minimum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Minimum }
-     *     
-     */
-    public void setMinimum(Minimum value) {
-        this.minimum = value;
-    }
+	/**
+	 * Gets the value of the minimum property.
+	 * 
+	 * @return possible object is {@link Minimum }
+	 * 
+	 */
+	public Minimum getMinimum() {
+		return minimum;
+	}
 
-    /**
-     * Gets the value of the maximum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Maximum }
-     *     
-     */
-    public Maximum getMaximum() {
-        return maximum;
-    }
+	/**
+	 * Sets the value of the minimum property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Minimum }
+	 * 
+	 */
+	public void setMinimum(Minimum value) {
+		this.minimum = value;
+	}
 
-    /**
-     * Sets the value of the maximum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Maximum }
-     *     
-     */
-    public void setMaximum(Maximum value) {
-        this.maximum = value;
-    }
+	/**
+	 * Gets the value of the maximum property.
+	 * 
+	 * @return possible object is {@link Maximum }
+	 * 
+	 */
+	public Maximum getMaximum() {
+		return maximum;
+	}
 
+	/**
+	 * Sets the value of the maximum property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Maximum }
+	 * 
+	 */
+	public void setMaximum(Maximum value) {
+		this.maximum = value;
+	}
 }

@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -36,64 +39,64 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "width",
-    "height"
-})
+@XmlType(name = "", propOrder = { "width", "height" })
 @XmlRootElement(name = "Minimum")
-public class Minimum {
+public class Minimum implements Serializable {
 
-    @XmlElement(name = "Width")
-    protected Integer width;
-    @XmlElement(name = "Height")
-    protected Integer height;
+	@XmlElement(name = "Width")
+	protected Integer width;
+	@XmlElement(name = "Height")
+	protected Integer height;
 
-    /**
-     * Gets the value of the width property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getWidth() {
-        return width;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (width != null)
+			hashCode += width.hashCode();
+		if (height != null)
+			hashCode += height.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the width property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setWidth(Integer value) {
-        this.width = value;
-    }
+	/**
+	 * Gets the value of the width property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getWidth() {
+		return width;
+	}
 
-    /**
-     * Gets the value of the height property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getHeight() {
-        return height;
-    }
+	/**
+	 * Sets the value of the width property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setWidth(Integer value) {
+		this.width = value;
+	}
 
-    /**
-     * Sets the value of the height property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setHeight(Integer value) {
-        this.height = value;
-    }
+	/**
+	 * Gets the value of the height property.
+	 * 
+	 * @return possible object is {@link Integer }
+	 * 
+	 */
+	public Integer getHeight() {
+		return height;
+	}
 
+	/**
+	 * Sets the value of the height property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Integer }
+	 * 
+	 */
+	public void setHeight(Integer value) {
+		this.height = value;
+	}
 }

@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -38,118 +41,115 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "name",
-    "attributes",
-    "remoteFilter",
-    "localFilter"
-})
+@XmlType(name = "", propOrder = { "name", "attributes", "remoteFilter", "localFilter" })
 @XmlRootElement(name = "FeatureType")
-public class FeatureType {
+public class FeatureType implements Serializable {
 
-    @XmlElement(name = "Name", required = true)
-    protected String name;
-    @XmlElement(name = "Attributes", required = true)
-    protected Attributes attributes;
-    @XmlElement(name = "RemoteFilter")
-    protected RemoteFilter remoteFilter;
-    @XmlElement(name = "LocalFilter")
-    protected LocalFilter localFilter;
+	@XmlElement(name = "Name", required = true)
+	protected String name;
+	@XmlElement(name = "Attributes", required = true)
+	protected Attributes attributes;
+	@XmlElement(name = "RemoteFilter")
+	protected RemoteFilter remoteFilter;
+	@XmlElement(name = "LocalFilter")
+	protected LocalFilter localFilter;
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (name != null)
+			hashCode += name.hashCode();
+		if (attributes != null)
+			hashCode += attributes.hashCode();
+		if (remoteFilter != null)
+			hashCode += remoteFilter.hashCode();
+		if (localFilter != null)
+			hashCode += localFilter.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Gets the value of the attributes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Attributes }
-     *     
-     */
-    public Attributes getAttributes() {
-        return attributes;
-    }
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(String value) {
+		this.name = value;
+	}
 
-    /**
-     * Sets the value of the attributes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Attributes }
-     *     
-     */
-    public void setAttributes(Attributes value) {
-        this.attributes = value;
-    }
+	/**
+	 * Gets the value of the attributes property.
+	 * 
+	 * @return possible object is {@link Attributes }
+	 * 
+	 */
+	public Attributes getAttributes() {
+		return attributes;
+	}
 
-    /**
-     * Gets the value of the remoteFilter property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link RemoteFilter }
-     *     
-     */
-    public RemoteFilter getRemoteFilter() {
-        return remoteFilter;
-    }
+	/**
+	 * Sets the value of the attributes property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Attributes }
+	 * 
+	 */
+	public void setAttributes(Attributes value) {
+		this.attributes = value;
+	}
 
-    /**
-     * Sets the value of the remoteFilter property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link RemoteFilter }
-     *     
-     */
-    public void setRemoteFilter(RemoteFilter value) {
-        this.remoteFilter = value;
-    }
+	/**
+	 * Gets the value of the remoteFilter property.
+	 * 
+	 * @return possible object is {@link RemoteFilter }
+	 * 
+	 */
+	public RemoteFilter getRemoteFilter() {
+		return remoteFilter;
+	}
 
-    /**
-     * Gets the value of the localFilter property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link LocalFilter }
-     *     
-     */
-    public LocalFilter getLocalFilter() {
-        return localFilter;
-    }
+	/**
+	 * Sets the value of the remoteFilter property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link RemoteFilter }
+	 * 
+	 */
+	public void setRemoteFilter(RemoteFilter value) {
+		this.remoteFilter = value;
+	}
 
-    /**
-     * Sets the value of the localFilter property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link LocalFilter }
-     *     
-     */
-    public void setLocalFilter(LocalFilter value) {
-        this.localFilter = value;
-    }
+	/**
+	 * Gets the value of the localFilter property.
+	 * 
+	 * @return possible object is {@link LocalFilter }
+	 * 
+	 */
+	public LocalFilter getLocalFilter() {
+		return localFilter;
+	}
+
+	/**
+	 * Sets the value of the localFilter property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link LocalFilter }
+	 * 
+	 */
+	public void setLocalFilter(LocalFilter value) {
+		this.localFilter = value;
+	}
 
 }

@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,91 +40,89 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "from",
-    "mask",
-    "to"
-})
+@XmlType(name = "", propOrder = { "from", "mask", "to" })
 @XmlRootElement(name = "AvailabilityPeriod")
-public class AvailabilityPeriod {
+public class AvailabilityPeriod implements Serializable {
 
-    @XmlElement(name = "From")
-    protected From from;
-    @XmlElement(name = "Mask")
-    protected String mask;
-    @XmlElement(name = "To")
-    protected To to;
+	@XmlElement(name = "From")
+	protected From from;
+	@XmlElement(name = "Mask")
+	protected String mask;
+	@XmlElement(name = "To")
+	protected To to;
 
-    /**
-     * Gets the value of the from property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link From }
-     *     
-     */
-    public From getFrom() {
-        return from;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (from != null)
+			hashCode += from.hashCode();
+		if (mask != null)
+			hashCode += mask.hashCode();
+		if (mask != null)
+			hashCode += mask.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the from property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link From }
-     *     
-     */
-    public void setFrom(From value) {
-        this.from = value;
-    }
+	/**
+	 * Gets the value of the from property.
+	 * 
+	 * @return possible object is {@link From }
+	 * 
+	 */
+	public From getFrom() {
+		return from;
+	}
 
-    /**
-     * Gets the value of the mask property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getMask() {
-        return mask;
-    }
+	/**
+	 * Sets the value of the from property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link From }
+	 * 
+	 */
+	public void setFrom(From value) {
+		this.from = value;
+	}
 
-    /**
-     * Sets the value of the mask property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setMask(String value) {
-        this.mask = value;
-    }
+	/**
+	 * Gets the value of the mask property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getMask() {
+		return mask;
+	}
 
-    /**
-     * Gets the value of the to property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link To }
-     *     
-     */
-    public To getTo() {
-        return to;
-    }
+	/**
+	 * Sets the value of the mask property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setMask(String value) {
+		this.mask = value;
+	}
 
-    /**
-     * Sets the value of the to property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link To }
-     *     
-     */
-    public void setTo(To value) {
-        this.to = value;
-    }
+	/**
+	 * Gets the value of the to property.
+	 * 
+	 * @return possible object is {@link To }
+	 * 
+	 */
+	public To getTo() {
+		return to;
+	}
 
+	/**
+	 * Sets the value of the to property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link To }
+	 * 
+	 */
+	public void setTo(To value) {
+		this.to = value;
+	}
 }

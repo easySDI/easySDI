@@ -64,12 +64,13 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
-		if (request.getHeader("Authorization") == null && request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map")) {
+		Cookie[] cookies = request.getCookies();
+		if (request.getHeader("Authorization") == null
+				&& (request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map") || cookies != null)) {
 			final boolean debug = logger.isDebugEnabled();
 			userCache = cacheManager.getCache("userCache");
 			String sessionKey = null;
 			Map<String, Object> authenticationPair = null;
-			Cookie[] cookies = request.getCookies();
 			String username = null, password = null;
 			if (cookies != null) {
 				for (Cookie cookie : cookies) {

@@ -8,6 +8,7 @@
 
 package org.easysdi.proxy.policy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     "policy"
 })
 @XmlRootElement(name = "PolicySet")
-public class PolicySet {
+public class PolicySet implements Serializable{
 
     @XmlElement(name = "Policy", required = true)
     protected List<Policy> policy;

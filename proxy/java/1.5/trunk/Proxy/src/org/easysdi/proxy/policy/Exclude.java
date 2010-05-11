@@ -5,9 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,11 +16,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -37,42 +39,49 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "attribute"
-})
+@XmlType(name = "", propOrder = { "attribute" })
 @XmlRootElement(name = "Exclude")
-public class Exclude {
+public class Exclude implements Serializable {
 
-    @XmlElement(name = "Attribute")
-    protected List<Attribute> attribute;
+	@XmlElement(name = "Attribute")
+	protected List<Attribute> attribute;
 
-    /**
-     * Gets the value of the attribute property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attribute property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAttribute().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
-     * 
-     * 
-     */
-    public List<Attribute> getAttribute() {
-        if (attribute == null) {
-            attribute = new ArrayList<Attribute>();
-        }
-        return this.attribute;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (attribute != null)
+			hashCode += attribute.hashCode();
+		return hashCode;
+	}
+
+	/**
+	 * Gets the value of the attribute property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a
+	 * snapshot. Therefore any modification you make to the returned list will
+	 * be present inside the JAXB object. This is why there is not a
+	 * <CODE>set</CODE> method for the attribute property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getAttribute().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list
+	 * {@link Attribute }
+	 * 
+	 * 
+	 */
+	public List<Attribute> getAttribute() {
+		if (attribute == null) {
+			attribute = new ArrayList<Attribute>();
+		}
+		return this.attribute;
+	}
 
 }

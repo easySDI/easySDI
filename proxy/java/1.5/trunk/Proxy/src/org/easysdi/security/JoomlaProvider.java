@@ -90,9 +90,14 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	}
 
 	private Collection<GrantedAuthority> getAuthorities(String username) {
-		String sql = "select profile_code as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
-				+ "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
-				+ "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+		String sql = "SELECT role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join " + getPrefix() + "easysdi_map_profile_role ON " + getPrefix()
+				+ "easysdi_map_profile_role.id_role = " + getPrefix() + "easysdi_community_role.role_id Inner Join " + getPrefix()
+				+ "easysdi_community_profile ON " + getPrefix() + "easysdi_map_profile_role.id_prof = " + getPrefix()
+				+ "easysdi_community_profile.profile_id Inner Join " + getPrefix() + "easysdi_community_partner_profile ON " + getPrefix()
+				+ "easysdi_community_partner_profile.profile_id = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
+				+ "easysdi_community_partner ON " + getPrefix() + "easysdi_community_partner_profile.partner_id = " + getPrefix()
+				+ "easysdi_community_partner.partner_id Inner Join " + getPrefix() + "users ON " + getPrefix() + "easysdi_community_partner.user_id = "
+				+ getPrefix() + "users.id WHERE " + getPrefix() + "users.username =  ?";
 		List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
 			public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return new GrantedAuthorityImpl(rs.getString("role"));

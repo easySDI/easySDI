@@ -2,6 +2,10 @@ package org.easysdi.proxy.ehcache;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.Principal;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -9,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -17,16 +22,24 @@ import net.sf.ehcache.constructs.blocking.BlockingCache;
 import net.sf.ehcache.constructs.blocking.LockTimeoutException;
 import net.sf.ehcache.constructs.web.AlreadyCommittedException;
 import net.sf.ehcache.constructs.web.AlreadyGzippedException;
+import net.sf.ehcache.constructs.web.HttpDateFormatter;
 import net.sf.ehcache.constructs.web.PageInfo;
 import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 
+import org.easysdi.proxy.policy.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GetMapCacheFilter.class);
+	private String servletName;
+	private Cache configCache;
 
 	public GetMapCacheFilter(CacheManager cm) throws ServletException {
 		this.cm = cm;
@@ -34,7 +47,29 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	}
 
 	@Override
+	protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws AlreadyGzippedException,
+			AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
+		boolean cache = true;
+		servletName = request.getPathInfo().substring(1);
+		String req = request.getParameter("REQUEST");
+		if (req == null)
+			req = request.getParameter("request");
+		if ("getfeature".equalsIgnoreCase(req) && "getfeatureinfo".equalsIgnoreCase(req))
+			cache = false;
+		if (cache)
+			super.doFilter(request, response, chain);
+		else
+			chain.doFilter(request, response);
+	}
+
+	@Override
 	public void doInit(FilterConfig filterConfig) throws CacheException {
+		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+		CacheManager cm = (CacheManager) context.getBean("cacheManager");
+		if (cm != null) {
+			configCache = cm.getCache("configCache");
+		}
+
 		synchronized (this.getClass()) {
 			if (blockingCache == null) {
 				final String localCacheName = getCacheName();
@@ -54,33 +89,13 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	}
 
 	@Override
-	protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws AlreadyGzippedException,
-			AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
-		boolean cache = true;
-		String req = request.getParameter("REQUEST");
-		if (req == null)
-			req = request.getParameter("request");
-		if ("getmap".equalsIgnoreCase(req)) {
-			request.setAttribute("includeUser", Boolean.TRUE);
-			String width = request.getParameter("WIDTH");
-			if (width == null)
-				width = request.getParameter("width");
-			String height = request.getParameter("HEIGHT");
-			if (height == null)
-				height = request.getParameter("height");
-			cache = ("256".equals(width) && "256".equals(height));
-		} else if ("getlegendgraphic".equalsIgnoreCase(req))
-			cache = true;
-		else
-			cache = false;
-		if (cache)
-			super.doFilter(request, response, chain);
-		else
-			chain.doFilter(request, response);
-	}
-
-	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) {
+		String user = null;
+		Principal principal = httpRequest.getUserPrincipal();
+		if (principal != null)
+			user = principal.getName();
+		Element policyE = configCache.get(servletName + user + "policyFile");
+		Policy policy = (Policy) policyE.getValue();
 		StringBuffer stringBuffer = new StringBuffer();
 		String url;
 		try {
@@ -88,9 +103,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		} catch (UnsupportedEncodingException e) {
 			url = httpRequest.getQueryString();
 		}
-		if (httpRequest.getAttribute("includeUser") != null)
-			stringBuffer.append(httpRequest.getUserPrincipal().getName()).append(":");
-		stringBuffer.append(httpRequest.getMethod()).append(":").append(httpRequest.getRequestURI()).append(url);
+		stringBuffer.append(policy.hashCode()).append(url);
 
 		String key = stringBuffer.toString();
 		return key;
@@ -109,6 +122,22 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	@Override
 	protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws Exception {
 		// Look up the cached page
+		String pCache = request.getParameter("CACHE");
+		if (pCache == null || "".equals(pCache))
+			pCache = request.getParameter("cache");
+		boolean cacheAllowed = Boolean.parseBoolean(pCache);
+		if (cacheAllowed) {
+			cacheAllowed = false;
+			Iterator<GrantedAuthority> iterator = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator();
+			while (iterator.hasNext()) {
+				GrantedAuthority authority = iterator.next();
+				if ("EASYSDI_CACHE".equals(authority.getAuthority())) {
+					cacheAllowed = true;
+					break;
+				}
+			}
+		}
+
 		final String key = calculateKey(request);
 		PageInfo pageInfo = null;
 		String originalThreadName = Thread.currentThread().getName();
@@ -120,24 +149,30 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 					// Page is not cached - build the response, cache it, and
 					// send to client
 					pageInfo = buildPage(request, response, chain);
-					if (pageInfo.isOk()) {
+					if (pageInfo.isOk() && !response.containsHeader("easysdi-proxy-error-occured")) {
 						if (LOG.isDebugEnabled()) {
 							LOG.debug("PageInfo ok. Adding to cache " + blockingCache.getName() + " with key " + key);
 						}
-						blockingCache.put(new Element(key, pageInfo));
-						blockingCache.flush();
+						if (cacheAllowed) {
+							blockingCache.put(new Element(key, pageInfo));
+							blockingCache.flush();
+						}
 					} else {
 						if (LOG.isDebugEnabled()) {
 							LOG.debug("PageInfo was not ok(200). Putting null into cache " + blockingCache.getName() + " with key " + key);
 						}
-						blockingCache.put(new Element(key, null));
-						blockingCache.flush();
+						if (cacheAllowed) {
+							blockingCache.put(new Element(key, null));
+							blockingCache.flush();
+						}
 					}
 				} catch (final Throwable throwable) {
 					// Must unlock the cache if the above fails. Will be logged
 					// at Filter
-					blockingCache.put(new Element(key, null));
-					blockingCache.flush();
+					if (cacheAllowed) {
+						blockingCache.put(new Element(key, null));
+						blockingCache.flush();
+					}
 					throw new Exception(throwable);
 				}
 			} else {
@@ -151,6 +186,33 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		}
 		return pageInfo;
 	}
+
+	@Override
+	protected PageInfo buildPage(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws AlreadyGzippedException, Exception {
+		PageInfo pageInfo = super.buildPage(request, response, chain);
+		if (!response.containsHeader("easysdi-proxy-error-occured")) {
+			// add expires and last-modified headers
+			Date now = new Date();
+			List<String[]> headers = pageInfo.getResponseHeaders();
+			HttpDateFormatter httpDateFormatter = new HttpDateFormatter();
+			String lastModified = httpDateFormatter.formatHttpDate(pageInfo.getCreated());
+			long ttlMilliseconds = calculateTimeToLiveMilliseconds();
+			headers.add(new String[] { "Last-Modified", lastModified });
+			headers.add(new String[] { "Expires", httpDateFormatter.formatHttpDate(new Date(now.getTime() + ttlMilliseconds)) });
+			headers.add(new String[] { "Cache-Control", "max-age=" + ttlMilliseconds / MILLISECONDS_PER_SECOND });
+			headers.add(new String[] { "ETag", generateEtag(ttlMilliseconds) });
+		}
+		return pageInfo;
+	}
+
+	private String generateEtag(long ttlMilliseconds) {
+		StringBuffer stringBuffer = new StringBuffer();
+		Long eTagRaw = System.currentTimeMillis() + ttlMilliseconds;
+		String eTag = stringBuffer.append("\"").append(eTagRaw).append("\"").toString();
+		return eTag;
+	}
+
+	private static final int MILLISECONDS_PER_SECOND = 1000;
 
 	private CacheManager cm;
 

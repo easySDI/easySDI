@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -41,199 +44,191 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "url",
-    "featureTypes",
-    "layers",
-    "metadata",
-    "filter",
-    "namespace",
-    "prefix"
-})
+@XmlType(name = "", propOrder = { "url", "featureTypes", "layers", "metadata", "filter", "namespace", "prefix" })
 @XmlRootElement(name = "Server")
-public class Server {
+public class Server implements Serializable {
 
-    @XmlElement(required = true)
-    protected String url;
-    @XmlElement(name = "FeatureTypes")
-    protected FeatureTypes featureTypes;
-    @XmlElement(name = "Layers")
-    protected Layers layers;
-    @XmlElement(name = "Metadata")
-    protected Metadata metadata;
-    @XmlElement(name = "Filter")
-    protected Filter filter;
-    @XmlElement(name = "Namespace")
-    protected String namespace;
-    @XmlElement(name = "Prefix")
-    protected String prefix;
+	@XmlElement(required = true)
+	protected String url;
+	@XmlElement(name = "FeatureTypes")
+	protected FeatureTypes featureTypes;
+	@XmlElement(name = "Layers")
+	protected Layers layers;
+	@XmlElement(name = "Metadata")
+	protected Metadata metadata;
+	@XmlElement(name = "Filter")
+	protected Filter filter;
+	@XmlElement(name = "Namespace")
+	protected String namespace;
+	@XmlElement(name = "Prefix")
+	protected String prefix;
 
-    /**
-     * Gets the value of the url property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUrl() {
-        return url;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (url != null)
+			hashCode += url.hashCode();
+		if (featureTypes != null)
+			hashCode += featureTypes.hashCode();
+		if (layers != null)
+			hashCode += layers.hashCode();
+		if (metadata != null)
+			hashCode += metadata.hashCode();
+		if (filter != null)
+			hashCode += filter.hashCode();
+		if (namespace != null)
+			hashCode += namespace.hashCode();
+		if (prefix != null)
+			hashCode += prefix.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the url property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUrl(String value) {
-        this.url = value;
-    }
+	/**
+	 * Gets the value of the url property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getUrl() {
+		return url;
+	}
 
-    /**
-     * Gets the value of the featureTypes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link FeatureTypes }
-     *     
-     */
-    public FeatureTypes getFeatureTypes() {
-        return featureTypes;
-    }
+	/**
+	 * Sets the value of the url property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setUrl(String value) {
+		this.url = value;
+	}
 
-    /**
-     * Sets the value of the featureTypes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link FeatureTypes }
-     *     
-     */
-    public void setFeatureTypes(FeatureTypes value) {
-        this.featureTypes = value;
-    }
+	/**
+	 * Gets the value of the featureTypes property.
+	 * 
+	 * @return possible object is {@link FeatureTypes }
+	 * 
+	 */
+	public FeatureTypes getFeatureTypes() {
+		return featureTypes;
+	}
 
-    /**
-     * Gets the value of the layers property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Layers }
-     *     
-     */
-    public Layers getLayers() {
-        if(layers == null) layers = new Layers();
-    	return layers;
-    }
+	/**
+	 * Sets the value of the featureTypes property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link FeatureTypes }
+	 * 
+	 */
+	public void setFeatureTypes(FeatureTypes value) {
+		this.featureTypes = value;
+	}
 
-    /**
-     * Sets the value of the layers property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Layers }
-     *     
-     */
-    public void setLayers(Layers value) {
-        this.layers = value;
-    }
+	/**
+	 * Gets the value of the layers property.
+	 * 
+	 * @return possible object is {@link Layers }
+	 * 
+	 */
+	public Layers getLayers() {
+		if (layers == null)
+			layers = new Layers();
+		return layers;
+	}
 
-    /**
-     * Gets the value of the metadata property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Metadata }
-     *     
-     */
-    public Metadata getMetadata() {
-        return metadata;
-    }
+	/**
+	 * Sets the value of the layers property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Layers }
+	 * 
+	 */
+	public void setLayers(Layers value) {
+		this.layers = value;
+	}
 
-    /**
-     * Sets the value of the metadata property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Metadata }
-     *     
-     */
-    public void setMetadata(Metadata value) {
-        this.metadata = value;
-    }
+	/**
+	 * Gets the value of the metadata property.
+	 * 
+	 * @return possible object is {@link Metadata }
+	 * 
+	 */
+	public Metadata getMetadata() {
+		return metadata;
+	}
 
-    /**
-     * Gets the value of the filter property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Filter }
-     *     
-     */
-    public Filter getFilter() {
-        return filter;
-    }
+	/**
+	 * Sets the value of the metadata property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Metadata }
+	 * 
+	 */
+	public void setMetadata(Metadata value) {
+		this.metadata = value;
+	}
 
-    /**
-     * Sets the value of the filter property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Filter }
-     *     
-     */
-    public void setFilter(Filter value) {
-        this.filter = value;
-    }
-    
-    /**
-     * Gets the value of the Namspace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Namespace }
-     *     
-     */
-    public String getNamespace() {
-        return namespace;
-    }
+	/**
+	 * Gets the value of the filter property.
+	 * 
+	 * @return possible object is {@link Filter }
+	 * 
+	 */
+	public Filter getFilter() {
+		return filter;
+	}
 
-    /**
-     * Sets the value of the Namspace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Namspace }
-     *     
-     */
-    public void setNamspace(String value) {
-        this.namespace = value;
-    }
-    
-    /**
-     * Gets the value of the Prefix property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Prefix }
-     *     
-     */
-    public String getPrefix() {
-        return prefix;
-    }
+	/**
+	 * Sets the value of the filter property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Filter }
+	 * 
+	 */
+	public void setFilter(Filter value) {
+		this.filter = value;
+	}
 
-    /**
-     * Sets the value of the Prefix property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Prefix }
-     *     
-     */
-    public void setPrefix(String value) {
-        this.prefix = value;
-    }
+	/**
+	 * Gets the value of the Namspace property.
+	 * 
+	 * @return possible object is {@link Namespace }
+	 * 
+	 */
+	public String getNamespace() {
+		return namespace;
+	}
+
+	/**
+	 * Sets the value of the Namspace property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Namspace }
+	 * 
+	 */
+	public void setNamspace(String value) {
+		this.namespace = value;
+	}
+
+	/**
+	 * Gets the value of the Prefix property.
+	 * 
+	 * @return possible object is {@link Prefix }
+	 * 
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
+	/**
+	 * Sets the value of the Prefix property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Prefix }
+	 * 
+	 */
+	public void setPrefix(String value) {
+		this.prefix = value;
+	}
 }

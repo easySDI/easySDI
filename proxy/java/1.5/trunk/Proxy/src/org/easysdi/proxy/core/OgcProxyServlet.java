@@ -17,11 +17,8 @@
 
 package org.easysdi.proxy.core;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
@@ -32,24 +29,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.policy.Policy;
-import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.handler.ConfigFileHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Reads the configuration file and dispatch the request to the right class.
@@ -58,6 +48,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * 
  */
 public class OgcProxyServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5619994356764480389L;
 
 	private Cache configCache;
 	private Config configuration;
@@ -259,63 +254,68 @@ public class OgcProxyServlet extends HttpServlet {
 	 */
 	private ProxyServlet createProxy(String servletName, HttpServletRequest req) throws JAXBException {
 		try {
-			File configF = new File(configFile).getAbsoluteFile();
-			long lastmodified = configF.lastModified();
-			Element configE = configCache.get("configFile");
-			if (configE != null && configE.getVersion() != lastmodified)
-				configE = null;
-			if (configE == null) {
-				XMLReader xr = XMLReaderFactory.createXMLReader();
-				ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
-				// Debug tb 28.09.2009
-				// Dans le fichier web.xml, si le chemin d'accès au fichier
-				// config.xml est donné en relatif à la servlet
-				// InputStream is = new
-				// java.io.FileInputStream(getServletContext().getRealPath(configFile));
-				// Dans le fichier web.xml, si le chemin d'accès au fichier
-				// config.xml est donné en absolu
-				InputStream is = new java.io.FileInputStream(configFile);
-				// Fin de Debug
-				xr.setContentHandler(confHandler);
-				xr.parse(new InputSource(is));
-				configuration = confHandler.getConfig();
-				configE = new Element("configFile", configuration);
-				configE.setVersion(lastmodified);
-				configCache.put(configE);
-			} else
-				configuration = (Config) configE.getValue();
+			// File configF = new File(configFile).getAbsoluteFile();
+			// long lastmodified = configF.lastModified();
+			Element configE = configCache.get(servletName + "configFile");
+			// if (configE != null && configE.getVersion() != lastmodified)
+			// configE = null;
+			// if (configE == null) {
+			// XMLReader xr = XMLReaderFactory.createXMLReader();
+			// ConfigFileHandler confHandler = new
+			// ConfigFileHandler(servletName);
+			// Debug tb 28.09.2009
+			// Dans le fichier web.xml, si le chemin d'accès au fichier
+			// config.xml est donné en relatif à la servlet
+			// InputStream is = new
+			// java.io.FileInputStream(getServletContext().getRealPath(configFile));
+			// Dans le fichier web.xml, si le chemin d'accès au fichier
+			// config.xml est donné en absolu
+			// InputStream is = new java.io.FileInputStream(configFile);
+			// Fin de Debug
+			// xr.setContentHandler(confHandler);
+			// xr.parse(new InputSource(is));
+			// configuration = confHandler.getConfig();
+			// configE = new Element(servletName + "configFile", configuration);
+			// configE.setVersion(lastmodified);
+			// configCache.put(configE);
+			// } else
+
+			configuration = (Config) configE.getValue();
 
 			Class<?> classe = Class.forName(configuration.getServletClass());
 			Constructor<?> constructeur = classe.getConstructor();
 			ProxyServlet ps = (ProxyServlet) constructeur.newInstance();
 			ps.setConfiguration(configuration);
-			String filePath = new File(configuration.getPolicyFile()).getAbsolutePath();
-			File policyF = new File(filePath).getAbsoluteFile();
-			long plastmodified = policyF.lastModified();
+			// String filePath = new
+			// File(configuration.getPolicyFile()).getAbsolutePath();
+			// File policyF = new File(filePath).getAbsoluteFile();
+			// long plastmodified = policyF.lastModified();
 			String user = null;
 			Principal principal = req.getUserPrincipal();
 			if (principal != null)
 				user = principal.getName();
 			Element policyE = configCache.get(servletName + user + "policyFile");
-			if (policyE != null && policyE.getVersion() != plastmodified)
-				policyE = null;
-			if (policyE == null) {
+			// if (policyE != null && policyE.getVersion() != plastmodified)
+			// policyE = null;
+			// if (policyE == null) {
 
-				JAXBContext jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
-				Unmarshaller u = jc.createUnmarshaller();
-				// Debug tb 28.09.2009
-				// PolicySet policySet = (PolicySet) u.unmarshal(new
-				// FileInputStream(getServletContext().getRealPath(configuration.getPolicyFile())));
-				PolicySet policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
-				// Fin de Debug
-				PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
-				Policy policy = ph.getPolicy(user, req);
-				ps.setPolicy(policy);
-				policyE = new Element(servletName + user + "policyFile", policy);
-				policyE.setVersion(plastmodified);
-				configCache.put(policyE);
-			} else
-				ps.setPolicy((Policy) policyE.getValue());
+			// JAXBContext jc =
+			// JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
+			// Unmarshaller u = jc.createUnmarshaller();
+			// Debug tb 28.09.2009
+			// PolicySet policySet = (PolicySet) u.unmarshal(new
+			// FileInputStream(getServletContext().getRealPath(configuration.getPolicyFile())));
+			// PolicySet policySet = (PolicySet) u.unmarshal(new
+			// FileInputStream(filePath));
+			// Fin de Debug
+			// PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
+			// Policy policy = ph.getPolicy(user, req);
+			// ps.setPolicy(policy);
+			// policyE = new Element(servletName + user + "policyFile", policy);
+			// policyE.setVersion(plastmodified);
+			// configCache.put(policyE);
+			// } else
+			ps.setPolicy((Policy) policyE.getValue());
 			return ps;
 
 		} catch (ClassNotFoundException e) {
@@ -338,15 +338,6 @@ public class OgcProxyServlet extends HttpServlet {
 			e.printStackTrace();
 			// Mauvais type de paramètre
 			// (Pas obligatoire d'intercepter IllegalArgumentException)
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}

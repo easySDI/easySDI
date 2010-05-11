@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -32,37 +35,40 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "content"
-})
+@XmlType(name = "", propOrder = { "content" })
 @XmlRootElement(name = "Attribute")
-public class Attribute {
+public class Attribute implements Serializable {
 
-    @XmlValue
-    protected String content;
+	@XmlValue
+	protected String content;
 
-    /**
-     * Gets the value of the content property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getContent() {
-        return content;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (content != null)
+			hashCode += content.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the content property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setContent(String value) {
-        this.content = value;
-    }
+	/**
+	 * Gets the value of the content property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getContent() {
+		return content;
+	}
+
+	/**
+	 * Sets the value of the content property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setContent(String value) {
+		this.content = value;
+	}
 
 }

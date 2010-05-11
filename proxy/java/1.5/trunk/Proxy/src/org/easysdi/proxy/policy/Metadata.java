@@ -5,8 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
+
+import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,11 +15,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -35,37 +38,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "attributes"
-})
+@XmlType(name = "", propOrder = { "attributes" })
 @XmlRootElement(name = "Metadata")
-public class Metadata {
+public class Metadata implements Serializable {
 
-    @XmlElement(name = "Attributes", required = true)
-    protected Attributes attributes;
+	@XmlElement(name = "Attributes", required = true)
+	protected Attributes attributes;
 
-    /**
-     * Gets the value of the attributes property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Attributes }
-     *     
-     */
-    public Attributes getAttributes() {
-        return attributes;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if (attributes != null)
+			hashCode += attributes.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Sets the value of the attributes property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Attributes }
-     *     
-     */
-    public void setAttributes(Attributes value) {
-        this.attributes = value;
-    }
+	/**
+	 * Gets the value of the attributes property.
+	 * 
+	 * @return possible object is {@link Attributes }
+	 * 
+	 */
+	public Attributes getAttributes() {
+		return attributes;
+	}
+
+	/**
+	 * Sets the value of the attributes property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Attributes }
+	 * 
+	 */
+	public void setAttributes(Attributes value) {
+		this.attributes = value;
+	}
 
 }

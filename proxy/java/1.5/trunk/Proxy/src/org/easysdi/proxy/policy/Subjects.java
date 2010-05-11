@@ -5,9 +5,9 @@
 // Generated on: 2008.06.16 at 03:41:04 PM CEST 
 //
 
-
 package org.easysdi.proxy.policy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,11 +17,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for anonymous complex type.
+ * <p>
+ * Java class for anonymous complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within
+ * this class.
  * 
  * <pre>
  * &lt;complexType>
@@ -40,100 +42,105 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "role",
-    "user"
-})
+@XmlType(name = "", propOrder = { "role", "user" })
 @XmlRootElement(name = "Subjects")
-public class Subjects {
+public class Subjects implements Serializable {
 
-    @XmlElement(name = "Role")
-    protected List<String> role;
-    @XmlElement(name = "User")
-    protected List<String> user;
-    @XmlAttribute(name = "All")
-    protected Boolean all;
+	@XmlElement(name = "Role")
+	protected List<String> role;
+	@XmlElement(name = "User")
+	protected List<String> user;
+	@XmlAttribute(name = "All")
+	protected Boolean all;
 
-    /**
-     * Gets the value of the role property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the role property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getRole().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getRole() {
-        if (role == null) {
-            role = new ArrayList<String>();
-        }
-        return this.role;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		hashCode += ((all) ? 17099 : 9904);
+		if (role != null)
+			hashCode += role.hashCode();
+		if (user != null)
+			hashCode += user.hashCode();
+		return hashCode;
+	}
 
-    /**
-     * Gets the value of the user property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the user property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getUser().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getUser() {
-        if (user == null) {
-            user = new ArrayList<String>();
-        }
-        return this.user;
-    }
+	/**
+	 * Gets the value of the role property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a
+	 * snapshot. Therefore any modification you make to the returned list will
+	 * be present inside the JAXB object. This is why there is not a
+	 * <CODE>set</CODE> method for the role property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getRole().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link String }
+	 * 
+	 * 
+	 */
+	public List<String> getRole() {
+		if (role == null) {
+			role = new ArrayList<String>();
+		}
+		return this.role;
+	}
 
-    /**
-     * Gets the value of the all property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isAll() {
-        return all;
-    }
+	/**
+	 * Gets the value of the user property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list, not a
+	 * snapshot. Therefore any modification you make to the returned list will
+	 * be present inside the JAXB object. This is why there is not a
+	 * <CODE>set</CODE> method for the user property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * 
+	 * <pre>
+	 * getUser().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list {@link String }
+	 * 
+	 * 
+	 */
+	public List<String> getUser() {
+		if (user == null) {
+			user = new ArrayList<String>();
+		}
+		return this.user;
+	}
 
-    /**
-     * Sets the value of the all property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setAll(Boolean value) {
-        this.all = value;
-    }
+	/**
+	 * Gets the value of the all property.
+	 * 
+	 * @return possible object is {@link Boolean }
+	 * 
+	 */
+	public Boolean isAll() {
+		return all;
+	}
+
+	/**
+	 * Sets the value of the all property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Boolean }
+	 * 
+	 */
+	public void setAll(Boolean value) {
+		this.all = value;
+	}
 
 }
