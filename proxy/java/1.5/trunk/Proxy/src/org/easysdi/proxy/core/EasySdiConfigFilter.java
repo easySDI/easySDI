@@ -25,8 +25,6 @@ import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -37,6 +35,20 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 
 	private Cache configCache;
 	private String servletName;
+	private CacheManager cm;
+	private Unmarshaller u;
+
+	public EasySdiConfigFilter(CacheManager cm) {
+		this.cm = cm;
+		configCache = cm.getCache("configCache");
+		JAXBContext jc;
+		try {
+			jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
+			u = jc.createUnmarshaller();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void destroy() {
 
@@ -46,11 +58,6 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 
-		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-		CacheManager cm = (CacheManager) context.getBean("cacheManager");
-		if (cm != null) {
-			configCache = cm.getCache("configCache");
-		}
 		servletName = request.getPathInfo().substring(1);
 		Config configuration;
 		try {
@@ -82,7 +89,8 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			configE = new Element(servletName + "configFile", configuration);
 			configE.setVersion(lastmodified);
 			configCache.put(configE);
-		} else configuration = (Config) configE.getValue();
+		} else
+			configuration = (Config) configE.getValue();
 		return configuration;
 	}
 
@@ -102,8 +110,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			policyE = null;
 
 		if (policyE == null) {
-			JAXBContext jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
-			Unmarshaller u = jc.createUnmarshaller();
+
 			PolicySet policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
 			PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 			Policy policy = ph.getPolicy(user, req);

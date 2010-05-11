@@ -30,10 +30,8 @@ import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilte
 import org.easysdi.proxy.policy.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
@@ -64,12 +62,6 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	public void doInit(FilterConfig filterConfig) throws CacheException {
-		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-		CacheManager cm = (CacheManager) context.getBean("cacheManager");
-		if (cm != null) {
-			configCache = cm.getCache("configCache");
-		}
-
 		synchronized (this.getClass()) {
 			if (blockingCache == null) {
 				final String localCacheName = getCacheName();
@@ -90,6 +82,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) {
+		configCache = cm.getCache("configCache");
 		String user = null;
 		Principal principal = httpRequest.getUserPrincipal();
 		if (principal != null)
