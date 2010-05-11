@@ -21,7 +21,7 @@
  * PHP script to emit component configuration into JavaScript.
  */
 
-$s .= "Ext.namespace('SData');\n";
+$s = "Ext.namespace('SData');\n";
 $s .= "Ext.BLANK_IMAGE_URL = '".JURI::base()."components/com_easysdi_map/externals/ext/resources/images/default/s.gif';\n";
 $document->addScriptDeclaration($s);
 
@@ -101,7 +101,7 @@ else
 }
 
 // user.areaLimitedFullPrecision - set to true if the user has full precision access but only in a certain area.
-$s.= "var user = {
+$s= "var user = {
   loggedIn: ".$loggedIn.",
   id: ".$user->id.",
   name: '".$user->name."',
@@ -230,11 +230,14 @@ $s .= "{
 if ($result->maxExtent) {
 	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxExtent),\n";
 }
-if ($result->minResolution) {
-	$s .= "    minScale : $result->minResolution,\n";
+if ($result->resolutionOverScale && $result->resolutions) {
+	$s .= "    resolutions : $result->resolutions,\n";
 }
-if ($result->maxResolution) {
-	$s .= "    maxScale : $result->maxResolution,\n";
+if (!$result->resolutionOverScale && $result->minScale) {
+	$s .= "    minScale : $result->minScale,\n";
+}
+if (!$result->resolutionOverScale && $result->maxScale) {
+	$s .= "    maxScale : $result->maxScale,\n";
 }
 $s .= "    units : '$result->unit'
 }";
@@ -252,6 +255,7 @@ if (!is_null($result)) {
 	{
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
+			$cache=(($l_cache==1) ? 'true' : 'false');
 			$i++;
 			$s .= "{
     id : '$l_id',
@@ -262,16 +266,20 @@ if (!is_null($result)) {
 	defaultVisibility : $l_default_visibility,	
 	defaultOpacity : $l_default_opacity,
 	metadataUrl : '$l_metadata_url',
-    imageFormat : '$l_img_format',\n";
+    imageFormat : '$l_img_format',
+    cache : $cache,\n";
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
 			if ($l_maxExtent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
 			}
-			if ($l_minResolution) {
-				$s .= "    minScale : $l_minResolution,\n";
+			if ($l_resolutionOverScale && $l_resolutions) {
+				$s .= "    resolutions : $l_resolutions,\n";
 			}
-			if ($l_maxResolution) {
-				$s .= "    maxScale : $l_maxResolution,\n";
+			if (!$l_resolutionOverScale && $l_minScale) {
+				$s .= "    minScale : $l_minScale,\n";
+			}
+			if (!$l_resolutionOverScale && $l_maxScale) {
+				$s .= "    maxScale : $l_maxScale,\n";
 			}
 			$s .= "    units : '$l_unit'
 }";
@@ -296,7 +304,8 @@ if (!is_null($result)) {
 	{
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
-		$s .= "{ id : $l_id, name : '$l_name' }";
+		$open = (($l_open == 1) ? 'true' : 'false');
+		$s .= "{ id : $l_id, name : '$l_name', open: $open}";
 		if ($i != count($result)) $s .= ",";
 	}
 };
@@ -314,9 +323,8 @@ if (!is_null($result)) {
 	{
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
-		if (!$l_minResolution) $l_minResolution=1;
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, $l_url_type, $l_layers, $valid_wms_layers, $valid_wfs_features)){
-
+			$cache=(($l_cache==1) ? 'true' : 'false');
 			// add comma before all but the first
 			if ($done_first) $s .= ",";
 			$done_first=true;
@@ -331,18 +339,22 @@ if (!is_null($result)) {
 	defaultVisibility : $l_default_visibility,
 	defaultOpacity : $l_default_opacity,
 	metadataUrl : '$l_metadata_url',
-	imageFormat : '$l_img_format',\n";
-			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
+	imageFormat : '$l_img_format',
+	cache : $cache,\n";
+			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxExtent) {
 				//$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
 			}
-			if ($l_minResolution) {
-				//$s .= "    minScale : $l_minResolution,\n";
+			if ($l_resolutionOverScale && $l_resolutions) {
+				$s .= "resolutions : $l_resolutions,\n";
 			}
-			if ($l_maxResolution) {
-				//$s .= "    maxScale : $l_maxResolution,\n";
+			if (!$l_resolutionOverScale && $l_minScale) {
+				$s .= "minScale : $l_minScale,\n";
 			}
-			$s .= "    units : '$l_unit'
+			if (!$l_resolutionOverScale && $l_maxScale) {
+				$s .= "maxScale : $l_maxScale,\n";
+			}
+			$s .= "units : '$l_unit'
 }";
 			//if ($i != count($result)) $s .= ",";
 		} else {$s .= "// blocked access to $l_layers\n";}
@@ -580,9 +592,9 @@ $s .= "alert('Invalid configuration. No search layer defined.');\n";
  * attribute available in the feature type indicated by SData.searchLayer.featureType.
  * SData.searchPrecisions[] = name of geom field.
  * SData.searchPrecisions[].title = Title of the search precision in the tree.
- * SData.searchPrecisions[].minResolution = MinResolution of layer.
- * SData.searchPrecisions[].minResolution = MaxResolution of layer.
- * SData.searchPrecisions[].lowScaleSwitchTo = Geom name of search precision that should be replaced if above the maxResolution (optional).
+ * SData.searchPrecisions[].minScale = MinResolution of layer.
+ * SData.searchPrecisions[].minScale = MaxResolution of layer.
+ * SData.searchPrecisions[].lowScaleSwitchTo = Geom name of search precision that should be replaced if above the maxScale (optional).
  * SData.searchPrecisions[].style = specify any style overrides here. Generally, the larger the geom, the lower the fillOpacity should be
  *   set to.
  */
@@ -1529,19 +1541,19 @@ componentParams.getMapImageFormat =
 ";
 //	},
 //	{
-//		value :'image/jpeg',  
+//		value :'image/jpeg',
 //		text : 'jpeg'
 //	},
 //	{
-//		value :'image/gif',  
+//		value :'image/gif',
 //		text : 'gif'
 //	},
 //	{
-//		value :'image/wbmp',  
+//		value :'image/wbmp',
 //		text : 'wbmp'
 //	},
 //	{
-//		value :'image/tiff',  
+//		value :'image/tiff',
 //		text : 'tiff'
 //	}
 /*"

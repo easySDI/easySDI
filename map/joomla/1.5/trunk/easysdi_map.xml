@@ -20,7 +20,7 @@
 			<language tag="en-GB">en-GB.com_easysdi_map.ini</language>
 		</languages>
 	</administration>
-	<files folder="components">	
+	<files folder="components">
 		<filename>easysdi_map.php</filename>
 		<folder>assets</folder>	
 		<folder>classes</folder>

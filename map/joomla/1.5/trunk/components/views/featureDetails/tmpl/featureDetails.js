@@ -251,8 +251,8 @@ filterText +
         projection: componentParams.projection,
         minExtent: bounds,
         maxExtent: bounds,
-        minResolution: 262,
-        maxResolution: 262,
+        minScale: 262,
+        maxScale: 262,
         units: "m",
         numZoomLevels: 1
       },

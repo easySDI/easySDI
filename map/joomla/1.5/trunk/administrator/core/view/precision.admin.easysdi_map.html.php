@@ -134,11 +134,11 @@ class HTML_precision
 								<td><input class="inputbox" type="text" size="100" maxlength="500" name="title" id="title" value="<?php echo $precision->title; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MIN_RESOLUTION"); ?></td>
+								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MIN_SCALE"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="250" name="min_resolution" id="min_resolution" value="<?php echo $precision->min_resolution; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MAX_RESOLUTION"); ?></td>
+								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MAX_SCALE"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="250" name="max_resolution" id="max_resolution" value="<?php echo $precision->max_resolution; ?>" /></td>
 							</tr>
 							<tr>

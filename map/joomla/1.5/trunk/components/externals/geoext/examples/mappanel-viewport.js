@@ -29,7 +29,7 @@ Ext.onReady(function() {
             projection: new OpenLayers.Projection("EPSG:900913"),
             units: "m",
             numZoomLevels: 18,
-            maxResolution: 156543.0339,
+            maxScale: 156543.0339,
             maxExtent: new OpenLayers.Bounds(-20037508, -20037508,
                                              20037508, 20037508.34)
         };

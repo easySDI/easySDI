@@ -377,7 +377,8 @@ Ext.each(SData.overlayGroups, function(group) {
 	this._overlays['overlay_' + group.id] = new Ext.tree.TreeNode( {
 		text : EasySDI_Map.lang.getLocal(group.name),
 		singleClickExpand : true,
-		iconCls : 'folderLayer'
+		iconCls : 'folderLayer',
+		expanded : group.open
 	});
 }, this);
 },
@@ -416,6 +417,24 @@ Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
 _addBaseLayer : function(layer, i) {
 // Store a reference to this object
 	var tree = this;
+
+	var extraOptions = {
+		isBaseLayer : true,
+		singleTile : layer.singletile,
+		buffer : 0,
+		opacity : layer.defaultOpacity
+	}
+	if (layer.unit != undefined)
+		extraOptions.units = layer.unit;
+	if (layer.maxExtent != undefined)
+		extraOptions.maxExtent = layer.maxExtent;
+	if (layer.minScale != undefined)
+		extraOptions.minScale = layer.minScale;
+	if (layer.maxScale != undefined)
+		extraOptions.maxScale = layer.maxScale;
+	if (layer.resolutions != undefined)
+		extraOptions.resolutions = layer.resolutions;
+
 	var WMSoptions = {
 		LAYERS : layer.layers,
 		SERVICE : layer.url_type,
@@ -424,18 +443,15 @@ _addBaseLayer : function(layer, i) {
 		SRS : layer.projection,
 		FORMAT : layer.imageFormat
 	};
+	if (layer.cache)
+		WMSoptions.CACHE = true;
 	// var l = new OpenLayers.Layer.WMS.Untiled(layer.name,
-//	var l = new OpenLayers.Layer.WMS(layer.name, componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions, {
-	var l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, {
-		// minScale : layer.minScale,
-		// maxScale : layer.maxScale,
-		//maxExtent : layer.maxExtent,
-		// units : layer.unit,
-		isBaseLayer : true,
-		singleTile : layer.singletile,
-		buffer: 0,
-		opacity : layer.defaultOpacity
-	});
+	// var l = new OpenLayers.Layer.WMS(layer.name,
+	// componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions, {
+	var l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
+
+	if (layer.cache)
+		l.params.CACHE = true;
 
 	this._layerStore.add(this.reader.readRecords( [ l ]).records);
 	// At this point, the first basemap loaded will have been set up as the
@@ -527,6 +543,24 @@ _addOverlayLayer : function(layer) {
 	// indicated in the Cookie.
 	switch (layer.url_type.toUpperCase()) {
 	case 'WMS':
+		var extraOptions = {
+			isBaseLayer : false,
+			singleTile : layer.singletile,
+			buffer : 0,
+			opacity : layer.defaultOpacity
+		}
+
+		if (layer.unit != undefined)
+			extraOptions.units = layer.unit;
+		if (layer.maxExtent != undefined)
+			extraOptions.maxExtent = layer.maxExtent;
+		if (layer.minScale != undefined)
+			extraOptions.minScale = layer.minScale;
+		if (layer.maxScale != undefined)
+			extraOptions.maxScale = layer.maxScale;
+		if (layer.resolutions != undefined)
+			extraOptions.resolutions = layer.resolutions;
+
 		var WMSoptions = {
 			LAYERS : layer.layers,
 			SERVICE : layer.url_type,
@@ -537,17 +571,13 @@ _addOverlayLayer : function(layer) {
 			TRANSPARENT : true
 		};
 		// l = new OpenLayers.Layer.WMS.Untiled(layer.name,
-		//l = new OpenLayers.Layer.WMS(layer.name, componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions, {
-		l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, {
-			maxExtent : layer.maxExtent,
-			minScale : layer.minScale,
-			maxScale : layer.maxScale,
-			units : layer.unit,
-			isBaseLayer : false,
-			singleTile : layer.singletile,
-			buffer: 0,
-			opacity : layer.defaultOpacity
-		});
+		// l = new OpenLayers.Layer.WMS(layer.name,
+		// componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions,
+		// {
+		l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
+
+		if (layer.cache)
+			l.params.CACHE = true;
 		break;
 
 	case 'WFS':
