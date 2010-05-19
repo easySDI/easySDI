@@ -301,7 +301,6 @@ _updateNodeStyle : function(node) {
 	// node.layer.maxScale);
 	// Layer is visible at this scale
 	node.isInScaleRange = true;
-
 	// Remove the css class for not visible layer (in case it was added)
 	node.getUI().removeClass('hiddenLayer');
 	// Add the link to metadata Url if needed

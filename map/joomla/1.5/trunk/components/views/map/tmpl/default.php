@@ -36,7 +36,7 @@ JHTML::stylesheet('jquery-ui-1.7.2.custom.css', 'components/com_easysdi_map/exte
 JHTML::stylesheet('getFeatureInfo.css', 'components/com_easysdi_map/resource/xslt/');
 // And OpenLayers
 JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/openlayers/');
-//JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/OpenLayers-2.8/lib/');
+//JHTML::script('OpenLayers.js', 'Lib/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('proj4js-compressed.js', 'administrator/components/com_easysdi_core/common/lib/js/proj4js/');
 // And the GeoExt library

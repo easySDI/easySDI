@@ -852,15 +852,19 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				data : [ [ '0', EasySDI_Map.lang.getLocal('SP_ERROR_NO_LOCALISATION') ] ]
 			});
 		}
-
+		if (componentParams.localisationInputWidth == undefined)
+			componentParams.localisationInputWidth = 200;
+		else
+			componentParams.localisationInputWidth = parseInt(componentParams.localisationInputWidth);
 		this.locAutocomplete = new Ext.form.ComboBox( {
 			store : this.locStore,
 			valueField : 'ipa_fullid',
 			displayField : 'ipa_display_name',
 			loadingText : EasySDI_Map.lang.getLocal('SP_SEARCHING'),
-			minWidth : 200,
+			width : componentParams.localisationInputWidth,
 			triggerAction : 'all',
 			mode : 'remote',
+			selectOnFocus : true,
 			minChars : componentParams.autocompleteNumChars,
 			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP')
 		});
