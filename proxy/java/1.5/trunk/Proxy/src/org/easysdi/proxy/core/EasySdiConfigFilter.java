@@ -35,19 +35,9 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 
 	private Cache configCache;
 	private String servletName;
-	private CacheManager cm;
-	private Unmarshaller u;
 
 	public EasySdiConfigFilter(CacheManager cm) {
-		this.cm = cm;
 		configCache = cm.getCache("configCache");
-		JAXBContext jc;
-		try {
-			jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
-			u = jc.createUnmarshaller();
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void destroy() {
@@ -110,8 +100,10 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			policyE = null;
 
 		if (policyE == null) {
-
-			PolicySet policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
+			JAXBContext jc = JAXBContext.newInstance(org.easysdi.proxy.policy.PolicySet.class);
+			Unmarshaller u = jc.createUnmarshaller();
+			PolicySet policySet = null;
+			policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
 			PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 			Policy policy = ph.getPolicy(user, req);
 			policyE = new Element(servletName + user + "policyFile", policy);

@@ -253,6 +253,9 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @throws JAXBException
 	 */
 	private ProxyServlet createProxy(String servletName, HttpServletRequest req) throws JAXBException {
+		// L'existance de la config et des policies dans le cache est assuré par
+		// un servlet filter déclaré dans spring.
+		// Voir org.easysdi.proxy.core.EasySdiConfigFilter.java
 		try {
 			// File configF = new File(configFile).getAbsoluteFile();
 			// long lastmodified = configF.lastModified();

@@ -20,6 +20,7 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.blocking.BlockingCache;
 import net.sf.ehcache.constructs.blocking.LockTimeoutException;
+import net.sf.ehcache.constructs.blocking.SelfPopulatingCache;
 import net.sf.ehcache.constructs.web.AlreadyCommittedException;
 import net.sf.ehcache.constructs.web.AlreadyGzippedException;
 import net.sf.ehcache.constructs.web.HttpDateFormatter;
@@ -36,8 +37,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GetMapCacheFilter.class);
-	private String servletName;
 	private Cache configCache;
+	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 
 	public GetMapCacheFilter(CacheManager cm) throws ServletException {
 		this.cm = cm;
@@ -47,16 +48,21 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	@Override
 	protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws AlreadyGzippedException,
 			AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
-		boolean cache = true;
-		servletName = request.getPathInfo().substring(1);
-		String req = request.getParameter("REQUEST");
-		if (req == null)
-			req = request.getParameter("request");
-		if ("getfeature".equalsIgnoreCase(req) && "getfeatureinfo".equalsIgnoreCase(req))
-			cache = false;
-		if (cache)
-			super.doFilter(request, response, chain);
-		else
+		String pCache = request.getParameter("CACHE");
+		if (pCache == null || "".equals(pCache))
+			pCache = request.getParameter("cache");
+		boolean cache = Boolean.parseBoolean(pCache);
+		if (cache) {
+			String req = request.getParameter("REQUEST");
+			if (req == null)
+				req = request.getParameter("request");
+			if ("getfeature".equalsIgnoreCase(req) && "getfeatureinfo".equalsIgnoreCase(req))
+				cache = false;
+			if (cache)
+				super.doFilter(request, response, chain);
+			else
+				chain.doFilter(request, response);
+		} else
 			chain.doFilter(request, response);
 	}
 
@@ -67,9 +73,8 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 				final String localCacheName = getCacheName();
 				Ehcache cache = getCacheManager().getEhcache(localCacheName);
 				if (!(cache instanceof BlockingCache)) {
-					// decorate and substitute
-					BlockingCache newBlockingCache = new BlockingCache(cache);
-					getCacheManager().replaceCacheWithDecoratedCache(cache, newBlockingCache);
+					SelfPopulatingCache newBlockingCache = new SelfPopulatingCache(cache, cacheFactory);
+					newBlockingCache.getCacheManager().replaceCacheWithDecoratedCache(cache, newBlockingCache);
 				}
 				blockingCache = (BlockingCache) getCacheManager().getEhcache(localCacheName);
 				Integer blockingTimeoutMillis = 60000;
@@ -82,6 +87,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	protected String calculateKey(HttpServletRequest httpRequest) {
+		String servletName = httpRequest.getPathInfo().substring(1);
 		configCache = cm.getCache("configCache");
 		String user = null;
 		Principal principal = httpRequest.getUserPrincipal();
@@ -114,20 +120,13 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws Exception {
-		// Look up the cached page
-		String pCache = request.getParameter("CACHE");
-		if (pCache == null || "".equals(pCache))
-			pCache = request.getParameter("cache");
-		boolean cacheAllowed = Boolean.parseBoolean(pCache);
-		if (cacheAllowed) {
-			cacheAllowed = false;
-			Iterator<GrantedAuthority> iterator = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator();
-			while (iterator.hasNext()) {
-				GrantedAuthority authority = iterator.next();
-				if ("EASYSDI_CACHE".equals(authority.getAuthority())) {
-					cacheAllowed = true;
-					break;
-				}
+		boolean cacheAllowed = false;
+		Iterator<GrantedAuthority> iterator = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator();
+		while (iterator.hasNext()) {
+			GrantedAuthority authority = iterator.next();
+			if ("EASYSDI_CACHE".equals(authority.getAuthority())) {
+				cacheAllowed = true;
+				break;
 			}
 		}
 
@@ -154,10 +153,8 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 						if (LOG.isDebugEnabled()) {
 							LOG.debug("PageInfo was not ok(200). Putting null into cache " + blockingCache.getName() + " with key " + key);
 						}
-						if (cacheAllowed) {
-							blockingCache.put(new Element(key, null));
-							blockingCache.flush();
-						}
+						blockingCache.put(new Element(key, null));
+						blockingCache.flush();
 					}
 				} catch (final Throwable throwable) {
 					// Must unlock the cache if the above fails. Will be logged
