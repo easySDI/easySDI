@@ -25,7 +25,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Site\Joomla\administrator\components\com_easysdi_proxy">
+			todir="C:\www\Site\apem\administrator\components\com_easysdi_proxy">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -39,7 +39,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\Joomla\components\com_easysdi_proxy">
+			todir="C:\www\Site\apem\components\com_easysdi_proxy">
 			<fileset dir="./com_easysdi_proxy">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -52,13 +52,13 @@
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\administrator\language\fr-FR">
+		   todir="C:\www\Site\apem\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_proxy.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\administrator\language\en-GB">
+		   todir="C:\www\Site\apem\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_proxy.ini" />
 		     </fileset>
