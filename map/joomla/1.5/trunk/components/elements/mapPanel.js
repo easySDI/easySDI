@@ -27,6 +27,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		this.GeoExtMapPanel = new GeoExt.MapPanel( {
 			border : true,
 			region : "center",
+			id : 'geoMap',
 			map : this.map
 		});
 		config.layout = "border";
@@ -79,7 +80,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				// OpenLayers.Layer.WMS.Untiled(EasySDI_Map.lang.getLocal('MP_SEARCH_RESULTS')
 				// + ' ' +(searchBarIdx+1),
 				layer = new OpenLayers.Layer.WMS(EasySDI_Map.lang.getLocal('MP_SEARCH_RESULTS') + ' ' + (searchBarIdx + 1),
-						componentParams.proxyURL.asString + '&url=' + componentParams.pubWmsUrl, WMSoptions, layerOptions);
+						componentParams.pubWmsUrl, WMSoptions, layerOptions);
 				layer.events.register('loadend', layer, this._hideMsg);
 				layers.push(layer);
 				// Do we need to add an extra layer for when this layer
@@ -112,8 +113,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 
 					// var lowScaleLayer = new
 					// OpenLayers.Layer.WMS.Untiled("Search results",
-					var lowScaleLayer = new OpenLayers.Layer.WMS("Search results", componentParams.proxyURL.asString + '&url='
-							+ componentParams.pubWmsUrl, LowScaleWMSoptions, layerOptions);
+					var lowScaleLayer = new OpenLayers.Layer.WMS("Search results", componentParams.pubWmsUrl, LowScaleWMSoptions,
+							layerOptions);
 					this.map.addLayer(lowScaleLayer);
 					layers.push(lowScaleLayer);
 					lowScaleLayer.events.register('loadend', lowScaleLayer, this._hideMsg);
@@ -148,7 +149,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			};
 
 			layer = new OpenLayers.Layer.WMS(EasySDI_Map.lang.getLocal('MP_SEARCH_RESULTS') + ' ' + (searchBarIdx + 1),
-					componentParams.proxyURL.asString + '&url=' + componentParams.pubWmsUrl, WMSoptions, layerOptions);
+					componentParams.pubWmsUrl, WMSoptions, layerOptions);
 			layer.events.register('loadend', layer, this._hideMsg);
 			layers.push(layer);
 			this.map.addLayer(layer);
@@ -335,23 +336,31 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 */
 	_initMap : function() {
 		var options = {
-			projection : SData.baseMap.projection,
-			maxExtent : SData.baseMap.maxExtent,
-			//resolutions: JSON.parse(componentParams.resolutions),
-			units : SData.baseMap.units,
-		  	minScale : SData.baseMap.minScale,
-			numZoomLevels: componentParams.numZoomLevels,
 			controls : []
 		};
 
-		var ov_options = {
-			projection : componentParams.projection,
-			//maxExtent : SData.baseMap.maxExtent,
-			units : SData.baseMap.units
-		};
+		if (SData.baseMap.projection != undefined)
+			options.projection = SData.baseMap.projection;
+		if (SData.baseMap.units != undefined)
+			options.units = SData.baseMap.units;
+		if (SData.baseMap.maxExtent != undefined)
+			options.maxExtent = SData.baseMap.maxExtent;
+		if (SData.baseMap.minScale != undefined)
+			options.minScale = SData.baseMap.minScale;
+		if (SData.baseMap.maxScale != undefined)
+			options.maxScale = SData.baseMap.maxScale;
+		if (SData.baseMap.resolutions != undefined)
+			options.resolutions = SData.baseMap.resolutions;
+		if (componentParams.numZoomLevels != undefined)
+			options.numZoomLevels = componentParams.numZoomLevels;
+
+		var ov_options = {};
+		if (SData.baseMap.maxExtent != undefined)
+			ov_options.maxExtent = SData.baseMap.maxExtent;
 
 		this.map = new OpenLayers.Map(options);
 
+		// hack for click decalage
 		if ($.browser.mozilla)
 			this.map.events.hack = 5;
 		else if ($.browser.msie)
@@ -381,12 +390,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				this.element.offsets[0] += this.element.scrolls[0];
 				this.element.offsets[1] += this.element.scrolls[1];
 			}
-			return new OpenLayers.Pixel((evt.clientX + this.element.scrolls[0]) - this.element.offsets[0] - this.element.lefttop[0] - this.hack,
-					(evt.clientY + this.element.scrolls[1]) - this.element.offsets[1] - this.element.lefttop[1] - this.hack);
+			return new OpenLayers.Pixel((evt.clientX + this.element.scrolls[0]) - this.element.offsets[0] - this.element.lefttop[0]
+					- this.hack, (evt.clientY + this.element.scrolls[1]) - this.element.offsets[1] - this.element.lefttop[1] - this.hack);
 		}
 
 		this.map.addControl(new OpenLayers.Control.ScaleLine());
-
 
 		// Adds a scale line to the map
 
@@ -442,9 +450,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		this.map.addControl(this.zoomOutBoxCtrl);
 
 		this.map.addControl(this.selectFeatureCtrl);
-		
+
 		this.addGetFeatureCtrl();
-		
+
 		// this.getFeatureInfoCtrl = new
 		// OpenLayers.Control.ClickFeature(null);
 		// this.getFeatureInfoCtrl.onClick =
@@ -513,22 +521,20 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		}
 	},
 
-	_onZoomToLocation : function() {
+	_onZoomToLocation : function(combo, newValue, index) {
 
-		if (this.locAutocomplete.getRawValue() == this.locAutocomplete.lastSelectionText) {
-			// the value displayed was picked from the drop down, so use
-			// the
-			// store record to define
-			// the geometry
-			if (this.locAutocomplete.value !== undefined) {
-				for ( var i = this.locAutocomplete.store.getCount() - 1; i >= 0; i--) {
-					var record = this.locAutocomplete.store.getAt(i);
-					if (record.data.ipa_fullid == this.locAutocomplete.value) {
-						this.zoomToExtent(record.data.feature.geometry.getBounds());
-					}
-				}
-			}
-		} else {
+		// the value displayed was picked from the drop down, so use
+		// the
+		// store record to define
+		// the geometry
+		// for ( var i = this.locAutocomplete.store.getCount() - 1; i >=
+		// 0; i--) {
+		// var record = this.locAutocomplete.store.getAt(i);
+		// if (record.data.ipa_fullid == this.locAutocomplete.value) {
+		Ext.getCmp('geoMap').map.zoomToExtent(newValue.data.feature.geometry.getBounds());
+		// }
+		// }
+		if (false) {
 			// the value is different to last selected.
 			// assume value typed in: try to convert to a coordinate in
 			// current
@@ -852,18 +858,19 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			valueField : 'ipa_fullid',
 			displayField : 'ipa_display_name',
 			loadingText : EasySDI_Map.lang.getLocal('SP_SEARCHING'),
-			width : 140,
+			minWidth : 200,
 			triggerAction : 'all',
 			mode : 'remote',
-			minChars : componentParams.autocompleteNumChars
+			minChars : componentParams.autocompleteNumChars,
+			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP')
 		});
 
-		this.zoomButton = new Ext.Toolbar.Button( {
-			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'),
-			iconCls : "x-btn-icon zoom",
-			handler : this._onZoomToLocation,
-			scope : this
-		});
+		this.locAutocomplete.on('select', this._onZoomToLocation);
+		/*
+		 * this.zoomButton = new Ext.Toolbar.Button( { tooltip :
+		 * EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'), iconCls : "x-btn-icon
+		 * zoom", handler : this._onZoomToLocation, scope : this });
+		 */
 
 		// General tool bar items
 		this.previousButton = new Ext.Toolbar.Button( {
@@ -985,7 +992,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				// this.selectButton,
 						this.saveMapButton, this.printMapButton, this.pdfButton, {
 							xtype : 'tbfill'
-						}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete, this.zoomButton
+						}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete
 
 				]
 			});
@@ -1013,7 +1020,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				autoHeight : true,
 				items : [ {
 					xtype : 'tbfill'
-				}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete, this.zoomButton ]
+				}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete ]
 			});
 		}
 

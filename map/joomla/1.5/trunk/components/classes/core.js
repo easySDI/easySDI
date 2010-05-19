@@ -275,7 +275,7 @@ Ext.extend(EasySDI_Map.data.ProtocolMultiProxy, Ext.data.DataProxy, {
                 filter: new OpenLayers.Filter.Comparison({
                       type: OpenLayers.Filter.Comparison.LIKE,
                       property: protoSpec.filterField,
-                      value: params.query+"*",
+                      value: "*"+params.query+"*",
                       matchCase: false
                  })
               };

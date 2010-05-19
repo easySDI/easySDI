@@ -301,6 +301,7 @@ _updateNodeStyle : function(node) {
 	// node.layer.maxScale);
 	// Layer is visible at this scale
 	node.isInScaleRange = true;
+
 	// Remove the css class for not visible layer (in case it was added)
 	node.getUI().removeClass('hiddenLayer');
 	// Add the link to metadata Url if needed
@@ -360,62 +361,62 @@ this.trigger('refreshLegend', true);
  * Initiate the build of the entire tree
  */
 _rebuildTree : function() {
-this._rootNode.appendChild(this._baseLayers);
-this.previousNode = this._baseLayers;
-Ext.each(SData.overlayGroups, function(group) {
-	this._rootNode.insertBefore(this._overlays['overlay_' + group.id], this.previousNode);
-	this.previousNode = this._overlays['overlay_' + group.id];
-}, this);
-this.setRootNode(this._rootNode);
+// this.previousNode = this._baseLayers;
+	Ext.each(SData.overlayGroups, function(group) {
+		this._rootNode.appendChild(this._overlays['overlay_' + group.id]);
+		// this.previousNode = this._overlays['overlay_' + group.id];
+		}, this);
+	this._rootNode.appendChild(this._baseLayers);
+	this.setRootNode(this._rootNode);
 },
 
 /**
  * Add the list of overlay groups as top level nodes in the tree.
  */
 _addOverlayGroups : function() {
-Ext.each(SData.overlayGroups, function(group) {
-	this._overlays['overlay_' + group.id] = new Ext.tree.TreeNode( {
-		text : EasySDI_Map.lang.getLocal(group.name),
-		singleClickExpand : true,
-		iconCls : 'folderLayer',
-		expanded : group.open
-	});
-}, this);
+	Ext.each(SData.overlayGroups, function(group) {
+		this._overlays['overlay_' + group.id] = new Ext.tree.TreeNode( {
+			text : EasySDI_Map.lang.getLocal(group.name),
+			singleClickExpand : true,
+			iconCls : 'folderLayer',
+			expanded : group.open
+		});
+	}, this);
 },
 
 /**
  * Add the layers including the base and overlay layers into the tree.
  */
 _addLayers : function() {
-this.reader = new GeoExt.data.LayerReader();
-var noLayerNode = new Ext.tree.TreeNode( {
-	text : EasySDI_Map.lang.getLocal('LT_NONE'),
-	iconCls : 'baseLayer',
-	allowDrag : false,
-	checked : false,
-	uiProvider : Ext.tree.RadioNode
-});
-noLayerNode.addListener('click', function() {
-	// deactivate the base layers
-		Ext.each(this._baseLayers.childNodes, function(layer) {
-			if (layer.layer !== undefined) {
-				layer.layer.setVisibility(false);
-			}
-		});
-		this._saveState();
-	}, this);
-this._baseLayers.appendChild(noLayerNode);
-this.previousNode = null;
-Ext.each(SData.baseLayers, this._addBaseLayer, this);
-this.previousLayerNode = null;
-Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
+	this.reader = new GeoExt.data.LayerReader();
+	var noLayerNode = new Ext.tree.TreeNode( {
+		text : EasySDI_Map.lang.getLocal('LT_NONE'),
+		iconCls : 'baseLayer',
+		allowDrag : false,
+		checked : false,
+		uiProvider : Ext.tree.RadioNode
+	});
+	noLayerNode.addListener('click', function() {
+		// deactivate the base layers
+			Ext.each(this._baseLayers.childNodes, function(layer) {
+				if (layer.layer !== undefined) {
+					layer.layer.setVisibility(false);
+				}
+			});
+			this._saveState();
+		}, this);
+	this._baseLayers.appendChild(noLayerNode);
+	// this.previousNode = null;
+	Ext.each(SData.baseLayers, this._addBaseLayer, this);
+	this.previousLayerNode = null;
+	Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
 },
 
 /**
  * Add a node and the associated layer for a base layer
  */
 _addBaseLayer : function(layer, i) {
-// Store a reference to this object
+	// Store a reference to this object
 	var tree = this;
 
 	var extraOptions = {
@@ -453,7 +454,9 @@ _addBaseLayer : function(layer, i) {
 	if (layer.cache)
 		l.params.CACHE = true;
 
-	this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	this._layerStore.map.addLayer(l);
+	this._layerStore.map.setLayerIndex(l, 0);
 	// At this point, the first basemap loaded will have been set up as the
 	// default map basemap, and
 	// its visibility set true: override this to prevent excess map fetches. (NB
@@ -492,15 +495,16 @@ _addBaseLayer : function(layer, i) {
 				tree._saveState();
 			}
 		}
-	}
+	};
+
 	if (layer.metadataUrl) {
 		blConfig.href = layer.metadataUrl;
 		blConfig.hrefTarget = '_blank';
 	}
 	var baseLayerNode = new EasySDI_Map.BaseLayerNode(blConfig);
 
-	this._baseLayers.insertBefore(baseLayerNode, this.previousNode);
-	this.previousNode = baseLayerNode;
+	this._baseLayers.appendChild(baseLayerNode);
+	// this.previousNode = baseLayerNode;
 	// this._baseLayers.appendChild(baseLayerNode);
 	// baseLayerNode.ensureVisible();
 	// If the user is logged in and already save a personnal state (means it is
@@ -581,14 +585,16 @@ _addOverlayLayer : function(layer) {
 		break;
 
 	case 'WFS':
-		l = new OpenLayers.Layer.WFS(layer.name, componentParams.proxyURL.asString + "&url=" + layer.url, {
+		l = new OpenLayers.Layer.WFS(layer.name, layer.url, {
 			typename : layer.layers
 		});
 		break;
 	}
 
 	l.setVisibility(false);
-	this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	this._layerStore.map.addLayer(l);
+	this._layerStore.map.setLayerIndex(l, 0);
 	var mstyle = '';
 	var toolTip = '';
 	var metadataUrl = '';
@@ -669,8 +675,9 @@ _addOverlayLayer : function(layer) {
 
 	// The node are inserted in reverse order : the last one in first...
 	// So, add each node before the previous
-	this._overlays['overlay_' + layer.group].insertBefore(layerNode, this.previousLayerNode);
-	this.previousLayerNode = layerNode;
+	if (layer.group)
+		this._overlays['overlay_' + layer.group].appendChild(layerNode);
+	// this.previousLayerNode = layerNode;
 
 	// layerNode.ensureVisible();
 },

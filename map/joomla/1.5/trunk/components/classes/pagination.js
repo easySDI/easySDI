@@ -307,7 +307,7 @@ wmcInput +
 '<wps:RawDataOutput mimeType="' + mimeType + '"><ows:Identifier>' + transform + '</ows:Identifier></wps:RawDataOutput>'+
 '</wps:ResponseForm>'+
 '</wps:Execute>';
-    document.forms.postform.action=componentParams.proxyURL.asString + '&url=' + componentParams.wpsReportsUrl;
+    document.forms.postform.action=componentParams.wpsReportsUrl;
     document.forms.postform.submit();
   },
 

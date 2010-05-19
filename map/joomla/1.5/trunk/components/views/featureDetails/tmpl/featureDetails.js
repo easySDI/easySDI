@@ -216,7 +216,7 @@ filterText +
 '<wps:RawDataOutput mimeType="' + mimeType + '"><ows:Identifier>' + transform + '</ows:Identifier></wps:RawDataOutput>'+
 '</wps:ResponseForm>'+
 '</wps:Execute>';
-    document.forms.postform.action=componentParams.proxyURL.asString + '&url=' + componentParams.wpsReportsUrl; 
+    document.forms.postform.action=componentParams.wpsReportsUrl; 
     document.forms.postform.submit();
   },
 
@@ -275,8 +275,7 @@ filterText +
       tiled: 'true'
     };    
 
-    var l = new OpenLayers.Layer.WMS(baseLayer.name,
-      componentParams.proxyURL.asString + '&url=' + baseLayer.url,
+    var l = new OpenLayers.Layer.WMS(baseLayer.name, baseLayer.url,
       WMSoptions
     );
     this.mapPanel.map.addLayer(l);
@@ -304,8 +303,7 @@ filterText +
                        	
       };
       
-      dist = new OpenLayers.Layer.WMS(layer.name,
-            componentParams.proxyURL.asString + '&url=' + componentParams.pubWmsUrl,
+      dist = new OpenLayers.Layer.WMS(layer.name, componentParams.pubWmsUrl,
             WMSoptions,
             {
               isBaseLayer: false              

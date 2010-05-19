@@ -79,6 +79,9 @@ require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
 JHTML::script('json.js', 'components/com_easysdi_map/externals/json/');
 
 JHTML::script('StyledLayerDescriptor.js', 'components/com_easysdi_map/classes/');
+
+$doc =& JFactory::getDocument();
+$doc->addStyleDeclaration('body{overflow:hidden;}');
 /*
  * Include extensions resources :
  * The GUI elements that can be extended are :
@@ -119,6 +122,10 @@ easySDImap = new EasySDI_Map.RwgLayout(
 		renderTo: 'map',
 		bodyCssClass: 'mapAutoHeight',
 		monitorResize: true,
+		defaults:
+		{
+			bodyStyle: 'padding:0px'
+		},
 		listeners:
      {
       'afterlayout': function(p) 

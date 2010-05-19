@@ -245,7 +245,7 @@ $s .= ";\n";
 
 // Export layer objects from the base layers table.
 //$query = "SELECT * from #__easysdi_basemap_content;";
-$query = "SELECT * from #__easysdi_map_base_layer l order by l.order;";
+$query = "SELECT * from #__easysdi_map_base_layer l order by l.default_visibility DESC, l.order ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";
@@ -293,7 +293,7 @@ if($i == 0){
 }
 
 
-$query = "SELECT * from #__easysdi_overlay_group g order by g.order desc;";
+$query = "SELECT * from #__easysdi_overlay_group g order by g.order asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -311,7 +311,7 @@ if (!is_null($result)) {
 };
 $s .= "];\n";
 
-$query = "SELECT * from #__easysdi_overlay_content o order by o.order desc;";
+$query = "SELECT * from #__easysdi_overlay_content o order by o.order asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -381,8 +381,8 @@ foreach ($result as $rec)
 	 */
 	$s .= "{
     id: '$l_id',
-    wfs_url: '$proxyURLAsString&url=$l_wfs_url',
-    //wms_url: '$proxyURLAsString&url=$l_wms_url',
+    wfs_url: '$l_wfs_url',
+    //wms_url: '$l_wms_url',
     layer_name: '$l_layer_name',
     area_field_name: '$l_area_field_name',
     name_field_name: '$l_name_field_name',

@@ -79,10 +79,10 @@ EasySDI_Map.RwgLayout = Ext.extend(EasySDI_Map.LayoutBase, {
     	layersAndPrecisions = new Ext.Panel({
         region: "west",
         title: EasySDI_Map.lang.getLocal("02000000"), // internationalise
+        border: true,
         collapsible: true,
         items: new Ext.TabPanel({
 		      activeTab: 0,
-		      border: false,
 		      items: [
 		        this.layerPanel,
 		        this.dataPrecisionPanel
@@ -179,6 +179,7 @@ EasySDI_Map.RwgLayout = Ext.extend(EasySDI_Map.LayoutBase, {
       activeItem: 0,
       collapsible: true,
       title: EasySDI_Map.lang.getLocal("02000003"),
+      split: true,
       items: [
         this.legendPanel
         // the filter panel will be created on demand

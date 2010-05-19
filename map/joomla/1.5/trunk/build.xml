@@ -88,7 +88,7 @@
 	</fileset>
 
 	<target name="sync" description="Copy from here to apache">
-		<copy todir="C:\www\Site\apem\administrator\components\com_easysdi_map" verbose="on">
+		<copy todir="C:\www\Site\apem\administrator\components\com_easysdi_map">
 			<fileset refid="fsadmin" />
 		</copy>
 		<copy todir="C:\www\Site\apem\components\com_easysdi_map">

@@ -39,7 +39,6 @@ require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resourc
 global $mainframe;
 $task = JRequest::getVar('task');
 $option = JRequest::getVar('option');
-
 switch($task)
 {
 	default:

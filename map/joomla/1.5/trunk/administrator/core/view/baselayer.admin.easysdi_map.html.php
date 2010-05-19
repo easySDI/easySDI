@@ -128,7 +128,7 @@ function submitbutton(pressbutton)
 			alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_PROJECTION_VALIDATION_ERROR');?>');	
 			return;
 		}
-		else if (document.getElementById('maxExtent').value == "")
+		else if (false && document.getElementById('maxExtent').value == "")
 		{
 			alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
 			return;
@@ -143,7 +143,7 @@ function submitbutton(pressbutton)
 			alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
 			return;
 		}
-		else if (false && $j('#resolutionOverScale1').attr('checked') && document.getElementById('resolutions').value == "")
+		else if ($j('#resolutionOverScale1').attr('checked') && document.getElementById('resolutions').value == "")
 		{
 			alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_RESOLUTION_VALIDATION_ERROR');?>');	
 			return;
@@ -360,7 +360,7 @@ $j(document).ready(function() {
 				alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_PROJECTION_VALIDATION_ERROR');?>');	
 				return;
 			}
-			else if (document.getElementById('maxExtent').value == "")
+			else if (false && document.getElementById('maxExtent').value == "")
 			{
 				alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
 				return;
@@ -375,7 +375,7 @@ $j(document).ready(function() {
 				alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
 				return;
 			}
-			else if (false && $j('#resolutionOverScale1').attr('checked') && document.getElementById('resolutions').value == "")
+			else if ($j('#resolutionOverScale1').attr('checked') && document.getElementById('resolutions').value == "")
 			{
 				alert ('<?php echo  JText::_( 'EASYSDI_BASE_CT_RESOLUTION_VALIDATION_ERROR');?>');	
 				return;
