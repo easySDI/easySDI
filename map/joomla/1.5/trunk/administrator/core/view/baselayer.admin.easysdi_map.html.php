@@ -187,6 +187,10 @@ function submitbutton(pressbutton)
 					value="<?php echo $base_definition->maxExtent; ?>" /></td>
 			</tr>
 			<tr>
+				<td class="key"><?php echo JText::_("EASYSDI_BASE_DEFAULT_EXTENT"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="extent" value="<?php echo $base_definition->extent; ?>" /></td>
+			</tr>
+			<tr>
 				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0" <?php if ($base_definition->resolutionOverScale == 0) echo "checked=\"checked"; ?>" />
 				<?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
 			</tr>
@@ -465,6 +469,10 @@ $j(document).ready(function() {
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_TILE"); ?></td>
 				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($base_layer->singletile == 1) echo "checked=\"checked"; ?>" /></td>
+			</tr>
+			<tr>
+				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
+				<td><input class="checkbox" name="customStyle" value="0" type="checkbox" <?php if ($base_layer->customStyle == 1) echo "checked=\"checked"; ?>" /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_VISIBILITY"); ?></td>

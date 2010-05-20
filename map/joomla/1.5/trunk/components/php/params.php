@@ -230,6 +230,12 @@ $s .= "{
 if ($result->maxExtent) {
 	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxExtent),\n";
 }
+if ($result->extent){
+	$s .= "    extent : new OpenLayers.Bounds($result->extent),\n";
+}else if ($result->maxExtent) {
+	$s .= "    extent : new OpenLayers.Bounds($result->maxExtent),\n";
+}
+
 if ($result->resolutionOverScale && $result->resolutions) {
 	$s .= "    resolutions : $result->resolutions,\n";
 }
@@ -245,7 +251,7 @@ $s .= ";\n";
 
 // Export layer objects from the base layers table.
 //$query = "SELECT * from #__easysdi_basemap_content;";
-$query = "SELECT * from #__easysdi_map_base_layer l order by l.default_visibility DESC, l.order ASC;";
+$query = "SELECT * from #__easysdi_map_base_layer l order by l.default_visibility DESC, l.order DESC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";
@@ -256,6 +262,7 @@ if (!is_null($result)) {
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
 			$cache=(($l_cache==1) ? 'true' : 'false');
+			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
 			$i++;
 			$s .= "{
     id : '$l_id',
@@ -267,7 +274,8 @@ if (!is_null($result)) {
 	defaultOpacity : $l_default_opacity,
 	metadataUrl : '$l_metadata_url',
     imageFormat : '$l_img_format',
-    cache : $cache,\n";
+    cache : $cache,
+    customStyle : $customStyle,\n";
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
 			if ($l_maxExtent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
@@ -311,7 +319,7 @@ if (!is_null($result)) {
 };
 $s .= "];\n";
 
-$query = "SELECT * from #__easysdi_overlay_content o order by o.order asc;";
+$query = "SELECT * from #__easysdi_overlay_content o order by o.order DESC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -325,6 +333,7 @@ if (!is_null($result)) {
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, $l_url_type, $l_layers, $valid_wms_layers, $valid_wfs_features)){
 			$cache=(($l_cache==1) ? 'true' : 'false');
+			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
 			// add comma before all but the first
 			if ($done_first) $s .= ",";
 			$done_first=true;
@@ -340,7 +349,8 @@ if (!is_null($result)) {
 	defaultOpacity : $l_default_opacity,
 	metadataUrl : '$l_metadata_url',
 	imageFormat : '$l_img_format',
-	cache : $cache,\n";
+	cache : $cache,
+	customStyle : $customStyle,\n";
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxExtent) {
 				//$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";

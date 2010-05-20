@@ -122,17 +122,13 @@ easySDImap = new EasySDI_Map.RwgLayout(
 		renderTo: 'map',
 		bodyCssClass: 'mapAutoHeight',
 		monitorResize: true,
-		defaults:
-		{
-			bodyStyle: 'padding:0px'
-		},
 		listeners:
      {
       'afterlayout': function(p) 
       {
         p.layerTree.loadLayers();
         p.legendPanel.refresh();
-        p.mapPanel.zoomToExtent(SData.baseMap.maxExtent);
+        p.mapPanel.zoomToExtent(SData.baseMap.extent);
       },
       single:true
     }

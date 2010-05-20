@@ -188,6 +188,16 @@ $j(document).ready(function() {
 				<td><?php echo $overlay_content->id; ?></td>
 			</tr>
 			<tr>
+				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_NAME"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name"
+					value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
+			</tr>
+			<tr>
+				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_LAYERS"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
+				<td><?php echo JText::_("EASYSDI_OVERLAY_LAYERS_SEPARATOR"); ?></td>
+			</tr>
+			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_GROUP"); ?></td>
 				<td><?php echo JHTML::_("select.genericlist",$rowsGroup, 'overlay_group_id', 'size="1" class="inputbox" ', 'value', 'text',$overlay_content->overlay_group_id); ?>
 			
@@ -260,14 +270,8 @@ $j(document).ready(function() {
 				<td>ex : image/png</td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_LAYERS"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
-				<td><?php echo JText::_("EASYSDI_OVERLAY_LAYERS_SEPARATOR"); ?></td>
-			</tr>
-			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_NAME"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name"
-					value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
+				<td><input class="checkbox" name="customStyle" value="1" type="checkbox" <?php if ($overlay_content->customStyle == 1) echo "checked=\"checked"; ?>" /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_VISIBILITY"); ?></td>

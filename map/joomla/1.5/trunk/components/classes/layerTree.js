@@ -405,7 +405,7 @@ _addLayers : function() {
 			this._saveState();
 		}, this);
 	this._baseLayers.appendChild(noLayerNode);
-	// this.previousNode = null;
+	this.previousNode = null;
 	Ext.each(SData.baseLayers, this._addBaseLayer, this);
 	this.previousLayerNode = null;
 	Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
@@ -424,6 +424,8 @@ _addBaseLayer : function(layer, i) {
 		buffer : 0,
 		opacity : layer.defaultOpacity
 	}
+	if (layer.customStyle != undefined)
+		extraOptions.customStyle = layer.customStyle;
 	if (layer.unit != undefined)
 		extraOptions.units = layer.unit;
 	if (layer.maxExtent != undefined)
@@ -455,7 +457,7 @@ _addBaseLayer : function(layer, i) {
 
 	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
 	this._layerStore.map.addLayer(l);
-	this._layerStore.map.setLayerIndex(l, 0);
+	// this._layerStore.map.setLayerIndex(l, 0);
 	// At this point, the first basemap loaded will have been set up as the
 	// default map basemap, and
 	// its visibility set true: override this to prevent excess map fetches. (NB
@@ -502,8 +504,8 @@ _addBaseLayer : function(layer, i) {
 	}
 	var baseLayerNode = new EasySDI_Map.BaseLayerNode(blConfig);
 
-	this._baseLayers.appendChild(baseLayerNode);
-	// this.previousNode = baseLayerNode;
+	this._baseLayers.insertBefore(baseLayerNode, this.previousNode);
+	this.previousNode = baseLayerNode;
 	// this._baseLayers.appendChild(baseLayerNode);
 	// baseLayerNode.ensureVisible();
 	// If the user is logged in and already save a personnal state (means it is
@@ -552,7 +554,8 @@ _addOverlayLayer : function(layer) {
 			buffer : 0,
 			opacity : layer.defaultOpacity
 		}
-
+		if (layer.customStyle != undefined)
+			extraOptions.customStyle = layer.customStyle;
 		if (layer.unit != undefined)
 			extraOptions.units = layer.unit;
 		if (layer.maxExtent != undefined)
@@ -593,7 +596,7 @@ _addOverlayLayer : function(layer) {
 	l.setVisibility(false);
 	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
 	this._layerStore.map.addLayer(l);
-	this._layerStore.map.setLayerIndex(l, 0);
+	// this._layerStore.map.setLayerIndex(l, 0);
 	var mstyle = '';
 	var toolTip = '';
 	var metadataUrl = '';
@@ -675,8 +678,8 @@ _addOverlayLayer : function(layer) {
 	// The node are inserted in reverse order : the last one in first...
 	// So, add each node before the previous
 	if (layer.group)
-		this._overlays['overlay_' + layer.group].appendChild(layerNode);
-	// this.previousLayerNode = layerNode;
+		this._overlays['overlay_' + layer.group].insertBefore(layerNode, this.previousLayerNode);
+	this.previousLayerNode = layerNode;
 
 	// layerNode.ensureVisible();
 },

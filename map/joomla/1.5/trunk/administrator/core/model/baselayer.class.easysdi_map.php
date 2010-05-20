@@ -28,6 +28,7 @@ class base_layer extends JTable
 	var $layers=null;
 	var $projection=null;
 	var $img_format=null;
+	var $customStyle=false;
 	var $maxExtent=null;
 	var $minScale=null;
 	var $maxScale=null;
@@ -51,6 +52,7 @@ class base_definition extends JTable
 {
 	var $id=null;
 	var $projection=null;
+	var $extent=null;
 	var $maxExtent=null;
 	var $minScale=null;
 	var $maxScale=null;

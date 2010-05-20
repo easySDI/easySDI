@@ -24,6 +24,8 @@ EasySDI_Map.LayerPanel = Ext.extend(Ext.tree.TreePanel, {
 	},
 	constructor : function(config) {
 		if (!componentParams.authorisedTo.DATA_PRECISION || !componentDisplayOption.DataPrecisionEnable) {
+			var treePanelWidth = (componentParams.treePanelWidth != undefined) ? parseInt(componentParams.treePanelWidth) : 200;
+			this._defaults.width = treePanelWidth;
 			this._defaults.border = true;
 			this._defaults.collapsible = true;
 			this._defaults.split = true;
@@ -36,19 +38,22 @@ EasySDI_Map.LayerPanel = Ext.extend(Ext.tree.TreePanel, {
 
 		// Add menu
 	this.on('contextmenu', function(node, e) {
-		// Only show if we're at a second level node that is not a base layer
+		// Only show if we're at a second level node that is not a base
+			// layer
 			if (node.isLeaf() && !node.layer.isBaseLayer) {
-				var menu = new Ext.menu.Menu( [ {
-					id : "style",
-					text : EasySDI_Map.lang.getLocal("LP_DEFINE_LAYER_SYMBOL"),
-					iconCls : 'color_swatch',
-					handler : function(evt) {
-						var styler = new EasySDI_Map.Dlg.Styler( {}, node);
-						styler.show();
-					},
-					scope : this
-				} ]);
-				menu.showAt(e.getPoint());
+				if (node.layer.customStyle) {
+					var menu = new Ext.menu.Menu( [ {
+						id : "style",
+						text : EasySDI_Map.lang.getLocal("LP_DEFINE_LAYER_SYMBOL"),
+						iconCls : 'color_swatch',
+						handler : function(evt) {
+							var styler = new EasySDI_Map.Dlg.Styler( {}, node);
+							styler.show();
+						},
+						scope : this
+					} ]);
+					menu.showAt(e.getPoint());
+				}
 			}
 		});
 }

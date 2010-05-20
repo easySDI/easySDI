@@ -35,6 +35,7 @@ class overlay_content extends JTable
 	var $layers=null;
 	var $name=null;
 	var $img_format=null;
+	var $customStyle=false;
 	var $overlay_group_id=null;
 	var $default_visibility=false;
 	var $order=null;
