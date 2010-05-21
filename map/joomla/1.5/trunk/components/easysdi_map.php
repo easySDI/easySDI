@@ -46,7 +46,7 @@ else
 $c = 'EasySDI_mapController'.$c;
 $controller = new $c();
 // if accessing the proxy, use the raw format - can't be in URL because of clash with the FORMAT of WMS
-if (JRequest::getCmd('view')=='proxy' || JRequest::getCmd('view')=='printMap') {	
+if (JRequest::getCmd('view')=='getfeatureinfo' || JRequest::getCmd('view')=='proxy' || JRequest::getCmd('view')=='printMap') {	
   $doc = &JFactory::getDocument();
   $docRaw = &JDocument::getInstance('raw');
   $doc = $docRaw;  	

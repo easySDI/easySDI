@@ -482,7 +482,7 @@ EasySDI_Map.Dlg.InputPDFTitle = Ext
 											var anyOverlay = false;
 
 											Ext.each(this.mapPanel.map.layers, function(layer) {
-												if (layer.getVisibility() && !layer.isBaseLayer && layer.CLASS_NAME == "OpenLayers.Layer.WMS") {
+												if (layer.inRange && layer.getVisibility() && !layer.isBaseLayer && layer.CLASS_NAME == "OpenLayers.Layer.WMS") {
 													anyOverlay = true;
 													overlays += layer.params.LAYERS + ",";
 												}

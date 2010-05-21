@@ -475,8 +475,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		 * version: "1.0.0", propertyNames: ["NOM"] }), box: true, hover: false,
 		 * multipleKey: "shiftKey", toggleKey: "ctrlKey" });
 		 */
-		this.getFeatureCtrl = new OpenLayers.Control.WMSGetFeatureInfo( {
-			url : componentParams.pubWmsUrl,
+		this.getFeatureCtrl = new EasySDI_Map.WMSGetFeatureInfo( {
+			url : componentParams.componentUrl + '&view=getfeatureinfo',
 			infoFormat : 'text/html',
 			queryVisible : true,
 			format : new OpenLayers.Format.WMSGetFeatureInfo(),
@@ -1344,7 +1344,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		url += "?LAYERS=";
 		var found = false;
 		Ext.each(this.map.layers, function(layer) {
-			if (layer.getVisibility() && layer.CLASS_NAME == "OpenLayers.Layer.WMS")
+			if (layer.inRange && layer.getVisibility() && layer.CLASS_NAME == "OpenLayers.Layer.WMS")
 				url += layer.params.LAYERS + ",";
 			found = true;
 		}, this);
