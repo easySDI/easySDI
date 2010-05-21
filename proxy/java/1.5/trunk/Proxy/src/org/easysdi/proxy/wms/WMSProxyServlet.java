@@ -234,12 +234,8 @@ public class WMSProxyServlet extends ProxyServlet {
 					while (itLayer.hasNext()) {
 						Layer l = (Layer) itLayer.next();
 						// Debug tb 03.07.2009
-						String tmpFT = l.getName();
-						if (tmpFT != null) {
-							String[] s = tmpFT.split(":");
-							tmpFT = s[s.length - 1];
-						}
-						boolean allowed = isLayerAllowed(tmpFT, getRemoteServerUrl(remoteServerIndex));
+						// String tmpFT = l.getName();
+						boolean allowed = isLayerAllowed(l.getName(), getRemoteServerUrl(remoteServerIndex));
 						if (!allowed)
 						// Fin de Debug
 						// if (!isLayerAllowed(l.getName(),
@@ -1542,8 +1538,12 @@ public class WMSProxyServlet extends ProxyServlet {
 									List<String> layersTabWithNS = Arrays.asList(layers.split(","));
 									List<String> layersTab = new ArrayList<String>();
 									for (String layerName : layersTabWithNS) {
-										String[] layerNameFinal = layerName.split(":", 2);
-										layersTab.add((layerNameFinal.length > 1) ? layerNameFinal[1] : layerNameFinal[0]);
+										// String[] layerNameFinal =
+										// layerName.split(":", 2);
+										// layersTab.add((layerNameFinal.length
+										// > 1) ? layerNameFinal[1] :
+										// layerNameFinal[0]);
+										layersTab.add(layerName);
 									}
 
 									if (!configuration.isGrouping() && layerToKeepList.size() > 0) {

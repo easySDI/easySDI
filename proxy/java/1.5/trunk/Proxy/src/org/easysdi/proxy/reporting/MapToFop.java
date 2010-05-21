@@ -228,7 +228,7 @@ public class MapToFop {
 				featuresE.setAttribute("title", title);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.err.println(e.getLocalizedMessage());
 			}
 		}
 		if (getFeature) {

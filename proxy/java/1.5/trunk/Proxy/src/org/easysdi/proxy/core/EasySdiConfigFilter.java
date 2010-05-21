@@ -34,7 +34,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class EasySdiConfigFilter extends GenericFilterBean {
 
 	private Cache configCache;
-	private String servletName;
 
 	public EasySdiConfigFilter(CacheManager cm) {
 		configCache = cm.getCache("configCache");
@@ -47,21 +46,23 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
-
-		servletName = request.getPathInfo().substring(1);
-		Config configuration;
-		try {
-			configuration = setConfig();
-			setPolicySet(configuration, request);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (JAXBException e) {
-			e.printStackTrace();
+		if ("/ogc".equals(request.getServletPath())) {
+			String servletName = request.getPathInfo().substring(1);
+			Config configuration;
+			try {
+				configuration = setConfig(servletName);
+				setPolicySet(configuration, request, servletName);
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
 		}
 		chain.doFilter(request, response);
+
 	}
 
-	private Config setConfig() throws SAXException, IOException {
+	private Config setConfig(String servletName) throws SAXException, IOException {
 		Config configuration = null;
 		String configFile = getServletContext().getInitParameter("configFile");
 		File configF = new File(configFile).getAbsoluteFile();
@@ -84,7 +85,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		return configuration;
 	}
 
-	private void setPolicySet(Config configuration, HttpServletRequest req) throws JAXBException, FileNotFoundException {
+	private void setPolicySet(Config configuration, HttpServletRequest req, String servletName) throws JAXBException, FileNotFoundException {
 		String filePath = new File(configuration.getPolicyFile()).getAbsolutePath();
 		File policyF = new File(filePath).getAbsoluteFile();
 		long plastmodified = policyF.lastModified();

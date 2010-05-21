@@ -1183,10 +1183,6 @@ public abstract class ProxyServlet extends HttpServlet {
 							// the Policy Attributes will be returned
 							else if (attribute.equals("")) {
 								String tmpFA = attributeList.get(k).getContent();
-								if (tmpFA != null) {
-									String[] s = tmpFA.split(":");
-									tmpFA = s[s.length - 1];
-								}
 								policyAttributeListToKeepPerFT.add(tmpFA);
 								// then at the end of function -> return false,
 								// "" is effectively not a valid attribute
