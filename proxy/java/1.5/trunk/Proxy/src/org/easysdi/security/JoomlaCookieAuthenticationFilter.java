@@ -62,6 +62,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 	}
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+		//System.err.println(System.currentTimeMillis());
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 		Cookie[] cookies = request.getCookies();
@@ -72,32 +73,31 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 			String sessionKey = null;
 			Map<String, Object> authenticationPair = null;
 			String username = null, password = null;
-			if (cookies != null) {
+			Element e = userCache.get(cookies);
+			if (e != null)
+				authenticationPair = (Map<String, Object>) e.getValue();
+			else if (cookies != null) {
 				for (Cookie cookie : cookies) {
-					Element e = userCache.get(cookie.getValue());
-					if (e != null)
-						authenticationPair = (Map<String, Object>) e.getValue();
-					if (authenticationPair == null) {
-						sessionKey = cookie.getValue();
-						if (sessionKey != null) {
-							String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join "
-									+ joomlaProvider.getPrefix() + "users u " + "on (u.username = s.username) where session_id = ? limit 1";
-							try {
-								authenticationPair = sjt.queryForMap(sql1, sessionKey);
-							} catch (EmptyResultDataAccessException er) {
-							}
+					sessionKey = cookie.getValue();
+					if (sessionKey != null) {
+						String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join " + joomlaProvider.getPrefix()
+								+ "users u " + "on (u.username = s.username) where session_id = ? limit 1";
+						try {
+							authenticationPair = sjt.queryForMap(sql1, sessionKey);
+						} catch (EmptyResultDataAccessException er) {
 						}
-						if (authenticationPair != null && authenticationPair.size() > 0) {
-							if (authenticationPair.get("username") != null) {
-								userCache.put(new Element(cookie.getValue(), authenticationPair));
-								break;
-							}
+					}
+					if (authenticationPair != null && authenticationPair.size() > 0) {
+						if (authenticationPair.get("username") != null) {
+							userCache.put(new Element(cookies, authenticationPair));
+							break;
 						}
 					}
 				}
 			}
+
 			if (authenticationPair == null || authenticationPair.get("username") == null) {
-				Element e = userCache.get("com_easysdi_map");
+				e = userCache.get("com_easysdi_map");
 				if (e != null)
 					authenticationPair = (Map<String, Object>) e.getValue();
 				if (authenticationPair == null || authenticationPair.get("username") == null) {
@@ -108,7 +108,8 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 						authenticationPair = sjt.queryForMap(sql2);
 						if (authenticationPair != null && authenticationPair.size() > 0) {
 							if (authenticationPair.get("username") != null) {
-								userCache.put(new Element("com_easysdi_map", authenticationPair));
+								Object k =(cookies != null && cookies.length>0) ? cookies : "com_easysdi_map"; 
+								userCache.put(new Element(k, authenticationPair));
 							}
 						}
 					} catch (EmptyResultDataAccessException er) {
@@ -170,6 +171,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 			}
 		}
 		chain.doFilter(request, response);
+	//	System.err.println(System.currentTimeMillis());
 	}
 
 	private boolean authenticationIsRequired(String username) {

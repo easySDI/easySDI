@@ -60,6 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -137,6 +138,16 @@ public class WMSProxyServlet extends ProxyServlet {
 	// Fin de Debug
 	private String layers;
 	private String styles;
+	private static DocumentBuilder builder = null;
+	static {
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+		domFactory.setNamespaceAware(true);
+		try {
+			builder = domFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
 
 	// ***************************************************************************************************************************************
 
@@ -225,24 +236,25 @@ public class WMSProxyServlet extends ProxyServlet {
 				hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
 				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-				WMSCapabilities capa = (WMSCapabilities) DocumentFactory.getInstance(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0])
-						.toURI(), hints, Level.WARNING);
+				// WMSCapabilities capa = (WMSCapabilities)
+				// DocumentFactory.getInstance(new
+				// File(wmsFilePathList.get(remoteServerIndex).toArray()[0].toString()).toURI(),
+				// hints, Level.SEVERE);
+				Document doc = builder.parse(wmsFilePathList.get(remoteServerIndex).toArray()[0].toString());
+				XPath xpath = XPathFactory.newInstance().newXPath();
+				// XPath Query for showing all nodes value
+				XPathExpression expr = xpath.compile("//Layer/Name");
+				Object result = expr.evaluate(doc, XPathConstants.NODESET);
+				NodeList nodes = (NodeList) result;
 
 				// Filtrage xsl des layers
 				if (hasPolicy) {
-					Iterator<Layer> itLayer = capa.getLayerList().iterator();
-					while (itLayer.hasNext()) {
-						Layer l = (Layer) itLayer.next();
-						// Debug tb 03.07.2009
-						// String tmpFT = l.getName();
-						boolean allowed = isLayerAllowed(l.getName(), getRemoteServerUrl(remoteServerIndex));
-						if (!allowed)
-						// Fin de Debug
-						// if (!isLayerAllowed(l.getName(),
-						// getRemoteServerUrl(remoteServerIndex)))
-						{
+					for (int i = 0; i < nodes.getLength(); i++) {
+						Node l = nodes.item(i);
+						boolean allowed = isLayerAllowed(l.getTextContent(), getRemoteServerUrl(remoteServerIndex));
+						if (!allowed) {
 							// Si couche pas permise alors on l'enlève
-							WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getName() + "')]");
+							WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getTextContent() + "')]");
 							WMSCapabilities111.append("\"></xsl:template>");
 						}
 					}
@@ -812,12 +824,20 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			for (int i = 1; i < tempFileCapa.size(); i++) {
-				Document documentChild = db.newDocumentBuilder().parse(tempFileCapa.get(i));
-				NodeList nl = documentChild.getElementsByTagName("Layer");
-				NodeList nlMaster = documentMaster.getElementsByTagName("Layer");
-				Node ItemMaster = nlMaster.item(0);
-				if (nl.item(0) != null)
-					ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
+				Document documentChild = null;
+				try {
+					documentChild = db.newDocumentBuilder().parse(tempFileCapa.get(i));
+				} catch (Exception e) {
+					e.printStackTrace();
+					dump("ERROR", e.getMessage());
+				}
+				if (documentChild != null) {
+					NodeList nl = documentChild.getElementsByTagName("Layer");
+					NodeList nlMaster = documentMaster.getElementsByTagName("Layer");
+					Node ItemMaster = nlMaster.item(0);
+					if (nl.item(0) != null)
+						ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
+				}
 			}
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();

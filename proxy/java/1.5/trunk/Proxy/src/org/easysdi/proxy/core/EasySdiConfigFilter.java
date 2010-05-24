@@ -59,7 +59,6 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			}
 		}
 		chain.doFilter(request, response);
-
 	}
 
 	private Config setConfig(String servletName) throws SAXException, IOException {

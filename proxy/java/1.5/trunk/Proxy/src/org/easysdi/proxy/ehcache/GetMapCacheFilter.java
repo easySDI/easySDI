@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.sun.org.apache.bcel.internal.generic.ISUB;
+
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GetMapCacheFilter.class);
@@ -120,15 +122,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws Exception {
-		boolean cacheAllowed = false;
-		Iterator<GrantedAuthority> iterator = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator();
-		while (iterator.hasNext()) {
-			GrantedAuthority authority = iterator.next();
-			if ("EASYSDI_CACHE".equals(authority.getAuthority())) {
-				cacheAllowed = true;
-				break;
-			}
-		}
+		boolean cacheAllowed = (request.isUserInRole("EASYSDI_CACHE"));
 
 		final String key = calculateKey(request);
 		PageInfo pageInfo = null;

@@ -90,8 +90,8 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	}
 
 	private Collection<GrantedAuthority> getAuthorities(String username) {
-		String sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join " + getPrefix()
-				+ "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
+		String sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
+				+ getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
 				+ "easysdi_community_role.role_id Inner Join " + getPrefix() + "easysdi_community_profile ON " + getPrefix()
 				+ "easysdi_map_profile_role.id_prof = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
 				+ "easysdi_community_partner_profile ON " + getPrefix() + "easysdi_community_partner_profile.profile_id = " + getPrefix()
@@ -122,48 +122,56 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	}
 
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		JoomlaUser user = null;
+		UsernamePasswordAuthenticationToken token = null;
 		userCache = cacheManager.getCache("userCache");
 		Element userElement = userCache.get(authentication.getPrincipal());
-		UsernamePasswordAuthenticationToken token = (userElement != null) ? ((UsernamePasswordAuthenticationToken) userElement.getValue()) : null;
-		if (token == null) {
-			JoomlaUser user = (JoomlaUser) loadUserByUsername(authentication.getPrincipal().toString());
-			if (user == null)
-				throw new UsernameNotFoundException("Username not found !");
-			else if (authentication.getPrincipal().equals(user.getUsername())) {
-				if (authentication.getCredentials().equals(user.getPassword())) {
-					token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
-							.getAuthorities());
-				} else if (authentication.getCredentials().toString().split(":")[0].equals(user.getPassword().split(":")[0])) {
-					token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
-							.getAuthorities());
-				} else {
-					java.security.MessageDigest msgDigest;
-					try {
-						msgDigest = java.security.MessageDigest.getInstance("MD5");
-						msgDigest.update(authentication.getCredentials().toString().getBytes());
-						if (user.getSalt() != null)
-							msgDigest.update(user.getSalt().getBytes());
-						StringBuffer joomlaPasswordBuilder = new StringBuffer();
-						byte[] digest = msgDigest.digest();
-						joomlaPasswordBuilder.append(toHexString(digest));
-						if (user.getSalt() != null) {
-							joomlaPasswordBuilder.append(":");
-							joomlaPasswordBuilder.append(user.getSalt());
-						}
-						String joomlaPassword = joomlaPasswordBuilder.toString();
-
-						if (joomlaPassword.equals(user.getPassword())) {
-							token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), joomlaPassword, user.getAuthorities());
-						} else
-							throw new BadCredentialsException("username or password incorrect !");
-					} catch (NoSuchAlgorithmException e) {
-
+		user = (JoomlaUser) ((userElement != null) ? (userElement.getValue()) : null);
+		if (user == null)
+			user = (JoomlaUser) loadUserByUsername(authentication.getPrincipal().toString());
+		if (user == null)
+			throw new UsernameNotFoundException("Username not found !");
+		else if (authentication.getPrincipal().equals(user.getUsername())) {
+			if (authentication.getCredentials().equals(user.getPassword())) {
+				token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
+						.getAuthorities());
+			} else if (authentication.getCredentials().toString().split(":")[0].equals(user.getPassword().split(":")[0])) {
+				token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
+						.getAuthorities());
+			} else {
+				java.security.MessageDigest msgDigest;
+				try {
+					msgDigest = java.security.MessageDigest.getInstance("MD5");
+					msgDigest.update(authentication.getCredentials().toString().getBytes());
+					if (user.getSalt() != null)
+						msgDigest.update(user.getSalt().getBytes());
+					StringBuffer joomlaPasswordBuilder = new StringBuffer();
+					byte[] digest = msgDigest.digest();
+					joomlaPasswordBuilder.append(toHexString(digest));
+					if (user.getSalt() != null) {
+						joomlaPasswordBuilder.append(":");
+						joomlaPasswordBuilder.append(user.getSalt());
 					}
+					String joomlaPassword = joomlaPasswordBuilder.toString();
+
+					if (joomlaPassword.equals(user.getPassword())) {
+						token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), joomlaPassword, user.getAuthorities());
+					} else {
+						if (userElement != null)
+							userCache.remove(authentication.getPrincipal());
+						throw new BadCredentialsException("username or password incorrect !");
+					}
+				} catch (NoSuchAlgorithmException e) {
+
 				}
 			}
-			userElement = new Element(authentication.getPrincipal(), token);
-			userCache.put(userElement);
+		} else {
+			if (userElement != null)
+				userCache.remove(authentication.getPrincipal());
 		}
+		userElement = new Element(authentication.getPrincipal(), user);
+		userCache.put(userElement);
+
 		return token;
 	}
 
