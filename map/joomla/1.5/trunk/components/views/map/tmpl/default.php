@@ -134,17 +134,17 @@ easySDImap = new EasySDI_Map.RwgLayout(
       single:true
     }
   });
+  	new Ext.ToolTip( {
+			target : 'localisationInputWidth',
+			html : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'),
+			dismissDelay: 5000
+		});
   }
 Ext.QuickTips.init();  
 Ext.onReady(function() {
 //$(document).ready(function() {
 	if ($.browser.msie)	setTimeout(loadMap, 2000);
 	else loadMap();
-	new Ext.ToolTip( {
-			target : 'localisationInputWidth',
-			html : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'),
-			dismissDelay: 5000
-		});
   });
 ";
 

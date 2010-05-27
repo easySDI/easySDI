@@ -47,6 +47,21 @@ function com_install()
 		}
 	}
 
+	/**
+	 * Menu creation
+	 */
+	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
+	$db->setQuery( $query);
+	$id = $db->loadResult();
+	if ($id)
+	{
+	}
+	else
+	{
+		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
+		return false;
+	}
+
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);
 	if (!$db->query()) {
@@ -54,8 +69,8 @@ function com_install()
 		return false;
 	}
 
-	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('EasySDI - Map','option=com_easysdi_map','Easysdi Map','com_easysdi_map','js/ThemeOffice/component.png','')";
+	$query =  "insert into #__components (parent, name,admin_menu_link, link,admin_menu_alt,`option`,admin_menu_img,params)
+		values($id, 'Map','option=com_easysdi_map','option=com_easysdi_map', 'Easysdi Map','com_easysdi_map','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query())
 	{
