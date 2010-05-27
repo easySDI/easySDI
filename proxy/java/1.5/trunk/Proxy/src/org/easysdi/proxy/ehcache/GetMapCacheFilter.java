@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -31,10 +30,6 @@ import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilte
 import org.easysdi.proxy.policy.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import com.sun.org.apache.bcel.internal.generic.ISUB;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 

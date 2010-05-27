@@ -62,7 +62,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 	}
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-		//System.err.println(System.currentTimeMillis());
+		// System.err.println(System.currentTimeMillis());
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 		Cookie[] cookies = request.getCookies();
@@ -96,11 +96,11 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 				}
 			}
 
-			if (authenticationPair == null || authenticationPair.get("username") == null) {
+			if (authenticationPair != null && authenticationPair.get("username") == null && authenticationPair.size() == 2) {
 				e = userCache.get("com_easysdi_map");
 				if (e != null)
 					authenticationPair = (Map<String, Object>) e.getValue();
-				if (authenticationPair == null || authenticationPair.get("username") == null) {
+				if (authenticationPair.get("username") == null && authenticationPair.size() == 2) {
 					String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
 							+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join "
 							+ joomlaProvider.getPrefix() + "users u on (u.id = p.user_id) limit 1";
@@ -108,8 +108,9 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 						authenticationPair = sjt.queryForMap(sql2);
 						if (authenticationPair != null && authenticationPair.size() > 0) {
 							if (authenticationPair.get("username") != null) {
-								Object k =(cookies != null && cookies.length>0) ? cookies : "com_easysdi_map"; 
+								Object k = (cookies != null && cookies.length > 0) ? cookies : "com_easysdi_map";
 								userCache.put(new Element(k, authenticationPair));
+								userCache.put(new Element("com_easysdi_map", authenticationPair));
 							}
 						}
 					} catch (EmptyResultDataAccessException er) {
@@ -171,7 +172,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 			}
 		}
 		chain.doFilter(request, response);
-	//	System.err.println(System.currentTimeMillis());
+		// System.err.println(System.currentTimeMillis());
 	}
 
 	private boolean authenticationIsRequired(String username) {

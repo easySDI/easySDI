@@ -187,6 +187,8 @@ public class MapToFop {
 		DocumentBuilder builder = DocumentBuilderFactoryImpl.newInstance().newDocumentBuilder();
 		Document doc = builder.newDocument();
 		Element featuresE = doc.createElement("features");
+		featuresE.setAttribute("image", mapPath);
+		featuresE.setAttribute("title", title);
 		doc.appendChild(featuresE);
 
 		FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
@@ -223,9 +225,6 @@ public class MapToFop {
 				BBOX bboxFilter = ff.bbox(geomName, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), bbox.getEPSGCode());
 				Query query = new DefaultQuery(layer.getName(), bboxFilter);
 				DocumentWriter.writeFragment(query, WFSSchema.getInstance(), w, hints);
-
-				featuresE.setAttribute("image", mapPath);
-				featuresE.setAttribute("title", title);
 
 			} catch (Exception e) {
 				System.err.println(e.getLocalizedMessage());
@@ -289,7 +288,8 @@ public class MapToFop {
 				transformer.setParameter(key.substring(2), value);
 			}
 		}
-		Transformer t = factory.newTransformer();t.transform(domSource, new StreamResult(System.err));
+		// Transformer t = factory.newTransformer();t.transform(domSource, new
+		// StreamResult(System.err));
 		transformer.transform(domSource, res);
 	}
 

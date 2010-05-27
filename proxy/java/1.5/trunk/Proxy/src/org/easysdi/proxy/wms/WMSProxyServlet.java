@@ -865,7 +865,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	// ***************************************************************************************************************************************
 
 	protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
-
+		this.requestPreTreatmentGET(req, resp);
 	}
 
 	// ***************************************************************************************************************************************
