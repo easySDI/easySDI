@@ -336,7 +336,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 */
 	_initMap : function() {
 		var options = {
-			controls : []
+			controls : [],
+			layers : []
 		};
 
 		if (SData.baseMap.projection != undefined)
@@ -857,16 +858,17 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		else
 			componentParams.localisationInputWidth = parseInt(componentParams.localisationInputWidth);
 		this.locAutocomplete = new Ext.form.ComboBox( {
+			id : 'localisationInputWidth',
 			store : this.locStore,
 			valueField : 'ipa_fullid',
 			displayField : 'ipa_display_name',
+			emptyText : EasySDI_Map.lang.getLocal('FP_SURVEY_SEARCH_FOR'),
 			loadingText : EasySDI_Map.lang.getLocal('SP_SEARCHING'),
 			width : componentParams.localisationInputWidth,
 			triggerAction : 'all',
 			mode : 'remote',
 			selectOnFocus : true,
-			minChars : componentParams.autocompleteNumChars,
-			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP')
+			minChars : componentParams.autocompleteNumChars
 		});
 
 		this.locAutocomplete.on('select', this._onZoomToLocation);
@@ -1291,7 +1293,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	_encodeCurrentMap : function() {
 		var currentMap = {};
 		currentMap.extent = this.map.getExtent();
-		currentMap.zoom = this.map.getZoom();
+		// currentMap.zoom = this.map.getZoom();
 		currentMap.basemap = this.map.baseLayer.params.LAYERS;
 		currentMap.basemapVisible = this.map.baseLayer.getVisibility();
 

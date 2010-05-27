@@ -251,7 +251,7 @@ $s .= ";\n";
 
 // Export layer objects from the base layers table.
 //$query = "SELECT * from #__easysdi_basemap_content;";
-$query = "SELECT * from #__easysdi_map_base_layer l order by l.default_visibility DESC, l.order DESC;";
+$query = "SELECT l.* from #__easysdi_map_base_layer l join #__easysdi_map_base_definition d on (l.id_base = d.id) order by d.def ASC, l.order ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";

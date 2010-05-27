@@ -30,44 +30,16 @@
 <script type="text/javascript" src="components/com_easysdi_map/externals/jquery/jquery-ui-1.7.2.custom.min.js"></script>
 <link rel="stylesheet" href="components/com_easysdi_map/externals/jquery/css/jquery-ui-1.7.2.custom.css" type="text/css" />
 <script type="text/javascript" src="components/com_easysdi_map/externals/json/json.js"></script>
-<link rel="stylesheet" href="components/com_easysdi_map/resource/xslt/getFeatureInfo.css" type="text/css" />
 <script type="text/javascript" src="components/com_easysdi_map/externals/openlayers/OpenLayers.js"></script>
 <!--<script type="text/javascript" src="components/com_easysdi_map/externals/OpenLayers-2.8/lib/OpenLayers.js"></script>-->
-<script type="text/javascript" src="components/com_easysdi_map/classes/SortableWFS.js"></script>
-<script type="text/javascript" src="administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/externals/geoext/lib/GeoExt.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/core.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/i18n.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/triggerManager.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/featureDetailsHelper.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/searchManager.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/sortableWFS.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/dialog.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/TristateCheckboxNode.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/TristateCheckboxNodeUI.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/LayerNode.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/layerTree.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/multiGeomGml.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/precisionTree.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/featureSelectionModel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/distinctFeatureReader.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/pagination.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/radionode.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/clickFeature.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/classes/triggerTextBox.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/viewPort.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/layout_base.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/mapPanel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/searchPanel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/layerPanel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/legendPanel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/filterPanel.js"></script>
-<!-- <script type="text/javascript" src="components/com_easysdi_map/elements/RwgFilterPanel.js"></script> -->
-<script type="text/javascript" src="components/com_easysdi_map/elements/gridPanel.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/featurePopup.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/elements/Ext.ux.form.SearchField.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/views/printMap/tmpl/standard_layout.js"></script>
 
+<?php
+$h = JRequest::getVar ('mapPanelHeight');
+$w = JRequest::getVar ('mapPanelWidth');
+?>
 <script type="text/javascript">
 <?php
 include(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
@@ -76,17 +48,14 @@ include(JPATH_COMPONENT.DS.'php'.DS.'params.php');
 echo $s;
 ?>
 var completeMap = '<?php echo JRequest::getVar ('mapPanel') ?>';
-var mapPanelHeight = <?php echo JRequest::getVar ('mapPanelHeight') ?>;
-var mapPanelWidth = <?php echo JRequest::getVar ('mapPanelWidth') ?>;
-var mapPanel = null;
+thisMap = null;
 Ext.onReady(function() {
-//$(document).ready(function() {
-	  mapPanel = new EasySDI_Map.printMapLayout({});
-	  //print();
-})
+	printMap({});
+	});
 </script>
 </head>
 <body>
-<div id="map"></div>
+<div id="map" style='border: thin; width: <?php echo $w?>px; height: <?php echo $h?>px;'>
+</div>
 </body>
 </html>

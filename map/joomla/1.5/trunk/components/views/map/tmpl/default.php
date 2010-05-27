@@ -32,6 +32,7 @@ JHTML::script('ext-all.js', 'components/com_easysdi_map/externals/ext/');
 // And JQuery
 JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
 JHTML::script('jquery-ui-1.7.2.custom.min.js', 'components/com_easysdi_map/externals/jquery/');
+JHTML::script('jquery.download.js', 'components/com_easysdi_map/views/map/js/');
 JHTML::stylesheet('jquery-ui-1.7.2.custom.css', 'components/com_easysdi_map/externals/jquery/css/');
 JHTML::stylesheet('getFeatureInfo.css', 'components/com_easysdi_map/resource/xslt/');
 // And OpenLayers
@@ -129,17 +130,21 @@ easySDImap = new EasySDI_Map.RwgLayout(
       {
         p.layerTree.loadLayers();
         p.legendPanel.refresh();
-        p.mapPanel.zoomToExtent(SData.baseMap.extent);
       },
       single:true
     }
   });
   }
-//Ext.onReady(function() {  
-$(document).ready(function() {
-	//if (false && $.browser.msie)
-	setTimeout(loadMap, 2000);
-	//else loadMap();
+Ext.QuickTips.init();  
+Ext.onReady(function() {
+//$(document).ready(function() {
+	if ($.browser.msie)	setTimeout(loadMap, 2000);
+	else loadMap();
+	new Ext.ToolTip( {
+			target : 'localisationInputWidth',
+			html : EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'),
+			dismissDelay: 5000
+		});
   });
 ";
 

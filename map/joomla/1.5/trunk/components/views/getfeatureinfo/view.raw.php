@@ -42,7 +42,7 @@ class EasySDI_mapViewGetfeatureinfo extends JView {
 			$i--;
 			if($i>0) $cookie.='; ';
 		}
-		curl_setopt($session, CURLOPT_HTTPHEADER, array($cookie));
+		curl_setopt($session, CURLOPT_HTTPHEADER, array($cookie, 'Referer: '.$_SERVER['HTTP_REFERER']));
 		curl_setopt($session, CURLOPT_HEADER, true);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($session);

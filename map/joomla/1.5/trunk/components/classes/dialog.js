@@ -482,7 +482,8 @@ EasySDI_Map.Dlg.InputPDFTitle = Ext
 											var anyOverlay = false;
 
 											Ext.each(this.mapPanel.map.layers, function(layer) {
-												if (layer.inRange && layer.getVisibility() && !layer.isBaseLayer && layer.CLASS_NAME == "OpenLayers.Layer.WMS") {
+												if (layer.inRange && layer.getVisibility() && !layer.isBaseLayer
+														&& layer.CLASS_NAME == "OpenLayers.Layer.WMS") {
 													anyOverlay = true;
 													overlays += layer.params.LAYERS + ",";
 												}
@@ -493,14 +494,15 @@ EasySDI_Map.Dlg.InputPDFTitle = Ext
 											var curentExtent = this.mapPanel.map.getExtent();
 											var baseLayerString = (this.mapPanel.map.baseLayer.visibility) ? this.mapPanel.map.baseLayer.params.LAYERS
 													: '';
-											window.open(componentParams.maptofopURL + '?title='
+											$.download(componentParams.maptofopURL + '?title='
 													+ this.getComponent('txtPDFTitle').getValue() + '&baseLayer=' + baseLayerString
 													+ '&epsg=' + this.mapPanel.map.getProjection() + overlays + pdfParams + '&minX='
 													+ curentExtent.left + '&minY=' + curentExtent.bottom + '&maxX=' + curentExtent.right
-													+ '&maxY=' + curentExtent.top + '&w=' + this.mapPanel.map.getSize().w + '&h=' + this.mapPanel.map.getSize().h
-													+ '&wms='+componentParams.pubWmsUrl
-													+ '&wfs='+componentParams.pubWfsUrl, '_blank');
-
+													+ '&maxY=' + curentExtent.top + '&w=' + this.mapPanel.map.getSize().w + '&h='
+													+ this.mapPanel.map.getSize().h + '&wms=' + componentParams.pubWmsUrl + '&wfs='
+													+ componentParams.pubWfsUrl, {
+												download : 1
+											});
 											this.destroy();
 										},
 										scope : this
@@ -578,21 +580,22 @@ EasySDI_Map.Dlg.SaveAsPopup = Ext.extend(Ext.Window, {
 
 		config.items = this.form;
 
-		config.buttons = [
-				{
-					text : EasySDI_Map.lang.getLocal('Save'),
-					handler : function() {
-						window.open(this.mapPanel._getOneImageMapURL(this.combo.getValue())+"&download=1");
-						this.destroy();
-					},
-					scope : this
-				}, {
-					text : EasySDI_Map.lang.getLocal('Cancel'),
-					handler : function() {
-						this.destroy();
-					},
-					scope : this
-				} ];
+		config.buttons = [ {
+			text : EasySDI_Map.lang.getLocal('Save'),
+			handler : function() {
+				$.download(this.mapPanel._getOneImageMapURL(this.combo.getValue()), {
+					download : 1
+				});
+				this.destroy();
+			},
+			scope : this
+		}, {
+			text : EasySDI_Map.lang.getLocal('Cancel'),
+			handler : function() {
+				this.destroy();
+			},
+			scope : this
+		} ];
 
 		EasySDI_Map.Dlg.SaveAsPopup.superclass.constructor.apply(this, arguments);
 	}

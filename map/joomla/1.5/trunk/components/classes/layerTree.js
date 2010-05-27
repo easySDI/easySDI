@@ -409,6 +409,7 @@ _addLayers : function() {
 	Ext.each(SData.baseLayers, this._addBaseLayer, this);
 	this.previousLayerNode = null;
 	Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
+	this._layerStore.map.zoomToExtent(SData.baseMap.extent, true);
 },
 
 /**
@@ -426,8 +427,8 @@ _addBaseLayer : function(layer, i) {
 	}
 	if (layer.customStyle != undefined)
 		extraOptions.customStyle = layer.customStyle;
-	if (layer.unit != undefined)
-		extraOptions.units = layer.unit;
+	if (layer.units != undefined)
+		extraOptions.units = layer.units;
 	if (layer.maxExtent != undefined)
 		extraOptions.maxExtent = layer.maxExtent;
 	if (layer.minScale != undefined)
@@ -474,7 +475,7 @@ _addBaseLayer : function(layer, i) {
 	// To allow the map.getScale() function to return the expected value (the
 	// scale of the displayed map at the component initilisation)
 	// the map must be zoomToMaxExtent before the getScale call
-	this._layerStore.map.zoomToMaxExtent();
+	// this._layerStore.map.zoomToMaxExtent();
 	if (this._layerStore.map.getScale() < layer.maxScale || this._layerStore.map.getScale() > layer.minScale) {
 		mstyle = 'hiddenLayer';
 		// inScaleRange = false;
@@ -556,8 +557,8 @@ _addOverlayLayer : function(layer) {
 		}
 		if (layer.customStyle != undefined)
 			extraOptions.customStyle = layer.customStyle;
-		if (layer.unit != undefined)
-			extraOptions.units = layer.unit;
+		if (layer.units != undefined)
+			extraOptions.units = layer.units;
 		if (layer.maxExtent != undefined)
 			extraOptions.maxExtent = layer.maxExtent;
 		if (layer.minScale != undefined)
