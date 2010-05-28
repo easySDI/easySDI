@@ -72,14 +72,13 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.xerces.dom.DeferredElementImpl;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.data.ows.Layer;
-import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.AttributeTypeFactory;
@@ -97,6 +96,7 @@ import org.geotools.xml.handlers.DocumentHandler;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -589,13 +589,17 @@ public class WMSProxyServlet extends ProxyServlet {
 					for (String path : wmsFilePathList.values()) {
 						Document resultDoc = builder.parse(new File(path));
 						if (rootNode == null) {
-							Node result = (Node) expr.evaluate(resultDoc, XPathConstants.NODE);
+							DeferredElementImpl result = (DeferredElementImpl) expr.evaluate(resultDoc, XPathConstants.NODE);
 							if (result != null) {
 								rootNode = (Element) doc.importNode(result, true);
 								doc.appendChild(rootNode);
 							}
 						} else {
-							NodeList result = resultDoc.getDocumentElement().getChildNodes();
+							DeferredElementImpl result = (DeferredElementImpl) resultDoc.getDocumentElement().getChildNodes();
+							for (int i = 0; i < result.getAttributes().getLength(); i++) {
+								Attr attr = (Attr) doc.importNode(result.getAttributes().item(i), true);
+								rootNode.setAttributeNode(attr);
+							}
 							if (result != null && result.getLength() > 0) {
 								for (int i = 0; i < result.getLength(); i++) {
 									Node nnode = result.item(i);
