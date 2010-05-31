@@ -106,9 +106,11 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			policySet = (PolicySet) u.unmarshal(new FileInputStream(filePath));
 			PolicyHelpers ph = new PolicyHelpers(policySet, servletName);
 			Policy policy = ph.getPolicy(user, req);
-			policyE = new Element(servletName + user + "policyFile", policy);
-			policyE.setVersion(plastmodified);
-			configCache.put(policyE);
+			if (policy != null) {
+				policyE = new Element(servletName + user + "policyFile", policy);
+				policyE.setVersion(plastmodified);
+				configCache.put(policyE);
+			}
 		}
 	}
 

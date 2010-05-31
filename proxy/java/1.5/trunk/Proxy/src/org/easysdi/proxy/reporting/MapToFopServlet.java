@@ -1,10 +1,10 @@
 package org.easysdi.proxy.reporting;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.easysdi.security.JoomlaProvider;
 import org.geotools.data.ows.Layer;
 import org.geotools.ows.ServiceException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.xml.sax.SAXException;
 
 public class MapToFopServlet extends HttpServlet {
@@ -24,7 +27,7 @@ public class MapToFopServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 8400303568411604114L;
-	private Map<String, MapToFop> services = new HashMap<String, MapToFop>();
+	private Logger logger = LoggerFactory.getLogger("maptofop");
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,32 +36,15 @@ public class MapToFopServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String wms = req.getParameter("wms");
-		if (wms == null)
-			throw new ServletException("WMS URL must be set !");
-		String wfs = req.getParameter("wfs");
-		if (wfs == null)
-			throw new ServletException("WFS URL must be set !");
-		String key = wms + wfs;
-
-		MapToFop mf = services.get(key);
-		if (mf == null) {
-			mf = new MapToFop(getServletContext().getRealPath("/WEB-INF/fop"));
-			services.put(key, mf);
-		}
-
-		Authentication token = SecurityContextHolder.getContext().getAuthentication();
-		if (token != null && token.getPrincipal() != null && token.getCredentials() != null) {
-			mf.setCredentials(token.getPrincipal().toString(), token.getCredentials().toString());
-		}
-
+		MapToFop mf = new MapToFop(getServletContext().getRealPath("/WEB-INF/fop"));
+		ServletContext context = getServletContext();
+		WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
+		JoomlaProvider provider = applicationContext.getBean(JoomlaProvider.class);
 		try {
-			mf.setUrlWMS(wms);
-		} catch (ServiceException e) {
-			e.printStackTrace();
+			mf.initWmsWfs(provider);
+		} catch (ServiceException e1) {
+			logger.error("Le service d'impression PDF n'a pas pu être initialisé", e1);
 		}
-		mf.setUrlWFS(wfs);
-
 		String baseLayerName = req.getParameter("baseLayer");
 		Layer baseLayer = new Layer();
 		baseLayer.setName(baseLayerName);

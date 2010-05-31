@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
-import javax.servlet.http.Cookie;
+import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -25,7 +25,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.Credentials;
@@ -34,10 +33,12 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.fop.apps.FOURIResolver;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
+import org.easysdi.security.JoomlaProvider;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.Query;
@@ -58,6 +59,9 @@ import org.geotools.xml.DocumentWriter;
 import org.geotools.xml.wfs.WFSSchema;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.spatial.BBOX;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -69,8 +73,27 @@ public class MapToFop {
 	private DataStore wfs;
 	private String fopDir;
 	private HttpClient httpClient;
+	private UsernamePasswordAuthenticationToken token;
 	Map<String, Object> connectionParameters = null;
-	private Cookie[] cookies;
+
+	public void initWmsWfs(JoomlaProvider provider) throws ServletException, IOException, ServiceException {
+		JdbcTemplate sjt = provider.getSjt();
+		String prefix = provider.getPrefix();
+
+		String wms = sjt.queryForObject("select value as pubWmsUrl from " + prefix + "easysdi_map_config where name = 'pubWmsUrl' limit 1", String.class);
+		if (wms == null)
+			throw new ServletException("pubWmsUrl must be set !");
+		String wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "easysdi_map_config where name = 'pubWfsUrl' limit 1", String.class);
+		if (wfs == null)
+			throw new ServletException("pubWfsUrl must be set !");
+		this.setUrlWMS(wms);
+		this.setUrlWFS(wfs);
+		token = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
+			this.setCredentials(token.getPrincipal().toString(), token.getCredentials().toString());
+		}
+
+	}
 
 	public MapToFop(String fopDir) {
 		super();
@@ -94,7 +117,6 @@ public class MapToFop {
 		this.urlWFS = urlWFS;
 		connectionParameters = new HashMap<String, Object>();
 		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=getcapabilities&version=1.0.0"));
-		// connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, true);
 		connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
 		this.wfs = wfsFactory.createDataStore(connectionParameters);
 	}
@@ -131,12 +153,8 @@ public class MapToFop {
 		Credentials credentials = new UsernamePasswordCredentials(username, password);
 		httpClient.getParams().setAuthenticationPreemptive(true);
 		httpClient.getState().setCredentials(AuthScope.ANY, credentials);
-		if (connectionParameters != null) {
-			connectionParameters.remove(WFSDataStoreFactory.USERNAME.key);
-			connectionParameters.remove(WFSDataStoreFactory.PASSWORD.key);
-			connectionParameters.put(WFSDataStoreFactory.USERNAME.key, username);
-			connectionParameters.put(WFSDataStoreFactory.PASSWORD.key, password);
-		}
+		connectionParameters.put(WFSDataStoreFactory.USERNAME.key, username);
+		connectionParameters.put(WFSDataStoreFactory.PASSWORD.key, password);
 	}
 
 	public String getMap(String baseLayerName, String epsgCode, double minX, double minY, double maxX, double maxY, String overlayNames, String format,
@@ -201,10 +219,9 @@ public class MapToFop {
 		Writer w = new StringWriter();
 
 		for (Layer layer : overlays) {
-			Element featureE = doc.createElement("feature");
-			featuresE.appendChild(featureE);
 
 			try {
+				Element featureE = doc.createElement("feature");
 				FeatureType schema = wfs.getSchema(layer.getName());
 				String ftTitle = schema.getTypeName();
 				GetLegendGraphicRequest legentRequest = new GetLegendGraphicRequest(new URL(urlWMS));
@@ -225,15 +242,17 @@ public class MapToFop {
 				BBOX bboxFilter = ff.bbox(geomName, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), bbox.getEPSGCode());
 				Query query = new DefaultQuery(layer.getName(), bboxFilter);
 				DocumentWriter.writeFragment(query, WFSSchema.getInstance(), w, hints);
-
+				featuresE.appendChild(featureE);
 			} catch (Exception e) {
 				System.err.println(e.getLocalizedMessage());
+				// e.printStackTrace();
 			}
 		}
 		if (getFeature) {
 			String request = "<GetFeature xmlns=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" version=\"1.0.0\" service=\"WFS\" outputFormat=\"GML2\">\n"
 					+ w.toString() + "\n</GetFeature>";
 			PostMethod post = new PostMethod(urlWFS);
+			// wmsGet.setRequestHeader(new Head)
 			post.setRequestEntity(new StringRequestEntity(request, "text/xml", "utf-8"));
 			httpClient.executeMethod(post);
 			if (post.getResponseHeader("Content-Type").getValue().equals("text/xml")) {
@@ -270,6 +289,9 @@ public class MapToFop {
 		FopFactory fopFactory = FopFactory.newInstance();
 		fopFactory.setUserConfig(fopDir + "/fop.xconf");
 		Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out);
+		FOURIResolver resolver = new EasySDIFOURIResolver(token);
+		fop.getUserAgent().setURIResolver(resolver);
+
 		Source xslt = new StreamSource(new File(fopDir + File.separator + xsltPath));
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer transformer = factory.newTransformer(xslt);
@@ -291,11 +313,6 @@ public class MapToFop {
 		// Transformer t = factory.newTransformer();t.transform(domSource, new
 		// StreamResult(System.err));
 		transformer.transform(domSource, res);
-	}
-
-	public void setCookies(Cookie[] cookies) {
-		this.cookies = cookies;
-
 	}
 
 	public static class GetMapRequest extends WMS1_0_0.GetMapRequest {
