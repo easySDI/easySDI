@@ -499,8 +499,7 @@ EasySDI_Map.Dlg.InputPDFTitle = Ext
 													+ '&epsg=' + this.mapPanel.map.getProjection() + overlays + pdfParams + '&minX='
 													+ curentExtent.left + '&minY=' + curentExtent.bottom + '&maxX=' + curentExtent.right
 													+ '&maxY=' + curentExtent.top + '&w=' + this.mapPanel.map.getSize().w + '&h='
-													+ this.mapPanel.map.getSize().h + '&wms=' + componentParams.pubWmsUrl + '&wfs='
-													+ componentParams.pubWfsUrl, {
+													+ this.mapPanel.map.getSize().h, {
 												download : 1
 											});
 											this.destroy();

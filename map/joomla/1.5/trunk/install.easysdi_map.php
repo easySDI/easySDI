@@ -48,34 +48,42 @@ function com_install()
 	}
 
 	/**
-	 * Menu creation
+	 * Menu managment
 	 */
 	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
 	$db->setQuery( $query);
 	$id = $db->loadResult();
-	if ($id)
-	{
-	}
-	else
+	if (!$id)
 	{
 		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
 		return false;
 	}
 
-	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		return false;
-	}
-
-	$query =  "insert into #__components (parent, name,admin_menu_link, link,admin_menu_alt,`option`,admin_menu_img,params)
-		values($id, 'Map','option=com_easysdi_map','option=com_easysdi_map', 'Easysdi Map','com_easysdi_map','js/ThemeOffice/component.png','')";
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map' ";
 	$db->setQuery( $query);
 	if (!$db->query())
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
+
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+				values($id,'Map','','option=com_easysdi_map','Map','com_easysdi_map','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+	if (!$db->query())
+	{
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
+	}
+	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
+		values('EasySDI - Map','option=com_easysdi_map','Easysdi Map','com_easysdi_map','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+	if (!$db->query())
+	{
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	$mainframe->enqueueMessage("Congratulations Map component for EasySdi is now installed and ready to be used. Enjoy EasySdi!","INFO");
+	return true;
 
 	return true;
 }
