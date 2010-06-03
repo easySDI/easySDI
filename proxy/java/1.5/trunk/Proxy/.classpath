@@ -65,7 +65,7 @@
 	<classpathentry kind="lib" path="lib/gt2-imagepyramid-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-jdbc-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-main-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/gt2-mappane-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/gt2-mappane-2.4.1.jar" sourcepath="C:/Documents and Settings/HVH/My Documents/Downloads/gt2-wfs-2.4.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-metadata-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-mysql-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-oracle-spatial-2.4.1.jar"/>
@@ -79,7 +79,6 @@
 	<classpathentry kind="lib" path="lib/gt2-shapefile-renderer-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-validation-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-vpf-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/gt2-wfs-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-widgets-swing-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-wms-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-xml-2.4.1.jar"/>
@@ -151,5 +150,6 @@
 	<classpathentry kind="lib" path="lib/org.springframework.web.servlet-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache-core-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache-web-2.0.1.jar" sourcepath="C:/Documents and Settings/HVH/.m2/repository/net/sf/ehcache/ehcache-web/2.0.1/ehcache-web-2.0.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/gt2-wfs-2.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

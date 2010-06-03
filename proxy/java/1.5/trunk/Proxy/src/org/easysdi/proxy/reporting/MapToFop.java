@@ -86,12 +86,12 @@ public class MapToFop {
 		String wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "easysdi_map_config where name = 'pubWfsUrl' limit 1", String.class);
 		if (wfs == null)
 			throw new ServletException("pubWfsUrl must be set !");
-		this.setUrlWMS(wms);
-		this.setUrlWFS(wfs);
 		token = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 		if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
 			this.setCredentials(token.getPrincipal().toString(), token.getCredentials().toString());
 		}
+		this.setUrlWMS(wms);
+		this.setUrlWFS(wfs);
 
 	}
 
@@ -115,9 +115,11 @@ public class MapToFop {
 
 	public void setUrlWFS(String urlWFS) throws IOException {
 		this.urlWFS = urlWFS;
-		connectionParameters = new HashMap<String, Object>();
+		if (connectionParameters == null)
+			connectionParameters = new HashMap<String, Object>();
 		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=getcapabilities&version=1.0.0"));
 		connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
+		connectionParameters.put(WFSDataStoreFactory.TRY_GZIP.key, false);
 		this.wfs = wfsFactory.createDataStore(connectionParameters);
 	}
 
@@ -153,6 +155,8 @@ public class MapToFop {
 		Credentials credentials = new UsernamePasswordCredentials(username, password);
 		httpClient.getParams().setAuthenticationPreemptive(true);
 		httpClient.getState().setCredentials(AuthScope.ANY, credentials);
+		if (connectionParameters == null)
+			connectionParameters = new HashMap<String, Object>();
 		connectionParameters.put(WFSDataStoreFactory.USERNAME.key, username);
 		connectionParameters.put(WFSDataStoreFactory.PASSWORD.key, password);
 	}
