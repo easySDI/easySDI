@@ -82,7 +82,7 @@
 		</copy>
 	</target>
 
-	<target name="compilation" description="Compilation">
+	<target name="compilation" description="Compilation" depends="create-structure">
 		<javac source="1.5" target="1.5" debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes">
 			<classpath refid="projet.classpath" />
 		</javac>
