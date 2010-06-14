@@ -122,9 +122,18 @@ function com_install(){
 	}
 
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-			values($id,'Proxy','','option=com_easysdi_proxy&task=showConfigList','Proxy','com_easysdi_proxy','js/ThemeOffice/component.png','')";
+				values($id,'Proxy','','option=com_easysdi_proxy&task=showConfigList','Proxy','com_easysdi_proxy','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
-	if (!$db->query()) {
+	if (!$db->query())
+	{
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
+	}
+	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
+		values('EasySDI - Proxy','option=com_easysdi_proxy&task=showConfigList','Proxy','com_easysdi_proxy','js/ThemeOffice/component.png','')";
+	$db->setQuery( $query);
+	if (!$db->query())
+	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
 
