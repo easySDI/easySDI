@@ -2,13 +2,13 @@
 <configurations>
 	<config id="metacarta">
 		<authorization>
-			<policy-file>C:\user\proxy\NewPolicy.xml
+			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\tomcat6\logs</path>
+				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
 				<suffix>wms</suffix>
 				<prefix>metacarta</prefix>
 				<extension>log</extension>
@@ -27,13 +27,13 @@
 	</config>
 	<config id="gmap">
 		<authorization>
-			<policy-file>C:\user\proxy\NewPolicy.xml
+			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\tomcat6\logs</path>
+				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
 				<suffix>wms</suffix>
 				<prefix>gmap</prefix>
 				<extension>log</extension>
@@ -52,13 +52,13 @@
 	</config>
 	<config id="mfwfs">
 		<authorization>
-			<policy-file>C:\user\proxy\NewPolicy.xml
+			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\tomcat6\logs</path>
+				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
 				<suffix>wfs</suffix>
 				<prefix>mfwfs</prefix>
 				<extension>log</extension>
@@ -75,29 +75,29 @@
 			</remote-server>
 		</remote-server-list>
 	</config>
-<config id="geosignal">
-	<authorization>
-		<policy-file>C:\user\proxy\NewPolicy.xml
+	<config id="geosignal">
+		<authorization>
+			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
 		</policy-file>
-	</authorization>
-	<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
-	<log-config>
-		<file-structure>
-			<path>C:\tomcat6\logs</path>
-			<suffix>wms</suffix>
-			<prefix>geosignal</prefix>
-			<extension>log</extension>
-			<period>daily</period>
-		</file-structure>
-		<date-format>dd/MM/yyyy HH:mm:ss</date-format>
-	</log-config>
-	<host-translator></host-translator>
-	<remote-server-list>
-		<remote-server>
-			<user></user>
-			<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
-			<password></password>
-		</remote-server>
-	</remote-server-list>
-</config>
+		</authorization>
+		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
+				<suffix>wms</suffix>
+				<prefix>geosignal</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<host-translator></host-translator>
+		<remote-server-list>
+			<remote-server>
+				<user></user>
+				<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
+				<password></password>
+			</remote-server>
+		</remote-server-list>
+	</config>
 </configurations>
