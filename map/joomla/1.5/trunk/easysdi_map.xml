@@ -1,18 +1,18 @@
 <?xml version="1.0" ?>
 <install type="component" version="1.5">
-	<name>easysdi_map</name>
-	<creationDate>April 2009</creationDate>
-	<author>John van Breda</author>
-	<authorUrl>http://www.biodiverseit.co.uk</authorUrl>
+	<name>EasySDI_Map</name>
+	<creationDate>June 2010</creationDate>
+	<author>DEPTH SA</author>
+	<authorUrl>http://www.easysdi.org</authorUrl>
 	<license>GPL 3.0</license>
-	<version>0.1</version>
+	<version>1</version>
 	<description>Web Mapping Module for EasySDI</description>
 	<installfile>install.easysdi_map.php</installfile>
 	<uninstallfile>uninstall.easysdi_map.php</uninstallfile>
 	<administration>
-		<files folder="administrator">	
+		<files folder="administrator">
 			<filename>admin.easysdi_map.php</filename>
-			<folder>core</folder>	
+			<folder>core</folder>
 			<folder>tables</folder>
 		</files>
 		<languages folder="administrator/language">
@@ -22,7 +22,7 @@
 	</administration>
 	<files folder="components">
 		<filename>easysdi_map.php</filename>
-		<folder>assets</folder>	
+		<folder>assets</folder>
 		<folder>classes</folder>
 		<folder>controllers</folder>
 		<folder>elements</folder>
@@ -30,7 +30,7 @@
 		<folder>models</folder>
 		<folder>php</folder>
 		<folder>resource</folder>
-		<folder>views</folder>		
+		<folder>views</folder>
 	</files>
 	<languages folder="components/language">
 		<language tag="fr-FR">fr-FR.com_easysdi_map.ini</language>

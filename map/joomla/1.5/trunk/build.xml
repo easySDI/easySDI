@@ -13,15 +13,24 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
+	<target name="build-component" description="build-component" depends="create-structure">
+		<copy todir="${projet.out.dir}/com_easysdi_map" overwrite="true">
+			<fileset refid="fsbase" />
+		</copy>
+
+		<copy todir="${projet.out.dir}/com_easysdi_map/administrator" overwrite="true">
+			<fileset refid="fsadmin" />
+		</copy>
+		<copy todir="${projet.out.dir}/com_easysdi_map/components" overwrite="true">
+			<fileset refid="fscomp" />
+		</copy>
+	</target>
+
 	<target name="compression" description="Compression" depends="create-structure">
 		<zip compress="true" destfile="${projet.out.dir}/com_easysdi_map.zip">
 			<zipfileset refid="fsbase" />
 			<zipfileset refid="fsadmin" prefix="administrator" />
 			<zipfileset refid="fscomp" prefix="components" />
-			<zipfileset refid="lafrFR" prefix="administrator/language" />
-			<zipfileset refid="laenGB" prefix="administrator/language" />
-			<zipfileset refid="lcfrFR" prefix="components/language" />
-			<zipfileset refid="lcenGB" prefix="components/language" />
 		</zip>
 	</target>
 
@@ -36,6 +45,7 @@
 		<include name="**/*.xsl" />
 		<include name="**/*.xslt" />
 		<include name="**/*.inc" />
+		<include name="**/*.ini" />
 		<include name="**/*.jar" />
 		<include name="**/*.xml" />
 		<include name="**/*.png" />
@@ -52,6 +62,7 @@
 		<include name="**/*.xsl" />
 		<include name="**/*.xslt" />
 		<include name="**/*.inc" />
+		<include name="**/*.ini" />
 		<include name="**/*.jar" />
 		<include name="**/*.xml" />
 		<include name="**/*.png" />
