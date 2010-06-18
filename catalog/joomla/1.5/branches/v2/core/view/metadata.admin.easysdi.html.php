@@ -193,10 +193,11 @@ class HTML_metadata {
 								        			if (cmp.xtype=='fieldset')
 							         				{
 							         					console.log('Fieldset: ' + cmp.getId() + ' - ' + cmp.clone);
-														console.log(cmp);
 														if (cmp.clone == false)
 														{
-							         						cmp.expand(true);
+							         						console.log(cmp);
+															if (cmp.collapsible == true)
+																cmp.expand(true);
 							         					}
 							         				}
 							        			});
@@ -213,10 +214,11 @@ class HTML_metadata {
 								        			if (cmp.xtype=='fieldset')
 							         				{
 							         					console.log('Fieldset: ' + cmp.getId() + ' - ' + cmp.clone);
-														console.log(cmp);
 														if (cmp.clone == false)
 														{
-							         						cmp.collapse(true);
+							         						console.log(cmp);
+															if (cmp.collapsible == true)
+																cmp.collapse(true);
 							         					}
 							         				}
 							        			});
