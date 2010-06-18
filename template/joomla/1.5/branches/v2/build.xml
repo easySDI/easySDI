@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<project default="sync" basedir=".">
+
+	<property name="projet.out.dir" value="C:\SVN\core\out" />
+
+
+	<target name="com_easysdi" depends="create-structure,compression"
+		description="Main target">
+
+	</target>
+
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete>
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	<target name="compression" description="Compression">
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_core.zip"
+			basedir="." excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project; .prefs" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy
+			todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\components\com_easysdi_core">
+			<fileset dir=".">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.inc" />
+				<include name="**/*.jar" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.ttf" />
+				<include name="**/*.txt" />
+				<include name="**/*.js" />
+				<include name="**/*.css" />
+				<include name="**/*.xml" />
+			</fileset>
+		</copy>
+		<copy
+			todir="C:\Inetpub\wwwroot\easysdi_1510\components\com_easysdi_core">
+			<fileset dir="./com_easysdi_core">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.inc" />
+				<include name="**/*.jar" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.ttf" />
+				<include name="**/*.txt" />
+				<include name="**/*.js" />
+			</fileset>
+		</copy>
+		<copy		   
+		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\fr-FR">
+		     <fileset dir="./language/admin">
+		      <include name="**/fr-FR.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
+	</target>
+
+
+</project>
