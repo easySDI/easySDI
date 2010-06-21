@@ -1,9 +1,9 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_Proxy</name>
-	<version>1.0</version>
-	<creationDate>July 2008</creationDate>
-	<author>Depth.ch</author>
+	<version>1.6.3</version>
+	<creationDate>June 2010</creationDate>
+	<author>DEPTH SA</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
 	<authorUrl>www.depth.ch</authorUrl>
 	<copyright></copyright>
