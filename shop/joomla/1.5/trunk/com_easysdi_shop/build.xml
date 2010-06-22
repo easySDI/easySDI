@@ -25,7 +25,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Site\Joomla\administrator\components\com_easysdi_shop">
+			todir="C:\www\Site\sdiv1\administrator\components\com_easysdi_shop">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -40,7 +40,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\Joomla\components\com_easysdi_shop">
+			todir="C:\www\Site\sdiv1\components\com_easysdi_shop">
 			<fileset dir="./com_easysdi_shop">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -54,32 +54,32 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\Joomla\components\com_easysdi_core\views">
+			todir="C:\www\Site\sdiv1\components\com_easysdi_core\views">
 			<fileset dir="./com_easysdi_shop/views">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\language\fr-FR">
+		   todir="C:\www\Site\sdiv1\language\fr-FR">
 		     <fileset dir="./language/site">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\language\en-GB">
+		   todir="C:\www\Site\sdiv1\language\en-GB">
 		     <fileset dir="./language/site">
 		      <include name="**/en-GB.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\administrator\language\fr-FR">
+		   todir="C:\www\Site\sdiv1\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Site\Joomla\administrator\language\en-GB">
+		   todir="C:\www\Site\sdiv1\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_shop.ini" />
 		     </fileset>
