@@ -22,11 +22,8 @@ class ADMIN_basemap {
 	
 	
 	function orderUpBasemapContent($id,$basemapId){
-		
-
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-		
 
 		$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE id = $id AND basemap_def_id = $basemapId";
 		$database->setQuery( $query );
@@ -42,7 +39,6 @@ class ADMIN_basemap {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}		
 		
-
 		$query = "update #__easysdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
 			$database->setQuery( $query );				
 			if (!$database->query()) {		
@@ -53,16 +49,10 @@ class ADMIN_basemap {
 			$database->setQuery( $query );				
 			if (!$database->query()) {		
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
-		
-		
-		
-		
+			}
 	}
 	
-		function orderDownBasemapContent($id,$basemapId){
-		
-
+	function orderDownBasemapContent($id,$basemapId){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 
@@ -79,8 +69,7 @@ class ADMIN_basemap {
 			if ($database->getErrorNum()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}		
-		
-
+	
 		$query = "update #__easysdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
 			$database->setQuery( $query );				
 			if (!$database->query()) {		
@@ -92,10 +81,6 @@ class ADMIN_basemap {
 			if (!$database->query()) {		
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
 			}		
-		
-		
-		
-		
 	}
 	
 	function listBasemapContent($basemap_id,$option) {
@@ -116,8 +101,6 @@ class ADMIN_basemap {
 		{
 			$basemap_id = JRequest::getVar('basemap_def_id');
 		}
-		
-
 		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_content where basemap_def_id = ".$basemap_id;
 		
 		//$query .= $filter;
@@ -125,9 +108,7 @@ class ADMIN_basemap {
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
-		
 		// Recherche des enregistrements selon les limites
-		
 		if($order_field)
 		{
 			$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by $order_field";
@@ -136,9 +117,7 @@ class ADMIN_basemap {
 		{
 			$query = "SELECT * FROM #__easysdi_basemap_content where basemap_def_id = $basemap_id order by ordering";
 		}		
-									
-		
-	
+					
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}
@@ -150,10 +129,8 @@ class ADMIN_basemap {
 		}		
 	
 		HTML_Basemap::listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option);	
-
 	}
 	
-
 	function editBasemapContent( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowBasemap = new basemap_content( $database );
@@ -164,16 +141,14 @@ class ADMIN_basemap {
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
 		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
 		
 		HTML_Basemap::editBasemapContent( $rowBasemap, $rowsAccount, $id, $option );
 	}
 	
-	
-	
 	function saveBasemapContent($returnList ,$option){
-						global  $mainframe;
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
 		$rowBasemap =&	 new basemap_content($database);
@@ -185,11 +160,9 @@ class ADMIN_basemap {
 			exit();
 		}
 		$query = "SELECT COUNT(*) FROM  #__easysdi_basemap_content where basemap_def_id = ".$basemap_def_id ;
-		
 		$database->setQuery( $query );
 		$total = $database->loadResult();	
-			
-		$rowBasemap->ordering = $total;		
+		$rowBasemap->ordering = $total + 1;		
 		
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
@@ -202,7 +175,6 @@ class ADMIN_basemap {
 			$rowBasemap->easysdi_account_id="";
 		}
 		 
-		
 		if (!$rowBasemap->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_def_id );
@@ -230,10 +202,35 @@ class ADMIN_basemap {
 			$Basemap = new basemap_content( $database );
 			$Basemap->load( $id );
 					
+			$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE id = $id ";
+			$database->setQuery( $query );
+			$row1 = $database->loadObject() ;
+				if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+	
+			$query = "SELECT *  FROM #__easysdi_basemap_content  WHERE  basemap_def_id = $row1->basemap_def_id AND ordering > $row1->ordering  order by ordering ASC";
+			$database->setQuery( $query );
+			$rows2 = $database->loadObjectList() ;
+				if ($database->getErrorNum()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}	
+			
+			$o = $row1->ordering;
+			foreach ($rows2 as $row2 )
+			{
+				$query = "update #__easysdi_basemap_content set ordering= $o where id =$row2->id";
+				$database->setQuery( $query );				
+				if (!$database->query()) {		
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+				}
+				$o = $o+1;
+			}	
+
 			if (!$Basemap->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
-			}												
+			}
 		}
 
 		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_def_id') );		
@@ -246,27 +243,20 @@ class ADMIN_basemap {
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
-		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
+//		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
+//		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
+//		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
 		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_definition";
 		
-		//$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
-		
 		// Recherche des enregistrements selon les limites
-		
-		
 		$query = "SELECT * FROM #__easysdi_basemap_definition ";		
-									
-		
-	
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}
@@ -278,23 +268,19 @@ class ADMIN_basemap {
 		}		
 	
 		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option);	
-
 	}
 	
 	function editBasemap( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowBasemap = new basemap( $database );
-		$rowBasemap->load( $id );					
-	
-		
-		
+		$rowBasemap->load( $id );	
+			
 		HTML_Basemap::editBasemap( $rowBasemap,$id, $option );
 	}
 	
 	function saveBasemap($returnList ,$option){
-						global  $mainframe;
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
-		
 		$rowBasemap =&	 new basemap($database);
 				
 		
@@ -342,9 +328,6 @@ class ADMIN_basemap {
 		$mainframe->redirect("index.php?option=$option&task=listBasemap" );		
 	}
 		
-		
-	
-	
 }
 	
 ?>

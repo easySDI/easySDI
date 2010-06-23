@@ -25,6 +25,11 @@ function com_install(){
 
 	global  $mainframe;
 	$db =& JFactory::getDBO();
+	
+	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+
+	$user =& JFactory::getUser();
+	$user_id = $user->get('id');
 
 	/**
 	 * Check the CORE installation
@@ -1524,31 +1529,31 @@ if ($version == "0.998")
 	/**
 	 * Menu creation
 	 */
-	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
-	$db->setQuery( $query);
-	$id = $db->loadResult();
-	if ($id)
-	{
-	}
-	else
-	{
-		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
-		return false;
-	}
-
-	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-			}
-		
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-	values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
+//	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
+//	$db->setQuery( $query);
+//	$id = $db->loadResult();
+//	if ($id)
+//	{
+//	}
+//	else
+//	{
+//		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
+//		return false;
+//	}
+//
+//	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
+//			$db->setQuery( $query);
+//			if (!$db->query()) 
+//			{
+//				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+//			}
+//		
+//	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+//	values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
+//	$db->setQuery( $query);
+//	if (!$db->query()) {
+//		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+//	}
 
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('EasySDI - Shop','option=com_easysdi_shop','Easysdi Shop','com_easysdi_shop','js/ThemeOffice/component.png','')";

@@ -316,15 +316,6 @@ class HTML_basemap {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	function editBasemap( $rowBasemap,$id, $option ){
 		
 		global  $mainframe;
@@ -467,65 +458,57 @@ class HTML_basemap {
 	
 	
 	function listBasemap($use_pagination, $rows, $pageNav,$option){
-	
-		
-		
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
-		
-		
 		?>
-	<form action="index.php" method="post" name="adminForm">
-		
-		<table width="100%">
-			<tr>
-				<td align="right">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
-				</td>
-			</tr>
-		</table>
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listBasemap\');"',$use_pagination); ?></td>
-			</tr>
-		</table>
-		<table class="adminlist">
-		<thead>
-			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_SHARP"); ?></th>
-				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ID"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_MAXEXTENT"); ?></th>				
-			</tr>
-		</thead>
-		<tbody>		
-<?php
+		<form action="index.php" method="post" name="adminForm">
+			<table width="100%">
+				<tr>
+					<td align="right">
+						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
+						<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
+					</td>
+				</tr>
+			</table>
+			<table width="100%">
+				<tr>																																			
+					<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listBasemap\');"',$use_pagination); ?></td>
+				</tr>
+			</table>
+			<table class="adminlist">
+			<thead>
+				<tr>					 			
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_SHARP"); ?></th>
+					<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ID"); ?></th>
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?></th>
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?></th>
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?></th>
+					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_MAXEXTENT"); ?></th>				
+				</tr>
+			</thead>
+			<tbody>		
+		<?php
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
 			$row = $rows[$i];
 			$link = 'index.php?option='.$option.'&task=editBasemap&cid[]='.$row->id;	  				
-?>
+		?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-								
 				<td><?php echo $row->id; ?></td>
 				<td><a href="<?php echo $link ?>"><?php echo $row->alias; ?></a></td>
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>
 			</tr>
-<?php
+		<?php
 			$k = 1 - $k;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
 		
 		if (JRequest::getVar('use_pagination',0))
