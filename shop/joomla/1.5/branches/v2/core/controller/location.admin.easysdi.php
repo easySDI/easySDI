@@ -27,27 +27,29 @@ class ADMIN_location {
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
-		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
-		$query = "SELECT COUNT(*) FROM #__easysdi_location_definition";
+//		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
+//		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
+//		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
+//		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+//		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		
+		$query = "SELECT COUNT(*) FROM #__easysdi_location_definition";
 		//$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
-	
 		
 		// Recherche des enregistrements selon les limites
-		
-		
-		$query = "SELECT id,wfs_url,location_name,location_desc FROM #__easysdi_location_definition ";		
-									
-		
-	
+		$query = "SELECT id,wfs_url,location_name,location_desc FROM #__easysdi_location_definition ";
+		$search	= $mainframe->getUserStateFromRequest( "search{$option}",'search','','string' );
+		$search	= JString::strtolower( $search );
+		if ($search)
+		{
+			$query .= ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= ' or LOWER(wfs_url) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= ' or LOWER(location_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= ' or LOWER(location_desc) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );			
+		}		
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}
@@ -59,38 +61,33 @@ class ADMIN_location {
 		}		
 	
 		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option);	
-
 	}
 	
-
 	function editLocation( $id, $option ) {
 		$database =& JFactory::getDBO(); 
-		$rowLocation = new Location( $database );
+		$rowLocation = new location( $database );
 		$rowLocation->load( $id );					
 	
 		if ($id == '0'){
-			$rowLocation->creation_date =date('d.m.Y H:i:s');
-			 			
+			$rowLocation->creation_date =date('d.m.Y H:i:s');			 			
 		}
 		$rowLocation->update_date = date('d.m.Y H:i:s'); 
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
 		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
-		
 		
 		HTML_Location::editLocation( $rowLocation,$rowsAccount,$id, $option );
 	}
 	
 	function saveLocation($returnList ,$option){
-						global  $mainframe;
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowLocation =&	 new Location($database);
+		$rowLocation =&	 new location($database);
 				
-		
 		if (!$rowLocation->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
@@ -127,12 +124,8 @@ class ADMIN_location {
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listLocation");
 		}
-		
-		
 	}
-	
-	
-	
+		
 	function deleteLocation($cid ,$option){
 		
 		global $mainframe;
@@ -145,7 +138,7 @@ class ADMIN_location {
 		}
 		foreach( $cid as $id )
 		{
-			$Location = new Location( $database );
+			$Location = new location( $database );
 			$Location->load( $id );
 					
 			if (!$Location->delete()) {
@@ -153,12 +146,10 @@ class ADMIN_location {
 				$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			}												
 		}
-
 		$mainframe->redirect("index.php?option=$option&task=listLocation" );		
 	}
 	
-	function copyLocation($cid ,$option){
-		
+	function copyLocation($cid ,$option){		
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		
@@ -170,7 +161,7 @@ class ADMIN_location {
 		
 		foreach( $cid as $id )
 		{
-			$Location = new Location( $database );
+			$Location = new location( $database );
 			$Location->load( $id );
 			$Location->id=0;
 					
@@ -179,12 +170,8 @@ class ADMIN_location {
 				$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			}												
 		}
-
 		$mainframe->redirect("index.php?option=$option&task=listLocation" );		
 	}
-		
-		
-	
 	
 }
 	

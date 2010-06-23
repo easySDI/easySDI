@@ -26,8 +26,8 @@ class HTML_location {
 		$database =& JFactory::getDBO(); 
 		
 		//Get if the current location is used by an other in the field "id_location_filter".
-		//This means that a location depends on this one for a filter and
-		//so this means that the current location can not be "shown in location"
+		//This means that a location depends on this one for a filter so
+		// the current location can not be "shown in location"
 		$queryIsFilter = "select * from  #__easysdi_location_definition  where id_location_filter=$rowLocation->id ";
 		$database->setQuery( $queryIsFilter );
 		$result = $database->loadObjectList() ;

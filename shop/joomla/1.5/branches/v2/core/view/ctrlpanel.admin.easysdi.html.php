@@ -56,7 +56,7 @@ class HTML_ctrlpanel {
 				</div>
 			</div>
 			<?php	
-			$link = "index.php?option=$option&amp;task=ctrlPanelLocation";
+			$link = "index.php?option=$option&amp;task=listLocation";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">
