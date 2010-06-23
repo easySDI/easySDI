@@ -246,9 +246,11 @@ class ADMIN_basemap {
 //		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 //		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 //		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
+//		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+//		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		$search				= $mainframe->getUserStateFromRequest( "search{$option}",'search','','string' );
+		$search				= JString::strtolower( $search );
+		
 		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_definition";
 		
 		$db->setQuery( $query );
@@ -256,7 +258,11 @@ class ADMIN_basemap {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__easysdi_basemap_definition WHERE alias like '%$search%'";		
+		$query = "SELECT * FROM #__easysdi_basemap_definition ";	
+		if($search)
+		{
+			$query .= " WHERE LOWER(alias) like '".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false )."'";
+		}	
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}

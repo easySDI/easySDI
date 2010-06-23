@@ -19,8 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_perimeter {
-	
-	
+		
 	function goDownPerim($cid,$option){
 
 			global  $mainframe;
@@ -55,6 +54,7 @@ class ADMIN_perimeter {
 
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
 	}
+	
 	function goUpPerim($cid,$option){
 
 				global  $mainframe;
@@ -88,7 +88,6 @@ class ADMIN_perimeter {
 			}	
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );				
 	}
-	
 	
 	function listPerimeter($option) {
 		global  $mainframe;
@@ -201,6 +200,7 @@ class ADMIN_perimeter {
 
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 	}
+	
 	function goUpPerimeter($cid,$option){
 
 			global  $mainframe;
@@ -281,27 +281,24 @@ class ADMIN_perimeter {
 		$rowPerimeter->load( $id );					
 	
 		if ($id == '0'){
-			$rowPerimeter->creation_date =date('d.m.Y H:i:s');
-			 			
+			$rowPerimeter->creation_date =date('d.m.Y H:i:s');			 			
 		}
 		$rowPerimeter->update_date = date('d.m.Y H:i:s'); 
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.partner_id as value, u.name as text FROM #__users u INNER JOIN #__easysdi_community_partner p ON u.id = p.user_id " );
+		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
 		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
 		
 		HTML_Perimeter::editPerimeter( $rowPerimeter, $rowsAccount, $id, $option );
 	}
 	
-	//Save perimeter
 	function savePerimeter($returnList ,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowPerimeter =&	 new Perimeter($database);
-				
+		$rowPerimeter =&	 new perimeter($database);
 		
 		if (!$rowPerimeter->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -339,11 +336,7 @@ class ADMIN_perimeter {
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter");
 		}
-		
-		
 	}
-	
-	
 	
 	function deletePerimeter($cid ,$option){
 		
@@ -395,9 +388,6 @@ class ADMIN_perimeter {
 		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );		
 	}
 		
-		
-	
-	
 }
 	
 ?>

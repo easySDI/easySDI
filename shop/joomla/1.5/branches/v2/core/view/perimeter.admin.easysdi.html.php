@@ -26,8 +26,8 @@ class HTML_perimeter {
 		$database =& JFactory::getDBO(); 
 		
 		//Get if the current perimeter is used by an other in the field "id_perimeter_filter".
-		//This means that a perimeter depends on this one for a filter and
-		//so this means that the current perimeter can not be used in "manual perimeter"
+		//This means that a perimeter depends on this one for a filter so
+		// it can not be used in "manual perimeter"
 		$queryIsFilter = "select * from  #__easysdi_perimeter_definition  where id_perimeter_filter=$rowPerimeter->id ";
 		$database->setQuery( $queryIsFilter );
 		$result = $database->loadObjectList() ;
