@@ -53,7 +53,7 @@ function com_install(){
 		return false;
 	}
 
-		/**
+	/**
 	 * Check the CATALOG installation
 	 */
 	$count = 0;
@@ -75,58 +75,27 @@ function com_install(){
 		return false;
 	}
 
-	/**
-	 * Creates the database structure
-	 */
-	$query="CREATE TABLE IF NOT EXISTS  `#__easysdi_config` (
-			  `id` bigint(20) NOT NULL auto_increment,
-			  `thekey` varchar(100) NOT NULL default '',
-			  `value` varchar(100) NOT NULL default '',
-			  PRIMARY KEY  (`id`)
-			)"; 
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
-
-
-	$query="CREATE TABLE  IF NOT EXISTS `#__easysdi_version` (
-			  `component` varchar(100) NOT NULL default '',
-			  `id` bigint(20) NOT NULL auto_increment,
-			  `version` varchar(100) NOT NULL default '',
-			  PRIMARY KEY  (`id`)
-			)"; 		
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
 		
 	/**
-	 * Gets the component versions
+	 * Gets the component version
 	 */
-	$version = '0';
-	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_shop'";
+	$version = '0.0';
+	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'SHOP'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
-	if ($db->getErrorNum()) {
-		$version = '0';
-		//	$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
-	if (!$version){
-		$version="0";
-	}
-	if (strlen($version)==0){$version ='0';}
-
-	//When there is no DB version, then we create the full db
-	if ($version == '0')
+	if (!$version)
 	{
-		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
+		$version= '0.1';
+		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'SHOP', 'com_easysdi_shop', 'com_easysdi_shop', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_shop', 'com_sdi_shop', '".$version."')";
+		$db->setQuery( $query);		
+		if (!$db->query()) 
+		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
 		}
-
-		$query="INSERT INTO #__easysdi_version (id,component,version) VALUES (null, 'com_easysdi_shop', '0.9')";
+	
+		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -136,7 +105,7 @@ function com_install(){
 		 * todo : move those SQL statements in the core installation
 		 * @var unknown_type
 		 */
-	$query="CREATE TABLE `#__easysdi_location_definition` (
+		$query="CREATE TABLE `#__easysdi_location_definition` (
 		  `id` bigint(20) NOT NULL auto_increment,
 		  `wfs_url` varchar(4000) NOT NULL default '',
 		  `location_name` varchar(4000) NOT NULL default '',
@@ -158,7 +127,8 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	$query="ALTER TABLE #__easysdi_location_definition add column user varchar(400)";
+	
+		$query="ALTER TABLE #__easysdi_location_definition add column user varchar(400)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
@@ -362,72 +332,12 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-
-		$version = "0.9";
-	}
-	if ($version == "0.9")
-	{
-		$query="UPDATE #__easysdi_version set version = '0.91' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.91";
-
-		
-		
-	}
-	if ($version == "0.91")
-	{
-
-		$query="UPDATE #__easysdi_version set version = '0.92' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.92";
-	}
-	if ($version == "0.92" || $version == "0.93" || $version == "0.94" || $version == "0.95" || $version == "0.96")
-	{
-		$query="UPDATE #__easysdi_version set version = '0.97' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.97";
-
-		
-	}
-	if ($version == "0.97")
-	{
-		$query="UPDATE #__easysdi_version set version = '0.98' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.98";
-
 		$query="ALTER TABLE #__easysdi_product_properties_definition add column type_code varchar(100) NOT NULL default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	if ($version == "0.98")
-	{
-		$query="UPDATE #__easysdi_version set version = '0.99' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.99";
-
+	
 		$query="ALTER TABLE #__easysdi_product add column is_free tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -476,17 +386,7 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	if ($version == "0.99")
-	{
-		$query="UPDATE #__easysdi_version set version = '0.991' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version = "0.991";
-
+	
 		$query="ALTER TABLE #__easysdi_order_product_list add column `status` varchar(100) NOT NULL default 'AWAIT'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -528,31 +428,13 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	if ($version == "0.991")
-	{
-		$version = "0.992";
-		$query="UPDATE #__easysdi_version set version = '0.992' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
+		
 		$query="ALTER TABLE #__easysdi_product add column `metadata_partner_id` bigint(20) default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-//		$query =  "INSERT INTO `#__easysdi_community_role`
-//				  (`publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`)
-//				   VALUES 
-//				  ( 0, 1, 'FAVORITE', 'EASYSDI_FAVORITE_RIGHT', 'Gestion des favoris', NULL),
-//				  (0, 1, 'PRODUCT', 'EASYSDI_PRODUCT_RIGHT', 'Gestion des produits', NULL);";
-//		$db->setQuery( $query);
-//		if (!$db->query()) {
-//			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-//		}
-		
 		$query="INSERT INTO `#__sdi_list_role` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`, `publish_id`, `roletype_id`) VALUES
 					('".helper_easysdi::getUniqueId()."', 'EASYSDI_FAVORITE_RIGHT', 'EASYSDI_FAVORITE_RIGHT', 'EASYSDI_FAVORITE_RIGHT', 'Gestion des favoris', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1'),
 					('".helper_easysdi::getUniqueId()."', 'EASYSDI_PRODUCT_RIGHT', 'EASYSDI_PRODUCT_RIGHT', 'EASYSDI_PRODUCT_RIGHT', 'Gestion des produits', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1')";
@@ -595,31 +477,6 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-	}
-	if ($version == "0.992")
-	{
-
-		$version = "0.993";
-		$query="UPDATE #__easysdi_version set version = '0.993' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-
-	if ($version == "0.993")
-	{
-
-
-		$version = "0.994";
-		$query="UPDATE #__easysdi_version set version = '0.994' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
-
 		$query="ALTER TABLE #__easysdi_order add column buffer bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -641,7 +498,6 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-
 
 		$query="ALTER TABLE #__easysdi_product add column previewWmsUrl varchar(400) default ''";
 		$db->setQuery( $query);
@@ -671,8 +527,6 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-
 		$query="ALTER TABLE #__easysdi_basemap_definition add column alias  varchar(400) default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -700,25 +554,6 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-
-
-
-	}
-
-
-	if ($version == "0.994")
-	{
-
-
-		$version = "0.995";
-		$query="UPDATE #__easysdi_version set version = '0.995' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
-		
-		
 		
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column min_resolution bigint(20) NOT NULL default '0' ";
 		$db->setQuery( $query);
@@ -726,18 +561,13 @@ function com_install(){
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-		
-
+	
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column max_resolution bigint(20) NOT NULL default '0' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-
-		
-		
-	
 
 		$query="ALTER TABLE #__easysdi_basemap_content add column ordering int(11) NOT NULL default '0'";
 		$db->setQuery( $query);
@@ -760,9 +590,6 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-
-
 		$query="ALTER TABLE #__easysdi_basemap_content add column user varchar(400) ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -777,8 +604,6 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-
-
 		$query = "insert  into #__easysdi_config (thekey, value) values('PROXYHOST','index.php?option=com_easysdi_shop&no_html=1&task=proxy')";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -786,60 +611,28 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
-		
-		
 		$query="ALTER TABLE #__easysdi_order_product_list add `remark` varchar(4000) default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-		
 	
-	 $query="ALTER TABLE #__easysdi_order_product_list add `price` decimal(10,0) default '0' ";
+	 	$query="ALTER TABLE #__easysdi_order_product_list add `price` decimal(10,0) default '0' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
-	}
-	
-	
-	
-	if ($version == "0.995")
-	{
-
-
-		$version = "0.996";
-		$query="UPDATE #__easysdi_version set version = '0.996' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	
-	
-			$query="ALTER TABLE #__easysdi_perimeter_definition add column perimeter_code varchar(400) NOT NULL default '' ";
+		
+		$query="ALTER TABLE #__easysdi_perimeter_definition add column perimeter_code varchar(400) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	
-	}	
-	
-	if ($version == "0.996")
-	{
-
-
-		$version = "0.997";
-		$query="UPDATE #__easysdi_version set version = '0.997' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	
-	
-			$query="ALTER TABLE #__easysdi_order_product_properties add column property_value varchar(4000) NOT NULL default '' ";
+		$query="ALTER TABLE #__easysdi_order_product_properties add column property_value varchar(4000) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
@@ -853,60 +646,24 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	
-	$query="ALTER TABLE #__easysdi_order_product_properties add column code varchar(400) NOT NULL default '' ";
+		$query="ALTER TABLE #__easysdi_order_product_properties add column code varchar(400) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	}	
-if ($version == "0.997")
-	{
-
-
-		$version = "0.998";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-		
+	
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column ordering double NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-		
-if ($version == "0.998")
-	{
-
-		$version = "0.999";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
+	
 		$query="ALTER TABLE #__easysdi_basemap_definition add column restrictedExtent tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-		
-	}
-	if ($version == "0.999")
-	{
-
-		$version = "0.9991";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
@@ -916,23 +673,6 @@ if ($version == "0.998")
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
-	}		
-		
-	
-	if ($version == "0.9991")
-	{
-
-
-		$version = "0.9992";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-		
 		
 		$query="ALTER TABLE #__easysdi_order add column order_date datetime NOT NULL";
 		$db->setQuery( $query);
@@ -1044,16 +784,6 @@ if ($version == "0.998")
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	if ($version == "0.9992")
-	{
-		$version = "0.9993";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
 		
 		$query="ALTER TABLE #__easysdi_basemap_definition add column decimalPrecisionDisplayed int(2) NOT NULL default '3'";
 		$db->setQuery( $query);
@@ -1061,10 +791,7 @@ if ($version == "0.998")
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	}
-	
-	if($version == "0.9993")
-	{
+
 		//Add diffusion partner field for product
 		$query="ALTER TABLE #__easysdi_product add column `diffusion_partner_id` bigint(20) default '0'";
 		$db->setQuery( $query);
@@ -1073,19 +800,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		//Update component version
-		$version = "0.9994";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-
-	if($version == "0.9994")
-	{
-		
-
 		$query="ALTER TABLE #__easysdi_product_properties_definition ADD column `translation` varchar(50) NOT NULL";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -1100,16 +814,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		//Update component version
-		$version = "0.9995";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-	 if($version == "0.9995")
-	 {
 	 	//Add product treatment type
 		$query="ALTER TABLE #__easysdi_product add column `treatment_type`  BIGINT( 20 ) NOT NULL default '1' ";
 		$db->setQuery( $query);
@@ -1164,18 +868,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		//Update component version
-		$version = "0.9996";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-
-	
-	 if($version == "0.9996")
-	 {
 	 	//Add field for internal metadata
 		$query="ALTER TABLE #__easysdi_product add column `metadata_internal`  TINYINT( 1 ) NOT NULL default '0' ";
 		$db->setQuery( $query);
@@ -1192,16 +884,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		//Update component version
-		$version = "0.9997";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 if($version == "0.9997")
-	 {
 		//Insert key config for caddy description length
 	 	$query = "insert  into #__easysdi_config (thekey, value) values('CADDY_DESCRIPTION_LENGTH','10')";
 		$db->setQuery( $query);
@@ -1210,16 +892,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-	 	//Update component version
-		$version = "0.9998";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 if($version == "0.9998")
-	 {
 		 //Add field for product administrator
 		$query="ALTER TABLE #__easysdi_product add column `admin_partner_id` bigint(20) default '0' ";
 		$db->setQuery( $query);
@@ -1228,16 +900,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-	 	//Update component version
-		$version = "0.9999";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
- 	if($version == "0.9999")
-	 {
 		 //Add total area field to order 
 		$query="ALTER TABLE #__easysdi_order add column `surface` bigint(20) default '0' ";
 		$db->setQuery( $query);
@@ -1253,64 +915,7 @@ if ($version == "0.998")
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-	 	//Update component version
-		$version = "0.99991";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	if($version == "0.99991")
-	 {
-	 	
-	 	
-		//Update component version
-		$version = "0.99992";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 
-	 if($version == "0.99992")
-	 {		
-	  	//Update component version
-		$version = "0.99993";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 
-	if($version == "0.99993")
-	 {		
-		
-	 	//Update component version
-		$version = "0.99994";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 
-	if($version == "0.99994")
-	 {		
-		
-	 	//Update component version
-		$version = "0.99995";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	if($version == "0.99995")
-	 {		
+
 	 	// Add config keys fort extjs form pos
 		$query="INSERT INTO #__easysdi_config (thekey, value) values('DIV_CONTAINER_FRONTEND','div#maincolumn')";
 	 	$db->setQuery( $query);
@@ -1326,28 +931,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 				
-	 	//Update component version
-		$version = "0.99996";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-
-	 if($version == "0.99996")
-	 {		
-	 	//Update component version
-		$version = "0.99997";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 
-	 if ($version == "0.99997")
-	 {
 	 	/**
 	 	 * Add the support of an easySDI account for authentication on each service subject to be called via proxy.php
 	 	 */
@@ -1371,46 +954,19 @@ if ($version == "0.998")
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	 	//Update component version
-		$version = "0.99998";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+
+		$query="ALTER TABLE #__easysdi_product add column metadata_update_date datetime NOT NULL default '0000-00-00 00:00:00' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	 }
-	 if ($version == "0.99998")
-	 {
-		 $query="ALTER TABLE #__easysdi_product add column metadata_update_date datetime NOT NULL default '0000-00-00 00:00:00' ";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 	//Update component version
-		$version = "0.99999";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 if ($version == "0.99999")
-	 {
+
 		$query="ALTER TABLE #__easysdi_perimeter_definition add column name_field_search_name varchar(100) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	 	//Update component version
-		$version = "0.999991";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 if ($version == "0.999991")
-	 {
+
 		$query="ALTER TABLE #__easysdi_basemap_content add column attribution varchar(100) NOT NULL default '' ";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -1431,16 +987,6 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-	 	//Update component version
-		$version = "0.999992";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	 if ($version == "0.999992")
-	 {
 		$query="ALTER TABLE #__easysdi_basemap_definition add column dflt_fillcolor varchar(10) NOT NULL default ''";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -1483,16 +1029,7 @@ if ($version == "0.998")
 			//The table does not exists then create it
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	 	//Update component version
-		$version = "0.999993";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	 }
-	  if ($version == "0.999993")
-	 {
+
 		$query = "insert  into #__easysdi_config (thekey, value) values('ENABLE_FAVORITES','1')";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -1517,43 +1054,8 @@ if ($version == "0.998")
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	 	//Update component version
-		$version = "0.999994";
-		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
+
 	 }
-	 
-	/**
-	 * Menu creation
-	 */
-//	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
-//	$db->setQuery( $query);
-//	$id = $db->loadResult();
-//	if ($id)
-//	{
-//	}
-//	else
-//	{
-//		$mainframe->enqueueMessage("EASYSDI menu was not installed. Usually this menu is created during the installation of the easysdi core component. Please be sure that the easysdi_core component is installed before installing this component.","ERROR");
-//		return false;
-//	}
-//
-//	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
-//			$db->setQuery( $query);
-//			if (!$db->query()) 
-//			{
-//				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-//			}
-//		
-//	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-//	values($id,'SHOP','','option=com_easysdi_shop','SHOP','com_easysdi_shop','js/ThemeOffice/component.png','')";
-//	$db->setQuery( $query);
-//	if (!$db->query()) {
-//		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-//	}
 
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('EasySDI - Shop','option=com_easysdi_shop','Easysdi Shop','com_easysdi_shop','js/ThemeOffice/component.png','')";
