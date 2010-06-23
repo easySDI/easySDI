@@ -19,76 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_perimeter {
-		
-	function goDownPerim($cid,$option){
 
-			global  $mainframe;
-			$db =& JFactory::getDBO();
-			
-			$query = "select * from  #__easysdi_perimeter_definition  where id=$cid[0]";
-			$db->setQuery( $query );
-			
-			$row1 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-								
-			$query = "select * from  #__easysdi_perimeter_definition  where id=$row1->properties_id and `order` > $row1->order   order by `order` ";
-			$db->setQuery( $query );
-			$row2 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			
-			$query = "update #__easysdi_perimeter_definition set `order`= $row1->order where id =$row2->id";
-			$db->setQuery( $query );
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-			
-			$query = "update #__easysdi_perimeter_definition set `order`= $row2->order where id =$row1->id";
-			$db->setQuery( $query );
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-
-			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
-	}
-	
-	function goUpPerim($cid,$option){
-
-				global  $mainframe;
-			$db =& JFactory::getDBO();
-			
-			$query = "select * from  #__easysdi_perimeter_definition  where id=$cid[0]";
-			$db->setQuery( $query );
-			
-			$row1 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-								
-			$query = "select * from  #__easysdi_perimeter_definition  where properties_id=$row1->properties_id and `order` < $row1->order  order by `order` ";
-			$db->setQuery( $query );
-			$row2 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			
-			$query = "update #__easysdi_perimeter_definition set `order`= $row1->order where id =$row2->id";
-			$db->setQuery( $query );				
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-			
-			$query = "update #__easysdi_perimeter_definition set `order`= $row2->order where id =$row1->id";
-			$db->setQuery( $query );				
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}	
-			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );				
-	}
-	
 	function listPerimeter($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -240,7 +171,7 @@ class ADMIN_perimeter {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		
-		$query = "select count(*) from  #__easysdi_metadata_tabs ";								
+		$query = "select count(*) from  #__easysdi_perimeter_definition ";								
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 
@@ -258,11 +189,9 @@ class ADMIN_perimeter {
 		$order = $_POST[order];
 		
 		// update ordering values
-		
 		for ($i = 0; $i < $total; $i++)
 		{
 			$rowMPerimeter->load($cid[$i]);
-			
 			if ($rowMPerimeter->ordering != $order[$i])
 			{
 				$rowMPerimeter->ordering = $order[$i];

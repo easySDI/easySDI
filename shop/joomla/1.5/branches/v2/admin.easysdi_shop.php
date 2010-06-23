@@ -2030,8 +2030,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
 		TOOLBAR_perimeter::_EDITPERIMETER();
-		ADMIN_perimeter::editPerimeter(0,$option);
-		
+		ADMIN_perimeter::editPerimeter(0,$option);		
 		break;
 	
 	case "cancelPerimeter":
@@ -2042,35 +2041,34 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
 		
 		TOOLBAR_perimeter::_LISTPERIMETER();
-		ADMIN_perimeter::listPerimeter($option);
-		
+		ADMIN_perimeter::listPerimeter($option);		
 		break;
+		
 	case "orderupPerimeter":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'perimeter.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'perimeter.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'perimeter.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
 		
-		ADMIN_perimeter::goupPerimeter($cid, $option);
-		
+		ADMIN_perimeter::goupPerimeter($cid, $option);		
 		break;
+		
 	case "orderdownPerimeter":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'perimeter.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'perimeter.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'perimeter.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
 		
-		ADMIN_perimeter::godownPerimeter($cid, $option);
-		
+		ADMIN_perimeter::godownPerimeter($cid, $option);		
 		break;
+		
 	case "saveOrderPerimeter":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'perimeter.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'perimeter.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'perimeter.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
 		
-		ADMIN_perimeter::saveOrderPerimeter($cid, $option);
-		
+		ADMIN_perimeter::saveOrderPerimeter($cid, $option);		
 		break;
 		
 	/*****************************************************************************************************************************
