@@ -256,7 +256,7 @@ class ADMIN_basemap {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__easysdi_basemap_definition ";		
+		$query = "SELECT * FROM #__easysdi_basemap_definition WHERE alias like '%$search%'";		
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}

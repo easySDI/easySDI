@@ -458,8 +458,10 @@ class HTML_basemap {
 	
 	
 	function listBasemap($use_pagination, $rows, $pageNav,$option){
+		global  $mainframe;
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
+		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		?>
 		<form action="index.php" method="post" name="adminForm">
 			<table width="100%">
