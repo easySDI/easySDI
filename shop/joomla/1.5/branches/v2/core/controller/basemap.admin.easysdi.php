@@ -261,7 +261,7 @@ class ADMIN_basemap {
 		$query = "SELECT * FROM #__easysdi_basemap_definition ";	
 		if($search)
 		{
-			$query .= " WHERE LOWER(alias) like '".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false )."'";
+			$query .= " WHERE LOWER(alias) like ".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}	
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
