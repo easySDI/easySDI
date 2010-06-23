@@ -961,39 +961,78 @@ class HTML_metadata {
 						                {
 						                	myMask.show();
 						                 	var fields = new Array();
-						        			form.cascade(function(cmp)
+						        			form.getForm().isInvalid=false;
+							        		form.cascade(function(cmp)
 						        			{
 							        			if (cmp.xtype=='fieldset')
 						         				{
 						         					if (cmp.clones_count)
 						          						fields.push(cmp.getId()+','+cmp.clones_count);
 						         				}
+							         				
+							         				// Validation des champs langue
+						         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+						         					{
+						         						var countFields = cmp.items.length;
+						         						var countValues = 0;
+														
+														for (var i=0; i < countFields ; i++)
+														{
+															field = cmp.items.get(i); 
+															if (field.getValue() != '')
+															{
+																countValues++;
+															}
+														}
+														
+														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+														if (countValues != countFields && countValues != 0)
+														{
+															//console.log(cmp.getId());
+															for (var i=0; i < countFields ; i++)
+															{
+																field = cmp.items.get(i);
+																if (field.getValue() == '')
+																	field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+															} 
+															form.getForm().isInvalid=true;
+														}
+						         					}
 						        			});
 						        			var fieldsets = fields.join(' | ');
 						        			
-											form.getForm().setValues({fieldsets: fieldsets});
-						                 	form.getForm().setValues({task: 'validateMetadata'});
-						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({product_id: '".$product_id."'});
-						                 	form.getForm().setValues({account_id: '".$account_id."'});
-											form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: true,
-												success: function(form, action) 
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-							  						window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
-													myMask.hide();
-												},
-												failure: function(form, action) 
-												{
-                        							Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
-														
-													myMask.hide();
-												},
-												url:'".$validate_url."'
-											});
+											if (!form.getForm().isInvalid)
+						        			{
+							        			form.getForm().setValues({fieldsets: fieldsets});
+							                 	form.getForm().setValues({task: 'validateMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({product_id: '".$product_id."'});
+							                 	form.getForm().setValues({account_id: '".$account_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: true,
+													success: function(form, action) 
+													{
+														Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
+								  						window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+														myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+	                        							Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
+															
+														myMask.hide();
+													},
+													url:'".$validate_url."'
+												});
+											}
+											else
+											{
+												Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+															
+												myMask.hide();
+											}
 							        	}})
 							        );
 						form.render();";
@@ -1010,6 +1049,7 @@ class HTML_metadata {
 							                {
 							                	myMask.show();
 							                 	var fields = new Array();
+							        			form.getForm().isInvalid=false;
 							        			form.cascade(function(cmp)
 							        			{
 								        			if (cmp.xtype=='fieldset')
@@ -1017,109 +1057,146 @@ class HTML_metadata {
 							         					if (cmp.clones_count)
 							          						fields.push(cmp.getId()+','+cmp.clones_count);
 							         				}
+							         				
+							         				// Validation des champs langue
+						         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+						         					{
+						         						var countFields = cmp.items.length;
+						         						var countValues = 0;
+														
+														for (var i=0; i < countFields ; i++)
+														{
+															field = cmp.items.get(i); 
+															if (field.getValue() != '')
+															{
+																countValues++;
+															}
+														}
+														
+														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+														if (countValues != countFields && countValues != 0)
+														{
+															for (var i=0; i < countFields ; i++)
+															{
+																field = cmp.items.get(i);
+																if (field.getValue() == '')
+																	field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+															} 
+															form.getForm().isInvalid=true;
+														}
+						         					}
 							        			});
 							        			var fieldsets = fields.join(' | ');
 							        			
-												form.getForm().setValues({fieldsets: fieldsets});
-							                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({product_id: '".$product_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: true,
-													success: function(form, action) 
-													{
-														xml = (action.result.file.xml);
-														xmlfile = xml.split('<br>').join('\\n');
-														// Créer une iframe pour demander à l'utilisateur la date de publication
-														if (!win)
-															win = new Ext.Window({
-																	                title:'Publication',
-																	                width:300,
-																	                height:130,
-																	                closeAction:'hide',
-																	                layout:'fit', 
-																				    border:false, 
-																				    closable:false, 
-																				    modal:true,
-																				    renderTo:Ext.getBody(), 
-																				    frame:true,
-																				    items:[{ 
-																					     xtype:'form' 
-																					     ,id:'publishform' 
-																					     ,defaultType:'textfield' 
-																					     ,frame:true 
-																					     ,method:'post' 
-																					     ,defaults:{anchor:'95%'} 
-																					     ,items:[ 
-																					       { 
-																					         fieldLabel:'Date de publication', 
-																					         id:'publishdate', 
-																					         xtype: 'datefield',
-																					         format: 'd.m.Y',
-																					         value:'' 
-																					       },
-																					       { 
-																					         id:'metadata_id', 
-																					         xtype: 'hidden',
-																					         value:'".$metadata_id."' 
-																					       },
-																					       { 
-																					         id:'product_id', 
-																					         xtype: 'hidden',
-																					         value:'".$product_id."' 
-																					       },
-																					       { 
-																					         id:'account_id', 
-																					         xtype: 'hidden',
-																					         value:'".$account_id."' 
-																					       },
-																					       { 
-																					         id:'xml', 
-																					         xtype: 'hidden',
-																					         value: xmlfile
-																					       }
-																					    ] 
-																					     ,buttonAlign:'right' 
-																					     ,buttons: [{
-																			                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-																			                    handler: function(){
-																			                    	win.items.get(0).getForm().submit({
-																							    	scope: this,
-																									method	: 'POST',
-																									url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
-																									});
-																			                    	win.hide();
-																						
-																			                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
-														
-								  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
-														
-																			                    }
-																			                },{
-																			                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-																			                    handler: function(){
-																			                        win.hide();
-																			                }
-																					   }] 
-																	                }]
-																	            });
-														else
-															win.items.get(0).findById('publishdate').setValue('');
+							        			if (!form.getForm().isInvalid)
+							        			{
+													form.getForm().setValues({fieldsets: fieldsets});
+								                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
+								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								                 	form.getForm().setValues({product_id: '".$product_id."'});
+													form.getForm().submit({
+												    	scope: this,
+														method	: 'POST',
+														clientValidation: true,
+														success: function(form, action) 
+														{
+															xml = (action.result.file.xml);
+															xmlfile = xml.split('<br>').join('\\n');
+															// Créer une iframe pour demander à l'utilisateur la date de publication
+															if (!win)
+																win = new Ext.Window({
+																		                title:'Publication',
+																		                width:300,
+																		                height:130,
+																		                closeAction:'hide',
+																		                layout:'fit', 
+																					    border:false, 
+																					    closable:false, 
+																					    modal:true,
+																					    renderTo:Ext.getBody(), 
+																					    frame:true,
+																					    items:[{ 
+																						     xtype:'form' 
+																						     ,id:'publishform' 
+																						     ,defaultType:'textfield' 
+																						     ,frame:true 
+																						     ,method:'post' 
+																						     ,defaults:{anchor:'95%'} 
+																						     ,items:[ 
+																						       { 
+																						         fieldLabel:'Date de publication', 
+																						         id:'publishdate', 
+																						         xtype: 'datefield',
+																						         format: 'd.m.Y',
+																						         value:'' 
+																						       },
+																						       { 
+																						         id:'metadata_id', 
+																						         xtype: 'hidden',
+																						         value:'".$metadata_id."' 
+																						       },
+																						       { 
+																						         id:'product_id', 
+																						         xtype: 'hidden',
+																						         value:'".$product_id."' 
+																						       },
+																						       { 
+																						         id:'account_id', 
+																						         xtype: 'hidden',
+																						         value:'".$account_id."' 
+																						       },
+																						       { 
+																						         id:'xml', 
+																						         xtype: 'hidden',
+																						         value: xmlfile
+																						       }
+																						    ] 
+																						     ,buttonAlign:'right' 
+																						     ,buttons: [{
+																				                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+																				                    handler: function(){
+																				                    	win.items.get(0).getForm().submit({
+																								    	scope: this,
+																										method	: 'POST',
+																										url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
+																										});
+																				                    	win.hide();
+																							
+																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
 															
-								  						win.show();
-								  						
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+									  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
 															
-														myMask.hide();
-													},
-													url:'".$publish_url."'
-												});
+																				                    }
+																				                },{
+																				                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+																				                    handler: function(){
+																				                        win.hide();
+																				                }
+																						   }] 
+																		                }]
+																		            });
+															else
+																win.items.get(0).findById('publishdate').setValue('');
+																
+									  						win.show();
+									  						
+															myMask.hide();
+														},
+														failure: function(form, action) 
+														{
+	                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																
+															myMask.hide();
+														},
+														url:'".$publish_url."'
+													});
+												}
+												else
+												{
+													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+																
+													myMask.hide();
+												}
 								        	}})
 								        );
 						form.render();";
