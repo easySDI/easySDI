@@ -52,6 +52,7 @@ class ADMIN_basemap {
 			}
 	}
 	
+	
 	function orderDownBasemapContent($id,$basemapId){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
