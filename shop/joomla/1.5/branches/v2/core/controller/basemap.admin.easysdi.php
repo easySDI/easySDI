@@ -93,7 +93,7 @@ class ADMIN_basemap {
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchBaseMapContent{$option}", 'searchBaseMapContent', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		$order_field = JRequest::getVar('order_field');
 		
@@ -128,7 +128,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option);	
+		HTML_Basemap::listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search);	
 	}
 	
 	function editBasemapContent( $id, $option ) {
@@ -248,7 +248,7 @@ class ADMIN_basemap {
 //		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 //		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 //		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-		$search				= $mainframe->getUserStateFromRequest( "search{$option}",'search','','string' );
+		$search				= $mainframe->getUserStateFromRequest( "searchBaseMap{$option}",'searchBaseMap','','string' );
 		$search				= JString::strtolower( $search );
 		
 		$query = "SELECT COUNT(*) FROM #__easysdi_basemap_definition";
@@ -273,7 +273,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option);	
+		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option, $search);	
 	}
 	
 	function editBasemap( $id, $option ) {

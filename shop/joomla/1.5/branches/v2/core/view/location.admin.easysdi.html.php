@@ -261,12 +261,10 @@ class HTML_location {
 	
 	
 	
-	function listLocation($use_pagination, $rows, $pageNav,$option){
+	function listLocation($use_pagination, $rows, $pageNav,$option,$search){
 	
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_LOCATION"));
-				  
-		$search = JRequest::getVar("search","");
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">

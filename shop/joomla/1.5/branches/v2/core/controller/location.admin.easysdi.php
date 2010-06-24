@@ -30,8 +30,6 @@ class ADMIN_location {
 //		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 //		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 //		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-//		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-//		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		
 		$query = "SELECT COUNT(*) FROM #__easysdi_location_definition";
 		//$query .= $filter;
@@ -60,7 +58,7 @@ class ADMIN_location {
 			return false;
 		}		
 	
-		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option);	
+		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option, $search);	
 	}
 	
 	function editLocation( $id, $option ) {

@@ -204,8 +204,7 @@ class HTML_basemap {
 	}
 	
 	
-	
-	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option){
+	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search){
 
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAPCONTENT"));
@@ -227,7 +226,7 @@ class HTML_basemap {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listBasemap');" />			
+					<input type="text" name="searchBaseMapContent" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listBasemapContent');" />			
 				</td>
 			</tr>
 		</table>
@@ -457,18 +456,17 @@ class HTML_basemap {
 	
 	
 	
-	function listBasemap($use_pagination, $rows, $pageNav,$option){
+	function listBasemap($use_pagination, $rows, $pageNav,$option, $search){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		?>
 		<form action="index.php" method="post" name="adminForm">
 			<table width="100%">
 				<tr>
 					<td align="right">
 						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-						<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
+						<input type="text" name="searchBaseMap" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
 					</td>
 				</tr>
 			</table>
