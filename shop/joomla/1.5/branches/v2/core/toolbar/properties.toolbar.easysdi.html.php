@@ -44,7 +44,7 @@ class TOOLBAR_properties{
 		JToolBarHelper::editList('editPropertiesValues');
 		JToolBarHelper::deleteList('','deletePropertiesValues');				
 		JToolBarHelper::spacer();
-		JToolBarHelper::cancel('cancelProperties');
+		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
 	}
 }
 ?>
