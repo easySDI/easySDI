@@ -116,9 +116,9 @@ class HTML_properties {
 				<tr>
 					<td align="right">
 						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-						<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+						<input type="text" name="searchProperty" id="searchProperty" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 						<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-						<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			
+						<button onclick="document.getElementById('searchProperty').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			
 					</td>
 				</tr>
 			</table>
@@ -294,7 +294,7 @@ class HTML_properties {
 				<tr>
 					<td align="right">
 						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-						<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listPropertiesValues');" />			
+						<input type="text" name="searchPropertyValue" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listPropertiesValues');" />			
 					</td>
 				</tr>
 			</table>

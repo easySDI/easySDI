@@ -264,7 +264,7 @@ class ADMIN_properties {
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search	= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search	= $mainframe->getUserStateFromRequest( "$option.searchProperty",'searchProperty','','string' );
 		$search	= JString::strtolower( $search );
 		
 		$where="";
@@ -393,7 +393,7 @@ class ADMIN_properties {
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchPropertyValue{$option}", 'searchPropertyValue', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		
 		if ($properties_id == "")
