@@ -21,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_properties {
 	
 	
-	function goDown($cid,$option){
+	function goDownPropertyValue($cid,$option){
 			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
@@ -56,7 +56,8 @@ class ADMIN_properties {
 
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
 	}
-	function goUp($cid,$option){
+	
+	function goUpPropertyValue($cid,$option){
 			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
@@ -88,6 +89,7 @@ class ADMIN_properties {
 			}	
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=$row1->properties_id" );
 	}
+	
 	function saveOrderPropertiesValues($cid, $properties_id, $option)
 	{
 		global  $mainframe;
@@ -111,11 +113,9 @@ class ADMIN_properties {
 		$order = $_POST[order];
 		
 		// update ordering values
-		
 		for ($i = 0; $i < $total; $i++)
 		{
 			$rowPropertiesValues->load($cid[$i]);
-			
 			if ($rowPropertiesValues->order != $order[$i])
 			{
 				$rowPropertiesValues->order = $order[$i];
@@ -129,8 +129,8 @@ class ADMIN_properties {
 	}
 	
 	function publish($cid,$published){
-			global  $mainframe;
-			$db =& JFactory::getDBO(); 
+		global  $mainframe;
+		$db =& JFactory::getDBO(); 
 		if ($published){
 			$query = "update #__easysdi_product_properties_definition  set published = 1  where id=$cid[0]";			
 			
@@ -141,7 +141,6 @@ class ADMIN_properties {
 		if (!$db->query()) {		
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
 		}		
-		
 	}
 	
 	function goDownProperties($cid,$option){
@@ -180,6 +179,7 @@ class ADMIN_properties {
 
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );
 	}
+	
 	function goUpProperties($cid,$option){
 
 			global  $mainframe;
@@ -264,12 +264,8 @@ class ADMIN_properties {
 		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		
-		//$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		//$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
-		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
-		$search				= JString::strtolower( $search );
+		$search	= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search	= JString::strtolower( $search );
 		
 		$where="";
 		if ($search)
@@ -279,12 +275,9 @@ class ADMIN_properties {
 		}
 		
 		$query = "SELECT COUNT(*) FROM #__easysdi_product_properties_definition`";
-		
-		//$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
-	
 		
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
@@ -316,10 +309,8 @@ class ADMIN_properties {
 		}		
 	
 		HTML_properties::listProperties($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
-
 	}
 	
-
 	function editProperties( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties( $database );
@@ -327,8 +318,15 @@ class ADMIN_properties {
 			if ($id==0){
 				$rowProperties->order="0";
 			}
+		$partners = array();
+		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_ROOT") );
+		$database->setQuery( "  SELECT a.id AS value, b.name AS text 
+								FROM #__sdi_account a,#__users b 
+								WHERE a.root_id is null 
+								AND a.user_id = b.id ORDER BY b.name" );
+		$partners = array_merge( $partners, $database->loadObjectList() );
 		
-		HTML_properties::editProperties( $rowProperties,$id, $option );
+		HTML_properties::editProperties( $rowProperties,$partners, $id, $option );
 	}
 	
 	function saveProperties($returnList ,$option){
@@ -343,16 +341,15 @@ class ADMIN_properties {
 		}
 		
 		$rowProperties->update_date = date('Y-m-d h:i:s');
-		/*
+		
 		if ($rowProperties->order == "0")
 		{
 			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_definition ";
 			$database->setQuery( $query );
 			$maxOrder = $database->loadResult();
+			if(!$maxOrder)$maxOrder = 1;
 			$rowProperties->order = $maxOrder; 
-			 
 		}
-		*/
 		
 		if (!$rowProperties->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -360,9 +357,6 @@ class ADMIN_properties {
 		}
 		
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
-		
-				
-		
 	}
 	
 	function deleteProperties($cid ,$option){
@@ -388,14 +382,7 @@ class ADMIN_properties {
 		
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );		
 	}
-		
-		
-	
-	
-	
-	
-	
-	
+				
 	function listPropertiesValues($properties_id , $option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -422,8 +409,6 @@ class ADMIN_properties {
 		}
 		
 		$query = "SELECT COUNT(*) FROM #__easysdi_product_properties_values_definition WHERE properties_id=".$properties_id;
-		
-		//$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
@@ -438,14 +423,12 @@ class ADMIN_properties {
 			$filter_order		= "id";
 			$filter_order_Dir	= "asc";
 		}
-		
 		$orderby 	= ' order by `'. $filter_order .'` '. $filter_order_Dir;
 		
 		// Recherche des enregistrements selon les limites
 		$query = "SELECT * FROM #__easysdi_product_properties_values_definition where properties_id=$properties_id ";		
 		$query .= $where;
 		$query .= $orderby;						
-		
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);	
 		}else{
@@ -456,14 +439,17 @@ class ADMIN_properties {
 		if ($db->getErrorNum()) {						
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
 			echo $db->getErrorMsg(); 			
-		}		
-	
-		HTML_properties::listPropertiesValues($properties_id, $use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+		}	
 
-	}
+		$query="select text from #__easysdi_product_properties_definition where id = $properties_id";		 
+		$db->setQuery( $query );			
+		$row = $db->loadObject() ;
 	
+		HTML_properties::listPropertiesValues($properties_id, $use_pagination, $rows, $row, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+	}
 
 	function editPropertiesValues( $id, $option ) {
+		global $mainframe;
 		$database =& JFactory::getDBO(); 
 		$rowProperties = new properties_values( $database );
 		$rowProperties->load( $id );					
@@ -472,15 +458,21 @@ class ADMIN_properties {
 		}	
 		$rowProperties->update_date = date('d.m.Y H:i:s'); 		
 		
-		HTML_properties::editPropertiesValues( $rowProperties,$id, $option );
+		$properties_id = JRequest::getVar(properties_id,-1);
+		$query = "SELECT * FROM #__easysdi_product_properties_definition where id=".$properties_id;		
+		$database->setQuery( $query );
+		$property = $database->loadObject();
+		if ($database->getErrorNum()) {						
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						 		
+		}
+		
+		HTML_properties::editPropertiesValues( $rowProperties,$property, $id, $option );
 	}
 	
 	function savePropertiesValues($returnList ,$option){
-						global  $mainframe;
+		global  $mainframe;
 		$database=& JFactory::getDBO(); 
-		
 		$rowProperties =&	 new properties_values($database);
-				
 		
 		if (!$rowProperties->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -491,20 +483,15 @@ class ADMIN_properties {
 			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_values_definition WHERE properties_id=$rowProperties->properties_id";
 			$database->setQuery( $query );
 			$maxOrder = $database->loadResult();
+			if(!$maxOrder)$maxOrder = 1;
 			$rowProperties->order = $maxOrder; 
-			 
 		}
-		
-		
 		if (!$rowProperties->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );			
 		}
 		$properties_id = JRequest::getVar('properties_id');
 		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$properties_id );
-		
-				
-		
 	}
 	
 	function deletePropertiesValues($cid ,$option){
@@ -521,7 +508,29 @@ class ADMIN_properties {
 		{
 			$properties = new properties_values( $database );
 			$properties->load( $id );
-					
+			
+			//Reorder remaining property values
+			$query = "SELECT *  FROM #__easysdi_product_properties_values_definition  
+								WHERE  properties_id = $properties->properties_id 
+								AND `order` > $properties->order  order by `order` ASC";
+			$database->setQuery( $query );
+			$rows2 = $database->loadObjectList() ;
+			if ($database->getErrorNum()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}	
+			
+			$o = $properties->order;
+			foreach ($rows2 as $row2 )
+			{
+				$query = "update #__easysdi_product_properties_values_definition set `order`= $o where id =$row2->id";
+				$database->setQuery( $query );				
+				if (!$database->query()) {		
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
+				}
+				$o = $o+1;
+			}
+			
+			//Delete the current property value
 			if (!$properties->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );

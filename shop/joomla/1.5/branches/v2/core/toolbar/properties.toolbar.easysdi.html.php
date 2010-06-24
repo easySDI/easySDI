@@ -18,39 +18,28 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-
-
 class TOOLBAR_properties{
 	
-	
 	function _EDITPROPERTIES(){
-		
 		JToolBarHelper::save('saveProperties');
 		JToolBarHelper::cancel('cancelProperties');
 	}
 	
 	function _LISTPROPERTIES() {
-		global $mainframe;
-
-		
 		JToolBarHelper::addNew('newProperties');
 		JToolBarHelper::editList('editProperties');
 		JToolBarHelper::deleteList('','deleteProperties');
-		//JToolBarHelper::editList( 'listPropertiesValues',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"));		
 		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"), false);
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
 	}
-function _EDITPROPERTIESVALUES(){
-		
+	
+	function _EDITPROPERTIESVALUES(){
 		JToolBarHelper::save('savePropertiesValues');
 		JToolBarHelper::cancel('cancelPropertiesValues');
 	}
 	
 	function _LISTPROPERTIESVALUES() {
-		global $mainframe;
-
-		
 		JToolBarHelper::addNew('newPropertiesValues');
 		JToolBarHelper::editList('editPropertiesValues');
 		JToolBarHelper::deleteList('','deletePropertiesValues');				

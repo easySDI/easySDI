@@ -48,7 +48,7 @@
 		<div id="cpanel">
 			<br/>
 			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=ctrlPanelProduct";
+			$link = "index.php?option=com_easysdi_shop&amp;task=listProduct";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">
@@ -60,7 +60,7 @@
 				</div>
 			</div>
 			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=ctrlPanelProperties";
+			$link = "index.php?option=com_easysdi_shop&amp;task=listProperties";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">
