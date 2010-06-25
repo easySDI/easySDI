@@ -2546,7 +2546,6 @@ if (count($rows)>0){
 	}
 
 	function order(){
-
 		global $mainframe;
 
 		$option = JRequest::getVar('option');
