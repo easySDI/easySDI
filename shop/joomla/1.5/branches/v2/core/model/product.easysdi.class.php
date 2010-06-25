@@ -58,6 +58,30 @@ class product extends JTable
 	{
 		parent::__construct ( '#__easysdi_product', 'id', $db ) ;    		
 	}
+	
+	function deleteProduct ()
+	{
+		if(!parent::delete())
+		{
+			return false;
+		}
+		
+		$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$this->id;
+		$this->_db->setQuery( $query );
+		if (!$this->_db->query()) {
+			return false;
+		}
+
+		$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$this->id;
+		$this->_db->setQuery( $query );
+		if (!$this->_db->query()) {
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 
 }
 

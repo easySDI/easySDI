@@ -533,7 +533,6 @@ class SITE_product {
 	}
 	
 	function suppressProduct($cid,$option){
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'product.admin.easysdi.php');
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		$user = JFactory::getUser();
@@ -542,8 +541,15 @@ class SITE_product {
 		{
 			return;
 		}
-		ADMIN_product::deleteProduct($cid,$option);
-        }
+		
+		$rowProduct = new product( $database );
+		$rowProduct->load( $cid[0] );	
+		if(!$rowProduct->deleteProduct())
+		{
+			$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
+			return;
+		}
+     }
 	
 	function editMetadata($isNew = false) {
 		global  $mainframe;

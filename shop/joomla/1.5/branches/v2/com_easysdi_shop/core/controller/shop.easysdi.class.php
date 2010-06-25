@@ -2783,55 +2783,7 @@ function validateForm(toStep, fromStep){
 	<?php
 	}
 
-	function importProduct(){
-
-
-
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		if (!$catalogUrlBase) $catalogUrlBase ="http://localhost:8081/proxy/ogc/geonetwork";
-		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&typeNames=csw:Record&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
-		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
-		$cswResults= simplexml_load_file($catalogUrlGetRecordsCount);
-		if ($cswResults !=null){
-			$countMD = 0;
-			foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) {
-				if ($a=='numberOfRecordsMatched'){
-					$countMD = $b;
-					echo $b;
-				}
-			}
-			$db =& JFactory::getDBO();
-
-			$inc = 1;
-			//$countMD
-			for ($i=1; $i<=$countMD;$i=$i+$inc){
-				//for ($i=1; $i<=1;$i=$i+$inc){
-				$catalogUrlGetRecordsMD =  $catalogUrlGetRecords . "&startPosition=".$i."&maxRecords=".$inc;
-				$cswResults= simplexml_load_file($catalogUrlGetRecordsMD);
-				foreach ($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->children("http://www.isotc211.org/2005/gmd")->MD_Metadata as $metadata){
-
-					$md = new geoMetadata($metadata);
-
-					echo "<b>".$i."</b><br>";
-						
-					$query= "insert into #__easysdi_product (metadata_id,id,supplier_name,data_title,metadata_standard_id,hasMetadata) values(".$db->Quote($md->getFileIdentifier()).",0,".$db->Quote($md->getDistributionOrganisationName()).",".$db->Quote($md->getDataIdentificationTitle()).",(select id from #__easysdi_metadata_standard WHERE name = 'ASITVD - ISO 19115:2003/19139' ),1)";
-					echo $query."<br>";
-					$db->setQuery( $query);
-					if (!$db->query()) {
-						echo "<div class='alert'>";
-						echo "<b>".$db->getErrorMsg()."</b><br>";
-						echo "</div>";
-						exit;
-					}
-				}
-			}
-
-		}
-
-
-
-	}
-
+	
 	function searchProducts($orderable = 1){
 		global $mainframe;
 		$db =& JFactory::getDBO();

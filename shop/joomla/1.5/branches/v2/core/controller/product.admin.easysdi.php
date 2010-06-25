@@ -311,7 +311,6 @@ class ADMIN_product {
 	}
 
 	function deleteProduct($cid ,$option){
-
 		global $mainframe;
 		$database =& JFactory::getDBO();
 
@@ -325,27 +324,27 @@ class ADMIN_product {
 		{
 			$product = new product( $database );
 			$product->load( $id );
-			
-			if (!$product->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			}
-
-			$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$id;
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
-			}
-
-			$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$id;
-			$database->setQuery( $query );
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
-			}
+			if(!$rowProduct->deleteProduct())$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
+//			if (!$product->delete()) {
+//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+//			}
+//
+//			$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$id;
+//			$database->setQuery( $query );
+//			if (!$database->query()) {
+//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+//				exit();
+//			}
+//
+//			$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$id;
+//			$database->setQuery( $query );
+//			if (!$database->query()) {
+//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+//				exit();
+//			}
 		}
 		
 		$limitstart = JRequest::getVar("limitstart");
