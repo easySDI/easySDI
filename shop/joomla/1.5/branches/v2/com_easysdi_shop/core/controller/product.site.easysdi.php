@@ -246,19 +246,16 @@ class SITE_product {
 		{
 			return;
 		}
-		$rowPartner = new partnerByUserId( $database );
+		$rowPartner = new accountByUserId( $database );
 		$rowPartner->load( $user->id );
 		
 		$rowProduct =& new Product($database);
 		$rowProductOld =& new Product($database);
 		$sendMail = false;
 		
-		
-		$query = "SELECT name FROM jos_easysdi_metadata_standard where id =".$_POST['metadata_standard_id'];
-		$database->setQuery( $query );
-		$stdName = $database->loadResult();
-		
-		
+//		$query = "SELECT name FROM jos_easysdi_metadata_standard where id =".$_POST['metadata_standard_id'];
+//		$database->setQuery( $query );
+//		$stdName = $database->loadResult();
 		
 		$id = JRequest::getVar("id",0);
 		if($id >0){
@@ -266,7 +263,6 @@ class SITE_product {
 			if ($rowProductOld->published == 0 && JRequest::getVar("published",0) ==1){
 				$sendMail = true;
 			}
-			
 		}
 		if (!$rowProduct->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -274,379 +270,14 @@ class SITE_product {
 			exit();
 		}
 				
-		$rowProduct->admin_partner_id = $rowPartner->partner_id;
+		$rowProduct->admin_partner_id = $rowPartner->id;
 		if($rowPartner->root_id)
 		{
 			$rowProduct->partner_id = $rowPartner->root_id;
 		}
 		else
 		{
-			$rowProduct->partner_id = $rowPartner->partner_id;
-		}
-		
-		// Si le produit n'existe pas encore, cr�er la m�tadonn�e
-		if ($rowProduct->id == 0)
-		{
-			// Cr�ation de la m�tadonn�e pour le nouveau guid
-			// Ins�rer dans Geonetwork la nouvelle version de la m�tadonn�e
-			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<csw:Transaction service=\"CSW\"
-			version=\"2.0.2\"
-			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-				<csw:Insert>
-					<gmd:MD_Metadata  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-						xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-						xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
-						xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-						xmlns:gml=\"http://www.opengis.net/gml\" 
-						xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
-						xmlns:srv=\"http://www.isotc211.org/2005/srv\"
-						xmlns:ext=\"http://www.depth.ch/2008/ext\">
-						
-						<gmd:fileIdentifier>
-							<gco:CharacterString>".$_POST['metadata_id']."</gco:CharacterString>
-						</gmd:fileIdentifier>
-						<gmd:language>
-							<gco:CharacterString>fra</gco:CharacterString>
-						</gmd:language>
-						<gmd:dateStamp>
-							<gco:DateTime>".date('Y-m-d\TH:i:s')."</gco:DateTime>
-						</gmd:dateStamp>
-						<gmd:metadataStandardName>
-							<gco:CharacterString>".$stdName."</gco:CharacterString>
-						</gmd:metadataStandardName>
-						<gmd:contact>
-							<gmd:CI_ResponsibleParty>
-								<gmd:individualName>
-									<gco:CharacterString></gco:CharacterString>
-								</gmd:individualName>
-								<gmd:organisationName>
-									<gco:CharacterString></gco:CharacterString>
-								</gmd:organisationName>
-								<gmd:contactInfo>
-									<gmd:CI_Contact>
-										<gmd:phone>
-											<gmd:CI_Telephone>
-												<gmd:voice>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:voice>
-												<gmd:facsimile>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:facsimile>
-											</gmd:CI_Telephone>
-										</gmd:phone>
-										<gmd:address>
-											<gmd:CI_Address>
-												<gmd:deliveryPoint>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:deliveryPoint>
-												<gmd:city>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:city>
-												<gmd:postalCode>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:postalCode>
-												<gmd:country xsi:type=\"gmd:PT_FreeText_PropertyType\">
-													<gco:CharacterString>CH</gco:CharacterString>
-												</gmd:country>
-												<gmd:electronicMailAddress>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:electronicMailAddress>
-											</gmd:CI_Address>
-										</gmd:address>
-									</gmd:CI_Contact>
-								</gmd:contactInfo>
-								<gmd:role>
-									<gmd:CI_RoleCode codeListValue=\"custodian\"
-										codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode\" />
-								</gmd:role>
-							</gmd:CI_ResponsibleParty>
-						</gmd:contact>
-						<gmd:referenceSystemInfo>
-							<gmd:MD_ReferenceSystem>
-								<gmd:referenceSystemIdentifier>
-									<gmd:RS_Identifier>
-										<gmd:code>
-											<gco:CharacterString>EPSG:21781</gco:CharacterString>
-										</gmd:code>
-									</gmd:RS_Identifier>
-								</gmd:referenceSystemIdentifier>
-							</gmd:MD_ReferenceSystem>
-						</gmd:referenceSystemInfo>
-						<gmd:identificationInfo>
-							<gmd:MD_DataIdentification>
-								<gmd:pointOfContact>
-									<gmd:CI_ResponsibleParty>
-										<gmd:individualName>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:individualName>
-										<gmd:organisationName>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:organisationName>
-										<gmd:contactInfo>
-											<gmd:CI_Contact>
-												<gmd:phone>
-													<gmd:CI_Telephone>
-														<gmd:voice>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:voice>
-														<gmd:facsimile>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:facsimile>
-													</gmd:CI_Telephone>
-												</gmd:phone>
-												<gmd:address>
-													<gmd:CI_Address>
-														<gmd:deliveryPoint>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:deliveryPoint>
-														<gmd:city>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:city>
-														<gmd:postalCode>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:postalCode>
-														<gmd:country xsi:type=\"gmd:PT_FreeText_PropertyType\">
-															<gco:CharacterString>CH</gco:CharacterString>
-														</gmd:country>
-														<gmd:electronicMailAddress>
-															<gco:CharacterString></gco:CharacterString>
-														</gmd:electronicMailAddress>
-													</gmd:CI_Address>
-												</gmd:address>
-											</gmd:CI_Contact>
-										</gmd:contactInfo>
-										<gmd:role>
-											<gmd:CI_RoleCode codeListValue=\"pointOfContact\"
-												codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode\" />
-										</gmd:role>
-									</gmd:CI_ResponsibleParty>
-								</gmd:pointOfContact>
-								<gmd:citation>
-									<gmd:CI_Citation>
-										<gmd:title>
-											<gco:CharacterString>".$rowProduct->data_title."</gco:CharacterString>
-										</gmd:title>
-										<gmd:date>
-											<gmd:CI_Date>
-												<gmd:date>
-													<gco:Date></gco:Date>
-												</gmd:date>
-												<gmd:dateType>
-													<gmd:CI_DateTypeCode codeListValue=\"revision\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
-												</gmd:dateType>
-											</gmd:CI_Date>
-										</gmd:date>
-										<gmd:date>
-											<gmd:CI_Date>
-												<gmd:date>
-													<gco:Date></gco:Date>
-												</gmd:date>
-												<gmd:dateType>
-													<gmd:CI_DateTypeCode codeListValue=\"creation\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
-												</gmd:dateType>
-											</gmd:CI_Date>
-										</gmd:date>
-									</gmd:CI_Citation>
-								</gmd:citation>
-								<gmd:resourceConstraints xlink:title=\"Conditions de diffusion\">
-									<gmd:MD_LegalConstraints>
-										<gmd:otherConstraints>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:otherConstraints>
-									</gmd:MD_LegalConstraints>
-								</gmd:resourceConstraints>
-								<gmd:resourceConstraints xlink:title=\"Restriction d'utilisation\">
-									<gmd:MD_LegalConstraints>
-										<gmd:otherConstraints>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:otherConstraints>
-									</gmd:MD_LegalConstraints>
-								</gmd:resourceConstraints>
-								<gmd:resourceConstraints xlink:title=\"Référence du document légal\">
-									<gmd:MD_LegalConstraints>
-										<gmd:otherConstraints>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:otherConstraints>
-									</gmd:MD_LegalConstraints>
-								</gmd:resourceConstraints>
-								<gmd:extent>
-									<gmd:EX_Extent>
-										<gmd:description>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:description>
-										<gmd:geographicElement>
-											<gmd:EX_GeographicBoundingBox>
-												<gmd:westBoundLongitude>
-													<gco:Decimal>6.27</gco:Decimal>
-												</gmd:westBoundLongitude>
-												<gmd:eastBoundLongitude>
-													<gco:Decimal>6.78</gco:Decimal>
-												</gmd:eastBoundLongitude>
-												<gmd:southBoundLatitude>
-													<gco:Decimal>46.53</gco:Decimal>
-												</gmd:southBoundLatitude>
-												<gmd:northBoundLatitude>
-													<gco:Decimal>46.67</gco:Decimal>
-												</gmd:northBoundLatitude>
-											</gmd:EX_GeographicBoundingBox>
-										</gmd:geographicElement>
-									</gmd:EX_Extent>
-								</gmd:extent>
-							</gmd:MD_DataIdentification>
-						</gmd:identificationInfo>
-						<gmd:distributionInfo>
-							<gmd:MD_Distribution>
-								<gmd:distributor>
-									<gmd:MD_Distributor>
-										<gmd:distributorContact>
-											<gmd:CI_ResponsibleParty>
-												<gmd:individualName>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:individualName>
-												<gmd:organisationName>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:organisationName>
-												<gmd:contactInfo>
-													<gmd:CI_Contact>
-														<gmd:phone>
-															<gmd:CI_Telephone>
-																<gmd:voice>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:voice>
-																<gmd:facsimile>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:facsimile>
-															</gmd:CI_Telephone>
-														</gmd:phone>
-														<gmd:address>
-															<gmd:CI_Address>
-																<gmd:deliveryPoint>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:deliveryPoint>
-																<gmd:city>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:city>
-																<gmd:postalCode>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:postalCode>
-																<gmd:country xsi:type=\"gmd:PT_FreeText_PropertyType\">
-																	<gco:CharacterString>CH</gco:CharacterString>
-																</gmd:country>
-																<gmd:electronicMailAddress>
-																	<gco:CharacterString></gco:CharacterString>
-																</gmd:electronicMailAddress>
-															</gmd:CI_Address>
-														</gmd:address>
-													</gmd:CI_Contact>
-												</gmd:contactInfo>
-												<gmd:role>
-													<gmd:CI_RoleCode codeListValue=\"distributor\"
-														codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode\" />
-												</gmd:role>
-											</gmd:CI_ResponsibleParty>
-										</gmd:distributorContact>
-										<gmd:distributionOrderProcess>
-											<gmd:MD_StandardOrderProcess>
-												<gmd:fees>
-													<gco:CharacterString></gco:CharacterString>
-												</gmd:fees>
-											</gmd:MD_StandardOrderProcess>
-										</gmd:distributionOrderProcess>
-									</gmd:MD_Distributor>
-								</gmd:distributor>
-							</gmd:MD_Distribution>
-						</gmd:distributionInfo>
-						<gmd:extendedMetadata xlink:title=\"Identification\">
-							<ext:EX_extendedMetadata_Type>
-								<ext:name>
-									<gco:CharacterString>Synoptique</gco:CharacterString>
-								</ext:name>
-								<ext:value>
-									<gco:CharacterString></gco:CharacterString>
-								</ext:value>
-							</ext:EX_extendedMetadata_Type>
-						</gmd:extendedMetadata>
-						<gmd:extendedMetadata xlink:title=\"Statut juridique\">
-							<ext:EX_extendedMetadata_Type>
-								<ext:name>
-									<gco:CharacterString>Statut</gco:CharacterString>
-								</ext:name>
-								<ext:value>
-									<gco:CharacterString></gco:CharacterString>
-								</ext:value>
-							</ext:EX_extendedMetadata_Type>
-						</gmd:extendedMetadata>
-						<gmd:extendedMetadata xlink:title=\"Représentation\">
-							<ext:EX_extendedMetadata_Type>
-								<ext:name>
-									<gco:CharacterString>Précision</gco:CharacterString>
-								</ext:name>
-								<ext:value>
-									<gco:CharacterString></gco:CharacterString>
-								</ext:value>
-							</ext:EX_extendedMetadata_Type>
-						</gmd:extendedMetadata>
-						<gmd:extendedMetadata xlink:title=\"Produit vecteur\">
-							<ext:EX_extendedMetadata_Type>
-								<ext:name>
-									<gco:CharacterString>Type d'objet graphique</gco:CharacterString>
-								</ext:name>
-								<ext:value>
-									<gco:CharacterString></gco:CharacterString>
-								</ext:value>
-							</ext:EX_extendedMetadata_Type>
-						</gmd:extendedMetadata>
-						<gmd:extendedMetadata xlink:title=\"Produit vecteur\">
-							<ext:EX_extendedMetadata_Type>
-								<ext:name>
-									<gco:CharacterString>Modèle de données</gco:CharacterString>
-								</ext:name>
-								<ext:value>
-									<gco:CharacterString></gco:CharacterString>
-								</ext:value>
-							</ext:EX_extendedMetadata_Type>
-						</gmd:extendedMetadata>
-					</gmd:MD_Metadata>
-				</csw:Insert>
-			</csw:Transaction>";
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
-			echo "url:".$catalogUrlBase." query".$xmlstr;
-			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			echo "result:".$result;
-			//Look for and exception and clean response
-			$pos = strripos($result, "</ows:ExceptionReport>");
-			if ($pos === false) {
-				//No exception
-				$pos = strripos($result, "</csw:TransactionResponse>");
-				$result = substr($result, 0, $pos+26);
-				$insertResults = DOMDocument::loadXML($result);
-				$xpathInsert = new DOMXPath($insertResults);
-				$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-				$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-				
-				if ($inserted <> 1)
-				{
-					$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();
-				}
-			}
-			else
-			{
-				//treat exception report
-				$exception = substr($result, 0, $pos+22);
-				$docException = DOMDocument::loadXML($exception);
-				$xpathExcText = new DOMXPath($docException);
-				$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
-				$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
-				$mainframe->enqueueMessage('OGC error on metadata insert:'.$excText,"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
-			}
-			
+			$rowProduct->partner_id = $rowPartner->id;
 		}
 		
 		if (!$rowProduct->store()) {
@@ -663,7 +294,6 @@ class SITE_product {
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );	
 				exit();		
 		}
-		
 		
 		
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
@@ -719,11 +349,17 @@ class SITE_product {
 		
 		
 		if ($sendMail){
-			$query = "SELECT count(*) FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_distribution=1";
+			$query = "SELECT count(*) FROM #__users,#__sdi_account 
+						WHERE #__users.id=#__easysdi_community_partner.user_id 
+						AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') 
+						AND #__sdi_account.notify_distribution=1";
 			$database->setQuery( $query );
 			$total = $database->loadResult();
 			if($total >0){
-			$query = "SELECT * FROM #__users,#__easysdi_community_partner WHERE #__users.id=#__easysdi_community_partner.user_id AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') AND #__easysdi_community_partner.notify_distribution=1";
+			$query = "SELECT * FROM #__users,#__sdi_account 
+							WHERE #__users.id=#__sdi_account.user_id 
+							AND (#__users.usertype='Administrator' OR #__users.usertype='Super Administrator') 
+							AND #__sdi_account.notify_distribution=1";
 			$database->setQuery( $query );
 
 			$rows = $database->loadObjectList();
@@ -733,11 +369,9 @@ class SITE_product {
 			}
 		}	
 			
-		 //SITE_product::SaveMetadata();
 		 
 		if ($returnList == true) {
-			if ($rowProduct->id == 0)
-				$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
+			if ($rowProduct->id == 0)$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$limitstart = JRequest::getVar("limitstart");
 			$limit = JRequest::getVar("limit");
 			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
@@ -786,7 +420,7 @@ class SITE_product {
 		$rowProduct->load( $id );					
 		if ($id ==0){
 			$rowProduct->creation_date =date('d.m.Y H:i:s');
-			$rowProduct->metadata_id = helper_easysdi::getUniqueId();
+		//	$rowProduct->metadata_id = helper_easysdi::getUniqueId();
 			$rowProduct->partner_id = $partner->id;			
 			if(userManager::hasRight($partner->id,"METADATA"))
 			{
