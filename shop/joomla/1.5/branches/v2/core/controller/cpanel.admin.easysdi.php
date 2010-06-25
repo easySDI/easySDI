@@ -18,8 +18,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 class ADMIN_cpanel {
-	
-	
+		
 	function archiveOrder(){
 		global  $mainframe;
 		$option=JRequest::getVar("option");
@@ -50,30 +49,18 @@ class ADMIN_cpanel {
 	}
 	
 	function listOrders(){
-		
 		global  $mainframe;
+		$database =& JFactory::getDBO();
 		$option=JRequest::getVar("option");
-		
-		/*
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
-		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		*/
 		
 		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
 		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
-		
-		$database =& JFactory::getDBO();		 	
 		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
 	
-		/*$orderarchived=JRequest::getVar("orderarchived","");
-		if ($orderarchived !=""){
-				$filterList[] = "(o.archived ='orderarchived')";
-		}*/
-		
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
 				$filterList[] = "(o.type ='$ordertype')";
@@ -140,10 +127,9 @@ class ADMIN_cpanel {
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
 		
-		//$queryPartner = "select p.partner_id as partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id=a.partner_id where a.type_id=1 order by name";
-		$queryPartner = "select p.partner_id as partner_id, u.name AS name 
-						 from #__users u, #__easysdi_community_partner p 
-						 inner join #__easysdi_community_address a on p.partner_id=a.partner_id ,
+		$queryPartner = "select p.id as partner_id, u.name AS name 
+						 from #__users u, #__sdi_account p 
+						 inner join #__sdi_address a on p.id=a.account_id ,
 						 #__easysdi_order o
 						 where a.type_id=1 
 						 AND u.id = p.user_id
@@ -152,16 +138,15 @@ class ADMIN_cpanel {
 		$database->setQuery($queryPartner);
 		$partnerFilter = $database->loadObjectList();
 		
-		//$querySupplier = "SELECT p.partner_id AS partner_id, CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name FROM #__easysdi_community_partner p INNER JOIN	#__easysdi_community_address a ON p.partner_id = a.partner_id INNER JOIN	#__users u ON p.user_id = u.id where a.type_id=1 AND p.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT')) ORDER BY u.name";
-		$querySupplier = "SELECT p.partner_id AS partner_id, u.name AS name 
-							FROM #__easysdi_community_partner p 
-							INNER JOIN	#__easysdi_community_address a ON p.partner_id = a.partner_id 
+		$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
+							FROM #__sdi_account p 
+							INNER JOIN	#__sdi_address a ON p.id = a.account_id 
 							INNER JOIN	#__users u ON p.user_id = u.id,
 							#__easysdi_product prd 
-							where a.type_id=1 AND p.partner_id 
-							IN (SELECT partner_id FROM #__easysdi_community_actor 
-								WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT'))
-							AND prd.partner_id = p.partner_id
+							where a.type_id=1 AND p.id 
+							IN (SELECT account_id FROM #__sdi_actor 
+								WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE role_code ='PRODUCT'))
+							AND prd.partner_id = p.id
 							AND prd.orderable = 1
 							AND prd.published = 1
 							group by name ORDER BY u.name";
@@ -173,19 +158,7 @@ class ADMIN_cpanel {
 		$database->setQuery($queryProduct);
 		$productFilter = $database->loadObjectList();
 		
-//		$query = "select o.*, 
-//						 sl.code, 
-//						 sl.translation, 
-//						 p.partner_id as partner_id, 
-//						 p.partner_acronym as partner_acronym, 
-//						 tp.partner_id as thirdparty_id, 
-//						 tp.partner_acronym as thirdparty_acronym 
-//						 from #__easysdi_order o 
-//						 inner join #__easysdi_order_status_list sl on o.status=sl.id 
-//						 inner join #__easysdi_community_partner p on o.provider_id=p.partner_id 
-//						 inner join #__easysdi_community_partner tp on o.third_party=tp.partner_id";
 		$query = "select distinct(o.order_id), 
-						 
 							o.*, 
 							o.order_date as orderDate, 
 							o.order_send_date as orderSendDate,
@@ -197,23 +170,9 @@ class ADMIN_cpanel {
 				 inner join #__easysdi_order_status_list sl on o.status=sl.id 
 				 inner join #__easysdi_order_type_list tl on o.type=tl.id 
 				 left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
-				 left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
+				 left outer join #__sdi_account p on  o.user_id=p.user_id 
 				 left outer join #__easysdi_product prod on opl.product_id=prod.id
 				 ";
-		/*$query = "select distinct(o.order_id), 
-						 
-						 o.*, 
-						 o.order_date as orderDate, 
-						 o.response_date as responseDate, 
-						 sl.code, 
-						 sl.translation as status_translation, 
-						 tl.translation as type_translation 
-				from #__easysdi_order o 
-				inner join #__easysdi_order_status_list sl on o.status=sl.id 
-				inner join #__easysdi_order_type_list tl on o.type=tl.id 
-				 
-				left outer join #__easysdi_community_partner p on  o.user_id=p.user_id ";*/
-				
 		$query .= $filter;
 		$query .= "order by responseDate";
 
@@ -222,15 +181,8 @@ class ADMIN_cpanel {
 						inner join #__easysdi_order_status_list sl on o.status=sl.id 
 						inner join #__easysdi_order_type_list tl on o.type=tl.id 
 						left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
-						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
+						left outer join #__sdi_account p on  o.user_id=p.user_id 
 						left outer join #__easysdi_product prod on opl.product_id=prod.id";
-		/*$queryCount = "select count(*) 
-						from #__easysdi_order o 
-						inner join #__easysdi_order_status_list sl on o.status=sl.id 
-						inner join #__easysdi_order_type_list tl on o.type=tl.id 
-						 
-						left outer join #__easysdi_community_partner p on  o.user_id=p.user_id 
-						";*/
 		$queryCount .= $filter;
 
 		
@@ -255,161 +207,31 @@ class ADMIN_cpanel {
 		HTMLadmin_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter, $partnerFilter, $supplierFilter, $productFilter, $orderpartner, $ordersupplier, $orderproduct ,$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo);
 		
 	}
-	
-	/*
-	function orderReport($id,$isfrontEnd, $isForProvider)
-	{
-		SITE_cpanel::orderReport($id,$isfrontEnd,$isForProvider);
-	}
-*/
-	/*
-	function orderReport($id,$isfrontEnd, $isForProvider){
-	
+		
+	function sendOrder(){
 		global $mainframe;
-		
-		if($isForProvider == '')
-		{
-			$isForProvider == false;
-		}
-			$database =& JFactory::getDBO();
-		
-		//Get the current logged user
-		$u = JFactory::getUser();
-		$rootPartner = new partnerByUserId($database);
-		$rootPartner->load($u->id);
-		if($isfrontEnd == true)
-		{
-			//Check if a user is logged
-			if ($u->guest)
-			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
-				return;
-			}
-			if($isForProvider == false)
-			{
-				//Check the current user rights
-				if(!userManager::hasRight($rootPartner->partner_id,"REQUEST_INTERNAL") &&
-					!userManager::hasRight($rootPartner->partner_id,"REQUEST_EXTERNAL"))
-				{
-					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
-					return;
-				}
-			}
-		}
 		
 		$db =& JFactory::getDBO();
 		
-		$query = "SELECT *,  sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__easysdi_order a ,  #__easysdi_order_product_perimeters b, #__easysdi_order_status_list sl,#__easysdi_order_type_list tl where a.order_id = b.order_id and a.order_id = $id and tl.id = a.type and sl.id = a.status";
-		$db->setQuery($query );
-
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}
-
-		//Customer name
-		$user =$rows[0]->user_id;
+		 jimport("joomla.utilities.date");
+		$date = new JDate();
 		
-		if($isfrontEnd == true && $isForProvider == false)
-		{
-			//Check if the current order belongs to the current logged user
-			if($user != $u->id)
-			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
-				return;
+		$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+		$database->setQuery($queryStatus);
+		$status_id = $database->loadResult();
+		
+		$order_id=JRequest::getVar("order_id",0);
+		$query = "UPDATE  #__easysdi_order set status = ".$status_id.", order_update ='". $date->toMySQL()."' WHERE order_id = $order_id";
+		
+		$db->setQuery($query );
+		
+		if (!$db->query()) {		
+			echo "<div class='alert'>";
+				echo $db->getErrorMsg();
+				echo "</div>";						
 			}
-		}
-		$queryUser = "SELECT name FROM #__users WHERE id = $user";
-		$db->setQuery($queryUser );
-		$user_name =  $db->loadResult();
-		
-		$third_name ='';
-		//Third name
-		$third = $rows[0]->third_party; 
-		if( $third != 0)
-		{
-			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__easysdi_community_partner where partner_id= $third)";
-			$db->setQuery($queryUser );
-			$third_name =  $db->loadResult();
-		}
-		
-		$query = '';
-		if($isForProvider)
-		{
-			$query = "SELECT *, a.id as plId 
-					  FROM #__easysdi_order_product_list  a, 
-					  	   #__easysdi_product b 
-					  WHERE a.product_id  = b.id 
-					  AND order_id = $id 
-					  AND b.diffusion_partner_id = $rootPartner->partner_id";
-		}
-		else
-		{
-			$query = "SELECT *, a.id as plId 
-					  FROM #__easysdi_order_product_list  a, 
-					       #__easysdi_product b 
-					  WHERE a.product_id  = b.id 
-					  AND order_id = $id";
-		}
-		
-		$db->setQuery($query );
-		$rowsProduct = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}
-		if(count($rowsProduct) == 0)
-		{
-			//The connected user does not have any product to provide in this order
-			//Do not display any information and quit with error message
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
-			return;
-		}
-		
-	
-	HTMLadmin_cpanel::orderReportRecap($id,$isfrontEnd, $isForProvider, $rows, $user_name, $third_name,$rowsProduct);
 }
-*/
-function sendOrder(){
-	global $mainframe;
-	
-	$db =& JFactory::getDBO();
-	
-	 jimport("joomla.utilities.date");
-	$date = new JDate();
-	
-	$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
-	$database->setQuery($queryStatus);
-	$status_id = $database->loadResult();
-	
-	$order_id=JRequest::getVar("order_id",0);
-	$query = "UPDATE  #__easysdi_order set status = ".$status_id.", order_update ='". $date->toMySQL()."' WHERE order_id = $order_id";
-	
-	$db->setQuery($query );
-	
-	if (!$db->query()) {		
-		echo "<div class='alert'>";
-			echo $db->getErrorMsg();
-			echo "</div>";						
-		}
-}
-	/*
-	function editOrder($id,$option){
-		
-		global  $mainframe;
-		
-		$database =& JFactory::getDBO(); 
-		$rowOrder = new Order( $database );
-		
-		$rowOrder->load( $id );
 
-		HTML_cpanel::editOrder( $rowOrder,$id, $option );
-		
-	}	
-	*/
 	function deleteOrder($cid,$option){
 		global  $mainframe;
 		?>

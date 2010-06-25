@@ -18,22 +18,11 @@
 
 defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_cpanel{
-/*
-	function _EDITORDERS() {
-		global $mainframe;
 
-		JToolBarHelper::save('saveOrder');
-		JToolBarHelper::cancel('cancelOrder');						
-	}
-*/
-
-function _LISTORDERS(){
-		global $mainframe;
-
-		//JToolBarHelper::editList('editOrder');
-		JToolBarHelper::deleteList('','deleteOrder');
-		JToolBarHelper::spacer();		
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
+	function _LISTORDERS(){
+			JToolBarHelper::deleteList('','deleteOrder');
+			JToolBarHelper::spacer();		
+			JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
 }
 	
 }

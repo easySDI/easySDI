@@ -72,39 +72,7 @@ class ADMIN_product {
 			exit();
 		}
 
-		HTML_product::listProduct($use_pagination, $rows, $pageNav,$option);
-	}
-
-	function editProductMetadata2( $id, $option ) {
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-		$rowProduct = new product( $database );
-		$rowProduct->load( $id );
-
-		$rowProduct->update_date = date('d.m.Y H:i:s');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		if (strlen($catalogUrlBase )==0){
-			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
-		}else{
-			HTML_product::editProductMetadata2( $rowProduct,$id, $option );
-		}
-	}
-
-	function editProductMetadata( $id, $option ) {
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-		$rowProduct = new product( $database );
-		$rowProduct->load( $id );
-
-		$rowProduct->update_date = date('d.m.Y H:i:s');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		if (strlen($catalogUrlBase )==0){
-			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
-		}else{
-			HTML_product::editProductMetadata( $rowProduct,$id, $option );
-		}
+		HTML_product::listProduct($use_pagination, $rows, $search,$pageNav,$option);
 	}
 
 	function editProduct( $id, $option ) {
@@ -255,81 +223,6 @@ class ADMIN_product {
 			HTML_product::editProduct( $rowProduct,$current_manager_partner,$rowsAccount,$partners,$metadata_partner,$admin_partner,$diffusion_partner,$baseMaplist,$treatmentTypeList,$standardlist,$perimeterList,$selected_perimeter,$catalogUrlBase,$id, $option );
 		}
 	}
-
-	function saveProductMetadata($option){
-
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-
-			
-		$metadata_standard_id = JRequest::getVar("standard_id");
-		$metadata_id = JRequest::getVar("metadata_id");
-		
-		$query = "SELECT b.text as text,a.tab_id as tab_id FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_tabs b where a.tab_id =b.id  and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $metadata_standard_id)) group by a.tab_id" ;
-		$database->setQuery($query);
-		$rows = $database->loadObjectList();
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-			
-
-		$doc = "<gmd:MD_Metadata xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\" xmlns:ext=\"http://www.depth.ch/2008/ext\">";
-
-		
-
-		foreach ($rows as $row){
-
-
-		$query = "SELECT  * FROM #__easysdi_metadata_standard_classes a, #__easysdi_metadata_classes b where a.class_id =b.id and a.tab_id = $row->tab_id and (a.standard_id = $metadata_standard_id or a.standard_id in (select inherited from #__easysdi_metadata_standard where is_deleted =0 AND inherited !=0 and id = $metadata_standard_id)) order by position" ;
-			
-		$database->setQuery($query);
-		$rowsClasses = $database->loadObjectList();
-		if ($database->getErrorNum()) {
-		$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-		foreach ($rowsClasses as $rowClasses){
-		$doc=$doc."<$rowClasses->iso_key>";
-					
-		$count = helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);
-				
-		for ($i=0;$i<helper_easysdi::searchForLastEntry($rowClasses,$metadata_standard_id);$i++){										
-			helper_easysdi::generateMetadata($rowClasses,$row->tab_id,$metadata_standard_id,$rowClasses->iso_key,&$doc,$i);							
-		}
-
-		$doc=$doc."</$rowClasses->iso_key>";
-		}
-		}				
-		
-		$doc=$doc."</gmd:MD_Metadata>";
-
-	
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.0\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw\" >
-		<csw:Insert>
-		$doc
-		</csw:Insert>
-		</csw:Transaction>";
-
-		//$mainframe->enqueueMessage(htmlentities($xmlstr),"ERROR");	
-
-			
-		ADMIN_product::deleteMetadata($metadata_id);
-		ADMIN_product::SaveMetadata($xmlstr);
-			
-		$query = "UPDATE #__easysdi_product SET hasMetadata = 1 WHERE id = ".$metadata_standard_id = JRequest::getVar("id");
-		
-		$database->setQuery( $query );
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			exit();
-		}
-
-
-	}
 	
 	function saveProduct($returnList ,$option){
 		global  $mainframe;
@@ -417,7 +310,6 @@ class ADMIN_product {
 
 	}
 
-	
 	function deleteProduct($cid ,$option){
 
 		global $mainframe;
@@ -462,79 +354,7 @@ class ADMIN_product {
 	}
 
 	
-	function deleteMetadata($metadata_id){
-		$xmlstr = "
-		<csw:Transaction service=\"CSW\" 
-   version=\"2.0.0\" 
-   xmlns:csw=\"http://www.opengis.net/cat/csw\" 
-   xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\"
-   xmlns:ogc=\"http://www.opengis.net/ogc\"
-   xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-   xmlns:gco=\"http://www.isotc211.org/2005/gco\">
-  <csw:Delete typeName=\"csw:Record\">
-    <csw:Constraint version=\"2.0.0\">
-      <ogc:Filter>
-        <ogc:PropertyIsEqualTo>
-            <ogc:PropertyName>//gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString</ogc:PropertyName>
-            <ogc:Literal>".$metadata_id."</ogc:Literal>
-        </ogc:PropertyIsEqualTo>
-      </ogc:Filter>
-    </csw:Constraint>
-  </csw:Delete>
-</csw:Transaction>";
-
-		include_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$session = curl_init($catalogUrlBase);
-
-
-		curl_setopt ($session, CURLOPT_POST, true);
-		curl_setopt ($session, CURLOPT_POSTFIELDS, $xmlstr);
-
-
-		// Don't return HTTP headers. Do return the contents of the call
-		curl_setopt($session, CURLOPT_HEADER, false);
-		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-
-		// Make the call
-		$xml = curl_exec($session);
-
-
-
-		echo $xml;
-		curl_close($session);
-
-
-	}
-
 	
-	function SaveMetadata($xmlstr){
-		$content_length = strlen($xmlstr);
-
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$session = curl_init($catalogUrlBase);
-
-
-
-		curl_setopt ($session, CURLOPT_POST, true);
-		curl_setopt ($session, CURLOPT_POSTFIELDS, $xmlstr);
-
-
-		// Don't return HTTP headers. Do return the contents of the call
-		curl_setopt($session, CURLOPT_HEADER, false);
-		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-
-		// Make the call
-		$xml = curl_exec($session);
-		echo $xml;
-
-		curl_close($session);
-
-	}
-
 }
 
 ?>

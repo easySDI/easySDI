@@ -24,19 +24,15 @@ class HTMLadmin_cpanel {
 	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $partnerFilter="", $supplierFilter="", $productFilter="", $orderpartner="", $ordersupplier="", $orderproduct="",$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo)
 	{
 		JToolBarHelper::title( JText::_("EASYSDI_LIST_ORDERS"), 'generic.png' );
-		
 		$database =& JFactory::getDBO();
-	?>	
-		
+		?>	
 		<form action="index.php" method="GET" id="adminForm" name="adminForm">		
-	
 		<table width="100%" class="adminlist">
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
 					<input type="text" name="search" class="inputbox" value="<?php echo $search;?>" />			
 				</td>
-				
 				<td>
 				<select name="ordertype" >
 				<option value=""><?php echo JText::_("EASYSDI_TYPES_LIST"); ?></option>
@@ -166,10 +162,9 @@ class HTMLadmin_cpanel {
 		 	<!--
 			<?php 
 		
-				$query = "select CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_address a inner join #__easysdi_product p on a.partner_id = p.partner_id inner join #__easysdi_order_product_list pl on p.id=pl.product_id WHERE pl.order_id = ".$row->order_id." and a.type_id=1" ;
+				$query = "select CONCAT( CONCAT( a.agentfirstname, ' ' ) , a.agentlastname ) AS name from #__sdi_address a inner join #__easysdi_product p on a.account_id = p.partner_id inner join #__easysdi_order_product_list pl on p.id=pl.product_id WHERE pl.order_id = ".$row->order_id." and a.type_id=1" ;
 				$database->setQuery($query);
 				$partners = $database->loadResultArray();
-				
 				if (count($partners)>1)
 					$partners=implode(", ", $partners);
 				else if (count($partners)==1)
@@ -180,12 +175,9 @@ class HTMLadmin_cpanel {
 		 	<td><?php echo $partners; ?></td>
 			-->
 			<?php 
-		
-		
 				$query = "SELECT p.data_title FROM #__easysdi_order_product_list pl INNER JOIN #__easysdi_product p ON pl.product_id=p.id WHERE order_id=".$row->order_id ;
 				$database->setQuery($query);
 				$products = $database->loadResultArray();	
-
 				if (count($products)>1)
 					$products=implode(", ", $products);
 				else if (count($products)==1)
@@ -198,10 +190,8 @@ class HTMLadmin_cpanel {
 			</tr>
 				<?php		
 		}
-		
 	?>
 	</tbody>
-	
 	<tfoot>
 		<tr>	
 		<td colspan="11"><?php echo $pageNav->getListFooter(); ?></td>
@@ -216,9 +206,5 @@ class HTMLadmin_cpanel {
 		
 	<?php	
 	}
-
-	
-	
-
 }
 ?>
