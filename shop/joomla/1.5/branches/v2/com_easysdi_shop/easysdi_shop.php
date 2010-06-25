@@ -54,43 +54,33 @@ switch($task){
 	 * Shop
 	 *****************************************************************************************************************************/
 	case "shop":
-		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
-			
-		//Core FrontEnd
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php');
-			
 		//Core BackEnd
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+					
 		//Shop BackEnd
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
-			
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'cpanel.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'cpanel.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'properties.easysdi.class.php');
+					
 		//Shop FrontEnd
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-		/*Déplacé au niveau de chaque case qui le requiert réellement
-			car provoque un bug au niveau de l'affichage des périmètres WMS dans openlayers*/
-		//require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'cpanel.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'properties.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
-			
-			
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'properties.site.easysdi.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'proxy.php');
+						
 		HTML_shop::order();
 		break;
 
