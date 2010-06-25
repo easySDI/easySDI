@@ -19,122 +19,34 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_product{
 	
-	function editProduct( $rowProduct,$id, $option ){
-		
+	function editProduct($partner, $rowProduct,$id, $partners,$metadata_partner,$diffusion_partner,$standardlist,$baseMaplist,$treatmentTypeList,$perimeterList,$propertiesList,$option ){
 		global  $mainframe;
-		
-		 
 		$database =& JFactory::getDBO(); 
 		
-		$user = JFactory::getUser();
-		$partner = new partnerByUserId($database);
-		$partner->load($user->id);
 		if($partner->root_id == "")
 		{
 			$partner->root_id = 0;
 		}
 		
-		//List of partner with the same root as current logged user
-		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery( "SELECT a.partner_id AS value, 
-									 b.name AS text 
-									 FROM 
-									 #__easysdi_community_partner a,
-									 #__users b 
-									 where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)  
-									 AND 
-									 a.user_id = b.id 
-									 AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
-								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='PRODUCT'))
-									 ORDER BY b.name" );
-		$partners = array_merge( $partners, $database->loadObjectList() );
-		
 		JHTML::_('behavior.calendar');
-
-		//List of partner with METADATA right 
-		$metadata_partner = array();
-		$metadata_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$database->setQuery("SELECT a.partner_id AS value, 
-								   b.name AS text 
-								   FROM 
-								    #__easysdi_community_partner a,
-								    #__users b  
-								    where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)
-								    AND 
-								    a.user_id = b.id 
-								    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
-								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='METADATA'))
-								    ORDER BY b.name");
-		$metadata_partner = array_merge( $metadata_partner, $database->loadObjectList() );
-		
-		//List of partner with DIFFUSION right
-		$database->setQuery("SELECT a.partner_id AS value, 
-								   b.name AS text 
-								   FROM 
-								    #__easysdi_community_partner a,
-								    #__users b  
-								    where (a.root_id = $partner->root_id OR a.root_id = $partner->partner_id OR a.partner_id = $partner->partner_id OR a.partner_id = $partner->root_id)
-								    AND 
-								    a.user_id = b.id 
-								    AND a.partner_id IN (SELECT partner_id FROM #__easysdi_community_actor
-								    					 WHERE role_id = (SELECT role_id FROM #__easysdi_community_role WHERE role_code ='DIFFUSION'))
-								    ORDER BY b.name");
-		$diffusion_partner = array();
-		$diffusion_partner[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_LIST") );
-		$diffusion_partner = array_merge($diffusion_partner, $database->loadObjectList());
-		
-		jimport("joomla.utilities.date");
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		
-		$standardlist = array();
-		$standardlist[] = JHTML::_('select.option','0', JText::_("EASYSDI_TABS_LIST") );
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__easysdi_metadata_standard  WHERE is_deleted =0 " );
-		$standardlist= $database->loadObjectList() ;
-		
-		if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-			
- 
-		$baseMaplist = array();		
-		$database->setQuery( "SELECT id AS value,  alias AS text FROM #__easysdi_basemap_definition " );
-		$baseMaplist = $database->loadObjectList() ;
-		
-		if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-		
-		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		
-		//Product treatment
-		$treatmentTypeList = array();		
-		$database->setQuery( "SELECT id AS value,  translation AS text FROM #__easysdi_product_treatment_type " );
-		$treatmentTypeList = $database->loadObjectList() ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-		HTML_product::alter_array_value_with_JTEXT_($treatmentTypeList);
-		
-			
 		?>
 		
-	<div id="page">
-	<?php if($id)
-	{ ?>
-	<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_EDIT_PRODUCT"); ?></h2>
-	<?php
-	}
-	else
-	{ ?>
-	<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_NEW_PRODUCT"); ?></h2>
-	<?php
-	} ?>
-	<div class="contentin">
-	<div class="editProductPane">
-	<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
-<?php
+		<div id="page">
+		<?php if($id)
+		{ ?>
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_EDIT_PRODUCT"); ?></h2>
+		<?php
+		}
+		else
+		{ ?>
+		<h2 class="contentheading"><?php echo JText::_("EASYSDI_TITLE_NEW_PRODUCT"); ?></h2>
+		<?php
+		} ?>
+		<div class="contentin">
+		<div class="editProductPane">
+		<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
+		<?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productPane");
 		?>
@@ -282,41 +194,15 @@ class HTML_product{
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER"),"productPane");
-				
 		?>
 		<br>
-		
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
-<?php
-		
-?>
 			<tr>
 				<td>
 					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("EASYSDI_TEXT_PERIMETER") ?></legend>
 						<table width="100%">
 							<tr>
-<?php
-			
-				$perimeterList = array();
-				$query = "SELECT id AS value, perimeter_name AS text FROM #__easysdi_perimeter_definition ";
-				$database->setQuery( $query );
-				$perimeterList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {						
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-						exit;					 			
-				}		
-	
-		
-				$selected = array();
-				$query = "SELECT perimeter_id AS value FROM #__easysdi_product_perimeter WHERE product_id=".$rowProduct->id;				
-				$database->setQuery( $query );
-				$selected = $database->loadObjectList();
-				if ($database->getErrorNum()) {						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					exit;					 			
-					}		
-?>
 								<td width="100%">
 								<script>
 								   function productAvailability_change(obj, id){
@@ -339,11 +225,6 @@ class HTML_product{
 								</tr>
 								</thead>
 								<tbody>
-								   <?php
-								   //echo JHTML::_("select.genericlist",$perimeterList, 'perimeter_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); 
-								   
-								   ?>
-								
 								   <?php 
 							          foreach ($perimeterList as $curPerim){
 									  $query = "SELECT * FROM #__easysdi_product_perimeter WHERE product_id=$rowProduct->id AND perimeter_id = $curPerim->value";				
@@ -352,13 +233,13 @@ class HTML_product{
 									  if ($database->getErrorNum()) {						
 										$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 									  }
-?>
+									?>
 								  <tr>
 								  	<td align="left"><?php  echo $curPerim->text; ?></td>
 									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->product_id != "") echo "checked"?> onclick="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
 									<td align="center"><input type="checkbox" id="buffer_<?php echo $curPerim->value;?>" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"; else if ($bufferRow->product_id == "") echo "disabled";?>></td>
 								</tr>
-<?php } ?>
+								<?php } ?>
 								</tbody>
 							       </table>
 							       </td>
@@ -368,182 +249,152 @@ class HTML_product{
 				</td>
 			</tr>
 		</table>
-		
-		
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PROPERTIES"),"productPane");
-		
 		?>
 		<br>
 		<table class="ProductPropreties">
 			<tr>
 				<td>
 				<table border="0" cellpadding="3" cellspacing="0">
-<?php
-																
+				<?php
 				$selected = array();
 				$query = "SELECT property_value_id as value FROM #__easysdi_product_property WHERE product_id=".$rowProduct->id;				
 				$database->setQuery( $query );
-	
 				$selected = $database->loadObjectList();
 				if ($database->getErrorNum()) {						
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
-
-				
-				$queryProperties = "SELECT b.id as property_id, 
-										   b.translation as text,
-										   type_code
-									FROM #__easysdi_product_properties_definition b  
-									where published =1 
-									AND (partner_id = 0 OR partner_id = $rowProduct->partner_id )
-									order by b.order";
-									
-				$database->setQuery( $queryProperties );
-				$propertiesList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) 
-				{						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-				}		
-				HTML_product::alter_array_value_with_JTEXT_($propertiesList);
-				
 				foreach ($propertiesList as $curProperty)
 				{
 					?>
-					
 					<!--<tr><td><?php echo $curProperty->text; ?></td></tr> -->
-					
 					<?php
-					
-				$propertiesValueList = array();
-				$query = "SELECT a.id as value, a.translation as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
-				$database->setQuery( $query );
-				$propertiesValueList = $database->loadObjectList() ;
-				if ($database->getErrorNum()) 
-				{						
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-				}							
-				HTML_product::alter_array_value_with_JTEXT_($propertiesValueList);					
-					switch($curProperty->type_code){
-
-					case "list":
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
-						</fieldset>
-						</td></tr>
-						<?php
-						break;
-						
-					case "mlist":
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
-						</fieldset>
-						</td></tr>
-						<?php
-						break;
-					case "cbox":
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
-						</fieldset>
-						</td></tr>
-						<?php
-						break;
-						
-					case "text":
-					if ($curProperty->mandatory == 0 ){
-						$propertiesTemp1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
-						$propertiesTemp2[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
-						$propertiesValueList = array_merge( $propertiesTemp1 , $propertiesTemp2);
-						}
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox"', 'value', 'text', $selected ); ?>
-						</fieldset>
-						</td></tr>
-						<?php
-						break;
-						
-					case "textarea":
-					if ($curProperty->mandatory == 0 ){
-						$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
-						$propertiesValueList3[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
-						
-						$propertiesValueList = array_merge( $propertiesValueList2 , $propertiesValueList3);
+					$propertiesValueList = array();
+					$query = "SELECT a.id as value, a.translation as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+					$database->setQuery( $query );
+					$propertiesValueList = $database->loadObjectList() ;
+					if ($database->getErrorNum()) 
+					{						
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+					}							
+					helper_easysdi::alter_array_value_with_JTEXT_($propertiesValueList);					
+					switch($curProperty->type_code)
+					{
+						case "list":
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
+							</fieldset>
+							</td></tr>
+							<?php
+							break;						
+						case "mlist":
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
+							</fieldset>
+							</td></tr>
+							<?php
+							break;
+						case "cbox":
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="inputbox"', 'value', 'text', $selected ); ?>
+							</fieldset>
+							</td></tr>
+							<?php
+							break;
 							
-						}
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox" size="1" ', 'value', 'text', $selected ); ?>
-						</fieldset>
-						</td></tr>
-						<?php
-						break;
-					case "message":
-						?>
-						<script>
-						   var arrMsgs = new Array();
-						   <?php
-						   foreach ($propertiesValueList as $key => $value) {
-							echo "arrMsgs[$value->value] = \"".addslashes($value->text)."\";\n";
-						   }
-						   ?>
-						   function messageContents_change(obj){
-						        $('messageContents').innerHTML=arrMsgs[obj.options[obj.selectedIndex].value];
-						   }
-						</script>
-						<?php
-						$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
-						$database->setQuery( $query );
-						$res = $database->loadObjectList() ;
-						if ($database->getErrorNum()) 
-						{
-							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-						}
-						if ($curProperty->mandatory == 0 )
-						{
-							$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
-							$propertiesValueList = array_merge( $res , $propertiesValueList3  );
-						}
-						?>
-						<tr><td>
-						<fieldset class="fieldset_properties">
-						<legend><?php echo $curProperty->text; ?></legend>
-						<table>
-						<tr><td>
-						<?php echo JHTML::_("select.genericlist",$res, 'properties_id[]', 'class="inputbox" size="3" onchange="messageContents_change(this);"', 'value', 'text', $selected ); ?>
-						</td></tr>
-						<tr><td id="messageContents">
-						</td></tr>
-						</table>
-						</fieldset>
-						<?php
-						break;
-					}	
+						case "text":
+						if ($curProperty->mandatory == 0 ){
+							$propertiesTemp1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
+							$propertiesTemp2[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
+							$propertiesValueList = array_merge( $propertiesTemp1 , $propertiesTemp2);
+							}
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox"', 'value', 'text', $selected ); ?>
+							</fieldset>
+							</td></tr>
+							<?php
+							break;
+							
+						case "textarea":
+						if ($curProperty->mandatory == 0 ){
+							$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE"));
+							$propertiesValueList3[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("EASYSDI_PROPERTY_YES"));
+							
+							$propertiesValueList = array_merge( $propertiesValueList2 , $propertiesValueList3);
+								
+							}
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'class="inputbox" size="1" ', 'value', 'text', $selected ); ?>
+							</fieldset>
+							</td></tr>
+							<?php
+							break;
+						case "message":
+							?>
+							<script>
+							   var arrMsgs = new Array();
+							   <?php
+							   foreach ($propertiesValueList as $key => $value) {
+								echo "arrMsgs[$value->value] = \"".addslashes($value->text)."\";\n";
+							   }
+							   ?>
+							   function messageContents_change(obj){
+							        $('messageContents').innerHTML=arrMsgs[obj.options[obj.selectedIndex].value];
+							   }
+							</script>
+							<?php
+							$query = "SELECT a.id as value, a.text as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+							$database->setQuery( $query );
+							$res = $database->loadObjectList() ;
+							if ($database->getErrorNum()) 
+							{
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+							}
+							if ($curProperty->mandatory == 0 )
+							{
+								$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+								$propertiesValueList = array_merge( $res , $propertiesValueList3  );
+							}
+							?>
+							<tr><td>
+							<fieldset class="fieldset_properties">
+							<legend><?php echo $curProperty->text; ?></legend>
+							<table>
+							<tr><td>
+							<?php echo JHTML::_("select.genericlist",$res, 'properties_id[]', 'class="inputbox" size="3" onchange="messageContents_change(this);"', 'value', 'text', $selected ); ?>
+							</td></tr>
+							<tr><td id="messageContents">
+							</td></tr>
+							</table>
+							</fieldset>
+							<?php
+							break;
+						}	
 					 } ?>		
 					</table>
 				</td>
 			</tr>
 		</table>
 		<?php
-		
-		
-	
 		echo $tabs->endPanel();		
-				echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productPane");
+		echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productPane");
 		?>
 		<br>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -572,12 +423,10 @@ class HTML_product{
 								<td class="ptitle"><?php echo JText::_("EASYSDI_PREVIEW_MAX_RESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewMaxResolution" value="<?php echo $rowProduct->previewMaxResolution; ?>" /></td>								
 							</tr>
-							
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_PREVIEW_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewProjection" value="<?php echo $rowProduct->previewProjection; ?>" /></td>								
 							</tr>
-							
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_PREVIEW_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="previewUnit" >								
@@ -586,23 +435,18 @@ class HTML_product{
 								</select>
 								</td>																						
 							</tr>
-							
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
 							</tr>
-																	
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>
-	
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->endPane();	
-
-		
 		?>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" id="task" name="task" value="cancelEditProduct">
@@ -816,8 +660,6 @@ class HTML_product{
 		<button type="button" onClick="document.getElementById('task').value='cancelEditProductMetadata';document.getElementById('productForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PRODUCT"); ?></button>
 	<?php
 	}
-	
-	
 	
 	function editMetadata2( $rowProduct,$id, $option ){
 		
@@ -1050,7 +892,6 @@ class HTML_product{
 	<?php
 	}
 	
-	
 	function listProduct($pageNav,$rows,$option,$rootPartner,$search){
 		?>	
 		<div id="page">
@@ -1119,9 +960,8 @@ class HTML_product{
 			<tr>
 			<td class="logo2"><div <?php if($row->external && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->internal && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
 			<td width="100%"><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
-			
-			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editProduct" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
-			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" /></td>
+			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
+			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" /></td>
 			
 			</tr>
 			
@@ -1143,7 +983,7 @@ class HTML_product{
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
 			
-			<?php if (userManager::hasRight($rootPartner->partner_id,"INTERNAL")){?> 
+			<?php if (userManager::hasRight($rootPartner->id,"INTERNAL")){?> 
 			<?php }  ?>
 		</form>
 		</div>
@@ -1152,9 +992,7 @@ class HTML_product{
 		
 		
 	}
-	
-	
-	
+		
 	function listProductMetadata($pageNav,$rows,$option,$rootPartner,$search){
 		?>
 		<div id="page">
@@ -1246,17 +1084,6 @@ class HTML_product{
 	<?php
 		
 		
-	}
-	
-	function alter_array_value_with_JTEXT_(&$rows)
-	{		
-		if (count($rows)>0)
-		{
-			foreach($rows as $key => $row)
-			{		  	
-      			$rows[$key]->text = JText::_($rows[$key]->text);
-  			}			    
-		}
 	}
 	
 	function array_to_json( $array ){
