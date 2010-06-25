@@ -1,4 +1,4 @@
-	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip)
+	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, isLanguageFieldset)
 	{	
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
@@ -29,7 +29,8 @@
 				    relation: relation,
 					dynamic: dynamic,
 					template: master,
-		            qTip: tip
+		            qTip: tip,
+		            isLanguageFieldset: isLanguageFieldset
 	        });
 		//if (navigator.appName == "Netscape")
 		//	console.log(id+" - "+clone+" - "+clones_count);
@@ -523,7 +524,7 @@
 			regex = new RegExp(regex,"g")
 		
 		var ds = new Ext.data.Store({
-	        proxy: new Ext.data.HttpProxy({
+			proxy: new Ext.data.HttpProxy({
 	            url: 'index.php?option=com_easysdi_catalog&task=getContact'
 	        }),
 	        reader: new Ext.data.JsonReader({
@@ -535,27 +536,7 @@
 	            {name: 'guid', mapping: 'guid'}
 	        ]),
 
-	        baseParams: {limit:20, forumId: 4, objecttype_id: objecttype_id},
-            listeners: {
-						datachanged: {
-								fn:function(store) {
-									//console.log(store.getTotalCount());
-									console.log(Ext.getCmp(id));
-									if (store.getTotalCount() == 1)
-									{
-										Ext.getCmp(id).fireEvent('beforeselect', Ext.getCmp(id), store.getAt(0), 0);
-										// Sélectionner le seul contact retourné
-										//console.log(store.getAt(0).get('name'));
-										//console.log(store.indexOf(store.getAt(0)));
-										//Ext.getCmp(id).select(store.indexOf(store.getAt(0)));
-										Ext.getCmp(id).setValue(store.getAt(0).data[Ext.getCmp(id).valueField || Ext.getCmp(id).displayField]);
-										Ext.getCmp(id).collapse();
-							            //Ext.getCmp(id).setValue(store.getAt(0).get('name'));
-										Ext.getCmp(id).fireEvent('select', Ext.getCmp(id), store.getAt(0), 0);
-									}
-								}
-						}
-			}
+	        baseParams: {limit:20, forumId: 4, objecttype_id: objecttype_id}
 	    });
 	   
 	    var resultTpl = new Ext.XTemplate(
@@ -601,8 +582,10 @@
 			clones_count: clones_count,
             template: master,
             minChars: 4,
-            forceSelection: true
+            forceSelection: true,
+            selectOnFocus: true
 	    });
+	    //Ext.util.Observable.capture(Ext.getCmp(id), console.info);
 		
-		 return sf;
+		return sf;
 	}
