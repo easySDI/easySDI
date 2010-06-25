@@ -661,13 +661,48 @@ class displayManager{
 	
 	function exportXml()
 	{
-		$type = JRequest::getVar('type', 'abstract');
+		$database =& JFactory::getDBO();
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
 		
-		//$cswResults = displayManager::getCSWresult();
+		$type =  JRequest::getVar('type', 'abstract');
+		
+		$id = JRequest::getVar('id');
+		
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
+		// RÈcupÈrer le type d'objet
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$objecttype = $database->loadResult();
+		
+		if ($type == 'abstract')
+		{
+			$style = new DomDocument();
+			// Test des diffÈrentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive ‡ la plus basique
+			if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+			{
+				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
+			}
+			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl'))
+			{
+				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl');
+			}
+			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl');
+			}
+			else{
+				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract.xsl');
+			}
+			
+			$processor = new xsltProcessor();
+			$processor->importStylesheet($style);
+			$cswResults = $processor->transformToDoc($cswResults);
+		}
+		
 		$xpath = new DomXPath($cswResults);
+		
 		if ($type == 'diffusion')
 		{
 			$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
@@ -687,48 +722,44 @@ class displayManager{
 			$xmlContent = $dom ->importNode($nodes->item(0),true);
 			$dom->appendChild($xmlContent);
 		}
-		/*
-		$xml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.'metadata.xml';
-		$file =fopen($xml, 'w');
-		fwrite($file, $dom->saveXML());
-		fclose($file);	
-		*/
+
+		$file = $dom->saveXML();
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
-		header('Pragma: public');
-		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-		//header('Content-Transfer-Encoding: binary');
-		header('Content-Tran¬ßsfer-Encoding: none');
-		header('Content-Type: text/xml');
-		//header('Content-Type: application/force-download');		
+		header('Content-type: application/xml');
 		header('Content-Disposition: attachement; filename="metadata.xml"');
-		header("Content-Description: File Transfer" );
- 		//header("Expires: 0"); 
-		//header("Content-Length: ".filesize($file));
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Pragma: public');
+		header("Expires: 0"); 
+		header("Content-Length: ".filesize($file));
 		
-		//readfile($file);
-		
-		echo $dom->saveXML();
+		echo $file;
+		//Very important, if you don't call this, the content-type will have no effect
+		die();
 	}
 	
 	function exportPdf(){
-		$type = JRequest::getVar('type', 'abstract');
+		$database =& JFactory::getDBO();
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
+		
+		$type =  JRequest::getVar('type', 'abstract');
+		
+		$id = JRequest::getVar('id');
+		
+		$cswResults = new DomDocument();
+		displayManager::getMetadata($cswResults);
+		
+		// RÈcupÈrer le type d'objet
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$objecttype = $database->loadResult();
+		
 		$cswResults = new DomDocument();
 		
 		displayManager::getMetadata($cswResults);
 		
 		$processor = new xsltProcessor();
 		$style = new DomDocument();
-
-		$database =& JFactory::getDBO();
-		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
-		
-		$id = JRequest::getVar('id');
-		
-		// RÈcupÈrer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
-		$objecttype = $database->loadResult();
 		
 		if ($type == 'abstract')
 		{
@@ -794,223 +825,143 @@ class displayManager{
 		displayManager::exportPDFfile($myHtml);
 	}
 	
-	function exportPDFfile( $myHtml) {
+	function exportPDFfile( $myHtml) 
+	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
+		$user =& JFactory::getUser();
+		$language = $user->getParam('language', '');
+		
+		$type =  JRequest::getVar('type', 'abstract');
+		
 		$id = JRequest::getVar('id');
-		$supplier;
-		$product_creation_date;
-		$product_update_date;
 		
-		//$timerFile = 'timer.txt';
-		//$timer = fopen ($timerFile, 'w');
-			
-		//fwrite($timer, "Avant acc√®s base de donn√©es : ".date("H:i:s")."\n");
-		
-		$db =& JFactory::getDBO();
-		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$id."'";
-		$db->setQuery($queryPartnerID);
-		$partner_id = $db->loadResult();
-		
-		$query="select u.name from #__easysdi_community_partner p inner join #__users u on p.user_id = u.id WHERE p.partner_id = ".$partner_id;
-   		$db->setQuery($query);
-   		$supplier= $db->loadResult();
-			
-		$query = "select creation_date from #__easysdi_product where metadata_id = '".$id."'";
-			$db->setQuery($query);
-			$product_creation_date = $db->loadResult();
-		
-		$query = "select update_date from #__easysdi_product where metadata_id = '".$id."'";
-			$db->setQuery($query);
-			$product_update_date = $db->loadResult();
-			
-		$temp = explode(" ", $product_creation_date);
-		$temp = explode("-", $temp[0]);
-		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		$temp = explode(" ", $product_update_date);
-		$temp = explode("-", $temp[0]);
-		$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
-		
-
-		$myHtml = str_replace("__ref_1\$s", "", $myHtml);
-		$myHtml = str_replace("__ref_2\$s", $supplier, $myHtml);
-		$myHtml = str_replace("__ref_3\$s", $product_creation_date, $myHtml);
-		$myHtml = str_replace("__ref_4\$s", $product_update_date, $myHtml);
-		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
-		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
-
-		//fwrite($timer, "Apr√®s acc√®s base de donn√©es : ".date("H:i:s")."\n");
-		
-		//fwrite($timer, "Avant application xhtml to xslfo : ".date("H:i:s")."\n");
+		$cswResults = new DomDocument();
+		displayManager::getMetadata($cswResults);
 		
 		// RÈcupÈrer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
 		$objecttype = $database->loadResult();
 		
+		$supplier;
+		$product_creation_date;
+		$product_update_date;
+		
+		$db =& JFactory::getDBO();
+		$queryAccountID = "select account_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
+		$db->setQuery($queryAccountID);
+		$account_id = $db->loadResult();
+		
+		$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
+		$db->setQuery($queryAccountLogo);
+		$account_logo = $db->loadResult();
+		
+		//$query="select CONCAT( CONCAT( ad.agentfirstname, ' ' ) , ad.agentlastname ) AS name from #__sdi_account a inner join #__sdi_address ad on a.id = ad.account_id WHERE ad.account_id = ".$account_id ." and ad.type_id=1" ;
+		$query="select u.name from #__sdi_account a inner join #__users u on a.user_id = u.id WHERE a.id = ".$account_id;
+   		$db->setQuery($query);
+		$supplier= $db->loadResult();
+			
+		$query = "select created from #__sdi_object where metadata_id = '".$id."'";
+		$db->setQuery($query);
+		$temp = $db->loadResult();
+		$object_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		
+		$query = "select updated from #__sdi_object where metadata_id = '".$id."'";
+		$db->setQuery($query);
+		$temp = $db->loadResult();
+		$object_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");		
+		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.JPATH_BASE.DS.$account_logo.'"/>';
+		
+		$myHtml = str_replace("__ref_1\$s", $img, $myHtml);
+		$myHtml = str_replace("__ref_2\$s", $supplier, $myHtml);
+		$myHtml = str_replace("__ref_3\$s", $object_creation_date, $myHtml);
+		$myHtml = str_replace("__ref_4\$s", $object_update_date, $myHtml);
+		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
+		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
+
+		if($myHtml == "")
+			$myHtml = "<div/>";
+		
 		$document  = new DomDocument();	
-		// Test des diffÈrentes combinaisons possibles pour le nom de fichier, en allant
-		// de la plus restrictive ‡ la plus basique
-		if (file_exists(dirname(__FILE__).'/../xsl/XHTML2FO_'.$objecttype.'.xsl'))
-		{
-			$document->load(dirname(__FILE__).'/../xsl/XHTML2FO_'.$objecttype.'.xsl');
-		}
-		else{
-			$document->load(dirname(__FILE__).'/../xsl/XHTML2FO.xsl');
-		}
+		$document ->load(dirname(__FILE__).'/../xsl/XHTML2FO.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		
-		//fwrite($timer, "Apr√®s application xhtml to xslfo : ".date("H:i:s")."\n");
-		
 		//Problem with loadHTML() and encoding : work around method
-		$pageDom = new DomDocument();   
+		$pageDom = new DomDocument();
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
-    	@$pageDom->loadHTML($searchPage);
-    	$result = $processor->transformToXml($pageDom);    	
-		$bridge_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
-		$fop_url = config_easysdi::getValue("FOP_URL");
-	 
-		if ($bridge_url ){ 
-			require_once($bridge_url);
-			if ($fop_url )
-			{ 
-				$tmp = uniqid();
-				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
-				$fopxml = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xml';
-				$fopxsl = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.xsl';
-				$fopfo = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.fo';
-				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
-				
-				try {
-					// Ecrire le xml temporaire
-					$fp = fopen ($fopxml, 'w');
-					fwrite($fp, $pageDom->saveXML());
-					fclose ($fp);
-					
-					// Ecrire le xslt temporaire
-					$fp = fopen ($fopxsl, 'w');
-					fwrite($fp, $document->saveXML());
-					fclose ($fp);
-					
-					// Usefull FOP libraries
-					java_require("$fop_url/build/fop.jar;
-								  $fop_url/lib/xmlgraphics-commons-1.3.1.jar;
-								  $fop_url/lib/batik-all-1.7.jar;
-								  $fop_url/lib/avalon-framework-4.2.0.jar;
-								  $fop_url/lib/xml-apis-1.3.04.jar;
-								  $fop_url/lib/commons-io-1.3.1.jar;
-								  $fop_url/lib/commons-logging-1.0.4.jar");
-										
-					//Create the PDF file based on the FO file
-
-					//fwrite($timer, "Avant convertXML2FO : ".date("H:i:s")."\n");
+		@$pageDom->loadHTML($searchPage);
+		$result = $processor->transformToXml($pageDom);
+		$exportpdf_url = config_easysdi::getValue("EXPORT_PDF_URL");
 		
-					displayManager::convertXML2FO($fopxml, $fopxsl, $fopfo); //, $timer);
+		if ($exportpdf_url )
+		{ 
+			$tmp = uniqid();
+			$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
+			$foptmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
+			$fopfotmp = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'.fo';
+			//Check foptmp against the schema before processing
+			//avoid JavaBrigde to fail
+			
+			file_put_contents($fopfotmp, $result);
 
-					//fwrite($timer, "Apr√®s convertXML2FO : ".date("H:i:s")."\n");
-					//fwrite($timer, "Avant convertFO2PDF : ".date("H:i:s")."\n");
-					
-					displayManager::convertFO2PDF($fopfo, $foptmp); //, $timer);
-					//fwrite($timer, "Apr√®s convertFO2PDF : ".date("H:i:s")."\n");
-					
-					if (file_exists($foptmp)) {
-						//fwrite($timer, "Avant download PDF : ".date("H:i:s")."\n");
-					
-						ob_end_clean();
-						@java_reset();
-						
-						error_reporting(0);
-						ini_set('zlib.output_compression', 0);
-						
-					    header('Content-Description: File Transfer');
-					    header('Content-Type: application/octet-stream');
-					    header('Content-Disposition: attachment; filename=metadata.pdf');
-					    header('Content-Transfer-Encoding: binary');
-					    header('Expires: 0');
-					    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-					    header('Pragma: public');
-					    header('Content-Length: ' . filesize($foptmp));
-					    
-					    @readfile($foptmp);
-					    
-					    //fwrite($timer, "Apr√®s download PDF : ".date("H:i:s")."\n");
-					}
-					
-					//fwrite($timer, "Avant suppression temp files : ".date("H:i:s")."\n");
-					
-					// Remove temporaries files
-					unlink($fopxml);
-					unlink($fopxsl);
-					unlink($fopfo);
-				    unlink($foptmp);
-					
-				    //fwrite($timer, "Apr√®s suppression temp files : ".date("H:i:s")."\n");
-					//fclose($timer);
-					/*					
-					@java_reset();
-						
-				 	error_reporting(0);
-					ini_set('zlib.output_compression', 0);
-					
-					header('Pragma: public');
-					header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-					header('Content-Transfer-Encoding: binary');
-					header('Content-type: application/pdf');
-					header('Content-Disposition: attachement; filename="metadata.pdf"');
-					header("Expires: 0"); 
-					header("Content-Length: ".filesize($foptmp));
-					
-					ob_clean();
-				    flush();
-				    @readfile($foptmp);
-					*/
-					
-				}
-				catch (JavaException $ex) {
-					echo "An exception occured: "; echo $ex; echo "<br>\n";
-				}
+			//GÈnÈration du document PDF sous forme de fichier
+			$res = "";
+			//Url to the export pdf servlet
+			$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
+			//echo $url;
+			$fp = fopen($url,"r");
+			while (!feof($fp)) {
+				$res .= fgets($fp, 4096);
 			}
-			else {
-				$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP'  ),'error');
-				
-				// FOP 0.93 - √† tester
-				$java_library_path = 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'fop.jar;';
-				$java_library_path .= 'file:'.JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'java'.DS.'fop'.DS.'FOPWrapper.jar';
-				
-				$tmp = uniqid();
-				$fopcfg = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'config'.DS.'fop.xml';
-				$foptmp = JPATH_COMPONENT_ADMINISTRATOR.DS.'xml'.DS.'tmp'.DS.$tmp.'.pdf';
-				
-				@java_reset();		
-				
-				java_require($java_library_path);
-				$j_fw = new Java("FOPWrapper");
-				$version = $j_fw->FOPVersion();
-				//G√©n√©ration du document PDF sous forme de fichier
-				$j_fw->convert($fopcfg,$result,$foptmp);
-				
-				@java_reset();
-						
-			 	ob_end_clean();
-			    error_reporting(0);
+			
+			//Avoid JVM class caching while testing DO NOT LET THIS FOR PRODUCTION USE!!!!
+			//@java_reset();
+			if(substr(strtoupper($res),0,7) == "SUCCESS"){
+				$fp = fopen ($foptmp, 'r');
+				$result = fread($fp, filesize($foptmp));
+				fclose ($fp);
+					//ob_end_clean();
+				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
-				
-				header('Pragma: public');
-				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-				header('Content-Transfer-Encoding: binary');
+                        	
 				header('Content-type: application/pdf');
 				header('Content-Disposition: attachement; filename="metadata.pdf"');
+				header('Content-Transfer-Encoding: binary');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Pragma: public');
 				header("Expires: 0"); 
 				header("Content-Length: ".filesize($foptmp));
 				
-				//flush();
-			    readfile($foptmp);
-				
-			    //echo $result;
+				echo $result;
+				//Very important, if you don't call this, the content-type will have no effect
+				die();
+			}else
+			{
+				//If there was an error when generating the pdf, write it.
+				$mainframe->redirect("index.php?option=com_easysdi_core&tmpl=component&task=reportPdfError&res=".urlencode($res));
 			}
 		}else {
-			$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
+			$mainframe->enqueueMessage(JText::_(  'CORE_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  ),'error'); 
 		}
+	}
+	
+	function reportPdfError() //, $timer)
+	{
+		$res = urldecode(JRequest::getVar('res'));
+		
+		echo '<div id="metadata" class="contentin">';
+		echo '<h2 class="contentheading">'.JText::_('CORE_ERROR_PDF_TITLE').'</h2>';
+		echo '<table class="descr">';
+		echo '<tr><td>&nbsp;</td></tr>';
+		echo '<tr><td>'.JText::_('CORE_ERROR_PDF_DETAIL').'</td><td>'.$res.'</td></tr>';
+		echo '<tr><td>&nbsp;</td></tr>';
+		echo '<tr><td colspan="2">'.JText::_('CORE_ERROR_PDF_REPORT').'</td></tr>';
+		echo '</table>';
+		echo '</div>';
 	}
 	
 	function convertXML2FO($xml, $xslt, $fo) //, $timer)
@@ -1030,15 +981,15 @@ class displayManager{
 	
  		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
 		//Setup XSLT
-		//fwrite($timer, "\tCr√©er factory : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCrÈer factory : ".date("H:i:s")."\n");
 		$factory = new java("javax.xml.transform.TransformerFactory");
 		$factory = $factory->newInstance();
-		//fwrite($timer, "\tFactory cr√©e! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tFactory crÈe! : ".date("H:i:s")."\n");
 		$xsltStream = new java("javax.xml.transform.stream.StreamSource", $xslt);
 		//$xsltStream->setSystemId($xmlSystemId);
-		//fwrite($timer, "\tCr√©er transformer : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCrÈer transformer : ".date("H:i:s")."\n");
 		$transformer = $factory->newTransformer($xsltStream);
-		//fwrite($timer, "\tTransformer cr√©√©! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformer crÈÈ! : ".date("H:i:s")."\n");
 		//Setup input for XSLT transformation
 		$src = new java("javax.xml.transform.stream.StreamSource", $xml);
 		//Resulting SAX events (the generated FO) must be piped through to FOP
@@ -1046,7 +997,7 @@ class displayManager{
 		//Start XSLT transformation and FOP processing
 		//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 		$transformer->transform($src, $res);
-		//fwrite($timer, "\tTransformation termin√©e : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformation terminÈe : ".date("H:i:s")."\n");
 	}
 	catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
@@ -1061,14 +1012,14 @@ class displayManager{
 		{
 			$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
 			// configure fopFactory as desired
-			//fwrite($timer, "\tCr√©er FOP Factory : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCrÈer FOP Factory : ".date("H:i:s")."\n");
 			$fopFactory = new java("org.apache.fop.apps.FopFactory");
 			$fopFactory = $fopFactory->newInstance();
-			//fwrite($timer, "\tFOP Factory cr√©e! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP Factory crÈe! : ".date("H:i:s")."\n");
 			// configure foUserAgent as desired
-			//fwrite($timer, "\tCr√©er FO User Agent: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCrÈer FO User Agent: ".date("H:i:s")."\n");
 			$foUserAgent = $fopFactory->newFOUserAgent();
-			//fwrite($timer, "\tFO User Agent cr√©√©! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFO User Agent crÈÈ! : ".date("H:i:s")."\n");
 			// Setup output
 			$pdf = new java("java.io.File", $pdf);
 			$pdf= $pdf->getAbsolutePath();
@@ -1077,15 +1028,15 @@ class displayManager{
 			$out = new java("java.io.BufferedOutputStream", $out);
 	
 			// Construct fop with desired output format
-			//fwrite($timer, "\tCr√©er FOP: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCrÈer FOP: ".date("H:i:s")."\n");
 			$fop = $fopFactory->newFop($fop_mime_constants->MIME_PDF, $foUserAgent, $out);
-			//fwrite($timer, "\tFOP cr√©√©! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP crÈÈ! : ".date("H:i:s")."\n");
 			//Setup XSLT
-			//fwrite($timer, "\tCr√©er Transformer Factory: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCrÈer Transformer Factory: ".date("H:i:s")."\n");
 			$factory = new java("javax.xml.transform.TransformerFactory");
 			$factory = $factory->newInstance();
 			$transformer = $factory->newTransformer();
-			//fwrite($timer, "\tTransformer Factory cr√©√©! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformer Factory crÈÈ! : ".date("H:i:s")."\n");
 			
 			// Set the value of a <param> in the stylesheet
 			$transformer->setParameter("versionParam", "2.0");
@@ -1094,13 +1045,13 @@ class displayManager{
 			$src = new java("javax.xml.transform.stream.StreamSource", $fo);
         
 			// Resulting SAX events (the generated FO) must be piped through to FOP
-			//fwrite($timer, "\tCr√©er SAX: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCrÈer SAX: ".date("H:i:s")."\n");
 			$res = new java("javax.xml.transform.sax.SAXResult", $fop->getDefaultHandler());
-			//fwrite($timer, "\tSAX cr√©√©! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tSAX crÈÈ! : ".date("H:i:s")."\n");
 			//Start XSLT transformation and FOP processing
 			//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 			$transformer->transform($src, $res);
-			//fwrite($timer, "\tTransformation termin√©e : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformation terminÈe : ".date("H:i:s")."\n");
 		}
 		catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
