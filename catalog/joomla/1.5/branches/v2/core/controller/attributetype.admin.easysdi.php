@@ -82,7 +82,7 @@ class ADMIN_attributetype {
 		if ($filter_order <> "id" and 
 			$filter_order <> "name" and 
 			$filter_order <> "ordering" and
-			$filter_order <> "isocode" and 
+			$filter_order <> "attributetype_isocode" and 
 			$filter_order <> "updated" and
 			$filter_order <> "description")
 		{
@@ -111,7 +111,7 @@ class ADMIN_attributetype {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__sdi_list_attributetype";
+		$query = "SELECT t.*, CONCAT(ns.prefix,':',t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=t.namespace_id";
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
@@ -151,7 +151,12 @@ class ADMIN_attributetype {
 			} 
 		}
 		
-		HTML_attributetype::editAttributeType($rowAttributeType, $fieldsLength, $option);
+		$namespacelist = array();
+		$namespacelist[] = JHTML::_('select.option','0', " - " );
+		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
+		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
+				
+		HTML_attributetype::editAttributeType($rowAttributeType, $fieldsLength, $namespacelist, $option);
 	}
 	
 	function saveAttributeType($option)

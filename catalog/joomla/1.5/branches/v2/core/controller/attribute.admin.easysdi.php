@@ -77,13 +77,16 @@ class ADMIN_attribute {
 		$searchAttribute				= JString::strtolower($searchAttribute);
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "isocode" and $filter_order <> "issystem" and $filter_order <> "isextensible" and $filter_order <> "description" and $filter_order <> "updated")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "attribute_isocode" and $filter_order <> "issystem" and $filter_order <> "isextensible" and $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
 		}
 		
-		$orderby 	= ' order by a.'. $filter_order .' '. $filter_order_Dir;
+		if ($filter_order <> "attribute_isocode")
+			$orderby 	= ' order by a.'. $filter_order .' '. $filter_order_Dir;
+		else
+			$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		
 		/*
@@ -117,7 +120,7 @@ class ADMIN_attribute {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT a.*, at.name as attributetype_name, at.code as attributetype_code, CONCAT(ns.prefix,':',a.name) as isocode FROM #__sdi_list_attributetype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
+		$query = "SELECT a.*, at.name as attributetype_name, at.code as attributetype_code, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode FROM #__sdi_list_attributetype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
 		if ($where)
 			$query .= ' AND '.$where;
 		$query .= $orderby;
@@ -407,29 +410,9 @@ class ADMIN_attribute {
 					$mainframe->redirect("index.php?option=$option&task=listAttribute" );
 					exit();
 				}
-				/*
-				// remember to updateOrder this group
-				//$condition = 'id = '.(int) $row->id;
-				$condition = '';
-				$found = false;
-				foreach ($conditions as $cond)
-					if ($cond[1] == $condition) {
-						$found = true;
-						break;
-					}
-				if (!$found)
-					$conditions[] = array ($row->id, $condition);
-				*/
 			}
 		}
 
-		// execute updateOrder for each group
-		/*foreach ($conditions as $cond)
-		{
-			$row->load($cond[0]);
-			$row->reorder($cond[1]);
-		}
-		*/
 		$cache = & JFactory::getCache('com_easysdi_catalog');
 		$cache->clean();
 

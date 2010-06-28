@@ -66,7 +66,7 @@ class ADMIN_class {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "isocode" and $filter_order <> "isrootclass" and $filter_order <> "issystem" and $filter_order <> "isextensible" and $filter_order <> "description" and $filter_order <> "updated")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "class_isocode" and $filter_order <> "isrootclass" and $filter_order <> "issystem" and $filter_order <> "isextensible" and $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -100,7 +100,7 @@ class ADMIN_class {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT c.*, CONCAT(ns.prefix,':',c.name) as isocode FROM #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=c.namespace_id";
+		$query = "SELECT c.*, CONCAT(ns.prefix,':',c.isocode) as class_isocode FROM #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=c.namespace_id";
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
