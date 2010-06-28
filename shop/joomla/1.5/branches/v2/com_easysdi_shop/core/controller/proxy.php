@@ -281,7 +281,7 @@ class SITE_proxy{
 		if ($object->easysdi_account_id && $object->easysdi_account_id <> 0)
 		{
 			 $db =& JFactory::getDBO(); 
-			 $query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__easysdi_community_partner WHERE partner_id= $object->easysdi_account_id)";
+			 $query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $object->easysdi_account_id)";
 			 $db->setQuery( $query);
 			 $row = $db->loadObject();
 			 $user = $row->username;

@@ -21,12 +21,13 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_cpanel_partner {
 	
 	function showSummaryForPartner($summaryForId, $print, $toolbar){
-
 		$database = & JFactory::getDBO();
 		
-		//Request
-		
-		$request="SELECT * FROM #__easysdi_community_partner p LEFT JOIN #__easysdi_community_address a ON p.partner_id=a.partner_id LEFT JOIN #__users u ON p.user_id=u.id where a.type_id=1 and u.id=".$summaryForId;
+		$request="SELECT * FROM #__sdi_account p 
+							LEFT JOIN #__sdi_address a ON p.id=a.account_id 
+							LEFT JOIN #__users u ON p.user_id=u.id 
+							WHERE a.type_id=1 
+							AND u.id=".$summaryForId;
 		
 		$database->setQuery($request);
 		if (!$database->query()) {
@@ -37,7 +38,7 @@ class HTML_cpanel_partner {
 		$array = explode("-", $rows[0]->partner_entry);
 		$displayEntryDate = $array[2]."-".$array[1]."-".$array[0];
 		
-		if($rows[0]->country_code == 'CH')
+		if($rows[0]->country_id == 'CH')
 			$rows[0]->country_code='Suisse';
 		
 		$isRoot = $rows[0]->root_id == null ? true : false;
@@ -45,7 +46,11 @@ class HTML_cpanel_partner {
 		//Select the root partner name if not root
 		$rowsRoot = null;
 		if(!$isRoot){
-			$request="SELECT name FROM #__easysdi_community_partner p LEFT JOIN #__easysdi_community_address a ON p.partner_id=a.partner_id LEFT JOIN #__users u ON p.user_id=u.id where a.type_id=1 and p.partner_id=".$rows[0]->root_id;
+			$request="SELECT name FROM #__sdi_account p 
+							LEFT JOIN #__sdi_address a ON p.id=a.account_id 
+							LEFT JOIN #__users u ON p.user_id=u.id 
+							WHERE a.type_id=1 
+							AND p.id=".$rows[0]->root_id;
 		
 			$database->setQuery($request);
 			if (!$database->query()) {
@@ -76,7 +81,7 @@ class HTML_cpanel_partner {
 		<div id="page" class="partnerList">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_PARTNERLIST_PARTENAIRE") ?></h2>
 		<div class="contentin">
-		<h3><?php if($rowsRoot != null) echo $rowsRoot[0]->name." (".$rows[0]->address_corporate_name1 ." ". $rows[0]->address_corporate_name2 .")"; else echo $rows[0]->address_corporate_name1 ." ". $rows[0]->address_corporate_name2;?></h3>
+		<h3><?php if($rowsRoot != null) echo $rowsRoot[0]->name." (".$rows[0]->corporatename1 ." ". $rows[0]->corporatename2 .")"; else echo $rows[0]->corporatename1 ." ". $rows[0]->corporatename2;?></h3>
 	<table width="100%" border="0">
 	  <tr>
 	     <td>&nbsp;</td>
@@ -84,7 +89,7 @@ class HTML_cpanel_partner {
 	     <table class="partnerSummaryContent">
 		 <tr>
 		   <td class="ptitle" width="100" valign="top"><?php echo JText::_("EASYSDI_SHOP_PARTNERLIST_ID") ?></td>
-		   <td><?php echo $rows[0]->partner_id ?></td>
+		   <td><?php echo $rows[0]->id ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_SHOP_PARTNERLIST_ENTRYDATE") ?></td>
@@ -92,9 +97,11 @@ class HTML_cpanel_partner {
 		 </tr>
 		 <!-- Put this as a hack -->
 		  <?php
-		 $queryProfile = "SELECT profile_name FROM #__asitvd_community_profile p, #__asitvd_community_partner par where par.profile_id=p.profile_id AND par.partner_id=".$rows[0]->partner_id;
-		 $database->setQuery($queryProfile);
-		 $profile = $database->loadResult();
+//		 $queryProfile = "SELECT profile_name FROM #__asitvd_community_profile p, 
+//		 						#__asitvd_community_partner par where par.profile_id=p.profile_id AND par.partner_id=".$rows[0]->partner_id;
+//		 $database->setQuery($queryProfile);
+//		 $profile = $database->loadResult();
+		$profile ="Profile?";
 		 ?>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("SHOP_PARTNERLIST_PROFILE") ?></td>
@@ -102,36 +109,36 @@ class HTML_cpanel_partner {
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_CONTACT") ?></td>
-		   <td><?php echo $rows[0]->address_agent_firstname ?> <?php echo $rows[0]->address_agent_lastname ?></td>
+		   <td><?php echo $rows[0]->agentfirstname ?> <?php echo $rows[0]->agentlastname ?></td>
 		 </tr>
 		 <!-- address -->
 		 <tr>  
 		   <td class="ptitle">&nbsp;</td>
-		   <td><?php echo $rows[0]->address_street1 ?> <?php echo $rows[0]->address_street2 ?></td>
+		   <td><?php echo $rows[0]->street1 ?> <?php echo $rows[0]->street2 ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_LOCALITY") ?></td>
-		   <td><?php echo $rows[0]->address_postalcode ?> <?php echo $rows[0]->address_locality ?></td>
+		   <td><?php echo $rows[0]->postalcode ?> <?php echo $rows[0]->locality ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_COUNTRY") ?></td>
-		   <td><?php echo $rows[0]->country_code ?></td>
+		   <td><?php echo $rows[0]->country_id ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_PHONE") ?></td>
-		   <td><?php echo $rows[0]->address_phone ?></td>
+		   <td><?php echo $rows[0]->phone ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_FAX") ?></td>
-		   <td><?php echo $rows[0]->address_fax ?></td>
+		   <td><?php echo $rows[0]->fax ?></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_EMAIL") ?></td>
-		   <td><a href="mailto:<?php echo $rows[0]->address_email ?>"><?php echo $rows[0]->address_email ?></a></td>
+		   <td><a href="mailto:<?php echo $rows[0]->email ?>"><?php echo $rows[0]->email ?></a></td>
 		 </tr>
 		 <tr>    
 		   <td class="ptitle" valign="top"><?php echo JText::_("EASYSDI_TEXT_WEBSITE") ?></td>
-		   <td><a href="<?php echo $rows[0]->partner_url ?>" target="_blank"><?php echo $rows[0]->partner_url ?></a></td>
+		   <td><a href="<?php echo $rows[0]->url ?>" target="_blank"><?php echo $rows[0]->url ?></a></td>
 		 </tr>
 	       </table>
 	      </td>

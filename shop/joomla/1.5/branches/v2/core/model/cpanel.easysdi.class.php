@@ -32,6 +32,9 @@ class order extends JTable
 	var $user_id=null;
 	var $buffer=null;
 	var $order_date=null;
+	var $surface=null;
+	var $order_send_date=null;
+	var $perimeter_id=null;
 
 	// Class constructor
 	function __construct( &$db )

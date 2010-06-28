@@ -21,31 +21,11 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_cpanel {
 
 	
-	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $redirectURL){
+	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $redirectURL, $saved,$finish,$archived,$historized){
 		global $mainframe;
-		$db =& JFactory::getDBO();
-	
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
-		$db->setQuery($queryStatus);
-		$saved = $db->loadResult();
-		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
-		$db->setQuery($queryStatus);
-		$finish = $db->loadResult();
-		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
-		$db->setQuery($queryStatus);
-		$archived = $db->loadResult();
-		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
-		$db->setQuery($queryStatus);
-		$historized = $db->loadResult();
 	?>	
 	<script>
-	
-	
 	function showAllowedButton(status, saved, finish){
-		
 		if (status == saved){
 		 document.getElementById('buttonArchive').disabled=false;
 		 document.getElementById('buttonSent').disabled=false;
@@ -58,8 +38,6 @@ class HTML_cpanel {
 		 document.getElementById('buttonSent').disabled=true;
 		}
 	}
-	
-	
 	</script>
 	<div id="page" class="listOrders">
 	<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
@@ -271,7 +249,6 @@ class HTML_cpanel {
 					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
-					
 					<?php 
 					if($archived == $row->status || $historized == $row->status){
 					?>
@@ -286,13 +263,11 @@ class HTML_cpanel {
 					<?php
 					}
 					?>
-					
 					<td class="logo"><div class="noLogo"></td>
 					<?php 
 				}
 			?>
 			</tr>
-			
 				<?php		
 		}
 	?>
@@ -311,36 +286,15 @@ class HTML_cpanel {
 			<input type="hidden" name="Itemid" id="Itemid" value="">
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<!--
-			<input type="hidden" name="limit" value="<?php echo JRequest::getVar("limit",20); ?>">
-			-->
 			<input type="hidden" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
-			
 			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrders">
-			
-			<!--  <button id="buttonArchive" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='archiveOrder';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ARCHIVE_ORDER"); ?></button>
-			<button id="buttonSent" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='changeOrderToSend';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_SEND_ORDER"); ?></button>-->
 		</form>
 		</div>
 		</div>
 	<?php	
 	}
 	
-	function processOrder($rows,$option,$rowOrder,$partner,$product_id, $treatmentTranslation, $treatmentCode){
-		$database =& JFactory::getDBO();
-		$third_party = false;
-		if($rowOrder->third_party != 0){
-			$query = "SELECT user_id FROM #__easysdi_community_partner where partner_id = ".$rowOrder->third_party;
-			$database->setQuery($query);
-			$res = $database->loadResult();
-			$query = "SELECT * FROM  #__users WHERE id=".$res;
-			$database->setQuery($query);
-			$third_party = $database->loadObject();
-		}
-		$query = "SELECT translation FROM #__easysdi_order_status_list where id = ".$rowOrder->status;
-		$database->setQuery($query);
-		$status = $database->loadResult();
-		
+	function processOrder($rows,$option,$rowOrder,$third_party,$status,$partner,$product_id, $treatmentTranslation, $treatmentCode){
 		?>
 		<?php JHTML::_("behavior.modal","a.modal",$param); ?>
 		<div id="page" class="processTreatmentPage">
@@ -490,7 +444,6 @@ class HTML_cpanel {
 			}
 		}			
 		?>
-		
 		<input type="hidden" id="ordertype" name="ordertype" value="<?php echo JRequest::getVar("ordertype",""); ?>" />
 		<input type="hidden" id="treatmentType" name="treatmentType" value="<?php echo JRequest::getVar("treatmentType",""); ?>" />
 		<input type="hidden" id="orderStatus" name="orderStatus" value="<?php echo JRequest::getVar("orderStatus",""); ?>" />
@@ -547,7 +500,6 @@ class HTML_cpanel {
 	}
 	
 	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="", $orderStatus="", $productorderstatus="", $productStatusFilter="", $productTypeFilter="", $treatmentList="", $treatmentType){
-	
 	?>	
 		<div id="page" class="listOrdersForProvider">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS_FOR_PROVIDER"); ?></h2>
@@ -639,13 +591,10 @@ class HTML_cpanel {
 	<tbody>
 	<?php
 		$i=0;
-		//$old_order_id = -1;
 		foreach ($rows as $row)
 		{	
-			//if ($old_order_id != $row->order_id){
-				//$old_order_id = $row->order_id;
-				$i++;
-				?>
+			$i++;
+			?>
 			<tr>
 				<td align="center" class="infoLogo"><a title="<?php echo $row->order_id.": ".$row->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->order_id; ?></a></td>
 				<td align="center" class="infoLogo"><div class="<?php if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_translation) ;?>"></div></td>
@@ -680,7 +629,6 @@ class HTML_cpanel {
 				<a  title="<?php echo $row->username ;?>" id="partnerLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:565,y:450}}" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForPartner&SummaryForId=<?php echo $row->client_id ;?>" class="modal">&nbsp;</a>
 				</div>
 				</td>
-				<!-- <td class="reqName"><span class="mdtitle" ><b><a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?></a></b></span><br></td>-->
 				<td align="left" id ="product_id">
 					<a class="modal"
 					title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
@@ -691,15 +639,10 @@ class HTML_cpanel {
 				<td align="center"><!--<?php echo JText::_($row->status_translation) ;?>--></td>
 				<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_PROCESS_ORDER'); ?>" class="treatRequest" id="treatReqButton" onClick="document.getElementById('product_list_id').value='<?php echo $row->product_list_id; ?>';document.getElementById('ordersListForm').task.value='processOrder'; document.getElementById('ordersListForm').submit();"/></td>
 			</tr>
-				
 			<?php
-			//}			
-		
 			?>
-								
 	<?php		
 		}
-		
 	?>
 	</tbody>
 	</table>

@@ -15,13 +15,13 @@ if (is_array(($cid)))
 
 	if (count($cid)>0)
 	{		
-		$query = "select p.*, u.name from #__easysdi_product p, #__easysdi_community_partner cp, #__users u where p.id in (";
+		$query = "select p.*, u.name from #__easysdi_product p, #__sdi_account a, #__users u where p.id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query.") AND p.partner_id = cp.partner_id AND cp.user_id = u.id		";
+		$query = $query.") AND p.partner_id = a.id AND a.user_id = u.id		";
 
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();

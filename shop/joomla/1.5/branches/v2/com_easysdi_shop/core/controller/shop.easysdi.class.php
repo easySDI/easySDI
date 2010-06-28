@@ -121,12 +121,12 @@ class HTML_shop {
 	var isFreeSelectionPerimeter = false;
 	var wfsSelection;
 	var fromZoomEnd = false;
-	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");?>;
+	var meterToKilometerLimit = <?php if (config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT")){echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");} else {echo "100000";} ;?>;
 	if(meterToKilometerLimit == '') meterToKilometerLimit = 100000;
 	var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
 	var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
 	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
-	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");?>;
+	var MOD_PERIM_AREA_PRECISION = <?php if (config_easysdi::getValue("MOD_PERIM_AREA_PRECISION")) {echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");}else{echo "2";};?>;
 	if(MOD_PERIM_AREA_PRECISION == '') MOD_PERIM_AREA_PRECISION = 2;
 	
 	function onFeatureSelect(feature) 
@@ -1713,9 +1713,9 @@ if (count($rows)>0){
 	}
 	
 	
-		$query = "select a.partner_id as partner_id, j.name as name 
-					from #__easysdi_community_partner a, #__easysdi_community_actor b, #__easysdi_community_role c, #__users as j 
-					where c.role_code = 'TIERCE' and c.role_id = b.role_id AND a.partner_id = b.partner_id and a.user_id = j.id and a.root_id is null ORDER BY name";
+		$query = "select a.id as partner_id, j.name as name 
+					from #__sdi_account a, #__sdi_actor b, #__sdi_list_role c, #__users as j 
+					where c.code = 'TIERCE' and c.id = b.role_id AND a.id = b.account_id and a.user_id = j.id and a.root_id is null ORDER BY name";
 		$db->setQuery( $query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -1791,7 +1791,7 @@ if (count($rows)>0){
 		$db =& JFactory::getDBO();
 
 		$user = JFactory::getUser();
-		$partner = new partnerByUserId( $db );
+		$partner = new accountByUserId( $db );
 		$partner->load( $user->id );
 
 
@@ -1823,15 +1823,15 @@ if (count($rows)>0){
 			$isProductAllowed = true;
 			$hasExternal = false;
 			$hasInternal = false;
-			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			if(userManager::hasRight($partner->id,"REQUEST_EXTERNAL"))
 			{
 				$hasExternal = true;
 			}
-			if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+			if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
 			{
 				$hasInternal = true;
 			}
-			$partner = new partnerByUserId($db);
+			$partner = new accountByUserId($db);
 			$partner->load($user->id);
 
 			$cid = $mainframe->getUserState('productList');
@@ -1858,13 +1858,13 @@ if (count($rows)>0){
 				$query = "SELECT COUNT(*) FROM #__easysdi_product p WHERE
 								p.id = $row->id
 								AND
-								 (p.partner_id =  $partner->partner_id
+								 (p.partner_id =  $partner->id
 								OR
-								p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+								p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
 								OR 
-								p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+								p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
 								OR
-								p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ))" ;
+								p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ))" ;
 						$db->SetQuery($query);
 						$countProduct = $db->loadResult();
 				if($row->internal == '1')
@@ -1904,32 +1904,10 @@ if (count($rows)>0){
 								break;
 							}
 						}
-						/*
-						if($countProduct == 1 )
-						{
-							if($hasInternal == false)
-							{
-								//The product belongs to the current user's group and the user does not have the internal right
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						else
-						{
-							if($hasExternal == false)
-							{
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						*/
 					}
 				}
 				else
 				{
-					//$row->internal == '0'
 					if($row->external = '1')
 					{
 						if($hasExternal == false)
@@ -1939,25 +1917,6 @@ if (count($rows)>0){
 							$isProductAllowed = false;
 							break;
 						}
-						/*
-						if($countProduct == 1)
-						{
-							//This product is not visible for the user of the partner's group
-							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-							$isProductAllowed = false;
-							break;
-						}
-						else
-						{
-							if($hasExternal == false)
-							{
-								//User does not have the right to order external product
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						*/
 					}
 					else
 					{
@@ -2059,7 +2018,9 @@ if (count($rows)>0){
 					$OrderProductList = new orderProductListByOrder($db);
 					$OrderProductList->load($order_id);
 					
-					$query = "DELETE FROM #__easysdi_order_product_properties  WHERE order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $order_id)";
+					$query = "DELETE FROM #__easysdi_order_product_properties  
+								WHERE order_product_list_id 
+								IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $order_id)";
 					$db->setQuery($query);
 					$db->query();
 					
@@ -2316,7 +2277,7 @@ if (count($rows)>0){
 							 p.data_title as data_title , 
 							 p.partner_id as partner_id   
 					  FROM #__users u,
-					  	   #__easysdi_community_partner pa, 
+					  	   #__sdi_account pa, 
 					  	   #__easysdi_order_product_list opl , 
 					  	   #__easysdi_product p,
 					  	   #__easysdi_order o, 
@@ -2327,7 +2288,7 @@ if (count($rows)>0){
 					  and opl.status='".$await_type."' 
 					  and o.type=otl.id 
 					  and otl.code='D' 
-					  AND p.diffusion_partner_id = pa.partner_id 
+					  AND p.diffusion_partner_id = pa.id 
 					  and pa.user_id = u.id 
 					  and o.order_id=opl.order_id 
 					  and o.status='".$sent."' ";
@@ -2351,7 +2312,7 @@ if (count($rows)>0){
 				}
 				$user = JFactory::getUser();
 
-				SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
+				SITE_cpanel::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
 					
 			}
 			
@@ -2361,11 +2322,11 @@ if (count($rows)>0){
 			if($order_status_value == "SENT")
 			{
 				//verify the notification is active.
-				$queryNot = "SELECT p.notify_order_ready FROM #__easysdi_community_partner p, #__users u WHERE u.id = p.user_id and p.user_id = $user->id";
+				$queryNot = "SELECT p.notify_order_ready FROM #__sdi_account p, #__users u WHERE u.id = p.user_id and p.user_id = $user->id";
 				$db->setQuery($queryNot);
 				$not = $db->loadResult();
 				if($not == 1)
-					SITE_product::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
+					SITE_cpanel::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
 			}
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
 			
@@ -2821,15 +2782,22 @@ function validateForm(toStep, fromStep){
 		//partner select box
 		$partners = array();
 		$partners[0]='';
-		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
+		
 		//Do not display a furnisher without product	
-		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
-		          FROM #__users, `#__easysdi_community_partner` 
-			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
-			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
-			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
-			  GROUP BY #__easysdi_community_partner.partner_id 
-			  ORDER BY #__users.name";
+//		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
+//		          FROM #__users, `#__easysdi_community_partner` 
+//			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
+//			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
+//			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+//			  GROUP BY #__easysdi_community_partner.partner_id 
+//			  ORDER BY #__users.name";
+		$query = "SELECT  #__sdi_account.id as value, #__users.name as text 
+		          FROM #__users, `#__sdi_account` 
+			  	  INNER JOIN `#__easysdi_product` ON #__sdi_account.id = #__easysdi_product.partner_id 
+			  	  WHERE #__users.id = #__sdi_account.user_id AND 
+			      #__sdi_account.id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+			      GROUP BY #__sdi_account.id 
+			      ORDER BY #__users.name";
 		$db->setQuery( $query);
 		$partners = array_merge( $partners, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
@@ -2881,14 +2849,14 @@ function validateForm(toStep, fromStep){
 		}
 		
 		$user = JFactory::getUser();
-		$partner = new partnerByUserId($db);
+		$partner = new accountByUserId($db);
 		if (!$user->guest){
 			$partner->load($user->id);
 		}else{
-			$partner->partner_id = 0;
+			$partner->id = 0;
 		}
 
-		if($partner->partner_id == 0)
+		if($partner->id == 0)
 		{
 			//No user logged, display only external products
 			$filter .= " AND (EXTERNAL=1) ";
@@ -2896,20 +2864,20 @@ function validateForm(toStep, fromStep){
 		else
 		{
 			//User logged, display products according to users's rights
-			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			if(userManager::hasRight($partner->id,"REQUEST_EXTERNAL"))
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.EXTERNAL=1
 					OR
 					(p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
+					(p.partner_id =  $partner->id
 					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
 					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
 					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
 					
 					))) ";
 				}
@@ -2920,16 +2888,16 @@ function validateForm(toStep, fromStep){
 			}
 			else
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
+					(p.partner_id =  $partner->id
 					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
 					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
 					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
 					)) ";
 									
 				}
@@ -2945,7 +2913,7 @@ function validateForm(toStep, fromStep){
 
 		if ($simpleSearchCriteria == "favoriteProduct"){
 
-			$queryFav = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
+			$queryFav = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->id ";
 			$db->setQuery( $queryFav);
 			$productList = $db->loadResultArray();
 
@@ -2968,7 +2936,6 @@ function validateForm(toStep, fromStep){
 
 		$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;
 		$query  = $query .$filter;
-
 		if ($simpleSearchCriteria == "moreConsultedMD"){
 			$query  = $query." order by weight";
 		}
@@ -3248,112 +3215,6 @@ function validateForm(toStep, fromStep){
 	<?php
 	}
 	
-	function orderDraft ($order_id)
-	{
-		global $mainframe;
-		$database =& JFactory::getDBO();
-		$option = JRequest::getVar('option');
-		$devis_to_order = JRequest::getVar('devis_to_order',0);
-		//Order
-		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
-		$database->setQuery($query);
-		$order = $database->loadObject();
-		$mainframe->setUserState('order_name',$order->name);
-		$mainframe->setUserState('third_party',$order->third_party);
-		$mainframe->setUserState('bufferValue',$order->buffer);
-		$mainframe->setUserState('totalArea',$order->surface);
-		
-		//Order ID
-		$mainframe->setUserState('order_id',$order->order_id);
-				
-		//Order type
-		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
-		$database->setQuery($queryType);
-		$type = $database->loadObject();
-		
-		if($devis_to_order == 1)
-			$mainframe->setUserState('order_type','O');
-		else
-			$mainframe->setUserState('order_type',$type->code );
-		
-		//Products
-		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
-		$database->setQuery($queryProducts);
-		$productList = $database->loadObjectList();
-		$productArray = array ();
-		foreach($productList as $product)
-		{
-			$productArray[]=$product->product_id;
-		}
-		$mainframe->setUserState('productList',$productArray);
-		
-		//Selected surfaces
-		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id ORDER BY id";
-		$database->setQuery($queryPerimeters);
-		$perimeterList = $database->loadObjectList();
-		$selectedSurfaces = array ();
-		$selectedSurfacesName = array();
-		foreach ($perimeterList as $perimeter)
-		{
-			$selectedSurfaces[]=$perimeter->value;
-			$selectedSurfacesName[]=$perimeter->text;	
-		}
-		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);
-		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
-		$mainframe->setUserState('perimeter_id',$perimeterList[0]->perimeter_id);
-		//Properties
-		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
-		$database->setQuery($queryProducts);
-		$productsList = $database->loadObjectList();
-		foreach($productsList as $productItem)
-		{
-			$queryPropertyCode = "SELECT * FROM #__easysdi_order_product_properties WHERE order_product_list_id = $productItem->id";
-			$database->setQuery($queryPropertyCode);
-			$orderProperties = $database->loadObjectList();
-			$mlistArray = array();
-			$cboxArray = array();
-			foreach($orderProperties as $orderProperty)
-			{
-				$queryPropertyDefintion = "SELECT * FROM #__easysdi_product_properties_definition WHERE code='$orderProperty->code'";
-				$database->setQuery($queryPropertyDefintion);
-				$propertyDefinition = $database->loadObject();
-				switch($propertyDefinition->type_code)
-				{
-					case "message":
-						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_id);
-						break;
-					case "list":
-						$a = array();
-						$a[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_list_property_".$productItem->product_id,$a);
-						break;
-					case "text":
-						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_value);
-						break;
-					case "textarea":
-						$a = array();
-						$a[] = $orderProperty->property_value;
-						$mainframe->setUserState($orderProperty->code."_textarea_property_".$productItem->product_id,$a);
-						break;
-					case "cbox":
-						$cboxArray[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_cbox_property_".$productItem->product_id,$cboxArray);
-						break;
-					case "mlist":
-						$mlistArray[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_mlist_property_".$productItem->product_id,$mlistArray);
-						break;
-						
-				}
-			}
-		
-		}
-		//Get the url for the "order" entry of the menu
-		$database =& JFactory::getDBO();
-		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
-		$database->setQuery($queryURL);
-		$redirectURL = $database->loadResult();
-		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL&step=5" );
-	}
+	
 }
 	?>
