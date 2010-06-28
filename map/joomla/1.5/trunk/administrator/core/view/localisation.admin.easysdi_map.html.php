@@ -186,7 +186,7 @@ class HTML_localisation
 		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="id" value="<?php echo $localisation->id;?>">
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="saveLocalisation" />
 		</form>
 	<?php
 	}

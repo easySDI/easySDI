@@ -191,8 +191,8 @@ function submitbutton(pressbutton)
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="extent" value="<?php echo $base_definition->extent; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0" <?php if ($base_definition->resolutionOverScale == 0) echo "checked=\"checked"; ?>" />
-				<?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0"
+				<?php if ($base_definition->resolutionOverScale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_MIN_SCALE"); ?></td>
@@ -205,8 +205,8 @@ function submitbutton(pressbutton)
 				<?php if ($base_definition->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $base_definition->maxScale; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1" <?php if ($base_definition->resolutionOverScale == 1) echo "checked=\"checked"; ?>"/>
-				<?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1"
+				<?php if ($base_definition->resolutionOverScale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
@@ -215,7 +215,7 @@ function submitbutton(pressbutton)
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_DEFAULT"); ?></td>
-				<td><input class="checkbox" name="def" type="checkbox" value="1" <?php if ($base_definition->def == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="def" type="checkbox" value="1" <?php if ($base_definition->def == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 		</table>
 		</fieldset>
@@ -225,7 +225,7 @@ function submitbutton(pressbutton)
 </table>
 
 <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="id" value="<?php echo $base_definition->id;?>"> <input
-	type="hidden" name="task" value="" /></form>
+	type="hidden" name="task" value="saveBaseDefinition" /></form>
 				<?php
 	}
 
@@ -436,8 +436,8 @@ $j(document).ready(function() {
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxExtent" id="maxExtent" value="<?php echo $base_layer->maxExtent; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0" <?php if ($base_layer->resolutionOverScale == 0) echo "checked=\"checked"; ?>" />
-				<?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0"
+				<?php if ($base_layer->resolutionOverScale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_MIN_SCALE"); ?></td>
@@ -450,8 +450,8 @@ $j(document).ready(function() {
 				<?php if ($base_layer->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $base_layer->maxScale; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1" <?php if ($base_layer->resolutionOverScale == 1) echo "checked=\"checked"; ?>"/>
-				<?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1"
+				<?php if ($base_layer->resolutionOverScale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
@@ -460,7 +460,7 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_CACHE"); ?></td>
-				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($base_layer->cache == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($base_layer->cache == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_URL"); ?></td>
@@ -468,15 +468,16 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_TILE"); ?></td>
-				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($base_layer->singletile == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($base_layer->singletile == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-				<td><input class="checkbox" name="customStyle" value="0" type="checkbox" <?php if ($base_layer->customStyle == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="customStyle" value="0" type="checkbox" <?php if ($base_layer->customStyle == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_VISIBILITY"); ?></td>
-				<td><input class="checkbox" name="default_visibility" value="1" type="checkbox" <?php if ($base_layer->default_visibility == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="default_visibility" value="1" type="checkbox"
+				<?php if ($base_layer->default_visibility == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_OPACITY"); ?></td>
@@ -497,7 +498,7 @@ $j(document).ready(function() {
 
 <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="id" value="<?php echo $base_layer->id;?>"> <input
 	type="hidden" name="id_base" value="<?php echo $base_layer->id_base;?>"> <input type="hidden" name="order" value="<?php echo $base_layer->order;?>">
-<input type="hidden" name="cid[]" value="<?php echo $base_layer->id_base;?>"> <input type="hidden" name="task" value="" /></form>
+<input type="hidden" name="cid[]" value="<?php echo $base_layer->id_base;?>"> <input type="hidden" name="task" value="saveBaseLayer" /></form>
 				<?php
 	}
 }

@@ -253,8 +253,16 @@ CREATE TABLE `#__easysdi_map_display_options` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of #__easysdi_map_display_options
+-- Records of jos_easysdi_map_display_options
 -- ----------------------------
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('1', 'EASYSDI_MAP_SIMPLESEARCH', 'SimpleSearch', '0');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('2', 'EASYSDI_MAP_ADVANCEDSEARCH', 'AdvancedSearch', '0');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('3', 'EASYSDI_MAP_DATAPRECISION', 'DataPrecision', '0');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('4', 'EASYSDI_MAP_LOCALISATION', 'Localisation', '1');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('5', 'EASYSDI_MAP_TOOLBAR', 'ToolBar', '1');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('6', 'EASYSDI_MAP_MAPOVERVIEW', 'MapOverview', '1');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('7', 'EASYSDI_MAP_ANNOTATION', 'Annotation', '0');
+INSERT INTO `jos_easysdi_map_display_options` VALUES ('8', 'EASYSDI_MAP_COORDINATE', 'Coordinate', '1');
 
 -- ----------------------------
 -- Table structure for `#__easysdi_map_extension`

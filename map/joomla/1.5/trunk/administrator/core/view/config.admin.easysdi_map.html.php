@@ -139,7 +139,7 @@ class HTML_config
 	</tr>
 </table>
 <input type="hidden" name="id" value="<?php echo $mapconfig->id; ?>" /> <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input
-	type="hidden" name="task" value="" /></form>
+	type="hidden" name="task" value="saveMapConfig" /></form>
 
 		<?php
 	}

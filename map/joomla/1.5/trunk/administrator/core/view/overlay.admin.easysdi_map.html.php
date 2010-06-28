@@ -222,8 +222,8 @@ $j(document).ready(function() {
 					value="<?php echo $overlay_content->maxExtent; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0" <?php if ($overlay_content->resolutionOverScale == 0) echo "checked=\"checked"; ?>" />
-				<?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0"
+				<?php if ($overlay_content->resolutionOverScale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_MIN_SCALE"); ?></td>
@@ -236,8 +236,8 @@ $j(document).ready(function() {
 				<?php if ($overlay_content->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $overlay_content->maxScale; ?>" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1" <?php if ($overlay_content->resolutionOverScale == 1) echo "checked=\"checked"; ?>"/>
-				<?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1"
+				<?php if ($overlay_content->resolutionOverScale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
@@ -246,7 +246,7 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_CACHE"); ?></td>
-				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_URL"); ?></td>
@@ -261,7 +261,8 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_TILE"); ?></td>
-				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($overlay_content->singletile == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="singletile" value="1" type="checkbox"
+				<?php if ($overlay_content->singletile == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_IMG_FORMAT"); ?></td>
@@ -271,11 +272,13 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-				<td><input class="checkbox" name="customStyle" value="1" type="checkbox" <?php if ($overlay_content->customStyle == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="customStyle" value="1" type="checkbox"
+				<?php if ($overlay_content->customStyle == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_VISIBILITY"); ?></td>
-				<td><input class="checkbox" name="default_visibility" value="1" type="checkbox" <?php if ($overlay_content->default_visibility == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="default_visibility" value="1" type="checkbox"
+				<?php if ($overlay_content->default_visibility == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_OPACITY"); ?></td>
@@ -295,7 +298,7 @@ $j(document).ready(function() {
 </table>
 
 <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="id" value="<?php echo $overlay_content->id;?>"> <input
-	type="hidden" name="order" value="<?php echo $overlay_content->order;?>"> <input type="hidden" name="task" value="" /></form>
+	type="hidden" name="order" value="<?php echo $overlay_content->order;?>"> <input type="hidden" name="task" value="saveOverlayContent" /></form>
 				<?php
 	}
 
@@ -398,7 +401,7 @@ $j(document).ready(function() {
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_OPEN"); ?></td>
-				<td><input class="checkbox" name="open" value="1" type="checkbox" <?php if ($overlay_group->open == 1) echo "checked=\"checked"; ?>" /></td>
+				<td><input class="checkbox" name="open" value="1" type="checkbox" <?php if ($overlay_group->open == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 
 		</table>
@@ -407,7 +410,7 @@ $j(document).ready(function() {
 	</tr>
 </table>
 <input type="hidden" name="id" value="<?php echo $overlay_group->id; ?>" /> <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input
-	type="hidden" name="task" value="" /></form>
+	type="hidden" name="task" value="saveOverlayGroup" /></form>
 
 		<?php
 	}
