@@ -35,6 +35,10 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
 		} 
+		else if (form.isocode.value == "") 
+		{
+			alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
+		}
 		else 
 		{
 			submitform( pressbutton );

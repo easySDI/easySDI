@@ -35,6 +35,10 @@ defined('_JEXEC') or die('Restricted access');
 		else if (getSelectedValue('adminForm','namespace_id') < 1) 
 		{
 			alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
+		}
+		else if (form.isocode.value == "") 
+		{
+			alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
 		} 
 		else if (getSelectedValue('adminForm','attributetype_id') == 6 && getSelectedValue('adminForm','listnamespace_id') < 1) 
 		{
