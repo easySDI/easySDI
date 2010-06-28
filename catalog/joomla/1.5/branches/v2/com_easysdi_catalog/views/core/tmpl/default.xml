@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="Search">
+	<layout title="Register">
 		<message>
-			<![CDATA[STANDARD CSEARCH LAYOUT DESC]]>
+			<![CDATA[STANDARD REGISTER LAYOUT DESC]]>
 		</message>
 	</layout>
 	<state>
-		<name>Search</name>
-		<description><![CDATA[STANDARD CSEARCH LAYOUT DESC]]></description>
+		<name>Register</name>
+		<description><![CDATA[STANDARD REGISTER LAYOUT DESC]]></description>
 	</state>
 </metadata>

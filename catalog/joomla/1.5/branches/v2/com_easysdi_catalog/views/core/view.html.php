@@ -25,7 +25,7 @@ jimport( 'joomla.application.component.view');
  * @subpackage	Weblinks
  * @since 1.0
  */
-class CatalogViewCatalog extends JView
+class CoreViewCore extends JView
 {
 		function display($tpl = null)
 		{
