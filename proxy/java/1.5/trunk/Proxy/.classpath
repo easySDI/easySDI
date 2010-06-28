@@ -54,7 +54,7 @@
 	<classpathentry kind="lib" path="lib/gt2-demo-data-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-demo-libraryJTS-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-demo-property-2.4.1.jar"/>
-	<classpathentry kind="lib" path="lib/gt2-directory-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/gt2-directory-2.4.1.jar" sourcepath="C:/Documents and Settings/HVH/My Documents/Downloads/gt2-xml-2.4.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-epsg-hsql-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-geotiff-2.4.1.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-gml-2.4.1.jar"/>

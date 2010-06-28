@@ -3,14 +3,14 @@ package org.easysdi.proxy.reporting;
 import java.net.URLConnection;
 
 import org.apache.fop.apps.FOURIResolver;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.codec.Base64;
 
 public class EasySDIFOURIResolver extends FOURIResolver {
 
-	private UsernamePasswordAuthenticationToken token;
+	private Authentication token;
 
-	public EasySDIFOURIResolver(UsernamePasswordAuthenticationToken token) {
+	public EasySDIFOURIResolver(Authentication token) {
 		this.token = token;
 	}
 

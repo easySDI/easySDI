@@ -25,6 +25,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.Credentials;
@@ -60,7 +61,7 @@ import org.geotools.xml.wfs.WFSSchema;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.spatial.BBOX;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -73,7 +74,7 @@ public class MapToFop {
 	private DataStore wfs;
 	private String fopDir;
 	private HttpClient httpClient;
-	private UsernamePasswordAuthenticationToken token;
+	private Authentication token;
 	Map<String, Object> connectionParameters = null;
 
 	public void initWmsWfs(JoomlaProvider provider) throws ServletException, IOException, ServiceException {
@@ -86,7 +87,7 @@ public class MapToFop {
 		String wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "easysdi_map_config where name = 'pubWfsUrl' limit 1", String.class);
 		if (wfs == null)
 			throw new ServletException("pubWfsUrl must be set !");
-		token = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+		token = SecurityContextHolder.getContext().getAuthentication();
 		if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
 			this.setCredentials(token.getPrincipal().toString(), token.getCredentials().toString());
 		}
@@ -277,12 +278,14 @@ public class MapToFop {
 		Layer baseLayer = new Layer();
 		baseLayer.setName(baseLayerName);
 		List<Layer> overlays = new ArrayList<Layer>();
-		String[] overlayNamesTab = (overlayNames).split(",");
-		for (String overlayName : overlayNamesTab) {
-			Layer overlay = new Layer();
-			overlay.setName(overlayName);
-			overlay.setParent(baseLayer);
-			overlays.add(0, overlay);
+		if (overlayNames != null) {
+			String[] overlayNamesTab = (overlayNames).split(",");
+			for (String overlayName : overlayNamesTab) {
+				Layer overlay = new Layer();
+				overlay.setName(overlayName);
+				overlay.setParent(baseLayer);
+				overlays.add(0, overlay);
+			}
 		}
 
 		CRSEnvelope bbox = new CRSEnvelope(epsgCode, minX, minY, maxX, maxY);
@@ -314,8 +317,8 @@ public class MapToFop {
 				transformer.setParameter(key.substring(2), value);
 			}
 		}
-		// Transformer t = factory.newTransformer();t.transform(domSource, new
-		// StreamResult(System.err));
+		// Transformer t = factory.newTransformer();
+		// t.transform(domSource, new StreamResult(System.err));
 		transformer.transform(domSource, res);
 	}
 
