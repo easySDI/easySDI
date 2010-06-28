@@ -14,7 +14,10 @@
 	</path>
 
 
-	<target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
+	<target name="preparework" depends="create-structure,copy-to-work,compilation,compression,deleteResources" description="Main target">
+	</target>
+
+	<target name="createwar" depends="preparework,war" description="Main target">
 	</target>
 
 
@@ -22,32 +25,15 @@
 		<echo>Creating the working directory structure</echo>
 		<mkdir dir="${projet.out.dir}" />
 		<mkdir dir="${projet.work.dir}" />
-		<mkdir dir="${projet.work.dir}/META-INF" />
-		<mkdir dir="${projet.work.dir}/WEB-INF" />
-		<mkdir dir="${projet.work.dir}/WEB-INF/conf" />
-		<mkdir dir="${projet.work.dir}/WEB-INF/spring" />
 		<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
-		<mkdir dir="${projet.work.dir}/WEB-INF/lib" />
 	</target>
 
-	<target name="copy-resources">
-		<copy todir="${projet.work.dir}">
+	<target name="copy-to-work">
+		<copy todir="${projet.work.dir}" includeemptydirs="true">
 			<fileset dir="${projet.conf.dir}">
-				<include name="*.jsp" />
+				<include name="**/*.*" />
 			</fileset>
 		</copy>
-		<copy todir="${projet.work.dir}/META-INF/">
-			<fileset dir="${projet.conf.dir}/META-INF">
-				<include name="context.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${projet.work.dir}/WEB-INF/">
-			<fileset dir="${projet.conf.dir}/WEB-INF">
-				<include name="*.*" />
-			</fileset>
-		</copy>
-
-		<echo>Copy the resources into the working directory</echo>
 		<copy todir="${projet.work.dir}/WEB-INF/lib">
 			<fileset dir="${projet.lib.dir}">
 				<include name="**/*.jar" />
@@ -57,27 +43,6 @@
 				<exclude name="**/servlet-api-6.0.18.jar" />
 				<exclude name="**/jsp-api*.jar" />
 				<exclude name="**/rt.jar" />
-			</fileset>
-		</copy>
-
-		<copy todir="${projet.work.dir}/WEB-INF/conf/">
-			<fileset dir="${projet.conf.dir}/WEB-INF/conf">
-				<include name="config.xml" />
-				<include name="NewPolicy.xml" />
-				<include name="policy_csw.xml" />
-			</fileset>
-		</copy>
-
-		<copy todir="${projet.work.dir}/WEB-INF/spring/">
-			<fileset dir="${projet.conf.dir}/WEB-INF/spring">
-				<include name="app-config.xml" />
-				<include name="security-config.xml" />
-			</fileset>
-		</copy>
-
-		<copy todir="${projet.work.dir}/WEB-INF/tlds/">
-			<fileset dir="${projet.conf.dir}/WEB-INF/tlds">
-				<include name="*.tld" />
 			</fileset>
 		</copy>
 	</target>
@@ -92,10 +57,12 @@
 		<jar jarfile="${projet.work.dir}/WEB-INF/lib/easysdi.jar" basedir="${projet.work.dir}/WEB-INF/classes" />
 	</target>
 
-	<target name="deleteResources" description="generate the war">
+	<target name="deleteResources">
 		<delete includeEmptyDirs="true">
 			<fileset dir="${projet.work.dir}/WEB-INF/classes" />
 		</delete>
+		<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
+		<copy todir="${projet.work.dir}/WEB-INF/classes" file="${projet.conf.dir}/WEB-INF/classes/ehcache.xml" />
 	</target>
 
 	<target name="war" description="generate the war">
