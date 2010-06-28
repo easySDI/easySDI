@@ -49,7 +49,7 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 				<!-- <th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderClass' ); ?></th> -->
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'isocode', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'class_isocode', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_ISROOTCLASS"), 'isrootclass', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISSYSTEM"), 'issystem', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISEXTENSIBLE"), 'isextensible', @$filter_order_Dir, @$filter_order); ?></th>
@@ -119,7 +119,7 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 				}
 				?>
 				</td>
-				<td><?php echo htmlspecialchars($row->isocode); ?></td>
+				<td><?php echo htmlspecialchars($row->class_isocode); ?></td>
 				<td width="100px" align="center">
 					<img src="images/<?php echo ( $row->isrootclass ) ? 'tick.png' : 'publish_x.png';?>" width="16" height="16" border="0" alt="<?php echo ( $row->isrootclass ) ? JText::_( 'Yes' ) : JText::_( 'No' );?>" />
 				</td>
@@ -187,26 +187,15 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
-				<!-- 
-				<tr>
-					<td><?php echo JText::_("CORE_CODE"); ?></td>
-					<td><input size="50" type="text" name ="code" value="<?php echo $row->code?>" maxlength="<?php echo $fieldsLength['code'];?>"> </td>							
-				</tr>
-				 -->
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
-				<!-- 
-				<tr>
-					<td><?php echo JText::_("CORE_LABEL"); ?></td>
-					<td><input size="50" type="text" name ="label" value="<?php echo $row->label?>" maxlength="<?php echo $fieldsLength['label'];?>"> </td>							
-				</tr>
-				-->	
 				<tr>
 					<td><?php echo JText::_("CORE_NAMESPACE"); ?></td>
 					<td>
-						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?> 
+						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?>
+						<input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> 
 					</td>							
 				</tr>
 				<tr>

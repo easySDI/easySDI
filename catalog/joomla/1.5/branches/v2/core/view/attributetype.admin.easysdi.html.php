@@ -35,7 +35,7 @@ function listAttributeType(&$rows, $page, $option,  $filter_order_Dir, $filter_o
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderAttributeType' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'isocode', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'attributetype_isocode', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
@@ -85,7 +85,7 @@ function listAttributeType(&$rows, $page, $option,  $filter_order_Dir, $filter_o
 	            </td>
 				 <?php $link =  "index.php?option=$option&amp;task=editAttributeType&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->isocode; ?></td>
+				<td><?php echo $row->attributetype_isocode; ?></td>
 				 <td><?php echo $row->description; ?></td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
@@ -111,7 +111,7 @@ function listAttributeType(&$rows, $page, $option,  $filter_order_Dir, $filter_o
 <?php
 	}
 	
-	function editAttributeType(&$row, $fieldsLength, $option)
+	function editAttributeType(&$row, $fieldsLength, $namespacelist, $option)
 	{
 		global  $mainframe;
 		
@@ -133,8 +133,11 @@ if ($row->name <> "list" and $row->name <> "locale" and $row->name <> "localecho
 { 
 ?>
 				<tr>
-					<td><?php echo JText::_("CORE_ISOCODE"); ?></td>
-					<td><input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> </td>							
+					<td><?php echo JText::_("CORE_ISOCODE");?></td>
+					<td>
+						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?>
+						<input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> 
+					</td>							
 				</tr>
 <?php
 }
