@@ -44,7 +44,8 @@ class attribute extends JTable
 	var $listnamespace_id=null;
 	var $checked_out=null;
 	var $checked_out_time=null;
- 	
+ 	var $isocode=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{

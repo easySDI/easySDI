@@ -33,6 +33,7 @@ class attributetype extends JTable
 	var $ordering=0;
 	var $defaultpattern=null;
 	var $isocode=null;
+	var $namespace_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
