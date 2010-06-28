@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurations>
-	<config id="metacarta">
+	<config id="metacarta_open">
 		<authorization>
 			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
 			</policy-file>

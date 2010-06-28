@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PolicySet>
 	<Policy />
-	<Policy Id="all_user" ConfigId="metacarta">
+	<Policy Id="all_user" ConfigId="metacarta_open">
 		<Servers All="false">
 			<Server>
 				<url>http://labs.metacarta.com/wms/vmap0</url>
