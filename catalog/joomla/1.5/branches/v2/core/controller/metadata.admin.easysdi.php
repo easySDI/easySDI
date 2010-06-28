@@ -24,6 +24,9 @@ class ADMIN_metadata {
 	var $defaultencoding_val = "";
 	var $defaultencoding_code = "";
 		
+	/*
+	 * Permet de choisir la version de l'objet dont il faut éditer la métadonnée
+	 */
 	function askForEditMetadata($id, $option)
 	{
 		global  $mainframe;
@@ -146,6 +149,9 @@ class ADMIN_metadata {
 		}
 	}
 	
+	/*
+	 * Edition d'une métadonnée
+	 */
 	function editMetadata($id, $option)
 	{
 		global  $mainframe;
@@ -164,8 +170,9 @@ class ADMIN_metadata {
 		$rowObject->load( $id );
 		
 		// Récupérer la métadonnée choisie par l'utilisateur
-		
-		if (array_key_exists('version_hidden', $_POST))
+		$rowMetadata = new metadata( $database );
+		$rowMetadata->load( $rowObject->metadata_id );
+		/*if (array_key_exists('version_hidden', $_POST))
 		{
 			$rowVersion = new objectversion($database);
 			$rowVersion->load( $_POST['version_hidden'] );
@@ -181,7 +188,7 @@ class ADMIN_metadata {
 		{
 			$rowMetadata = new metadata( $database );
 			$rowMetadata->load( $rowObject->metadata_id );
-		}
+		}*/
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -231,7 +238,7 @@ class ADMIN_metadata {
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
@@ -250,16 +257,15 @@ class ADMIN_metadata {
 			$isManager = false;
 		
 		// Est-ce que la métadonnée est publiée?
+		$isPublished = false;
 		if ($rowMetadata->metadatastate_id == 1)
 			$isPublished = true;
-		else
-			$isPublished = false;
+			
 		
-		// Est-ce que la métadonnée est publiée?
+		// Est-ce que la métadonnée est validée?
+		$isValidated = false;
 		if ($rowMetadata->metadatastate_id == 3)
 			$isValidated = true;
-		else
-			$isValidated = false;
 			
 		// Récupérer les périmètres administratifs
 		$boundaries = array();
@@ -271,9 +277,12 @@ class ADMIN_metadata {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmètres prédéfinis 
-		$rowAttributeType = new attributetype($database);
-		$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
-		$type_isocode = $rowAttributeType->isocode;
+		//$rowAttributeType = new attributetype($database);
+		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$database->setQuery( $query );
+		$rowAttributeType = $database->loadObject();
+		$type_isocode = $rowAttributeType->attributetype_isocode;
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
@@ -350,6 +359,9 @@ class ADMIN_metadata {
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}
 
+	/*
+	 * Construction d'un xml ISO1939, à partir du formulaire EXTJS 
+	 */
 	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
 		//echo "Name: ".$parentName." \r\n ";
@@ -383,7 +395,7 @@ class ADMIN_metadata {
 						 a.length as length,
 						 a.codeList as codeList,
 						 a.information as tip,
-						 t.isocode as t_isocode, 
+						 CONCAT(attributetype_namespace.prefix,':',t.isocode) as t_isocode, 
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
@@ -412,6 +424,8 @@ class ADMIN_metadata {
 					  		 ON child_namespace.id=c.namespace_id
 					     LEFT OUTER JOIN #__sdi_namespace as relation_namespace
 					  		 ON relation_namespace.id=rel.namespace_id
+					  	 LEFT OUTER JOIN #__sdi_namespace as attributetype_namespace
+					  		 ON attributetype_namespace.id=t.namespace_id
 				  WHERE  rel.parent_id=".$parent."
 				  		 AND 
 				  		 prof.profile_id=".$profile_id."
@@ -1490,19 +1504,22 @@ class ADMIN_metadata {
 		}
 	}
 	
+	/*
+	 * Sauvegarde d'une métadonnée 
+	 */
 	function saveMetadata($option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$option = $_POST['option'];
 		$metadata_id = $_POST['metadata_id'];
-		$product_id = $_POST['product_id'];
+		$object_id = $_POST['object_id'];
 		
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
 		//echo "Metadata: ".$metadata_id." \r\n ";
-		//echo "Product: ".$product_id." \r\n ";
+		//echo "Product: ".$object_id." \r\n ";
 		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
@@ -1574,10 +1591,10 @@ class ADMIN_metadata {
 		$rowMetadata->load($metadata_id);
 		//echo "Metadata: ".$rowMetadata->guid." \r\n ";
 		$rowObject = new object( $database );
-		$rowObject->load($product_id);
+		$rowObject->load($object_id);
 		//echo "Product: ".$rowObject->id." \r\n ";
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.name) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
 		//echo $database->getQuery()." \r\n ";
@@ -1775,11 +1792,14 @@ class ADMIN_metadata {
 		
 		// Checkin object
 		$rowObject = new object( $database );
-		$rowObject->load( $product_id );
+		$rowObject->load( $object_id );
 		$rowObject->checkin();
 		
 	}
 	
+	/*
+	 * Quitter l'édition d'une métadonnée
+	 */
 	function cancelMetadata($option)
 	{
 		global $mainframe;
@@ -1789,27 +1809,27 @@ class ADMIN_metadata {
 		
 		// Check the attribute in if checked out
 		$rowObject = new object( $database );
-		$rowObject->load( $_POST['product_id'] );
+		$rowObject->load( $_POST['object_id'] );
 			
 		$rowObject->checkin();
-		
-		//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 	
+	/*
+	 * Prévisualiser le XML ISO19139 qui pourrait être construit à partir du formulaire EXTJS
+	 */
 	function previewXMLMetadata($option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$option = $_POST['option'];
 		$metadata_id = $_POST['metadata_id'];
-		
-		$product_id = $_POST['product_id'];
+		$object_id = $_POST['object_id'];
 		
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
 		//echo "Metadata: ".$metadata_id." \r\n ";
-		//echo "Product: ".$product_id." \r\n ";
+		//echo "Product: ".$object_id." \r\n ";
 		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
@@ -1846,14 +1866,13 @@ class ADMIN_metadata {
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
 		$rowObject = new object( $database );
-		$rowObject->load($product_id);
+		$rowObject->load($object_id);
 		//echo "Product: ".$rowObject->id." \r\n ";
 		// Récupérer la classe racine du profile du type d'objet
-		//$query = "SELECT c.name as name, c.isocode as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
-		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
-		//echo $database->getQuery()." \r\n ";
+		
 		//Pour chaque élément rencontré, l'insérer dans le xml
 		$XMLNode = $XMLDoc->createElement("gmd:MD_Metadata");
 		$XMLDoc->appendChild($XMLNode);
@@ -1863,17 +1882,12 @@ class ADMIN_metadata {
 		
 		// Récupération des namespaces à inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
 		 foreach ($namespacelist as $namespace)
         {
         	$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:'.$namespace->prefix, $namespace->uri);
-        	//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gco', 'http://www.isotc211.org/2005/gco');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gml', 'http://www.opengis.net/gml');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:bee', 'http://www.depth.ch/2008/bee');
         } 
 		
 		// Récupérer le profil lié à cet objet
@@ -1890,7 +1904,6 @@ class ADMIN_metadata {
 
 		
 		$path="/";
-		//echo $root->id;
 		
 		// Construire les champs concernant la langue par défaut et l'encodage par défaut
 		$XMLNodeEncoding = $XMLDoc->createElement("gmd:characterSet");
@@ -1934,37 +1947,15 @@ class ADMIN_metadata {
 			}
 		}
 		
-		// COnstruire la partie dynamique du xml
+		// Construire la partie dynamique du xml
 		ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
 		
-		//$file = "C:\\RecorderWebGIS\\_previewXML_".$metadata_id.".xml";
-		// XMLDoc->save($file);
+		// XMLDoc->save("C:\\RecorderWebGIS\\_previewXML_".$metadata_id.".xml");
 		//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
 		
-		$param = array('size'=>array('x'=>800,'y'=>800) );
-		JHTML::_("behavior.modal","a.modal",$param);
 		
-		// Construction de la fenêtre popup pour l'affichage du xml
-		/*?>
-		<script>
-			alert('<?php echo $XMLDoc->saveXML();?>');
-		</script>
-		<script>
-			//pop-up window for preview
-			function popup() {
-			win = window.open('','myWin','toolbars=0');
-			document.post.action= "file:".$file;
-			document.post.target='myWin';
-			document.post.submit();
-			document.post.action='validate.php';
-			document.post.target='_self';
-			
-			}
-		</script>
-				
-		<a rel="{handler: 'iframe', size: {x: 800 y: 800}}" href="<?php echo "file:".$file;?>" class="modal">link name</a>
-		<?php
-		*/
+		// Jusqu'ici, on utilise le code de saveMetadata //
+		
 		if ($XMLDoc)
 		{
 			//$xmlToReturn = htmlentities($XMLDoc->saveXML(), ENT_COMPAT, "UTF-8");
@@ -1996,10 +1987,10 @@ class ADMIN_metadata {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		
-		ADMIN_metadata::saveMetadata($option);
-		
 		$metadata_id = $_POST['metadata_id'];
 		$account_id = $_POST['account_id'];
+		
+		ADMIN_metadata::saveMetadata($option);
 		
 		// Passer en statut validé
 		$rowMetadata = new metadataByGuid($database);
@@ -2007,11 +1998,10 @@ class ADMIN_metadata {
 		$rowMetadata->metadatastate_id=3;
 		$rowMetadata->updated = date('Y-m-d H:i:s');
 		$rowMetadata->updatedby = $account_id;
-		//print_r($rowMetadata);
 		
-		if (!$rowMetadata->store()) {
+		if (!$rowMetadata->store()) 
+		{
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 			exit();
 		}
 		
@@ -2039,11 +2029,10 @@ class ADMIN_metadata {
 		$rowMetadata->metadatastate_id=4;
 		$rowMetadata->updated = date('Y-m-d H:i:s');
 		$rowMetadata->updatedby = $account_id;
-		//print_r($rowMetadata);
 		
-		if (!$rowMetadata->store()) {
+		if (!$rowMetadata->store()) 
+		{
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 			exit();
 		}
 		
@@ -2063,13 +2052,13 @@ class ADMIN_metadata {
 		$database =& JFactory::getDBO(); 
 		$option = $_POST['option'];
 		$metadata_id = $_POST['metadata_id'];
-		$product_id = $_POST['product_id'];
+		$object_id = $_POST['object_id'];
 		
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
 		//echo "Metadata: ".$metadata_id." \r\n ";
-		//echo "Product: ".$product_id." \r\n ";
+		//echo "Object: ".$object_id." \r\n ";
 		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
@@ -2105,12 +2094,12 @@ class ADMIN_metadata {
 		// Récupérer l'objet lié à cette métadonnée
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
-		//echo "Metadata: ".$rowMetadata->guid." \r\n ";
+		
 		$rowObject = new object( $database );
-		$rowObject->load($product_id);
-		//echo "Product: ".$rowObject->id." \r\n ";
+		$rowObject->load($object_id);
+		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.name) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
 		//echo $database->getQuery()." \r\n ";
@@ -2223,16 +2212,13 @@ class ADMIN_metadata {
 		$metadata_id = $_POST['metadata_id'];
 		$publishdate = $_POST['publishdate'];
 		
-		$product_id= $_POST['product_id'];
+		$object_id= $_POST['object_id'];
 		$account_id= $_POST['account_id'];
 		
 		$xml= $_POST['xml'];
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		$XMLDoc = DOMDocument::loadXML($xml);
 
-		//print_r($_POST);
-		//$XMLDoc->save("C:\\RecorderWebGIS\\publish\\".$metadata_id.".xml");
-		
 		// Enregistrement de la métadonnée dans geonetwork
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
@@ -2319,13 +2305,12 @@ class ADMIN_metadata {
 			
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 				exit();
 			}
 			
 			// Checkin object
 			$rowObject = new object( $database );
-			$rowObject->load( $product_id );
+			$rowObject->load( $object_id );
 			$rowObject->checkin();
 			
 			
@@ -2392,19 +2377,9 @@ class ADMIN_metadata {
 		$rowUser = array();
 		$database->setQuery( "SELECT * FROM #__sdi_account a, #__users u WHERE a.user_id=u.id AND a.id=".$editor );
 		$rowUser= array_merge( $rowUser, $database->loadObjectList() );
-		/*
-		$languageOfMail = ""; 
-		$languageOfMail = substr($rowUser[0]->params, strpos($rowUser[0]->params, "language="));
-		$languageOfMail = substr($languageOfMail, strlen("language="), strpos($languageOfMail, "\n")-strlen("language="));
 		
-		if ($languageOfMail)
-			$success = ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$rowUser[0]->username,$rowObject->name));
-		else
-			$success = ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$rowUser[0]->username,$rowObject->name));
-		*/
 		$body = JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
 		
-		//echo $body ;
 		$success = ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
 		if (!$success) 
 		{
@@ -2501,7 +2476,7 @@ class ADMIN_metadata {
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
@@ -2512,9 +2487,10 @@ class ADMIN_metadata {
 		
 		// Récupérer l'attribut qui correspond au stockage de l'id
 		$idrow = "";
-		$database->setQuery("SELECT a.name as name, ns.prefix as ns, at.isocode as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 		$idrow = $database->loadObjectList();
-		
+		//echo $database->getQuery()." - ".$idrow;
 		// Est-ce que cet utilisateur est un manager?
 		$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
 		$total = $database->loadResult();
@@ -2541,48 +2517,31 @@ class ADMIN_metadata {
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
 		// Récupérer la métadonnée en CSW
-		//$metadata_id = "0f62e111-831d-4547-aee7-03ad10a3a141";
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmètres prédéfinis 
-		$rowAttributeType = new attributetype($database);
-		$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
-		$type_isocode = $rowAttributeType->isocode;
+		//$rowAttributeType = new attributetype($database);
+		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$database->setQuery( $query );
+		$rowAttributeType = $database->loadObject();
+		$type_isocode = $rowAttributeType->attributetype_isocode;
+		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
-		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowMetadata->guid;
-		
-		// En GET
-		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		
 		// Télécharger le XML indiqué par l'utilisateur
-		//echo $xmlfile."\r\n";
 		$xml = DOMDocument::loadXML($xmlfile);
-		
-		//$xml = DOMDocument::load($_FILES['xmlfile']['tmp_name']);
-		
-		/*echo "Récupération de tout le document :\n";
-		echo $xml->saveXML() . "\n";
-		*/
 		
 		// Appliquer le XSL
 		$style = new DomDocument();
 		$style->load($xslfile);
-		/*echo "Récupération du style :\n";
-		echo $style->saveXML() . "\n";
-		*/
 		
         $processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
 		
-		/*echo "Récupération du xml résultat :\n";
-		echo $cswResults->saveXML();
-		*/
-		//$cswResults->save("C:\RecorderWebGIS\merging\FE_import_ESRI_".$metadata_id."_file2.xml");
-        
 		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
         $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
 
@@ -2602,10 +2561,6 @@ class ADMIN_metadata {
         	}
         }
         
-        /*echo "APRES Récupération du xml résultat :\n";
-		echo $cswResults->saveXML();
-        */
-        
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
@@ -2620,315 +2575,19 @@ class ADMIN_metadata {
         
         // Récupération des namespaces à inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
 		foreach ($namespacelist as $namespace)
         {
         	$xpathResults->registerNamespace($namespace->prefix,$namespace->uri);
-        	// Les 3 suivantes dans la table SQL avec flag system
-       		//$xpathResults->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-        	//$xpathResults->registerNamespace('gco','http://www.isotc211.org/2005/gco');
-        	//$xpathResults->registerNamespace('gml','http://www.opengis.net/gml');
-        	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
         
-        //$xpathResults->registerNamespace('ext','http://www.depth.ch/2008/ext');
-        //$xpathResults->registerNamespace('dc','http://purl.org/dc/elements/1.1/');
-        /*
-        // Merging
-        $actualXML = DOMDocument::load($catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$metadata_id);
-		if ($actualXML <> false)
-			$actualXpathResults = new DOMXPath($actualXML);
-		else
-			$actualXpathResults = new DOMXPath($doc);
-		$actualXpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-        $actualXpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
-        $actualXpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
-        $actualXpathResults->registerNamespace('gts','http://www.isotc211.org/2005/gts');
-        
-        // Récupération des namespaces à inclure
-		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
-		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
-		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
-		
-		foreach ($namespacelist as $namespace)
-        {
-        	$actualXpathResults->registerNamespace($namespace->prefix,$namespace->uri);
-        } 
-        
-        //$actualXML->save("C:\RecorderWebGIS\merging\FE_import_ESRI_".$metadata_id."_file1.xml");
-        /*
-        $mergeXml = new DomDocument();
-        $mergePath = " <merge xmlns=\"http://informatik.hu-berlin.de/merge\">
-					      <file1>FE_import_ESRI_".$metadata_id."_file1.xml</file1>
-					      <file2>FE_import_ESRI_".$metadata_id."_file2.xml</file2>
-					   </merge>";
-        
-        $mergeXml = DOMDocument::loadXML($mergePath);
-		//$mergeXml->save("C:\RecorderWebGIS\merging\FE_import_ESRI_".$metadata_id."_file3.xml");
-        
-        $mergeStyle = new DomDocument();
-		$mergeStyle->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
-		
-		$mergeProcessor = new xsltProcessor();
-		$mergeProcessor->importStylesheet($mergeStyle);
-		$mergeResults = new DomDocument();
-		
-        $mergeResults = $mergeProcessor->transformToDoc($mergeXml);
-		$mergeResults->save("C:\RecorderWebGIS\merging\FE_import_ESRI_".$metadata_id."_merged.xml");
-        
-		*/
-        
-		/* Fusionner les xml*/
-        /*
-        $nodeListMD = &$actualXML->getElementsByTagName($root[0]->name);
-		$nodeListESRI = &$cswResults->getElementsByTagName($root[0]->name);
-        
-		$currentNode = $actualXpathResults->query("//gmd:identificationInfo", $nodeListMD->item(0));
-        // echo "gmd:identificationInfo: ".$currentNode->length."<br>";
-        if ($currentNode->length > 0)
-        {
-        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification", $nodeListMD->item(0));
-        	// echo "gmd:MD_DataIdentification: ".$currentNode->length."<br>";
-	        if ($currentChildNode->length > 0)
-	        {
-	        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent", $nodeListMD->item(0));
-	        	// echo "gmd:extent: ".$currentNode->length."<br>";
-		        if ($currentChildNode->length > 0)
-		        {
-		        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent", $nodeListMD->item(0));
-		        	// echo "gmd:EX_Extent: ".$currentNode->length."<br>";
-			        if ($currentChildNode->length > 0)
-			        {
-			        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement", $nodeListMD->item(0));
-			        	// echo "gmd:geographicElement: ".$currentNode->length."<br>";
-				        if ($currentChildNode->length > 0)
-				        {
-				        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox", $nodeListMD->item(0));
-				        	// echo "gmd:EX_GeographicBoundingBox: ".$currentNode->length."<br>";
-					        if ($currentChildNode->length > 0)
-					        {
-					        	// North
-					        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude", $nodeListMD->item(0));
-					        	// echo "gmd:northBoundLatitude: ".$currentNode->length."<br>";
-					        	// Insérer le noeud gmd:northBoundLatitude du xml ESRI normalisé dans le xml courant de la métadonnée
-					        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude", $nodeListESRI->item(0));
-					        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-					        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-						        // echo "nodeImported: ".$nodeImported->nodeName."<br>";
-						        	
-						        if ($currentChildNode->length > 0)
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$nodeReplaced = $currentChildNode->item(0);
-						        	// echo "nodeToReplace: ".$nodeReplaced->nodeName."<br>";
-						        	$placeToCopy->item(0)->replaceChild($nodeImported, $nodeReplaced);
-						        }
-						        else
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundindBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$placeToCopy->item(0)->appendChild($nodeImported);
-						        }
-						        
-					        	// South
-					        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude", $nodeListMD->item(0));
-					        	// echo "gmd:southBoundLatitude: ".$currentNode->length."<br>";
-					        	// Insérer le noeud gmd:southBoundLatitude du xml ESRI normalisé dans le xml courant de la métadonnée
-					        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude", $nodeListESRI->item(0));
-					        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-					        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-						        // echo "nodeImported: ".$nodeImported->nodeName."<br>";
-						        	
-						        if ($currentChildNode->length > 0)
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$nodeReplaced = $currentChildNode->item(0);
-						        	// echo "nodeToReplace: ".$nodeReplaced->nodeName."<br>";
-						        	$placeToCopy->item(0)->replaceChild($nodeImported, $nodeReplaced);
-						        }
-						        else
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundindBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$placeToCopy->item(0)->appendChild($nodeImported);
-						        }
-						        
-					        	// East
-					        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude", $nodeListMD->item(0));
-					        	// echo "gmd:eastBoundLongitude: ".$currentNode->length."<br>";
-					        	// Insérer le noeud gmd:eastBoundLongitude du xml ESRI normalisé dans le xml courant de la métadonnée
-					        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude", $nodeListESRI->item(0));
-					        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-					        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-						        // echo "nodeImported: ".$nodeImported->nodeName."<br>";
-						        	
-						        if ($currentChildNode->length > 0)
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$nodeReplaced = $currentChildNode->item(0);
-						        	// echo "nodeToReplace: ".$nodeReplaced->nodeName."<br>";
-						        	$placeToCopy->item(0)->replaceChild($nodeImported, $nodeReplaced);
-						        }
-						        else
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundindBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$placeToCopy->item(0)->appendChild($nodeImported);
-						        }
-						        
-					        	// West
-					        	$currentChildNode = $actualXpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude", $nodeListMD->item(0));
-					        	// echo "gmd:westBoundLongitude: ".$currentNode->length."<br>";
-					        	// Insérer le noeud gmd:westBoundLongitude du xml ESRI normalisé dans le xml courant de la métadonnée
-					        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude", $nodeListESRI->item(0));
-					        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-					        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-						        // echo "nodeImported: ".$nodeImported->nodeName."<br>";
-						        	
-						        if ($currentChildNode->length > 0)
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$nodeReplaced = $currentChildNode->item(0);
-						        	// echo "nodeToReplace: ".$nodeReplaced->nodeName."<br>";
-						        	$placeToCopy->item(0)->replaceChild($nodeImported, $nodeReplaced);
-						        }
-						        else
-						        {
-						        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundindBox", $nodeListMD->item(0));
-						        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-						        	$placeToCopy->item(0)->appendChild($nodeImported);
-						        }
-					        }
-					        else
-					        {
-					        	// Insérer le noeud gmd:EX_GeographicBoundindBox du xml ESRI normalisé dans le xml courant de la métadonnée
-					        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundindBox", $nodeListESRI->item(0));
-					        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-					        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement", $nodeListMD->item(0));
-					        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-					        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-					        	$placeToCopy->item(0)->appendChild($nodeImported);
-					        }
-				        }
-				        else
-				        {
-				        	// Insérer le noeud gmd:geographicElement du xml ESRI normalisé dans le xml courant de la métadonnée
-				        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement", $nodeListESRI->item(0));
-				        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-				        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent", $nodeListMD->item(0));
-				        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-				        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-				        	$placeToCopy->item(0)->appendChild($nodeImported);
-				        }
-			        }
-			        else
-			        {
-				        // Insérer le noeud gmd:EX_Extent du xml ESRI normalisé dans le xml courant de la métadonnée
-				        $nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent", $nodeListESRI->item(0));
-			        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-			        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent", $nodeListMD->item(0));
-			        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-			        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-			        	$placeToCopy->item(0)->appendChild($nodeImported);
-			        }
-		        }
-		        else
-		        {
-		        	// Insérer le noeud gmd:extent du xml ESRI normalisé dans le xml courant de la métadonnée
-		        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent", $nodeListESRI->item(0));
-		        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-		        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification", $nodeListMD->item(0));
-		        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-		        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-		        	$placeToCopy->item(0)->appendChild($nodeImported);
-		        }
-	        }
-	        else
-	        {
-	        	// Insérer le noeud gmd:MD_DataIdentification du xml ESRI normalisé dans le xml courant de la métadonnée
-	        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo/gmd:MD_DataIdentification", $nodeListESRI->item(0));
-	        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-	        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo", $nodeListMD->item(0));
-	        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-	        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-	        	$placeToCopy->item(0)->appendChild($nodeImported);	
-	        }
-        }
-        else
-        {
-        	// Insérer le noeud gmd:identificationInfo du xml ESRI normalisé dans le xml courant de la métadonnée
-        	$nodeToCopy = $xpathResults->query("//gmd:identificationInfo", $nodeListESRI->item(0));
-        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata", $nodeListMD->item(0));
-        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-        	$placeToCopy->item(0)->appendChild($nodeImported);
-        }
-        
-		$currentNode = $actualXpathResults->query("//gmd:contentInfo", $nodeListMD->item(0));
-        // echo "gmd:identificationInfo: ".$currentNode->length."<br>";
-        if ($currentNode->length > 0)
-        {
-        	$currentChildNode = $actualXpathResults->query("//gmd:contentInfo/gmd:MD_FeatureCatalogueDescription", $nodeListMD->item(0));
-        	// echo "gmd:MD_DataIdentification: ".$currentNode->length."<br>";
-	        if ($currentChildNode->length > 0)
-	        {
-	        	// Insérer le noeud gmd:class du xml ESRI normalisé dans le xml courant de la métadonnée
-	        	$nodeToCopy = $xpathResults->query("//gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/gmd:class", $nodeListESRI->item(0));
-	        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-	        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription", $nodeListMD->item(0));
-	        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-	        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-	        	$placeToCopy->item(0)->appendChild($nodeImported);
-	        }
-	        else
-	        {
-	        	// Insérer le noeud gmd:MD_FeatureCatalogueDescription du xml ESRI normalisé dans le xml courant de la métadonnée
-	        	$nodeToCopy = $xpathResults->query("//gmd:contentInfo/gmd:MD_FeatureCatalogueDescription", $nodeListESRI->item(0));
-	        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-	        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata/gmd:contentInfo", $nodeListMD->item(0));
-	        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-	        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-	        	$placeToCopy->item(0)->appendChild($nodeImported);	
-	        }
-        }
-        else
-        {
-        	// Insérer le noeud gmd:contentInfo du xml ESRI normalisé dans le xml courant de la métadonnée
-        	$nodeToCopy = $xpathResults->query("//gmd:contentInfo", $nodeListESRI->item(0));
-        	// echo "nodeToCopy: ".$nodeToCopy->item(0)->nodeName."<br>";
-        	$placeToCopy = $actualXpathResults->query("//gmd:MD_Metadata", $nodeListMD->item(0));
-        	// echo "placeToCopy: ".$placeToCopy->item(0)->nodeName."<br>";
-        	$nodeImported = $actualXML->importNode($nodeToCopy->item(0), true);
-        	$placeToCopy->item(0)->appendChild($nodeImported);
-        }
-        
-        $actualXML->save("C:\RecorderWebGIS\merging\MERGED.xml");
-        */
+       
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
-		
-		/*// Retour de la réponse au formulaire ExtJS
-		$xmlToReturn = addslashes($cswResults->saveXML());
-		$cswResults->save("C:\RecorderWebGIS\import_".$metadata_id.".xml");
-		$response = '{
-			    		success: true,
-					    file: {
-					        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
-					    }
-					}';
-		print_r($response);
-		die();*/
 	}
 
 	function importCSWMetadata($option)
@@ -2999,7 +2658,7 @@ class ADMIN_metadata {
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
@@ -3010,7 +2669,8 @@ class ADMIN_metadata {
 		
 		// Récupérer l'attribut qui correspond au stockage de l'id
 		$idrow = "";
-		$database->setQuery("SELECT a.name as name, ns.prefix as ns, at.isocode as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a RIGHT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		//$database->setQuery("SELECT a.name as name, ns.prefix as ns, at.isocode as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a RIGHT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 		$idrow = $database->loadObjectList();
 		
 		// Est-ce que cet utilisateur est un manager?
@@ -3043,9 +2703,13 @@ class ADMIN_metadata {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmètres prédéfinis 
-		$rowAttributeType = new attributetype($database);
-		$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
-		$type_isocode = $rowAttributeType->isocode;
+		//$rowAttributeType = new attributetype($database);
+		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$database->setQuery( $query );
+		$rowAttributeType = $database->loadObject();
+		$type_isocode = $rowAttributeType->attributetype_isocode;
+		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$importid;
@@ -3056,16 +2720,10 @@ class ADMIN_metadata {
 		// Appliquer le XSL
 		$style = new DomDocument();
 		$style->load($xslfile);
-		/*echo "Récupération du style :\n";
-		echo $style->saveXML() . "\n";
-		*/
+		
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
-		
-		/*echo "Récupération du xml résultat :\n";
-		echo $cswResults->saveXML();
-		*/
 		
 		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
         $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
@@ -3085,11 +2743,6 @@ class ADMIN_metadata {
         		}
         	}
         }
-        
-        /*echo "\nAPRES Récupération du xml résultat :\n";
-		echo $cswResults->saveXML();
-       */
-        //$cswResults->save("C:\RecorderWebGIS\import_".$metadata_id.".xml");
         
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
@@ -3112,33 +2765,12 @@ class ADMIN_metadata {
 		 foreach ($namespacelist as $namespace)
         {
         	$xpathResults->registerNamespace($namespace->prefix,$namespace->uri);
-        	// Les 3 suivantes dans la table SQL avec flag system
-       		//$xpathResults->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-        	//$xpathResults->registerNamespace('gco','http://www.isotc211.org/2005/gco');
-        	//$xpathResults->registerNamespace('gml','http://www.opengis.net/gml');
-        	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
-        
-        //$xpathResults->registerNamespace('ext','http://www.depth.ch/2008/ext');
-        //$xpathResults->registerNamespace('dc','http://purl.org/dc/elements/1.1/');
         
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
-		
-		// Retour de la réponse au formulaire ExtJS
-		/*$xmlToReturn = addslashes($cswResults->saveXML());
-		$cswResults->save("C:\RecorderWebGIS\import_".$metadata_id.".xml");
-		$response = '{
-			    		success: true,
-					    file: {
-					        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
-					    }
-					}';
-		print_r($response);
-		die();
-		*/
 	}
 
 	function replicateMetadata($option)
@@ -3207,7 +2839,7 @@ class ADMIN_metadata {
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
@@ -3218,7 +2850,8 @@ class ADMIN_metadata {
 		
 		// Récupérer l'attribut qui correspond au stockage de l'id
 		$idrow = "";
-		$database->setQuery("SELECT a.name as name, ns.prefix as ns, at.isocode as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a RIGHT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		//$database->setQuery("SELECT a.name as name, ns.prefix as ns, at.isocode as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a RIGHT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 		$idrow = $database->loadObjectList();
 		
 		// Est-ce que cet utilisateur est un manager?
@@ -3250,9 +2883,13 @@ class ADMIN_metadata {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmètres prédéfinis 
-		$rowAttributeType = new attributetype($database);
-		$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
-		$type_isocode = $rowAttributeType->isocode;
+		//$rowAttributeType = new attributetype($database);
+		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$database->setQuery( $query );
+		$rowAttributeType = $database->loadObject();
+		$type_isocode = $rowAttributeType->attributetype_isocode;
+		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");

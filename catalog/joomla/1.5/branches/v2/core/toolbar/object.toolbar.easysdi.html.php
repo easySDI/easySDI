@@ -51,13 +51,13 @@ class TOOLBAR_object{
 		JToolBarHelper::editList('editObject');
 		JToolBarHelper::custom('historyAssignMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_HISTORYASSIGN_METADATA"), false );
 		JToolBarHelper::custom('archiveObject', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_ARCHIVE_METADATA"), false );
-		JToolBarHelper::custom('versionaliseObject', 'copy.png', 'copy.png', JTEXT::_("CATALOG_VERSIONALISE_METADATA"), false );
+		//JToolBarHelper::custom('versionaliseObject', 'copy.png', 'copy.png', JTEXT::_("CATALOG_VERSIONALISE_METADATA"), false );
 		JToolBarHelper::deleteList('','deleteObject');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
-		JToolBarHelper::custom('viewObjectLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTTYPELINK"), false );
-		//JToolBarHelper::preview('index.php?option=com_easysdi_catalog&view=viewObjectLink', false );
-		JToolBarHelper::custom('manageObjectLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTTYPELINK"), false );
+		//JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		//JToolBarHelper::custom('viewObjectLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTTYPELINK"), false );
+		//JToolBarHelper::custom('manageObjectLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTTYPELINK"), false );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}

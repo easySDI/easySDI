@@ -53,7 +53,7 @@ class HTML_metadata {
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
 	
-	function editMetadata($product_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
 	{
 		$uri =& JUri::getInstance();
 		
@@ -152,7 +152,7 @@ class HTML_metadata {
 			class="adminForm">
 			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="product_id" value="<?php echo $product_id;?>" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
 				<?php
 				$this->javascript .="
@@ -201,7 +201,7 @@ class HTML_metadata {
 												form.getForm().setValues({fieldsets: fieldsets});
 							              		form.getForm().setValues({task: 'previewXMLMetadata'});
 							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({product_id: '".$product_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
 												form.getForm().submit({
 											    	scope: this,
 													method	: 'POST',
@@ -249,7 +249,7 @@ class HTML_metadata {
 						       			buttonAlign: 'right',
 						       			layout: 'toolbar',
 						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns',
-						       			items: [".HTML_metadata::buildTBar($isPublished, $isValidated, $product_id, $metadata_id, $account_id, $option)."]
+						       			items: [".HTML_metadata::buildTBar($isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)."]
 						       			})
 						    });
 						//console.log(form.fbar.layout);
@@ -268,7 +268,7 @@ class HTML_metadata {
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
-					var hiddenFields= new Array();
+					//var hiddenFields= new Array();
 					form.cascade(function(cmp)
 					{
 						if (cmp.xtype=='fieldset')
@@ -279,7 +279,7 @@ class HTML_metadata {
 								//var f = cmp.items;
 								cmp.cascade(function (field)
 								{
-									hiddenFields.push(field.getId());
+									//hiddenFields.push(field.getId());
 									//console.log('Field: ' + field.getId() + ' - ' + field.allowBlank);
 									if (field.allowBlank == false)
 									{
@@ -331,7 +331,7 @@ class HTML_metadata {
 							        			form.getForm().setValues({fieldsets: fieldsets});
 							              		form.getForm().setValues({task: 'saveMetadata'});
 							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({product_id: '".$product_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
 												form.getForm().submit({
 											    	scope: this,
 													method	: 'POST',
@@ -363,6 +363,10 @@ class HTML_metadata {
 							        
 						form.render();";
 					
+					/*
+					 * Pas de raison d'être en backend car disponible que pour les editeurs
+					 * 
+					 * 
 					$this->javascript .="
 						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
 											handler: function()
@@ -414,7 +418,7 @@ class HTML_metadata {
 													form.getForm().setValues({fieldsets: fieldsets});
 								                 	form.getForm().setValues({task: 'validateMetadata'});
 								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-								                 	form.getForm().setValues({product_id: '".$product_id."'});
+								                 	form.getForm().setValues({object_id: '".$object_id."'});
 								                 	form.getForm().setValues({account_id: '".$account_id."'});
 													form.getForm().submit({
 												    	scope: this,
@@ -443,170 +447,202 @@ class HTML_metadata {
 												}
 								        	}})
 								        );
-						form.render();";
-					
-					if($isValidated)
-					{
-						$this->javascript .="
-							form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
-											handler: function()
-							                {
-							                	myMask.show();
-							                 	var fields = new Array();
-							        			form.getForm().isInvalid=false;
-							        			form.cascade(function(cmp)
-							        			{
-								        			if (cmp.xtype=='fieldset')
-							         				{
-							         					if (cmp.clones_count)
-							          						fields.push(cmp.getId()+','+cmp.clones_count);
-							         				}
-							         				
-							         				// Validation des champs langue
-						         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
-						         					{
-						         						var countFields = cmp.items.length;
-						         						var countValues = 0;
-														
+						form.render();";*/
+				}
+				else if($isValidated)
+				{
+					$this->javascript .="
+						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
+										handler: function()
+						                {
+						                	myMask.show();
+						                 	var fields = new Array();
+						        			form.getForm().isInvalid=false;
+						        			form.cascade(function(cmp)
+						        			{
+							        			if (cmp.xtype=='fieldset')
+						         				{
+						         					if (cmp.clones_count)
+						          						fields.push(cmp.getId()+','+cmp.clones_count);
+						         				}
+						         				
+						         				// Validation des champs langue
+					         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+					         					{
+					         						var countFields = cmp.items.length;
+					         						var countValues = 0;
+													
+													for (var i=0; i < countFields ; i++)
+													{
+														field = cmp.items.get(i); 
+														if (field.getValue() != '')
+														{
+															countValues++;
+														}
+													}
+													
+													// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+													if (countValues != countFields && countValues != 0)
+													{
 														for (var i=0; i < countFields ; i++)
 														{
-															field = cmp.items.get(i); 
-															if (field.getValue() != '')
-															{
-																countValues++;
-															}
-														}
+															field = cmp.items.get(i);
+															if (field.getValue() == '')
+																field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+														} 
+														form.getForm().isInvalid=true;
+													}
+					         					}
+						        			});
+						        			var fieldsets = fields.join(' | ');
+						        			
+						        			if (!form.getForm().isInvalid)
+						        			{
+												form.getForm().setValues({fieldsets: fieldsets});
+							                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: true,
+													success: function(form, action) 
+													{
+														xml = (action.result.file.xml);
+														xmlfile = xml.split('<br>').join('\\n');
+														// Créer une iframe pour demander à l'utilisateur la date de publication
+														if (!win)
+															win = new Ext.Window({
+																	                title:'Publication',
+																	                width:300,
+																	                height:130,
+																	                closeAction:'hide',
+																	                layout:'fit', 
+																				    border:false, 
+																				    closable:false, 
+																				    modal:true,
+																				    renderTo:Ext.getBody(), 
+																				    frame:true,
+																				    items:[{ 
+																					     xtype:'form' 
+																					     ,id:'publishform' 
+																					     ,defaultType:'textfield' 
+																					     ,frame:true 
+																					     ,method:'post' 
+																					     ,defaults:{anchor:'95%'} 
+																					     ,items:[ 
+																					       { 
+																					         fieldLabel:'Date de publication', 
+																					         id:'publishdate', 
+																					         xtype: 'datefield',
+																					         format: 'd.m.Y',
+																					         value:'' 
+																					       },
+																					       { 
+																					         id:'metadata_id', 
+																					         xtype: 'hidden',
+																					         value:'".$metadata_id."' 
+																					       },
+																					       { 
+																					         id:'object_id', 
+																					         xtype: 'hidden',
+																					         value:'".$object_id."' 
+																					       },
+																					       { 
+																					         id:'account_id', 
+																					         xtype: 'hidden',
+																					         value:'".$account_id."' 
+																					       },
+																					       { 
+																					         id:'xml', 
+																					         xtype: 'hidden',
+																					         value: xmlfile
+																					       }
+																					    ] 
+																					     ,buttonAlign:'right' 
+																					     ,buttons: [{
+																			                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+																			                    handler: function(){
+																			                    	win.items.get(0).getForm().submit({
+																							    	scope: this,
+																									method	: 'POST',
+																									url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
+																									});
+																			                    	win.hide();
+																						
+																			                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
 														
-														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
-														if (countValues != countFields && countValues != 0)
-														{
-															for (var i=0; i < countFields ; i++)
-															{
-																field = cmp.items.get(i);
-																if (field.getValue() == '')
-																	field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
-															} 
-															form.getForm().isInvalid=true;
-														}
-						         					}
-							        			});
-							        			var fieldsets = fields.join(' | ');
-							        			
-							        			if (!form.getForm().isInvalid)
-							        			{
-													form.getForm().setValues({fieldsets: fieldsets});
-								                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
-								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-								                 	form.getForm().setValues({product_id: '".$product_id."'});
-													form.getForm().submit({
-												    	scope: this,
-														method	: 'POST',
-														clientValidation: true,
-														success: function(form, action) 
-														{
-															xml = (action.result.file.xml);
-															xmlfile = xml.split('<br>').join('\\n');
-															// Créer une iframe pour demander à l'utilisateur la date de publication
-															if (!win)
-																win = new Ext.Window({
-																		                title:'Publication',
-																		                width:300,
-																		                height:130,
-																		                closeAction:'hide',
-																		                layout:'fit', 
-																					    border:false, 
-																					    closable:false, 
-																					    modal:true,
-																					    renderTo:Ext.getBody(), 
-																					    frame:true,
-																					    items:[{ 
-																						     xtype:'form' 
-																						     ,id:'publishform' 
-																						     ,defaultType:'textfield' 
-																						     ,frame:true 
-																						     ,method:'post' 
-																						     ,defaults:{anchor:'95%'} 
-																						     ,items:[ 
-																						       { 
-																						         fieldLabel:'Date de publication', 
-																						         id:'publishdate', 
-																						         xtype: 'datefield',
-																						         format: 'd.m.Y',
-																						         value:'' 
-																						       },
-																						       { 
-																						         id:'metadata_id', 
-																						         xtype: 'hidden',
-																						         value:'".$metadata_id."' 
-																						       },
-																						       { 
-																						         id:'product_id', 
-																						         xtype: 'hidden',
-																						         value:'".$product_id."' 
-																						       },
-																						       { 
-																						         id:'account_id', 
-																						         xtype: 'hidden',
-																						         value:'".$account_id."' 
-																						       },
-																						       { 
-																						         id:'xml', 
-																						         xtype: 'hidden',
-																						         value: xmlfile
-																						       }
-																						    ] 
-																						     ,buttonAlign:'right' 
-																						     ,buttons: [{
-																				                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-																				                    handler: function(){
-																				                    	win.items.get(0).getForm().submit({
-																								    	scope: this,
-																										method	: 'POST',
-																										url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
-																										});
-																				                    	win.hide();
-																							
-																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
+								  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
+														
+																			                    }
+																			                },{
+																			                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+																			                    handler: function(){
+																			                        win.hide();
+																			                }
+																					   }] 
+																	                }]
+																	            });
+														else
+															win.items.get(0).findById('publishdate').setValue('');
 															
-									  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
+								  						win.show();
+								  						
+														myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
 															
-																				                    }
-																				                },{
-																				                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-																				                    handler: function(){
-																				                        win.hide();
-																				                }
-																						   }] 
-																		                }]
-																		            });
-															else
-																win.items.get(0).findById('publishdate').setValue('');
-																
-									  						win.show();
-									  						
-															myMask.hide();
-														},
-														failure: function(form, action) 
-														{
-	                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-																
-															myMask.hide();
-														},
-														url:'".$publish_url."'
-													});
-												}
-												else
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
-																
-													myMask.hide();
-												}
-								        	}})
-								        );
-						form.render();";
-					}
+														myMask.hide();
+													},
+													url:'".$publish_url."'
+												});
+											}
+											else
+											{
+												Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+															
+												myMask.hide();
+											}
+							        	}})
+							        );
+					form.render();";
+					
+				// Ajout du bouton INVALIDATE seulement si l'utilisateur courant est gestionnaire de la métadonnée
+				// et que la métadonnée est validée
+				$this->javascript .="
+				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
+								handler: function()
+				                {
+				                	myMask.show();
+				                 	
+				                	form.getForm().setValues({task: 'invalidateMetadata'});
+				                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+				                 	form.getForm().setValues({object_id: '".$object_id."'});
+									form.getForm().submit({
+								    	scope: this,
+										method	: 'POST',
+										clientValidation: false,
+										success: function(form, action) 
+										{
+											Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
+						  					window.open ('./index.php?option=".$option."&task=listObject','_parent');
+												
+											myMask.hide();
+										},
+										failure: function(form, action) 
+										{
+                        					Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TEXT'))."');
+												
+											myMask.hide();
+										},
+										url:'".$invalidate_url."'
+									});
+					        	}})
+					        );
+				form.render();";
 				}
-				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est publiée
 				else if($isPublished)
@@ -630,7 +666,7 @@ class HTML_metadata {
 											form.getForm().setValues({fieldsets: fieldsets});
 						                 	form.getForm().setValues({task: 'validateMetadata'});
 						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({product_id: '".$product_id."'});
+						                 	form.getForm().setValues({object_id: '".$object_id."'});
 											form.getForm().submit({
 										    	scope: this,
 												method	: 'POST',
@@ -657,48 +693,13 @@ class HTML_metadata {
 							        );
 						form.render();";
 					}
-					// Ajout du bouton INVALIDATE seulement si l'utilisateur courant est gestionnaire de la métadonnée
-					// et que la métadonnée est validée
-					if($isValidated)
-					{
-						$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
-										handler: function()
-						                {
-						                	myMask.show();
-						                 	
-						                	form.getForm().setValues({task: 'invalidateMetadata'});
-						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({product_id: '".$product_id."'});
-											form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: false,
-												success: function(form, action) 
-												{
-													Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
-								  					window.open ('./index.php?option=".$option."&task=listObject','_parent');
-														
-													myMask.hide();
-												},
-												failure: function(form, action) 
-												{
-                        							Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TEXT'))."');
-														
-													myMask.hide();
-												},
-												url:'".$invalidate_url."'
-											});
-							        	}})
-							        );
-						form.render();";
-					}
+					
 					
 					$this->javascript .="
 						form.add(createHidden('option', 'option', '".$option."'));
 						form.add(createHidden('task', 'task', ''));
 						form.add(createHidden('metadata_id', 'metadata_id', '".$metadata_id."'));
-						form.add(createHidden('product_id', 'product_id', '".$product_id."'));
+						form.add(createHidden('object_id', 'object_id', '".$object_id."'));
 						form.add(createHidden('account_id', 'account_id', '".$account_id."'));
 						form.add(createHidden('fieldsets', 'fieldsets', ''));
 			    		// Affichage du formulaire
@@ -749,7 +750,7 @@ class HTML_metadata {
 						 rel.classassociation_id as association_id,
 						 a.guid as attribute_guid,
 						 a.name as attribute_name, 
-						 CONCAT(attribute_namespace.prefix,':',a.name) as attribute_isocode, 
+						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
 						 a.default as attribute_default, 
@@ -758,11 +759,11 @@ class HTML_metadata {
 						 a.length as length,
 						 a.codeList as codeList,
 						 a.information as tip,
-						 t.isocode as t_isocode, 
+						 CONCAT(attributetype_namespace.prefix,':',t.isocode) as t_isocode, 
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
-						 CONCAT(child_namespace.prefix,':',c.name) as child_isocode, 
+						 CONCAT(child_namespace.prefix,':',c.isocode) as child_isocode, 
 						 accountrel_class.account_id as classaccount_id
 				  FROM	 #__sdi_relation as rel 
 						 JOIN #__sdi_relation_profile as prof
@@ -787,6 +788,8 @@ class HTML_metadata {
 					  		 ON child_namespace.id=c.namespace_id
 					     LEFT OUTER JOIN #__sdi_namespace as relation_namespace
 					  		 ON relation_namespace.id=rel.namespace_id
+					  	 LEFT OUTER JOIN #__sdi_namespace as attributetype_namespace
+					  		 ON attributetype_namespace.id=t.namespace_id
 				  WHERE  rel.parent_id=".$parent."
 				  		 AND 
 				  		 prof.profile_id=".$profile_id."
@@ -2069,6 +2072,7 @@ class HTML_metadata {
 							// DateTime
 							case 8:
 								$nodeValue = substr($nodeValue, 0, 10);
+								
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
@@ -2878,6 +2882,7 @@ class HTML_metadata {
 						// DateTime
 						case 8:
 							$nodeValue = substr($nodeValue, 0, 10);
+								
 							// Selon le rendu de l'attribut, on fait des traitements différents
 							switch ($child->rendertype_id)
 							{
@@ -3773,7 +3778,7 @@ class HTML_metadata {
 		return $return;//Return associative JSON
 	}
 	
-	function buildTBar($isPublished, $isValidated, $product_id, $metadata_id, $account_id, $option)
+	function buildTBar($isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -3894,7 +3899,7 @@ class HTML_metadata {
 														       { 
 														         id:'object_id', 
 														         xtype: 'hidden',
-														         value:'".$product_id."' 
+														         value:'".$object_id."' 
 														       },
 														       { 
 														         id:'xslfile', 
@@ -3975,7 +3980,7 @@ class HTML_metadata {
 														       { 
 														         id:'object_id', 
 														         xtype: 'hidden',
-														         value:'".$product_id."' 
+														         value:'".$object_id."' 
 														       },
 														       { 
 														         id:'xslfile', 
@@ -4173,7 +4178,7 @@ class HTML_metadata {
 											       { 
 											         id:'object_id', 
 											         xtype: 'hidden',
-											         value:'".$product_id."' 
+											         value:'".$object_id."' 
 											       },
 											       { 
 											         id:'metadata_guid', 
@@ -4280,12 +4285,12 @@ class HTML_metadata {
 															       { 
 															         id:'object_id', 
 															         xtype: 'hidden',
-															         value:'".$product_id."' 
+															         value:'".$object_id."' 
 															       },
 															       { 
 															         id:'cid[]', 
 															         xtype: 'hidden',
-															         value:'".$product_id."' 
+															         value:'".$object_id."' 
 															       },
 															       { 
 															         id:'task', 

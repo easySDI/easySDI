@@ -1713,24 +1713,6 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		$query="ALTER TABLE #__sdi_attribute DROP COLUMN isocode";
-		$db->setQuery( $query);
-		
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		$query="ALTER TABLE #__sdi_class DROP COLUMN isocode";
-		$db->setQuery( $query);
-		
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
 		// Update component version
 		$version= '0.13';
 		$query="UPDATE #__sdi_list_module SET currentversion = ".$version." WHERE code='CATALOG'";

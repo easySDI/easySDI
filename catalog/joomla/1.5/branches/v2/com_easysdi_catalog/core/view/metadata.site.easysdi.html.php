@@ -94,11 +94,11 @@ class HTML_metadata {
 	<tr>
 	<!-- <th></th> -->
 	<th><?php echo JText::_('CATALOG_METADATA_OBJECTNAME'); ?></th>
-	<th><?php echo JText::_('CATALOG_METADATA_VERSIONNAME'); ?></th>
+	<!-- <th><?php //echo JText::_('CATALOG_METADATA_VERSIONNAME'); ?></th> -->
 	<th><?php echo JText::_('CORE_METADATA_STATE'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
-	<th><?php echo JText::_('CORE_CREATED'); ?></th>
+	<!-- <th><?php echo JText::_('CORE_CREATED'); ?></th> -->
 	<th><?php echo JText::_('CORE_UPDATED'); ?></th>
 	<th></th>
 	<th></th>
@@ -117,10 +117,14 @@ class HTML_metadata {
 			?>		
 			<tr>
 				<!-- <td class="logo2"><div <?php if($row->id) echo 'class="publicMd" title="'.JText::_("EASYSDI_METADATA_EXTERNAL").'"'; else if($row->metadata_internal && !$row->metadata_external) echo '"class="privateMd" title="'.JText::_("EASYSDI_METADATA_INTERNAL").'"';?>></div></td> -->
-				<td ><?php echo JText::_($row->name); ?></td>
 				<td >
-					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_name ;?></a>
+					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a>
 				</td>
+				<!-- <td ><?php //echo JText::_($row->name); ?></td>
+				<td >
+					<a class="modal" title="<?php //echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php //echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php //echo $row->version_name ;?></a>
+				</td>
+				 -->
 				<td ><?php echo JText::_($row->state); ?></td>
 				<?php 		
 				$managers = "";
@@ -133,7 +137,7 @@ class HTML_metadata {
 				?>
 				<td ><?php echo $managers; ?></td>
 				<td ><?php echo $editors; ?></td>
-				<td ><?php echo date('d.m.Y h:i:s',strtotime($row->version_created)); ?></td>
+				<!-- <td ><?php //echo date('d.m.Y h:i:s',strtotime($row->version_created)); ?></td> -->
 				<td ><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 				<?php 
 				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
@@ -164,7 +168,10 @@ class HTML_metadata {
 					$rowMetadata->load($row->metadata_guid);
 					if ($isManager) // Le rôle de manager prime sur celui d'éditeur, au cas où l'utilisateur a les deux
 					{
-						if ($rowMetadata->metadatastate_id == 1 or $rowMetadata->metadatastate_id == 4)
+						if ($rowMetadata->metadatastate_id == 4 // En travail
+							or $rowMetadata->metadatastate_id == 3 // Validé
+							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published >= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
+							)
 						{
 							?>
 								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
@@ -183,7 +190,7 @@ class HTML_metadata {
 						$rowCurrentUser = new accountByUserId($database);
 						$rowCurrentUser->load($user->get('id'));
 			
-						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id)
+						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tâche d'édition assignée
 						{
 							?>
 							<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
@@ -233,7 +240,7 @@ class HTML_metadata {
 	<?php
 	}
 	
-	function editMetadata($product_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
 	{
 		$uri =& JUri::getInstance();
 		
@@ -345,7 +352,7 @@ class HTML_metadata {
 			class="adminForm">
 			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="product_id" value="<?php echo $product_id;?>" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
 		</div>
 		</div>
@@ -460,7 +467,7 @@ class HTML_metadata {
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
-					var hiddenFields= new Array();
+					//var hiddenFields= new Array();
 					form.cascade(function(cmp)
 					{
 						if (cmp.xtype=='fieldset')
@@ -471,7 +478,7 @@ class HTML_metadata {
 								//var f = cmp.items;
 								cmp.cascade(function (field)
 								{
-									hiddenFields.push(field.getId());
+									//hiddenFields.push(field.getId());
 									//console.log('Field: ' + field.getId() + ' - ' + field.allowBlank);
 									if (field.allowBlank == false)
 									{
@@ -490,7 +497,6 @@ class HTML_metadata {
 					//console.log(hiddenFields);
 				";								
 
-				// Ajout du bouton SAUVER seulement si c'est un éditeur et que la métadonnée n'est pas publiée
 				if (!$isPublished)
 				{
 					$importrefs = array();
@@ -545,7 +551,7 @@ class HTML_metadata {
 																       { 
 																         id:'object_id', 
 																         xtype: 'hidden',
-																         value:'".$product_id."' 
+																         value:'".$object_id."' 
 																       },
 																       { 
 																         id:'xslfile', 
@@ -626,7 +632,7 @@ class HTML_metadata {
 																       { 
 																         id:'object_id', 
 																         xtype: 'hidden',
-																         value:'".$product_id."' 
+																         value:'".$object_id."' 
 																       },
 																       { 
 																         id:'xslfile', 
@@ -838,7 +844,7 @@ class HTML_metadata {
 													       { 
 													         id:'object_id', 
 													         xtype: 'hidden',
-													         value:'".$product_id."' 
+													         value:'".$object_id."' 
 													       },
 													       { 
 													         id:'metadata_guid', 
@@ -896,152 +902,152 @@ class HTML_metadata {
 					);
 					form.render();";
 					
-					if (!$isManager)
-					{
-						$this->javascript .="
-						form.fbar.add(new Ext.Button( {
-							                text: '".JText::_('CORE_SAVE')."',
-							                handler: function()
-							                {
-							                	myMask.show();
-							                 	var fields = new Array();
-							        			form.cascade(function(cmp)
-							        			{
-								        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
-						         					{
-						         						//alert(cmp.getId() + \" - \" + cmp.getValue());
-						         						//alert(escape(cmp.getValue()));
-						         					}
-						          					
-							         				//alert(cmp.getId() + \" - \" + cmp.xtype);
-													if (cmp.xtype=='fieldset')
-							         				{
-							         					//alert(cmp.getId() + \" - \" + cmp.clones_count);
-														if (cmp.clones_count)
-							          					{
-							           						fields.push(cmp.getId()+','+cmp.clones_count);
-							         					}
-							         				}
-							        			});
-							        			var fieldsets = fields.join(' | ');
-							        			//alert(fieldsets);
-												
-							        			form.getForm().setValues({fieldsets: fieldsets});
-							              		form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: false,
-													success: function(form, action) 
-													{
-														//alert('Metadata saved successfully.');
-														
-														// Retour à la page précédente
-														//history.back();
-														window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-                        								if (action.result)
-															alert(action.result.errors.xml);
-														else
-															alert('Form save error');
-														myMask.hide();
-													},
-													url:'".$url."'
-												});
-							        	}
-						        })
-							        );
-						form.render();";
-					
-						$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
-										handler: function()
+					$this->javascript .="
+					form.fbar.add(new Ext.Button( {
+						                text: '".JText::_('CORE_SAVE')."',
+						                handler: function()
 						                {
 						                	myMask.show();
 						                 	var fields = new Array();
-						        			form.getForm().isInvalid=false;
-							        		form.cascade(function(cmp)
+						        			form.cascade(function(cmp)
 						        			{
-							        			if (cmp.xtype=='fieldset')
+							        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
+					         					{
+					         						//alert(cmp.getId() + \" - \" + cmp.getValue());
+					         						//alert(escape(cmp.getValue()));
+					         					}
+					          					
+						         				//alert(cmp.getId() + \" - \" + cmp.xtype);
+												if (cmp.xtype=='fieldset')
 						         				{
-						         					if (cmp.clones_count)
-						          						fields.push(cmp.getId()+','+cmp.clones_count);
-						         				}
-							         				
-							         				// Validation des champs langue
-						         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
-						         					{
-						         						var countFields = cmp.items.length;
-						         						var countValues = 0;
-														
-														for (var i=0; i < countFields ; i++)
-														{
-															field = cmp.items.get(i); 
-															if (field.getValue() != '')
-															{
-																countValues++;
-															}
-														}
-														
-														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
-														if (countValues != countFields && countValues != 0)
-														{
-															//console.log(cmp.getId());
-															for (var i=0; i < countFields ; i++)
-															{
-																field = cmp.items.get(i);
-																if (field.getValue() == '')
-																	field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
-															} 
-															form.getForm().isInvalid=true;
-														}
+						         					//alert(cmp.getId() + \" - \" + cmp.clones_count);
+													if (cmp.clones_count)
+						          					{
+						           						fields.push(cmp.getId()+','+cmp.clones_count);
 						         					}
+						         				}
 						        			});
 						        			var fieldsets = fields.join(' | ');
-						        			
-											if (!form.getForm().isInvalid)
-						        			{
-							        			form.getForm().setValues({fieldsets: fieldsets});
-							                 	form.getForm().setValues({task: 'validateMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({product_id: '".$product_id."'});
-							                 	form.getForm().setValues({account_id: '".$account_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: true,
-													success: function(form, action) 
-													{
-														Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-								  						window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-	                        							Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
-															
-														myMask.hide();
-													},
-													url:'".$validate_url."'
-												});
-											}
-											else
-											{
-												Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
-															
-												myMask.hide();
-											}
-							        	}})
-							        );
-						form.render();";
-					}
+						        			//alert(fieldsets);
+											
+						        			form.getForm().setValues({fieldsets: fieldsets});
+						              		form.getForm().submit({
+										    	scope: this,
+												method	: 'POST',
+												clientValidation: false,
+												success: function(form, action) 
+												{
+													//alert('Metadata saved successfully.');
+													
+													// Retour à la page précédente
+													//history.back();
+													window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+													myMask.hide();
+												},
+												failure: function(form, action) 
+												{
+                        							if (action.result)
+														alert(action.result.errors.xml);
+													else
+														alert('Form save error');
+													myMask.hide();
+												},
+												url:'".$url."'
+											});
+						        	}
+					        })
+						        );
+					form.render();";
 				}
 				
-				// Ajout du bouton VALIDER seulement si l'utilisateur courant est gestionnaire de la métadonnée
+				if (!$isManager and !$isPublished)
+				{
+					$this->javascript .="
+					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
+									handler: function()
+					                {
+					                	myMask.show();
+					                 	var fields = new Array();
+					        			form.getForm().isInvalid=false;
+						        		form.cascade(function(cmp)
+					        			{
+						        			if (cmp.xtype=='fieldset')
+					         				{
+					         					if (cmp.clones_count)
+					          						fields.push(cmp.getId()+','+cmp.clones_count);
+					         				}
+						         				
+						         				// Validation des champs langue
+					         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+					         					{
+					         						var countFields = cmp.items.length;
+					         						var countValues = 0;
+													
+													for (var i=0; i < countFields ; i++)
+													{
+														field = cmp.items.get(i); 
+														if (field.getValue() != '')
+														{
+															countValues++;
+														}
+													}
+													
+													// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+													if (countValues != countFields && countValues != 0)
+													{
+														//console.log(cmp.getId());
+														for (var i=0; i < countFields ; i++)
+														{
+															field = cmp.items.get(i);
+															if (field.getValue() == '')
+																field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+														} 
+														form.getForm().isInvalid=true;
+													}
+					         					}
+					        			});
+					        			var fieldsets = fields.join(' | ');
+					        			
+										if (!form.getForm().isInvalid)
+					        			{
+						        			form.getForm().setValues({fieldsets: fieldsets});
+						                 	form.getForm().setValues({task: 'validateMetadata'});
+						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+						                 	form.getForm().setValues({object_id: '".$object_id."'});
+						                 	form.getForm().setValues({account_id: '".$account_id."'});
+											form.getForm().submit({
+										    	scope: this,
+												method	: 'POST',
+												clientValidation: true,
+												success: function(form, action) 
+												{
+													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
+							  						window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+													myMask.hide();
+												},
+												failure: function(form, action) 
+												{
+                        							Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
+														
+													myMask.hide();
+												},
+												url:'".$validate_url."'
+											});
+										}
+										else
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+														
+											myMask.hide();
+										}
+						        	}})
+						        );
+					form.render();";
+				}
+				
+				// Ajout du bouton PUBLISH seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée n'est pas publiée
-				if($isManager and !$isPublished)
+				if($isManager and $isValidated)
 				{
 					$this->javascript .="
 						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
@@ -1093,7 +1099,7 @@ class HTML_metadata {
 													form.getForm().setValues({fieldsets: fieldsets});
 								                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
 								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-								                 	form.getForm().setValues({product_id: '".$product_id."'});
+								                 	form.getForm().setValues({object_id: '".$object_id."'});
 													form.getForm().submit({
 												    	scope: this,
 														method	: 'POST',
@@ -1136,9 +1142,9 @@ class HTML_metadata {
 																						         value:'".$metadata_id."' 
 																						       },
 																						       { 
-																						         id:'product_id', 
+																						         id:'object_id', 
 																						         xtype: 'hidden',
-																						         value:'".$product_id."' 
+																						         value:'".$object_id."' 
 																						       },
 																						       { 
 																						         id:'account_id', 
@@ -1201,123 +1207,39 @@ class HTML_metadata {
 								        );
 						form.render();";
 						
-						// Ajout de bouton de reset
-						$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_RESET')."',
-										handler: function()
-						                {
-						                	// Créer une iframe pour confirmer la réinitialisation
-											if (!winrst)
-												winrst = new Ext.Window({
-												                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',
-												                width:370,
-												                height:100,
-												                closeAction:'hide',
-												                layout:'fit', 
-															    border:true, 
-															    closable:true, 
-															    renderTo:Ext.getBody(), 
-															    frame:true,
-															    items:[{ 
-																     xtype:'form' 
-																     ,id:'resetform' 
-																     ,defaultType:'textfield' 
-																     ,frame:true 
-																     ,method:'post' 
-																     ,url:'".$reset_url."'
-																	 ,standardSubmit: true
-																     ,items:[ 
-																       { 
-																       	 typeAhead:true,
-																       	 triggerAction:'all',
-																       	 mode:'local',
-																         xtype: 'label',
-																         text: '".JText::_('CATALOG_METADATA_CONFIRM_RESET')."'
-																       },
-																       { 
-																         id:'metadata_id', 
-																         xtype: 'hidden',
-																         value:'".$metadata_id."' 
-																       },
-																       { 
-																         id:'object_id', 
-																         xtype: 'hidden',
-																         value:'".$product_id."' 
-																       },
-																       { 
-																         id:'cid[]', 
-																         xtype: 'hidden',
-																         value:'".$product_id."' 
-																       },
-																       { 
-																         id:'task', 
-																         xtype: 'hidden',
-																         value:'editMetadata' 
-																       },
-																       { 
-																         id:'option', 
-																         xtype: 'hidden',
-																         value:'".$option."' 
-																       }
-																    ] 
-																     ,buttonAlign:'center' 
-																     ,buttons: [{ 
-														                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CONFIRM'))."',
-														                    handler: function(){
-														                    	myMask.show();
-														                    	winrst.items.get(0).getForm().submit();
-														                    }
-														                },
-														                {
-														                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-														                    handler: function(){
-														                        winrst.hide();
-														                    }
-														                }]
-																   }] 
-												                
-												            });
-						  						winrst.show();
-										}})
-							        );
-						form.render();";
-						
-						if ($isValidated)
-						{
-							$this->javascript .="
-							form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
-											handler: function()
-							                {
-							                	myMask.show();
-							                 	
-							                	form.getForm().setValues({task: 'invalidateMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({product_id: '".$product_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: false,
-													success: function(form, action) 
-													{
-														Ext.MessageBox.alert('".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-									  					window.open ('./index.php?option=".$option."&task=listObject','_parent');
-															
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-	                        							Ext.MessageBox.alert('".JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TEXT')."');
-															
-														myMask.hide();
-													},
-													url:'".$invalidate_url."'
-												});
-								        	}})
-								        );
-							form.render();";
-						}
+					$this->javascript .="
+					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
+									handler: function()
+					                {
+					                	myMask.show();
+					                 	
+					                	form.getForm().setValues({task: 'invalidateMetadata'});
+					                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+					                 	form.getForm().setValues({object_id: '".$object_id."'});
+										form.getForm().submit({
+									    	scope: this,
+											method	: 'POST',
+											clientValidation: false,
+											success: function(form, action) 
+											{
+												Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
+						  						window.open ('./index.php?option=".$option."&task=listObject','_parent');
+													
+												myMask.hide();
+											},
+											failure: function(form, action) 
+											{
+                        						Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TEXT'))."');
+												
+												myMask.hide();
+											},
+											url:'".$invalidate_url."'
+										});
+						        	}})
+						        );
+					form.render();";
 				}
-					
+				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est publiée
 				if($isManager and $isPublished)
@@ -1341,7 +1263,7 @@ class HTML_metadata {
 											form.getForm().setValues({fieldsets: fieldsets});
 						                 	form.getForm().setValues({task: 'validateMetadata'});
 						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({product_id: '".$product_id."'});
+						                 	form.getForm().setValues({object_id: '".$object_id."'});
 						                 	form.getForm().setValues({account_id: '".$account_id."'});
 											form.getForm().submit({
 										    	scope: this,
@@ -1364,173 +1286,255 @@ class HTML_metadata {
 							        	}})
 							        );
 						form.render();";
-					}
+				}
 					
-					// Assignation de métadonnée
-					$editors = array();
-					$listEditors = array();
-					$database->setQuery( "SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$product_id." OR d.object_id=".$product_id.") ORDER BY b.name" );
-					$editors = array_merge( $editors, $database->loadObjectList() );
-					foreach($editors as $e)
-					{
-						$listEditors[$e->value] = $e->text;
-					}
-					//print_r($listEditors);
-					//$editors = str_replace('"', "'", HTML_metadata::array2json($editors));
-					//print_r($editors);
-					//print_r(HTML_metadata::array2extjs($listEditors, false));
-					$listEditors = HTML_metadata::array2extjs($listEditors, false);
-					
-					$this->javascript .="
-					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_ASSIGN')."',
-										handler: function()
-						                {
-						                	/*myMask.show();
-						                 	form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: false,
-												success: function(form, action) 
-												{*/
-													// Créer une iframe pour demander à l'utilisateur la date de publication
-													if (!win)
-														win = new Ext.Window({
-														                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
-														                width:500,
-														                height:200,
-														                closeAction:'hide',
-														                layout:'fit', 
-																	    border:false, 
-																	    closable:false, 
-																	    renderTo:Ext.getBody(), 
-																	    frame:true,
-																	    items:[{ 
-																		     xtype:'form' 
-																		     ,id:'assignform' 
-																		     ,defaultType:'textfield' 
-																		     ,frame:true 
-																		     ,method:'post' 
-																		     ,defaults:{anchor:'95%'} 
-																		     ,items:[ 
-																		       { 
-																		       	 typeAhead:true,
-																		       	 triggerAction:'all',
-																		       	 mode:'local',
-																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_EDITOR_LABEL'))."', 
-																		         id:'editor', 
-																		         hiddenName:'editor_hidden', 
-																		         xtype: 'combo',
-																		         store: new Ext.data.ArrayStore({
-																					        id: 0,
-																					        fields: [
-																					            'value',
-																					            'text'
-																					        ],
-																					        data: ".$listEditors."
-																					    }),
-																				 valueField:'value',
-																				 displayField:'text'
-																		       },
-																		       { 
-																		         id:'information', 
-																		         xtype: 'textarea',
-																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_INFORMATION_LABEL'))."', 
-																		         grow: true,
-																		         multiline:true,
-																		         value:'' 
-																		       },
-																		       { 
-																		         id:'metadata_id', 
-																		         xtype: 'hidden',
-																		         value:'".$metadata_id."' 
-																		       },
-																		       { 
-																		         id:'object_id', 
-																		         xtype: 'hidden',
-																		         value:'".$product_id."' 
-																		       }
-																		    ] 
-																		     ,buttonAlign:'right' 
-																		     ,buttons: [{
-																                    text:'Submit',
-																                    handler: function(){
-																                    	myMask.show();
-																                    	win.items.get(0).getForm().submit({
-																				    	scope: this,
-																						method	: 'POST',
-																						url:'".$assign_url."',
-																						success: function(form, action) 
-																						{
-										                        							win.hide();
-																	                    	myMask.hide();
-																						},
-																						failure: function(form, action) 
-																						{
-										                        							if (action.result)
-																								alert(action.result.errors.xml);
-																							else
-																								alert('Form assign error');
-																								
-																							win.hide();
-																	                    	myMask.hide();
-																						}
-																						});
-																                    }
-																                },
-																                {
-																                    text: 'Close',
-																                    handler: function(){
-																                        win.hide();
-																                    }
-																                }]
-																		   }] 
-														                
-														            });
-													else
-													{
-														win.items.get(0).findById('editor').setValue('');
-														win.items.get(0).findById('information').setValue('');
-													}	
-							  						win.show();
-							  						/*myMask.hide();
-								  				},
-												failure: function(form, action) 
+				// Assignation de métadonnée
+				$editors = array();
+				$listEditors = array();
+				$database->setQuery( "SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") ORDER BY b.name" );
+				$editors = array_merge( $editors, $database->loadObjectList() );
+				foreach($editors as $e)
+				{
+					$listEditors[$e->value] = $e->text;
+				}
+				//print_r($listEditors);
+				//$editors = str_replace('"', "'", HTML_metadata::array2json($editors));
+				//print_r($editors);
+				//print_r(HTML_metadata::array2extjs($listEditors, false));
+				$listEditors = HTML_metadata::array2extjs($listEditors, false);
+				
+				$this->javascript .="
+				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_ASSIGN')."',
+									handler: function()
+					                {
+					                	/*myMask.show();
+					                 	form.getForm().submit({
+									    	scope: this,
+											method	: 'POST',
+											clientValidation: false,
+											success: function(form, action) 
+											{*/
+												// Créer une iframe pour demander à l'utilisateur la date de publication
+												if (!win)
+													win = new Ext.Window({
+													                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
+													                width:500,
+													                height:200,
+													                closeAction:'hide',
+													                layout:'fit', 
+																    border:false, 
+																    closable:false, 
+																    renderTo:Ext.getBody(), 
+																    frame:true,
+																    items:[{ 
+																	     xtype:'form' 
+																	     ,id:'assignform' 
+																	     ,defaultType:'textfield' 
+																	     ,frame:true 
+																	     ,method:'post' 
+																	     ,defaults:{anchor:'95%'} 
+																	     ,items:[ 
+																	       { 
+																	       	 typeAhead:true,
+																	       	 triggerAction:'all',
+																	       	 mode:'local',
+																	         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_EDITOR_LABEL'))."', 
+																	         id:'editor', 
+																	         hiddenName:'editor_hidden', 
+																	         xtype: 'combo',
+																	         store: new Ext.data.ArrayStore({
+																				        id: 0,
+																				        fields: [
+																				            'value',
+																				            'text'
+																				        ],
+																				        data: ".$listEditors."
+																				    }),
+																			 valueField:'value',
+																			 displayField:'text'
+																	       },
+																	       { 
+																	         id:'information', 
+																	         xtype: 'textarea',
+																	         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_INFORMATION_LABEL'))."', 
+																	         grow: true,
+																	         multiline:true,
+																	         value:'' 
+																	       },
+																	       { 
+																	         id:'metadata_id', 
+																	         xtype: 'hidden',
+																	         value:'".$metadata_id."' 
+																	       },
+																	       { 
+																	         id:'object_id', 
+																	         xtype: 'hidden',
+																	         value:'".$object_id."' 
+																	       }
+																	    ] 
+																	     ,buttonAlign:'right' 
+																	     ,buttons: [{
+															                    text:'Submit',
+															                    handler: function(){
+															                    	myMask.show();
+															                    	win.items.get(0).getForm().submit({
+																			    	scope: this,
+																					method	: 'POST',
+																					url:'".$assign_url."',
+																					success: function(form, action) 
+																					{
+									                        							win.hide();
+																                    	myMask.hide();
+																					},
+																					failure: function(form, action) 
+																					{
+									                        							if (action.result)
+																							alert(action.result.errors.xml);
+																						else
+																							alert('Form assign error');
+																							
+																						win.hide();
+																                    	myMask.hide();
+																					}
+																					});
+															                    }
+															                },
+															                {
+															                    text: 'Close',
+															                    handler: function(){
+															                        win.hide();
+															                    }
+															                }]
+																	   }] 
+													                
+													            });
+												else
 												{
-                        							if (action.result)
-														alert(action.result.errors.xml);
-													else
-														alert('Form assign error');
-														
-													myMask.hide();
-												},
-												url:'".$assign_url."'
-											});*/
-							        	}})
-							        );
-					form.render();";
-					
-					
-					// Ajout de bouton de retour
-					$this->javascript .="
-					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_CANCEL')."',
-										handler: function()
-						                {
-						                	//history.back();
-						                	window.open ('./index.php?tmpl=component&option=".$option."&task=cancelMetadata&product_id=".$product_id."','_parent');
-							        	}})
-							        );
-					form.render();";
-					
-					
-					$this->javascript .="
-						form.add(createHidden('option', 'option', '".$option."'));
-						form.add(createHidden('task', 'task', 'saveMetadata'));
-						form.add(createHidden('metadata_id', 'metadata_id', '".$metadata_id."'));
-						form.add(createHidden('product_id', 'product_id', '".$product_id."'));
-						form.add(createHidden('account_id', 'account_id', '".$account_id."'));
-						form.add(createHidden('fieldsets', 'fieldsets', ''));
-			    		// Affichage du formulaire
-			    		form.doLayout();";
+													win.items.get(0).findById('editor').setValue('');
+													win.items.get(0).findById('information').setValue('');
+												}	
+						  						win.show();
+						  						/*myMask.hide();
+							  				},
+											failure: function(form, action) 
+											{
+                        						if (action.result)
+													alert(action.result.errors.xml);
+												else
+													alert('Form assign error');
+													
+												myMask.hide();
+											},
+											url:'".$assign_url."'
+										});*/
+						        	}})
+						        );
+				form.render();";
+				
+				
+
+				// Ajout de bouton de reset
+				$this->javascript .="
+				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_RESET')."',
+								handler: function()
+				                {
+				                	// Créer une iframe pour confirmer la réinitialisation
+									if (!winrst)
+										winrst = new Ext.Window({
+										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',
+										                width:370,
+										                height:100,
+										                closeAction:'hide',
+										                layout:'fit', 
+													    border:true, 
+													    closable:true, 
+													    renderTo:Ext.getBody(), 
+													    frame:true,
+													    items:[{ 
+														     xtype:'form' 
+														     ,id:'resetform' 
+														     ,defaultType:'textfield' 
+														     ,frame:true 
+														     ,method:'post' 
+														     ,url:'".$reset_url."'
+															 ,standardSubmit: true
+														     ,items:[ 
+														       { 
+														       	 typeAhead:true,
+														       	 triggerAction:'all',
+														       	 mode:'local',
+														         xtype: 'label',
+														         text: '".JText::_('CATALOG_METADATA_CONFIRM_RESET')."'
+														       },
+														       { 
+														         id:'metadata_id', 
+														         xtype: 'hidden',
+														         value:'".$metadata_id."' 
+														       },
+														       { 
+														         id:'object_id', 
+														         xtype: 'hidden',
+														         value:'".$object_id."' 
+														       },
+														       { 
+														         id:'cid[]', 
+														         xtype: 'hidden',
+														         value:'".$object_id."' 
+														       },
+														       { 
+														         id:'task', 
+														         xtype: 'hidden',
+														         value:'editMetadata' 
+														       },
+														       { 
+														         id:'option', 
+														         xtype: 'hidden',
+														         value:'".$option."' 
+														       }
+														    ] 
+														     ,buttonAlign:'center' 
+														     ,buttons: [{ 
+												                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CONFIRM'))."',
+												                    handler: function(){
+												                    	myMask.show();
+												                    	winrst.items.get(0).getForm().submit();
+												                    }
+												                },
+												                {
+												                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+												                    handler: function(){
+												                        winrst.hide();
+												                    }
+												                }]
+														   }] 
+										                
+										            });
+				  						winrst.show();
+								}})
+					        );
+				form.render();";
+				
+				// Ajout de bouton de retour
+				$this->javascript .="
+				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_CANCEL')."',
+									handler: function()
+					                {
+					                	//history.back();
+					                	window.open ('./index.php?tmpl=component&option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');
+						        	}})
+						        );
+				form.render();";
+				
+				
+				$this->javascript .="
+					form.add(createHidden('option', 'option', '".$option."'));
+					form.add(createHidden('task', 'task', 'saveMetadata'));
+					form.add(createHidden('metadata_id', 'metadata_id', '".$metadata_id."'));
+					form.add(createHidden('object_id', 'object_id', '".$object_id."'));
+					form.add(createHidden('account_id', 'account_id', '".$account_id."'));
+					form.add(createHidden('fieldsets', 'fieldsets', ''));
+		    		// Affichage du formulaire
+		    		form.doLayout();";
 					
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
@@ -1585,7 +1589,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 						 a.length as length,
 						 a.codeList as codeList,
 						 a.information as tip,
-						 t.isocode as t_isocode, 
+						 CONCAT(attributetype_namespace.prefix,':',t.isocode) as t_isocode, 
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
@@ -1614,6 +1618,8 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					  		 ON child_namespace.id=c.namespace_id
 					     LEFT OUTER JOIN #__sdi_namespace as relation_namespace
 					  		 ON relation_namespace.id=rel.namespace_id
+					  	 LEFT OUTER JOIN #__sdi_namespace as attributetype_namespace
+					  		 ON attributetype_namespace.id=t.namespace_id
 				  WHERE  rel.parent_id=".$parent."
 				  		 AND 
 				  		 prof.profile_id=".$profile_id."

@@ -67,7 +67,7 @@ class SITE_metadata {
 			$rootAccount = $account;
 			
 		//List only the products for which metadata manager is the current user
-		$queryCount = "	SELECT DISTINCT o.*, ov.name as version_name, s.label as state 
+		/*$queryCount = "	SELECT DISTINCT o.*, ov.name as version_name, s.label as state 
 						FROM 	#__sdi_editor_object e, 
 								#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
@@ -79,6 +79,26 @@ class SITE_metadata {
 						LEFT OUTER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
 						WHERE e.object_id=o.id
 							AND ov.metadata_id=m.id 
+							AND m.metadatastate_id=s.id 
+							AND e.account_id=a.id 
+							AND a.user_id = u.id
+							AND ot.id=o.objecttype_id
+							AND ot.predefined=0
+							AND (e.account_id = ".$account->id."
+								OR (ma.account_id=".$account->id."
+									AND s.id=1)
+								)";*/
+		$queryCount = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
+						FROM 	#__sdi_editor_object e, 
+								#__sdi_metadata m, 
+								#__sdi_list_metadatastate s, 
+								#__sdi_account a, 
+								#__users u,
+								#__sdi_objecttype ot,
+								#__sdi_object o 
+						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+						WHERE e.object_id=o.id
+							AND o.metadata_id=m.id
 							AND m.metadatastate_id=s.id 
 							AND e.account_id=a.id 
 							AND a.user_id = u.id
@@ -99,18 +119,7 @@ class SITE_metadata {
 		}	
 		
 		$pageNav = new JPagination($total,$limitstart,$limit);
-		//$query = "select * from #__easysdi_product where (partner_id in (SELECT partner_id FROM #__easysdi_community_partner where  root_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id) OR  partner_id = ( SELECT root_id FROM #__easysdi_community_partner where partner_id=$partner->partner_id)  OR root_id = $partner->partner_id OR  partner_id = $partner->partner_id)) ";
-		//List only the products for which metadata manager is the current user
-		//$query = " SELECT * FROM #__sdi_object where account_id = $rootAccount->id " ;
-		/*$query = "	SELECT o.*, s.label as state 
-					FROM #__sdi_account a, #__users b, #__sdi_object o 
-					LEFT OUTER JOIN #__sdi_metadata m ON o.metadata_id=m.id 
-					LEFT OUTER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
-					WHERE a.user_id = b.id 
-						AND a.id=o.account_id 
-						AND o.account_id = ".$rootAccount->id;
-		*/
-		$query = "	SELECT DISTINCT o.*, ov.name as version_name, ov.created as version_created, CONCAT(o.name,' ',ov.name) as full_name, s.label as state, m.guid as metadata_guid 
+		/*$query = "	SELECT DISTINCT o.*, ov.name as version_name, ov.created as version_created, CONCAT(o.name,' ',ov.name) as full_name, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_editor_object e, 
 								#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
@@ -130,9 +139,30 @@ class SITE_metadata {
 							AND (e.account_id = ".$account->id."
 								OR (ma.account_id=".$account->id."
 									AND s.id=1)
+								)";*/
+		$query = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
+						FROM 	#__sdi_editor_object e, 
+								#__sdi_metadata m, 
+								#__sdi_list_metadatastate s, 
+								#__sdi_account a, 
+								#__users u,
+								#__sdi_objecttype ot,
+								#__sdi_object o 
+						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+						WHERE e.object_id=o.id
+							AND o.metadata_id=m.id
+							AND m.metadatastate_id=s.id 
+							AND e.account_id=a.id 
+							AND a.user_id = u.id
+							AND ot.id=o.objecttype_id
+							AND ot.predefined=0
+							AND (e.account_id = ".$account->id."
+								OR (ma.account_id=".$account->id."
+									AND s.id=1)
 								)";
 		$query .= $filter;
-		$query .= " ORDER BY o.name, ov.name ASC";
+		//$query .= " ORDER BY o.name, ov.name ASC";
+		$query .= " ORDER BY o.name ASC";
 		
 		$database->setQuery($query,$limitstart,$limit);
 		//echo $database->getQuery();		
@@ -249,7 +279,7 @@ class SITE_metadata {
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.name) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
@@ -268,16 +298,14 @@ class SITE_metadata {
 		
 			
 		// Est-ce que la métadonnée est publiée?
+		$isPublished = false;
 		if ($rowMetadata->metadatastate_id == 1)
-			$isPublished = true;
-		else
-			$isPublished = false;
+			$isPublished = true;			
 			
 		// Est-ce que la métadonnée est validée?
+		$isValidated = false;
 		if ($rowMetadata->metadatastate_id == 3)
-			$isValidated = true;
-		else
-			$isValidated = false;
+			$isValidated = true;			
 			
 		// Récupérer les périmètres administratifs
 		$boundaries = array();
@@ -285,7 +313,6 @@ class SITE_metadata {
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
 		// Récupérer la métadonnée en CSW
-		//$metadata_id = "0f62e111-831d-4547-aee7-03ad10a3a141";
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmètres prédéfinis 
@@ -391,7 +418,7 @@ class SITE_metadata {
 						 a.length as length,
 						 a.codeList as codeList,
 						 a.information as tip,
-						 t.isocode as t_isocode, 
+						 CONCAT(attributetype_namespace.prefix,':',t.isocode) as t_isocode, 
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
@@ -420,6 +447,8 @@ class SITE_metadata {
 					  		 ON child_namespace.id=c.namespace_id
 					     LEFT OUTER JOIN #__sdi_namespace as relation_namespace
 					  		 ON relation_namespace.id=rel.namespace_id
+					  	 LEFT OUTER JOIN #__sdi_namespace as attributetype_namespace
+					  		 ON attributetype_namespace.id=t.namespace_id
 				  WHERE  rel.parent_id=".$parent."
 				  		 AND 
 				  		 prof.profile_id=".$profile_id."
@@ -1176,13 +1205,13 @@ class SITE_metadata {
 		$database =& JFactory::getDBO(); 
 		$option = $_POST['option'];
 		$metadata_id = $_POST['metadata_id'];
-		$product_id = $_POST['product_id'];
+		$object_id = $_POST['object_id'];
 		
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
 		//echo "Metadata: ".$metadata_id." \r\n ";
-		//echo "Product: ".$product_id." \r\n ";
+		//echo "Product: ".$object_id." \r\n ";
 		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
@@ -1242,7 +1271,7 @@ class SITE_metadata {
 		$rowObject->load($metadata_id);
 		//echo "Product: ".$rowObject->id." \r\n ";
 		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.name) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON ns.id=c.namespace_id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON ns.id=c.namespace_id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
 		//echo $database->getQuery()." \r\n ";
@@ -1379,7 +1408,7 @@ class SITE_metadata {
 		}
 		
 		$rowObject = new object( $database );
-		$rowObject->load( $product_id );
+		$rowObject->load( $object_id );
 		$rowObject->checkin();
 		
 	}
@@ -1393,7 +1422,7 @@ class SITE_metadata {
 
 		// Check the attribute in if checked out
 		$rowObject = new object( $database );
-		$rowObject->load( $_GET['product_id'] );
+		$rowObject->load( $_GET['object_id'] );
 		
 		$rowObject->checkin();
 		

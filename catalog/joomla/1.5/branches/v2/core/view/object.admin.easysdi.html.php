@@ -440,7 +440,7 @@ if ($rowObject->updated)
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_OBJECTTYPE_NAME"), 'objecttype_name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title'><?php echo JText::_("CATALOG_OBJECT_VERSION_COL"); ?></th>
+					<!-- <th class='title'><?php //echo JText::_("CATALOG_OBJECT_VERSION_COL"); ?></th> -->
 					<th class='title'><?php echo JText::_("CORE_METADATA_MANAGERS"); ?></th>
 					<th class='title'><?php echo JText::_("CORE_METADATA_EDITORS"); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
@@ -518,9 +518,9 @@ if ($rowObject->updated)
 					<td><?php echo JText::_($row->objecttype_name); ?></td>
 					<td><?php echo JText::_($row->state); ?></td>
 					<?php 		
-					$versions = "";
+					/*$versions = "";
 					$database->setQuery( "SELECT name FROM #__sdi_objectversion WHERE object_id=".$row->id." ORDER BY created" );
-					$versions = implode(", ", $database->loadResultArray());
+					$versions = implode(", ", $database->loadResultArray());*/
 					
 					$managers = "";
 					$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
@@ -530,7 +530,7 @@ if ($rowObject->updated)
 					$database->setQuery( "SELECT b.name FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 					$editors = implode(", ", $database->loadResultArray());
 					?>
-					<td><?php echo $versions; ?></td>		
+					<!-- <td><?php //echo $versions; ?></td> -->		
 					<td><?php echo $managers; ?></td>		
 					<td><?php echo $editors; ?></td>		
 					<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>

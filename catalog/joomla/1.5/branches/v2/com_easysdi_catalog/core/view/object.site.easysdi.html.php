@@ -582,9 +582,9 @@ if ($rowObject->updated)
 		    	<tr>
 					<td width="100%" align="right">
 					<?php if ($backPage == 'object'){?>
-						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelObject&product_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelObject&object_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
 					<?php }else if ($backPage == 'metadata'){?>
-						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelMetadata&product_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelMetadata&object_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
 					<?php }?>
 						<br></br>
 					</td>
@@ -701,7 +701,7 @@ if ($rowObject->updated)
 		    <table width="100%">
 				<tr>
 					<td width="100%" align="right">
-						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelObjectLink&product_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelObjectLink&object_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
 						<br></br>
 					</td>
 				</tr>

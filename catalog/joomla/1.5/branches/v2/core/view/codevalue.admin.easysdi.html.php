@@ -163,12 +163,6 @@ function listCodeValue(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $row->published);?> </td>																
 				</tr>
-				<!-- 
-				<tr>
-					<td><?php echo JText::_("CORE_ISOCODE"); ?></td>
-					<td><input size="50" type="text" name ="isocode" value="<?php //echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> </td>							
-				</tr>
-				 -->
 				<tr>
 					<td><?php echo JText::_("CATALOG_VALUE"); ?></td>
 					<td><input size="50" type="text" name ="val" value="<?php echo $row->value?>" maxlength="<?php echo $fieldsLength['value'];?>"> </td>							
