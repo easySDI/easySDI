@@ -1192,11 +1192,11 @@ class HTML_cpanel {
 	{ ?>
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+	src="./components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
+	src="./components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
 	</script>
 	<?php
 	} ?>

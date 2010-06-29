@@ -959,7 +959,7 @@ class HTML_product{
 			?>		
 			<tr>
 			<td class="logo2"><div <?php if($row->external && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->internal && $row->orderable == 1) echo 'title="'.JText::_("EASYSDI_SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
-			<td width="100%"><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
+			<td width="100%"><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title ;?></a></td>
 			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
 			<td class="logo"><div title="<?php echo JText::_('EASYSDI_SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" /></td>
 			
