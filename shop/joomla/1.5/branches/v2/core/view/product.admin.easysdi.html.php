@@ -480,15 +480,8 @@ class HTML_product {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>
-				<?php
-				if ($row->hasMetadata == 1){
-					$link =  "index.php?option=$option&amp;task=editProductMetadata2&cid[]=$row->id";					
-				}else{					
-					$link =  "index.php?option=$option&amp;task=editProductMetadata&cid[]=$row->id";
-				}
-				?>								
-				<td><a href="<?php echo $link;?>"><?php echo $row->metadata_id; ?></a></td>
-				<td><a href="<?php echo $link;?>"><?php echo $row->data_title; ?></a></td>																												
+				<td><a href="<?php echo "index.php?option=$option&amp;&task=showMetadata&id=$row->metadata_id";?>"><?php echo $row->metadata_id; ?></a></td>
+				<td><a href="<?php echo "index.php?option=$option&amp;task=editProduct&cid[]=$row->id";?>"><?php echo $row->data_title; ?></a></td>																												
 				<?php 
 //				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
 //				$database->setQuery($query);				 
