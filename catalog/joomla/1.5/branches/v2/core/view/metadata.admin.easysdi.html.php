@@ -97,6 +97,7 @@ class HTML_metadata {
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
 		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
 		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
+		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
 		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		
 		$user =& JFactory::getUser();
@@ -563,18 +564,30 @@ class HTML_metadata {
 																					     ,buttons: [{
 																			                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 																			                    handler: function(){
-																			                    	win.items.get(0).getForm().submit({
+																			                    	myMask.show();
+					                 																win.items.get(0).getForm().submit({
 																							    	scope: this,
 																									method	: 'POST',
-																									url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
+																									url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
+																									success: function(form, action) 
+																									{
+																										win.hide();
+																										myMask.hide();
+
+																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
+
+									  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
+															
+																									},
+																									failure: function(form, action) 
+																									{
+																										win.hide();
+																										myMask.hide();
+
+																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																									}
 																									});
-																			                    	win.hide();
-																						
-																			                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
-														
-								  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
-														
-																			                    }
+																			                    						                    }
 																			                },{
 																			                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 																			                    handler: function(){
@@ -664,9 +677,10 @@ class HTML_metadata {
 						        			var fieldsets = fields.join(' | ');
 						        			
 											form.getForm().setValues({fieldsets: fieldsets});
-						                 	form.getForm().setValues({task: 'validateMetadata'});
+						                 	form.getForm().setValues({task: 'updateMetadata'});
 						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
 						                 	form.getForm().setValues({object_id: '".$object_id."'});
+											form.getForm().setValues({account_id: '".$account_id."'});
 											form.getForm().submit({
 										    	scope: this,
 												method	: 'POST',
@@ -687,7 +701,7 @@ class HTML_metadata {
 														
 													myMask.hide();
 												},
-												url:'".$validate_url."'
+												url:'".$update_url."'
 											});
 							        	}})
 							        );
