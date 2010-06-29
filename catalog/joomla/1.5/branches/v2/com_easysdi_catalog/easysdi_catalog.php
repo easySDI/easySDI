@@ -105,11 +105,6 @@ else
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-			//require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
-			//TOOLBAR_metadata::_EDIT();
-				
-			//echo $cid[0];
-			//break;	
 			SITE_metadata::editMetadata($cid[0],$option);
 			break;
 		case "saveMetadata":
