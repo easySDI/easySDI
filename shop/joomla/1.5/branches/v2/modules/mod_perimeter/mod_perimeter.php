@@ -21,7 +21,7 @@
 global  $mainframe;
 global  $areaPrecision;
 global  $meterToKilometerLimit;
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 $curstep = JRequest::getVar('step',0);
 $areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");
 $meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");
