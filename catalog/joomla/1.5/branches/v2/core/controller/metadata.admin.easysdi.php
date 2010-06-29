@@ -172,6 +172,14 @@ class ADMIN_metadata {
 		// Récupérer la métadonnée choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObject->metadata_id );
+		
+		if ($rowMetadata->id == 0)
+		{
+			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+		}
+			
+			
 		/*if (array_key_exists('version_hidden', $_POST))
 		{
 			$rowVersion = new objectversion($database);
@@ -251,10 +259,10 @@ class ADMIN_metadata {
 		$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
 		$total = $database->loadResult();
 		
+		$isManager = false;
 		if ($total == 1)
 			$isManager = true;
-		else
-			$isManager = false;
+			
 		
 		// Est-ce que la métadonnée est publiée?
 		$isPublished = false;
@@ -322,10 +330,20 @@ class ADMIN_metadata {
 		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		if ($cswResults <> false)
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
+		else if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = $cswResults->childNodes->item(0)->nodeValue;
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+		}
 		else
-			$xpathResults = new DOMXPath($doc);
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
@@ -1683,118 +1701,132 @@ class ADMIN_metadata {
 			}
 		}
 		
-		ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-		
-		//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
-		//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
-		
-		
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-			    <csw:Delete>
-			        <csw:Constraint version="1.0.0">
-			            <ogc:Filter>
-			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
-			                </ogc:PropertyIsLike>
-			            </ogc:Filter>
-			        </csw:Constraint>
-			    </csw:Delete>
-			</csw:Transaction>'; 
-		
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		
-		$deleteResults = DOMDocument::loadXML($result);
-		$xpathDelete = new DOMXPath($deleteResults);
-		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		
-		if ($deleted <> 1)
+		try
 		{
-			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
 			
-			$response = '{
-				    		success: false,
-						    errors: {
-						        xml: "Metadata has not been deleted. '.$errorMsg.'"
-						    }
-						}';
-			print_r($response);
-			die();
-		}
+			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
+			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
+			
+			
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 	
-		// Insérer dans Geonetwork la nouvelle version de la métadonnée
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-		<csw:Insert>
-		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
-		</csw:Insert>
-		</csw:Transaction>";
-		//echo $XMLDoc->saveXML()." \r\n ";
+			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+				    <csw:Delete>
+				        <csw:Constraint version="1.0.0">
+				            <ogc:Filter>
+				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+				                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
+				                </ogc:PropertyIsLike>
+				            </ogc:Filter>
+				        </csw:Constraint>
+				    </csw:Delete>
+				</csw:Transaction>'; 
 			
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			
+			$deleteResults = DOMDocument::loadXML($result);
+			$xpathDelete = new DOMXPath($deleteResults);
+			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			
+			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			
+			if ($deleted <> 1)
+			{
+				$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				
+				$response = '{
+					    		success: false,
+							    errors: {
+							        xml: "Metadata has not been deleted. '.$errorMsg.'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
 		
-		$insertResults = DOMDocument::loadXML($result);
-		
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		
-		if ($inserted <> 1)
+			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+			<csw:Transaction service=\"CSW\"
+			version=\"2.0.2\"
+			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+			<csw:Insert>
+			".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
+			</csw:Insert>
+			</csw:Transaction>";
+			//echo $XMLDoc->saveXML()." \r\n ";
+				
+			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			
+			$insertResults = DOMDocument::loadXML($result);
+			
+			$xpathInsert = new DOMXPath($insertResults);
+			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			
+			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+			
+			if ($inserted <> 1)
+			{
+				$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				$response = '{
+					    		success: false,
+							    errors: {
+							        xml: "Metadata has not been inserted. '.$errorMsg.'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+			else if ($_POST['task'] == 'saveMetadata')
+			{
+				//$result="";
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//ADMIN_metadata::cswTest($xmlstr);
+				$response = '{
+					    		success: true,
+							    errors: {
+							        xml: "Metadata saved"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+			
+			// Mettre à jour la métadonnée liée (state et revision)
+			$rowMetadata = new metadata($database);
+			$rowMetadata->load($metadata_id);
+			$rowMetadata->updated = date('Y-m-d H:i:s');
+			$rowMetadata->updatedby = $account_id;
+			
+			//$rowMetadata->metadatastate_id = 1;
+			if (!$rowMetadata->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+				exit();
+			}
+			
+			// Checkin object
+			$rowObject = new object( $database );
+			$rowObject->load( $object_id );
+			$rowObject->checkin();
+		}
+		catch (Exception $e) 
 		{
-			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 			$response = '{
-				    		success: false,
+							success: false,
 						    errors: {
-						        xml: "Metadata has not been inserted. '.$errorMsg.'"
+						        xml: "Exception: '.$e->getMessage().'"
 						    }
 						}';
 			print_r($response);
 			die();
+		
 		}
-		else if ($_POST['task'] == 'saveMetadata')
-		{
-			//$result="";
-			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			//ADMIN_metadata::cswTest($xmlstr);
-			$response = '{
-				    		success: true,
-						    errors: {
-						        xml: "Metadata saved"
-						    }
-						}';
-			print_r($response);
-			die();
-		}
-		
-		// Mettre à jour la métadonnée liée (state et revision)
-		$rowMetadata = new metadata($database);
-		$rowMetadata->load($metadata_id);
-		$rowMetadata->updated = date('Y-m-d H:i:s');
-		$rowMetadata->updatedby = $account_id;
-		
-		//$rowMetadata->metadatastate_id = 1;
-		if (!$rowMetadata->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
-			exit();
-		}
-		
-		// Checkin object
-		$rowObject = new object( $database );
-		$rowObject->load( $object_id );
-		$rowObject->checkin();
-		
 	}
 	
 	/*
@@ -1947,38 +1979,53 @@ class ADMIN_metadata {
 			}
 		}
 		
-		// Construire la partie dynamique du xml
-		ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-		
-		// XMLDoc->save("C:\\RecorderWebGIS\\_previewXML_".$metadata_id.".xml");
-		//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
-		
-		
-		// Jusqu'ici, on utilise le code de saveMetadata //
-		
-		if ($XMLDoc)
+		try
 		{
-			//$xmlToReturn = htmlentities($XMLDoc->saveXML(), ENT_COMPAT, "UTF-8");
-			$xmlToReturn = addslashes($XMLDoc->saveXML());
-			$response = '{
-							success: true,
-						    file: {
-						        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
-						    }
-						}';
-			print_r($response);
-			die();
+			// Construire la partie dynamique du xml
+			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
+			
+			// XMLDoc->save("C:\\RecorderWebGIS\\_previewXML_".$metadata_id.".xml");
+			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
+			
+			
+			// Jusqu'ici, on utilise le code de saveMetadata //
+			
+			if ($XMLDoc)
+			{
+				//$xmlToReturn = htmlentities($XMLDoc->saveXML(), ENT_COMPAT, "UTF-8");
+				$xmlToReturn = addslashes($XMLDoc->saveXML());
+				$response = '{
+								success: true,
+							    file: {
+							        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+			else
+			{
+				$response = '{
+								success: false,
+							    errors: {
+							        xml: "Problème rencontré"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
 		}
-		else
+		catch (Exception $e) 
 		{
 			$response = '{
 							success: false,
 						    errors: {
-						        xml: "Problème rencontré"
+						        xml: "Exception: '.$e->getMessage().'"
 						    }
 						}';
 			print_r($response);
 			die();
+		
 		}
 	}
 	
@@ -2009,6 +2056,38 @@ class ADMIN_metadata {
 			    		success: true,
 					    errors: {
 					        xml: "Metadata validated"
+					    }
+					}';
+		print_r($response);
+		die();
+	}
+	
+	function updateMetadata($option)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+		
+		$metadata_id = $_POST['metadata_id'];
+		$account_id = $_POST['account_id'];
+		
+		ADMIN_metadata::saveMetadata($option);
+		
+		// Mettre à jour la date
+		$rowMetadata = new metadataByGuid($database);
+		$rowMetadata->load($metadata_id);
+		$rowMetadata->updated = date('Y-m-d H:i:s');
+		$rowMetadata->updatedby = $account_id;
+		
+		if (!$rowMetadata->store()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			exit();
+		}
+		
+		$response = '{
+			    		success: true,
+					    errors: {
+					        xml: "Metadata updated"
 					    }
 					}';
 		print_r($response);
@@ -2172,35 +2251,50 @@ class ADMIN_metadata {
 			}
 		}
 		
-		ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-		
-		//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
-		//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
-		
-		
-		if (!$XMLDoc)
+		try
 		{
-			$errorMsg = "XML non construit";
-			$response = '{
-				    		success: false,
-						    errors: {
-						        xml: "Metadata has not been inserted. '.$errorMsg.'"
-						    }
-						}';
-			print_r($response);
-			die();
+			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
+			
+			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
+			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
+			
+			
+			if (!$XMLDoc)
+			{
+				$errorMsg = "XML non construit";
+				$response = '{
+					    		success: false,
+							    errors: {
+							        xml: "Metadata has not been inserted. '.$errorMsg.'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
+			else
+			{
+				$xmlToReturn = addslashes($XMLDoc->saveXML());
+				$response = '{
+								success: true,
+							    file: {
+							        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
+							    }
+							}';
+				print_r($response);
+				die();
+			}
 		}
-		else
+		catch (Exception $e) 
 		{
-			$xmlToReturn = addslashes($XMLDoc->saveXML());
 			$response = '{
-							success: true,
-						    file: {
-						        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
+							success: false,
+						    errors: {
+						        xml: "Exception: '.$e->getMessage().'"
 						    }
 						}';
 			print_r($response);
 			die();
+		
 		}
 	}
 	
@@ -2564,10 +2658,14 @@ class ADMIN_metadata {
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		if ($cswResults <> false)
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
-			$xpathResults = new DOMXPath($doc);
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_IMPORTXML_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
@@ -2746,11 +2844,15 @@ class ADMIN_metadata {
         
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
-		
-		if ($cswResults <> false)
+		// Le document a été créé correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => résultat retourné
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
-			$xpathResults = new DOMXPath($doc);
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_IMPORTCSW_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
@@ -2920,10 +3022,14 @@ class ADMIN_metadata {
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		if ($cswResults <> false)
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
-			$xpathResults = new DOMXPath($doc);
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_REPLICATE_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');

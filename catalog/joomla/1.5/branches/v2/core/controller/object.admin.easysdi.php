@@ -726,9 +726,12 @@ class ADMIN_object {
 			$metadata = new metadata($database);
 			$metadata->load( $object->metadata_id );
 			
-			if ($metadata->metadatastate_id <> 1) // Impossible de supprimer si le statut n'est pas "PUBLISHED"
+			if ($metadata->metadatastate_id <> 1) // Impossible d'archiver si le statut n'est pas "PUBLISHED"
 			{
-				$msg = JText::sprintf('CATALOG_OBJECT_ARCHIVEMETADATA_MSG', $object->name);
+				if ($metadata->metadatastate_id == 2) // Message particulier si on est déjà dans l'état ARCHIVED
+					$msg = JText::sprintf('CATALOG_OBJECT_ARCHIVEMETADATA_ARCHIVED_MSG', $object->name);
+				else
+					$msg = JText::sprintf('CATALOG_OBJECT_ARCHIVEMETADATA_MSG', $object->name);
 				$mainframe->enqueueMessage($msg, "error");
 				continue;
 			}
