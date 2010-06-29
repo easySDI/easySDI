@@ -46,7 +46,7 @@ class ADMIN_product {
 //		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
 //		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 //		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
 		$query = "SELECT COUNT(*) FROM #__easysdi_product ";

@@ -101,7 +101,7 @@ class HTML_perimeter {
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_PERIMETER_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowPerimeter->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
@@ -316,9 +316,9 @@ class HTML_perimeter {
 			<tr>
 				<td align="left" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
-					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<input type="text" name="searchPerimeter" id="searchPerimeter" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-					<button onclick="document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+					<button onclick="document.getElementById('searchPerimeter').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>

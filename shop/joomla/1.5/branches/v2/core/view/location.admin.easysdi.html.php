@@ -101,7 +101,7 @@ class HTML_location {
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_LOCATION_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowLocation->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
@@ -273,7 +273,7 @@ class HTML_location {
 			<tr>
 				<td align="right">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listLocation');" />			
+					<input type="text" name="searchLocation" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listLocation');" />			
 				</td>
 			</tr>
 		</table>
@@ -287,7 +287,7 @@ class HTML_location {
 			<tr>					 			
 				<th class='title'><?php echo JText::_("EASYSDI_LOCATION_DEF"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_LOCATION_ID"); ?></th>
+				<th class='title'><?php echo JText::_("CORE_ID"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_LOCATION_WFS_URL"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_LOCATION_LOCATION_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_LOCATION_LOCATION_DESC"); ?></th>

@@ -31,7 +31,7 @@ class HTMLadmin_cpanel {
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="search" class="inputbox" value="<?php echo $search;?>" />			
+					<input type="text" name="searchOrder" class="inputbox" value="<?php echo $search;?>" />			
 				</td>
 				<td>
 				<select name="ordertype" >
@@ -118,9 +118,9 @@ class HTMLadmin_cpanel {
 	<table class="adminlist">
 	<thead>
 	<tr>
-	<th class='title'><?php echo JText::_('EASYSDI_ORDER_SHARP'); ?></th>
+	<th class='title'><?php echo JText::_('CORE_SHARP'); ?></th>
 	<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows)+1; ?>);" /></th>
-	<th class='title'><?php echo JText::_('EASYSDI_ORDER_ID'); ?></th>
+	<th class='title'><?php echo JText::_('CORE_ID'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>

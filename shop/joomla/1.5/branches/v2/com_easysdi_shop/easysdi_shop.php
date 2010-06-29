@@ -24,8 +24,8 @@ jimport("joomla.utilities.date");
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
 $language=&JFactory::getLanguage();
-$language->load('com_easysdi_core');
-$language->load('com_easysdi_shop');
+$language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 $view = JRequest::getVar('view');
@@ -163,7 +163,6 @@ switch($task){
 		break;	
 		
 	case "saveOrdersForProvider":
-		echo "here";
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		
 		SITE_cpanel::saveOrdersForProvider($order_id);

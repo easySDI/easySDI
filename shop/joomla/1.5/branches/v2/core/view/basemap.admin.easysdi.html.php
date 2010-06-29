@@ -61,7 +61,7 @@ class HTML_basemap {
 					<fieldset>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_CONTENT_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
@@ -238,9 +238,9 @@ class HTML_basemap {
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_SHARP"); ?></th>
+				<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ID"); ?></th>
+				<th class='title'><?php echo JText::_("CORE_ID"); ?></th>
 				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'url');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_URL"); ?></a></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_LAYER_NAME"); ?></th>
 				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_PROJECTION"); ?></th>				
@@ -336,7 +336,7 @@ class HTML_basemap {
 						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_Basemap_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
@@ -478,9 +478,9 @@ class HTML_basemap {
 			<table class="adminlist">
 			<thead>
 				<tr>					 			
-					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_SHARP"); ?></th>
+					<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 					<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ID"); ?></th>
+					<th class='title'><?php echo JText::_("CORE_ID"); ?></th>
 					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?></th>
 					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?></th>
 					<th class='title'><?php echo JText::_("EASYSDI_BASEMAP_UNIT"); ?></th>

@@ -39,7 +39,7 @@ class ADMIN_location {
 		
 		// Recherche des enregistrements selon les limites
 		$query = "SELECT id,wfs_url,location_name,location_desc FROM #__easysdi_location_definition ";
-		$search	= $mainframe->getUserStateFromRequest( "search{$option}",'search','','string' );
+		$search	= $mainframe->getUserStateFromRequest( "$option.searchLocation",'searchLocation','','string' );
 		$search	= JString::strtolower( $search );
 		if ($search)
 		{

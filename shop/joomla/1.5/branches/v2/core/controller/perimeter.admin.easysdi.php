@@ -38,7 +38,7 @@ class ADMIN_perimeter {
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
 		
-		$search				= $mainframe->getUserStateFromRequest( "$option.search",'search','','string' );
+		$search				= $mainframe->getUserStateFromRequest( "$option.searchPerimeter",'searchPerimeter','','string' );
 		$search				= JString::strtolower( $search );
 		
 		$where="";

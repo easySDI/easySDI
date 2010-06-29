@@ -72,7 +72,7 @@ class HTML_product {
 						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC_PRODUCT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_PRODUCT_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowProduct->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>
@@ -447,7 +447,7 @@ class HTML_product {
 					<tr>
 						<td align="right">
 							<b><?php echo JText::_("FILTER");?></b>&nbsp;
-							<input size="50" type="text" name="search" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProduct');" />			
+							<input size="50" type="text" name="searchProduct" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProduct');" />			
 						</td>
 					</tr>
 				</table>
