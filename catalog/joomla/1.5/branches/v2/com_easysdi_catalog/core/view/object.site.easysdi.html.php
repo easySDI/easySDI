@@ -438,16 +438,16 @@ if ($rowObject->updated)
 	<th class="logo2"></th>
 	<th><?php echo JText::_('CORE_NAME'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_STATE'); ?></th>
-	<th><?php echo JText::_('CATALOG_OBJECT_VERSION_COL'); ?></th>
+	<!--<th><?php //echo JText::_('CATALOG_OBJECT_VERSION_COL'); ?></th>-->
 	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
 	<th><?php echo JText::_('CORE_UPDATED'); ?></th>
 	<th class="logo">&nbsp;</th>
 	<th class="logo">&nbsp;</th>
 	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
+	<!-- <th class="logo">&nbsp;</th> -->
+	<!-- <th class="logo">&nbsp;</th> -->
+	<!-- <th class="logo">&nbsp;</th> -->
 	</tr>
 	</thead>
 	<tbody>
@@ -464,9 +464,9 @@ if ($rowObject->updated)
 			<td ><a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
 			<td ><?php echo JText::_($row->state); ?></td>
 			<?php 		
-			$versions = "";
+			/*$versions = "";
 			$database->setQuery( "SELECT name FROM #__sdi_objectversion WHERE object_id=".$row->id." ORDER BY created" );
-			$versions = implode(", ", $database->loadResultArray());
+			$versions = implode(", ", $database->loadResultArray());*/
 			
 			$managers = "";
 			$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
@@ -476,7 +476,7 @@ if ($rowObject->updated)
 			$database->setQuery( "SELECT b.name FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 			$editors = implode(", ", $database->loadResultArray());
 			?>
-			<td ><?php echo $versions; ?></td>
+			<!-- <td ><?php //echo $versions; ?></td> -->
 			<td ><?php echo $managers; ?></td>
 			<td ><?php echo $editors; ?></td>
 			<td ><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
@@ -488,7 +488,7 @@ if ($rowObject->updated)
 				<td></td>
 				<td></td>
 				<td></td>
-				<td></td>
+				<!-- <td></td> -->
 				<?php 
 			} 
 			else 
@@ -496,7 +496,7 @@ if ($rowObject->updated)
 				?>
 				<td class="logo"><div title="<?php echo JText::_('CORE_EDIT_OBJECT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
-				if ($row->metadatastate_id == 2) // Impossible de supprimer si le statut n'est pas "ARCHIVED"
+				if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
 				?> 
 				<td class="logo"><div title="<?php echo JText::_('CORE_DELETE_OBJECT'); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div></td>
@@ -521,12 +521,12 @@ if ($rowObject->updated)
 				<?php 
 				}
 				?>
-				<td class="logo"><div title="<?php echo JText::_('CORE_MANAGELINK_OBJECT'); ?>" id="manageObjectLink" onClick="return manageObjectLink_click('<?php echo $row->id; ?>');" ></div></td>
+				<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_MANAGELINK_OBJECT'); ?>" id="manageObjectLink" onClick="return manageObjectLink_click('<?php //echo $row->id; ?>');" ></div></td> -->
 				<?php
 			}
 			?>
-			<td class="logo"><div title="<?php echo JText::_('CORE_VIEWLINK_OBJECT'); ?>" id="viewObjectLink" onClick="return viewObjectLink_click('<?php echo $row->id; ?>');" ></div></td>
-			<td class="logo"><div title="<?php echo JText::_('CORE_NEWVERSION_OBJECT'); ?>" id="newObjectVersion" onClick="return newObjectVersion_click('<?php echo $row->id; ?>');" ></div></td>
+			<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_VIEWLINK_OBJECT'); ?>" id="viewObjectLink" onClick="return viewObjectLink_click('<?php //echo $row->id; ?>');" ></div></td> -->
+			<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_NEWVERSION_OBJECT'); ?>" id="newObjectVersion" onClick="return newObjectVersion_click('<?php //echo $row->id; ?>');" ></div></td> -->
 			
 			</tr>
 			<?php		
