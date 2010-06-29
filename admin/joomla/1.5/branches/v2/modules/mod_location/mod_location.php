@@ -131,6 +131,14 @@ if ($curstep == "2")
 			
 			if(curId == '<?php echo $rowall->id_location_filter;?>')
 			{
+				if (document.getElementById('filter<?php echo $rowall->id_location_filter;?>')!=null )
+			 	{
+			 		document.getElementById('filter<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 	}
+			 	if (document.getElementById('search<?php echo $rowall->id_location_filter;?>')!=null )
+			 	{
+			 		document.getElementById('search<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 	}
 				if(document.getElementById('locationsListLocation<?php echo $rowall->id; ?>') != null)
 				{
 					document.getElementById('locationsListLocation<?php echo $rowall->id; ?>').style.display = 'none';
@@ -199,7 +207,15 @@ if ($curstep == "2")
 	 			?>
 	 				if (document.getElementById(filterId)!=null && document.getElementById(filterId).value.length>0)
 	 				{
+	 					//filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						//Only one occurence
+	 		 			<?php if($row->allowMultipleSelection == 0) {?>
+							filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						<?php } 
+						//several occurences
+						else {?>	
 	 					filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						<?php } ?>
 		 		 	}
 		 		 	else
 		 		 	{
@@ -351,9 +367,16 @@ if ($curstep == "2")
                         format: new OpenLayers.Format.GML()                        
                     })
                 });		    	
-                            
-		wfs4.events.register("featureadded", null, function(event) {
 							var elSel = document.getElementById(locationsListLocationId);
+		wfs4.events.register("loadend", null, function(event) {
+			if(wfs4.features.length == 0)
+			{
+				elSel.remove(0);
+				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_MANUAL_PERIMETER_NO_FEATURE");?>","");
+				loadingPerimeter=false;
+			}
+		});
+		wfs4.events.register("featuresadded", null, function(event) {
 							//if (elSel.options[0].value==""){
 							if (loadingLocation==true)
 							{
@@ -362,24 +385,35 @@ if ($curstep == "2")
 								loadingLocation=false;
 							}
 									
-							var feat2 = event.feature;
-							
+							for(var k=0; k<event.features.length; k++){
+								var feat2 = event.features[k];
 							var perim = document.getElementById(locationsListLocationId);
 							var id = feat2.attributes[location_id_field_name];
 							var name = feat2.attributes[location_name_field_name];	
+								perim.options[perim.options.length] =  new Option(name,id);
+							}
 							
-							var n = utf8_encode(name);	
-							perim.options[perim.options.length] =  new Option(n,id);
 							if (isSort == 1) 
 							{
 								sortList(locationsListLocationId);
 							}
+							
+							map.removeLayer(wfs4);
+							
+							
+							//If only one occurence (title + choice = 2), then autoselect it directly and trigger the onchange event
+							//recenterOnLocationLocation
+							if(perim.length == 2){
+								perim.options[1].selected = true;
+								recenterOnLocationLocation(perim.id);
+							}
+							
 					              });              
          map.addLayer(wfs4);
-         map.removeLayer(wfs4);                  
+		                
 	}
             
-    function utf8_encode ( argString ) {
+//    function utf8_encode ( argString ) {
     // http://kevin.vanzonneveld.net
     // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
     // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -391,9 +425,9 @@ if ($curstep == "2")
     // *     example 1: utf8_encode('Kevin van Zonneveld');
     // *     returns 1: 'Kevin van Zonneveld'
  
-    var string = (argString+'').replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  /*  var string = (argString+'').replace(/\r\n/g, "\n").replace(/\r/g, "\n");
  
-    var utftext = "";
+    /*var utftext = "";
     var start, end;
     var stringl = 0;
  
@@ -424,7 +458,7 @@ if ($curstep == "2")
     }
  
     return utftext;
-}
+}*/
     /** 
     recenterOnLocationLocation
     */
