@@ -26,7 +26,9 @@ $language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
 if ($curstep == "2")
 {
-	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
+//	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+//	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
+	
 	
 	$db =& JFactory::getDBO(); 		
 
@@ -82,18 +84,6 @@ if ($curstep == "2")
 						<?php
 					}
 					
-					//if (2 == 2 || ($row->user !=null && strlen($row->user)>0))
-					/*if ($row->user != null && strlen($row->user)>0)
-					{
-						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
-						$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
-					}
-					else
-					{
-						$wfs_url = $row->wfs_url;						
-					}*/
 					$proxyhost = config_easysdi::getValue("PROXYHOST");
 					$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 					$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
@@ -277,7 +267,7 @@ if ($curstep == "2")
 	foreach ($rows as $row)
 	{ 			
 			echo "<div id=\"locationblock$row->id\" style=\"display:none\" ><table>";			
-				helper_easysdi::generateHtmlLocationSelect($row,0);
+				HTML_locationBuilder::generateHtmlLocationSelect($row,0);
 			echo "</table></div>";	
 	}			
 			?>
@@ -466,4 +456,43 @@ if ($curstep == "2")
 		<?php	
 }
 
+class HTML_locationBuilder 
+{
+	function generateHtmlLocationSelect($row,$parent){
+		$db =& JFactory::getDBO();
+
+		if ($row->id_location_filter > 0 ){
+			$query = "SELECT * FROM #__easysdi_location_definition where id = $row->id_location_filter";
+			$db->setQuery( $query );
+			$rows2 = $db->loadObject();
+			HTML_locationBuilder::generateHtmlLocationSelect($rows2,$row->id);
+
+		}
+		if ($parent == 0){
+			echo "<tr>";
+			echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
+
+			echo "</tr>";
+		}else{
+			
+			if ($row->searchbox == 1) {
+				echo "<tr>";
+				echo "<td><select style='display:none'  id=\"locationsListLocation$row->id\"	><option > </option></select></td>";
+				echo "</tr>";
+				echo "<tr>";
+				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
+				echo "<input style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
+							type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+				echo "</tr>";
+			}
+			else
+			{
+				echo "<tr>";
+				echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \"><option > </option></select></td>";
+				echo "</tr>";
+			}
+		}
+
+	}
+}
 ?>
