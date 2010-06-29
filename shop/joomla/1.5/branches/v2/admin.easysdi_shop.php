@@ -106,8 +106,6 @@ switch($task){
 	/*****************************************************************************************************************************
 	 * Control panel
 	 *****************************************************************************************************************************/
-	
-
 	case "ctrlPanelProperties":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'product.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'metadata.toolbar.easysdi.html.php');
@@ -150,7 +148,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 		
 		//Shop FrontEnd 
-		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'proxy.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'controller'.DS.'proxy.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'cpanel.site.easysdi.html.php');
 		

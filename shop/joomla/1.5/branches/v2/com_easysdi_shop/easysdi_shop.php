@@ -163,6 +163,7 @@ switch($task){
 		break;	
 		
 	case "saveOrdersForProvider":
+		echo "here";
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		
 		SITE_cpanel::saveOrdersForProvider($order_id);
@@ -295,92 +296,10 @@ switch($task){
 		SITE_product::suppressProduct($cid,$option);
 		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 		break;
-	
-		
-	/*****************************************************************************************************************************
-	 * Export
-	 *****************************************************************************************************************************/	
-	case "exportPdf":
-		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
-			
-		//Core FrontEnd
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php');
-			
-		//Core BackEnd
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			
-		//Shop BackEnd
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
-			
-		//Shop FrontEnd
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-		/*Déplacé au niveau de chaque case qui le requiert réellement
-			car provoque un bug au niveau de l'affichage des périmètres WMS dans openlayers*/
-		//require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
-			
-			
-		HTML_shop::exportPdf();
-		break;
-	case "exportXml":
-		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
-			
-		//Core FrontEnd
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php');
-			
-		//Core BackEnd
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			
-		//Shop BackEnd
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'metadata.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'cpanel.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'properties.easysdi.class.php');
-			
-		//Shop FrontEnd
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-		/*Déplacé au niveau de chaque case qui le requiert réellement
-			car provoque un bug au niveau de l'affichage des périmètres WMS dans openlayers*/
-		//require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'product.site.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'properties.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'favorite.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
-			
-			
-		HTML_shop::exportXml();
-		break;
 
+	/*****************************************************************************************************************************
+	 * Default
+	 *****************************************************************************************************************************/
 	default :
 		$mainframe->redirect("index.php");
 		break;

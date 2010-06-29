@@ -679,7 +679,7 @@ class SITE_cpanel {
 		echo $partner->notify_order_ready;
 
 		if ($partner->notify_order_ready == 1) {
-			SITE_product::sendMailByEmail($row->email,JText::sprintf($subject, $row->data_title, $row->order_id),JText::sprintf($body,$row->data_title, $row->order_id));
+			SITE_cpanel::sendMailByEmail($row->email,JText::sprintf($subject, $row->data_title, $row->order_id),JText::sprintf($body,$row->data_title, $row->order_id));
 			//SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
 
 		}
@@ -1235,7 +1235,7 @@ class SITE_cpanel {
 		 */
 		global $mainframe;
 		$db =& JFactory::getDBO();
-		jimport("joomla.utilities.date");
+//		jimport("joomla.utilities.date");
 		$date = new JDate();
 		
 		$query = "SELECT status FROM #__easysdi_order WHERE order_id=$order_id";
@@ -1250,7 +1250,7 @@ class SITE_cpanel {
 		$db->setQuery($query);
 		$totalProduct = $db->loadResult();
 			
-		jimport("joomla.utilities.date");
+//		jimport("joomla.utilities.date");
 		$date = new JDate();
 		if ( $total == 0)
 		{
@@ -1307,11 +1307,11 @@ class SITE_cpanel {
 		$not = $db->loadResult();
 		if ($total ==0 && $not == 1)
 		{
-			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
+			SITE_cpanel::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 		else if ($total == $totalProduct -1 && $not == 1)
 		{
-			SITE_product::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
+			SITE_cpanel::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 	}
 	
