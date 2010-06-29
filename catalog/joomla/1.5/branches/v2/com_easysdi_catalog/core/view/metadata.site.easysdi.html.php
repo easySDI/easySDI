@@ -283,6 +283,7 @@ class HTML_metadata {
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
 		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
 		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
+		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
 		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		$assign_url = 'index.php?option='.$option.'&task=assignMetadata';
 		
@@ -768,17 +769,29 @@ class HTML_metadata {
 																						     ,buttons: [{
 																				                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 																				                    handler: function(){
+																				                    	myMask.show();
 																				                    	win.items.get(0).getForm().submit({
 																								    	scope: this,
 																										method	: 'POST',
-																										url:'index.php?option=com_easysdi_catalog&task=publishMetadata'
+																										url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
+																										success: function(form, action) 
+																										{
+																											win.hide();
+																											myMask.hide();
+	
+																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
+	
+										  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
+																
+																										},
+																										failure: function(form, action) 
+																										{
+																											win.hide();
+																											myMask.hide();
+	
+																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																										}
 																										});
-																				                    	win.hide();
-																							
-																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
-															
-									  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
-															
 																				                    }
 																				                },{
 																				                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
@@ -868,7 +881,7 @@ class HTML_metadata {
 						        			var fieldsets = fields.join(' | ');
 						        			
 											form.getForm().setValues({fieldsets: fieldsets});
-						                 	form.getForm().setValues({task: 'validateMetadata'});
+						                 	form.getForm().setValues({task: 'updateMetadata'});
 						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
 						                 	form.getForm().setValues({object_id: '".$object_id."'});
 						                 	form.getForm().setValues({account_id: '".$account_id."'});
@@ -879,7 +892,7 @@ class HTML_metadata {
 												success: function(form, action) 
 												{
 													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."');
-								  					window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+								  					window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -888,156 +901,158 @@ class HTML_metadata {
 															
 													myMask.hide();
 												},
-												url:'".$validate_url."'
+												url:'".$update_url."'
 											});
 							        	}})
 							        );
 						form.render();";
 				}
 					
-				// Assignation de métadonnée
-				$editors = array();
-				$listEditors = array();
-				$database->setQuery( "SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") ORDER BY b.name" );
-				$editors = array_merge( $editors, $database->loadObjectList() );
-				foreach($editors as $e)
+				if(!$isPublished and !$isValidated)
 				{
-					$listEditors[$e->value] = $e->text;
-				}
-				//print_r($listEditors);
-				//$editors = str_replace('"', "'", HTML_metadata::array2json($editors));
-				//print_r($editors);
-				//print_r(HTML_metadata::array2extjs($listEditors, false));
-				$listEditors = HTML_metadata::array2extjs($listEditors, false);
-				
-				$this->javascript .="
-				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_ASSIGN')."',
-									handler: function()
-					                {
-					                	/*myMask.show();
-					                 	form.getForm().submit({
-									    	scope: this,
-											method	: 'POST',
-											clientValidation: false,
-											success: function(form, action) 
-											{*/
-												// Créer une iframe pour demander à l'utilisateur la date de publication
-												if (!win)
-													win = new Ext.Window({
-													                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
-													                width:500,
-													                height:200,
-													                closeAction:'hide',
-													                layout:'fit', 
-																    border:false, 
-																    closable:false, 
-																    renderTo:Ext.getBody(), 
-																    frame:true,
-																    items:[{ 
-																	     xtype:'form' 
-																	     ,id:'assignform' 
-																	     ,defaultType:'textfield' 
-																	     ,frame:true 
-																	     ,method:'post' 
-																	     ,defaults:{anchor:'95%'} 
-																	     ,items:[ 
-																	       { 
-																	       	 typeAhead:true,
-																	       	 triggerAction:'all',
-																	       	 mode:'local',
-																	         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_EDITOR_LABEL'))."', 
-																	         id:'editor', 
-																	         hiddenName:'editor_hidden', 
-																	         xtype: 'combo',
-																	         store: new Ext.data.ArrayStore({
-																				        id: 0,
-																				        fields: [
-																				            'value',
-																				            'text'
-																				        ],
-																				        data: ".$listEditors."
-																				    }),
-																			 valueField:'value',
-																			 displayField:'text'
-																	       },
-																	       { 
-																	         id:'information', 
-																	         xtype: 'textarea',
-																	         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_INFORMATION_LABEL'))."', 
-																	         grow: true,
-																	         multiline:true,
-																	         value:'' 
-																	       },
-																	       { 
-																	         id:'metadata_id', 
-																	         xtype: 'hidden',
-																	         value:'".$metadata_id."' 
-																	       },
-																	       { 
-																	         id:'object_id', 
-																	         xtype: 'hidden',
-																	         value:'".$object_id."' 
-																	       }
-																	    ] 
-																	     ,buttonAlign:'right' 
-																	     ,buttons: [{
-															                    text:'Submit',
-															                    handler: function(){
-															                    	myMask.show();
-															                    	win.items.get(0).getForm().submit({
-																			    	scope: this,
-																					method	: 'POST',
-																					url:'".$assign_url."',
-																					success: function(form, action) 
-																					{
-									                        							win.hide();
-																                    	myMask.hide();
-																					},
-																					failure: function(form, action) 
-																					{
-									                        							if (action.result)
-																							alert(action.result.errors.xml);
-																						else
-																							alert('Form assign error');
-																							
-																						win.hide();
-																                    	myMask.hide();
-																					}
-																					});
-															                    }
-															                },
-															                {
-															                    text: 'Close',
-															                    handler: function(){
-															                        win.hide();
-															                    }
-															                }]
-																	   }] 
-													                
-													            });
-												else
+					// Assignation de métadonnée
+					$editors = array();
+					$listEditors = array();
+					$database->setQuery( "SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") ORDER BY b.name" );
+					$editors = array_merge( $editors, $database->loadObjectList() );
+					foreach($editors as $e)
+					{
+						$listEditors[$e->value] = $e->text;
+					}
+					//print_r($listEditors);
+					//$editors = str_replace('"', "'", HTML_metadata::array2json($editors));
+					//print_r($editors);
+					//print_r(HTML_metadata::array2extjs($listEditors, false));
+					$listEditors = HTML_metadata::array2extjs($listEditors, false);
+					
+					$this->javascript .="
+					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_ASSIGN')."',
+										handler: function()
+						                {
+						                	/*myMask.show();
+						                 	form.getForm().submit({
+										    	scope: this,
+												method	: 'POST',
+												clientValidation: false,
+												success: function(form, action) 
+												{*/
+													// Créer une iframe pour demander à l'utilisateur la date de publication
+													if (!win)
+														win = new Ext.Window({
+														                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
+														                width:500,
+														                height:200,
+														                closeAction:'hide',
+														                layout:'fit', 
+																	    border:false, 
+																	    closable:false, 
+																	    renderTo:Ext.getBody(), 
+																	    frame:true,
+																	    items:[{ 
+																		     xtype:'form' 
+																		     ,id:'assignform' 
+																		     ,defaultType:'textfield' 
+																		     ,frame:true 
+																		     ,method:'post' 
+																		     ,defaults:{anchor:'95%'} 
+																		     ,items:[ 
+																		       { 
+																		       	 typeAhead:true,
+																		       	 triggerAction:'all',
+																		       	 mode:'local',
+																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_EDITOR_LABEL'))."', 
+																		         id:'editor', 
+																		         hiddenName:'editor_hidden', 
+																		         xtype: 'combo',
+																		         store: new Ext.data.ArrayStore({
+																					        id: 0,
+																					        fields: [
+																					            'value',
+																					            'text'
+																					        ],
+																					        data: ".$listEditors."
+																					    }),
+																				 valueField:'value',
+																				 displayField:'text'
+																		       },
+																		       { 
+																		         id:'information', 
+																		         xtype: 'textarea',
+																		         fieldLabel:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT_INFORMATION_LABEL'))."', 
+																		         grow: true,
+																		         multiline:true,
+																		         value:'' 
+																		       },
+																		       { 
+																		         id:'metadata_id', 
+																		         xtype: 'hidden',
+																		         value:'".$metadata_id."' 
+																		       },
+																		       { 
+																		         id:'object_id', 
+																		         xtype: 'hidden',
+																		         value:'".$object_id."' 
+																		       }
+																		    ] 
+																		     ,buttonAlign:'right' 
+																		     ,buttons: [{
+																                    text:'Submit',
+																                    handler: function(){
+																                    	myMask.show();
+																                    	win.items.get(0).getForm().submit({
+																				    	scope: this,
+																						method	: 'POST',
+																						url:'".$assign_url."',
+																						success: function(form, action) 
+																						{
+										                        							win.hide();
+																	                    	myMask.hide();
+																						},
+																						failure: function(form, action) 
+																						{
+										                        							if (action.result)
+																								alert(action.result.errors.xml);
+																							else
+																								alert('Form assign error');
+																								
+																							win.hide();
+																	                    	myMask.hide();
+																						}
+																						});
+																                    }
+																                },
+																                {
+																                    text: 'Close',
+																                    handler: function(){
+																                        win.hide();
+																                    }
+																                }]
+																		   }] 
+														                
+														            });
+													else
+													{
+														win.items.get(0).findById('editor').setValue('');
+														win.items.get(0).findById('information').setValue('');
+													}	
+							  						win.show();
+							  						/*myMask.hide();
+								  				},
+												failure: function(form, action) 
 												{
-													win.items.get(0).findById('editor').setValue('');
-													win.items.get(0).findById('information').setValue('');
-												}	
-						  						win.show();
-						  						/*myMask.hide();
-							  				},
-											failure: function(form, action) 
-											{
-                        						if (action.result)
-													alert(action.result.errors.xml);
-												else
-													alert('Form assign error');
-													
-												myMask.hide();
-											},
-											url:'".$assign_url."'
-										});*/
-						        	}})
-						        );
-				form.render();";
-				
+	                        						if (action.result)
+														alert(action.result.errors.xml);
+													else
+														alert('Form assign error');
+														
+													myMask.hide();
+												},
+												url:'".$assign_url."'
+											});*/
+							        	}})
+							        );
+					form.render();";
+				}
 				// Ajout de bouton de retour
 				$this->javascript .="
 				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_CANCEL')."',
