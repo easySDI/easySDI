@@ -5,7 +5,7 @@
 	<author>DEPTH SA</author>
 	<authorUrl>http://www.easysdi.org</authorUrl>
 	<license>GPL 3.0</license>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<description>Web Mapping Module for EasySDI</description>
 	<installfile>install.easysdi_map.php</installfile>
 	<uninstallfile>uninstall.easysdi_map.php</uninstallfile>
