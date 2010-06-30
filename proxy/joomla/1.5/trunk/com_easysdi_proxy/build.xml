@@ -16,9 +16,20 @@
 		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
-
+	
+	<target name="upload" depends="compression">
+		<scp file="${projet.out.dir}/com_easysdi_proxy.zip" todir="admin:easysdi@10.11.224.49:/var/data/joomla15/tmp" trust="true" />
+		<sshexec host="10.11.224.49" username="admin" password="easysdi" trust="true" command="
+			cd /var/data/joomla15/tmp;
+			rm -r proxy;
+			mkdir proxy;
+			cd proxy;
+			unzip ../com_easysdi_proxy.zip;
+			cd ..;
+		rm com_easysdi_proxy.zip;" />
+	</target>
+	
 	<target name="compression" description="Compression">
-
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_proxy.zip"
 			basedir="." excludes="out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
 	</target>
