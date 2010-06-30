@@ -162,7 +162,7 @@ CREATE TABLE `#__easysdi_map_base_layer` (
   `default_opacity` float NOT NULL DEFAULT '1',
   `metadata_url` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_base_def` (`id_base`) USING BTREE,
+  KEY `fk_base_def` (`id_base`),
   CONSTRAINT `fk_base_def` FOREIGN KEY (`id_base`) REFERENCES `#__easysdi_map_base_definition` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -196,7 +196,7 @@ CREATE TABLE `#__easysdi_map_config` (
   `value` varchar(500) DEFAULT NULL,
   `description` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24;
 
 -- ----------------------------
 -- Records of #__easysdi_map_config
@@ -416,25 +416,6 @@ CREATE TABLE `#__easysdi_map_precision` (
 
 -- ----------------------------
 -- Records of #__easysdi_map_precision
--- ----------------------------
-
--- ----------------------------
--- Table structure for `#__easysdi_map_profile_role`
--- ----------------------------
-DROP TABLE IF EXISTS `#__easysdi_map_profile_role`;
-CREATE TABLE `#__easysdi_map_profile_role` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `id_role` bigint(20) NOT NULL,
-  `id_prof` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_role` (`id_role`),
-  KEY `id_prof` (`id_prof`),
-  CONSTRAINT `#__easysdi_map_profile_role_ibfk_1` FOREIGN KEY (`id_role`) REFERENCES `#__easysdi_community_role` (`role_id`) ON DELETE CASCADE,
-  CONSTRAINT `#__easysdi_map_profile_role_ibfk_2` FOREIGN KEY (`id_prof`) REFERENCES `#__easysdi_community_profile` (`profile_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of #__easysdi_map_profile_role
 -- ----------------------------
 
 -- ----------------------------
