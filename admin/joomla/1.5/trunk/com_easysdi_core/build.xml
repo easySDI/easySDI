@@ -2,6 +2,7 @@
 <project default="sync" basedir=".">
 
 	<property name="projet.out.dir" value="out" />
+	<property name="project.deploy.dir" value="C:/www/Site/apem" />
 
 
 	<target name="com_easysdi" depends="create-structure,compression" description="Main target">
@@ -27,13 +28,13 @@
 			cd ..;
 		rm com_easysdi_core.zip;" />
 	</target>
-
+	
 	<target name="compression" description="Compression">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_core.zip" basedir="." excludes=" modules/** , out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
-		<copy todir="C:\www\Site\Joomla\administrator\components\com_easysdi_core">
+		<copy todir="${project.deploy.dir}/administrator/components/com_easysdi_core">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -46,9 +47,10 @@
 				<include name="**/*.js" />
 				<include name="**/*.css" />
 				<include name="**/*.xml" />
+				<exclude name="**/com_easysdi_core/**" />
 			</fileset>
 		</copy>
-		<copy todir="C:\www\Site\Joomla\components\com_easysdi_core">
+		<copy todir="${project.deploy.dir}/components/com_easysdi_core">
 			<fileset dir="./com_easysdi_core">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -61,22 +63,22 @@
 				<include name="**/*.js" />
 			</fileset>
 		</copy>
-		<copy todir="C:\www\Site\Joomla\language\fr-FR">
+		<copy todir="${project.deploy.dir}/language/fr-FR">
 			<fileset dir="./language/site">
 				<include name="**/fr-FR.com_easysdi_core.ini" />
 			</fileset>
 		</copy>
-		<copy todir="C:\www\Site\Joomla\language\en-GB">
+		<copy todir="${project.deploy.dir}/language/en-GB">
 			<fileset dir="./language/site">
 				<include name="**/en-GB.com_easysdi_core.ini" />
 			</fileset>
 		</copy>
-		<copy todir="C:\www\Site\Joomla\administrator\language\fr-FR">
+		<copy todir="${project.deploy.dir}/administrator/language/fr-FR">
 			<fileset dir="./language/admin">
 				<include name="**/fr-FR.com_easysdi_core.ini" />
 			</fileset>
 		</copy>
-		<copy todir="C:\www\Site\Joomla\administrator\language\en-GB">
+		<copy todir="${project.deploy.dir}/administrator/language/en-GB">
 			<fileset dir="./language/admin">
 				<include name="**/en-GB.com_easysdi_core.ini" />
 			</fileset>
