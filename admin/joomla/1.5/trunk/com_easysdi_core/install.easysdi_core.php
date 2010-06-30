@@ -25,7 +25,7 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
-	
+
 	/**
 	 * Creates the database structure
 	 */
@@ -34,7 +34,7 @@ function com_install(){
 		 	 `id` bigint(20) NOT NULL auto_increment,
 		 	 `version` varchar(100) NOT NULL default '',
 		 	 PRIMARY KEY  (`id`)
-			)"; 		
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;"; 		
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -42,7 +42,7 @@ function com_install(){
 
 	/**
 	 * Gets the component versions
-	 */	
+	 */
 	$version = '0';
 	$query = "SELECT version FROM #__easysdi_version where component = 'com_easysdi_core'";
 	$db->setQuery( $query);
@@ -50,18 +50,18 @@ function com_install(){
 	if (!$version)
 	{
 		$version="0";
-	}	
-	if ($db->getErrorNum()) 
+	}
+	if ($db->getErrorNum())
 	{
 		//The table does'nt exist
 		//That means nothing is installed.
-		$mainframe->enqueueMessage("EASYSDI IS NOT INSTALLED","ERROR");		
-		exit;		
-	}	
+		$mainframe->enqueueMessage("EASYSDI IS NOT INSTALLED","ERROR");
+		exit;
+	}
 	else
 	{
 		if ($version == "0")
-		{	
+		{
 			/**
 			 * Create the configuration table
 			 * Insert value for JAVA_BRIDGE_URL
@@ -71,20 +71,20 @@ function com_install(){
 				  	`thekey` varchar(100) NOT NULL default '',
 				  	`value` varchar(100) NOT NULL default '',
 				 	 PRIMARY KEY  (`id`)
-					)"; 
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;"; 
 			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			
+
 			$query = "insert into `#__easysdi_config` values(0,'JAVA_BRIDGE_URL','http://localhost:8081/JavaBridge/java/Java.inc')";
 			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="CREATE TABLE `#__easysdi_partner_extension` (
 					  `ext_id` bigint(20) NOT NULL auto_increment,
 					  `tab_id` bigint(20) NOT NULL,
@@ -93,20 +93,20 @@ function com_install(){
 					  `action` varchar(4000) NOT NULL,
 					  `tab_location` varchar(3000) NOT NULL,
 					  PRIMARY KEY  (`ext_id`)
-					  )"; 
+					  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"; 
 			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}		
-	
-			$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
-			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			
+
+			$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+
 			$query = "CREATE TABLE IF NOT EXISTS `#__easysdi_community_partner` (
 				  `user_id` int(11) NOT NULL default '0',
 				  `publish_id` tinyint(1) NOT NULL default '0',
@@ -129,9 +129,9 @@ function com_install(){
 				  KEY `parent_id` (`parent_id`),
 				  KEY `root_id` (`root_id`),
 				  KEY `state_id` (`state_id`)
-				) ";	
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;";	
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -144,9 +144,9 @@ function com_install(){
 					  PRIMARY KEY  (`actor_id`),
 					  KEY `partner_id` (`partner_id`),
 					  KEY `role_id` (`role_id`)
-					)";
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -175,10 +175,10 @@ function com_install(){
 					  KEY `type_id` (`type_id`),
 					  KEY `title_id` (`title_id`),
 					  KEY `country_code` (`country_code`)
-					)";
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -192,9 +192,9 @@ function com_install(){
 				  `type_update` datetime default NULL,
 				  PRIMARY KEY  (`type_id`),
 				  KEY `publish_id` (`publish_id`)
-				)";
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);
-			if (!$db->query()) 
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -206,9 +206,9 @@ function com_install(){
 					  `country_update` datetime default NULL,
 					  PRIMARY KEY  (`country_code`),
 					  KEY `publish_id` (`publish_id`)
-					)";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -454,8 +454,8 @@ function com_install(){
 					('ZA', 0, 'AFRIQUE DU SUD', NULL),
 					('ZM', 0, 'ZAMBIE', NULL),
 					('ZW', 0, 'ZIMBABWE', NULL)";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -472,9 +472,9 @@ function com_install(){
 					  UNIQUE KEY `role_code` (`role_code`),
 					  KEY `publish_id` (`publish_id`),
 					  KEY `type_id` (`type_id`)
-					)";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
@@ -488,12 +488,12 @@ function com_install(){
 					(6, 0, 1, 'MYACCOUNT', 'EASYSDI_MYACCOUNT_RIGHT', NULL, NULL),
 					(7, 0, 1, 'INTERNAL', 'EASYSDI_INTERNAL_RIGHT', NULL, NULL),
 					(8, 0, 1, 'TIERCE', 'EASYSDI_TIERCE_RIGHT', 'Commande pour un tiers', NULL)";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="CREATE TABLE IF NOT EXISTS `#__easysdi_community_role_type` (
 				  `type_id` bigint(20) NOT NULL auto_increment,
 				  `publish_id` tinyint(1) NOT NULL,
@@ -503,19 +503,19 @@ function com_install(){
 				  `type_update` datetime default NULL,
 				  PRIMARY KEY  (`type_id`),
 				  KEY `publish_id` (`publish_id`)
-				)";
-			$db->setQuery( $query);	
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
 			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 
 			$query="INSERT INTO `#__easysdi_community_role_type` (`type_id`, `publish_id`, `type_code`, `type_name`, `type_description`, `type_update`) VALUES
 					(1, 0, NULL, 'GEoportail', NULL, '0000-00-00 00:00:00')";	
-			$db->setQuery( $query);	
+			$db->setQuery( $query);
 			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="CREATE TABLE IF NOT EXISTS `#__easysdi_community_title` (
 					  `title_id` bigint(20) NOT NULL auto_increment,
 					  `publish_id` tinyint(1) NOT NULL default '0',
@@ -525,10 +525,10 @@ function com_install(){
 					  `title_update` datetime default NULL,
 					  PRIMARY KEY  (`title_id`),
 					  KEY `publish_id` (`publish_id`)
-					)";
-			$db->setQuery( $query);	
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
 			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 
 			$query="INSERT INTO `#__easysdi_community_title` (`title_id`, `publish_id`, `title_code`, `title_name`, `title_description`, `title_update`) VALUES
@@ -541,29 +541,29 @@ function com_install(){
 					(7, 0, NULL, 'Madame la Syndic', NULL, NULL),
 					(8, 0, NULL, 'Monsieur le Syndic', NULL, NULL),
 					(9, 0, NULL, 'Madame, Monsieur', NULL, NULL)";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="
 					INSERT INTO `#__easysdi_community_address_type` (`type_id`, `publish_id`, `type_code`, `type_name`, `type_description`, `type_update`) VALUES
 					(1, 0, '', 'Contact', NULL, '0000-00-00 00:00:00'),
 					(2, 0, '', 'Facturation', NULL, '0000-00-00 00:00:00'),
 					(3, 0, '', 'Livraison', NULL, '0000-00-00 00:00:00')";
-			$db->setQuery( $query);	
+			$db->setQuery( $query);
 			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="ALTER TABLE `#__easysdi_community_role`
 					  ADD CONSTRAINT `#__easysdi_community_role_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `#__easysdi_community_role_type` (`type_id`) ON UPDATE CASCADE";		
-			$db->setQuery( $query);	
+			$db->setQuery( $query);
 			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="ALTER TABLE `#__easysdi_community_address`
 				  ADD CONSTRAINT `#__easysdi_community_address_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `#__easysdi_community_partner` (`partner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				  ADD CONSTRAINT `#__easysdi_community_address_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `#__easysdi_community_address_type` (`type_id`) ON UPDATE CASCADE,
@@ -573,7 +573,7 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="ALTER TABLE `#__easysdi_community_actor`
 				  ADD CONSTRAINT `#__easysdi_community_actor_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `#__easysdi_community_partner` (`partner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				  ADD CONSTRAINT `#__easysdi_community_actor_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `#__easysdi_community_role` (`role_id`) ON UPDATE CASCADE";
@@ -581,7 +581,7 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-	
+
 			$query="ALTER TABLE `#__easysdi_community_partner`
 				  ADD CONSTRAINT `#__easysdi_community_partner_ibfk_16` FOREIGN KEY (`root_id`) REFERENCES `#__easysdi_community_partner` (`partner_id`) ON UPDATE CASCADE,
 				  ADD CONSTRAINT `#__easysdi_community_partner_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `#__easysdi_community_partner` (`partner_id`) ON DELETE CASCADE ON UPDATE CASCADE";
@@ -589,12 +589,12 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-		
+
 			$version="0.9";
 			$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
 					(null, 'com_easysdi_core', '0.9')";	
-			$db->setQuery( $query);	
-			if (!$db->query()) 
+			$db->setQuery( $query);
+			if (!$db->query())
 			{
 				//The table does not exists then create it
 				$query="CREATE TABLE `#__easysdi_version` (
@@ -602,36 +602,36 @@ function com_install(){
 					  `id` bigint(20) NOT NULL auto_increment,
 					  `version` varchar(100) NOT NULL default '',
 					  PRIMARY KEY  (`id`)
-					)"; 		
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;"; 		
 				$db->setQuery( $query);
-	
-				if (!$db->query()) 
+
+				if (!$db->query())
 				{
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				}
 				$query="INSERT INTO #__easysdi_version (id,component,version) VALUES
 						(null, 'com_easyssdi_partner', '0.9')";	
-				$db->setQuery( $query);		
-				if (!$db->query()) 
+				$db->setQuery( $query);
+				if (!$db->query())
 				{
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				}
 			}
 		}
-		
+
 	}
 	if ($version == "0.9")
 	{
 		$version="0.91";
 		$query="UPDATE #__easysdi_version SET version ='0.91' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="UPDATE `#__easysdi_community_role` SET role_name='EASYSDI_REQUEST_EXTERNAL_RIGHT' where role_code ='REQUEST_EXTERNAL'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -737,25 +737,25 @@ function com_install(){
 		$query="UPDATE #__easysdi_version SET version ='0.92' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE #__easysdi_community_partner add column notify_new_metadata tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE #__easysdi_community_partner add column notify_distribution tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE #__easysdi_community_partner add column notify_order_ready tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	if ($version == "0.92")
@@ -763,7 +763,7 @@ function com_install(){
 		$version="0.93";
 		$query="UPDATE #__easysdi_version SET version ='0.93' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -784,125 +784,125 @@ function com_install(){
 		  `searchbox` tinyint(1) NOT NULL default '0',
 		   `sort` tinyint(1) NOT NULL default '0',
 		  PRIMARY KEY  (`id`)
-		)";
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 
-	
+
 	if ($version == "0.93")
 	{
 		$version="0.94";
 		$query="UPDATE #__easysdi_version SET version ='0.94' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query="ALTER TABLE #__easysdi_community_partner add column rebate bigint(20) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE #__easysdi_community_partner add column isrebate tinyint(1) NOT NULL default '0'";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 	if ($version == "0.94")
 	{
 		$version="0.95";
 		$query="UPDATE #__easysdi_version SET version ='0.95' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
-		
+
+
 		$query="ALTER TABLE #__easysdi_location_definition add column user varchar(400)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query="ALTER TABLE #__easysdi_location_definition add column password varchar(400)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			//The table does not exists then create it
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
-	
+
 	if ($version == "0.95")
 	{
 		$query="ALTER TABLE #__easysdi_community_partner add column partner_logo varchar(400) ";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$query = "insert  into #__easysdi_config (thekey, value) values('DESCRIPTION_LENGTH','150')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "insert  into #__easysdi_config (thekey, value) values('LOGO_WIDTH','50')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "insert  into #__easysdi_config (thekey, value) values('LOGO_HEIGHT','20')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 
 		$query = "insert  into #__easysdi_config (thekey, value) values('PAGINATION_METADATA','20')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		//Url used for redirection after a new user made a registration request
 		$query = "insert  into #__easysdi_config (thekey, value) values('WELCOME_REDIRECT_URL','index.php?option=com_content&view=article&id=46&Itemid=104')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		// New role for diffusion
 		$query = "insert  into #__easysdi_community_role (publish_id, type_id, role_code, role_name, role_description) values(0,1, 'DIFFUSION', 'EASYSDI_DIFFUSION_RIGHT', 'Gestionnaire de diffusion')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$version="0.96";
 		$query="UPDATE #__easysdi_version SET version ='0.96' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -911,25 +911,25 @@ function com_install(){
 	{
 		$query = "insert  into #__easysdi_config (thekey, value) values('FOP_URL','http://localhost:8080/fop')";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$version="0.97";
 		$query="UPDATE #__easysdi_version SET version ='0.97' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	if ( $version == "0.97")
 	{
-		
+
 		$version="0.98";
 		$query="UPDATE #__easysdi_version SET version ='0.98' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -939,15 +939,15 @@ function com_install(){
 		//Remove FOP_URL key configuration
 		$query="DELETE FROM #__easysdi_config WHERE thekey='FOP_URL'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$version="0.99";
 		$query="UPDATE #__easysdi_version SET version ='0.99' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -963,9 +963,9 @@ function com_install(){
 					  `profile_update` datetime default NULL,
 					  PRIMARY KEY  (`profile_id`),
 					  UNIQUE KEY `profile_code` (`profile_code`)					  
-					)";
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
@@ -977,97 +977,130 @@ function com_install(){
 					  UNIQUE `user_profile_id` (`partner_id`,`profile_id`),
 					  FOREIGN KEY (partner_id) REFERENCES	#__easysdi_community_partner(partner_id) ON DELETE CASCADE ON UPDATE CASCADE,
 					FOREIGN KEY (profile_id) REFERENCES	#__easysdi_community_profile(profile_id)ON DELETE CASCADE ON UPDATE CASCADE						  		  
-					)";
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		//Update the value of the unique right type used in this version of easysdi
 		$query="UPDATE #__easysdi_community_role_type SET type_name='EASYSDI_ROLE_TYPE_FCT' WHERE type_name='GEoportail'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		
+
 		$version="0.991";
 		$query="UPDATE #__easysdi_version SET version ='0.991' where component = 'com_easysdi_core'";
 		$db->setQuery( $query);
-		if (!$db->query()) 
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		//Update the value of the unique right type used in this version of easysdi
+		$query="INSERT INTO `#__easysdi_community_role`
+		(`publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`) 
+		VALUES 
+		('0', '1', 'CACHE', 'EASYSDI_CACHE', 'Autorise l\'utlisation du cache de tuile en écriture', null);
+-- ----------------------------
+-- Table structure for `#__easysdi_map_profile_role`
+-- ----------------------------
+DROP TABLE IF EXISTS `#__easysdi_map_profile_role`;
+CREATE TABLE `#__easysdi_map_profile_role` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id_role` bigint(20) NOT NULL,
+  `id_prof` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_role` (`id_role`),
+  KEY `id_prof` (`id_prof`),
+  CONSTRAINT `#__easysdi_map_profile_role_ibfk_1` FOREIGN KEY (`id_role`) REFERENCES `#__easysdi_community_role` (`role_id`) ON DELETE CASCADE,
+  CONSTRAINT `#__easysdi_map_profile_role_ibfk_2` FOREIGN KEY (`id_prof`) REFERENCES `#__easysdi_community_profile` (`profile_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+		$db->setQuery( $query);
+		if (!$db->queryBatch())		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$version="1.0.1";
+		$query="UPDATE #__easysdi_version SET version ='1.0.1' where component = 'com_easysdi_core'";
+		$db->setQuery( $query);
+		if (!$db->query())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
-		/**
-		 * Menu creation
-		 */
-		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;		
+	/**
+	 * Menu creation
+	 */
+	$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'" ;
+	$db->setQuery( $query);
+	$id = $db->loadResult();
+	if ($id)
+	{
+		$mainframe->enqueueMessage("EASYSDI menu is already existing. Usually this menu is created during the installation of this component. Maybe something goes wrong during the previous uninstall !","INFO");
+	}
+	else
+	{
+		//Insert the EasySdi Main Menu
+		$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
 		$db->setQuery( $query);
-		$id = $db->loadResult();	
-		if ($id)
+		if (!$db->query())
 		{
-	 		$mainframe->enqueueMessage("EASYSDI menu is already existing. Usually this menu is created during the installation of this component. Maybe something goes wrong during the previous uninstall !","INFO"); 	 	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-		else
-		{
-			//Insert the EasySdi Main Menu
-			$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-			}
 			
-			$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+		$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 				values('Easy SDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-			}
-			$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
-			$db->setQuery( $query);
-			$id = $db->loadResult();	
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-	
-		//Partner
-		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+		$query =  "SELECT ID FROM #__components WHERE name ='Easy SDI'"  ;
+		$db->setQuery( $query);
+		$id = $db->loadResult();
+	}
+
+	//Partner
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values($id,'Partners','','option=com_easysdi_core&task=listPartner','Partners','com_easysdi_core','js/ThemeOffice/component.png','')";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
-	
-		//Configuration
-		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+	$db->setQuery( $query);
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	//Configuration
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values($id,'Configuration','','option=com_easysdi_core&task=listConfig','Configuration','com_easysdi_core','js/ThemeOffice/component.png','')";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
-	
-		//Resources
-		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+	$db->setQuery( $query);
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	//Resources
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values($id,'Ressources','','option=com_easysdi_core&task=listResources','Ressources','com_easysdi_core','js/ThemeOffice/component.png','')";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
-		
-		//Profiles
-		$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+	$db->setQuery( $query);
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	//Profiles
+	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values($id,'Roles','','option=com_easysdi_core&task=listProfile','Roles','com_easysdi_core','js/ThemeOffice/component.png','')";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
-		}
-		
-	$mainframe->enqueueMessage("Congratulation core components for EasySdi Core are installed and ready to be used. 
+	$db->setQuery( $query);
+	if (!$db->query()) {
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+	}
+
+	$mainframe->enqueueMessage("Congratulation core components for EasySdi Core are installed and ready to be used.
 								Enjoy EasySdi Core!","INFO");
-	
+
 
 }
 

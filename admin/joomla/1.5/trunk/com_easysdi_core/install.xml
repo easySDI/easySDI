@@ -1,7 +1,7 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_core</name>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<creationDate>July 2008</creationDate>
 	<author>Depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
