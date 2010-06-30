@@ -39,8 +39,7 @@ class TOOLBAR_basemap{
 		JToolBarHelper::cancel('cancelBasemapContent');
 	}
 	
-	function _LISTBASEMAPCONTENT($basemap_def_id) {
-		global $mainframe;
+	function _LISTBASEMAPCONTENT($basemap_id) {
 		JToolBarHelper::addNew('newBasemapContent');
 		JToolBarHelper::editList('editBasemapContent');
 		JToolBarHelper::deleteList('','deleteBasemapContent');		

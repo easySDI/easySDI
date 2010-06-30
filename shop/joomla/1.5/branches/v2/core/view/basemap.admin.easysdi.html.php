@@ -50,15 +50,11 @@ class HTML_basemap {
 		}		
 		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-<?php
-		echo $tabs->startPane("BasemapPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"BasemapPane");
-
-		?>		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
+						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
@@ -67,8 +63,8 @@ class HTML_basemap {
 							</tr>			
 							<tr>
 								<td ><?php echo JText::_("EASYSDI_BASEMAP_CONTENT_ID"); ?> : </td>
-								<td><?php echo $rowBasemap->basemap_def_id; ?></td>
-								<input type="hidden" name="basemap_def_id" value="<?php echo $rowBasemap->basemap_def_id;?>">								
+								<td><?php echo $rowBasemap->basemap_id; ?></td>
+								<input type="hidden" name="basemap_id" value="<?php echo $rowBasemap->basemap_id;?>">								
 							</tr>
 							
 							<tr>
@@ -106,16 +102,16 @@ class HTML_basemap {
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_URL_TYPE"); ?> : </td>
-								<td><select class="inputbox" name="url_type" >
-										<option value="WMS" <?php if($rowBasemap->url_type == 'WMS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WMS"); ?></option>
-										<option value="WMS" <?php if($rowBasemap->url_type == 'WFS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WFS"); ?></option>
+								<td><select class="inputbox" name="urltype" >
+										<option value="WMS" <?php if($rowBasemap->urltype == 'WMS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WMS"); ?></option>
+										<option value="WMS" <?php if($rowBasemap->urltype == 'WFS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WFS"); ?></option>
 								</select>
 								</td>															
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_IMG_FORMAT"); ?> : </td>
 								<td>
-									<input class="inputbox" name="img_format" type="text" size="50" maxlength="100" value="<?php echo $rowBasemap->img_format; ?>" />									
+									<input class="inputbox" name="imgformat" type="text" size="50" maxlength="100" value="<?php echo $rowBasemap->imgformat; ?>" />									
 								</td>
 								<td>ex : image/png</td>															
 							</tr>
@@ -143,60 +139,51 @@ class HTML_basemap {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="attribution" value="<?php echo $rowBasemap->attribution; ?>" /></td>							
 							</tr>
 							<br>
-							<tr>
-							<td colspan ="3">
-							<fieldset>
-							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
-								<table>
-								<tr>
-									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->easysdi_account_id) echo "checked";?>>
-									</td>
-									<td colspan="2">
-										<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $rowBasemap->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowBasemap->easysdi_account_id); ?></td>
-								</tr>
-								<tr>
-									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->user) echo "checked";?>> 
-								 	</td>
-								 	<td colspan="2">
-									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
-								 	</td>
-							 	<tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
-									<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
-								</tr>							
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
-									<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
-								</tr>
-								
-								</table>
-							</fieldset>	
-							<td>	
-							</tr>			
+										
 						</table>
 
 					</fieldset>
+					<fieldset>
+						<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
+							<table>
+							<tr>
+								<td >
+									<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->account_id) echo "checked";?>>
+								</td>
+								<td colspan="2">
+									<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
+								<td><?php $enable = $rowBasemap->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowBasemap->account_id); ?></td>
+							</tr>
+							<tr>
+								<td >
+								 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowBasemap->user) echo "checked";?>> 
+							 	</td>
+							 	<td colspan="2">
+								 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
+							 	</td>
+						 	<tr>
+							<tr>
+								<td></td>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
+								<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowBasemap->user; ?>" /></td>							
+							</tr>							
+							<tr>
+								<td></td>
+								<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
+								<td><input <?php if (!$rowBasemap->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowBasemap->password; ?>" /></td>							
+							</tr>
+							
+							</table>
+						</fieldset>	
 				</td>
 			</tr>
 			
 		</table>
-		
-		
-		<?php
-		echo $tabs->endPanel();
-		echo $tabs->endPane();		
-		?>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
@@ -253,7 +240,7 @@ class HTML_basemap {
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
 			$row = $rows[$i];	 
-			$link = 'index.php?option='.$option.'&task=editBasemapContent&cid[]='.$row->id.'&basemap_def_id='.$basemap_id;	  				
+			$link = 'index.php?option='.$option.'&task=editBasemapContent&cid[]='.$row->id.'&basemap_id='.$basemap_id;	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -307,7 +294,7 @@ class HTML_basemap {
 	  	<input type="hidden" name="task" value="listBasemapContent" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
-	  	<input type="hidden" name="basemap_def_id" value="<?php echo $basemap_id; ?>">
+	  	<input type="hidden" name="basemap_id" value="<?php echo $basemap_id; ?>">
 	  </form>
 <?php
 		
@@ -324,16 +311,11 @@ class HTML_basemap {
 			
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-<?php
-		echo $tabs->startPane("BasemapPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"BasemapPane");
-
-		?>		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
+						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
@@ -343,7 +325,7 @@ class HTML_basemap {
 
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_ALIAS"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="alias" value="<?php echo $rowBasemap->alias; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_PROJECTION"); ?> : </td>
@@ -375,7 +357,7 @@ class HTML_basemap {
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalPrecisionDisplayed" value="<?php echo $rowBasemap->decimalPrecisionDisplayed; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalPrecision" value="<?php echo $rowBasemap->decimalPrecision; ?>" /></td>							
 							</tr>
 							<tr>
 							
@@ -394,9 +376,9 @@ class HTML_basemap {
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_BASEMAP_IS_DEFAULT"); ?> : </td>
-								<td><select class="inputbox" name="def" >
-										<option value="0" <?php if($rowBasemap->def == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->def == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<td><select class="inputbox" name="default" >
+										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->default == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>	
@@ -411,43 +393,37 @@ class HTML_basemap {
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_FILLCOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_fillcolor" value="<?php echo $rowBasemap->dflt_fillcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dfltfillcolor" value="<?php echo $rowBasemap->dfltfillcolor; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_STROKECOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_strkcolor" value="<?php echo $rowBasemap->dflt_strkcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dfltstrkcolor" value="<?php echo $rowBasemap->dfltstrkcolor; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_DEFAULT_STROKEWIDTH"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dflt_strkwidth" value="<?php echo $rowBasemap->dflt_strkwidth; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="dfltstrkwidth" value="<?php echo $rowBasemap->dfltstrkwidth; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_SELECT_FILLCOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="select_fillcolor" value="<?php echo $rowBasemap->select_fillcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="selectfillcolor" value="<?php echo $rowBasemap->selectfillcolor; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_SELECT_STROKECOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="select_strkcolor" value="<?php echo $rowBasemap->select_strkcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="selectstrkcolor" value="<?php echo $rowBasemap->selectstrkcolor; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_TEMP_FILLCOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="temp_fillcolor" value="<?php echo $rowBasemap->temp_fillcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="tempfillcolor" value="<?php echo $rowBasemap->tempfillcolor; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_BASEMAP_OPENLAYERS_TEMP_STROKECOLOR"); ?> : </td>
-								<td><input class="inputbox" type="text" size="10" maxlength="10" name="temp_strkcolor" value="<?php echo $rowBasemap->temp_strkcolor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="10" maxlength="10" name="tempstrkcolor" value="<?php echo $rowBasemap->tempstrkcolor; ?>" /></td>
 							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>
-		
-		
-		<?php
-		echo $tabs->endPanel();
-		echo $tabs->endPane();		
-		?>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
@@ -499,7 +475,7 @@ class HTML_basemap {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><?php echo $row->id; ?></td>
-				<td><a href="<?php echo $link ?>"><?php echo $row->alias; ?></a></td>
+				<td><a href="<?php echo $link ?>"><?php echo $row->name; ?></a></td>
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>

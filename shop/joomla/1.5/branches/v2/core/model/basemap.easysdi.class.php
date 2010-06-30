@@ -19,57 +19,95 @@
 
 class basemap extends JTable
 {	
-	var $id=null;	
+	var $id=null;
+	var $guid=null;
+	var $code=null;
+	var $name=null;
+	var $description=null;
+	var $created=null;
+	var $updated=null;
+	var $createdby=null;
+	var $updatedby=null;
+	var $label=null;
+	var $ordering=0;	
 	var $projection=null;
 	var $unit=null;
 	var $minResolution=null;
-	var $maxResolution=null;	
+	var $maxResolution=null;
+	var $default=0;	
 	var $maxExtent=null;
 	var $restrictedExtent=null;
 	var $restrictedScales=null;
-	var $def=null;
-	var $alias=null;
-	var $decimalPrecisionDisplayed=null;
-	var $dflt_fillcolor=null;
-	var $dflt_strkcolor=null;
-	var $dflt_strkwidth=null;
-	var $select_fillcolor=null;
-	var $select_strkcolor=null;
-	var $temp_fillcolor=null;
-	var $temp_strkcolor=null;
+	var $decimalPrecision=null;
+	var $dfltfillcolor=null;
+	var $dfltstrkcolor=null;
+	var $dfltstrkwidth=null;
+	var $selectfillcolor=null;
+	var $selectstrkcolor=null;
+	var $tempfillcolor=null;
+	var $tempstrkcolor=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_basemap_definition', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_basemap', 'id', $db ) ;    		
+	}
+	
+	function loadDefault ()
+	{
+		$this->reset();
+
+		$db =& $this->getDBO();
+
+		$query = 'SELECT *'
+		. ' FROM '.$this->_tbl
+		. ' WHERE default = 1';
+		$db->setQuery( $query );
+
+		if ($result = $db->loadAssoc( )) {
+			return $this->bind($result);
+		}
+		else
+		{
+			$this->setError( $db->getErrorMsg() );
+			return false;
+		}
 	}
 
 }
 class basemap_content extends JTable
 {	
 	var $id=null;
-	var $basemap_def_id=null;	
+	var $guid=null;
+	var $code=null;
+	var $name=null;
+	var $description=null;
+	var $created=null;
+	var $updated=null;
+	var $createdby=null;
+	var $updatedby=null;
+	var $label=null;
+	var $ordering=0;
+	var $basemap_id=null;	
 	var $url=null;
-	var $url_type=null;
-	var $singletile=null;	
+	var $urltype=null;
+	var $singletile=null;
+	var $maxExtent=null;	
+	var $minResolution=null;
+	var $maxResolution=null;
 	var $projection=null;
 	var $unit=null;
-	var $minResolution=null;
-	var $maxResolution=null;	
-	var $maxExtent=null;
 	var $layers=null;
-	var $name=null;
+	var $imgformat=null;
 	var $attribution=null;
-	var $img_format=null;
-	var $ordering = 0;
 	var $user = null;
 	var $password = null;
-	var $easysdi_account_id = null;
+	var $account_id = null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_basemap_content', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_basemap_content', 'id', $db ) ;    		
 	}
 
 }

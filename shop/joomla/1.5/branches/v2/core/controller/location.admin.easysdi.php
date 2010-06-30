@@ -31,22 +31,22 @@ class ADMIN_location {
 //		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
 //		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		
-		$query = "SELECT COUNT(*) FROM #__easysdi_location_definition";
+		$query = "SELECT COUNT(*) FROM #__sdi_location";
 		//$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT id,wfs_url,location_name,location_desc FROM #__easysdi_location_definition ";
+		$query = "SELECT id,urlwfs,name,description FROM #__sdi_location ";
 		$search	= $mainframe->getUserStateFromRequest( "$option.searchLocation",'searchLocation','','string' );
 		$search	= JString::strtolower( $search );
 		if ($search)
 		{
 			$query .= ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query .= ' or LOWER(wfs_url) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query .= ' or LOWER(location_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query .= ' or LOWER(location_desc) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );			
+			$query .= ' or LOWER(urlwfs) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );			
 		}		
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
@@ -66,10 +66,15 @@ class ADMIN_location {
 		$rowLocation = new location( $database );
 		$rowLocation->load( $id );					
 	
+		$user = JFactory::getUser();
+		$account = new accountByUserId($database);
+		$account->load($user->id);
 		if ($id == '0'){
-			$rowLocation->creation_date =date('d.m.Y H:i:s');			 			
+			$rowLocation->created =date('d.m.Y H:i:s');	
+			$rowLocation->createdby = $account->id;	 			
 		}
-		$rowLocation->update_date = date('d.m.Y H:i:s'); 
+		$rowLocation->updated = date('d.m.Y H:i:s'); 
+		$rowLocation->updatedby = $account->id;	
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
@@ -93,15 +98,20 @@ class ADMIN_location {
 		}
 				
 		//If a filter location is selected, disable it for the use in location
-		if($rowLocation->id_location_filter > 0 )
+		if($rowLocation->filterlocation_id > 0 )
 		{
-			$query = "UPDATE #__easysdi_location_definition  SET is_localisation = 0 WHERE id = $rowLocation->id_location_filter";
+			$query = "UPDATE #__sdi_location  SET islocalisation = 0 WHERE id = $rowLocation->filterlocation_id";
 			$database->setQuery($query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->stderr(),'error');
 			}
 		}
-		
+		else
+		{
+			//delete the default value
+			$rowLocation->filterlocation_id = null;
+		}
+		echo $rowLocation->filterlocation_id;
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
 		{
@@ -110,7 +120,7 @@ class ADMIN_location {
 		}
 		else
 		{
-			$rowLocation->easysdi_account_id="";
+			$rowLocation->account_id="";
 		}
 		
 		if (!$rowLocation->store()) {
@@ -157,11 +167,17 @@ class ADMIN_location {
 			exit;
 		}
 		
+		$user = JFactory::getUser();
+		$account = new accountByUserId($database);
+		$account->load($user->id);
+		
 		foreach( $cid as $id )
 		{
 			$Location = new location( $database );
 			$Location->load( $id );
 			$Location->id=0;
+			$Location->created =date('d.m.Y H:i:s');	
+			$Location->createdby = $account->id;	 			
 					
 			if (!$Location->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

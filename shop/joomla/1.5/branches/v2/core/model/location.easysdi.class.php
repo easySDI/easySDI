@@ -20,27 +20,35 @@ defined('_JEXEC') or die('Restricted access');
 class location extends JTable
 {	
 	var $id=null;
-	var $wfs_url=null;
-	var $feature_type_name=null;
-	var $location_name=null;
-	var $location_desc=null;	
-	var $name_field_name=null;
-	var $id_field_name=null;
-  	var $filter_field_name=null;
-  	var $id_location_filter=0;
-	var $is_localisation=0;
+	var $guid=null;
+	var $code=null;
+	var $name=null;
+	var $description=null;
+	var $created=null;
+	var $updated=null;
+	var $createdby=null;
+	var $updatedby=null;
+	var $label=null;
+	var $ordering=0;
+	var $urlwfs=null;
+	var $featuretype=null;
+	var $fieldid=null;
+	var $fieldname=null;
+  	var $fieldfilter=null;
+  	var $filterlocation_id=0;
+	var $islocalisation=0;
 	var $maxfeatures=-1;
+	var $multipleselection=1;
 	var $searchbox=0;
-	var $allowMultipleSelection=1;
 	var $sort=0;
 	var $user=null;
 	var $password=null;
-	var $easysdi_account_id=null;
+	var $account_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_location_definition', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_location', 'id', $db ) ;    		
 	}
 
 }

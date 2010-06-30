@@ -31,7 +31,7 @@ class ADMIN_cpanel {
 		$database =& JFactory::getDBO();		 	
 		$user = JFactory::getUser();
 		
-		$rootPartner = new partnerByUserId($database);
+		$rootPartner = new accountByUserId($database);
 		$rootPartner->load($user->id);		
 		$query = "update #__easysdi_order set archived = 1 where user_id = ".$user->id." AND ORDER_ID =".$order_id;
 		$database->setQuery($query);
