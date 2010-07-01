@@ -22,9 +22,10 @@ class displayManager{
 		$database =& JFactory::getDBO();
 		
 		$id = JRequest::getVar('id');
-		$metadata_guid = "select guid from #__sdi_metadata WHERE id=".$id;
+		/*$metadata_guid = "select guid from #__sdi_metadata WHERE id=".$id;
 		$database->setQuery($metadata_guid);
-		$metadata_guid = $database->loadResult();
+		$metadata_guid = $database->loadResult();*/
+		$metadata_guid = $id;
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
@@ -46,7 +47,9 @@ class displayManager{
 	{	
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		$xml = "";
@@ -54,7 +57,7 @@ class displayManager{
 		$id = JRequest::getVar('id');
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == "abstract")
@@ -93,7 +96,7 @@ class displayManager{
 		}
 		else if ($type == "diffusion")
 		{
-			$title;
+			$title = "";
 			
 			$titleQuery = "select o.name from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
 			$database->setQuery($titleQuery);
@@ -154,7 +157,11 @@ class displayManager{
 	{	
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
+		//print_r($lg); 
+		//echo $language;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		$xml = "";
@@ -162,7 +169,7 @@ class displayManager{
 		$id = JRequest::getVar('id');
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == "abstract")
@@ -178,10 +185,12 @@ class displayManager{
 			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl')){
+			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl'))
+			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl');
 			}
-			else{
+			else
+			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract.xsl');
 			}
 			
@@ -286,10 +295,12 @@ class displayManager{
 			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl')){
+			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl'))
+			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl');
 			}
-			else{
+			else
+			{
 				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion.xsl');
 			}
 			
@@ -302,12 +313,14 @@ class displayManager{
 	{	
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$id = JRequest::getVar('id');
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
@@ -335,12 +348,14 @@ class displayManager{
 	{
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$id = JRequest::getVar('id');
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
@@ -369,12 +384,14 @@ class displayManager{
 	{
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$id = JRequest::getVar('id');
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		$title;
 		
@@ -469,9 +486,10 @@ class displayManager{
 		
 		$db =& JFactory::getDBO();
 		$queryAccountID = "	SELECT a.id 
-							FROM #__sdi_account a, #__sdi_object o 
+							FROM #__sdi_account a, #__sdi_object o, #__sdi_metadata m 
 							WHERE 	a.id = o.account_id
-									AND o.metadata_id = '".$id."'";
+									AND o.metadata_id=m.id
+									AND m.guid = '".$id."'";
 		$db->setQuery($queryAccountID);
 		$account_id = $db->loadResult();
 			
@@ -488,24 +506,107 @@ class displayManager{
    		$db->setQuery($query);
    		$supplier= $db->loadResult();
 		
-		$query = "	SELECT created 
-					FROM #__sdi_object 
-					WHERE metadata_id = '".$id."'";
+		$query = "	SELECT o.created 
+					FROM #__sdi_object o, #__sdi_metadata m
+					WHERE o.metadata_id=m.id
+						  AND m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_creation_date = $db->loadResult();
+		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
-		$query = "	SELECT updated 
-					FROM #__sdi_object 
-					WHERE metadata_id = '".$id."'";
+		$query = "	SELECT o.updated 
+					FROM #__sdi_object o, #__sdi_metadata m
+					WHERE o.metadata_id=m.id
+						  AND m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_update_date = $db->loadResult();
-			
+		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		if ($product_update_date == '0000-00-00 00:00:00')
+			$product_update_date = '-';
+				
 		$query = "	SELECT count(*) 
-					FROM #__sdi_list_module m 
-					WHERE m.code='SHOP'";
+					FROM #__sdi_list_module 
+					WHERE code='SHOP'";
 		$db->setQuery($query);
 		$shopExist = $db->loadResult();
 		
+		/*
+		//define an array of orderable associated product for the current user
+		$orderableProductsMd = null;
+		$filter = "";
+		$user = JFactory::getUser();
+		$partner = new partnerByUserId($db);
+		if (!$user->guest){
+			$partner->load($user->id);
+		}else{
+			$partner->partner_id = 0;
+		}
+        	
+		if($partner->partner_id == 0)
+		{
+			//No user logged, display only external products
+			$filter .= " AND (EXTERNAL=1) ";
+		}
+		else
+		{
+			//User logged, display products according to users's rights
+			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.EXTERNAL=1
+					OR
+					(p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					
+					))) ";
+				}
+				else
+				{
+					$filter .= " AND (p.EXTERNAL=1) ";
+				}
+			}
+			else
+			{
+				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				{
+					$filter .= " AND (p.INTERNAL =1 AND
+					(p.partner_id =  $partner->partner_id
+					OR
+					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+					OR 
+					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+					OR
+					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					)) ";
+									
+				}
+				else
+				{
+					//no command right
+					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
+				}
+			}
+		}
+		$query  = "SELECT metadata_id FROM #__easysdi_product p where published=1 and orderable = 1 ".$filter;
+		$db->setQuery($query);
+		$orderableProductsMd = $db->loadResultArray();
+		if ($db->getErrorNum()) {						
+					echo "<div class='alert'>";			
+					echo 			$db->getErrorMsg();
+					echo "</div>";
+		}*/
+		//Defines if the corresponding product is orderable.
+		$hasOrderableProduct = false;
+		/*if (in_array($id, $orderableProductsMd))
+			$hasOrderableProduct = true;*/
+			
 		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
@@ -527,20 +628,23 @@ class displayManager{
 		}*/
 		
 		//$doc .= '<esdi:ID><title>Test titre</title></esdi:ID>';
-		$doc = '<esdi:ID><title>Test titre</title></esdi:ID>';
+		/*$doc = '<esdi:ID><title>Test titre</title></esdi:ID>';
 		
 		$document = new DomDocument();
-		@$document->loadXML($doc);
+		@$document->loadXML($doc);*/
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
+		
 		$myHtml="";
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
 				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>
-				</td></tr></table>";		
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
+			if ($shopExist)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>";
+			
+			$buttonsHtml .= "</td></tr></table>";		
 		}
 		if ($print ==1 ){
 			$myHtml .= "<script>window.print();</script>";
@@ -558,8 +662,11 @@ class displayManager{
 			$menuLinkHtml .= $tabs->endPanel();
 			$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_COMPLETE_TAB"),"catalogPanel2");
 			$menuLinkHtml .= $tabs->endPanel();
-			$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_DIFFUSION_TAB"),"catalogPanel3");
-			$menuLinkHtml .= $tabs->endPanel();
+			if ($shopExist)
+			{
+				$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_DIFFUSION_TAB"),"catalogPanel3");
+				$menuLinkHtml .= $tabs->endPanel();
+			}
 			$menuLinkHtml .= $tabs->endPane();
 			
 			//Define links for onclick event
@@ -569,53 +676,68 @@ class displayManager{
 			/* Onglets abstract et complete*/
 			$myHtml .= "window.addEvent('domready', function() {
 			
-			$('catalogPanel1').addEvent( 'click' , function() { 
+			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
 			});
-			$('catalogPanel2').addEvent( 'click' , function() { 
+			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-			});";
+			});
+			
+			task = '$task';
+			type = '$type';
+			
+			";
 			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
 			if ($shopExist)
 			{
 				$myHtml .= "
-				$('catalogPanel3').addEvent( 'click' , function() { 
+				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
 					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-				});";
+				});
+				document.getElementById('orderProduct').addEvent( 'click' , function() { 
+					window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
+				});
+			
+				document.getElementById('catalogPanel3').className = 'closed';
+				
+				if(task == 'showMetadata' & type == 'diffusion'){
+	        		document.getElementById('catalogPanel3').className = 'open';
+				}
+				";
 			}
 			
 			/* Boutons */
 			$myHtml .= "
-			$('exportPdf').addEvent( 'click' , function() { 
+			document.getElementById('exportPdf').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');
 			});
-			$('exportXml').addEvent( 'click' , function() { 
+			document.getElementById('exportXml').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');
 			});
-			$('printMetadata').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+			document.getElementById('printMetadata').addEvent( 'click' , function() { 
+				window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
 			});
-			$('orderProduct').addEvent( 'click' , function() { 
-				window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
-			});
-	
-			task = '$task';
-			type = '$type';
 			
-			$('catalogPanel1').className = 'closed';
-			$('catalogPanel2').className = 'closed';
-			$('catalogPanel3').className = 'closed';
+	
+			document.getElementById('catalogPanel1').className = 'closed';
+			document.getElementById('catalogPanel2').className = 'closed';
+			
 			if(task == 'showMetadata' & type == 'abstract'){
-	        	$('catalogPanel1').className = 'open';
+	        	document.getElementById('catalogPanel1').className = 'open';
 			}
 			if(task == 'showMetadata' & type == 'complete'){
-	        	$('catalogPanel2').className = 'open';
-			}
-			if(task == 'showMetadata' & type == 'diffusion'){
-	        	$('catalogPanel3').className = 'open';
+	        	document.getElementById('catalogPanel2').className = 'open';
 			}
 			});\n"; 
 	
+			/*if($message != ""){
+				$myHtml .= "window.addEvent('domready', function() {
+					var divMsg = document.getElementById('message');
+					divMsg.style.display='block';
+					divMsg.innerHTML='".addslashes($message)."';
+				});\n";
+			}*/
+		
 			$myHtml .= "</script>";
 
 		}
@@ -624,20 +746,21 @@ class displayManager{
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
 		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
+		
 		$myHtml .= $xmlToHtml;
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
 		$temp = explode(" ", $product_creation_date);
 		$temp = explode("-", $temp[0]);
-		//$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		$product_creation_date="";
+		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		//$product_creation_date="";
 		$temp = explode(" ", $product_update_date);
 		$temp = explode("-", $temp[0]);
-		//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
-		$product_update_date="";
+		if ($product_update_date <> "-")
+			$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+		//$product_update_date="";
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
-		
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
 		
 			
@@ -663,7 +786,9 @@ class displayManager{
 	{
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		
@@ -673,7 +798,7 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == 'abstract')
@@ -741,7 +866,9 @@ class displayManager{
 	function exportPdf(){
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		
@@ -751,7 +878,7 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$cswResults = new DomDocument();
@@ -830,7 +957,9 @@ class displayManager{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
+		//$language = $user->getParam('language', '');
+		$lg = &JFactory::getLanguage();
+		$language = $lg->_lang;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		
@@ -840,7 +969,7 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o WHERE ot.id=o.objecttype_id AND o.metadata_id=".$id);
+		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$supplier;
@@ -848,7 +977,7 @@ class displayManager{
 		$product_update_date;
 		
 		$db =& JFactory::getDBO();
-		$queryAccountID = "select account_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
+		$queryAccountID = "select account_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
 		$db->setQuery($queryAccountID);
 		$account_id = $db->loadResult();
 		
@@ -864,12 +993,12 @@ class displayManager{
 		$query = "select created from #__sdi_object where metadata_id = '".$id."'";
 		$db->setQuery($query);
 		$temp = $db->loadResult();
-		$object_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		$object_creation_date = date("d-m-Y H:i:s", strtotime($temp));
 		
 		$query = "select updated from #__sdi_object where metadata_id = '".$id."'";
 		$db->setQuery($query);
 		$temp = $db->loadResult();
-		$object_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		$object_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date("d-m-Y H:i:s", strtotime($temp));
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");		
@@ -895,7 +1024,8 @@ class displayManager{
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
 		@$pageDom->loadHTML($searchPage);
 		$result = $processor->transformToXml($pageDom);
-		$exportpdf_url = config_easysdi::getValue("EXPORT_PDF_URL");
+		//$exportpdf_url = config_easysdi::getValue("EXPORT_PDF_URL");
+		$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 		
 		if ($exportpdf_url )
 		{ 
@@ -925,6 +1055,7 @@ class displayManager{
 				$result = fread($fp, filesize($foptmp));
 				fclose ($fp);
 					//ob_end_clean();
+				
 				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
                         	
