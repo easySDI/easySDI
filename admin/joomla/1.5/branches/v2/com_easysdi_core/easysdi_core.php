@@ -24,7 +24,7 @@ jimport("joomla.html.pane");
 require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.usertree.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
 
@@ -143,6 +143,10 @@ switch($task){
 	case "exportPdf":
 		displayManager::exportPdf();
 		break;
+	case "reportPdfError":
+		displayManager::reportPdfError();
+		break;
+			
 	case "showaccount":
 	default:
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
