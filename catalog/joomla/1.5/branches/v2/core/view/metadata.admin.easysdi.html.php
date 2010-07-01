@@ -53,7 +53,7 @@ class HTML_metadata {
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
 	{
 		$uri =& JUri::getInstance();
 		
