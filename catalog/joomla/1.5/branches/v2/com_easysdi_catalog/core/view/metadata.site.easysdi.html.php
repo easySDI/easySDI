@@ -240,7 +240,7 @@ class HTML_metadata {
 	<?php
 	}
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
 	{
 		$uri =& JUri::getInstance();
 		
@@ -568,7 +568,7 @@ class HTML_metadata {
 					form.render();";
 				}
 				
-				if (!$isManager and !$isPublished)
+				if ($isEditor and !$isPublished)
 				{
 					$this->javascript .="
 					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
@@ -781,7 +781,7 @@ class HTML_metadata {
 	
 																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
 	
-										  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
+										  																	window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
 																
 																										},
 																										failure: function(form, action) 
@@ -843,7 +843,7 @@ class HTML_metadata {
 											success: function(form, action) 
 											{
 												Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
-						  						window.open ('./index.php?option=".$option."&task=listObject','_parent');
+						  						window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
 													
 												myMask.hide();
 											},
@@ -1412,7 +1412,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
-												var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+												var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 													".$parentFieldsetName.".add(".$fieldsetName.");
 												";
 
@@ -1493,7 +1493,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
-													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 														".$parentFieldsetName.".add(".$fieldsetName.");
 												";
 													
@@ -1572,7 +1572,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 											$this->javascript .="
-											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 												".$parentFieldsetName.".add(".$fieldsetName.");
 											";
 												
@@ -2835,7 +2835,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 											$this->javascript .="
-											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 												".$parentFieldsetName.".add(".$fieldsetName.");
 											";
 												
@@ -2913,7 +2913,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 											$this->javascript .="
-											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 												".$parentFieldsetName.".add(".$fieldsetName.");
 											";
 												
@@ -2991,7 +2991,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 										$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 										$this->javascript .="
-										var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."'); 
+										var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', true); 
 											".$parentFieldsetName.".add(".$fieldsetName.");
 										";
 											

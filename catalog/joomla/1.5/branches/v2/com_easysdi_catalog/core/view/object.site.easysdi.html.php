@@ -461,7 +461,7 @@ if ($rowObject->updated)
 			?>		
 			<tr>
 			<td class="logo2"><div <?php if($row->visibility_id==1 && $row->orderable == 1) echo 'title="'.JText::_("CORE_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->visibility_id==2 && $row->orderable == 1) echo 'title="'.JText::_("CORE_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
-			<td ><a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
+			<td ><a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
 			<td ><?php echo JText::_($row->state); ?></td>
 			<?php 		
 			/*$versions = "";

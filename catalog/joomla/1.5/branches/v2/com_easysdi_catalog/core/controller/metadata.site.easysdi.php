@@ -304,6 +304,13 @@ class SITE_metadata {
 		$isManager = false;
 		if ($total == 1)
 			$isManager = true;
+		
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
 			
 		// Est-ce que la métadonnée est publiée?
 		$isPublished = false;
@@ -394,7 +401,7 @@ class SITE_metadata {
         	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
         
-        HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+        HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}

@@ -125,7 +125,7 @@ class SITE_object {
 		
 		// Recherche des enregistrements selon les limites
 		//$query = "SELECT o.*, b.name as account_name, s.code as state FROM #__sdi_account a, #__users b, #__sdi_object o LEFT OUTER JOIN #__sdi_metadata m ON o.metadata_id=m.id LEFT OUTER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id WHERE a.user_id = b.id AND a.id=o.account_id AND o.account_id=".$rootAccount->id;
-		$query = "	SELECT o.*, s.id as metadatastate_id, s.label as state 
+		$query = "	SELECT o.*, s.id as metadatastate_id, s.label as state, m.guid as metadata_guid 
 						FROM 	jos_sdi_manager_object e, 
 								jos_sdi_metadata m, 
 								jos_sdi_list_metadatastate s, 

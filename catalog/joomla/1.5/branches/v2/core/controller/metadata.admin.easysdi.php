@@ -263,6 +263,12 @@ class ADMIN_metadata {
 		if ($total == 1)
 			$isManager = true;
 			
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
 		
 		// Est-ce que la métadonnée est publiée?
 		$isPublished = false;
@@ -372,7 +378,7 @@ class ADMIN_metadata {
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		//ADMIN_metadata::buildTree($root[0]->id, $xpathResults, $option);
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}
@@ -1409,33 +1415,15 @@ class ADMIN_metadata {
 			}
 			else if ($child->objecttype_id <> null)
 			{
-				//$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 				$name = $parentName."-".str_replace(":", "_", $child->rel_isocode);
 	
-				/*$count=0;
-				
-				foreach($keyVals as $key => $val)
-				{
-					//echo "key: ".$key."\r\n";
-					//echo "equals: ".$parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1"."\r\n";
-					if ($key == $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1")
-					{
-						$count = $val;
-						break;
-					}
-				}
-				$count = $count - 1;
-				
-				echo "count: ".$count."\r\n";
-				*/
 				// Récupération des valeurs postées correspondantes
 				$keys = array_keys($_POST);
 				$usefullVals=array();
-				//$usefullKeys=array();
+				
 				$count=0;
 				foreach($keys as $key)
 				{
-					//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 					$partToCompare_temp1 = substr($key, strlen($parentName."-"));
 					
 					if (strpos($partToCompare_temp1, "-"))
@@ -1446,8 +1434,6 @@ class ADMIN_metadata {
 					$partToCompare_temp3 = substr($key, 0, strlen($parentName."-"));
 					$partToCompare  = substr($partToCompare_temp3.$partToCompare_temp2, 0, strlen($partToCompare_temp3.$partToCompare_temp2)-3);
 
-					//echo $partToCompare." == ".$parentName."-".str_replace(":", "_", $child->rel_isocode)."\r\n";
-					
 					if ($partToCompare == $parentName."-".str_replace(":", "_", $child->rel_isocode))
 					{
 						if (substr($key, -6) <> "_index")
@@ -1461,7 +1447,7 @@ class ADMIN_metadata {
 				//echo count($usefullVals);
 				//print_r($usefullVals); 
 				
-				for ($pos=0; $pos<$count; $pos++)
+				for ($pos=1; $pos<=$count; $pos++)
 				{
 					$searchName = $name."__".($pos+1)."-SEARCH__1"; 
 					//echo $searchName;
