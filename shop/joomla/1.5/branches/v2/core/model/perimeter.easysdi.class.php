@@ -20,37 +20,88 @@ defined('_JEXEC') or die('Restricted access');
 class perimeter extends JTable
 {	
 	var $id=null;
-	var $wfs_url=null;
-	var $layer_name=null;
-	var $wms_url=null;
-	var $feature_type_name=null;
-	var $perimeter_name=null;
-	var $perimeter_desc=null;	
-	var $area_field_name=null;
-	var $name_field_name=null;
-	var $name_field_search_name=null;
-	var $id_field_name=null;
-	var $wms_scale_min=0;
-  	var $wms_scale_max=-1;
-  	var $filter_field_name=null;
-  	var $id_perimeter_filter=0;
-	var $is_localisation=0;
+	var $guid=null;
+	var $code=null;
+	var $name=null;
+	var $description=null;
+	var $created=null;
+	var $updated=null;
+	var $createdby=null;
+	var $updatedby=null;
+	var $label=null;
+	var $ordering=0;
+	var $urlwms=null;
+	var $minscale=0;
+  	var $maxscale=-1;
+	var $minresolution=0;
+	var $maxresolution=0;
+	var $imgformat=null;
+	var $layername=null;
+	var $urlwfs=null;
+	var $featuretype=null;
+	var $fieldid=null;
+	var $fieldname=null;
+	var $fieldarea=null;
+	var $fieldsearch=null;
+	var $fieldfilter=null;
+	var $filterperimeter_id=null;
+	var $islocalisation=0;
 	var $maxfeatures=-1;
+	var $multipleselection=1;
 	var $searchbox=0;
-	var $allowMultipleSelection=1;
 	var $sort=0;
-	var $img_format=null;
 	var $user=null;
 	var $password=null;
-	var $min_resolution=0;
-	var $max_resolution=0;
-	var $perimeter_code=null;
-	var $ordering =0;
-	var $easysdi_account_id=null;
+	var $account_id=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_perimeter_definition', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_perimeter', 'id', $db ) ;    		
+	}
+	
+	function store ()
+	{
+		$user = JFactory::getUser();
+		$account = new accountByUserId($this->_db);
+		$account->load($user->id);
+		if ($this->id == '0'){
+			$this->created =date('d.m.Y H:i:s');
+			$this->createdby = $account->id;	 			 			
+		}
+		$this->updated = date('d.m.Y H:i:s'); 
+		$this->updatedby = $account->id;
+		
+		if($this->ordering == 0)
+		{
+			$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_perimeter " );
+			$this->ordering = $this->_db->loadResult() + 1;
+		}
+		
+		return parent::store();
+	}
+	
+	function delete ()
+	{
+		$this->_db->setQuery( "SELECT *  FROM #__sdi_perimeter WHERE ordering > $this->ordering  order by ordering ASC" );
+		$rows = $this->_db->loadObjectList() ;
+		if ($this->_db->getErrorNum()) {
+			$this->setError($this->_db->getErrorMsg());
+			return false;
+		}	
+		
+		$o = $this->ordering;
+		foreach ($rows as $row )
+		{
+			$this->_db->setQuery( "update #__sdi_perimeter set ordering= $o where id =$row->id" );	
+			$this->_db->query();
+			if ($this->_db->getErrorNum()) {
+				$this->setError($this->_db->getErrorMsg());
+				return false;
+			}
+			$o = $o+1;
+		}	
+		return parent::delete();
 	}
 
 }

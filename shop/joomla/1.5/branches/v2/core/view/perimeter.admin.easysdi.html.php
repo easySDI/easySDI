@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_perimeter {
 
-	function editPerimeter( $rowPerimeter,$rowsAccount,$id, $option ){
+	function editPerimeter( $rowPerimeter,$rowsAccount,$perimList,$id, $option ){
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -28,7 +28,7 @@ class HTML_perimeter {
 		//Get if the current perimeter is used by an other in the field "id_perimeter_filter".
 		//This means that a perimeter depends on this one for a filter so
 		// it can not be used in "manual perimeter"
-		$queryIsFilter = "select * from  #__easysdi_perimeter_definition  where id_perimeter_filter=$rowPerimeter->id ";
+		$queryIsFilter = "select * from  #__sdi_perimeter  where filterperimeter_id=$rowPerimeter->id ";
 		$database->setQuery( $queryIsFilter );
 		$result = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
@@ -49,7 +49,7 @@ class HTML_perimeter {
 		function choosePerimeterAsFilter(perimeterId)
 		{
 			<?php
-			$query = "SELECT * FROM #__easysdi_perimeter_definition WHERE is_localisation = 1 ";
+			$query = "SELECT * FROM #__sdi_perimeter WHERE islocalisation = 1 ";
 			$database->setQuery($query);
 			$rows = $database->loadObjectList();
 			if ($database->getErrorNum()) {
@@ -77,28 +77,23 @@ class HTML_perimeter {
 				document.getElementById('password').value = "";
 				document.getElementById('user').disabled = true;
 				document.getElementById('user').value ="";
-				document.getElementById('easysdi_account_id').disabled = false;
+				document.getElementById('account_id').disabled = false;
 			}
 			else
 			{
 				document.getElementById('password').disabled = false;
 				document.getElementById('user').disabled = false;
-				document.getElementById('easysdi_account_id').disabled = true;
-				document.getElementById('easysdi_account_id').value = '0';
+				document.getElementById('account_id').disabled = true;
+				document.getElementById('account_id').value = '0';
 			}
 		}		
 		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-<?php
-		echo $tabs->startPane("PerimeterPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"PerimeterPane");
-
-		?>		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_TEXT_JOOMLA"); ?></legend>
+						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
@@ -108,85 +103,74 @@ class HTML_perimeter {
 
 							<tr>
 								<td><?php echo JText::_("EASYSDI_WFS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="wfs_url" value="<?php echo $rowPerimeter->wfs_url; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowPerimeter->urlwfs; ?>" /></td>
 							</tr>
 							
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_FEATURETYPE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="feature_type_name" value="<?php echo $rowPerimeter->feature_type_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowPerimeter->featuretype; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_WMS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="wms_url" value="<?php echo $rowPerimeter->wms_url; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowPerimeter->urlwms; ?>" /></td>
 							</tr>
 							
 							<tr>
 								<td><?php echo JText::_("EASYSDI_WMS_MIN_RESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="min_resolution" value="<?php echo $rowPerimeter->min_resolution; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowPerimeter->minresolution; ?>" /></td>
 							</tr>
 							
 
 							<tr>
 								<td><?php echo JText::_("EASYSDI_WMS_MAX_RESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="max_resolution" value="<?php echo $rowPerimeter->max_resolution; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowPerimeter->maxresolution; ?>" /></td>
 							</tr>
 							
 														
 							<tr>
 								<td><?php echo JText::_("EASYSDI_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="img_format" value="<?php echo $rowPerimeter->img_format; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowPerimeter->imgformat; ?>" /></td>
 								<td>ex : image/png</td>
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_LAYER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layer_name" value="<?php echo $rowPerimeter->layer_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowPerimeter->layername; ?>" /></td>
 							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="perimeter_name" value="<?php echo $rowPerimeter->perimeter_name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowPerimeter->name; ?>" /></td>							
 							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_DESC"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="perimeter_desc" value="<?php echo $rowPerimeter->perimeter_desc; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowPerimeter->description; ?>" /></td>							
 							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_AREA_FIELD_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="area_field_name" value="<?php echo $rowPerimeter->area_field_name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldarea" value="<?php echo $rowPerimeter->fieldarea; ?>" /></td>							
 							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME_FIELD_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_name" value="<?php echo $rowPerimeter->name_field_name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldname" value="<?php echo $rowPerimeter->fieldname; ?>" /></td>							
 							</tr>
 							<tr>
 							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_NAME_FIELD_SEARCH_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_search_name" value="<?php echo $rowPerimeter->name_field_search_name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldsearch" value="<?php echo $rowPerimeter->fieldsearch; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_ID_FIELD_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="id_field_name" value="<?php echo $rowPerimeter->id_field_name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldid" value="<?php echo $rowPerimeter->fieldid; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="filter_field_name" value="<?php echo $rowPerimeter->filter_field_name; ?>"  /></td>
-								<?php
-									$perimList = array();
-									$perimList [] = JHTML::_('select.option','-1', JText::_("EASYSDI_PERIM_LIST") );
-									$database->setQuery( "SELECT id AS value, perimeter_name AS text FROM #__easysdi_perimeter_definition order by perimeter_name" );
-									$perimList = array_merge($perimList, $database->loadObjectList());
-		
-		
-															?>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldfilter" value="<?php echo $rowPerimeter->fieldfilter; ?>"  /></td>
 								<td><?php echo JText::_("EASYSDI_PERIMETER_FILTER_FIELD_NAME_DEPENDS_OF"); ?></td>
-								
-								<td><?php echo JHTML::_("select.genericlist",$perimList, 'id_perimeter_filter', 'size="1" class="inputbox" onChange="javascript:choosePerimeterAsFilter(this.value);"', 'value', 'text', $rowPerimeter->id_perimeter_filter ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$perimList, 'filterperimeter_id', 'size="1" class="inputbox" onChange="javascript:choosePerimeterAsFilter(this.value);"', 'value', 'text', $rowPerimeter->filterperimeter_id ); ?></td>
 								<td>
-								
-								
 								</td>
 							</tr>
 							<tr>
@@ -195,15 +179,15 @@ class HTML_perimeter {
 							if($is_filter == false)
 							{
 							?>
-							<td><select name="is_localisation" > <option value="1" <?php if($rowPerimeter->is_localisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowPerimeter->is_localisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+							<td><select name="islocalisation" > <option value="1" <?php if($rowPerimeter->islocalisation == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowPerimeter->islocalisation == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							<?php
 							}
 							else
 							{
 							?>
-							<td colspan="2"><select name="is_localisation" disabled >  
+							<td colspan="2"><select name="islocalisation" disabled >  
 								<option value="0" selected ><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 								<?php echo JText::_("EASYSDI_PERIMETER_DISABLE_VISIBLE_REASON"); ?>
 							</td>
@@ -220,8 +204,8 @@ class HTML_perimeter {
 							</tr>
 							<tr>
 							<td><?php echo JText::_("EASYSDI_PERIMETER_SEARCHBOX_ALLOW_MULTIPLE_OCCURENCES"); ?> : </td>
-							<td><select name="allowMultipleSelection" > <option value="1" <?php if($rowPerimeter->allowMultipleSelection == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
-								<option value="0" <?php if($rowPerimeter->allowMultipleSelection == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
+							<td><select name="multipleselection" > <option value="1" <?php if($rowPerimeter->multipleselection == 1) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option> 
+								<option value="0" <?php if($rowPerimeter->multipleselection == 0) echo "selected"; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option></select>
 							</td>
 							</tr>
 							<tr>
@@ -237,16 +221,16 @@ class HTML_perimeter {
 							</tr>
 							<tr>							
 							<td><?php echo JText::_("EASYSDI_PERIMETER_CODE"); ?> : </td>
-							<td><input type="text" name="perimeter_code"  value="<?php echo $rowPerimeter->perimeter_code ?>"></td>
+							<td><input type="text" name="code"  value="<?php echo $rowPerimeter->code ?>"></td>
 							</tr>
-							<tr>
-							<td colspan ="3">
-							<fieldset>
+						</table>
+					</fieldset>
+					<fieldset>
 							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
 								<table>
 								<tr>
 									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowPerimeter->easysdi_account_id) echo "checked";?>>
+										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowPerimeter->account_id) echo "checked";?>>
 									</td>
 									<td colspan="2">
 										<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
@@ -255,7 +239,7 @@ class HTML_perimeter {
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $rowPerimeter->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowPerimeter->easysdi_account_id); ?></td>
+									<td><?php $enable = $rowPerimeter->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowPerimeter->account_id); ?></td>
 								</tr>
 								<tr>
 									<td >
@@ -278,22 +262,10 @@ class HTML_perimeter {
 								
 								</table>
 							</fieldset>	
-							<td>	
-							</tr>
-							
-							
-						</table>
-					</fieldset>
 				</td>
 			</tr>
 			
 		</table>
-		
-		
-		<?php
-		echo $tabs->endPanel();
-		echo $tabs->endPane();		
-		?>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
@@ -335,10 +307,10 @@ class HTML_perimeter {
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPerimeter' ); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_WFS_URL"), 'wfs_url', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_LAYER_NAME"), 'layer_name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_NAME"), 'perimeter_name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_DESC"), 'perimeter_desc', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_urlwfs"), 'urlwfs', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_LAYER_NAME"), 'layername', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_DESC"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -386,10 +358,10 @@ class HTML_perimeter {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->wfs_url; ?></td>				
-				<td><?php echo $row->layer_name; ?></td>
-				<td><?php echo $row->perimeter_name; ?></td>
-				<td><?php echo $row->perimeter_desc; ?></td>
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->urlwfs; ?></td>				
+				<td><?php echo $row->layername; ?></td>
+				<td><?php echo $row->name; ?></td>
+				<td><?php echo $row->description; ?></td>
 			</tr>
 <?php
 			$k = 1 - $k;

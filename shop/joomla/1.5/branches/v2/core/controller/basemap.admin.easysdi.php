@@ -159,10 +159,10 @@ class ADMIN_basemap {
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_id );
 			exit();
 		}
-		$query = "SELECT COUNT(*) FROM  #__sdi_basemap_content where basemap_id = ".$basemap_id ;
-		$database->setQuery( $query );
-		$total = $database->loadResult();	
-		$rowBasemap->ordering = $total + 1;		
+//		$query = "SELECT COUNT(*) FROM  #__sdi_basemap_content where basemap_id = ".$basemap_id ;
+//		$database->setQuery( $query );
+//		$total = $database->loadResult();	
+//		$rowBasemap->ordering = $total + 1;		
 		
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
@@ -209,23 +209,7 @@ class ADMIN_basemap {
 //						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 //				}
 	
-			$query = "SELECT *  FROM #__sdi_basemap_content  WHERE  basemap_id = $Basemap->basemap_id AND ordering > $Basemap->ordering  order by ordering ASC";
-			$database->setQuery( $query );
-			$rows2 = $database->loadObjectList() ;
-				if ($database->getErrorNum()) {
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				}	
 			
-			$o = $Basemap->ordering;
-			foreach ($rows2 as $row2 )
-			{
-				$query = "update #__sdi_basemap_content set ordering= $o where id =$row2->id";
-				$database->setQuery( $query );				
-				if (!$database->query()) {		
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-				}
-				$o = $o+1;
-			}	
 
 			if (!$Basemap->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
