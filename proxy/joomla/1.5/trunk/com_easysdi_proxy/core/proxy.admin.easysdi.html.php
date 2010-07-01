@@ -1378,6 +1378,16 @@ function generateWMSHTML($config,$thePolicy){
 	foreach ($xmlCapa->xpath('//Layer') as $layer){
 		if ($layer->{'Name'} !=null){
 			if (strlen($layer->{'Name'})>0 ){
+				$tmp = ""; 
+				if (!(strpos($layer->{'Name'},":")===False)) 
+				{
+					$tmp = substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);					
+				}
+				else
+				{
+					$tmp = $layer->Name; 
+				}
+				
 				?>
 	<tr>
 		<td class="key" >
@@ -1385,20 +1395,20 @@ function generateWMSHTML($config,$thePolicy){
 				<tr valign="top" >
 					<td width="15">
 						<input
-						onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
+						onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $tmp;?>')"
 						<?php if( HTML_proxy::isLayerChecked($theServer,$layer)) echo 'checked';?>
 						type="checkbox"
-						id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-						name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-						value="<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>">
+						id = "layer@<?php echo $iServer; ?>@<?php echo $tmp; ?>"
+						name = "layer@<?php echo $iServer; ?>@<?php echo $tmp; ?>"
+						value = "<?php echo $tmp; ?>">
 					</td>
 					<td align="left">
-					 <?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>
+						<?php echo $tmp; ?>
 					</td>			
 				</tr>
 				<tr >
 					<td colspan="2" align="left">
-					"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1);}else{echo $layer->Title;}?>"
+					"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1); }else{echo $layer->Title;}?>"
 					</td>
 				</tr>
 			</table>		
@@ -1406,20 +1416,21 @@ function generateWMSHTML($config,$thePolicy){
 		<td align = "center"><input 
 		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
-			id="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			id="scaleMin@<?php echo $iServer; ?>@<?php echo $tmp; ?>"
+			name="scaleMin@<?php echo $iServer; ?>@<?php echo $tmp;?>"
 			value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
 		<td  align = "center"><input
 		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			type="text" size="10"
-			id="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+			id="scaleMax@<?php echo $iServer; ?>@<?php echo $tmp;?>"
+			name="scaleMax@<?php echo $iServer; ?>@<?php echo $tmp;?>"
 			value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
 		<td><textarea
 		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
 			rows="3" cols="60"
-			id="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
+			id="LocalFilter@<?php echo $iServer; ?>@<?php echo $tmp;?>"
+			name="LocalFilter@<?php echo $iServer; ?>@<?php echo $tmp;?>"> 
+			<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 	</tr>
 	<?php }}}?>
 </table>
