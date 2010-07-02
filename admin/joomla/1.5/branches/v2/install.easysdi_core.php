@@ -57,6 +57,8 @@ function com_install(){
 		return false;
 	}
 
+	
+	
 	/**
 	 * Gets the component versions
 	 */	
@@ -1431,6 +1433,42 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+	}
+	if ($version == "0.6")
+	{
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_module_panel` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20),
+				  `name` varchar(50) NOT NULL,
+				  `description` varchar(100),
+				  `created` datetime NOT NULL,
+				  `updated` datetime,
+				  `createdby` bigint(20) NOT NULL,
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20) ,
+				  `module_id` bigint(20) NOT NULL,
+				  `view_path` varchar(250) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`),
+				  UNIQUE KEY `code` (`code`)
+				)";	 		
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		// Update component version
+		$version="0.7";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 	}
 	
 	/**
