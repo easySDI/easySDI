@@ -112,6 +112,31 @@ function com_install(){
 			return false;
 		}
 	}
+	if ($version == "0.1")
+	{
+		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'PROXY'";
+		$db->setQuery( $query);
+		$id = $db->loadResult();
+		
+		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY_PANEL', 'Proxy Panel', 'Proxy Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$id."', 'com_easysdi_proxy\core\view\sub.ctrlpanel.admin.easysdi.html.php', '2')";
+		$db->setQuery( $query);		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		// Update component version
+		$version="0.2";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PROXY'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+	}
 	
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy' ";
