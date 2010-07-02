@@ -14,11 +14,13 @@ class ADMIN_ctrlpanel {
 		$db->setQuery( $query );
 		$proxyExist = $db->loadResult();
 		
-		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='SHOP'";
+		$query = "SELECT count(*) FROM  #__sdi_list_module m WHERE  m.code='SHOP'";
 		$db->setQuery( $query );
 		$shopExist = $db->loadResult();
 		
-		HTML_ctrlpanel::ctrlPanelCore($option, $catalogExist, $proxyExist, $shopExist);
+		$panels = modulePanel::loadModulePanels($db);
+		
+		HTML_ctrlpanel::ctrlPanelCore($option, $catalogExist, $proxyExist, $shopExist,$panels);
 	}
 }
 ?>
