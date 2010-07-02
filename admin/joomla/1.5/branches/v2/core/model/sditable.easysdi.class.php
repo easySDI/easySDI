@@ -65,6 +65,7 @@ class sdiTable extends JTable
 	
 	function delete ()
 	{
+		global  $mainframe;
 		$this->_db->setQuery( "SELECT *  FROM $this->_tbl WHERE ordering > $this->ordering  order by ordering ASC" );
 		$rows = $this->_db->loadObjectList() ;
 		if ($this->_db->getErrorNum()) {
@@ -78,23 +79,78 @@ class sdiTable extends JTable
 			$this->_db->setQuery( "update $this->_tbl set ordering= $o where id =$row->id" );	
 			$this->_db->query();
 			if ($this->_db->getErrorNum()) {
-				$this->setError($this->_db->getErrorMsg());
+				$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
 				return false;
 			}
 			$o = $o+1;
 		}	
+		
+		$this->_db->setQuery("DELETE FROM #__sdi_translation WHERE element_guid='".$this->guid."'");
+		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
 		return parent::delete();
+	}
+	
+	function orderDown()
+	{
+		global  $mainframe;
+		$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` > $this->ordering   order by `ordering` " );
+		$row = $this->_db->loadObject() ;			
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$this->_db->setQuery( "update $this->_tbl set `ordering`= $this->ordering where id =$row->id" );
+		if (!$this->_db->query()) {		
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");	
+			return false;							
+		}		
+		
+		$this->ordering = $row->ordering;
+		$this->store();	
+		return true;
+	}
+	
+	function orderUp()
+	{
+		global  $mainframe;
+		$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` < $this->ordering   order by `ordering` desc" );
+		$row = $this->_db->loadObject() ;			
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$this->_db->setQuery( "update $this->_tbl set `ordering`= $this->ordering where id =$row->id" );
+		if (!$this->_db->query()) {		
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");	
+			return false;							
+		}		
+		
+		$this->ordering = $row->ordering;
+		$this->store();	
+		return true;
 	}
 
 	 function publishedLanguages ()
 	 {
+	 	global  $mainframe;
 	 	$languages = array();
 		$this->_db->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $this->_db->loadObjectList() );
+	 	if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
 		return $languages;
 	 } 
 	 
-	 function getLabels ()
+	 function loadLabels ()
 	 {
 	 	// Les labels
 		$labels = array();
@@ -103,6 +159,10 @@ class sdiTable extends JTable
 		{
 			$this->_db->setQuery("SELECT label FROM #__sdi_translation WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
 			$label = $this->_db->loadResult();
+			if ($this->_db->getErrorNum()) {
+				$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+				return false;
+			}
 			$labels[$lang->id] = $label;
 		}
 		return $labels;
@@ -110,7 +170,7 @@ class sdiTable extends JTable
 	 
 	 function storeLabels ()
 	 {
-	 // Stocker les labels
+	 	global  $mainframe;
 		 $user =& JFactory::getUser();
 		 $languages = $this->publishedLanguages();
 		foreach ($languages as $lang)
@@ -139,8 +199,20 @@ class sdiTable extends JTable
 				}
 			}
 		}
+		return true;
 	 }
 
+	 function getObjectCount()
+	 {
+	 	global  $mainframe;
+	 	$this->_db->setQuery( "select count(*) from  $this->_tbl " );
+	 	if (!$this->_db->query())
+		{	
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		return $this->_db->loadResult();
+	 }
 }
 
 
