@@ -84,30 +84,6 @@ class HTML_object {
 								<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 								<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['description']; else echo $rowObject->description?></textarea></td>								
 							</tr>
-		<?php 
-		if ($rowObject->id == 0)
-		{
-		?>
-							<tr>
-								<td colspan="2">
-									<fieldset>
-										<legend><?php echo JText::_("CATALOG_OBJECT_VERSION"); ?></legend>
-										<table>
-											<tr>
-												<td><?php echo JText::_("CATALOG_OBJECT_VERSION_NAME"); ?> : </td>
-												<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="version_name" value="<?php if ($pageReloaded) echo $_POST['version_name']; ?>" /></td>								
-											</tr>
-											<tr>
-												<td><?php echo JText::_("CATALOG_OBJECT_VERSION_DESCRIPTION"); ?> : </td>
-												<td><textarea rows="4" cols="50" name ="version_description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['version_description'];?></textarea></td>								
-											</tr>
-										</table>
-									</fieldset>
-								</td>
-							</tr>
-		<?php
-		} 
-		?>
 							<!-- 
 							<tr>
 								<td><?php echo JText::_("CORE_CODE"); ?> : </td>

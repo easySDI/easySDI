@@ -334,16 +334,6 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrCswDateFilter;
 			
 			
-			$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
-			/*$sortBy='
-           				<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
-							<ogc:PropertyName>title</ogc:PropertyName>
-                			<ogc:SortOrder>ASC</ogc:SortOrder>
-            			</ogc:SortProperty>
-        			';
-			*/
-			
-			
 			// Filtre minimum: Produits publi?s avec métadonnée publiée et date de publication >= aujourd'hui
 			// Si aucun filtre n'a renvoy? de r?sultat ou si aucun filtre n'a ?t? demand?.
 			$arrCswMinMd=null;
@@ -475,10 +465,22 @@ class SITE_catalog {
 			
 			//echo "cswfilter:". $cswfilter;
 			
+			//$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
+			/*$sortBy='
+           				<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
+							<ogc:PropertyName>title</ogc:PropertyName>
+                			<ogc:SortOrder>ASC</ogc:SortOrder>
+            			</ogc:SortProperty>
+            			<ogc:SortProperty xmlns:ogc=\"http://www.opengis.net/ogc\">
+							<ogc:PropertyName>metadata_title</ogc:PropertyName>
+                			<ogc:SortOrder>ASC</ogc:SortOrder>
+            			</ogc:SortProperty>
+        			';
+			*/
 			//.$sortBy;
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
-			$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
+			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
 			$postResult;
 			
 			//Get the result from the server, only for count
@@ -494,15 +496,23 @@ class SITE_catalog {
 			$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase,$xmlBody);
 			$cswResults= simplexml_load_string($xmlResponse);
 			//echo var_dump($cswResults->saveXML())."<br>";
-		
+			$myDoc = new DomDocument();
+			$myDoc->loadXML($xmlBody);
+			$myDoc->save("C:\\RecorderWebGIS\\searchRequest.xml");
+			$myDoc = new DomDocument();
+			$myDoc->loadXML($cswResults->asXML());
+			$myDoc->save("C:\\RecorderWebGIS\\searchResult.xml");
 			//echo "dump the file: <br/><br/><br/>";
 			//echo $cswResults->asXML();
 			//echo "<br/> end dump the file";
 			
 			$total = 0;
-			if ($cswResults !=null){
-				foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) {
-					if ($a=='numberOfRecordsMatched'){
+			if ($cswResults !=null)
+			{
+				foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) 
+				{
+					if ($a=='numberOfRecordsMatched')
+					{
 						$total = $b;
 					}
 				}

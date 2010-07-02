@@ -408,7 +408,7 @@ class ADMIN_object {
 			// Récupérer l'attribut qui correspond au stockage de l'id
 			$idrow = array();
 			//$database->setQuery("SELECT CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, CONCAT(atns.prefix,':',at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace as ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace as atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
-			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
+			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 			$idrow = array_merge( $idrow, $database->loadObjectList() );
 			
 			// Récupérer la classe racine
@@ -473,7 +473,7 @@ class ADMIN_object {
 		}
 		/* Obsolète, maintenant on passe par une version */
 		// Créer une entrée dans la table des métadonnées pour la nouvelle métadonnée associée à cet objet
-		//$rowObject->metadata_id = $rowMetadata->id;	
+		$rowObject->metadata_id = $rowMetadata->id;	
 		if (!$rowObject->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listObject" );
@@ -481,7 +481,7 @@ class ADMIN_object {
 		}
 		
 		// Construire la nouvelle version
-		$rowObjectVersion= new objectversion( $database );
+		/*$rowObjectVersion= new objectversion( $database );
 		
 		$rowObjectVersion->object_id=$rowObject->id;
 		$rowObjectVersion->metadata_id=$rowMetadata->id;
@@ -500,7 +500,7 @@ class ADMIN_object {
 			$mainframe->redirect("index.php?option=$option&task=listObject" );
 			exit();
 		}	
-			
+		*/	
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );

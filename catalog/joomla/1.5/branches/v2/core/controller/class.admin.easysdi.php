@@ -85,8 +85,8 @@ class ADMIN_class {
 		$where = array();
 		// Keyword filter
 		if ($searchClass) {
-			$where[] = '(id LIKE '. (int) $searchClass .
-				' OR LOWER( name ) LIKE ' .$db->Quote( '%'.$db->getEscaped( $searchClass, true ).'%', false )
+			$where[] = '(c.id LIKE '. (int) $searchClass .
+				' OR LOWER( c.name ) LIKE ' .$db->Quote( '%'.$db->getEscaped( $searchClass, true ).'%', false )
 				//' OR LOWER( isocode ) LIKE ' .$db->Quote( '%'.$db->getEscaped( $searchClass, true ).'%', false ) 
 				.')';
 		}
