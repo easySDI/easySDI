@@ -37,7 +37,7 @@ class sdiTable extends JTable
 		parent::__construct ( $table , $id , $db ) ;    		
 	}
 	
-	function store ()
+	function store ($filter="", $filter_value="")
 	{
 		$user = JFactory::getUser();
 		$account = new accountByUserId($this->_db);
@@ -53,9 +53,17 @@ class sdiTable extends JTable
 		
 		if($this->ordering == 0)
 		{
-			$this->_db->setQuery( "SELECT COUNT(*) FROM  $this->_tbl " );
-			$this->ordering = $this->_db->loadResult() + 1;
-		}
+			if($filter)
+			{
+				$this->_db->setQuery( "SELECT COUNT(*) FROM  $this->_tbl WHERE $filter = '".$filter_value."'" );
+				$this->ordering = $this->_db->loadResult() + 1;
+			}
+			else
+			{
+				$this->_db->setQuery( "SELECT COUNT(*) FROM  $this->_tbl " );
+				$this->ordering = $this->_db->loadResult() + 1;
+			}
+		}		
 			
 		$this->updated = date('Y-m-d H:i:s'); 
 		$this->updatedby = $account->id;
@@ -63,10 +71,17 @@ class sdiTable extends JTable
 		return parent::store();
 	}
 	
-	function delete ()
+	function delete ($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		$this->_db->setQuery( "SELECT *  FROM $this->_tbl WHERE ordering > $this->ordering  order by ordering ASC" );
+		if(filter)
+		{
+			$this->_db->setQuery( "SELECT *  FROM $this->_tbl WHERE ordering > $this->ordering AND $filter = '".$filter_value."' order by ordering ASC" );
+		}
+		else
+		{
+			$this->_db->setQuery( "SELECT *  FROM $this->_tbl WHERE ordering > $this->ordering  order by ordering ASC" );
+		}
 		$rows = $this->_db->loadObjectList() ;
 		if ($this->_db->getErrorNum()) {
 			$this->setError($this->_db->getErrorMsg());
@@ -212,6 +227,12 @@ class sdiTable extends JTable
 			return false;
 		}
 		return $this->_db->loadResult();
+	 }
+	 
+	 function getObjectListAsArray()
+	 {
+	 	$this->_db->setQuery( "SELECT id AS value, name AS text FROM ".$this->_tbl." order by name" );
+	 	return  $this->_db->loadObjectList();
 	 }
 }
 
