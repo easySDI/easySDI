@@ -159,10 +159,7 @@ class ADMIN_basemap {
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_id );
 			exit();
 		}
-//		$query = "SELECT COUNT(*) FROM  #__sdi_basemap_content where basemap_id = ".$basemap_id ;
-//		$database->setQuery( $query );
-//		$total = $database->loadResult();	
-//		$rowBasemap->ordering = $total + 1;		
+	
 		
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
@@ -201,15 +198,6 @@ class ADMIN_basemap {
 		{
 			$Basemap = new basemap_content( $database );
 			$Basemap->load( $id );
-					
-//			$query = "SELECT *  FROM #__sdi_basemap_content  WHERE id = $id ";
-//			$database->setQuery( $query );
-//			$row1 = $database->loadObject() ;
-//				if ($database->getErrorNum()) {
-//						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//				}
-	
-			
 
 			if (!$Basemap->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

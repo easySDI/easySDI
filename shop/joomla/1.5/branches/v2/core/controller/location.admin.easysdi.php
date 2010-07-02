@@ -65,16 +65,6 @@ class ADMIN_location {
 		$database =& JFactory::getDBO(); 
 		$rowLocation = new location( $database );
 		$rowLocation->load( $id );					
-	
-		$user = JFactory::getUser();
-		$account = new accountByUserId($database);
-		$account->load($user->id);
-		if ($id == '0'){
-			$rowLocation->created =date('d.m.Y H:i:s');	
-			$rowLocation->createdby = $account->id;	 			
-		}
-		$rowLocation->updated = date('d.m.Y H:i:s'); 
-		$rowLocation->updatedby = $account->id;	
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
@@ -167,18 +157,11 @@ class ADMIN_location {
 			exit;
 		}
 		
-		$user = JFactory::getUser();
-		$account = new accountByUserId($database);
-		$account->load($user->id);
-		
 		foreach( $cid as $id )
 		{
 			$Location = new location( $database );
 			$Location->load( $id );
 			$Location->id=0;
-			$Location->created =date('d.m.Y H:i:s');	
-			$Location->createdby = $account->id;	 			
-					
 			if (!$Location->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listLocation" );

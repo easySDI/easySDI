@@ -274,7 +274,7 @@ class ADMIN_properties {
 			$where .= ' or LOWER(text) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
-		$query = "SELECT COUNT(*) FROM #__easysdi_product_properties_definition`";
+		$query = "SELECT COUNT(*) FROM #__sdi_property`";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
@@ -284,7 +284,7 @@ class ADMIN_properties {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'asc',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "published" and $filter_order <> "text" and $filter_order <> "mandatory" and $filter_order <> "update_date" and $filter_order <> "order")
+		if ($filter_order <> "id" and $filter_order <> "published" and $filter_order <> "description" and $filter_order <> "mandatory" and $filter_order <> "updated" and $filter_order <> "ordering")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "asc";
@@ -293,7 +293,7 @@ class ADMIN_properties {
 		$orderby 	= ' order by `'. $filter_order .'` '. $filter_order_Dir;
 		
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__easysdi_product_properties_definition ";		
+		$query = "SELECT * FROM #__sdi_property ";		
 		$query .= $where;
 		$query .= $orderby;						
 		
@@ -318,15 +318,20 @@ class ADMIN_properties {
 			if ($id==0){
 				$rowProperties->order="0";
 			}
-		$partners = array();
-		$partners[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_ROOT") );
+		$accounts = array();
+		$accounts[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_ROOT") );
 		$database->setQuery( "  SELECT a.id AS value, b.name AS text 
 								FROM #__sdi_account a,#__users b 
 								WHERE a.root_id is null 
 								AND a.user_id = b.id ORDER BY b.name" );
-		$partners = array_merge( $partners, $database->loadObjectList() );
+		$accounts = array_merge( $accounts, $database->loadObjectList() );
 		
-		HTML_properties::editProperties( $rowProperties,$partners, $id, $option );
+		
+		$languages = $rowProperties->publishedLanguages();
+		
+		$labels = $rowProperties->getLabels();
+		
+		HTML_properties::editProperties( $rowProperties,$accounts, $id, $languages, $labels,$option );
 	}
 	
 	function saveProperties($returnList ,$option){
@@ -340,18 +345,11 @@ class ADMIN_properties {
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );			
 		}
 		
-		$rowProperties->update_date = date('Y-m-d h:i:s');
-		
-		if ($rowProperties->order == "0")
-		{
-			$query = "select max( `order`)+1  FROM #__easysdi_product_properties_definition ";
-			$database->setQuery( $query );
-			$maxOrder = $database->loadResult();
-			if(!$maxOrder)$maxOrder = 1;
-			$rowProperties->order = $maxOrder; 
-		}
-		
 		if (!$rowProperties->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listProperties" );			
+		}
+		if (!$rowProperties->storeLabels()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );			
 		}

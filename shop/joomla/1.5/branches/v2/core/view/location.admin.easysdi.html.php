@@ -240,6 +240,7 @@ class HTML_location {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="guid" value="<?php echo $rowLocation->guid; ?>" />
 		</form>
 	<?php
 	}

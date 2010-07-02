@@ -17,19 +17,8 @@
  */
 
 
-class basemap extends JTable
+class basemap extends sdiTable
 {	
-	var $id=null;
-	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $updated=null;
-	var $createdby=null;
-	var $updatedby=null;
-	var $label=null;
-	var $ordering=0;	
 	var $projection=null;
 	var $unit=null;
 	var $minResolution=null;
@@ -75,19 +64,9 @@ class basemap extends JTable
 	}
 
 }
-class basemap_content extends JTable
+
+class basemap_content extends sdiTable
 {	
-	var $id=null;
-	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $updated=null;
-	var $createdby=null;
-	var $updatedby=null;
-	var $label=null;
-	var $ordering=0;
 	var $basemap_id=null;	
 	var $url=null;
 	var $urltype=null;
@@ -108,40 +87,6 @@ class basemap_content extends JTable
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_basemap_content', 'id', $db ) ;    		
-	}
-	
-	function store ()
-	{
-		if($this->ordering == 0)
-		{
-			$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_basemap_content where basemap_id = ".$this->basemap_id );
-			$this->ordering = $this->_db->loadResult() + 1;
-		}
-		
-		return parent::store();
-	}
-	
-	function delete ()
-	{
-		$this->_db->setQuery( "SELECT *  FROM #__sdi_basemap_content  WHERE  basemap_id = $this->basemap_id AND ordering > $this->ordering  order by ordering ASC" );
-		$rows = $this->_db->loadObjectList() ;
-		if ($this->_db->getErrorNum()) {
-			$this->setError($this->_db->getErrorMsg());
-			return false;
-		}	
-		
-		$o = $this->ordering;
-		foreach ($rows as $row )
-		{
-			$this->_db->setQuery( "update #__sdi_basemap_content set ordering= $o where id =$row->id" );	
-			$this->_db->query();			
-			if ($this->_db->getErrorNum()) {
-				$this->setError($this->_db->getErrorMsg());
-				return false;
-			}
-			$o = $o+1;
-		}	
-		return parent::delete();
 	}
 
 }

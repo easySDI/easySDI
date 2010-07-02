@@ -17,19 +17,8 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class perimeter extends JTable
+class perimeter extends sdiTable
 {	
-	var $id=null;
-	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $updated=null;
-	var $createdby=null;
-	var $updatedby=null;
-	var $label=null;
-	var $ordering=0;
 	var $urlwms=null;
 	var $minscale=0;
   	var $maxscale=-1;
@@ -60,49 +49,7 @@ class perimeter extends JTable
 		parent::__construct ( '#__sdi_perimeter', 'id', $db ) ;    		
 	}
 	
-	function store ()
-	{
-		$user = JFactory::getUser();
-		$account = new accountByUserId($this->_db);
-		$account->load($user->id);
-		if ($this->id == '0'){
-			$this->created =date('d.m.Y H:i:s');
-			$this->createdby = $account->id;	 			 			
-		}
-		$this->updated = date('d.m.Y H:i:s'); 
-		$this->updatedby = $account->id;
-		
-		if($this->ordering == 0)
-		{
-			$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_perimeter " );
-			$this->ordering = $this->_db->loadResult() + 1;
-		}
-		
-		return parent::store();
-	}
 	
-	function delete ()
-	{
-		$this->_db->setQuery( "SELECT *  FROM #__sdi_perimeter WHERE ordering > $this->ordering  order by ordering ASC" );
-		$rows = $this->_db->loadObjectList() ;
-		if ($this->_db->getErrorNum()) {
-			$this->setError($this->_db->getErrorMsg());
-			return false;
-		}	
-		
-		$o = $this->ordering;
-		foreach ($rows as $row )
-		{
-			$this->_db->setQuery( "update #__sdi_perimeter set ordering= $o where id =$row->id" );	
-			$this->_db->query();
-			if ($this->_db->getErrorNum()) {
-				$this->setError($this->_db->getErrorMsg());
-				return false;
-			}
-			$o = $o+1;
-		}	
-		return parent::delete();
-	}
 
 }
 

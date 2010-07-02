@@ -295,16 +295,13 @@ class ADMIN_perimeter {
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit;
 		}
-		$user = JFactory::getUser();
-		$account = new accountByUserId($database);
-		$account->load($user->id);
+
 		foreach( $cid as $id )
 		{
 			$Perimeter = new Perimeter( $database );
 			$Perimeter->load( $id );
 			$Perimeter->id=0;
-			$Perimeter->created =date('d.m.Y H:i:s');
-			$Perimeter->createdby = $account->id;	
+
 			if (!$Perimeter->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );

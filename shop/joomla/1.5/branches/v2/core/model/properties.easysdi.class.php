@@ -16,38 +16,30 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-class properties extends JTable
+class properties extends sdiTable
 {	
-	var $id=null;	
-	var $order=null;
 	var $mandatory=null;
-	var $text=null;	
 	var $published=null;
-	var $update_date = null;
-	var $partner_id=null;
-	var $type_code=null;
-	var $code=null;
-	var $translation=null;
+	var $account_id=null;
+	var $type_id=null;
+	var $type=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_product_properties_definition', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_property', 'id', $db ) ;    		
 	}
 
 }
 
-class properties_values extends JTable
+class properties_values extends sdiTable
 {	
-	var $id=null;
-	var $properties_id=null;
-	var $order=null;
-	var $value=null;
-	var $text=null;	
-	var $translation=null;
+	var $property_id=null;
+	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_product_properties_values_definition', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_property_value', 'id', $db ) ;    		
 	}
 
 }

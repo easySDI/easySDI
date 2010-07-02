@@ -17,25 +17,14 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class location extends JTable
+class location extends sdiTable
 {	
-	var $id=null;
-	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $updated=null;
-	var $createdby=null;
-	var $updatedby=null;
-	var $label=null;
-	var $ordering=0;
 	var $urlwfs=null;
 	var $featuretype=null;
 	var $fieldid=null;
 	var $fieldname=null;
   	var $fieldfilter=null;
-  	var $filterlocation_id=0;
+  	var $filterlocation_id=null;
 	var $islocalisation=0;
 	var $maxfeatures=-1;
 	var $multipleselection=1;

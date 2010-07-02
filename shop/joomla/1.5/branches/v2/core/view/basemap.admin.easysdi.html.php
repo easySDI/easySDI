@@ -186,6 +186,7 @@ class HTML_basemap {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
 		</form>
 	<?php
 	}
@@ -426,6 +427,7 @@ class HTML_basemap {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
 		</form>
 	<?php
 	}
