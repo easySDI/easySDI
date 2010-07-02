@@ -1713,6 +1713,19 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
+		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'CATALOG'";
+		$db->setQuery( $query);
+		$module_id = $db->loadResult();
+		
+		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'SHOP_PANEL', 'Shop Panel', 'Shop Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_shop\core\view\sub.ctrlpanel.admin.easysdi.html.php', '3')";
+		$db->setQuery( $query);		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
 		// Update component version
 		$version= '0.13';
 		$query="UPDATE #__sdi_list_module SET currentversion = ".$version." WHERE code='CATALOG'";
