@@ -43,8 +43,12 @@ class sdiTable extends JTable
 		$account = new accountByUserId($this->_db);
 		$account->load($user->id);
 		if ($this->id == '0'){
-			$this->created =date('d.m.Y H:i:s');
+			$this->created =date('Y-m-d H:i:s');
 			$this->createdby = $account->id;	 			 			
+		}
+		if ($this->guid == null || $this->guid == '0' )
+		{
+			$this->guid = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		}
 		
 		if($this->ordering == 0)
@@ -53,7 +57,7 @@ class sdiTable extends JTable
 			$this->ordering = $this->_db->loadResult() + 1;
 		}
 			
-		$this->updated = date('d.m.Y H:i:s'); 
+		$this->updated = date('Y-m-d H:i:s'); 
 		$this->updatedby = $account->id;
 		
 		return parent::store();
@@ -82,6 +86,60 @@ class sdiTable extends JTable
 		return parent::delete();
 	}
 
+	 function publishedLanguages ()
+	 {
+	 	$languages = array();
+		$this->_db->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
+		$languages = array_merge( $languages, $this->_db->loadObjectList() );
+		return $languages;
+	 } 
+	 
+	 function getLabels ()
+	 {
+	 	// Les labels
+		$labels = array();
+		$languages = $this->publishedLanguages();
+		foreach ($languages as $lang)
+		{
+			$this->_db->setQuery("SELECT label FROM #__sdi_translation WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
+			$label = $this->_db->loadResult();
+			$labels[$lang->id] = $label;
+		}
+		return $labels;
+	 }
+	 
+	 function storeLabels ()
+	 {
+	 // Stocker les labels
+		 $user =& JFactory::getUser();
+		 $languages = $this->publishedLanguages();
+		foreach ($languages as $lang)
+		{
+			$this->_db->setQuery("SELECT count(*) FROM #__sdi_translation WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
+			$total = $this->_db->loadResult();
+			
+			if ($total > 0)
+			{
+				//Update
+				$this->_db->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
+				if (!$this->_db->query())
+					{	
+						$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+						return false;
+					}
+			}
+			else
+			{
+				// Create
+				$this->_db->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$this->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				if (!$this->_db->query())
+				{	
+					$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+		}
+	 }
 
 }
 
