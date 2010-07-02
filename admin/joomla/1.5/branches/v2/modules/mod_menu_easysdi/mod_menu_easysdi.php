@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 defined('_JEXEC') or die('Restricted access');
-require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once(JPATH_BASE.DS.'administrator'.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 
 
 $user = JFactory::getUser();
@@ -35,12 +35,11 @@ if (!$user->guest)
 	<?php 
 	if(userManagerRight::isEasySDIUser($user))
 	{
-		
 		?>
 		<ul class="menu">
 		<?php 
 		$db =& JFactory::getDBO();
-		$rowPartner = new partnerByUserId( $db );
+		$rowPartner = new accountByUserId( $db );
 		$rowPartner->load( $user->id );
 		
 		/*
@@ -52,20 +51,20 @@ if (!$user->guest)
 		$count = $db->loadResult();
 		if ($count > 0) 
 		{			
-			if(userManagerRight::hasRight($rowPartner->partner_id,"MYACCOUNT"))
+			if(userManagerRight::hasRight($rowPartner->id,"MYACCOUNT"))
 			{
 				?>
 				<li >
-				<a href ="./index.php?option=com_easysdi_core&task=showPartner"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"); ?></span></a>
+				<a href ="./index.php?option=com_easysdi_core&task=showaccount"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYACCOUNT"); ?></span></a>
 				</li>
 				
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"ACCOUNT"))
+			if(userManagerRight::hasRight($rowPartner->id,"ACCOUNT"))
 			{
 				?>
 				<li >
-				<a href ="./index.php?option=com_easysdi_core&task=listAffiliatePartner"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"); ?></span></a>
+				<a href ="./index.php?option=com_easysdi_core&task=listAffiliateAccount"><span><?php echo JText::_("EASYSDI_MENU_ITEM_MYAFFILIATES"); ?></span></a>
 				</li>
 				
 				<?php
@@ -92,8 +91,8 @@ if (!$user->guest)
 		$count = $db->loadResult();
 		if ($count > 0) 
 		{
-			if(userManagerRight::hasRight($rowPartner->partner_id,"REQUEST_INTERNAL") 
-				|| userManagerRight::hasRight($rowPartner->partner_id,"REQUEST_EXTERNAL") )
+			if(userManagerRight::hasRight($rowPartner->id,"REQUEST_INTERNAL") 
+				|| userManagerRight::hasRight($rowPartner->id,"REQUEST_EXTERNAL") )
 			{
 				?>
 				<li>
@@ -101,7 +100,7 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"METADATA"))
+			if(userManagerRight::hasRight($rowPartner->id,"METADATA"))
 			{
 				?>
 				<li>
@@ -110,7 +109,7 @@ if (!$user->guest)
 				
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"PRODUCT"))
+			if(userManagerRight::hasRight($rowPartner->id,"PRODUCT"))
 			{
 				?>
 				<li>
@@ -118,7 +117,7 @@ if (!$user->guest)
 				</li>
 				<?php
 			}
-			if(userManagerRight::hasRight($rowPartner->partner_id,"FAVORITE"))
+			if(userManagerRight::hasRight($rowPartner->id,"FAVORITE"))
 			{
 				?>
 				<li>
@@ -137,7 +136,7 @@ if (!$user->guest)
 			$db->setQuery( $query);
 			$product_count = $db->loadResult();
 			if($product_count > 0)*/
-			if (userManagerRight::hasRight($rowPartner->partner_id,"DIFFUSION"))
+			if (userManagerRight::hasRight($rowPartner->id,"DIFFUSION"))
 			{
 				?>
 				<li>
@@ -180,7 +179,7 @@ class userManagerRight
 	static function isEasySDIUser ($user)
 	{
 		$database =& JFactory::getDBO(); 
-		$database->setQuery( "SELECT COUNT(*) FROM #__easysdi_community_partner WHERE user_id=".$user->id);
+		$database->setQuery( "SELECT COUNT(*) FROM #__sdi_account WHERE user_id=".$user->id);
 		$result = $database->loadResult();
 		if($result == 1)
 		{
@@ -196,13 +195,11 @@ class userManagerRight
 		$database =& JFactory::getDBO();		
 		
 		$query = "SELECT count(*) 
-				  FROM #__easysdi_community_actor a ,
-				  	   #__easysdi_community_role b  
-				  WHERE a.role_id = b.role_id 
-				  and partner_id = $partner_id 
-				  and role_code = '$right'";
-		
-				
+				  FROM #__sdi_actor a ,
+				  	   #__sdi_list_role b  
+				  WHERE a.role_id = b.id 
+				  and account_id = $partner_id 
+				  and b.code = '$right'";
 		$database->setQuery($query );
 		$total = $database->loadResult();
 		
