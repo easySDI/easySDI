@@ -38,6 +38,7 @@ if (!is_array( $cid )) {
 }
 
 global $mainframe;
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'sditable.easysdi.class.php');
 
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'mailing.easysdi.class.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'mailing.toolbar.easysdi.html.php');
@@ -580,6 +581,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'config.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'ctrlpanel.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'ctrlpanel.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'module.panel.easysdi.class.php');
 
 		ADMIN_config::saveShowConfig($option);
 		ADMIN_ctrlpanel::ctrlPanelCore($option);
@@ -599,6 +601,7 @@ switch($task){
 	case "cancelConfig":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'ctrlpanel.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'ctrlpanel.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'module.panel.easysdi.class.php');
 
 		ADMIN_ctrlpanel::ctrlPanelCore($option);
 		break;
@@ -668,6 +671,7 @@ switch($task){
 	default:
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'ctrlpanel.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'ctrlpanel.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'module.panel.easysdi.class.php');
 
 		ADMIN_ctrlpanel::ctrlPanelCore($option);	
 		break;
