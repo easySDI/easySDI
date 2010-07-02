@@ -19,7 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 class HTML_ctrlpanel {
-	function ctrlPanelCore($option, $catalogExist, $proxyExist, $shopExist,$panels){
+	function ctrlPanelCore($option, $panels){
 			JToolBarHelper::title( JText::_(  'CORE_CPANEL_TITLE' ), 'generic.png' );
 			global $mainframe;
 			$lang		=& JFactory::getLanguage();
