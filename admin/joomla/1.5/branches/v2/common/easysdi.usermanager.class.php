@@ -18,12 +18,7 @@ class userManager
 		}
 	}
 	
-	static function getEasySDIAccountsList ()
-	{
-		$database =& JFactory::getDBO();
-		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
-		return  $database->loadObjectList();
-	}
+	
 	
 	static function hasRight($account_id,$right){
 				
