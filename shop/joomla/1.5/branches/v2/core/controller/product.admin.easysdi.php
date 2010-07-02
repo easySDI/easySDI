@@ -108,7 +108,7 @@ class ADMIN_product {
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$rowsAccount = array_merge($rowsAccount,userManager::getEasySDIAccountsList());
+		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		//List of partners with PRODUCT right
 		$partners = array();

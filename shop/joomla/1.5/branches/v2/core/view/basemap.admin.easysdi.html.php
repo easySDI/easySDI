@@ -38,14 +38,14 @@ class HTML_basemap {
 				document.getElementById('password').value = "";
 				document.getElementById('user').disabled = true;
 				document.getElementById('user').value ="";
-				document.getElementById('easysdi_account_id').disabled = false;
+				document.getElementById('account_id').disabled = false;
 			}
 			else
 			{
 				document.getElementById('password').disabled = false;
 				document.getElementById('user').disabled = false;
-				document.getElementById('easysdi_account_id').disabled = true;
-				document.getElementById('easysdi_account_id').value = '0';
+				document.getElementById('account_id').disabled = true;
+				document.getElementById('account_id').value = '0';
 			}
 		}		
 		</script>
@@ -212,9 +212,11 @@ class HTML_basemap {
 		
 		<table width="100%">
 			<tr>
-				<td align="right">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="searchBaseMapContent" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listBasemapContent');" />			
+				<td align="left" width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchBaseMapContent" id="searchBaseMapContent" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchBaseMapContent').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -440,14 +442,17 @@ class HTML_basemap {
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASEMAP"));
 		?>
 		<form action="index.php" method="post" name="adminForm">
+			
 			<table width="100%">
-				<tr>
-					<td align="right">
-						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-						<input type="text" name="searchBaseMap" value="<?php echo $search;?>" class="inputbox" onchange="javascript:submitbutton('listBasemap');" />			
-					</td>
-				</tr>
-			</table>
+			<tr>
+				<td align="left" width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchBaseMap" id="searchBaseMap" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchBaseMapContent').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 			<table width="100%">
 				<tr>																																			
 					<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listBasemap\');"',$use_pagination); ?></td>

@@ -21,66 +21,24 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_basemap {
 	
 	
-	function orderUpBasemapContent($id,$basemapId){
+	function orderUpBasemapContent($cid){
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-
-		$query = "SELECT *  FROM #__sdi_basemap_content  WHERE id = $id AND basemap_id = $basemapId";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-
-		$query = "SELECT *  FROM #__sdi_basemap_content  WHERE  basemap_id = $basemapId AND ordering < $row1->ordering  order by ordering DESC";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
+		$db =& JFactory::getDBO();
 		
-		$query = "update #__sdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
-				
-		$query = "update #__sdi_basemap_content set ordering= $row2->ordering where id =$row1->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}
+		$basemap_content = new basemap_content( $db );
+		$basemap_content->load( $cid [0]);
+		$basemap_content->orderUp();
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_content->basemap_id );
 	}
 	
-	function orderDownBasemapContent($id,$basemapId){
+	function orderDownBasemapContent($cid){
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-
-		$query = "SELECT *  FROM #__sdi_basemap_content  WHERE id = $id AND basemap_id = $basemapId";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-
-		$query = "SELECT *  FROM #__sdi_basemap_content  WHERE  basemap_id = $basemapId AND ordering > $row1->ordering  order by ordering";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-	
-		$query = "update #__sdi_basemap_content set ordering= $row1->ordering where id =$row2->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
-				
-		$query = "update #__sdi_basemap_content set ordering= $row2->ordering where id =$row1->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
+		$db =& JFactory::getDBO();
+		
+		$basemap_content = new basemap_content( $db );
+		$basemap_content->load( $cid [0]);
+		$basemap_content->orderDown();
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_content->basemap_id );
 	}
 	
 	function listBasemapContent($basemap_id,$option) {
@@ -90,9 +48,6 @@ class ADMIN_basemap {
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
-		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		$search = $mainframe->getUserStateFromRequest( "searchBaseMapContent{$option}", 'searchBaseMapContent', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		$order_field = JRequest::getVar('order_field');
@@ -101,21 +56,20 @@ class ADMIN_basemap {
 		{
 			$basemap_id = JRequest::getVar('basemap_id');
 		}
-		$query = "SELECT COUNT(*) FROM #__sdi_basemap_content where basemap_id = ".$basemap_id;
 		
-		//$query .= $filter;
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$basemap_content = new basemap_content( $db );
+		$total = $basemap_content->getObjectCount($basemap_id);
+		
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// Recherche des enregistrements selon les limites
 		if($order_field)
 		{
-			$query = "SELECT * FROM #__sdi_basemap_content where basemap_id = $basemap_id order by $order_field";
+			$query = "SELECT * FROM ".$basemap_content->_tbl." where basemap_id = $basemap_id order by $order_field";
 		}
 		else
 		{
-			$query = "SELECT * FROM #__sdi_basemap_content where basemap_id = $basemap_id order by ordering";
+			$query = "SELECT * FROM ".$basemap_content->_tbl." where basemap_id = $basemap_id order by ordering";
 		}		
 					
 		if ($use_pagination) {
@@ -141,8 +95,7 @@ class ADMIN_basemap {
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
-		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
+		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		HTML_Basemap::editBasemapContent( $rowBasemap, $rowsAccount, $id, $option );
 	}
@@ -159,7 +112,6 @@ class ADMIN_basemap {
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_id );
 			exit();
 		}
-	
 		
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
@@ -215,22 +167,15 @@ class ADMIN_basemap {
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
-//		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-//		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-//		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
-//		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-//		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		$search				= $mainframe->getUserStateFromRequest( "searchBaseMap{$option}",'searchBaseMap','','string' );
 		$search				= JString::strtolower( $search );
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_basemap";
-		
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$basemap = new basemap( $db );
+		$total = $basemap->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__sdi_basemap ";	
+		$query = "SELECT * FROM ".$basemap->_tbl;	
 		if($search)
 		{
 			$query .= " WHERE LOWER(name) like ".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );

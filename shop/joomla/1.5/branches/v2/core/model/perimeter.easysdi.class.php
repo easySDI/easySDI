@@ -49,6 +49,11 @@ class perimeter extends sdiTable
 		parent::__construct ( '#__sdi_perimeter', 'id', $db ) ;    		
 	}
 	
+	function setLocalisation ($bool)
+	{
+		$this->isLocalisation = $bool;
+		$this->store();
+	}
 	
 
 }

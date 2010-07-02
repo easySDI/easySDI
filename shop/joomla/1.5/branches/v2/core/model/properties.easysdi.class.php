@@ -16,7 +16,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-class properties extends sdiTable
+class property extends sdiTable
 {	
 	var $mandatory=null;
 	var $published=null;
@@ -29,10 +29,32 @@ class properties extends sdiTable
 	{
 		parent::__construct ( '#__sdi_property', 'id', $db ) ;    		
 	}
+	
+	function publish ()
+	{
+		$this->published = 1;
+		return $this->store();
+	}
+	
+	function unpublish()
+	{
+		$this->published = 0;
+		return $this->store();
+	}
+	
+	function loadPropertyValues ()
+	{
+		$this->_db->setQuery( "SELECT * FROM #__sdi_property_value where property_id=".$this->id );
+		$property = $this->_db->loadObject();
+		if ($this->_db->getErrorNum()) {						
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");						 		
+		}
+		return $property;
+	}
 
 }
 
-class properties_values extends sdiTable
+class property_value extends sdiTable
 {	
 	var $property_id=null;
 	
@@ -40,6 +62,28 @@ class properties_values extends sdiTable
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_property_value', 'id', $db ) ;    		
+	}
+	
+	function store ()
+	{
+		return parent::store("property_id",$this->property_id);
+	}
+	
+	function delete ()
+	{
+		return parent::delete("property_id",$this->property_id);
+	}
+	
+	function getObjectCount($property_id)
+	{
+		$this->_db->setQuery( "select count(*) from  $this->_tbl WHERE property_id=".$property_id );
+	 	$result = $this->_db->loadResult();
+		if ($this->_db->getErrorNum())
+		{	
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		return $result;
 	}
 
 }

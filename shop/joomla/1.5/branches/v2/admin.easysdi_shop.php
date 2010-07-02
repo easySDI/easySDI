@@ -170,8 +170,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'basemap.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
 		
-		ADMIN_basemap::orderUpBasemapContent($cid[0],JRequest::getVar('basemap_id'));
-		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_id') );
+		ADMIN_basemap::orderUpBasemapContent($cid);
+		
 		break;
 		
 	case "orderdownbasemapcontent":
@@ -180,8 +180,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'basemap.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
 		
-		ADMIN_basemap::orderDownBasemapContent($cid[0],JRequest::getVar('basemap_id'));
-		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_id') );
+		ADMIN_basemap::orderDownBasemapContent($cid);
+		
 		break;
 		
 	case "listBasemapContent":
@@ -264,7 +264,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'properties.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'properties.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'properties.easysdi.class.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 		
 		ADMIN_properties::goUpPropertyValue($cid,$option);
 		break;
@@ -275,7 +274,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'properties.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'properties.easysdi.class.php');
 		
-		ADMIN_properties::saveOrderPropertiesValues($cid, JRequest::getVar('properties_id'), $option);
+		ADMIN_properties::saveOrderPropertiesValues($cid, JRequest::getVar('property_id'), $option);
 		break;
 		
 	case "savePropertiesValues":		
@@ -322,7 +321,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'properties.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'properties.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'properties.easysdi.class.php');
-		$cid[0] = JRequest::getVar('properties_id');
+		$cid[0] = JRequest::getVar('property_id');
 		
 	case "listPropertiesValues":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'properties.toolbar.easysdi.html.php');

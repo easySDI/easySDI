@@ -88,6 +88,28 @@ class basemap_content extends sdiTable
 	{
 		parent::__construct ( '#__sdi_basemap_content', 'id', $db ) ;    		
 	}
+	
+	function store ()
+	{
+		return parent::store("basemap_id",$this->basemap_id);
+	}
+	
+	function delete ()
+	{
+		return parent::delete("basemap_id",$this->basemap_id);
+	}
+	
+	function getObjectCount($basemap_id)
+	{
+		$this->_db->setQuery( "select count(*) from  $this->_tbl WHERE basemap_id=".$basemap_id );
+	 	$result = $this->_db->loadResult();
+		if ($this->_db->getErrorNum())
+		{	
+			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		return $result;
+	}
 
 }
 ?>

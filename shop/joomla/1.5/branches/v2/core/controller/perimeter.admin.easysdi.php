@@ -43,11 +43,8 @@ class ADMIN_perimeter {
 			$where .= ' or LOWER(perimeter_desc) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_perimeter";
-		
-		//$query .= $filter;
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$perimeter = new perimeter( $db );
+		$total = $perimeter->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// table ordering
@@ -64,7 +61,7 @@ class ADMIN_perimeter {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT id,urlwfs,layername,name,description, ordering FROM #__sdi_perimeter ";		
+		$query = "SELECT * FROM ".$perimeter->_tbl;		
 		$query .= $where;
 		$query .= $orderby;
 									
@@ -85,71 +82,22 @@ class ADMIN_perimeter {
 	}
 	
 	function goDownPerimeter($cid,$option){
-
 			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
-			$query = "select * from  #__sdi_perimeter  where id=$cid[0]";
-			$db->setQuery( $query );
-			
-			$row1 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-							
-			$query = "select * from  #__sdi_perimeter  where ordering > $row1->ordering   order by ordering ";
-			$db->setQuery( $query );
-			$row2 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			
-			$query = "update #__sdi_perimeter set ordering= $row1->ordering where id =$row2->id";
-			$db->setQuery( $query );
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-			
-			$query = "update #__sdi_perimeter set ordering= $row2->ordering where id =$row1->id";
-			$db->setQuery( $query );
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-
+			$perimeter = new perimeter( $db );
+			$perimeter->load( $cid [0]);
+			$perimeter->orderDown();
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 	}
 	
 	function goUpPerimeter($cid,$option){
-
 			global  $mainframe;
 			$db =& JFactory::getDBO();
 			
-			$query = "select * from  #__sdi_perimeter where id=$cid[0]";
-			$db->setQuery( $query );
-			
-			$row1 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-								
-			$query = "select * from  #__sdi_perimeter  where ordering < $row1->ordering  order by ordering desc";
-			$db->setQuery( $query );
-			$row2 = $db->loadObject() ;
-			if ($db->getErrorNum()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			
-			$query = "update #__sdi_perimeter set ordering= $row1->ordering where id =$row2->id";
-			$db->setQuery( $query );				
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}		
-			
-			$query = "update #__sdi_perimeter set ordering= $row2->ordering where id =$row1->id";
-			$db->setQuery( $query );				
-			if (!$db->query()) {		
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");								
-			}	
+			$perimeter = new perimeter( $db );
+			$perimeter->load( $cid [0]);
+			$perimeter->orderUp();
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );				
 	}
 	
@@ -158,31 +106,24 @@ class ADMIN_perimeter {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		
-		$query = "select count(*) from  #__sdi_perimeter ";								
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$perimeter =& new perimeter( $db );
+		$total = $perimeter->getObjectCount();
 
 		if (empty( $cid)) {
 			return JError::raiseWarning( 500, JText::_( 'No items selected' ) );
 		}
 
-		$rowMPerimeter =& new Perimeter( $db );
-		
-		if ($db->getErrorNum()) {						
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
-			exit();			
-		}
 		
 		$order = $_POST[order];
 		
 		// update ordering values
 		for ($i = 0; $i < $total; $i++)
 		{
-			$rowMPerimeter->load($cid[$i]);
-			if ($rowMPerimeter->ordering != $order[$i])
+			$perimeter->load($cid[$i]);
+			if ($perimeter->ordering != $order[$i])
 			{
-				$rowMPerimeter->ordering = $order[$i];
-				if (!$rowMPerimeter->store()) {
+				$perimeter->ordering = $order[$i];
+				if (!$perimeter->store()) {
 					return JError::raiseError( 500, $db->getErrorMsg() );
 				}
 			}
@@ -193,22 +134,20 @@ class ADMIN_perimeter {
 	
 	function editPerimeter( $id, $option ) {
 		$database =& JFactory::getDBO(); 
-		$rowPerimeter = new Perimeter( $database );
-		$rowPerimeter->load( $id );					
+		$perimeter = new perimeter( $database );
+		$perimeter->load( $id );					
 		 
 		
 		$perimList = array();
 		$perimList [] = JHTML::_('select.option','-1', JText::_("EASYSDI_PERIM_LIST") );
-		$database->setQuery( "SELECT id AS value, name AS text FROM #__sdi_perimeter order by name" );
-		$perimList = array_merge($perimList, $database->loadObjectList());
+		$perimList = array_merge($perimList, $perimeter->getObjectListAsArray());
 									
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
-		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
+		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
-		HTML_Perimeter::editPerimeter( $rowPerimeter, $rowsAccount, $perimList,$id, $option );
+		HTML_Perimeter::editPerimeter( $perimeter, $rowsAccount, $perimList,$id, $option );
 	}
 	
 	function savePerimeter($returnList ,$option){
@@ -226,11 +165,9 @@ class ADMIN_perimeter {
 		//If a filter perimeter is selected, disable it for the use in manual perimeter (AKA localisation)
 		if($rowPerimeter->filterperimeter_id > 0 )
 		{
-			$query = "UPDATE #__sdi_perimeter  SET is_localisation = 0 WHERE id = $rowPerimeter->filterperimeter_id";
-			$database->setQuery($query);
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->stderr(),'error');
-			}
+			$perimeter =&	 new perimeter($database);
+			$perimeter->load($rowPerimeter->filterperimeter_id);
+			$perimeter->setLocalisation(0);
 		}
 		else
 		{
@@ -301,7 +238,8 @@ class ADMIN_perimeter {
 			$Perimeter = new Perimeter( $database );
 			$Perimeter->load( $id );
 			$Perimeter->id=0;
-
+			$Perimeter->guid=0;
+			$Perimeter->ordering=0;
 			if (!$Perimeter->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );

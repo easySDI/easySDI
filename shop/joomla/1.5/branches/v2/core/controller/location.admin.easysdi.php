@@ -27,18 +27,13 @@ class ADMIN_location {
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
-//		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-//		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-//		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_location";
-		//$query .= $filter;
-		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$location = new location( $db );
+		$total = $location->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT id,urlwfs,name,description FROM #__sdi_location ";
+		$query = "SELECT * FROM ".$location->_tbl ;
 		$search	= $mainframe->getUserStateFromRequest( "$option.searchLocation",'searchLocation','','string' );
 		$search	= JString::strtolower( $search );
 		if ($search)
@@ -69,8 +64,7 @@ class ADMIN_location {
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
-		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
-		$rowsAccount = array_merge($rowsAccount, $database->loadObjectList());
+		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		HTML_Location::editLocation( $rowLocation,$rowsAccount,$id, $option );
 	}
@@ -79,41 +73,39 @@ class ADMIN_location {
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		$rowLocation =&	 new location($database);
+		$location =&	 new location($database);
 				
-		if (!$rowLocation->bind( $_POST )) {			
+		if (!$location->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit();
 		}
 				
 		//If a filter location is selected, disable it for the use in location
-		if($rowLocation->filterlocation_id > 0 )
+		if($location->filterlocation_id > 0 )
 		{
-			$query = "UPDATE #__sdi_location  SET islocalisation = 0 WHERE id = $rowLocation->filterlocation_id";
-			$database->setQuery($query);
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->stderr(),'error');
-			}
+			$loc =&	 new perimeter($database);
+			$loc->load($location->filterlocation_id);
+			$loc->setLocalisation(0);
 		}
 		else
 		{
 			//delete the default value
-			$rowLocation->filterlocation_id = null;
+			$location->filterlocation_id = null;
 		}
-		echo $rowLocation->filterlocation_id;
+		echo $location->filterlocation_id;
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
 		{
-			$rowLocation->user = "";
-			$rowLocation->password = "";
+			$location->user = "";
+			$location->password = "";
 		}
 		else
 		{
-			$rowLocation->account_id="";
+			$location->account_id="";
 		}
 		
-		if (!$rowLocation->store()) {
+		if (!$location->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit();
@@ -162,6 +154,7 @@ class ADMIN_location {
 			$Location = new location( $database );
 			$Location->load( $id );
 			$Location->id=0;
+			$location->guid=0;
 			if (!$Location->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listLocation" );
