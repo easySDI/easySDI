@@ -18,73 +18,6 @@ defined('_JEXEC') or die('Restricted access');
 
 class helper_easysdi{
 
-	function generateHtmlLocationSelect($row,$parent){
-		$db =& JFactory::getDBO();
-
-		if ($row->id_location_filter > 0 ){
-			$query = "SELECT * FROM #__easysdi_location_definition where id = $row->id_location_filter";
-			$db->setQuery( $query );
-			$rows2 = $db->loadObject();
-			helper_easysdi::generateHtmlLocationSelect($rows2,$row->id);
-
-		}
-		if ($parent == 0){
-			echo "<tr>";
-			echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"recenterOnLocationLocation('locationsListLocation$row->id')\"><option > </option></select></td>";
-
-			echo "</tr>";
-		}else{
-			
-			if ($row->searchbox == 1) {
-				echo "<tr>";
-				echo "<td><select style='display:none'  id=\"locationsListLocation$row->id\"	><option > </option></select></td>";
-				echo "</tr>";
-				echo "<tr>";
-				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
-							type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
-				echo "</tr>";
-			}
-			else
-			{
-				echo "<tr>";
-				echo "<td><select style='display:none' id=\"locationsListLocation$row->id\"	onChange=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \"><option > </option></select></td>";
-				echo "</tr>";
-			}
-		}
-
-	}
-
-     
-      
-	function generateHtmlPerimeterSelect($row,$parent){
-		$db =& JFactory::getDBO();
-		if ($row->id_perimeter_filter > 0 )
-		{
-			$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
-			$db->setQuery( $query );
-			$rows2 = $db->loadObject();
-			helper_easysdi::generateHtmlPerimeterSelect($rows2,$row->id);
-
-		}
-		if ($parent == 0){
-			echo "<tr>";
-			echo "<td><select style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"recenterOnPerimeterPerimeter('perimetersListPerimeter$row->id')\"><option > </option></select></td>";
-
-			echo "</tr>";
-		}else{
-			echo "<tr>";
-			echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent', '$parent') \"><option > </option></select></td>";
-			echo "</tr>";
-			if ($row->searchbox == 1) {
-				echo "<tr >";
-				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
-				echo "<input style='display:none' onClick=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent''') \" type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
-				echo "</tr>";
-			}
-		}
-
-	}
 	
 
 	function hasRight($partner_id,$right){
@@ -827,6 +760,16 @@ default:
     return $array_diff;
 }
 	
+	function alter_array_value_with_JTEXT_(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => $row)
+			{		  	
+      			$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
 }
 
 ?>
