@@ -126,21 +126,11 @@ echo $pane->endPanel();
 		
 		foreach ($theServer->FeatureTypes->FeatureType as $ft )
 		{
-			if (! (strrpos($featureType->{'Name'}, ":") ===False))
-			{			 
-				if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0)
-				{
-					return HTML_proxy::buildAttributesListString($ft->Attributes);
-				}
-			}
-			else 
-			{
 				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0)
 				{
 					return HTML_proxy::buildAttributesListString($ft->Attributes);
 				}
 			}
-		}
 		return "";
 	}
 	
@@ -163,21 +153,11 @@ echo $pane->endPanel();
 
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
 
-			if (! (strrpos($featureType->{'Name'}, ":") ===False))
-			{			 
-				if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0)
-				{
-					return $ft->{'RemoteFilter'};
-				}
-			}
-			else 
-			{
 				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0)
 				{
 					return $ft->{'RemoteFilter'};
 				}
 			}
-		}
 
 		return "";
 	}
@@ -187,18 +167,11 @@ echo $pane->endPanel();
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
 
-			if (!(strrpos($featureType->{'Name'}, ":") ===False)){			 
-			if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0){
-
-				return $ft->{'LocalFilter'};
-			}}else{
 			if (strcmp($ft->{'Name'},$featureType->{'Name'})==0){
 
 				return $ft->{'LocalFilter'};
 			}	
 			}
-		}
-
 		return "";
 	}
 
@@ -212,23 +185,11 @@ echo $pane->endPanel();
 
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (!(strrpos($layer->{'Name'}, ":") ===False))
-			{
-				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
-				{
-					return $theLayer->{'Filter'};
-				}
-			}
-			else
-			{				
 				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
 				{
 					return $theLayer->{'Filter'};
 				}
 			}
-			
-		}
-
 		return "";
 	}
 
@@ -238,21 +199,11 @@ echo $pane->endPanel();
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (!(strrpos($layer->{'Name'}, ":") ===False))
-			{
-				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
-				{
-					return $theLayer->ScaleMin;
-				}
-			}
-			else
-			{				
 				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
 				{
 					return $theLayer->ScaleMin;
 				}
 			}
-		}
 		return "";
 	}
 
@@ -260,21 +211,11 @@ echo $pane->endPanel();
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (!(strrpos($layer->{'Name'}, ":") ===False))
-			{
-				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
-				{
-					return $theLayer->ScaleMax;
-				}
-			}
-			else
-			{				
 				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
 				{
 					return $theLayer->ScaleMax;
 				}
 			}
-		}
 		return "";
 	}
 
@@ -287,21 +228,11 @@ echo $pane->endPanel();
 
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-			if (!(strrpos($layer->{'Name'}, ":") ===False))
-			{
-				if (strcmp($theLayer->{'Name'},substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1))==0)
-				{
-					return true;
-				}
-			}
-			else
-			{				
 				if (strcmp($theLayer->{'Name'},$layer->{'Name'})==0)
 				{
 					return true;
 				}
 			}
-		}
 		return false;
 	}
 
@@ -312,24 +243,12 @@ echo $pane->endPanel();
 		
 		if (count($theServer->FeatureTypes->FeatureType )==0) return false;
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
-
-			
-			if (!(strrpos($featureType->{'Name'}, ":") ===False)){
-				if (strcmp($ft->{'Name'},substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1))==0){
-
-					return true;
-				}
-			}else{				
 				if (strcmp($ft->{'Name'},$featureType->{'Name'})==0){
 					
 					return true;
 				}
 
 			}
-
-
-		}
-
 		return false;
 
 
@@ -1286,20 +1205,7 @@ function generateWMSHTML($config,$thePolicy){
 	    		$separator = "?";  
 			}
 
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
-			/*
-			$xml = explode("\n", $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
-			
-			if (!$xmlCapa) {
-			    $errors = libxml_get_errors();
-				echo "Erreurs:<br>";
-			    foreach ($errors as $error) {
-			        echo display_xml_error($error, $xml);
-			    }
-			
-			    libxml_clear_errors();
-			}
-			*/
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.1.1&SERVICE=WMS");
 			
 			if ($xmlCapa === false){
 					global $mainframe;		
@@ -1348,6 +1254,7 @@ function generateWMSHTML($config,$thePolicy){
 	</tr>
 
 	<?php
+	$layernum = 0;
 	foreach ($xmlCapa->xpath('//Layer') as $layer){
 		if ($layer->{'Name'} !=null){
 			if (strlen($layer->{'Name'})>0 ){
@@ -1356,45 +1263,34 @@ function generateWMSHTML($config,$thePolicy){
 		<td class="key" >
 			<table width ="100%" height="100%" >
 				<tr valign="top" >
-					<td width="15">
-						<input
-						onClick="activateLayer('<?php echo $iServer ; ?>','<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>')"
-						<?php if( HTML_proxy::isLayerChecked($theServer,$layer)) echo 'checked';?>
-						type="checkbox"
-						id="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-						name="layer@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-						value="<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>">
-					</td>
-					<td align="left">
-					 <?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>
-					</td>			
+				<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer)) echo 'checked';?> type="checkbox"
+					id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+					name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
+					value="<?php echo $layer->Name;?>"></td>
+				<td align="left"><?php echo $layer->Name; ?></td>
 				</tr>
 				<tr >
-					<td colspan="2" align="left">
-					"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1);}else{echo $layer->Title;}?>"
+				<td colspan="2" align="left">"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1);}else{echo $layer->Title;}?>"
 					</td>
 				</tr>
 			</table>		
 		</td>
-		<td align = "center"><input 
-		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
-			type="text" size="10"
-			id="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="scaleMin@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+		<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> type="text" size="10"
+			id="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+			name="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 			value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
-		<td  align = "center"><input
-		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
-			type="text" size="10"
-			id="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="scaleMax@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
+		<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> type="text" size="10"
+			id="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum?>" 
+			name="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 			value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
-		<td><textarea
-		<?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?>
-			rows="3" cols="60"
-			id="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (!(strpos($layer->{'Name'},":")===False)) {echo substr($layer->{'Name'},strrpos($layer->{'Name'}, ":")+1);}else{echo $layer->Name;}?>"> <?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
+		<td><textarea <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> rows="3" cols="60"
+			id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+			name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
+			<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 	</tr>
-	<?php }}}?>
+	<?php }}
+	$layernum += 1;
+	}?>
 </table>
 
 </fieldset>
@@ -1437,7 +1333,7 @@ function generateWMSHTML($config,$thePolicy){
 	    		$separator = "?";  
 			}
 			
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.0.0&SERVICE=WFS");
 			if ($xmlCapa === false){
 					global $mainframe;		
 							$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
@@ -1509,12 +1405,9 @@ function generateWMSHTML($config,$thePolicy){
 	    		$separator = "?";  
 			}
 	
+	$ftnum = 0;
 	foreach ($xmlCapa->{'FeatureTypeList'}->{'FeatureType'} as $featureType){
-		if (! (strrpos($featureType->{'Name'}, ":") ===False)){			
-			$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1));
-		}else{
 			$xmlDescribeFeature = simplexml_load_file($urlWithPassword.$separator."VERSION=1.0.0&REQUEST=DescribeFeatureType&SERVICE=WFS&TYPENAME=".$featureType->{'Name'});
-		}
 		if ($xmlDescribeFeature === false){
 					global $mainframe;		
 					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO DESCRIBE THE FEATURE TYPE OF THE REMOTE SERVER.' ),'error');
@@ -1598,21 +1491,14 @@ function generateWMSHTML($config,$thePolicy){
 			<table width ="100%" height="100%" >
 				<tr valign="top" >
 					<td width="15">
-						<input  align="left"
-							onClick="activateFeatureType('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
-							<?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?>
-							type="checkbox"
-							id="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-							name="featuretype@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-							value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>">
-					</td>
-					<td align="left">
-					 <?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>
-					</td>			
+				<input align="left" onClick="activateFeatureType('<?php echo $iServer; ?>','<?php echo $ftnum;?>')" <?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?> type="checkbox"
+					id="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+					name="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
+					value="<?php echo $featureType->{'Name'}; ?>"></td>
+				<td align="left"><?php echo $featureType->{'Name'}; ?></td>
 				</tr>
 				<tr >
-					<td colspan="2" align="left">
-					"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
+				<td colspan="2" align="left">"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
 					</td>
 				</tr>
 			</table>		
@@ -1620,45 +1506,33 @@ function generateWMSHTML($config,$thePolicy){
 		<td  align="center">
 			<table>
 				<tr>
-				<td>
-				<?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?>
-				<input  align="left"
-				<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled ';?>
-				<?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>
-			onClick="activateAttributeList('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
-			type="checkbox"
-			id="selectAttribute@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="selectAttribute@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			value="" />
-				</td>
+				<td><?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?> 
+				<input align="left" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled ';?> <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>
+					onClick="activateAttributeList('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" type="checkbox"
+					id="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+					name="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
+					value="" /></td>
 				</tr>
 				<tr>
-				<td>
-				<textarea rows="2" cols="22" <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){echo 'disabled';}?>
-			id="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="AttributeList@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"><?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?></textarea>
+				<td><textarea rows="2" cols="22"
+				<?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){echo 'disabled';}?>
+					id="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+					name="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>">
+					<?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?></textarea>
 			
 				</td>
 				</tr>
 			</table>
 					
 		</td> 
-		<td>
-		   <textarea rows="4" cols="50"  
-		   onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
-			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="RemoteFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			><?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType);
-			if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea>
-		</td>
-		<td>
-		 	<textarea rows="4" cols="50" 
-		 	onChange="CheckQuery('<?php echo $iServer; ?>','<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>')"
-			<?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-			id="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			name="LocalFilter@<?php echo $iServer; ?>@<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"
-			><?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
+		<td><textarea rows="4" cols="50" onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			id="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+			name="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>">
+			<?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType);
+			if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea></td>
+		<td><textarea rows="4" cols="50" onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $featureType->{'Name'}; ?>')" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+			id="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+			name="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"><?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
 			if (strcmp($localFilter,"")==0)
 			{	
 			} 
@@ -1669,7 +1543,9 @@ function generateWMSHTML($config,$thePolicy){
 		</td>
 	</tr>
 	
-	<?php }
+	<?php
+		$ftnum += 1; 
+	}
 	?>
 </table>
 

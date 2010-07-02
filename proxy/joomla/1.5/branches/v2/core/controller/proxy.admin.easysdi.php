@@ -597,9 +597,12 @@ function savePolicy($xml){
 					$theServer->FeatureTypes['All']='false';
 					$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
 					$theFeatureType->Name=$val;
+						$len =strlen("featuretype@$i")+1;
+						$lentot = strlen ($key);
+						$ftnum = substr($key,($lentot-$len ) *-1);
 
 					//Attribute to keep
-					$attributeList = JRequest::getVar("AttributeList@$i@$val","");
+						$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
 					if(strlen($attributeList)>0)
 					{
 						$theFeatureType->Attributes['All']="false";
@@ -617,14 +620,14 @@ function savePolicy($xml){
 					}
 					
 					//remote filter
-					$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
+						$remoteFilter = JRequest::getVar("RemoteFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
 					if(strlen($remoteFilter)>0)
 					{
 						$theFeatureType->RemoteFilter =$remoteFilter ;
 					}
 					
 					//local filter
-					$localFilter = JRequest::getVar("LocalFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
+						$localFilter = JRequest::getVar("LocalFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
 					if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
 					{
 						 
@@ -640,19 +643,24 @@ function savePolicy($xml){
 				{
 					$theServer->Layers['All']='False';
 					$theLayer = $theServer->Layers->addChild('Layer');
+						$len =strlen("layer@$i")+1;
+						$lentot = strlen ($key);
+						
+						$layernum = substr($key,($lentot-$len ) *-1);
 					$theLayer->Name =$val;
-					$scaleMin = JRequest::getVar("scaleMin@$i@$val");
+						
+						$scaleMin = JRequest::getVar("scaleMin@$i@$layernum");
 					if (strlen($scaleMin)>0)
 					{
 						$theLayer->ScaleMin = $scaleMin;
 					}
-					$scaleMax = JRequest::getVar("scaleMax@$i@$val");
+						$scaleMax = JRequest::getVar("scaleMax@$i@$layernum");
 					if (strlen($scaleMax)>0)
 					{
 						$theLayer->ScaleMax = $scaleMax;
 					}
 
-					$localFilter = JRequest::getVar("LocalFilter@$i@$val",null,'defaut','none',JREQUEST_ALLOWRAW);
+						$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
 
 					if (strlen($localFilter)>0)
 					{
