@@ -254,12 +254,13 @@ class HTML_location {
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">
-		
 		<table width="100%">
 			<tr>
-				<td align="right">
-					<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
-					<input type="text" name="searchLocation" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listLocation');" />			
+				<td align="right" width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchLocation" id="searchLocation" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchLocation').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>

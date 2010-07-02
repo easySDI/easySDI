@@ -287,7 +287,7 @@ class HTML_perimeter {
 		
 		<table width="100%">
 			<tr>
-				<td align="left" width="100%">
+				<td align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchPerimeter" id="searchPerimeter" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>

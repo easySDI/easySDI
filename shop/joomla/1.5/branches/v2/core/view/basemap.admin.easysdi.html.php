@@ -212,7 +212,7 @@ class HTML_basemap {
 		
 		<table width="100%">
 			<tr>
-				<td align="left" width="100%">
+				<td align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchBaseMapContent" id="searchBaseMapContent" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
@@ -445,11 +445,11 @@ class HTML_basemap {
 			
 			<table width="100%">
 			<tr>
-				<td align="left" width="100%">
+				<td align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchBaseMap" id="searchBaseMap" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-					<button onclick="document.getElementById('searchBaseMapContent').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+					<button onclick="document.getElementById('searchBaseMap').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>
