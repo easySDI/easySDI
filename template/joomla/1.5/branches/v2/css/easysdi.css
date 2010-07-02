@@ -94,34 +94,38 @@ div#addToFavorite{
 
 div#exportPdf{
 	background-color:transparent;
-	background-image:url(../../../components/com_easysdi_core/img/pdfButton.png);
+	/*background-image:url(../../../components/com_easysdi_core/img/pdfButton.png);*/
+	background-image:url(../icons/silk/page_white_acrobat.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
 }
 
+/*background-image:url(../../../components/com_easysdi_core/img/printButton.png);*/
 div#printMetadata{
 	background-color:transparent;
-	background-image:url(../../../components/com_easysdi_core/img/printButton.png);
+	background-image:url(../icons/silk/printer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
 }
 
+/*background-image:url(../../../components/com_easysdi_core/img/xmlButton.png);*/
 div#exportXml{
 	background-color:transparent;
-	background-image:url(../../../components/com_easysdi_core/img/xmlButton.png);
+	background-image:url(../icons/silk/page_white_code.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
 }
 
+/*background-image:url(../../../components/com_easysdi_core/img/orderProduct.png);*/
 div#orderProduct{
 	background-color:transparent;
-	background-image:url(../../../components/com_easysdi_core/img/orderProduct.png);
+	background-image:url(../icons/silk/cart.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
