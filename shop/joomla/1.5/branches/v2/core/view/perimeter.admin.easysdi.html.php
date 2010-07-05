@@ -308,10 +308,11 @@ class HTML_perimeter {
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPerimeter' ); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_urlwfs"), 'urlwfs', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_LAYER_NAME"), 'layername', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_PERIMETER_DESC"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_urlwfs"), 'urlwfs', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PERIMETER_LAYER_NAME"), 'layername', @$filter_order_Dir, @$filter_order); ?></th>
+				
 			</tr>
 		</thead>
 		<tbody>		
@@ -359,10 +360,11 @@ class HTML_perimeter {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->urlwfs; ?></td>				
-				<td><?php echo $row->layername; ?></td>
-				<td><?php echo $row->name; ?></td>
+	            <td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->name; ?></td>
 				<td><?php echo $row->description; ?></td>
+				<td><?php echo $row->urlwfs; ?></td>				
+				<td><?php echo $row->layername; ?></td>
+				
 			</tr>
 <?php
 			$k = 1 - $k;

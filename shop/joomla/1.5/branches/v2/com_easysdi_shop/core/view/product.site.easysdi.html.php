@@ -487,7 +487,6 @@ class HTML_product{
 		<div class="contentin">
 		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
-	
 		<table width="100%">
 			<tr>
 				<td align="left">

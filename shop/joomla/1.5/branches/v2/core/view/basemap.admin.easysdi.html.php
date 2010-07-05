@@ -231,9 +231,9 @@ class HTML_basemap {
 				<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JText::_("CORE_ID"); ?></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_NAME"); ?></th>				
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'description');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_DESCRIPTION"); ?></th>
 				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'url');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_URL"); ?></a></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_LAYER_NAME"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_BASEMAPCONTENT_PROJECTION"); ?></th>				
 				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'ordering');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASEMAPCONTENT_ORDER"); ?></th>
 			</tr>
 		</thead>
@@ -248,30 +248,18 @@ class HTML_basemap {
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-								
 				<td><?php echo $row->id; ?></td>
-				<td><a href="<?php echo $link ?>"><?php echo $row->url; ?></a></td>
-				<td><?php echo $row->layers; ?></td>
-				<td><?php echo $row->projection; ?></td>
+				<td><a href="<?php echo $link ?>"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->description; ?></a></td>
+				<td><?php echo $row->url; ?></a></td>
 				<td class="order" nowrap="nowrap">
-				<?php
-				$disabled = ($order_field == 'ordering'||$order_field == "") ? true : false;
-								
+					<?php
+					$disabled = ($order_field == 'ordering'||$order_field == "") ? true : false;
 					?>
-					
-							<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemapcontent', 'Move Up', $disabled);  ?></span>							
-							<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemapcontent', 'Move Down', $disabled);   ?></span>
-							
-							<?php echo $row->ordering ;?>
-							
-            		 
-            		 <?php
-				
-				
-				?>
-
-            	</td> 
-            				
+					<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemapcontent', 'Move Up', $disabled);  ?></span>							
+					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemapcontent', 'Move Down', $disabled);   ?></span>
+					<?php echo $row->ordering ;?>
+				</td>
 			</tr>
 <?php
 			$k = 1 - $k;

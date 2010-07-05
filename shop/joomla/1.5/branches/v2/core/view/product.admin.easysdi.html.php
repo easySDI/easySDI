@@ -24,19 +24,11 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct( $rowProduct, $current_manager_partner,$rowsAccount,$partners,$metadata_partner,$admin_partner,$diffusion_partner,$baseMaplist,$treatmentTypeList,$standardlist,$perimeterList,$selected_perimeter,$catalogUrlBase,$id, $option ){
+	function editProduct($product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeterList,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-		//$product_partner = $current_manager_partner;
 		JHTML::_('behavior.calendar');
 
-					
-//		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowProduct->metadata_id;
-//		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-//		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
-		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
-		//$geoMD = new geoMetadata($cswResults);				 
-		
 		$tabs =& JPANE::getInstance('Tabs');
 		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PRODUCT"), 'generic.png' );
 		?>	
@@ -45,128 +37,106 @@ class HTML_product {
 		{
 			if (document.forms['adminForm'].service_type[0].checked)
 			{
-				document.getElementById('previewPassword').disabled = true;
-				document.getElementById('previewPassword').value = "";
-				document.getElementById('previewUser').disabled = true;
-				document.getElementById('previewUser').value ="";
-				document.getElementById('easysdi_account_id').disabled = false;
+				document.getElementById('viewpassword').disabled = true;
+				document.getElementById('viewpassword').value = "";
+				document.getElementById('viewuser').disabled = true;
+				document.getElementById('viewuser').value ="";
+				document.getElementById('account_id').disabled = false;
 			}
 			else
 			{
-				document.getElementById('previewPassword').disabled = false;
-				document.getElementById('previewUser').disabled = false;
-				document.getElementById('easysdi_account_id').disabled = true;
-				document.getElementById('easysdi_account_id').value = '0';
+				document.getElementById('viewpassword').disabled = false;
+				document.getElementById('viewuser').disabled = false;
+				document.getElementById('account_id').disabled = true;
+				document.getElementById('account_id').value = '0';
 			}
 		}		
 		</script>			
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 	<?php
 		echo $tabs->startPane("productPane");
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_GENERAL"),"productrPane");
+		echo $tabs->startPanel(JText::_("SHOP_GENERAL"),"productrPane");
 		?>		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_EASYSDI_GENERIC_PRODUCT"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
-								<td><?php echo $rowProduct->id; ?></td>
-								<input type="hidden" name="id" value="<?php echo $id;?>">								
+								<td><?php echo $product->id; ?></td>
+								<input type="hidden" name="id" value="<?php echo $product->id;?>">								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_METADATA_ID"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="metadata_id" value="<?php echo $rowProduct->metadata_id; ?>" /></td>
+								<td><?php echo JText::_("CORE_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $product->name; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_UPDATE_DATE"); ?> : </td>						
-								<?php $date = new JDate($rowProduct->update_date); ?>										
-								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL(); ?>" />
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->update_date)); ?></td>								
+								<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $product->description; ?>" /></td>								
 							</tr>
 							<tr>
-							
-								<td><?php echo JText::_("EASYSDI_CREATION_DATE"); ?> : </td>
-								<?php $date = new JDate($rowProduct->creation_date); ?>
+								<td><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $object_id ); ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("SHOP_VERSION"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$version_list, 'version_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
+							</tr>
+							<tr>
+								<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+								<?php $date = new JDate($product->creation_date); ?>
 								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL(); ?>" />								
-								<td><?php echo date('d.m.Y H:i:s',strtotime($rowProduct->creation_date)); ?></td>
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_SUPPLIER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$partners, 'partner_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $current_manager_partner ); ?></td>								
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_ADMIN_PARTNER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$admin_partner, 'admin_partner_id', 'size="1" class="inputbox" ', 'value', 'text', $rowProduct->admin_partner_id  ); ?></td>								
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_METADATA_SUPPLIER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$metadata_partner, 'metadata_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_partner_id ); ?></td>								
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_DIFFUSION_PARTNER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$diffusion_partner, 'diffusion_partner_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->diffusion_partner_id ); ?></td>								
-							</tr>
-							<tr>							
-								<td><?php echo JText::_("EASYSDI_PRODUCT_NOTIFICATION_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $rowProduct->notification_email; ?>" /></td>								
+								<td><?php echo date('d.m.Y H:i:s',strtotime($product->created)); ?></td>
 							</tr>
 							<tr>
-							
-								<td><?php echo JText::_("EASYSDI_SURFACE_MIN"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surface_min" value="<?php echo $rowProduct->surface_min; ?>" /></td>							
+								<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>						
+								<?php $date = new JDate($product->update_date); ?>										
+								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL(); ?>" />
+								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
+								<td><?php echo $supplier->name; ?></td>	
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$manager_list, 'manager_id', 'size="1" class="inputbox" ', 'value', 'text', $product->manager_id  ); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
+							</tr>
+							<tr>							
+								<td><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $product->notification_email; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_SURFACE_MAX"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surface_max" value="<?php echo $rowProduct->surface_max; ?>" /></td>							
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PUBLISHED"); ?> : </td>
+								<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $rowProduct->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $product->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
+								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_ORDERABLE"); ?> : </td>
-								<td><select class="inputbox" name="orderable" >								
-								<option value="0" <?php if( $rowProduct->orderable == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
-								</select></td>																
+								<td><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox"', 'value',  'text', $product->treatmenttype_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PRODUCT_TREATMENT"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$treatmentTypeList, 'treatment_type', 'size="1" class="inputbox"', 'value',  'text', $rowProduct->treatment_type ); ?></td>															
+								<td><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_DATA_TITLE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="data_title" value="<?php echo $rowProduct->data_title; ?>" /></td>								
-							</tr>		
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DATA_INTERNAL"); ?> : </td>
-								<td><input name="internal" value="1" type="checkbox" <?php if ($rowProduct->internal) {echo "checked";};?> > </td>								
+								<td><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin" value="<?php echo $product->surfacemin; ?>" /></td>							
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_DATA_EXTERNAL"); ?> : </td>
-								<td><input name="external" value="1" type="checkbox" <?php if ($rowProduct->external) {echo "checked";};?> > </td>								
+								<td><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" value="<?php echo $product->surfacemax; ?>" /></td>							
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_METADATA_INTERNAL"); ?> : </td>
-								<td><input name="metadata_internal" value="1" type="checkbox" <?php if ($rowProduct->metadata_internal) {echo "checked";};?> > </td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_METADATA_EXTERNAL"); ?> : </td>
-								<td><input name="metadata_external" value="1" type="checkbox" <?php if ($rowProduct->metadata_external) {echo "checked";};?> > </td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DATA_FREE"); ?> : </td>
-								<td><input name="is_free" value="1" type="checkbox" <?php if ($rowProduct->is_free) {echo "checked";};?> > </td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("EASYSDI_DATA_STANDARD_ID"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$standardlist, 'metadata_standard_id', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->metadata_standard_id ); ?></td>																
+								<td><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
+								<td><?php if($version->free == 1)echo JText::_("CORE_YES"); else JText::_("CORE_NO");?></td>								
 							</tr>
 						</table>
 					</fieldset>
@@ -175,86 +145,85 @@ class HTML_product {
 		</table>
 		<?php
 		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_PREVIEW"),"productrPane");
+		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PREVIEW"),"productrPane");
 		?>
 		<br>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_PREVIEW"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">						
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_BASE_MAP_ID"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$baseMaplist, 'previewBaseMapId', 'size="1" class="inputbox"', 'value', 'text', $rowProduct->previewBaseMapId ); ?></td>																
+								<td><?php echo JText::_("SHOP_PREVIEW_BASEMAP"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$baseMap_list, 'viewbasemap_id', 'size="1" class="inputbox"', 'value', 'text', $product->viewbasemap_id ); ?></td>																
 							</tr>							
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_WMS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewWmsUrl" value="<?php echo $rowProduct->previewWmsUrl; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_WMS_URL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewurlwms" value="<?php echo $product->viewurlwms; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_WMS_LAYERS"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewWmsLayers" value="<?php echo $rowProduct->previewWmsLayers; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_LAYERS"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewlayers" value="<?php echo $product->viewlayers; ?>" /></td>								
 							</tr>							
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_MIN_RESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewMinResolution" value="<?php echo $rowProduct->previewMinResolution; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_MIN_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_MAX_RESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewMaxResolution" value="<?php echo $rowProduct->previewMaxResolution; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_MAX_RESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
 							</tr>			
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_PROJECTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewProjection" value="<?php echo $rowProduct->previewProjection; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_PROJECTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewprojection" value="<?php echo $product->viewprojection; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_UNIT"); ?> : </td>
+								<td><?php echo JText::_("SHOP_PREVIEW_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="previewUnit" >								
-									<option <?php if($rowProduct->previewUnit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_PREVIEW_METERS"); ?></option>
-									<option <?php if($rowProduct->previewUnit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("EASYSDI_PREVIEW_DEGREES"); ?></option>
+									<option <?php if($product->viewunit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("SHOP_METERS"); ?></option>
+									<option <?php if($product->viewunit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
 								</select>
 								</td>																						
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PREVIEW_IMAGE_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="previewImageFormat" value="<?php echo $rowProduct->previewImageFormat; ?>" /></td>								
+								<td><?php echo JText::_("SHOP_PREVIEW_IMAGE_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
 							</tr>
 							<tr>
 							<td colspan ="3">
 							<fieldset>
-							<legend><?php echo JText::_("EASYSDI_BASE_MAP_AUTHENTICATION"); ?></legend>
+							<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
 								<table>
 								<tr>
 									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowProduct->easysdi_account_id) echo "checked";?>>
+										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->easysdi_account_id) echo "checked";?>>
 									</td>
 									<td colspan="2">
-										<?php echo JText::_("EASYSDI_BASEMAP_VIA_PROXY"); ?>
+										<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
 									</td>
 								</tr>
 								<tr>
 									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $rowProduct->easysdi_account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'easysdi_account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowProduct->easysdi_account_id); ?></td>
+									<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+									<td><?php $enable = $product->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->account_id); ?></td>
 								</tr>
 								<tr>
 									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowProduct->previewUser) echo "checked";?>> 
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
 								 	</td>
 								 	<td colspan="2">
-									 	 <?php echo JText::_("EASYSDI_BASEMAP_DIRECT"); ?>
+									 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
 								 	</td>
 							 	</tr>
 								<tr>
 									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_USER"); ?> : </td>
-									<td><input <?php if (!$rowProduct->previewUser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="previewUser" id="previewUser" value="<?php echo $rowProduct->previewUser; ?>" /></td>							
+									<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+									<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
 								</tr>							
 								<tr>
 									<td></td>
-									<td><?php echo JText::_("EASYSDI_BASEMAP_PASSWORD"); ?> : </td>
-									<td><input <?php if (!$rowProduct->previewUser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="previewPassword" id="previewPassword" value="<?php echo $rowProduct->previewPassword; ?>" /></td>							
+									<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+									<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
 								</tr>
 								
 								</table>
@@ -268,16 +237,15 @@ class HTML_product {
 		</table>
 		<?php
 		echo $tabs->endPanel();
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER"),"productrPane");
+		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PERIMETER"),"productrPane");
 		?>
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td><?php echo JHTML::_("select.genericlist",$perimeterList, 'perimeter_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected_perimeter ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$perimeter_list, 'perimeter_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected_perimeter ); ?></td>
 							</tr>
 						</table>
 					</fieldset>
@@ -286,19 +254,19 @@ class HTML_product {
 		</table>	
 		<?php
 		echo $tabs->endPanel();		
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PERIMETER_BUFFER"),"productrPane");
+		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PERIMETER_BUFFER"),"productrPane");
 		?>	
 		<br>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 		<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("EASYSDI_TEXT_PERIMETER_BUFFER_TITLE") ?></legend>
+						<legend><?php echo JText::_("SHOP_PRODUCT_PERIMETER_BUFFER_TITLE") ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
-						<tr><th><?php echo JText::_("EASYSDI_PERIMETER_NAME") ?></th><th><?php echo JText::_("EASYSDI_PERIMETER_HAS_BUFFER") ?></th></tr>
+						<tr><th><?php echo JText::_("SHOP_PRODUCT_PERIMETER_NAME") ?></th><th><?php echo JText::_("SHOP_PRODUCT_PERIMETER_HAS_BUFFER") ?></th></tr>
 						<?php 
-							foreach ($perimeterList as $curPerim){
-								$query = "SELECT * FROM #__easysdi_product_perimeter WHERE product_id=$rowProduct->id AND perimeter_id = $curPerim->value";				
+							foreach ($perimeter_list as $curPerim){
+								$query = "SELECT * FROM #__sdi_product_perimeter WHERE product_id=$product->id AND perimeter_id = $curPerim->value";				
 								$database->setQuery( $query );
 								$bufferRow = $database->loadObject() ;
 								if ($database->getErrorNum()) 
@@ -308,7 +276,7 @@ class HTML_product {
 						?>
 						<tr>
 							<td><?php  echo $curPerim->text; ?></td>
-							<td><input type="checkbox" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->isBufferAllowed == 1) echo "checked"?>></td>
+							<td><input type="checkbox" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->buffer == 1) echo "checked"?>></td>
 						</tr>
 						<?php 
 							} 
@@ -320,68 +288,83 @@ class HTML_product {
 		</table>
 		<?php 
 		echo $tabs->endPanel();			
-		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_PROPERTIES"),"productrPane");
+		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PROPERTIES"),"productrPane");
 		?>
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo $row->type_name ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 				<?php
 															
 				$selected = array();
-				$query = "SELECT property_value_id as value FROM #__easysdi_product_property WHERE product_id=".$rowProduct->id;				
+				$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$product->id;				
 				$database->setQuery( $query );	
 				$selected = $database->loadObjectList();
 				if ($database->getErrorNum()) {						
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
-
-				$queryProperties = "SELECT b.id as property_id, 
-										   b.translation as text,
-										   type_code,
-										   mandatory 
-									FROM #__easysdi_product_properties_definition b 
-									where published =1 
-									AND (partner_id = 0 OR partner_id = $rowProduct->partner_id )
-									order by b.order";
+				$language =& JFactory::getLanguage();
+				$condition="";
+				if($supplier->id)
+				{
+					$condition = " OR p.account_id = $supplier->id ";
+				}
+	
+				$queryProperties = "SELECT p.id as property_id, 
+										   t.label as text,
+										   p.type as type,
+										   p.mandatory as mandatory 
+									FROM #__sdi_language l, 
+										#__sdi_list_codelang cl,
+										#__sdi_property p 
+										LEFT OUTER JOIN #__sdi_translation t ON p.guid=t.element_guid 
+									WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+									AND p.published =1 
+									AND (p.account_id = 0 $condition)
+									order by p.ordering";
 				$database->setQuery( $queryProperties );
 				$propertiesList = $database->loadObjectList() ;
 				if ($database->getErrorNum()) 
 				{						
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}		
-				HTML_product::alter_array_value_with_JTEXT_($propertiesList);
 				
 				foreach ($propertiesList as $curProperty){
 						?><tr><?php echo $curProperty->text; ?></tr>
 						<?php			
 							$propertiesValueList = array();
-							$query = "SELECT a.id as value, a.translation as text FROM #__easysdi_product_properties_values_definition a where a.properties_id =".$curProperty->property_id." order by a.order";				 
+							$query = "SELECT a.id as value, t.label as text 
+										FROM 
+											#__sdi_list_codelang cl,
+											#__sdi_language l,
+											#__sdi_property_value a 
+										LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid 
+									WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+										AND a.property_id =".$curProperty->property_id." 
+										order by a.ordering";				 
 							$database->setQuery( $query );
 							$propertiesValueList = $database->loadObjectList() ;
-							HTML_product::alter_array_value_with_JTEXT_($propertiesValueList);
 							
 							if ($database->getErrorNum()) {						
 									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 								}
-								switch($curProperty->type_code){
+								switch($curProperty->type){
 			
 								case "list":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
 									<?php
 									break;
 									
 								case "mlist":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
 									<?php
 									break;
 								case "cbox":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
 									<?php
 									break;
 									
@@ -393,7 +376,7 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', '', 'value', 'text', $selected ); ?></tr>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', '', 'value', 'text', $selected ); ?></tr>
 									<?php
 									break;
 									
@@ -405,7 +388,7 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
 									<?php
 									break;
 								case "message":
@@ -417,7 +400,7 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'properties_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
 									<?php
 									break;
 								}	
@@ -432,16 +415,17 @@ class HTML_product {
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();	
 		?>
-		<input type="hidden" name="id" value="<?php echo $rowProduct->id; ?>" />
+		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="editProduct" />
 		</form>
 	<?php
 	}
 	
 	function listProduct($use_pagination, $rows, $search,$pageNav, $option){
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); $partners = array(); ?>
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); 
+		$partners = array(); ?>
 		<form action="index.php" method="post" name="adminForm">
 				<table width="100%">
 					<tr>
@@ -453,20 +437,19 @@ class HTML_product {
 				</table>
 				<table width="100%">
 					<tr>																																			
-						<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProduct\');"',$use_pagination); ?></td>
+						<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProduct\');"',$use_pagination); ?></td>
 					</tr>
 				</table>
 				<table class="adminlist">
 				<thead>
 					<tr>					 			
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_DEF"); ?></th>
+						<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 						<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_PUBLISHED"); ?></th>
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_METADATA_ID"); ?></th>
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_DATA_TITLE"); ?></th>
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_SUPPLIER_NAME"); ?></th>
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_CREATION_DATE"); ?></th>	
-						<th class='title'><?php echo JText::_("EASYSDI_PRODUCT_TREATMENT"); ?></th>
+						<th class='title'><?php echo JText::_("CORE_PUBLISHED"); ?></th>
+						<th class='title'><?php echo JText::_("CORE_NAME"); ?></th>
+						<th class='title'><?php echo JText::_("CORE_DESCRIPTION"); ?></th>
+						<th class='title'><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?></th>
+						<th class='title'><?php echo JText::_("CORE_UPDATED"); ?></th>	
 					</tr>
 				</thead>
 				<tbody>		
@@ -480,21 +463,10 @@ class HTML_product {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>
-				<td><a href="<?php echo "index.php?option=$option&amp;&task=showMetadata&id=$row->metadata_id";?>"><?php echo $row->metadata_id; ?></a></td>
-				<td><a href="<?php echo "index.php?option=$option&amp;task=editProduct&cid[]=$row->id";?>"><?php echo $row->data_title; ?></a></td>																												
-				<?php 
-//				$query = "SELECT b.name AS text FROM #__easysdi_community_partner a,#__users b where a.root_id is null AND a.user_id = b.id AND partner_id=".$row->partner_id ;
-//				$database->setQuery($query);				 
-		 		?>
-				<td><?php 
-//				echo $database->loadResult();
-				echo $row->text; 
-				?></td>								
+				<td><a href="<?php echo "index.php?option=$option&amp;task=editProduct&cid[]=$row->id";?>"><?php echo $row->name; ?></a></td>																												
+				<td><?php echo $row->description; ?></a></td>
+				<td><?php echo JText::_($row->treatment); ?></td>								
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->creation_date)); ?></td>
-				<?php
-				
-				 ?>
-				<td><?php echo JText::_($row->translation); ?></td>
 			</tr>
 			<?php
 			$k = 1 - $k;
@@ -522,15 +494,6 @@ class HTML_product {
 		<?php
 	}	
 
-	function alter_array_value_with_JTEXT_(&$rows)
-	{		
-		if (count($rows)>0)
-		{
-			foreach($rows as $key => $row)
-			{		  	
-      			$rows[$key]->text = JText::_($rows[$key]->text);
-  			}			    
-		}
-	}
+
 }
 ?>

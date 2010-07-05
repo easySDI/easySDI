@@ -17,72 +17,63 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class product extends JTable
+class product extends sdiTable
 {
-	var $metadata_id=null;
-	var $id=0;
-	var $partner_id=null;
-	var $update_date=null;
-	var $creation_date=null;
-	var $supplier_name=null;	
-	var $surface_min=0;	
-	var $surface_max=0;
-	var $data_title=null;
-	var $published=null;
-	var $orderable=null;
-	var $internal=0;
-	var $external=0;
-	var $metadata_standard_id=null;
-	var $is_free=0;
-	var $metadata_partner_id=0;
-	var $previewBaseMapId=0;
-	var $previewWmsUrl=null;
-	var $previewWmsLayers=null;
-	var $previewMinResolution=0;
-	var $previewMaxResolution=0;
-	var $previewProjection=null;
-	var $previewUnit=null;
-	var $previewImageFormat=null;
-	var $diffusion_partner_id=0;
-	var $treatment_type=null;
-	var $notification_email=null;
-	var $previewUser = null;
-	var $previewPassword = null;
-	var $metadata_internal=0;
-	var $metadata_external=0;
-	var $admin_partner_id=0;
-	var $easysdi_account_id=null;
 	
+	var $objectversion_id=0;
+	var $surfacemin=null;
+	var $surfacemax=null;
+	var $published=null;
+	var $visibility_id=0;
+	var $manager_id=null;
+	var $diffusion_id=null;
+	var $treatmenttype_id=null;
+	var $notification=null;
+	var $viewbasemap_id=null;
+	var $viewurlwms=null;
+	var $viewlayers=null;
+	var $viewminresolution=null;
+	var $viewmaxresolution=null;
+	var $viewprojection=null;
+	var $viewunit=null;
+	var $viewimgformat=null;
+	var $viewuser=null;
+	var $viewpassword=null;
+	var $viewaccount_id=null;
+		
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_product', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_product', 'id', $db ) ;    		
 	}
 	
 	function deleteProduct ()
 	{
-		if(!parent::delete())
-		{
-			return false;
-		}
-		
-		$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$this->id;
-		$this->_db->setQuery( $query );
+		$this->_db->setQuery( "DELETE FROM  $this->_tbl WHERE product_id = ".$this->id );
 		if (!$this->_db->query()) {
 			return false;
 		}
 
-		$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$this->id;
-		$this->_db->setQuery( $query );
+		$this->_db->setQuery( "DELETE FROM  $this->_tbl WHERE product_id = ".$this->id );
 		if (!$this->_db->query()) {
 			return false;
 		}
 		
-		return true;
+		return parent::delete();
 		
 	}
 	
-
+	function publish ()
+	{
+		$this->published = 1;
+		return $this->store();
+	}
+	
+	function unpublish()
+	{
+		$this->published = 0;
+		return $this->store();
+	}
 }
 
 ?>

@@ -30,7 +30,6 @@ class TOOLBAR_product{
 	}
 	
 	function _EDITPRODUCT(){
-		
 		JToolBarHelper::save('saveProduct');
 		JToolBarHelper::cancel('cancelProduct');
 	}

@@ -32,6 +32,7 @@ class HTML_properties {
 			<tr>
 				<td>
 					<fieldset>
+					<legend align="top"><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td ><?php echo JText::_("EASYSDI_ID"); ?> : </td>
@@ -66,33 +67,14 @@ class HTML_properties {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property->name; ?>" /></td>
 							</tr>							
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_TEXT"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property->description; ?>" /></td>
 							</tr>
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property->code; ?>" /></td>
 							</tr>
-							<tr>
-							<td colspan="2">
-							<fieldset>
-							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
-							<table>
-							<?php
-							foreach ($languages as $lang)
-							{ 
-							?>
-												<tr>
-												<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-												<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
-												</tr>
-							<?php
-							}
-							?>
-							</table>
-							</fieldset>
-							</td>
-							</tr>
+							
 							<tr>							
 								<td><?php echo JText::_("EASYSDI_PROPERTIES_TYPE_CODE"); ?> : </td>
 								<td><select class="inputbox" name="type" >								
@@ -105,6 +87,26 @@ class HTML_properties {
 								</select>
 								</td>
 							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<fieldset>
+						<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+						<table>
+							<?php
+							foreach ($languages as $lang)
+							{ 
+							?>
+								<tr>
+								<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+								<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+								</tr>
+							<?php
+							}
+							?>
 						</table>
 					</fieldset>
 				</td>
@@ -151,10 +153,12 @@ class HTML_properties {
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderProperties' ); ?></th>			
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_MANDATORY"), 'mandatory', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TEXT"), 'description', @$filter_order_Dir, @$filter_order); ?></th>				
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TRANSLATION"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+									
+					
 				</tr>
 			</thead>
 			<tbody>		
@@ -202,11 +206,12 @@ class HTML_properties {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				<td><?php echo $row->mandatory; ?></td>				
-							
+	            <td><a href="<?php echo 'index.php?option='.$option.'&task=editProperties&cid[]='.$row->id ; ?>"><?php echo $row->name; ?></td>
+	            <td><?php echo $row->description; ?></td>
+				<td><?php echo $row->mandatory; ?></td>
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->updated)); ?></td>
-				<td><?php echo $row->description; ?></td>
-				<td><?php echo $row->name; ?></td>
+				
+				
 			</tr>
 			<?php
 				$k = 1 - $k;
@@ -266,15 +271,15 @@ class HTML_properties {
 								<td><?php echo JText::_($property->name); ?></td>
 							</tr>
   							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_VALUE"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property_value->name; ?>" /></td>
 							</tr>												
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_TEXT"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property_value->description; ?>" /></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_TRANSLATION"); ?> : </td>
+								<td><?php echo JText::_("EASYSDI_PROPERTIES_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property_value->code; ?>" /></td>
 							</tr>
 							<tr>
@@ -343,9 +348,10 @@ class HTML_properties {
 					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_VALUES_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPropertiesValues' ); ?></th>			
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_VALUE"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TEXT"), 'description', @$filter_order_Dir, @$filter_order); ?></th>				
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_TRANSLATION"), 'code', @$filter_order_Dir, @$filter_order); ?></th>			
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>				
+								
 				</tr>
 			</thead>
 			<tbody>		
@@ -392,9 +398,9 @@ class HTML_properties {
 						}?>
 						<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 		            </td>
-					<td><?php echo $row->name; ?></td>				
+					<td><a href="<?php echo 'index.php?option='.$option.'&task=editPropertiesValues&cid[]='.$row->id.'&property_id='.$property->id; ?>"><?php echo $row->name; ?></td>				
 					<td><?php echo $row->description; ?></td>
-					<td><?php echo $row->code; ?></td>
+					<td><?php echo date('d.m.Y H:i:s',strtotime($row->updated)); ?></td>
 				</tr>
 			<?php
 				$k = 1 - $k;
@@ -419,7 +425,7 @@ class HTML_properties {
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
-	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />	  	
 	  </form>
 		<?php
 	}
