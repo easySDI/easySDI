@@ -193,10 +193,10 @@ class ADMIN_product {
 		helper_easysdi::alter_array_value_with_JTEXT_($visibility_list);
 
 		//List of perimeters
-		$perimeterList = array();
+		$perimeter_list = array();
 		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter";
 		$database->setQuery( $query );
-		$perimeterList = $database->loadObjectList() ;
+		$perimeter_list = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {						
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 		}		
@@ -220,7 +220,7 @@ class ADMIN_product {
 		}
 		else
 		{
-			HTML_product::editProduct( $product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeterList,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option );
+			HTML_product::editProduct( $product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option );
 		}
 	}
 	

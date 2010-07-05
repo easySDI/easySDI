@@ -24,7 +24,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct($product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeterList,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
+	function editProduct($product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		JHTML::_('behavior.calendar');
