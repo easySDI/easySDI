@@ -79,7 +79,7 @@ class ADMIN_cpanel {
 				$filterList[] = "(o.type ='$ordertype')";
 		}
 		
-		$orderstatus=JRequest::getVar("orderstatus","");
+		$orderstatus=JRequest::getVar("orderstatus","4");
 		if ($orderstatus !=""){
 				$filterList[] = "(o.status ='$orderstatus')";
 		}
