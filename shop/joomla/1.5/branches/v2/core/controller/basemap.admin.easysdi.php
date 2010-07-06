@@ -21,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_basemap {
 	
 	
-	function orderUpBasemapContent($cid){
+	function orderUpBasemapContent($option,$cid){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		
@@ -31,7 +31,7 @@ class ADMIN_basemap {
 		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_content->basemap_id );
 	}
 	
-	function orderDownBasemapContent($cid){
+	function orderDownBasemapContent($option,$cid){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		

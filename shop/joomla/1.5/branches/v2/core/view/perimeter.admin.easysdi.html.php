@@ -297,7 +297,7 @@ class HTML_perimeter {
 		</table>
 		<table width="100%">
 			<tr>																																			
-				<td align="left"><b><?php echo JText::_("EASYSDI_TEXT_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listPerimeter\');"',$use_pagination); ?></td>
+				<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listPerimeter\');"',$use_pagination); ?></td>
 			</tr>
 		</table>
 		<table class="adminlist">
