@@ -538,6 +538,12 @@ class ADMIN_partner {
 					$profile_id_list .= ",";
 				}
 			}else{
+/*
+				$profile_id = $_POST['profile_id'];
+				if(is_array($profile_id))
+					$profile_id = $profile_id[0];
+				$database->setQuery( "INSERT INTO #__easysdi_community_partner_profile (profile_id, partner_id) VALUES (".$profile_id.",".$rowPartner->partner_id.")" );
+*/
 				$database->setQuery( "INSERT INTO #__easysdi_community_partner_profile (profile_id, partner_id) VALUES (".$_POST['profile_id'].",".$rowPartner->partner_id.")" );
 				if (!$database->query()) 
 				{
@@ -546,6 +552,9 @@ class ADMIN_partner {
 					exit();
 				}
 				$profile_id_list .= $profile_id;
+/*
+				$profile_id_list .= ",";
+*/
 			}
 		}
 		if($profile_id_list )
