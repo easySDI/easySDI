@@ -28,6 +28,31 @@ class product_property extends sdiTable
 		parent::__construct ( '#__sdi_product_property', 'id', $db ) ;    		
 	}
 
+	function loadById($product_id, $propertyvalue_id)
+	{
+		$query = 'SELECT *'
+		. ' FROM '.$this->_tbl
+		. ' WHERE product_id = '.$product_id.' AND propertyvalue_id = '.$propertyvalue_id;
+		$this->_db->setQuery( $query );
+
+		if ($result = $this->_db->loadAssoc( )) {
+			return $this->bind($result);
+		}
+		else
+		{
+			$this->setError($this->_db->getErrorMsg() );
+			return false;
+		}
+	}
+	
+	function delete ($product_id)
+	{
+		$this->_db->setQuery( "DELETE FROM  $this->_tbl WHERE PRODUCT_ID = ".$product_id );
+		if (!$this->_db->query()) {
+			return false;
+		}
+		return true;
+	}
 
 }
 

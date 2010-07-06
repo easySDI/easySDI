@@ -205,7 +205,7 @@ class ADMIN_product {
 
 		//List of perimeters
 		$perimeter_list = array();
-		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter";
+		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter ";
 		$database->setQuery( $query );
 		$perimeter_list = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {						
@@ -269,9 +269,8 @@ class ADMIN_product {
 			exit();
 		}
 
-		$query = "DELETE FROM  #__sdi_product_perimeter WHERE PRODUCT_ID = ".$product->id;
-		$database->setQuery( $query );
-		if (!$database->query()) {
+		$product_perimeter = new product_perimeter($database);
+		if(!$product_perimeter->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
@@ -279,9 +278,10 @@ class ADMIN_product {
 
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
 		{
-			$query = "INSERT INTO #__sdi_product_perimeter (product_id,perimeter_id) VALUES ($product->id,$perimeter_id)";
-			$database->setQuery( $query );
-			if (!$database->query()) {
+			$product_perimeter = new product_perimeter($database);
+			$product_perimeter->product_id=$product->id;
+			$product_perimeter->perimeter_id=$perimeter_id;
+			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();
@@ -290,19 +290,22 @@ class ADMIN_product {
 
 		foreach( $_POST['buffer'] as $bufferPerimeterId )
 		{
-			$query = "UPDATE #__sdi_product_perimeter SET buffer=1 WHERE product_id = $product->id AND perimeter_id = $bufferPerimeterId";
-			
-			$database->setQuery( $query );
-			if (!$database->query()) {
+			$product_perimeter = new product_perimeter($database);
+			if(!$product_perimeter->loadById($product->id,$bufferPerimeterId)){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );	
-				exit();			
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
+			$product_perimeter->buffer = 1;
+			if(!$product_perimeter->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
 			}
 		}
 
-		$query = "DELETE FROM  #__sdi_product_property WHERE PRODUCT_ID = ".$product->id;
-		$database->setQuery( $query );
-		if (!$database->query()) {
+		$product_property = new product_property($database);
+		if(!$product_property->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
@@ -310,10 +313,10 @@ class ADMIN_product {
 
 		foreach( $_POST['property_id'] as $properties_id )
 		{
-			$query = "INSERT INTO #__sdi_product_property (product_id,propertyvalue_id)VALUES (".$product->id.",".$properties_id.")";
-
-			$database->setQuery( $query );
-			if (!$database->query()) {
+			$product_property = new product_property($database);
+			$product_property->product_id=$product->id;
+			$product_property->propertyvalue_id=$properties_id;
+			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();
