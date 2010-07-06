@@ -162,6 +162,12 @@ switch($task){
 		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;	
 		
+	case "listProductsForPartnerId":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
+		
+		SITE_cpanel::listProductsForPartnerId();
+		break;	
+		
 	case "saveOrdersForProvider":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		
