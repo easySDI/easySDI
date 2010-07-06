@@ -121,12 +121,12 @@ class HTML_shop {
 	var isFreeSelectionPerimeter = false;
 	var wfsSelection;
 	var fromZoomEnd = false;
-	var meterToKilometerLimit = <?php if (config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT")){echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");} else {echo "100000";} ;?>;
+	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");?>;
 	if(meterToKilometerLimit == '') meterToKilometerLimit = 100000;
 	var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
 	var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
 	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
-	var MOD_PERIM_AREA_PRECISION = <?php if (config_easysdi::getValue("MOD_PERIM_AREA_PRECISION")) {echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");}else{echo "2";};?>;
+	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");?>;
 	if(MOD_PERIM_AREA_PRECISION == '') MOD_PERIM_AREA_PRECISION = 2;
 	
 	function onFeatureSelect(feature) 
@@ -906,7 +906,7 @@ function setAlpha(imageformat)
 		     	while (i< polygonSize)
 		     	{
 	     			document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-					new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
+					new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" "+components [i].y.toFixed(<?php echo $decimal_precision; ?>));
 					i++;
 	     		}          
 	     	}
@@ -3215,6 +3215,135 @@ function validateForm(toStep, fromStep){
 	<?php
 	}
 	
-	
+	function orderDraft ($order_id)
+	{
+		global $mainframe;
+		$database =& JFactory::getDBO();
+		$option = JRequest::getVar('option');
+		$devis_to_order = JRequest::getVar('devis_to_order',0);
+		
+		//basemap
+		$query = "select * from #__easysdi_basemap_definition where def = 1"; 
+		$database->setQuery( $query);
+		$rows = $database->loadObjectList();		  
+		if ($database->getErrorNum()) {						
+				echo "<div class='alert'>";			
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+		}
+		$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+		
+		//Order
+		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
+		$database->setQuery($query);
+		$order = $database->loadObject();
+		$mainframe->setUserState('order_name',$order->name);
+		$mainframe->setUserState('third_party',$order->third_party);
+		$mainframe->setUserState('bufferValue',$order->buffer);
+		$mainframe->setUserState('totalArea',$order->surface);
+		
+		//Order ID
+		$mainframe->setUserState('order_id',$order->order_id);
+				
+		//Order type
+		$queryType = "SELECT * FROM #__easysdi_order_type_list WHERE id=$order->type";
+		$database->setQuery($queryType);
+		$type = $database->loadObject();
+		
+		if($devis_to_order == 1)
+			$mainframe->setUserState('order_type','O');
+		else
+			$mainframe->setUserState('order_type',$type->code );
+		
+		//Products
+		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
+		$database->setQuery($queryProducts);
+		$productList = $database->loadObjectList();
+		$productArray = array ();
+		foreach($productList as $product)
+		{
+			$productArray[]=$product->product_id;
+		}
+		$mainframe->setUserState('productList',$productArray);
+		
+		//Selected surfaces
+		$queryPerimeters = "SELECT * FROM #__easysdi_order_product_perimeters WHERE order_id=$order_id ORDER BY id";
+		$database->setQuery($queryPerimeters);
+		$perimeterList = $database->loadObjectList();
+		$selectedSurfaces = array ();
+		$selectedSurfacesName = array();
+		foreach ($perimeterList as $perimeter)
+		{
+			//Round if free perimeter
+			$queryCode = "select d.perimeter_code from #__easysdi_perimeter_definition d, #__easysdi_order_product_perimeters p where p.perimeter_id=d.id and d.id=".$perimeter->perimeter_id;
+			$database->setQuery($queryCode);
+			$code = $database->loadResult();
+			if($code == "FREE"){
+				$tmp = explode(" ", $perimeter->value);
+				$tmp[0] = round($tmp[0], $decimal_precision);
+				$tmp[1] = round($tmp[1], $decimal_precision);
+				$selectedSurfaces[] = implode(" ", $tmp);
+			}else{
+				$selectedSurfaces[]=$perimeter->value;
+			}
+			$selectedSurfacesName[]=$perimeter->text;	
+		}
+		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);
+		$mainframe->setUserState('selectedSurfacesName',$selectedSurfacesName);
+		$mainframe->setUserState('perimeter_id',$perimeterList[0]->perimeter_id);
+		//Properties
+		$queryProducts = "SELECT * FROM #__easysdi_order_product_list WHERE order_id=$order_id";
+		$database->setQuery($queryProducts);
+		$productsList = $database->loadObjectList();
+		foreach($productsList as $productItem)
+		{
+			$queryPropertyCode = "SELECT * FROM #__easysdi_order_product_properties WHERE order_product_list_id = $productItem->id";
+			$database->setQuery($queryPropertyCode);
+			$orderProperties = $database->loadObjectList();
+			$mlistArray = array();
+			$cboxArray = array();
+			foreach($orderProperties as $orderProperty)
+			{
+				$queryPropertyDefintion = "SELECT * FROM #__easysdi_product_properties_definition WHERE code='$orderProperty->code'";
+				$database->setQuery($queryPropertyDefintion);
+				$propertyDefinition = $database->loadObject();
+				switch($propertyDefinition->type_code)
+				{
+					case "message":
+						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_id);
+						break;
+					case "list":
+						$a = array();
+						$a[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_list_property_".$productItem->product_id,$a);
+						break;
+					case "text":
+						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_value);
+						break;
+					case "textarea":
+						$a = array();
+						$a[] = $orderProperty->property_value;
+						$mainframe->setUserState($orderProperty->code."_textarea_property_".$productItem->product_id,$a);
+						break;
+					case "cbox":
+						$cboxArray[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_cbox_property_".$productItem->product_id,$cboxArray);
+						break;
+					case "mlist":
+						$mlistArray[] = $orderProperty->property_id;
+						$mainframe->setUserState($orderProperty->code."_mlist_property_".$productItem->product_id,$mlistArray);
+						break;
+						
+				}
+			}
+		
+		}
+		//Get the url for the "order" entry of the menu
+		$database =& JFactory::getDBO();
+		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
+		$database->setQuery($queryURL);
+		$redirectURL = $database->loadResult();
+		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL&step=5" );
+	}
 }
 	?>
