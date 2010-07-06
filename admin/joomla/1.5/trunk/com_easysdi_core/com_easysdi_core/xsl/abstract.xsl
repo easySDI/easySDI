@@ -54,7 +54,12 @@ __ref_6$s
 		<xsl:variable name="month" select="substring($date_norm, 6, 2)" />
 		<xsl:variable name="day" select="substring($date_norm, 9, 2)" />
 		<xsl:variable name="date_complete" select="concat($day, '.', $month, '.', $year)" />
-		<xsl:value-of select="$date_complete" />
+		<xsl:if test="$date_complete != '..'">
+			<xsl:value-of select="$date_complete" />
+		</xsl:if>
+		<xsl:if test="$date_complete = '..'">
+			non renseignée
+		</xsl:if>
      </xsl:if>
  </xsl:for-each>
 </td></tr>
@@ -67,9 +72,17 @@ __ref_6$s
 		<xsl:variable name="month" select="substring($date_norm, 6, 2)" />
 		<xsl:variable name="day" select="substring($date_norm, 9, 2)" />
 		<xsl:variable name="date_complete" select="concat($day, '.', $month, '.', $year)" />
-		<xsl:value-of select="$date_complete" />
+		<xsl:if test="$date_complete != '..'">
+			<xsl:value-of select="$date_complete" />
+		</xsl:if>
+		<xsl:if test="$date_complete = '..'">
+			non renseignée
+		</xsl:if>
      </xsl:if>
  </xsl:for-each>
+ (fréquence <xsl:call-template name="maintenanceFrequencyCodeTemplate">
+	<xsl:with-param name="maintenanceFrequencyCode" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode/@codeListValue"/>
+ </xsl:call-template>)
 </td></tr>
 <tr valign="top"><td class="title">Etendue géographique*:</td><td><xsl:value-of disable-output-escaping="yes" select="./gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gco:CharacterString"/></td></tr>
 <tr valign="top"><td class="title">Couverture spatiale:</td><td>
@@ -203,6 +216,54 @@ while(true){
 				</xsl:when>	
 				<xsl:otherwise>
 					<xsl:text>Inconnu</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+	</xsl:template>
+	<!-- Template MaintenanceFrequencyCode -->
+	<xsl:template name="maintenanceFrequencyCodeTemplate">
+		<xsl:param name="maintenanceFrequencyCode"/>
+			<xsl:choose>
+				<xsl:when test="$maintenanceFrequencyCode = 'continual'">
+				<xsl:text>continue</xsl:text>	
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'daily'">
+					<xsl:text>quotidienne</xsl:text>	
+				</xsl:when>		
+				<xsl:when test="$maintenanceFrequencyCode = 'weekly'">
+					<xsl:text>hebdomadaire</xsl:text>
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'fortnightly'">
+					<xsl:text>bimensuelle</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$maintenanceFrequencyCode = 'monthly'">
+					<xsl:text>mensuelle</xsl:text>
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'quarterly'">
+					<xsl:text>trimestrielle</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$maintenanceFrequencyCode = 'biannually'">
+					<xsl:text>semestrielle</xsl:text>
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'annually'">
+					<xsl:text>annuelle</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$maintenanceFrequencyCode = 'asNeeded'">
+					<xsl:text>au besoin</xsl:text>
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'irregular'">
+					<xsl:text>irrégulière</xsl:text>	
+				</xsl:when>	
+				<xsl:when test="$maintenanceFrequencyCode = 'notPlanned'">
+				<xsl:text>non planifiée</xsl:text>	
+				</xsl:when>
+				<xsl:when test="$maintenanceFrequencyCode = 'unknown'">
+				<xsl:text>inconnue</xsl:text>
+				</xsl:when>	
+				<xsl:when test="$maintenanceFrequencyCode = 'userDefined'">
+					<xsl:text>définie par l'utilisateur</xsl:text>
+				</xsl:when>	
+				<xsl:otherwise>
+					<xsl:value-of disable-output-escaping="yes" select="$maintenanceFrequencyCode"></xsl:value-of>
 				</xsl:otherwise>
 			</xsl:choose>
 	</xsl:template>

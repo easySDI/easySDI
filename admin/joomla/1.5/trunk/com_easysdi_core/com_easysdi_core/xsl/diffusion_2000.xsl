@@ -38,7 +38,7 @@ __ref_6$s
 <table class="descr">
 <tr><td colspan="2"><div style="display:none;" id="message" class="info"/></td></tr>
 <xsl:for-each select="./Property">
-	<tr><td class="title" valign="top"><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td><td>  
+	<tr><td valign="top"><table><tr><td class="title"><xsl:value-of disable-output-escaping="yes" select="PropertyName"/> : </td></tr></table></td><td>  
 	<table >
 		<xsl:for-each select="PropertyValue">
 			<tr><td><xsl:value-of disable-output-escaping="yes" select="value"/></td></tr>  

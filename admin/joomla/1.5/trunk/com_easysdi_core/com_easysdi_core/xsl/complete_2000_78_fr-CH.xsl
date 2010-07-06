@@ -250,9 +250,9 @@ __ref_6$s
  	</xsl:when>
  	<xsl:otherwise>
  		<table class="descr"   >
-	 	<tr valign="top"><td class="title">Nom*:</td><td>
+	 	<tr valign="top"><td class="title"><b>Nom*:</b></td><td><b>
 	 	<xsl:value-of disable-output-escaping="yes" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:name/gco:CharacterString"/>
-	 	</td></tr>
+	 	</b></td></tr>
 	 	 <tr valign="top"><td class="title">Description*:</td><td>
 	 	 <xsl:value-of disable-output-escaping="yes" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:definition/gco:CharacterString"/>
 	 	 </td></tr>
@@ -261,7 +261,7 @@ __ref_6$s
 	 	 </td></tr>
 	 	 <tr valign="top"><td class="title">Type:</td><td>
 	 	 <xsl:call-template name="DataTypeCodeTemplate">
-			<xsl:with-param name="DataTypeCode" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:dataType/gmd:MD_DataTypeCode/@codeListValue"/>
+			<xsl:with-param name="DataTypeCode" select="gmd:MD_MetadataExtensionInformation/gmd:extendedElementInformation/gmd:MD_ExtendedElementInformation/gmd:dataType/gmd:MD_DatatypeCode/@codeListValue"/>
 		 </xsl:call-template>
 		 </td></tr>
 	 	 <tr valign="top"><td class="title">Statut:</td><td>
@@ -270,6 +270,7 @@ __ref_6$s
 		</xsl:call-template>
 	 	 </td></tr>
 	 	 </table>
+		 <hr/>
  	</xsl:otherwise>
  </xsl:choose>
  </xsl:for-each>
