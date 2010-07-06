@@ -63,23 +63,23 @@ class ADMIN_cpanel {
 	
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
-				$filterList[] = "(o.type ='$ordertype')";
+				$filterList[] = "(o.type_id ='$ordertype')";
 		}
 		
 		$orderstatus=JRequest::getVar("orderstatus","4");
 		if ($orderstatus !=""){
-				$filterList[] = "(o.status ='$orderstatus')";
+				$filterList[] = "(o.status_id ='$orderstatus')";
 		}
 		
 		$orderpartner= JRequest::getVar("orderpartner","");
 		if ($orderpartner !=""){
-				$filterList[] = "(p.partner_id ='$orderpartner')";
+				$filterList[] = "(p.id ='$orderpartner')";
 		}
 		
 		$ordersupplier = JRequest::getVar("ordersupplier","");
 		if ($ordersupplier !="")
 		{
-			$filterList[] = "(prod.partner_id ='$ordersupplier')";
+			$filterList[] = "(prod.manager_id ='$ordersupplier')";
 		}
 		
 		$orderproduct = JRequest::getVar("orderproduct","");
@@ -94,43 +94,43 @@ class ADMIN_cpanel {
 		$SendDateTo = JRequest::getVar("SendDateTo","");
 		if ($SendDateFrom !="")
 		{
-			$filterList[] = "o.order_date >= STR_TO_DATE('".$SendDateFrom."', '".$dateFormat."')";
+			$filterList[] = "o.created >= STR_TO_DATE('".$SendDateFrom."', '".$dateFormat."')";
 		}
 		if ($SendDateTo !="")
 		{
-			$filterList[] = "o.order_date <= TIMESTAMPADD(DAY,1,STR_TO_DATE('".$SendDateTo."', '".$dateFormat."'))";
+			$filterList[] = "o.created <= TIMESTAMPADD(DAY,1,STR_TO_DATE('".$SendDateTo."', '".$dateFormat."'))";
 		}
 		
 		$ResponsDateFrom = JRequest::getVar("ResponsDateFrom","");
 		$ResponsDateTo = JRequest::getVar("ResponsDateTo","");
 		if ($ResponsDateFrom !="")
 		{
-			$filterList[] = "o.response_date >= STR_TO_DATE('".$ResponsDateFrom."', '".$dateFormat."')";
+			$filterList[] = "o.response >= STR_TO_DATE('".$ResponsDateFrom."', '".$dateFormat."')";
 		}
 		if ($ResponsDateTo !="")
 		{
-			$filterList[] = "o.response_date <= TIMESTAMPADD(DAY,1,STR_TO_DATE('".$ResponsDateTo."', '".$dateFormat."'))";
+			$filterList[] = "o.response <= TIMESTAMPADD(DAY,1,STR_TO_DATE('".$ResponsDateTo."', '".$dateFormat."'))";
 		}
 		
 		if ( $search ) {
-			$filterList[] = "(o.name LIKE '%$search%') or (o.order_id LIKE '%$search%')";
+			$filterList[] = "(o.name LIKE '%$search%') or (o.id LIKE '%$search%')";
 		}
 		
 		if (count($filterList) > 0)
 			$filter .= " where ".implode(" AND ", $filterList);
 		
-		$queryType = "select * from #__easysdi_order_type_list ";
+		$queryType = "select * from #__sdi_list_ordertype ";
 		$database->setQuery($queryType);
 		$typeFilter = $database->loadObjectList();
 		
-		$queryStatus = "select * from #__easysdi_order_status_list ";
+		$queryStatus = "select * from #__sdi_list_orderstatus";
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
 		
 		$queryPartner = "select p.id as partner_id, u.name AS name 
 						 from #__users u, #__sdi_account p 
 						 inner join #__sdi_address a on p.id=a.account_id ,
-						 #__easysdi_order o
+						 #__sdi_order o
 						 where a.type_id=1 
 						 AND u.id = p.user_id
 						 AND o.user_id = u.id
@@ -138,51 +138,64 @@ class ADMIN_cpanel {
 		$database->setQuery($queryPartner);
 		$partnerFilter = $database->loadObjectList();
 		
-		$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
+//		$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
+//							FROM #__sdi_account p 
+//							INNER JOIN	#__sdi_address a ON p.id = a.account_id 
+//							INNER JOIN	#__users u ON p.user_id = u.id,
+//							#__sdi_product prd 
+//							where a.type_id=1 AND p.id 
+//							IN (SELECT account_id FROM #__sdi_actor 
+//								WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE role_code ='PRODUCT'))
+//							AND prd.partner_id = p.id
+//							AND prd.orderable = 1
+//							AND prd.published = 1
+//							group by name ORDER BY u.name";
+$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
 							FROM #__sdi_account p 
 							INNER JOIN	#__sdi_address a ON p.id = a.account_id 
 							INNER JOIN	#__users u ON p.user_id = u.id,
-							#__easysdi_product prd 
+							#__sdi_product prd INNER JOIN #__sdi_object_version v ON v.id=prd.obectversion_id 
 							where a.type_id=1 AND p.id 
 							IN (SELECT account_id FROM #__sdi_actor 
 								WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE role_code ='PRODUCT'))
-							AND prd.partner_id = p.id
-							AND prd.orderable = 1
+							AND prd.manager_id = p.id
+							AND v.orderable = 1
 							AND prd.published = 1
 							group by name ORDER BY u.name";
 		$database->setQuery($querySupplier);
 		$database->setQuery($querySupplier);
 		$supplierFilter = $database->loadObjectList();
 		
-		$queryProduct = "select * from #__easysdi_product WHERE orderable = 1 and published = 1 order by data_title";
+		$queryProduct = "select p.* from #__sdi_product p INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id
+							 WHERE v.orderable = 1 and p.published = 1 order by p.name";
 		$database->setQuery($queryProduct);
 		$productFilter = $database->loadObjectList();
 		
-		$query = "select distinct(o.order_id), 
+		$query = "select distinct(o.id), 
 							o.*, 
-							o.order_date as orderDate, 
-							o.order_send_date as orderSendDate,
-							o.response_date as responseDate, 
+							o.created as orderDate, 
+							o.sent as orderSendDate,
+							o.response as responseDate, 
 							sl.code, 
-							sl.translation as status_translation, 
-							tl.translation as type_translation 
-				 from #__easysdi_order o 
-				 inner join #__easysdi_order_status_list sl on o.status=sl.id 
-				 inner join #__easysdi_order_type_list tl on o.type=tl.id 
-				 left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
+							sl.label as status_translation, 
+							tl.label as type_translation 
+				 from #__sdi_order o 
+				 inner join #__sdi_list_orderstatus sl on o.status_id=sl.id 
+				 inner join #__sdi_list_ordertype tl on o.type_id=tl.id 
+				 left outer join #__sdi_order_product opl on opl.order_id=o.id 
 				 left outer join #__sdi_account p on  o.user_id=p.user_id 
-				 left outer join #__easysdi_product prod on opl.product_id=prod.id
+				 left outer join #__sdi_product prod on opl.product_id=prod.id
 				 ";
 		$query .= $filter;
-		$query .= "order by responseDate";
+		$query .= "order by response";
 
 		$queryCount = "select count(*) 
-						from #__easysdi_order o 
-						inner join #__easysdi_order_status_list sl on o.status=sl.id 
-						inner join #__easysdi_order_type_list tl on o.type=tl.id 
-						left outer join #__easysdi_order_product_list opl on opl.order_id=o.order_id 
-						left outer join #__sdi_account p on  o.user_id=p.user_id 
-						left outer join #__easysdi_product prod on opl.product_id=prod.id";
+						from #__sdi_order o 
+						inner join #__sdi_list_orderstatus sl on o.status_id=sl.id 
+						inner join #__sdi_list_ordertype tl on o.type_id=tl.id 
+						 left outer join #__sdi_order_product opl on opl.order_id=o.id 
+						 left outer join #__sdi_account p on  o.user_id=p.user_id 
+						 left outer join #__sdi_product prod on opl.product_id=prod.id";
 		$queryCount .= $filter;
 
 		
