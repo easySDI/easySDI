@@ -11,7 +11,7 @@
 					<a href="<?php echo $link; ?>">
 						
 						<?php 
-						$text = JText::_( 'EASYSDI_BASEMAP_CTRL_PANEL' );
+						$text = JText::_( 'SHOP_CPANEL_BASEMAP' );
 						echo JHTML::_('image.site',  'icon-48-media.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -23,7 +23,7 @@
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_PERIMETER_CTRL_PANEL' );					
+							$text = JText::_( 'SHOP_CPANEL_PERIMETER' );					
 							echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -35,7 +35,7 @@
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_LOCATION_CTRL_PANEL' );					
+							$text = JText::_( 'SHOP_CPANEL_LOCATION' );					
 							echo JHTML::_('image.site',  'icon-48-checkin.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -54,7 +54,7 @@
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_PRODUCT_CTRL_PANEL' );					
+							$text = JText::_( 'SHOP_CPANEL_PRODUCT' );					
 							echo JHTML::_('image.site',  'icon-48-generic.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -66,7 +66,7 @@
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_PROPERTIES_CTRL_PANEL' );					
+							$text = JText::_( 'SHOP_CPANEL_PROPERTY' );					
 							echo JHTML::_('image.site',  'icon-48-cpanel.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -78,7 +78,7 @@
 				<div class="icon">
 					<a href="<?php echo $link; ?>">				
 						<?php 
-						$text = JText::_( 'EASYSDI_LIST_ORDERS' );
+						$text = JText::_( 'SHOP_CPANEL_ORDER' );
 						echo JHTML::_('image.site',  'icon-48-module.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
