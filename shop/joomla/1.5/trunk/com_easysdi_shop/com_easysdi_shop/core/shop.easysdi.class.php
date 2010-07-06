@@ -906,7 +906,7 @@ function setAlpha(imageformat)
 		     	while (i< polygonSize)
 		     	{
 	     			document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
-					new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x +" "+components [i].y);
+					new Option(components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" / "+components [i].y.toFixed(<?php echo $decimal_precision; ?>),components [i].x.toFixed(<?php echo $decimal_precision; ?>) +" "+components [i].y.toFixed(<?php echo $decimal_precision; ?>));
 					i++;
 	     		}          
 	     	}
@@ -2175,9 +2175,19 @@ if (count($rows)>0){
 						echo "</div>";
 						exit;
 					}
-
+					
 					$order_product_list_id = $db->insertId();
-
+					
+					$query = "INSERT INTO #__easysdi_order_product_list_blob(order_product_list_id,data) 
+								VALUES (".$order_product_list_id.",null)";
+					$db->setQuery($query );
+					if (!$db->query()) 
+					{
+						echo "<div class='alert'>";
+						echo $db->getErrorMsg();
+						echo "</div>";
+						exit;
+					}
 
 					$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
 														#__easysdi_product_properties_definition  as a ,
@@ -3305,6 +3315,18 @@ function validateForm(toStep, fromStep){
 		$database =& JFactory::getDBO();
 		$option = JRequest::getVar('option');
 		$devis_to_order = JRequest::getVar('devis_to_order',0);
+		
+		//basemap
+		$query = "select * from #__easysdi_basemap_definition where def = 1"; 
+		$database->setQuery( $query);
+		$rows = $database->loadObjectList();		  
+		if ($database->getErrorNum()) {						
+				echo "<div class='alert'>";			
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+		}
+		$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+		
 		//Order
 		$query = "SELECT * FROM #__easysdi_order WHERE order_id=$order_id";
 		$database->setQuery($query);
@@ -3346,7 +3368,18 @@ function validateForm(toStep, fromStep){
 		$selectedSurfacesName = array();
 		foreach ($perimeterList as $perimeter)
 		{
-			$selectedSurfaces[]=$perimeter->value;
+			//Round if free perimeter
+			$queryCode = "select d.perimeter_code from #__easysdi_perimeter_definition d, #__easysdi_order_product_perimeters p where p.perimeter_id=d.id and d.id=".$perimeter->perimeter_id;
+			$database->setQuery($queryCode);
+			$code = $database->loadResult();
+			if($code == "FREE"){
+				$tmp = explode(" ", $perimeter->value);
+				$tmp[0] = round($tmp[0], $decimal_precision);
+				$tmp[1] = round($tmp[1], $decimal_precision);
+				$selectedSurfaces[] = implode(" ", $tmp);
+			}else{
+				$selectedSurfaces[]=$perimeter->value;
+			}
 			$selectedSurfacesName[]=$perimeter->text;	
 		}
 		$mainframe->setUserState('selectedSurfaces',$selectedSurfaces);

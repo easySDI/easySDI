@@ -456,13 +456,6 @@ class SITE_product {
 										</gmd:otherConstraints>
 									</gmd:MD_LegalConstraints>
 								</gmd:resourceConstraints>
-								<gmd:resourceConstraints xlink:title=\"Restriction d'utilisation\">
-									<gmd:MD_LegalConstraints>
-										<gmd:otherConstraints>
-											<gco:CharacterString></gco:CharacterString>
-										</gmd:otherConstraints>
-									</gmd:MD_LegalConstraints>
-								</gmd:resourceConstraints>
 								<gmd:resourceConstraints xlink:title=\"Référence du document légal\">
 									<gmd:MD_LegalConstraints>
 										<gmd:otherConstraints>
@@ -560,6 +553,16 @@ class SITE_product {
 						<gmd:extendedMetadata xlink:title=\"Identification\">
 							<ext:EX_extendedMetadata_Type>
 								<ext:name>
+									<gco:CharacterString>Nom de la table</gco:CharacterString>
+								</ext:name>
+								<ext:value>
+									<gco:CharacterString></gco:CharacterString>
+								</ext:value>
+							</ext:EX_extendedMetadata_Type>
+						</gmd:extendedMetadata>
+						<gmd:extendedMetadata xlink:title=\"Identification\">
+							<ext:EX_extendedMetadata_Type>
+								<ext:name>
 									<gco:CharacterString>Synoptique</gco:CharacterString>
 								</ext:name>
 								<ext:value>
@@ -600,7 +603,37 @@ class SITE_product {
 						<gmd:extendedMetadata xlink:title=\"Produit vecteur\">
 							<ext:EX_extendedMetadata_Type>
 								<ext:name>
+									<gco:CharacterString>Cohérence topologique</gco:CharacterString>
+								</ext:name>
+								<ext:value>
+									<gco:CharacterString></gco:CharacterString>
+								</ext:value>
+							</ext:EX_extendedMetadata_Type>
+						</gmd:extendedMetadata>
+						<gmd:extendedMetadata xlink:title=\"Produit vecteur\">
+							<ext:EX_extendedMetadata_Type>
+								<ext:name>
+									<gco:CharacterString>Information altimétrique</gco:CharacterString>
+								</ext:name>
+								<ext:value>
+									<gco:CharacterString></gco:CharacterString>
+								</ext:value>
+							</ext:EX_extendedMetadata_Type>
+						</gmd:extendedMetadata>
+						<gmd:extendedMetadata xlink:title=\"Produit vecteur\">
+							<ext:EX_extendedMetadata_Type>
+								<ext:name>
 									<gco:CharacterString>Modèle de données</gco:CharacterString>
+								</ext:name>
+								<ext:value>
+									<gco:CharacterString></gco:CharacterString>
+								</ext:value>
+							</ext:EX_extendedMetadata_Type>
+						</gmd:extendedMetadata>
+						<gmd:extendedMetadata xlink:title=\"Produit raster\">
+							<ext:EX_extendedMetadata_Type>
+								<ext:name>
+									<gco:CharacterString>Résolution</gco:CharacterString>
 								</ext:name>
 								<ext:value>
 									<gco:CharacterString></gco:CharacterString>

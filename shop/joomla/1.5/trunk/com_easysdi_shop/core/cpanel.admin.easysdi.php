@@ -449,6 +449,10 @@ function sendOrder(){
 				$database->setQuery($query);
 				$database->query();
 				
+				$query = "DELETE FROM #__easysdi_order_product_list_blob  WHERE order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $id)";
+				$database->setQuery($query);
+				$database->query();
+				
 				if(!$OrderProductList->delete())
 				{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

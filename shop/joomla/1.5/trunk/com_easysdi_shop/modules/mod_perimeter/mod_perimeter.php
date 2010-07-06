@@ -584,6 +584,19 @@ if ($curstep == "2")
 					if (isFreeSelectionPerimeter)
 					{
 						var elSel = document.getElementById('selectedSurface');
+						var xVal = document.getElementById("xText").value;
+						var yVal = document.getElementById("yText").value;
+						
+						
+						//Numeric test
+						if(!isNumeric(xVal) || !isNumeric(yVal)){
+							alert('Les coordonnées entrées sont invalides');
+							return false;
+						}else{
+							xVal = parseFloat(xVal).toFixed(<?php echo $decimal_precision; ?>);
+							yVal = parseFloat(yVal).toFixed(<?php echo $decimal_precision; ?>);
+						}
+						
 						if (elSel.options.selectedIndex>=0)
 						{
 							var selectedIndex = elSel.options.selectedIndex;
@@ -593,18 +606,46 @@ if ($curstep == "2")
 								elSel.options[i+1] = new Option (elSel.options[i].text,elSel.options[i].value);
 							}
 
-							elSel.options[selectedIndex] = new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
-
+							//elSel.options[selectedIndex] = new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
+							elSel.options[selectedIndex] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
 						}
 						else
 						{
-							elSel.options[elSel.options.length] =  new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
+							//elSel.options[elSel.options.length] =  new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
+							elSel.options[elSel.options.length] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
 						}
 
 						drawSelectedSurface();	
 					}
 				}
+				
+				function isValidCoordinates(){
+					var xVal = document.getElementById("xText").value;
+					var yVal = document.getElementById("yText").value;
+					
+					if(!isNumeric(xVal)){
+						alert('<?php echo JText::_("EASYSDI_ERROR_COORDX_INVALID");?>' + ' ' + document.getElementById("xText").value);
+						return false;
+					}
+					else if (!isNumeric(yVal))
+					{
+						alert('<?php echo JText::_("EASYSDI_ERROR_COORDY_INVALID");?>' + ' '+  document.getElementById("yText").value);
+						return false;
+					}
+					else{
+						return true;
+					}
+				}
+				
+				function isNumeric(str){
+					//str = alltrim(str);
+					var val = /^[-+]?[0-9]+(\.[0-9]+)?$/.test(str);
+					return val;
+				} 
 
+				function alltrim(str) {
+					return str.replace(/^\s+|\s+$/g, '');
+				} 
 
 				function modifyGeometryPerimeter()
 				{
@@ -616,7 +657,8 @@ if ($curstep == "2")
 							if (elSel.options[i].selected) 
 							{
 								var curValue = elSel.options[i].value;
-								elSel.options[i].value = document.getElementById("xText").value+" "+document.getElementById("yText").value;
+								//elSel.options[i].value = document.getElementById("xText").value+" "+document.getElementById("yText").value;
+								elSel.options[i].value = parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>) +" "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>);	
 								elSel.options[i].text = parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>) +" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>);				
 								drawSelectedSurface();																		
 								break;
@@ -703,11 +745,11 @@ if ($curstep == "2")
 						</tr>
 						<tr>
 						<td colspan="2" align="left"><button class="searchButton" type="button"
-							onClick="addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button></td>
+						onClick="if(isValidCoordinates()){addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button></td>
 							</tr>
 							<tr>
 							<td colspan="2" align="left"><button class="searchButton" type="button"
-								onClick="modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button></td>
+							onClick="if(isValidCoordinates()){modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button></td>
 								</tr>
 								</table>
 								</div>

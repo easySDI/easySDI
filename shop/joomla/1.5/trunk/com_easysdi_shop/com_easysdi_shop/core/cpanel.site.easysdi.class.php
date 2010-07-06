@@ -50,7 +50,6 @@ class orderProductListByOrder extends JTable
 	var $product_id=null;
 	var $order_id=null;
 	var $status=null;
-	var $data=null;
 	var $filename= null;
 	var $remark=null;
 	var $price=null;

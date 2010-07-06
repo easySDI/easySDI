@@ -39,7 +39,7 @@ class SITE_cpanel {
 		if($user->id != $orderOwner && $user->id != $productFurnisher)
 			die();
 
-		$query = "SELECT data,filename FROM #__easysdi_order_product_list where product_id = $product_id AND order_id = $order_id";
+		$query = "SELECT oplb.data as data, opl.filename as filename FROM #__easysdi_order_product_list opl, #__easysdi_order_product_list_blob oplb where opl.id=oplb.order_product_list_id AND opl.product_id = $product_id AND opl.order_id = $order_id";
 		$database->setQuery($query);
 		$row = $database->loadObject();
 
@@ -89,6 +89,77 @@ class SITE_cpanel {
 				echo "</div>";
 				exit;
 			}
+		}
+	}
+	
+	function listProductsForPartnerId(){
+		global  $mainframe;
+		$option=JRequest::getVar("option");
+		$partner_id=JRequest::getVar("id",0);
+		if ($partner_id == 0){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
+			echo "</div>";
+		}else {
+			$database =& JFactory::getDBO();				
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			
+			$query = "select * from #__easysdi_product where partner_id =".$partner_id;
+			//echo $query;
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			
+			$csv = "id;titre;responsable;gestionnaire\r\n";
+			foreach ($rows as $row)
+			{
+				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&id=".$row->metadata_id;
+				$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+				
+				//echo var_dump($cswResults)."<br>";
+				$doc = new DOMDocument('1.0', 'UTF-8');
+				
+				if ($cswResults <> false)
+				$xpathResults = new DOMXPath($cswResults);
+				else
+				$xpathResults = new DOMXPath($doc);
+				$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.1');
+				$xpathResults->registerNamespace('dc','http://purl.org/dc/elements/1.1/');
+				$xpathResults->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+				$xpathResults->registerNamespace('gco','http://www.isotc211.org/2005/gco');
+				$xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
+				$xpathResults->registerNamespace('ext','http://www.depth.ch/2008/ext');
+				$xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');		
+				
+				$node = $xpathResults->query("//gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString");
+				$mid = $node->item(0)->nodeValue;
+				
+				$node = $xpathResults->query("//gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString");
+				$resp = $node->item(0)->nodeValue;
+				//echo "responsable:".$resp;
+				
+				$node = $xpathResults->query("//gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString");
+				$gest = $node->item(0)->nodeValue;
+				//echo "gestionnaire:".$gest;
+				
+				$node = $xpathResults->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
+				$title = $node->item(0)->nodeValue;
+				//echo "title:".$title;
+				
+				$csv .= utf8_decode($mid.";".$title.";".$resp.";".$gest."\r\n");
+			}
+			
+			error_reporting(0);
+			ini_set('zlib.output_compression', 0);
+			header('Pragma: public');
+			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+			header('Content-Transfer-Encoding: none');
+			header('Content-Type: application/octetstream; name="export.csv"');
+			header('Content-Disposition: attachement; filename="export.csv"');
+
+			echo $csv;	
+
+			die();
+			
 		}
 	}
 	
@@ -207,7 +278,7 @@ class SITE_cpanel {
 			$currentOrder = $currentOrder[0];
 			//Do not give the same name twice and limit the name to 40 characters
 			$order_name="";
-			$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".$order_name."'";
+			$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".addslashes($order_name)."'";
 			$database->setQuery($query_count_name);
 			$order_occ = $database->loadResult();
 			$l = 1;
@@ -217,7 +288,7 @@ class SITE_cpanel {
 					$order_name=$currentOrder->name.JText::_("EASYSDI_TEXT_COPY").$l;
 				else
 					$order_name=substr($currentOrder->name,0,31).JText::_("EASYSDI_TEXT_COPY").$l;
-				$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".$order_name."'";
+				$query_count_name = "select status from #__easysdi_order where user_id = ".$user->id." AND name ='".addslashes($order_name)."'";
 				$database->setQuery($query_count_name);
 				$order_occ = $database->loadResult();
 				$l++;
@@ -228,7 +299,7 @@ class SITE_cpanel {
 			
 			//insert new order
 			$query = "insert into #__easysdi_order (remark, provider_id, name, type, status, third_party, user_id, buffer, order_date, surface) ";
-			$query .= "values('$currentOrder->remark', $currentOrder->provider_id, '$order_name', $currentOrder->type, $saved, $currentOrder->third_party, $currentOrder->user_id, $currentOrder->buffer, now(), $currentOrder->surface)";
+			$query .= "values('$currentOrder->remark', $currentOrder->provider_id, '".addslashes($order_name)."', $currentOrder->type, $saved, $currentOrder->third_party, $currentOrder->user_id, $currentOrder->buffer, now(), $currentOrder->surface)";
 			$database->setQuery($query);
 			if (!$database->query()) {
 				echo "<div class='alert'>";
@@ -254,6 +325,17 @@ class SITE_cpanel {
 					exit;
 				}
 				$list_copy_id = mysql_insert_id();
+				
+				$query = "INSERT INTO #__easysdi_order_product_list_blob(order_product_list_id,data) 
+								VALUES (".$list_copy_id.",null)";
+				$database->setQuery($query);
+				if (!$database->query()) {
+					echo "<div class='alert'>";
+					echo $database->getErrorMsg();
+					echo "</div>";
+					exit;
+				}
+				
 				$query = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id=".$row->id;
 				$database->setQuery($query);
 				$rows1 = $database->loadObjectList();
@@ -565,15 +647,15 @@ class SITE_cpanel {
 				
 				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= ".$remark.",price = $price ";
 				$fileName = $_FILES['file'.$product_id]["name"];
+				$content = null;
 			 	if (strlen($fileName)>0)
 			 	{
 				 	$tmpName =  $_FILES['file'.$product_id]["tmp_name"];
-	
 				 	$fp      = fopen($tmpName, 'r');
 				 	$content = fread($fp, filesize($tmpName));
 				 	$content = addslashes($content);
 				 	fclose($fp);
-				 	$query .= ", filename = '$fileName' , data = '$content' ";
+				 	$query .= ", filename = '$fileName' ";
 				 }
 				 $query .= "WHERE order_id=".$order_id." AND product_id = ".$product_id;
 	
@@ -585,7 +667,20 @@ class SITE_cpanel {
 	
 				 	break;
 				 }
-			
+				 
+				$query = "SELECT id FROM #__easysdi_order_product_list WHERE order_id=".$order_id." AND product_id = ".$product_id;
+				$database->setQuery($query);
+				$opl_id = $database->loadResult();
+				
+				$query = "UPDATE #__easysdi_order_product_list_blob SET data = '$content' WHERE order_product_list_id=".$opl_id;
+				$database->setQuery( $query );
+				if (!$database->query()) {
+					echo "<div class='alert'>";
+					echo JText::_($database->getErrorMsg());
+					echo "</div>";
+	
+					break;
+				}
 			 //Mise à jour du statut de la commande
 		/*	 $query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=".$order_id." AND sl.code = 'AWAIT' ";
 			 $database->setQuery($query);
@@ -617,7 +712,7 @@ class SITE_cpanel {
 			 }*/
 			}
 		}
-		 SITE_cpanel::setOrderStatus($order_id,1);
+		 SITE_cpanel::setOrderStatus($order_id,true);
 	}
 
 	function notifyUserByEmail($order_id, $subject, $body){
@@ -842,7 +937,7 @@ class SITE_cpanel {
 
 		foreach ($toUpdate as $field)
 		{
-			$query = "update #__easysdi_order_product_list set data=NULL where order_id = ".$field;
+			$query = "update #__easysdi_order_product_list_blob set data=NULL where order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = ".$field.")";
 			$database->setQuery($query);
 				
 			if (!$database->query()) {
@@ -1236,18 +1331,20 @@ class SITE_cpanel {
 		jimport("joomla.utilities.date");
 		$date = new JDate();
 		
+		//current order status
 		$query = "SELECT status FROM #__easysdi_order WHERE order_id=$order_id";
 		$db->setQuery($query);
 		$status_id = $db->loadResult();
 		
+		//amount of non-treated order elements
 		$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id AND sl.code = 'AWAIT' ";
 		$db->setQuery($query);
 		$total = $db->loadResult();
 		
+		//total order element
 		$query = "SELECT COUNT(*) FROM #__easysdi_order_product_list p, #__easysdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id  ";
 		$db->setQuery($query);
 		$totalProduct = $db->loadResult();
-			
 		jimport("joomla.utilities.date");
 		$date = new JDate();
 		if ( $total == 0)
@@ -1286,6 +1383,7 @@ class SITE_cpanel {
 					WHERE order_id=$order_id ";
 		}
 			
+		//Update new status
 		$db->setQuery($query);
 		if (!$db->query()) {
 			echo "<div class='alert'>";

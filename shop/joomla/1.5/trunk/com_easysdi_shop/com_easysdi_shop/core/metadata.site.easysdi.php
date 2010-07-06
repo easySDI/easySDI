@@ -618,7 +618,8 @@ class SITE_metadata {
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gts', 'http://www.isotc211.org/2005/gts');
 		//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:srv', 'http://www.isotc211.org/2005/srv');
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:ext', 'http://www.depth.ch/2008/ext');
-
+		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:che', 'http://www.geocat.ch/2008/che');
+		
 		/*$doc = "<gmd:MD_Metadata
 					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
 					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
