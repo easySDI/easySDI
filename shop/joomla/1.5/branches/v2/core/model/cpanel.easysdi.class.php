@@ -16,83 +16,71 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-class order extends JTable
+class order extends sdiTable
 {	
-	var $order_id=null;	
-	var $remark=null;
-	var $provider_id=null;
-	var $name=null;
-	var $type=null;
-	var $status=null;
-	var $order_update=null;
-	var $third_party=null;
-	var $archived=null;
-	var $response_date=null;
-	var $response_send=null;
+	var $type_id=null;
+	var $status_id=null;
 	var $user_id=null;
+	var $thirdparty_id=null;
 	var $buffer=null;
-	var $order_date=null;
-	var $surface=null;
-	var $order_send_date=null;
-	var $perimeter_id=null;
+	var $surface = null;
+	var $remark=null;
+	var $response=null;
+	var $responsesent=null;
+	var $sent=null;	
 
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_order', 'order_id', $db ) ;    		
+		parent::__construct ( '#__sdi_order', 'id', $db ) ;    		
 	}
 
 }
 
-class orderProductListByOrder extends JTable
+class orderProductListByOrder extends sdiTable
 {	
-	var $id=null;	
-	var $product_id=null;
 	var $order_id=null;
-	var $status=null;
-	var $data=null;
-	var $filename= null;
+	var $product_id=null;
+	var $status_id=null;
+	var $filename=null;
 	var $remark=null;
 	var $price=null;
 
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_order_product_list', 'order_id', $db ) ;    		
+		parent::__construct ( '#__sdi_order_product', 'order_id', $db ) ;    		
 	}
 
 }
 
 
-class orderProductPerimeterByOrder extends JTable
+class orderProductPerimeterByOrder extends sdiTable
 {	
-	var $id=null;	
-	var $perimeter_id=null;
 	var $order_id=null;
+	var $perimeter_id=null;
 	var $value = null;
 	var $text=null;
 	
-
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_order_product_perimeters', 'order_id', $db ) ;    		
+		parent::__construct ( '#__sdi_order_perimeter', 'order_id', $db ) ;    		
 	}
 
 }
 
-class orderProductPropertiesByOrderList extends JTable
+class orderProductPropertiesByOrderList extends sdiTable
 {	
-	var $id=null;	
-	var $order_product_list_id=null;
+	var $orderproduct_id=null;
 	var $property_id = null;
-	var $property_value=null;
-	var $code=null;
+	var $propertyvalue_id=null;
+	var $propertyvalue=null;
 
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_order_product_properties', 'order_product_list_id', $db ) ;    		
+		parent::__construct ( '#__sdi_order_property', 'orderproduct_id', $db ) ;    		
 	}
 
 }
