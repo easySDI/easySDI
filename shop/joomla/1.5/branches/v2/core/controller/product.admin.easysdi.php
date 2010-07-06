@@ -90,7 +90,7 @@ class ADMIN_product {
 		
 		$product = new product( $database );
 		$product->load( $id );
-		
+				
 		$version_id = JRequest::getVar('objectversion_id', 0 );
 		if($version_id == 0)
 		{
@@ -257,7 +257,6 @@ class ADMIN_product {
 		{
 			$product->viewaccount_id="";
 		}
-		
 		if($product->viewbasemap_id == 0)
 		{
 			$product->viewbasemap_id = NULL;
@@ -355,7 +354,29 @@ class ADMIN_product {
 		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 	}
 
-	
+	function downloadProduct(){
+
+		$database =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$product_id = JRequest::getVar('product_id');
+		
+		$query = "SELECT data,filename FROM #__sdi_productfile where product_id = $product_id ";
+		$database->setQuery($query);
+		$row = $database->loadObject();
+
+		error_reporting(0);
+
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Transfer-Encoding: none');
+		header("Content-Length: ".strlen($row->data));
+		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
+		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+
+		echo $row->data;
+		die();
+	}
 	
 }
 

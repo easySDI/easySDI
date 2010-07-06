@@ -626,6 +626,12 @@ switch($task){
 	/*****************************************************************************************************************************
 	 * Product
 	 *****************************************************************************************************************************/
+	case "downloadProduct":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');
+		
+		ADMIN_product::downloadProduct();
+		break;
+		
 	case "saveProduct":		
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'product.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');

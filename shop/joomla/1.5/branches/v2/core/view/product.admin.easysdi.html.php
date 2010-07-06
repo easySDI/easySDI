@@ -51,8 +51,19 @@ class HTML_product {
 				document.getElementById('viewaccount_id').value = '0';
 			}
 		}		
+		function fileManagement()
+		{
+			if (document.forms['adminForm'].available.value == '0')
+			{
+				document.getElementById('productfile').disabled = true;
+			}
+			else
+			{
+				document.getElementById('productfile').disabled = false;
+			}
+		}
 		</script>			
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+	<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 	<?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("SHOP_GENERAL"),"productrPane");
@@ -137,6 +148,28 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
 								<td><?php if($version->free == 1)echo JText::_("CORE_YES"); else JText::_("CORE_NO");?></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
+								<td>
+									<table>
+									<tr>
+									<td>
+									<select class="inputbox" name="available" id="available"  onChange="javascript:fileManagement();">								
+									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+									</select>
+									</td>
+									<td><a target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>">
+									<?php echo $product->getFileName();?></a></td>
+									</tr>
+									</table>
+									
+								</td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
+								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 ) echo "disabled";  ?> ></td>
 							</tr>
 						</table>
 					

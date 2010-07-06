@@ -25,6 +25,7 @@ class product extends sdiTable
 	var $surfacemax=null;
 	var $published=0;
 	var $visibility_id=0;
+	var $available=0;
 	var $manager_id=null;
 	var $diffusion_id=null;
 	var $treatmenttype_id=null;
@@ -47,6 +48,62 @@ class product extends sdiTable
 		parent::__construct ( '#__sdi_product', 'id', $db ) ;    		
 	}
 	
+	function store()
+	{
+		if($this->available == 0)
+		{
+			$this->_db->setQuery( "DELETE FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+			if (!$this->_db->query()) {
+				return false;
+			}
+		}
+		else
+		{
+			
+			if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) 
+		 	{
+		 		$fileName = $_FILES['productfile']["name"];
+		 		$tmpName =  $_FILES['productfile']["tmp_name"];
+			 	$fp      = fopen($tmpName, 'r');
+			 	$content = fread($fp, filesize($tmpName));
+			 	$content = addslashes($content);
+			 	fclose($fp);
+				 
+				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+				$result = $this->_db->loadResult();
+				if ($this->_db->getErrorNum()) {
+					return false;
+				}
+				if($result > 0)
+				{
+					$this->_db->setQuery( "UPDATE  #__sdi_productfile SET data='".$content."', filename='".$fileName."' WHERE product_id = ".$this->id );
+					if (!$this->_db->query()) {
+						return false;
+					}
+				}
+				else
+				{
+					$this->_db->setQuery( "INSERT INTO  #__sdi_productfile (filename, data,product_id) VALUES ('".$fileName."' ,'".$content."', ".$this->id.")" );
+					if (!$this->_db->query()) {
+						return false;
+					}
+				}
+			}
+		}
+		return parent::store();
+	}
+	
+	function getFileName()
+	{
+			$this->_db->setQuery( "SELECT filename FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+			$filename = $this->_db->loadResult();
+			if ($this->_db->getErrorNum()) {
+				$mainframe->enqueueMessage($this->_db->getErrorMsg());
+				return false;
+			}
+			return $filename;
+	}
+	
 	function deleteProduct ()
 	{
 		$this->_db->setQuery( "DELETE FROM  $this->_tbl WHERE product_id = ".$this->id );
@@ -62,6 +119,7 @@ class product extends sdiTable
 		return parent::delete();
 		
 	}
+	
 	function delete()
 	{
 		$this->_db->setQuery( "DELETE FROM  #__sdi_product_perimeter WHERE product_id = ".$this->id );
@@ -88,6 +146,8 @@ class product extends sdiTable
 		$this->published = 0;
 		return $this->store();
 	}
+	
+
 }
 
 ?>
