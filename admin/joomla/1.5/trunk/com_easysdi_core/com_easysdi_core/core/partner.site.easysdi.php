@@ -496,7 +496,7 @@ class SITE_partner {
 		}
 		$option = JRequest::getVar("option");
 		$database =& JFactory::getDBO();
-			
+		
 		if (!is_null($affiliate_id)){
 
 			$rowPartner = new partnerByUserId( $database );
@@ -528,6 +528,35 @@ class SITE_partner {
 			}
 			$rowContact = new address( $database );
 			$rowContact->load( $contact_id );
+			
+			//add invoice and delivery
+			$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=2" );
+			$subscription_id = $database->loadResult();
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+			
+			$rowSubscription = new address( $database );
+			$rowSubscription->load( $subscription_id );
+        		
+			$database->setQuery( "SELECT address_id FROM #__easysdi_community_address WHERE partner_id=".$rowPartner->partner_id." AND type_id=3" );
+			$delivery_id = $database->loadResult();
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+        		
+			$rowDelivery = new address( $database );
+			$rowDelivery->load( $delivery_id );
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+
 			$rowUser =&	 new JTableUser($database);
 			$rowUser->load( $rowPartner->user_id );
 
@@ -536,9 +565,7 @@ class SITE_partner {
 			// new Affiliate
 			$rootPartner = new partnerByUserId( $database );
 			$rootPartner ->load($user->id);
-
-
-			$parent_id = JRequest::getVar("type",$rootPartner ->partner_id);
+			$parent_id = JRequest::getVar("type",$rootPartner->partner_id);
 
 			$parentPartner = new partnerByPartnerId( $database );
 			$parentPartner ->load($parent_id );
@@ -548,7 +575,6 @@ class SITE_partner {
 				$rowPartner->root_id=$parentPartner->partner_id;
 			}
 			$rowPartner->parent_id=$parentPartner->partner_id;
-				
 
 			$rowUser->usertype='Registered';
 			$rowUser->gid=18;
@@ -570,7 +596,7 @@ class SITE_partner {
 			$rowsPartnerProfile = $database->loadObjectList();
 			echo $database->getErrorMsg();
 		}
-		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $option, $rowsProfile, $rowsPartnerProfile);
+		HTML_partner::editAffiliatePartner( $rowUser, $rowPartner, $rowContact, $rowSubscription, $rowDelivery, $option, $rowsProfile, $rowsPartnerProfile);
 	}
 
 	function checkIsPartnerDeletable($affiliate_id){
@@ -1164,14 +1190,20 @@ class SITE_partner {
 			$rowAddress->address_id=$address_id;
 			$rowAddress->partner_id=$rowPartner->partner_id;
 			$rowAddress->type_id=$_POST['type_id'][$counter];
-			if ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 2) {
+				
+			if( $counter == 1 && isset($_POST['sameAddress1'] )  && $_POST['sameAddress1'] == 'on')
+			{
 				$index = 0;
-			} elseif ($_POST['sameAddress'][$counter] == 'on' && $rowAddress->type_id == 3) {
+			}
+			elseif ($counter == 2 && isset($_POST['sameAddress2'] ) && $_POST['sameAddress2'] == 'on')
+			{
 				$index = 0;
-			} else {
+			}
+			else
+			{
 				$index = $counter;
 			}
-
+				
 			$rowAddress->title_id=$_POST['title_id'][$index];
 			$rowAddress->country_code=$_POST['country_code'][$index];
 			$rowAddress->address_corporate_name1=$_POST['address_corporate_name1'][$index];
@@ -1186,7 +1218,7 @@ class SITE_partner {
 			$rowAddress->address_phone=$_POST['address_phone'][$index];
 			$rowAddress->address_fax=$_POST['address_fax'][$index];
 			$rowAddress->address_email=$_POST['address_email'][$index];
-
+			
 			if (!$rowAddress->store()) {
 				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
@@ -1280,7 +1312,7 @@ class SITE_partner {
 		}
 		
 		SITE_partner::includePartnerExtension(0,'BOTTOM','savePartner',$rowPartner->partner_id);
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner')."&type=".JRequest::getVar('type') );
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','listAffiliatePartner')."&type=".JRequest::getVar('type') );
 	}
 
 	function cancelPartner( $returnList, $option ) {
