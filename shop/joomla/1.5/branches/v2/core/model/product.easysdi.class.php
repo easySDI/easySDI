@@ -23,7 +23,7 @@ class product extends sdiTable
 	var $objectversion_id=0;
 	var $surfacemin=null;
 	var $surfacemax=null;
-	var $published=null;
+	var $published=0;
 	var $visibility_id=0;
 	var $manager_id=null;
 	var $diffusion_id=null;
@@ -61,6 +61,20 @@ class product extends sdiTable
 		
 		return parent::delete();
 		
+	}
+	function delete()
+	{
+		$this->_db->setQuery( "DELETE FROM  #__sdi_product_perimeter WHERE product_id = ".$this->id );
+		if (!$this->_db->query()) {
+			return false;
+		}
+	
+		$this->_db->setQuery( "DELETE FROM  #__sdi_product_property WHERE product_id = ".$this->id );
+		if (!$this->_db->query()) {
+			return false;
+		}
+		
+		return parent::delete();
 	}
 	
 	function publish ()

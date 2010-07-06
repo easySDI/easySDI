@@ -53,7 +53,20 @@ class ADMIN_product {
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
 					INNER JOIN (SELECT c.id , u.name FROM #__sdi_account c, #__users  u WHERE c.user_id = u.id ) a ON p.manager_id = a.id ";
-		if ($search !=null && strlen($search)>0 ) {$query = $query ." WHERE name like '%$search%' ";}	
+		if ($search !=null && strlen($search)>0 ) {$query = $query ." WHERE name like '%$search%' ";}
+
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "treatment" and $filter_order <> "created" and $filter_order <> "ordering")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		
+		$query = $query.$orderby;
+		
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);
 		}
@@ -78,8 +91,8 @@ class ADMIN_product {
 		$product = new product( $database );
 		$product->load( $id );
 		
-		$version_id = JRequest::getVar('version_id', 0 );
-		if($version_id == 0 || $version_id == -1)
+		$version_id = JRequest::getVar('objectversion_id', 0 );
+		if($version_id == 0)
 		{
 			$version_id = $product->objectversion_id;
 		}
@@ -92,14 +105,12 @@ class ADMIN_product {
 		{
 			$object_id=$version->object_id;
 		}
-		
 		if($object_id<>0)
 		{
 			$object = new object ($database);
 			$object->load($object_id);
 			$supplier->load($object->account_id);
 		}
-				
 				
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
@@ -228,9 +239,9 @@ class ADMIN_product {
 		global  $mainframe;
 		$database=& JFactory::getDBO();
 		$option =  JRequest::getVar("option");
-		$rowProduct =&	 new Product($database);
+		$product =&	 new product($database);
 
-		if (!$rowProduct->bind( $_POST )) {
+		if (!$product->bind( $_POST )) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
@@ -239,21 +250,26 @@ class ADMIN_product {
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
 		{
-			$rowProduct->previewUser = "";
-			$rowProduct->previewpassword = "";
+			$product->viewuser = "";
+			$product->viewpassword = "";
 		}
 		else
 		{
-			$rowProduct->easysdi_account_id="";
+			$product->viewaccount_id="";
 		}
-
-		if (!$rowProduct->store()) {
+		
+		if($product->viewbasemap_id == 0)
+		{
+			$product->viewbasemap_id = NULL;
+		}
+		
+		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
 		}
 
-		$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$rowProduct->id;
+		$query = "DELETE FROM  #__sdi_product_perimeter WHERE PRODUCT_ID = ".$product->id;
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -263,7 +279,7 @@ class ADMIN_product {
 
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
 		{
-			$query = "INSERT INTO #__easysdi_product_perimeter VALUES (0,$rowProduct->id,$perimeter_id,0)";
+			$query = "INSERT INTO #__sdi_product_perimeter (product_id,perimeter_id) VALUES ($product->id,$perimeter_id)";
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -274,7 +290,7 @@ class ADMIN_product {
 
 		foreach( $_POST['buffer'] as $bufferPerimeterId )
 		{
-			$query = "UPDATE #__easysdi_product_perimeter SET isBufferAllowed=1 WHERE product_id = $rowProduct->id AND perimeter_id = $bufferPerimeterId";
+			$query = "UPDATE #__sdi_product_perimeter SET buffer=1 WHERE product_id = $product->id AND perimeter_id = $bufferPerimeterId";
 			
 			$database->setQuery( $query );
 			if (!$database->query()) {
@@ -284,7 +300,7 @@ class ADMIN_product {
 			}
 		}
 
-		$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$rowProduct->id;
+		$query = "DELETE FROM  #__sdi_product_property WHERE PRODUCT_ID = ".$product->id;
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -292,9 +308,9 @@ class ADMIN_product {
 			exit();
 		}
 
-		foreach( $_POST['properties_id'] as $properties_id )
+		foreach( $_POST['property_id'] as $properties_id )
 		{
-			$query = "INSERT INTO #__easysdi_product_property VALUES (0,".$rowProduct->id.",".$properties_id.")";
+			$query = "INSERT INTO #__sdi_product_property (product_id,propertyvalue_id)VALUES (".$product->id.",".$properties_id.")";
 
 			$database->setQuery( $query );
 			if (!$database->query()) {
@@ -324,27 +340,11 @@ class ADMIN_product {
 		{
 			$product = new product( $database );
 			$product->load( $id );
-			if(!$rowProduct->deleteProduct())$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
-//			if (!$product->delete()) {
-//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-//			}
-//
-//			$query = "DELETE FROM  #__easysdi_product_perimeter WHERE PRODUCT_ID = ".$id;
-//			$database->setQuery( $query );
-//			if (!$database->query()) {
-//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-//				exit();
-//			}
-//
-//			$query = "DELETE FROM  #__easysdi_product_property WHERE PRODUCT_ID = ".$id;
-//			$database->setQuery( $query );
-//			if (!$database->query()) {
-//				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-//				exit();
-//			}
+			//if(!$product->deleteProduct())$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
+			if (!$product->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			}			
 		}
 		
 		$limitstart = JRequest::getVar("limitstart");

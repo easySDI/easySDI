@@ -41,14 +41,14 @@ class HTML_product {
 				document.getElementById('viewpassword').value = "";
 				document.getElementById('viewuser').disabled = true;
 				document.getElementById('viewuser').value ="";
-				document.getElementById('account_id').disabled = false;
+				document.getElementById('viewaccount_id').disabled = false;
 			}
 			else
 			{
 				document.getElementById('viewpassword').disabled = false;
 				document.getElementById('viewuser').disabled = false;
-				document.getElementById('account_id').disabled = true;
-				document.getElementById('account_id').value = '0';
+				document.getElementById('viewaccount_id').disabled = true;
+				document.getElementById('viewaccount_id').value = '0';
 			}
 		}		
 		</script>			
@@ -57,89 +57,89 @@ class HTML_product {
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("SHOP_GENERAL"),"productrPane");
 		?>		
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset>
+					
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $product->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $product->id;?>">								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("CORE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $product->name; ?>" /></td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $product->description; ?>" /></td>								
-							</tr>
-							<tr>
-								<td><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $object_id ); ?></td>
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_VERSION"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$version_list, 'version_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
+								<td class="key"><?php echo JText::_("SHOP_VERSION"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
 							</tr>
 							<tr>
-								<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name" value="<?php echo $product->name; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" id="description" value="<?php echo $product->description; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
 								<?php $date = new JDate($product->creation_date); ?>
 								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL(); ?>" />								
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->created)); ?></td>
 							</tr>
 							<tr>
-								<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>						
+								<td class="key"><?php echo JText::_("CORE_UPDATED"); ?> : </td>						
 								<?php $date = new JDate($product->update_date); ?>										
 								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL(); ?>" />
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
 								<td><?php echo $supplier->name; ?></td>	
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$manager_list, 'manager_id', 'size="1" class="inputbox" ', 'value', 'text', $product->manager_id  ); ?></td>								
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $product->notification_email; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
 								<option value="0" <?php if( $product->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
 								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox"', 'value',  'text', $product->treatmenttype_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin" value="<?php echo $product->surfacemin; ?>" /></td>							
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" value="<?php echo $product->surfacemax; ?>" /></td>							
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
 								<td><?php if($version->free == 1)echo JText::_("CORE_YES"); else JText::_("CORE_NO");?></td>								
 							</tr>
 						</table>
-					</fieldset>
+					
 				</td>
 			</tr>
 		</table>
@@ -148,37 +148,37 @@ class HTML_product {
 		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PREVIEW"),"productrPane");
 		?>
 		<br>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable" >
 			<tr>
 				<td>
 					<fieldset>
-						<table border="0" cellpadding="3" cellspacing="0">						
+						<table   >						
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_BASEMAP"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_BASEMAP"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$baseMap_list, 'viewbasemap_id', 'size="1" class="inputbox"', 'value', 'text', $product->viewbasemap_id ); ?></td>																
 							</tr>							
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_WMS_URL"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewurlwms" value="<?php echo $product->viewurlwms; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_LAYERS"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_LAYERS"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewlayers" value="<?php echo $product->viewlayers; ?>" /></td>								
 							</tr>							
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_MIN_RESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MIN_RESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_MAX_RESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MAX_RESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
 							</tr>			
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_PROJECTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewprojection" value="<?php echo $product->viewprojection; ?>" /></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_UNIT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="previewUnit" >								
 									<option <?php if($product->viewunit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("SHOP_METERS"); ?></option>
 									<option <?php if($product->viewunit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
@@ -186,111 +186,118 @@ class HTML_product {
 								</td>																						
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PREVIEW_IMAGE_FORMAT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_IMAGE_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
 							</tr>
-							<tr>
-							<td colspan ="3">
-							<fieldset>
-							<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
-								<table>
-								<tr>
-									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->easysdi_account_id) echo "checked";?>>
-									</td>
-									<td colspan="2">
-										<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $product->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->account_id); ?></td>
-								</tr>
-								<tr>
-									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
-								 	</td>
-								 	<td colspan="2">
-									 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
-								 	</td>
-							 	</tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
-									<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
-								</tr>							
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
-									<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
-								</tr>
-								
-								</table>
-							</fieldset>	
-							</td>	
-							</tr>										
+														
 						</table>
 					</fieldset>
 				</td>
 			</tr>
+			<tr>
+				<td >
+				<fieldset>
+				<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
+					<table class="admintable" >
+					<tr>
+						<td >
+							<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
+						</td>
+						<td class="key" colspan="2">
+							<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+						<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
+					</tr>
+					<tr>
+						<td >
+						 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
+					 	</td>
+					 	<td class="key" colspan="2">
+						 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+					 	</td>
+				 	</tr>
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
+					</tr>							
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
+					</tr>
+					
+					</table>
+				</fieldset>	
+				</td>	
+			</tr>			
 		</table>
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PERIMETER"),"productrPane");
 		?>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<fieldset>
-						<table border="0" cellpadding="3" cellspacing="0">
+					<fieldset >
+						<table width="100%">
 							<tr>
-								<td><?php echo JHTML::_("select.genericlist",$perimeter_list, 'perimeter_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected_perimeter ); ?></td>
+								<td width="100%">
+								<script>
+								   function productAvailability_change(obj, id){
+								   if(obj.checked){
+										$('buffer_'+id).disabled = false;
+									}
+									else
+									{
+										$('buffer_'+id).checked = false;
+										$('buffer_'+id).disabled = true;
+									}
+								   }
+								</script>
+								<table class="box-table">
+								<thead>
+								<tr>
+									<th align="center" ><?php echo JText::_("SHOP_PRODUCT_PERIMETER_NAME") ?></th>
+									<th align="center"><?php echo JText::_("SHOP_PRODUCT_PERIMETER_AVAILABILITY") ?></th>
+									<th align="center"><?php echo JText::_("SHOP_PRODUCT_PERIMETER_HAS_BUFFER") ?></th>
+								</tr>
+								</thead>
+								<tbody>
+								   <?php 
+							          foreach ($perimeter_list as $curPerim){
+									  $query = "SELECT * FROM #__sdi_product_perimeter WHERE product_id=$product->id AND perimeter_id = $curPerim->value";				
+									  $database->setQuery( $query );
+									  $bufferRow = $database->loadObject() ;
+									  if ($database->getErrorNum()) {						
+										$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+									  }
+									?>
+								  <tr>
+								  	<td  class="key" align="center"><?php  echo $curPerim->text; ?></td>
+									<td align="center"><input type="checkbox" id="perimeter_<?php echo $curPerim->value;?>" name="perimeter_id[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->product_id != "") echo "checked"?> onclick="productAvailability_change(this,<?php echo $curPerim->value;?>);"></td>
+									<td align="center"><input type="checkbox" id="buffer_<?php echo $curPerim->value;?>" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->buffer == 1) echo "checked"; else if ($bufferRow->product_id == "") echo "disabled";?>></td>
+								</tr>
+								<?php } ?>
+								</tbody>
+							       </table>
+							       </td>
 							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>	
-		<?php
-		echo $tabs->endPanel();		
-		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PERIMETER_BUFFER"),"productrPane");
-		?>	
-		<br>
-		<table width="100%" border="0" cellpadding="0" cellspacing="0">
-		<tr>
-				<td>
-					<fieldset>
-						<legend><?php echo JText::_("SHOP_PRODUCT_PERIMETER_BUFFER_TITLE") ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-						<tr><th><?php echo JText::_("SHOP_PRODUCT_PERIMETER_NAME") ?></th><th><?php echo JText::_("SHOP_PRODUCT_PERIMETER_HAS_BUFFER") ?></th></tr>
-						<?php 
-							foreach ($perimeter_list as $curPerim){
-								$query = "SELECT * FROM #__sdi_product_perimeter WHERE product_id=$product->id AND perimeter_id = $curPerim->value";				
-								$database->setQuery( $query );
-								$bufferRow = $database->loadObject() ;
-								if ($database->getErrorNum()) 
-								{						
-									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-								}										
-						?>
-						<tr>
-							<td><?php  echo $curPerim->text; ?></td>
-							<td><input type="checkbox" name="buffer[]" value="<?php  echo $curPerim->value ?>" <?php if ($bufferRow->buffer == 1) echo "checked"?>></td>
-						</tr>
-						<?php 
-							} 
-						?>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
+		
 		<?php 
 		echo $tabs->endPanel();			
 		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PROPERTIES"),"productrPane");
 		?>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable"  border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
@@ -331,7 +338,7 @@ class HTML_product {
 				}		
 				
 				foreach ($propertiesList as $curProperty){
-						?><tr><?php echo $curProperty->text; ?></tr>
+						?><tr><td class="key"><?php echo $curProperty->text; ?></td>
 						<?php			
 							$propertiesValueList = array();
 							$query = "SELECT a.id as value, t.label as text 
@@ -353,18 +360,18 @@ class HTML_product {
 			
 								case "list":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>							
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>							
 									<?php
 									break;
 									
 								case "mlist":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
 									<?php
 									break;
 								case "cbox":
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="15" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></tr>
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="'.count($propertiesValueList).'" multiple="true" class="selectbox"', 'value', 'text', $selected ); ?></td>
 									<?php
 									break;
 									
@@ -376,7 +383,7 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', '', 'value', 'text', $selected ); ?></tr>
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', '', 'value', 'text', $selected ); ?></td>
 									<?php
 									break;
 									
@@ -388,7 +395,7 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></td>
 									<?php
 									break;
 								case "message":
@@ -400,12 +407,13 @@ class HTML_product {
 										
 									}
 									?>
-									<tr><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></tr>
+									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', 'size="1" ', 'value', 'text', $selected ); ?></td>
 									<?php
 									break;
 								}	
 							?>	
 						<?php } ?>
+						</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -424,14 +432,16 @@ class HTML_product {
 	
 	function listProduct($use_pagination, $rows, $search,$pageNav, $option){
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_PRODUCT")); 
+		JToolBarHelper::title(JText::_("SHOP_LIST_PRODUCT")); 
 		$partners = array(); ?>
 		<form action="index.php" method="post" name="adminForm">
 				<table width="100%">
 					<tr>
-						<td align="right">
-							<b><?php echo JText::_("FILTER");?></b>&nbsp;
-							<input size="50" type="text" name="searchProduct" value="<?php echo $search;?>" class="inputbox" onChange="javascript:submitbutton('listProduct');" />			
+						<td align="right" width="100%">
+							<?php echo JText::_("FILTER"); ?>:
+							<input type="text" name="searchProduct" id="searchProduct" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+							<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+							<button onclick="document.getElementById('searchProduct').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 						</td>
 					</tr>
 				</table>
@@ -446,10 +456,10 @@ class HTML_product {
 						<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 						<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 						<th class='title'><?php echo JText::_("CORE_PUBLISHED"); ?></th>
-						<th class='title'><?php echo JText::_("CORE_NAME"); ?></th>
-						<th class='title'><?php echo JText::_("CORE_DESCRIPTION"); ?></th>
-						<th class='title'><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?></th>
-						<th class='title'><?php echo JText::_("CORE_UPDATED"); ?></th>	
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCT_TREATMENT"), 'treatment', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>	
 					</tr>
 				</thead>
 				<tbody>		
@@ -466,7 +476,7 @@ class HTML_product {
 				<td><a href="<?php echo "index.php?option=$option&amp;task=editProduct&cid[]=$row->id";?>"><?php echo $row->name; ?></a></td>																												
 				<td><?php echo $row->description; ?></a></td>
 				<td><?php echo JText::_($row->treatment); ?></td>								
-				<td><?php echo date('d.m.Y H:i:s',strtotime($row->creation_date)); ?></td>
+				<td><?php echo date('d.m.Y H:i:s',strtotime($row->created)); ?></td>
 			</tr>
 			<?php
 			$k = 1 - $k;
