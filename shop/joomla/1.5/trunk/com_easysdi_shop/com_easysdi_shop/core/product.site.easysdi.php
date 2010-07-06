@@ -433,7 +433,7 @@ class SITE_product {
 													<gco:Date></gco:Date>
 												</gmd:date>
 												<gmd:dateType>
-													<gmd:CI_DateTypeCode codeListValue=\"revision\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
+													<gmd:CI_DateTypeCode codeListValue=\"creation\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
 												</gmd:dateType>
 											</gmd:CI_Date>
 										</gmd:date>
@@ -443,7 +443,7 @@ class SITE_product {
 													<gco:Date></gco:Date>
 												</gmd:date>
 												<gmd:dateType>
-													<gmd:CI_DateTypeCode codeListValue=\"creation\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
+													<gmd:CI_DateTypeCode codeListValue=\"revision\" codeList=\"http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode\" />
 												</gmd:dateType>
 											</gmd:CI_Date>
 										</gmd:date>
@@ -634,6 +634,16 @@ class SITE_product {
 							<ext:EX_extendedMetadata_Type>
 								<ext:name>
 									<gco:CharacterString>Résolution</gco:CharacterString>
+								</ext:name>
+								<ext:value>
+									<gco:CharacterString></gco:CharacterString>
+								</ext:value>
+							</ext:EX_extendedMetadata_Type>
+						</gmd:extendedMetadata>
+						<gmd:extendedMetadata xlink:title=\"Produit raster\">
+							<ext:EX_extendedMetadata_Type>
+								<ext:name>
+									<gco:CharacterString>Date de prise de vue</gco:CharacterString>
 								</ext:name>
 								<ext:value>
 									<gco:CharacterString></gco:CharacterString>
