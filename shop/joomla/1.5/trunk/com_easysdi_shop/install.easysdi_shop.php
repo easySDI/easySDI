@@ -2301,6 +2301,39 @@ if ($version == "0.998")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	 }
+	 if ($version == "0.999994")
+	 {		 	
+	 	$query = "ALTER TABLE `#__easysdi_order_product_list` DROP COLUMN `data`";
+	 	$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		} 	
+	 	
+	 	$query = "ALTER TABLE `#__easysdi_order_product_list` ENGINE = InnoDB";
+	 	$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		} 	
+	 	
+	 	$query="CREATE TABLE `#__easysdi_order_product_list_blob` (
+			  `id` bigint(20) NOT NULL auto_increment,
+			  `order_product_list_id` bigint(20) NOT NULL default '0',
+			  `data` longblob,
+			  PRIMARY KEY  (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC"; 
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}	
+		
+	 	//Update component version
+		$version = "0.999995";
+		$query="UPDATE #__easysdi_version set version = '$version' where component = 'com_easysdi_shop'";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	 }
 	 
 	/**
 	 * Menu creation
