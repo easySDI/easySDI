@@ -28,55 +28,55 @@ class HTML_properties {
 		?>				
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
 					<legend align="top"><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
+								<td class="key" ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $property->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
 			
   							<tr>
-								<td><?php echo JText::_("SHOP_PROPERTIES_MANDATORY"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_MANDATORY"); ?> : </td>
 								<td><select class="inputbox" name="mandatory" >								
 								<option value="0" <?php if( $property->mandatory == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
 								<option value="1" <?php if( $property->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>															
 							</tr>
   							<tr>
-								<td><?php echo JText::_("SHOP_PROPERTIES_ACCOUNT_ID"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_ACCOUNT_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$accounts, 'account_id', 'size="1" class="inputbox"', 'value', 'text', $property->account_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("SHOP_PROPERTIES_PUBLISHED"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
 								<option value="0" <?php if( $property->published == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
 								<option value="1" <?php if( $property->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>	
 							</tr>
 							<tr>
-								<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>																
+								<td class="key"><?php echo JText::_("CORE_UPDATED"); ?> : </td>																
 								<td><?php echo date('d.m.Y H:i:s',strtotime($property->updated)); ?></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("CORE_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property->name; ?>" /></td>
 							</tr>							
 							<tr>							
-								<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property->description; ?>" /></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("CORE_CODE"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property->code; ?>" /></td>
 							</tr>
 							
 							<tr>							
-								<td><?php echo JText::_("SHOP_PROPERTIES_TYPE_CODE"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_TYPE_CODE"); ?> : </td>
 								<td><select class="inputbox" name="type" >								
 								<option value="list" <?php if( $property->type == 'list' ) echo "selected"; ?> ><?php echo JText::_("SHOP_PROPERTY_LIST"); ?></option>
 								<option value="mlist" <?php if( $property->type == 'mlist' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_MULTIPLE_LIST"); ?></option>
@@ -101,7 +101,7 @@ class HTML_properties {
 							{ 
 							?>
 								<tr>
-								<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+								<td  class="key" WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 								<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 								</tr>
 							<?php
@@ -128,11 +128,10 @@ class HTML_properties {
 		$ordering = ($filter_order == 'ordering');
 		?>
 		<form action="index.php" method="post" name="adminForm">
-			
-			<table width="100%">
+			<table class="admintable" width="100%">
 				<tr>
-					<td align="right">
-						<b><?php echo JText::_("SHOP_FILTER");?></b>&nbsp;
+					<td class="key" align="right">
+						<b><?php echo JText::_("CORE_FILTER");?></b>&nbsp;
 						<input type="text" name="searchProperty" id="searchProperty" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 						<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
 						<button onclick="document.getElementById('searchProperty').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			

@@ -47,14 +47,21 @@ class ADMIN_product {
 		$total = $product->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-
 		// Recherche des enregistrements selon les limites
 		$query = "SELECT p.*, t.label as treatment, a.name AS text
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
 					INNER JOIN (SELECT c.id , u.name FROM #__sdi_account c, #__users  u WHERE c.user_id = u.id ) a ON p.manager_id = a.id ";
-		if ($search !=null && strlen($search)>0 ) {$query = $query ." WHERE name like '%$search%' ";}
-
+		
+		$where="";
+		if ($search)
+		{
+			$where = ' where LOWER(p.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(p.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(p.description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		$query .= $where;
+		
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
@@ -66,7 +73,6 @@ class ADMIN_product {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		$query = $query.$orderby;
-		
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);
 		}
