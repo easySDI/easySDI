@@ -29,9 +29,9 @@ class TOOLBAR_properties{
 		JToolBarHelper::addNew('newProperties');
 		JToolBarHelper::editList('editProperties');
 		JToolBarHelper::deleteList('','deleteProperties');
-		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("EASYSDI_NEW_PROPERTIES_VALUES"), false);
+		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("SHOP_MENU_PROPERTIES_VALUES"), false);
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 	
 	function _EDITPROPERTIESVALUES(){
@@ -44,7 +44,7 @@ class TOOLBAR_properties{
 		JToolBarHelper::editList('editPropertiesValues');
 		JToolBarHelper::deleteList('','deletePropertiesValues');				
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
+		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
 	}
 }
 ?>

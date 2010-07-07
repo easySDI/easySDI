@@ -139,7 +139,7 @@ class SITE_product {
 			$rows = $database->loadObjectList();
 			$mailer =& JFactory::getMailer();
 			$user = JFactory::getUser();
-			SITE_product::sendMail($rows,JText::_("EASYSDI_NEW_DISTRIBUTION_MAIL_SUBJECT"),JText::sprintf("EASYSDI_NEW_DISTIBUTION_MAIL_BODY",$rowProduct->data_title,$user->username));																
+			SITE_product::sendMail($rows,JText::_("SHOP_NEW_DISTRIBUTION_MAIL_SUBJECT"),JText::sprintf("SHOP_NEW_DISTIBUTION_MAIL_BODY",$rowProduct->data_title,$user->username));																
 			}
 		}	
 			

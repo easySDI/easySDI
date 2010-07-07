@@ -64,7 +64,7 @@ class SITE_cpanel {
 		
 		if ($order_id == 0){
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
 			echo "</div>";
 		}else {
 			$database =& JFactory::getDBO();
@@ -271,7 +271,7 @@ class SITE_cpanel {
 		$order_id=JRequest::getVar("order_id",0);
 		if ($order_id == 0){
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
 			echo "</div>";
 		}else {
 			$database =& JFactory::getDBO();
@@ -318,7 +318,7 @@ class SITE_cpanel {
 		$order_copy_id="";
 		if ($order_id == 0){
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
 			echo "</div>";
 		}else {
 			$database =& JFactory::getDBO();

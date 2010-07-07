@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_product{
 	
 	function editComponentConfig(){
-		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'EASYSDI_SAVE' ),false);		
+		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'SHOP_SAVE' ),false);		
 		JToolBarHelper::cancel('cancelComponentConfig');					
 	}
 	
@@ -42,9 +42,9 @@ class TOOLBAR_product{
 		JToolBarHelper::editList('editProduct');
 		JToolBarHelper::deleteList('','deleteProduct');
 		//JToolBarHelper::editList('editProductMetadata');
-		JToolBarHelper::custom( 'showMetadata', 'preview.png' ,'preview.png',JTEXT::_("EASYSDI_MENU_PRODUCT_METADATA"), false  );
+		JToolBarHelper::custom( 'showMetadata', 'preview.png' ,'preview.png',JTEXT::_("SHOP_MENU_PRODUCT_METADATA"), false  );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 	
 }

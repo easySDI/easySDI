@@ -94,7 +94,7 @@ class ADMIN_basemap {
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
-		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		HTML_Basemap::editBasemapContent( $rowBasemap, $rowsAccount, $id, $option );
@@ -142,7 +142,7 @@ class ADMIN_basemap {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
 			exit;
 		}
@@ -233,7 +233,7 @@ class ADMIN_basemap {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listBasemap" );
 			exit;
 		}

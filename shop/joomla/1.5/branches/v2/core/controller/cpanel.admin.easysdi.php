@@ -25,7 +25,7 @@ class ADMIN_cpanel {
 		$order_id=JRequest::getVar("order_id",0);
 		if ($order_id == 0){
 			echo "<div class='alert'>";			
-			echo JText::_("EASYSDI_ERROR_NO_ORDER_ID");
+			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
 			echo "</div>";
 		}else {
 		$database =& JFactory::getDBO();		 	
@@ -255,7 +255,7 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listOrders" );
 			exit;
 		}

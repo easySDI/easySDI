@@ -30,8 +30,8 @@ class TOOLBAR_basemap{
 		JToolBarHelper::editList('editBasemap');
 		JToolBarHelper::deleteList('','deleteBasemap');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'listBasemapContent', 'preview.png', 'preview.png', JTEXT::_("EASYSDI_MENU_LISTBASEMAP_CONTENT"), false );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'listBasemapContent', 'preview.png', 'preview.png', JTEXT::_("SHOP_MENU_LISTBASEMAP_CONTENT"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 	
 	function _EDITBASEMAPCONTENT(){
@@ -43,7 +43,7 @@ class TOOLBAR_basemap{
 		JToolBarHelper::addNew('newBasemapContent');
 		JToolBarHelper::editList('editBasemapContent');
 		JToolBarHelper::deleteList('','deleteBasemapContent');		
-		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
+		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
 	}
 }
 ?>

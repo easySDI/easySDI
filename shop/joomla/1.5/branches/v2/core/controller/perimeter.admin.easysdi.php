@@ -23,9 +23,6 @@ class ADMIN_perimeter {
 	function listPerimeter($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
-		$profile = $mainframe->getUserStateFromRequest( "profile{$option}", 'profile', '' );
-		$category = $mainframe->getUserStateFromRequest( "category{$option}", 'category', '' );
-		$payment = $mainframe->getUserStateFromRequest( "payment{$option}", 'payment', '' );
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);		
@@ -52,7 +49,7 @@ class ADMIN_perimeter {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "urlwfs" and $filter_order <> "layername" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "ordering")
+		if ($filter_order <> "id" and $filter_order <> "urlwfs" and $filter_order <> "updated" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "ordering")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -139,12 +136,12 @@ class ADMIN_perimeter {
 		 
 		
 		$perimList = array();
-		$perimList [] = JHTML::_('select.option','-1', JText::_("EASYSDI_PERIM_LIST") );
+		$perimList [] = JHTML::_('select.option','-1', JText::_("SHOP_PERIMETER_LIST") );
 		$perimList = array_merge($perimList, $perimeter->getObjectListAsArray());
 									
 		//Select all available easysdi Account
 		$rowsAccount = array();
-		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		HTML_Perimeter::editPerimeter( $perimeter, $rowsAccount, $perimList,$id, $option );
@@ -204,7 +201,7 @@ class ADMIN_perimeter {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit;
 		}
@@ -228,7 +225,7 @@ class ADMIN_perimeter {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_COPY"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_COPY"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit;
 		}

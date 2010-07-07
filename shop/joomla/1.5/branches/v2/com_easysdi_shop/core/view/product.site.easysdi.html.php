@@ -81,8 +81,8 @@ class HTML_product{
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $rowProduct->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProduct->published == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProduct->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 						</table>
@@ -161,8 +161,8 @@ class HTML_product{
 							<tr>
 								<td class="ptitle"><?php echo JText::_("EASYSDI_ORDERABLE"); ?> : </td>
 								<td><select class="inputbox" name="orderable" >								
-								<option value="0" <?php if( $rowProduct->orderable == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $rowProduct->orderable == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
+								<option value="1" <?php if( $rowProduct->orderable == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>																
 							</tr>			
 							<tr>

@@ -43,6 +43,22 @@ class ADMIN_location {
 			$query .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$query .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );			
 		}		
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if (				$filter_order <> "id" 
+						and $filter_order <> "urlwfs"  
+						and $filter_order <> "name" 
+						and $filter_order <> "description" 
+						and $filter_order <> "updated")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+		
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}
@@ -53,7 +69,7 @@ class ADMIN_location {
 			return false;
 		}		
 	
-		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option, $search);	
+		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 	}
 	
 	function editLocation( $id, $option ) {
@@ -63,7 +79,7 @@ class ADMIN_location {
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
-		$rowsAccount[] = JHTML::_('select.option','0', JText::_("EASYSDI_LIST_ACCOUNT_SELECT" ));
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
 		HTML_Location::editLocation( $rowLocation,$rowsAccount,$id, $option );
@@ -122,7 +138,7 @@ class ADMIN_location {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit;
 		}
@@ -144,7 +160,7 @@ class ADMIN_location {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_COPY"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_COPY"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit;
 		}

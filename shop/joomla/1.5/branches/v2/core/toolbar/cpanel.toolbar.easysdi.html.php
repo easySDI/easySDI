@@ -22,7 +22,7 @@ class TOOLBAR_cpanel{
 	function _LISTORDERS(){
 			JToolBarHelper::deleteList('','deleteOrder');
 			JToolBarHelper::spacer();		
-			JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
+			JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );	
 }
 	
 }

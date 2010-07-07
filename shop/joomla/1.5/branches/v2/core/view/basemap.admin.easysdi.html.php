@@ -76,8 +76,8 @@ class HTML_basemap {
 								<td class="key"><?php echo JText::_("SHOP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="unit" >
 								
-								<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("EASYSDI_METERS"); ?></option>
-								<option <?php if($rowBasemap->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("EASYSDI_DEGREES"); ?></option>
+								<option <?php if($rowBasemap->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("SHOP_METERS"); ?></option>
+								<option <?php if($rowBasemap->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
 								</select>
 								</td>
 							</tr>
@@ -103,8 +103,8 @@ class HTML_basemap {
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_URL_TYPE"); ?> : </td>
 								<td><select class="inputbox" name="urltype" >
-										<option value="WMS" <?php if($rowBasemap->urltype == 'WMS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WMS"); ?></option>
-										<option value="WMS" <?php if($rowBasemap->urltype == 'WFS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WFS"); ?></option>
+										<option value="WMS" <?php if($rowBasemap->urltype == 'WMS') echo "selected" ; ?>><?php echo JText::_("SHOP_WMS"); ?></option>
+										<option value="WMS" <?php if($rowBasemap->urltype == 'WFS') echo "selected" ; ?>><?php echo JText::_("SHOP_WFS"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -118,8 +118,8 @@ class HTML_basemap {
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_SINGLE_TILE"); ?> : </td>
 								<td><select class="inputbox" name="singletile" >
-										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI__TRUE"); ?></option>
-										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI__FALSE"); ?></option>
+										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("CORE__TRUE"); ?></option>
+										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("CORE__FALSE"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -210,9 +210,9 @@ class HTML_basemap {
 </script>
 	<form action="index.php" method="post" name="adminForm">
 		
-		<table width="100%">
+		<table class="admintable" width="100%">
 			<tr>
-				<td align="right" width="100%">
+				<td class="key" align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchBaseMapContent" id="searchBaseMapContent" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
@@ -354,8 +354,8 @@ class HTML_basemap {
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXEXTEND_IS_RESTRICTIVE"); ?> : </td>
 								<td><select class="inputbox" name="restrictedExtend" >
-										<option value="0" <?php if($rowBasemap->restrictedExtend == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->restrictedExtend == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+										<option value="0" <?php if($rowBasemap->restrictedExtend == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->restrictedExtend == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>	
@@ -368,8 +368,8 @@ class HTML_basemap {
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_IS_DEFAULT"); ?> : </td>
 								<td><select class="inputbox" name="default" >
-										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->default == '1') echo "selected" ; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->default == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>	
@@ -431,9 +431,9 @@ class HTML_basemap {
 		?>
 		<form action="index.php" method="post" name="adminForm">
 			
-			<table width="100%">
+			<table class="admintable" width="100%">
 			<tr>
-				<td align="right" width="100%">
+				<td class="key" align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchBaseMap" id="searchBaseMap" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>

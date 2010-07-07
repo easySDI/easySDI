@@ -30,7 +30,7 @@ class HTML_product {
 		JHTML::_('behavior.calendar');
 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PRODUCT"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PRODUCT"), 'generic.png' );
 		?>	
 		<script>
 		function displayAuthentication()
@@ -125,8 +125,8 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $product->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $product->published == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
+								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>																
 							</tr>
 							<tr>
@@ -199,19 +199,19 @@ class HTML_product {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewlayers" value="<?php echo $product->viewlayers; ?>" /></td>								
 							</tr>							
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MIN_RESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MAX_RESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
 							</tr>			
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PREVIEW_PROJECTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewprojection" value="<?php echo $product->viewprojection; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PREVIEW_UNIT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="previewUnit" >								
 									<option <?php if($product->viewunit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("SHOP_METERS"); ?></option>
 									<option <?php if($product->viewunit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
@@ -219,7 +219,7 @@ class HTML_product {
 								</td>																						
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PREVIEW_IMAGE_FORMAT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
 							</tr>
 														
@@ -411,7 +411,7 @@ class HTML_product {
 								case "text":
 									if ($curProperty->mandatory == 0 ){
 										
-									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE") );
 									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
 										
 									}
@@ -423,7 +423,7 @@ class HTML_product {
 								case "textarea":
 									if ($curProperty->mandatory == 0 ){
 										
-									$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+									$propertiesValueList2[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE") );
 									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList2  );
 										
 									}
@@ -435,7 +435,7 @@ class HTML_product {
 									if ($curProperty->mandatory == 0 )
 									{
 										
-										$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+										$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE") );
 										$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList3  );
 										
 									}
@@ -468,9 +468,9 @@ class HTML_product {
 		JToolBarHelper::title(JText::_("SHOP_LIST_PRODUCT")); 
 		$partners = array(); ?>
 		<form action="index.php" method="post" name="adminForm">
-				<table width="100%">
+				<table class="admintable" width="100%">
 					<tr>
-						<td align="right" width="100%">
+						<td class="key" align="right" width="100%">
 							<?php echo JText::_("FILTER"); ?>:
 							<input type="text" name="searchProduct" id="searchProduct" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 							<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>

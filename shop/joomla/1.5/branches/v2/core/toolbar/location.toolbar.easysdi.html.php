@@ -28,9 +28,9 @@ class TOOLBAR_location{
 		JToolBarHelper::addNew('newLocation');
 		JToolBarHelper::editList('editLocation');
 		JToolBarHelper::deleteList('','deleteLocation');
-		JToolBarHelper::custom( 'copyLocation', 'copy.png', 'copy.png', JTEXT::_("EASYSDI_COPY_LOCATION"), false );
+		JToolBarHelper::custom( 'copyLocation', 'copy.png', 'copy.png', JTEXT::_("SHOP_COPY_LOCATION"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 }
 ?>

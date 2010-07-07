@@ -24,7 +24,7 @@ class HTML_properties {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PROPERTIES"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PROPERTIES"), 'generic.png' );
 		?>				
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			
@@ -35,55 +35,55 @@ class HTML_properties {
 					<legend align="top"><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_ID"); ?> : </td>
+								<td ><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $property->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
 			
   							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_MANDATORY"); ?> : </td>
+								<td><?php echo JText::_("SHOP_PROPERTIES_MANDATORY"); ?> : </td>
 								<td><select class="inputbox" name="mandatory" >								
-								<option value="0" <?php if( $property->mandatory == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $property->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $property->mandatory == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
+								<option value="1" <?php if( $property->mandatory == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>															
 							</tr>
   							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_PARTNER_ID"); ?> : </td>
+								<td><?php echo JText::_("SHOP_PROPERTIES_ACCOUNT_ID"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$accounts, 'account_id', 'size="1" class="inputbox"', 'value', 'text', $property->account_id ); ?></td>															
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_PUBLISHED"); ?> : </td>
+								<td><?php echo JText::_("SHOP_PROPERTIES_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
-								<option value="0" <?php if( $property->published == 0 ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_FALSE"); ?></option>
-								<option value="1" <?php if( $property->published == 1 ) echo "selected"; ?>><?php echo JText::_("EASYSDI_TRUE"); ?></option>
+								<option value="0" <?php if( $property->published == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
+								<option value="1" <?php if( $property->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>	
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"); ?> : </td>																
+								<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>																
 								<td><?php echo date('d.m.Y H:i:s',strtotime($property->updated)); ?></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_NAME"); ?> : </td>
+								<td><?php echo JText::_("CORE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property->name; ?>" /></td>
 							</tr>							
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_DESCRIPTION"); ?> : </td>
+								<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property->description; ?>" /></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_CODE"); ?> : </td>
+								<td><?php echo JText::_("CORE_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property->code; ?>" /></td>
 							</tr>
 							
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_TYPE_CODE"); ?> : </td>
+								<td><?php echo JText::_("SHOP_PROPERTIES_TYPE_CODE"); ?> : </td>
 								<td><select class="inputbox" name="type" >								
-								<option value="list" <?php if( $property->type == 'list' ) echo "selected"; ?> ><?php echo JText::_("EASYSDI_PROPERTY_LIST"); ?></option>
-								<option value="mlist" <?php if( $property->type == 'mlist' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_MULTIPLE_LIST"); ?></option>
-								<option value="cbox" <?php if( $property->type == 'cbox' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_CBOX"); ?></option>
-								<option value="text" <?php if( $property->type == 'text' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT"); ?></option>
-								<option value="textarea" <?php if( $property->type == 'textarea' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_TEXT_AREA"); ?></option>
-								<option value="message" <?php if( $property->type == 'message' ) echo "selected"; ?>><?php echo JText::_("EASYSDI_PROPERTY_MESSAGE"); ?></option>
+								<option value="list" <?php if( $property->type == 'list' ) echo "selected"; ?> ><?php echo JText::_("SHOP_PROPERTY_LIST"); ?></option>
+								<option value="mlist" <?php if( $property->type == 'mlist' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_MULTIPLE_LIST"); ?></option>
+								<option value="cbox" <?php if( $property->type == 'cbox' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_CBOX"); ?></option>
+								<option value="text" <?php if( $property->type == 'text' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_TEXT"); ?></option>
+								<option value="textarea" <?php if( $property->type == 'textarea' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_TEXT_AREA"); ?></option>
+								<option value="message" <?php if( $property->type == 'message' ) echo "selected"; ?>><?php echo JText::_("SHOP_PROPERTY_MESSAGE"); ?></option>
 								</select>
 								</td>
 							</tr>
@@ -124,7 +124,7 @@ class HTML_properties {
 	
 	function listProperties($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_PROPERTIES"));
+		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES"));
 		$ordering = ($filter_order == 'ordering');
 		?>
 		<form action="index.php" method="post" name="adminForm">
@@ -132,7 +132,7 @@ class HTML_properties {
 			<table width="100%">
 				<tr>
 					<td align="right">
-						<b><?php echo JText::_("EASYSDI_FILTER");?></b>&nbsp;
+						<b><?php echo JText::_("SHOP_FILTER");?></b>&nbsp;
 						<input type="text" name="searchProperty" id="searchProperty" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 						<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
 						<button onclick="document.getElementById('searchProperty').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			
@@ -147,16 +147,16 @@ class HTML_properties {
 			<table class="adminlist">
 			<thead>
 				<tr>					 			
-					<th class='title' width="10px"><?php echo JText::_("EASYSDI_PROPERTIES_DEF"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CORE_SHARP"); ?></th>
 					<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+					<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PROPERTIES_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderProperties' ); ?></th>			
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_MANDATORY"), 'mandatory', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("cORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PROPERTIES_MANDATORY"), 'mandatory', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 									
 					
 				</tr>
@@ -246,40 +246,40 @@ class HTML_properties {
 	function editPropertiesValues( $property_value, $property, $id, $languages, $labels,$option ){
 		global  $mainframe;
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("EASYSDI_TITLE_EDIT_PROPERTIES"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PROPERTIES_VALUE"), 'generic.png' );
 		if ($property->id == -1){
-			$mainframe->enqueueMessage(JText::_("EASYSDI_ERROR_NO_PROPERTY_ID"),"ERROR");	
+			$mainframe->enqueueMessage(JText::_("SHOP_ERROR_NO_PROPERTY_ID"),"ERROR");	
 		}
 		else
 		{
 		?>				
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
-								<td ><?php echo JText::_("EASYSDI_ID"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $property_value->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
 							<tr>
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_PROPERTIES_NAME"); ?> : </td>																						
+								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_VALUE_PROPERTIES_NAME"); ?> : </td>																						
 								<td><?php echo JText::_($property->name); ?></td>
 							</tr>
   							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property_value->name; ?>" /></td>
 							</tr>												
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_VALUE_DESCRIPTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property_value->description; ?>" /></td>
 							</tr>
 							<tr>							
-								<td><?php echo JText::_("EASYSDI_PROPERTIES_CODE"); ?> : </td>
+								<td class="key"><?php echo JText::_("CORE_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property_value->code; ?>" /></td>
 							</tr>
 							<tr>
@@ -297,7 +297,7 @@ class HTML_properties {
 							{ 
 							?>
 									<tr>
-									<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+									<td  class="key" WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 									<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 									</tr>
 							<?php
@@ -320,14 +320,14 @@ class HTML_properties {
 	}
 	
 	function listPropertiesValues($use_pagination, $rows,$property, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_PROPERTIES")." ".JText::_($property->name));
+		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES")." ".JText::_($property->name));
 		$ordering = ($filter_order == 'ordering');
 		?>
 		<form action="index.php" method="post" name="adminForm">
 		<input type ="hidden" name ="property_id" value ="<?php echo $property->id; ?>">
-			<table width="100%">
+			<table class="admintable" width="100%">
 			<tr>
-				<td align="right" width="100%">
+				<td class="key" align="right" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchPropertyValue" id="searchPropertyValue" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
@@ -343,14 +343,14 @@ class HTML_properties {
 			<table class="adminlist">
 			<thead>
 				<tr>					 			
-					<th class='title' width="10px"><?php echo JText::_("EASYSDI_PROPERTIES_DEF"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CORE_SHARP"); ?></th>
 					<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_VALUES_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderPropertiesValues' ); ?></th>			
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("EASYSDI_PROPERTIES_UPDATE_DATE"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>				
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' ><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>				
 								
 				</tr>
 			</thead>

@@ -195,7 +195,7 @@ class ADMIN_properties {
 				$property->order="0";
 			}
 		$accounts = array();
-		$accounts[] = JHTML::_('select.option','0', JText::_("EASYSDI_PARTNERS_ROOT") );
+		$accounts[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_ROOT") );
 		$accounts = array_merge( $accounts, account::getEasySDIAccountsList() );
 		
 		
@@ -235,7 +235,7 @@ class ADMIN_properties {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );
 			echo $db->getErrorMsg();
 		}
@@ -284,7 +284,7 @@ class ADMIN_properties {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'asc',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "property" and $filter_order <> "ordering" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "code")
+		if ($filter_order <> "id" and $filter_order <> "property" and $filter_order <> "ordering" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "asc";
@@ -358,7 +358,7 @@ class ADMIN_properties {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues" );
 			echo $db->getErrorMsg();
 		}
