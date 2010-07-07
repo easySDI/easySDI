@@ -74,7 +74,7 @@ class sdiTable extends JTable
 	function delete ($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		if(filter)
+		if($filter)
 		{
 			$this->_db->setQuery( "SELECT *  FROM $this->_tbl WHERE ordering > $this->ordering AND $filter = '".$filter_value."' order by ordering ASC" );
 		}
