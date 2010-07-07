@@ -153,10 +153,10 @@ class ADMIN_product {
 		$manager_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
 		if($object_id<>0)
 		{
-			$database->setQuery("SELECT a.id AS value, b.name AS text 
+			$database->setQuery("SELECT  a.id AS value, b.name AS text 
 								   FROM #__sdi_account a, #__users b  
 								   WHERE a.user_id = b.id 
-								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id )
+								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id )
 								   AND a.id IN (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
 								   ORDER BY b.name");
 			if ($database->getErrorNum()) {
@@ -170,10 +170,10 @@ class ADMIN_product {
 		$diffusion_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
 		if($object_id<>0)
 		{
-			$database->setQuery("SELECT a.id AS value, b.name AS text 
+			$database->setQuery("SELECT  a.id AS value, b.name AS text 
 								   FROM #__sdi_account a, #__users b 
 								   WHERE a.user_id = b.id 
-								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id )
+								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id )
 								   AND a.id IN (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code ='DIFFUSION'))
 								   ORDER BY b.name");	
 			if ($database->getErrorNum()) {
@@ -185,11 +185,13 @@ class ADMIN_product {
 		//List of available BaseMap
 		$baseMap_list = array();		
 		$baseMap_list [] = JHTML::_('select.option','0', JText::_("SHOP_BASEMAP_LIST") );
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_basemap " );
-		$baseMap_list = array_merge($baseMap_list, $database->loadObjectList()) ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
+//		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_basemap " );
+//		$baseMap_list = array_merge($baseMap_list, $database->loadObjectList()) ;
+//		if ($database->getErrorNum()) {
+//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+//		}
+		$basemap = new basemap( $database );
+		$baseMap_list = array_merge( $baseMap_list,$basemap->getObjectListAsArray());
 	
 		//Product treatment
 		$treatmentType_list = array();		
@@ -211,12 +213,14 @@ class ADMIN_product {
 
 		//List of perimeters
 		$perimeter_list = array();
-		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter ";
-		$database->setQuery( $query );
-		$perimeter_list = $database->loadObjectList() ;
-		if ($database->getErrorNum()) {						
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-		}		
+//		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter ";
+//		$database->setQuery( $query );
+//		$perimeter_list = $database->loadObjectList() ;
+//		if ($database->getErrorNum()) {						
+//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+//		}		
+		$perimeter = new perimeter( $database );
+		$perimeter_list = $perimeter->getObjectListAsArray();
 				
 		$selected_perimeter = array();
 		$query = "SELECT perimeter_id AS value FROM #__sdi_product_perimeter WHERE product_id=".$product->id;				
@@ -365,7 +369,7 @@ class ADMIN_product {
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$product_id = JRequest::getVar('product_id');
-		
+		echo $product_id;
 		$query = "SELECT data,filename FROM #__sdi_productfile where product_id = $product_id ";
 		$database->setQuery($query);
 		$row = $database->loadObject();

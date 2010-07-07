@@ -38,8 +38,8 @@ JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi
 JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
 $language =& JFactory::getLanguage();
-$language->load('com_easysdi_core');
-$language->load('com_easysdi_shop');
+$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
 global $mainframe;
 $task = JRequest::getVar('task');

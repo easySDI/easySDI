@@ -71,7 +71,8 @@ class HTML_product {
 		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					
+					<fieldset>
+						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
@@ -85,6 +86,14 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_VERSION"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
+								<td><?php echo $supplier->name; ?></td>	
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$manager_list, 'manager_id', 'size="1" class="inputbox" ', 'value', 'text', $product->manager_id  ); ?></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
@@ -106,22 +115,6 @@ class HTML_product {
 								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL(); ?>" />
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
 							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
-								<td><?php echo $supplier->name; ?></td>	
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$manager_list, 'manager_id', 'size="1" class="inputbox" ', 'value', 'text', $product->manager_id  ); ?></td>								
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $product->notification_email; ?>" /></td>								
-							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
@@ -129,13 +122,15 @@ class HTML_product {
 								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select></td>																
 							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox"', 'value',  'text', $product->treatmenttype_id ); ?></td>															
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
+							
+							</table>
+					</fieldset>
+					<fieldset>
+						<legend><?php echo JText::_("SHOP_FS_PRODUCT_DIFFUSION"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
@@ -146,8 +141,20 @@ class HTML_product {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" value="<?php echo $product->surfacemax; ?>" /></td>							
 							</tr>
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
 								<td><?php if($version->free == 1)echo JText::_("CORE_YES"); else JText::_("CORE_NO");?></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox"', 'value',  'text', $product->treatmenttype_id ); ?></td>															
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" value="<?php echo $product->notification_email; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
@@ -172,7 +179,7 @@ class HTML_product {
 								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 ) echo "disabled";  ?> ></td>
 							</tr>
 						</table>
-					
+					</fieldset>	
 				</td>
 			</tr>
 		</table>
