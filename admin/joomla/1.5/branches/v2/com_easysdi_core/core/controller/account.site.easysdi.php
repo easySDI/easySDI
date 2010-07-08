@@ -919,8 +919,7 @@ class SITE_account {
 		}
 		
 		//Check if the user is Referenced by an pending order
-		//$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR third_party=$Account->id";
-		$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR account_id=$Account->id";
+		/*$query ="SELECT * FROM #__easysdi_order WHERE user_id=$user->id OR account_id=$Account->id";
 		$database->setQuery( $query );
 		$orders = $database->loadObjectList();
 		if($orders)
@@ -937,9 +936,9 @@ class SITE_account {
 			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
 			//$mainframe->redirect("index.php?option=$option&task=listAffiliateAccount" );
 		}
-		
+		*/
 		//check if current user has children
-		$query ="SELECT p.*, u.username FROM #__sdi_Account p, #__users u WHERE (p.root_id=$Account->id OR p.parent_id=$Account->id AND ( p.user_id=u.id)";
+		$query ="SELECT p.*, u.username FROM #__sdi_account p, #__users u WHERE (p.root_id=$Account->id OR p.parent_id=$Account->id AND ( p.user_id=u.id))";
 		$database->setQuery( $query );
 		$Accounts = $database->loadObjectList();
 		if($Accounts)

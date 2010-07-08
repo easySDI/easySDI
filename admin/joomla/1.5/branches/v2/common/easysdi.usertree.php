@@ -40,7 +40,7 @@ class userTree
 				d.add(0,-1,'<?php echo addslashes($rootUser->name);  ?>');
 				
 				<?php 
-				$query = "SELECT * FROM #__sdi_account up, #__users u where up.id != up.parent_id  AND up.parent_id = '$rootUser->account_id' AND up.user_id = u.id ORDER BY u.name";						
+				$query = "SELECT *, up.id as account_id FROM #__sdi_account up, #__users u where up.id != up.parent_id  AND up.parent_id = '$rootUser->account_id' AND up.user_id = u.id ORDER BY u.name";						
 				$database->setQuery( $query );
 				
 				$src_list = $database->loadObjectList();
@@ -84,7 +84,7 @@ class userTree
 			else
 			{
 				?>
-				d.add(<?php echo $startId?>,<?php echo $parentNodeId?>,'<?php echo addslashes($childUser->name);  ?>','<?php JUri::base(true);?>index.php?cid[]=<?php echo $childUser->id; ?>&option=com_easysdi_core&task=editAffiliateAccount');
+				d.add(<?php echo $startId?>,<?php echo $parentNodeId?>,'<?php echo addslashes($childUser->name);  ?>','<?php JUri::base(true);?>index.php?cid[]=<?php echo $childUser->account_id; ?>&type=<?php echo $childUser->root_id; ?>&option=com_easysdi_core&task=editAffiliateAccount');
 				<?php
 			}
 			$query = "SELECT * FROM #__sdi_account up, 
