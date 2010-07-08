@@ -100,16 +100,17 @@ class ADMIN_location {
 		//If a filter location is selected, disable it for the use in location
 		if($location->filterlocation_id > 0 )
 		{
-			$loc =&	 new perimeter($database);
+			$loc =&	 new location($database);
 			$loc->load($location->filterlocation_id);
-			$loc->setLocalisation(0);
+			$loc->filterlocation_id =0;
+			$loc->store();
 		}
 		else
 		{
 			//delete the default value
 			$location->filterlocation_id = null;
 		}
-		echo $location->filterlocation_id;
+		//echo $location->filterlocation_id;
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
 		{

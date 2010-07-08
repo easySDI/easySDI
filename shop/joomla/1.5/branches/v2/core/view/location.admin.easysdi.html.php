@@ -241,6 +241,8 @@ class HTML_location {
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="guid" value="<?php echo $rowLocation->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $rowLocation->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $rowLocation->createdby; ?>" />
 		</form>
 	<?php
 	}

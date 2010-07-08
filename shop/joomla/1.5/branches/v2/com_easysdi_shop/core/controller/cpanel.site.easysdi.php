@@ -876,9 +876,6 @@ class SITE_cpanel {
 
 	function listOrders(){
 		global  $mainframe;
-		//Allows Pathway with mod_menu_easysdi
-		//breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYORDERS");
-		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$rootPartner = new accountByUserId($database);
@@ -888,13 +885,14 @@ class SITE_cpanel {
 		if(!userManager::hasRight($rootPartner->id,"REQUEST_INTERNAL") &&
 		!userManager::hasRight($rootPartner->id,"REQUEST_EXTERNAL"))
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+			$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
 			return;
 		}
 
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
+		
 		//Automatic Archive and/or Historize of the orders
 		//Get the delays in days unit
 		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY", 30);
@@ -902,22 +900,26 @@ class SITE_cpanel {
 		
 		if($history_delay <= $archive_delay){
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_HISTORY_ARCHIVE_DELAYS_ERROR");
+			echo JText::_("EASYSDI_HISTORY_ARCHIVE_DELAYS_ERROR");	
 			echo "</div>";
 		}
 		
 		//Archive
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
 		$database->setQuery($queryStatus);
 		$status_id = $database->loadResult();
 			
-		$query = "update #__easysdi_order set status=".$status_id.", ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $archive_delay AND DATEDIFF(NOW() ,ORDER_UPDATE) < $history_delay ";
+		$query = "UPDATE #__sdi_order SET status_id=".$status_id.", 
+					updated = NOW() 
+					WHERE user_id = ".$user->id." 
+					AND DATEDIFF(NOW() ,updated) > $archive_delay 
+					AND DATEDIFF(NOW() ,updated) < $history_delay ";
 
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
 		$database->setQuery($queryStatus);
 		$status_id = $database->loadResult();
 
-		$query .= " AND STATUS = ".$status_id;
+		$query .= " AND status_id = ".$status_id;
 		$database->setQuery($query);
 		if (!$database->query()) {
 			echo "<div class='alert'>";
@@ -927,19 +929,26 @@ class SITE_cpanel {
 		}
 		
 		//History
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
 		$database->setQuery($queryStatus);
 		$history = $database->loadResult();
 
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
 		$database->setQuery($queryStatus);
 		$archive = $database->loadResult();
 
-		$query = "select order_id from #__easysdi_order where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $history_delay AND (STATUS = ".$archive." OR STATUS = ".$status_id.")";
+		$query = "SELECT order_id FROM #__sdi_order 
+							WHERE user_id = ".$user->id." 
+							AND DATEDIFF(NOW() ,updated) > $history_delay 
+							AND (status_id = ".$archive." OR status_id = ".$status_id.")";
 		$database->setQuery($query);
 		$toUpdate = $database->loadResultArray();
 
-		$query = "update #__easysdi_order set status=".$history.", ORDER_UPDATE = NOW() where user_id = ".$user->id." AND DATEDIFF(NOW() ,ORDER_UPDATE) > $history_delay AND (STATUS = ".$archive." OR STATUS = ".$status_id.")";
+		$query = "UPDATE #__sdi_order 
+					SET status_id=".$history.", updated = NOW() 
+					WHERE user_id = ".$user->id." 
+					AND DATEDIFF(NOW() ,updated) > $history_delay 
+					AND (status_id = ".$archive." OR status_id = ".$status_id.")";
 		
 		$database->setQuery($query);
 
@@ -952,7 +961,9 @@ class SITE_cpanel {
 
 		foreach ($toUpdate as $field)
 		{
-			$query = "update #__easysdi_order_product_list set data=NULL where order_id = ".$field;
+			$query = "UPDATE #__sdi_orderproduct_file f 
+						INNER JOIN #__sdi_order_product o ON o.id=f.orderproduct_id
+					   SET f.data=NULL where o.order_id = ".$field;
 			$database->setQuery($query);
 				
 			if (!$database->query()) {
@@ -968,27 +979,27 @@ class SITE_cpanel {
 
 		$filter = "";
 
-		$queryType = "select * from #__easysdi_order_type_list ";
+		$queryType = "select * from #__sdi_list_ordertype";
 		$database->setQuery($queryType);
 		$typeFilter = $database->loadObjectList();
 
-		$queryStatus = "select * from #__easysdi_order_status_list";
+		$queryStatus = "select * from #__sdi_list_orderstatus";
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
 		
 		$orderstatus=JRequest::getVar("orderstatus","");
 		if ($orderstatus !=""){
-			$filterList[]= "(o.status ='$orderstatus')";
+			$filterList[]= "(o.status_id ='$orderstatus')";
 		}
 
 
 		$ordertype= JRequest::getVar("ordertype","");
 		if ($ordertype !=""){
-			$filterList[]= "(o.type ='$ordertype')";
+			$filterList[]= "(o.type_id ='$ordertype')";
 		}
 
 		if ( $search ) {
-			$filterList[]= "(o.name LIKE '%$search%' OR o.order_id LIKE '%$search%')";
+			$filterList[]= "(o.name LIKE '%$search%' OR o.id LIKE '%$search%')";
 		}
 
 		if (count($filterList) > 1)
@@ -996,18 +1007,18 @@ class SITE_cpanel {
 		elseif (count($filterList) == 1)
 		$filter .= " AND ".$filterList[0];
 
-		$query = "select o.*, osl.code, osl.translation as status_translation, tl.translation as type_translation from #__easysdi_order o inner join #__easysdi_order_status_list osl on o.status=osl.id inner join #__easysdi_order_type_list tl on o.type=tl.id AND  o.user_id = ".$user->id;
+		$query = "select o.*, osl.code, osl.label as status_label, tl.label as type_label from #__sdi_order o inner join #__sdi_list_orderstatus osl on o.status_id=osl.id inner join #__sdi_list_ordertype tl on o.type_id=tl.id AND  o.user_id = ".$user->id;
 		$query .= $filter;
 		
 		if ($orderstatus ==""){
-			$query .= " and o.status <> ".$archive." and o.status <> ".$history;
+			$query .= " and o.status_id <> ".$archive." and o.status_id <> ".$history;
 		}
 		
-		$query .= " order by o.order_date";
+		$query .= " order by o.created";
 		
-		$queryCount = "select count(*) from #__easysdi_order o where";
+		$queryCount = "select count(*) from #__sdi_order o where";
 		if ($orderstatus ==""){
-			$queryCount .= " o.status <> ".$archive." and o.status <> ".$history." AND";
+			$queryCount .= " o.status_id <> ".$archive." and o.status_id <> ".$history." AND";
 		}
 		$queryCount .= " o.user_id = ".$user->id;
 		
@@ -1037,19 +1048,19 @@ class SITE_cpanel {
 		$redirectURL = $database->loadResult();
 		
 		//$redirectURL = "index.php?option=com_easysdi_shop&view=shop&ItemId=".$ItemId;
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='SAVED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SAVED'";
 		$database->setQuery($queryStatus);
 		$saved = $database->loadResult();
 		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='FINISH'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
 		$database->setQuery($queryStatus);
 		$finish = $database->loadResult();
 		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='ARCHIVED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
 		$database->setQuery($queryStatus);
 		$archived = $database->loadResult();
 		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='HISTORIZED'";
+		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
 		$database->setQuery($queryStatus);
 		$historized = $database->loadResult();
 		
@@ -1089,7 +1100,7 @@ class SITE_cpanel {
 				if(!userManager::hasRight($rootPartner->id,"REQUEST_INTERNAL") &&
 					!userManager::hasRight($rootPartner->id,"REQUEST_EXTERNAL"))
 				{
-					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
 					return;
 				}
 			}

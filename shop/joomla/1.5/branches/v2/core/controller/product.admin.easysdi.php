@@ -370,7 +370,7 @@ class ADMIN_product {
 		$user = JFactory::getUser();
 		$product_id = JRequest::getVar('product_id');
 		echo $product_id;
-		$query = "SELECT data,filename FROM #__sdi_productfile where product_id = $product_id ";
+		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $product_id ";
 		$database->setQuery($query);
 		$row = $database->loadObject();
 

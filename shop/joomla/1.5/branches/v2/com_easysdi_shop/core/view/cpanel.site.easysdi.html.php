@@ -138,25 +138,25 @@ class HTML_cpanel {
 			<td align="center" class="infoLogo"><div class="<?php if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_translation) ;?>"></div></td>
 			<td align="center" class="logo">
 			<?php
-			if($row->order_send_date == "0000-00-00 00:00:00" && $row->RESPONSE_SEND == 0)
+			if($row->sent == "0000-00-00 00:00:00" && $row->responsesent == 0)
 			{
 				?>
-				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_date));?>"> </div>
+				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->created));?>"> </div>
 				<?php
 			}
 			else
 			{
-				if($row->RESPONSE_SEND)
+				if($row->responsesent)
 				{
 					
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
 					<?php 
 				}
 				else
 				{
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> " > </div>
+					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> " > </div>
 					<?php
 				}
 			}
@@ -164,13 +164,13 @@ class HTML_cpanel {
 			?>
 			</td>			
 			<td class="reqDescr"><span class="mdtitle" >
-				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?>
+				<a class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" rel="{handler:'iframe',size:{x:600,y:600}}"> <?php echo $row->name; ?>
 				</a>
 				</span><br></td>
-			<td align="center"><?php echo JText::_($row->status_translation) ;?></td>
+			<td align="center"><?php echo JText::_($row->status_label) ;?></td>
 			<?php
 				//Draft
-				if($saved == $row->status)
+				if($saved == $row->status_id)
 				{	
 					//if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";
 					?>
@@ -185,7 +185,7 @@ class HTML_cpanel {
 							 }
 						}
 							
-						document.getElementById('order_id').value='<?php echo $row->order_id ;?>';
+						document.getElementById('id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='orderDraft';
 						document.getElementById('ordersListForm').submit();
 					}
@@ -196,14 +196,14 @@ class HTML_cpanel {
 					</td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<td class="logo">
 					<div class="savedOrderSuppress" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_SUPPRESS") ?>"
 					onClick="
 					if (confirm('<?php echo JText::_("EASYSDI_ORDER_SUPPRESS_CONFIRM_ACTION") ?>')){
-						document.getElementById('order_id').value='<?php echo $row->order_id ;?>';
+						document.getElementById('id').value='<?php echo $row->order_id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='suppressOrder';
 						document.getElementById('ordersListForm').submit();
 						return true;
@@ -214,24 +214,24 @@ class HTML_cpanel {
 					<?php 
 				}
 				//finished
-				else if($finish == $row->status)
+				else if($finish == $row->status_id)
 				{
 					?>
 					<td><div class="noLogo"></td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<td class="logo">
 					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<td class="logo">
 					<div class="savedOrderArchive" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ARCHIVE") ?>"
 					onClick="
 					if (confirm('<?php echo JText::_("EASYSDI_ORDER_ARCHIVE_CONFIRM_ACTION") ?>')){
-						document.getElementById('order_id').value='<?php echo $row->order_id ;?>';
+						document.getElementById('id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='archiveOrder';
 						document.getElementById('ordersListForm').submit();
 						return true;
@@ -246,15 +246,15 @@ class HTML_cpanel {
 					<td class="logo"><div class="noLogo"></td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->order_id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<?php 
-					if($archived == $row->status || $historized == $row->status){
+					if($archived == $row->status_id || $historized == $row->status_id){
 					?>
 					<td class="logo">
 					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<?php 
 					}else{ 

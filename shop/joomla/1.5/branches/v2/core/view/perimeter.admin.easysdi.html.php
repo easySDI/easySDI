@@ -269,6 +269,8 @@ class HTML_perimeter {
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="guid" value="<?php echo $rowPerimeter->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $rowPerimeter->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $rowPerimeter->createdby; ?>" />
 		</form>
 	<?php
 	}

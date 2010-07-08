@@ -52,7 +52,7 @@ class product extends sdiTable
 	{
 		if($this->available == 0)
 		{
-			$this->_db->setQuery( "DELETE FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+			$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 			if (!$this->_db->query()) {
 				return false;
 			}
@@ -69,21 +69,21 @@ class product extends sdiTable
 			 	$content = addslashes($content);
 			 	fclose($fp);
 				 
-				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
 					return false;
 				}
 				if($result > 0)
 				{
-					$this->_db->setQuery( "UPDATE  #__sdi_productfile SET data='".$content."', filename='".$fileName."' WHERE product_id = ".$this->id );
+					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."' WHERE product_id = ".$this->id );
 					if (!$this->_db->query()) {
 						return false;
 					}
 				}
 				else
 				{
-					$this->_db->setQuery( "INSERT INTO  #__sdi_productfile (filename, data,product_id) VALUES ('".$fileName."' ,'".$content."', ".$this->id.")" );
+					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id) VALUES ('".$fileName."' ,'".$content."', ".$this->id.")" );
 					if (!$this->_db->query()) {
 						return false;
 					}
@@ -95,7 +95,7 @@ class product extends sdiTable
 	
 	function getFileName()
 	{
-			$this->_db->setQuery( "SELECT filename FROM  #__sdi_productfile WHERE product_id = ".$this->id );
+			$this->_db->setQuery( "SELECT filename FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 			$filename = $this->_db->loadResult();
 			if ($this->_db->getErrorNum()) {
 				$mainframe->enqueueMessage($this->_db->getErrorMsg());
