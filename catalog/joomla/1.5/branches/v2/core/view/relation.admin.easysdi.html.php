@@ -165,7 +165,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -352,6 +352,15 @@ if ($type == 2)
 				<?php 
 				}
 				?>							
+			</tr>
+			</table>
+			</div>
+			
+			<div id = "div_defaultVal_choicelist" style="<?php echo $defaultStyle_Choicelist; ?>">
+			<table border="0" cellpadding="3" cellspacing="0">
+			<tr>
+				<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
+				<td><?php echo JHTML::_("select.genericlist",$choicevalues, 'defaultChoice[]', 'size="1" class="inputbox"', 'value', 'text'); ?></td>							
 			</tr>
 			</table>
 			</div>
@@ -1236,7 +1245,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 			
-			<input type="hidden" name="type" value='1' />
+			<input type="hidden" name="type" value='3' />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />

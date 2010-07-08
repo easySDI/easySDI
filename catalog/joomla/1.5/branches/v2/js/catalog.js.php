@@ -149,6 +149,7 @@ function changeVisibility(attribute)
 	 var defaultVal_textbox = document.getElementById("div_defaultVal_textbox");
 	 var defaultVal_textarea = document.getElementById("div_defaultVal_textarea");
 	 var defaultVal_List = document.getElementById("div_defaultVal_list");
+	 var defaultVal_Choicelist = document.getElementById("div_defaultVal_choicelist");
 	 var defaultVal_Radio = document.getElementById("div_defaultVal_radio");
 	 var defaultDate = document.getElementById("defaultDate");
 	 var defaultDate_Radio = document.getElementById("defaultDate_Radio");
@@ -163,6 +164,7 @@ function changeVisibility(attribute)
 		 defaultVal_Locale_textbox.style.display = "none";
 		 defaultVal_Locale_textarea.style.display = "none";
 		 defaultVal_List.style.display = "none";
+		 defaultVal_Choicelist.style.display = "none";
 	 }  
      else if (attributeType == 3) // Locale
      {
@@ -170,6 +172,7 @@ function changeVisibility(attribute)
          defaultVal_Radio.style.display = "none";
          defaultVal_Locale_textbox.style.display = "";
  		 defaultVal_List.style.display = "none";
+ 		defaultVal_Choicelist.style.display = "none";
      }
      else if (attributeType == 5) // date
      {
@@ -177,6 +180,7 @@ function changeVisibility(attribute)
          defaultVal_Radio.style.display = "";
          defaultVal_Locale_textbox.style.display = "none";
  		 defaultVal_List.style.display = "none";
+ 		defaultVal_Choicelist.style.display = "none";
      }
      else if (attributeType == 6) // List
      {
@@ -184,6 +188,15 @@ function changeVisibility(attribute)
          defaultVal_Radio.style.display = "none";
          defaultVal_Locale_textbox.style.display = "none";
  		 defaultVal_List.style.display = "";
+ 		defaultVal_Choicelist.style.display = "none";
+     }
+     else if (attributeType == 9 || attributeType == 10) // Choicelist
+     {
+    	 defaultVal_textbox.style.display = "none";
+         defaultVal_Radio.style.display = "none";
+         defaultVal_Locale_textbox.style.display = "none";
+ 		 defaultVal_List.style.display = "none";
+ 		defaultVal_Choicelist.style.display = "";
      }
      else // others
      {
@@ -191,6 +204,7 @@ function changeVisibility(attribute)
          defaultVal_Radio.style.display = "none";
          defaultVal_Locale_textbox.style.display = "none";
  		 defaultVal_List.style.display = "none";
+ 		defaultVal_Choicelist.style.display = "none";
      }
 }
 

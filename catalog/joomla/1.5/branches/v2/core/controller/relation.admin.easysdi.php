@@ -101,9 +101,9 @@ defined('_JEXEC') or die('Restricted access');
 			}
 			else if (form.type.value == 3)
 			{
-				if (getSelectedValue('adminForm','classchild_id') < 1) 
+				if (getSelectedValue('adminForm','objecttypechild_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select a child class.', true ); ?>" );
+					alert( "<?php echo JText::_( 'Please select an objecttype child.', true ); ?>" );
 				}
 				else if (form.isocode.value == "") 
 				{
@@ -275,6 +275,8 @@ class ADMIN_relation {
 	function newRelation($id, $option)
 	{
 		$database =& JFactory::getDBO(); 
+		$language =& JFactory::getLanguage();
+		
 		$rowRelation = new relation( $database );
 		$rowRelation->load( $id );
 		
@@ -378,16 +380,19 @@ class ADMIN_relation {
 		$objects=array();
 		$rendertypes = array();
 		$attributetypes = array();
+		$objecttypes= array();
 		$attributeFieldsLength = array();
 		$defaults = array();
 		$defaultStyle_Date = "display:none";
 		$style = "display:none";
+		$defaultStyle_Choicelist = "display:none"; 
 		$defaultStyle_textarea = "display:none";
 		$defaultStyle_textbox = "display:none";
 		$defaultStyle_Radio = "display:none";
 		$defaultStyle_Locale_Textbox = "display:none";
 		$defaultStyle_Locale_Textarea = "display:inline";
 		$codevalues=array();
+		$choicevalues=array();
 		$selectedcodevalues=array();
 		$localeDefaults = array();
 		$relationtypes = array();
@@ -517,12 +522,37 @@ class ADMIN_relation {
 					$defaults['style_locale_textbox'] = "display:inline";
 				}
 			
+			// Liste déroulante choicelist
+			if ($rowAttribute->attributetype_id <> 9 and $rowAttribute->attributetype_id <> 10)
+			{
+				$defaultStyle_textbox = "display:none";
+				$defaultStyle_textarea = "display:none";
+				$defaultStyle_Choicelist = "display:none";
+				$defaults['style_choicelist'] = "display:none";	
+				$defaultStyle_Locale_Textbox = "display:none";
+				$defaultStyle_Locale_Textarea = "display:none";
+			}
+			else
+			{
+				$defaultStyle_textbox = "display:none";
+				$defaultStyle_textarea = "display:none";
+				$defaultStyle_Choicelist = "display:inline";
+				$defaults['style_choicelist'] = "display:inline";
+				$defaultStyle_Locale_Textbox = "display:none";
+				$defaultStyle_Locale_Textarea = "display:none";
+			}
+				
 			$codevalues=array();
 			if ($upper <= 1)
 				$codevalues[] = JHTML::_('select.option','', '');
 			$database->setQuery( "SELECT id as value, label as text FROM #__sdi_codevalue WHERE attribute_id=".$rowAttribute->id." AND published=true ORDER BY name" );
 			$codevalues = array_merge( $codevalues, $database->loadObjectList() );
 	
+			$choicevalues=array();
+			$choicevalues[] = JHTML::_('select.option','', '');
+			$database->setQuery( "SELECT c.id as value, c.name as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+			$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+			
 			$selectedcodevalues=array();
 			$database->setQuery( "SELECT codevalue_id as value FROM #__sdi_defaultvalue WHERE attribute_id=".$rowAttribute->id );
 			$selectedcodevalues = array_merge( $selectedcodevalues, $database->loadObjectList() );
@@ -576,7 +606,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -787,9 +817,9 @@ class ADMIN_relation {
 		
 		$choicevalues=array();
 		$choicevalues[] = JHTML::_('select.option','', '');
-		$database->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND c.published=true ORDER BY t.title" );
-		
+		$database->setQuery( "SELECT c.id as value, c.name as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
 		$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+		
 		$selectedchoicevalues=array();
 		$database->setQuery( "SELECT codevalue_id as value FROM #__sdi_defaultvalue WHERE attribute_id=".$rowAttribute->id );
 		$selectedchoicevalues = array_merge( $selectedchoicevalues, $database->loadObjectList() );

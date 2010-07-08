@@ -87,24 +87,21 @@ class SITE_metadata {
 									AND s.id=1)
 								)";*/
 		$queryCount = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
+						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
 								#__sdi_account a, 
 								#__users u,
 								#__sdi_objecttype ot,
 								#__sdi_object o 
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						WHERE e.object_id=o.id
-							AND o.metadata_id=m.id
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
+						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+						WHERE o.metadata_id=m.id
+							AND m.metadatastate_id=s.id
 							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
 							AND ot.predefined=0
 							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
+								OR (ma.account_id=".$account->id.")
 								)";
 		$queryCount .= $filter;
 		
@@ -139,24 +136,21 @@ class SITE_metadata {
 									AND s.id=1)
 								)";*/
 		$query = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
+						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
 								#__sdi_account a, 
 								#__users u,
 								#__sdi_objecttype ot,
 								#__sdi_object o 
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						WHERE e.object_id=o.id
-							AND o.metadata_id=m.id
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
+						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+						WHERE o.metadata_id=m.id
+							AND m.metadatastate_id=s.id
 							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
 							AND ot.predefined=0
 							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
+								OR (ma.account_id=".$account->id.")
 								)";
 		$query .= $filter;
 		//$query .= " ORDER BY o.name, ov.name ASC";
@@ -188,6 +182,13 @@ class SITE_metadata {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$user = JFactory::getUser();
+		
+		$language =& JFactory::getLanguage();
+		if ($language->_lang == "fr-FR") 
+			JHTML::script('ext-lang-fr.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else if ($language->_lang == "de-DE") 
+			JHTML::script('ext-lang-de.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
 		
 		if ($id == 0)
 		{

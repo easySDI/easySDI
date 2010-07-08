@@ -400,6 +400,10 @@ class SITE_catalog {
 				  <ogc:PropertyName>title</ogc:PropertyName>
 				    <ogc:Literal>$word%</ogc:Literal>
 				  </ogc:PropertyIsLike>\r\n
+				  <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+				  <ogc:PropertyName>metadata_title</ogc:PropertyName>
+				    <ogc:Literal>$word%</ogc:Literal>
+				  </ogc:PropertyIsLike>\r\n
 				 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
 				  <ogc:PropertyName>abstract</ogc:PropertyName>
 				    <ogc:Literal>$word%</ogc:Literal>

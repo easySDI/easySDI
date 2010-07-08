@@ -58,6 +58,11 @@ class HTML_metadata {
 		$uri =& JUri::getInstance();
 		
 		$database =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
+		if ($language->_lang == "fr-FR") 
+			JHTML::script('ext-lang-fr.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else if ($language->_lang == "de-DE") 
+			JHTML::script('ext-lang-de.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
