@@ -267,9 +267,9 @@ class ADMIN_product {
 		{
 			$product->viewaccount_id="";
 		}
-		if($product->viewbasemap_id == 0)
+		if($product->viewbasemap_id == '0')
 		{
-			$product->viewbasemap_id = NULL;
+			$product->viewbasemap_id = null;
 		}
 		
 		if (!$product->store()) {

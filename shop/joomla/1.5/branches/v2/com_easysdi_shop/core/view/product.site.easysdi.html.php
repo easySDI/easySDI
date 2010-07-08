@@ -64,11 +64,11 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $object_id ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $object_id ); ?></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_VERSION"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $version->id ); ?></td>
 							</tr>
 							<tr>							
 								<td class="ptitle"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
@@ -88,13 +88,13 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_CREATED"); ?> : </td>
-								<?php $date = new JDate($product->creation_date); ?>
+								<?php $date = new JDate($product->created); ?>
 								<input type="hidden" name="created" value="<?php echo $date->toMySQL() ?>" />								
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->created)); ?></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_UPDATED"); ?> : </td>						
-								<?php $date = new JDate($product->update_date); ?>										
+								<?php $date = new JDate($product->updated); ?>										
 								<input type="hidden"  name="updated" value="<?php echo $date->toMySQL() ?>" />
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
 							</tr>
@@ -493,6 +493,7 @@ class HTML_product{
 		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
 		<input type="hidden" name="supplier_id" value="<?php echo $supplier->id; ?>" />
 		<input type="hidden" name="manager_id" value="<?php echo $account->id; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />
 		</form>
 		</div>
 		<table>

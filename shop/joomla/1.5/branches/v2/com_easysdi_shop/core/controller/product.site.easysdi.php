@@ -51,12 +51,15 @@ class SITE_product {
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
 		}
-				
+		
 		if($account->root_id)
 		{
 			//$product->manager_id = $account->root_id;
 		}
-		
+		if($product->viewbasemap_id == '0')
+		{
+			$product->viewbasemap_id = null;
+		}
 		
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -236,32 +239,35 @@ class SITE_product {
 			$version_list = array_merge( $version_list, $database->loadObjectList() );
 		}
 		
-		//Build queries
-		$select_query = "SELECT a.id AS value, b.name AS text 
-									 FROM #__sdi_account a, #__users b 
-									 WHERE (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id)  
-									 AND a.user_id = b.id 
-									 AND a.id IN  (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code =";
-		$order_query = ")) ORDER BY b.name";
-		
-		//List of partner with the same root as current logged user
-		$accounts = array();
-		$accounts[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
-		$query = $select_query."'PRODUCT' ".$order_query;
-		$database->setQuery($query);
-		$accounts = array_merge( $accounts, $database->loadObjectList() );
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-		
-		//List of partner with DIFFUSION right
-		$diffusion_list = array();
-		$diffusion_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
-		$query = $select_query."'DIFFUSION' ".$order_query;
-		$database->setQuery($query);
-		$diffusion_list = array_merge($diffusion_list, $database->loadObjectList());
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		if($object_id<>0)
+		{
+			//Build queries
+			$select_query = "SELECT a.id AS value, b.name AS text 
+										 FROM #__sdi_account a, #__users b 
+										 WHERE (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id)  
+										 AND a.user_id = b.id 
+										 AND a.id IN  (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code =";
+			$order_query = ")) ORDER BY b.name";
+			
+			//List of partner with the same root as current logged user
+			$accounts = array();
+			$accounts[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
+			$query = $select_query."'PRODUCT' ".$order_query;
+			$database->setQuery($query);
+			$accounts = array_merge( $accounts, $database->loadObjectList() );
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			//List of partner with DIFFUSION right
+			$diffusion_list = array();
+			$diffusion_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
+			$query = $select_query."'DIFFUSION' ".$order_query;
+			$database->setQuery($query);
+			$diffusion_list = array_merge($diffusion_list, $database->loadObjectList());
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
 		//List of basemap
@@ -334,9 +340,9 @@ class SITE_product {
 		
 		$rowProduct = new product( $database );
 		$rowProduct->load( $cid[0] );	
-		if(!$rowProduct->deleteProduct())
+		if(!$rowProduct->delete())
 		{
-			$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
+			$mainframe->enqueueMessage("SHOP_MESSAGE_ERROR_SUPPRESS_PRODUCT","ERROR");
 			return;
 		}
      }

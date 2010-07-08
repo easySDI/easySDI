@@ -105,14 +105,14 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
-								<?php $date = new JDate($product->creation_date); ?>
-								<input type="hidden" name="creation_date" value="<?php echo $date->toMySQL(); ?>" />								
+								<?php $date = new JDate($product->created); ?>
+								<input type="hidden" name="created" value="<?php echo $date->toMySQL(); ?>" />								
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->created)); ?></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_UPDATED"); ?> : </td>						
-								<?php $date = new JDate($product->update_date); ?>										
-								<input type="hidden"  name="update_date" value="<?php echo $date->toMySQL(); ?>" />
+								<?php $date = new JDate($product->updated); ?>										
+								<input type="hidden"  name="updated" value="<?php echo $date->toMySQL(); ?>" />
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
 							</tr>
 							<tr>
@@ -466,6 +466,7 @@ class HTML_product {
 		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editProduct" />
+		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />
 		</form>
 	<?php
 	}
