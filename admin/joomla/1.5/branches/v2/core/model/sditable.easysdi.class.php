@@ -68,7 +68,7 @@ class sdiTable extends JTable
 		$this->updated = date('Y-m-d H:i:s'); 
 		$this->updatedby = $account->id;
 		
-		return parent::store();
+		return parent::store(true);
 	}
 	
 	function delete ($filter="", $filter_value="")
