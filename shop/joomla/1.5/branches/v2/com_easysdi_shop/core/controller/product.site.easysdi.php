@@ -34,8 +34,8 @@ class SITE_product {
 		$account = new accountByUserId( $database );
 		$account->load( $user->id );
 		
-		$product =& new Product($database);
-		$rowProductOld =& new Product($database);
+		$product =& new product($database);
+		$rowProductOld =& new product($database);
 		$sendMail = false;
 	
 		
@@ -46,6 +46,8 @@ class SITE_product {
 				$sendMail = true;
 			}
 		}
+	
+
 		if (!$product->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -365,7 +367,7 @@ class SITE_product {
 	
 	function listProduct(){
 		global  $mainframe;
-		 
+
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 );

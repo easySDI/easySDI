@@ -45,7 +45,7 @@ class HTML_product{
 		} ?>
 		<div class="contentin">
 		<div class="editProductPane">
-		<form action="index.php" method="post" name="productForm" id="productForm" class="productForm">
+		<form enctype="multipart/form-data" action="index.php" method="post" name="productForm" id="productForm" class="productForm">
 		<?php
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("SHOP_TEXT_GENERAL"),"productPane");
@@ -131,7 +131,7 @@ class HTML_product{
 								{
 									document.getElementById('productfile').disabled = true;
 									document.getElementById('available').disabled = true;
-									//document.getElementById('available').value = '0';
+									document.getElementById('available').value = '0';
 								}
 								else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
 								{

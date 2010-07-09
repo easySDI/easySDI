@@ -50,10 +50,8 @@ class product extends sdiTable
 	
 	function store()
 	{
-		global  $mainframe;
-		if($this->available == 0)
+		if($this->available == 0 || $this->free == 0)
 		{
-			$mainframe->enqueueMessage("Product not avalaible");
 			$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 			if (!$this->_db->query()) {
 				return false;
@@ -61,7 +59,6 @@ class product extends sdiTable
 		}
 		else
 		{
-			$mainframe->enqueueMessage("Product avalaible");
 			if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) 
 		 	{
 		 		$fileName = $_FILES['productfile']["name"];
@@ -70,7 +67,7 @@ class product extends sdiTable
 			 	$content = fread($fp, filesize($tmpName));
 			 	$content = addslashes($content);
 			 	fclose($fp);
-				 $mainframe->enqueueMessage("file read");
+				
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
