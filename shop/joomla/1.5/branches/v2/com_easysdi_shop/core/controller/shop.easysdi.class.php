@@ -1720,7 +1720,7 @@ if (count($rows)>0){
 		 }
 		 //Limit order name to 40 characters
 		 if(document.getElementById('order_name').value.length > 40){
-			alert('<?php echo JText::_("EASYSDI_SHOP_ORDER_NAME_TOO_LONG"); ?>');
+			alert('<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_NAME_TOO_LONG"); ?>');
 			return;
 		}
 	 }
@@ -1735,18 +1735,18 @@ if (count($rows)>0){
 	<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
 	<table class="ordersteps">
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_NAME"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_NAME"); ?>:</td>
 			<td><input type="text" class="infoClient" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"></td>
 		</tr>
 		<tr>
 			<td colspan="2"><div class="separator" /></td>
 		</tr>
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_TYPE_DEVIS"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_TYPE_D"); ?>:</td>
 			<td><input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
 		</tr>
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_TYPE_COMMANDE"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_TYPE_O"); ?>:</td>
 			<td><input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
 		</tr>
 		<tr>
@@ -1758,14 +1758,14 @@ if (count($rows)>0){
 	if ($user->guest ){
 		?>
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_USER_NOT_CONNECTED"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_SHOP_MESSAGE_USER_NOT_CONNECTED"); ?>:</td>
 		</tr>
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_USER"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_AUTH_USER"); ?>:</td>
 			<td><input type="text" class="infoClient" name="user" value=""></td>
 		</tr>
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?>:</td>
 			<td><input type="password" class="infoClient" name="password" value=""></td>
 		</tr>
 		<?php
@@ -1790,10 +1790,10 @@ if (count($rows)>0){
     ?>	
 
 		<tr>
-			<td class="orderstepsTitle"><?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY"); ?>:</td>
+			<td class="orderstepsTitle"><?php echo JText::_("SHOP_SHOP_ORDER_THIRD_PARTY"); ?>:</td>
 			<td>
 				<select class="thirdPartySelect" name="third_party">
-					<option value="0"><?php echo JText::_("EASYSDI_ORDER_FOR_NOBODY"); ?></option>
+					<option value="0"><?php echo JText::_("SHOP_SHOP_ORDER_FOR_NOBODY"); ?></option>
 					<?php
 					$third_party = $mainframe->getUserState('third_party');
 					echo $third_party;
@@ -1850,8 +1850,8 @@ if (count($rows)>0){
 		$db =& JFactory::getDBO();
 
 		$user = JFactory::getUser();
-		$partner = new accountByUserId( $db );
-		$partner->load( $user->id );
+		$account = new accountByUserId( $db );
+		$account->load( $user->id );
 
 
 		?>
@@ -1878,21 +1878,28 @@ if (count($rows)>0){
 		if (!$user->guest){
 			
 			//Check the user rights and the product accessibilitty
-		
 			$isProductAllowed = true;
 			$hasExternal = false;
 			$hasInternal = false;
-			if(userManager::hasRight($partner->id,"REQUEST_EXTERNAL"))
+			
+			//Public
+			$queryVisibility = "select id from #__sdi_list_visibility where code ='public'";
+			$db->setQuery($queryVisibility);
+			$public = $db->loadResult();
+			//Private
+			$queryVisibility = "select id from #__sdi_list_visibility where code ='private'";
+			$db->setQuery($queryVisibility);
+			$private = $db->loadResult();
+			
+			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
 				$hasExternal = true;
 			}
-			if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
+			if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 			{
 				$hasInternal = true;
 			}
-			$partner = new accountByUserId($db);
-			$partner->load($user->id);
-
+			
 			$cid = $mainframe->getUserState('productList');
 			$listId = '';
 			foreach ($cid as $productId)
@@ -1901,89 +1908,67 @@ if (count($rows)>0){
 			}
 			$listId = substr($listId,0,strlen($listId) -1);
 			
-			$query = "SELECT * from #__easysdi_product WHERE id IN($listId) ";
+			$query = "SELECT * from #__sdi_product WHERE id IN($listId) ";
 			$db->setQuery( $query);
 			$rows = $db->loadObjectList();
 			
 			foreach ($rows as $row)
 			{
-				if($row->published == '0' || $row->orderable == '0' || ($row->external == '0' && $row->internal == '0'))
+				if($row->published == '0' ||  ($row->visibility_id <> $public && $row->visibility_id <> $private))
 				{
-					HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE", $row->data_title );
+					HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE", $row->name );
 					$isProductAllowed = false;
 					break;
 				}
 				
-				$query = "SELECT COUNT(*) FROM #__easysdi_product p WHERE
-								p.id = $row->id
+				$query = "SELECT COUNT(*) FROM #__sdi_product p 
+								INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+								INNER JOIN #__sdi_object o ON o.id = v.object_id
+								INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+								WHERE p.published=1 AND o.published = 1
+								AND p.id = $row->id
 								AND
-								 (p.partner_id =  $partner->id
+								 (o.account_id =  $account->id
 								OR
-								p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
+								o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id )
 								OR 
-								p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
+								o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
 								OR
-								p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ))" ;
+								o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ))" ;
 						$db->SetQuery($query);
 						$countProduct = $db->loadResult();
-				if($row->internal == '1')
+				if($row->visibility_id == $private)
 				{	
-					if($row->external == '0' )
+					//User needs to belong to the product's partner group
+					if($countProduct == 1 && $hasInternal == true )
 					{
-						//User needs to belong to the product's partner group
-						if($countProduct == 1 && $hasInternal == true )
-						{
-							//The product belongs to the current user's group and the user has the internal right
-						}
-						else
-						{
-							//The product does not belogn to the current user's group, or the user does not have the internal right
-							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-							$isProductAllowed = false;
-							break;
-						}		
+						//The product belongs to the current user's group and the user has the internal right
 					}
 					else
-					{	
-						if($countProduct == 1 )
-						{
-							if($hasExternal == false && $hasInternal == false)
-							{
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						else
-						{
-							if($hasExternal == false)
-							{
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
+					{
+						//The product does not belong to the current user's group, or the user does not have the internal right
+						HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+						$isProductAllowed = false;
+						break;
+					}		
+					
+				}
+				else if($row->visibility_id == $public)
+				{
+					if($hasExternal == false)
+					{
+						//User does not have the right to order external product
+						HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+						$isProductAllowed = false;
+						break;
 					}
 				}
 				else
 				{
-					if($row->external = '1')
-					{
-						if($hasExternal == false)
-						{
-							//User does not have the right to order external product
-							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-							$isProductAllowed = false;
-							break;
-						}
-					}
-					else
-					{
-						//Product is not orderable
-						HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-						$isProductAllowed = false;
-						break;
-					}
+					//Product is not orderable
+					HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+					$isProductAllowed = false;
+					break;
 				}
 				
 			}
@@ -2016,18 +2001,18 @@ if (count($rows)>0){
 				onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
 				type="button"
 				class="button"
-				value='<?php echo JText::_("EASYSDI_ORDER_SAVE_BUTTON"); ?>'> <input
+				value='<?php echo JText::_("SHOP_SHOP_ORDER_SAVE_BUTTON"); ?>'> <input
 				onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
 				type="button"
 				class="button"
-				value='<?php echo JText::_("EASYSDI_ORDER_SEND_BUTTON"); ?>'> <?php
+				value='<?php echo JText::_("SHOP_SHOP_ORDER_SEND_BUTTON"); ?>'> <?php
 			}
 		}
 		else
 		{
 			//User not connected
 			?>
-			<div class="alert"><?php echo JText::_("EASYSDI_NOT_CONNECTED");?></div>
+			<div class="alert"><?php echo JText::_("SHOP_SHOP_MESSAGE_NOT_CONNECTED");?></div>
 			<?php
 		}
 		?></div>
@@ -2038,10 +2023,10 @@ if (count($rows)>0){
 	{
 		?>
 		<div class="alert">
-			<span class="alertheader"><?php echo JText::_("EASYSDI_ORDER_PROBLEM_IN_ORDER");?><br></span>
+			<span class="alertheader"><?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_IN_ORDER");?><br></span>
 			<?php echo JText::_($error);?>
 			<span class="alerthighlight"><?php echo $product;?><br></span>
-			<?php echo JText::_("EASYSDI_ORDER_PROBLEM_ACTION");?><br>
+			<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_ACTION");?><br>
 		</div>
 		<?php 
 	}
@@ -2064,7 +2049,7 @@ if (count($rows)>0){
 				if ($Order->order_id == 0)
 				{
 					echo "<div class='alert'>";			
-					echo JText::_("EASYSDI_DELETE_ORDER_MSG").$Order->id;
+					echo JText::_("SHOP_SHOP_MESSAGE_DELETE_ORDER").$Order->id;
 					echo "</div>";
 				}
 				else 
@@ -2077,9 +2062,9 @@ if (count($rows)>0){
 					$OrderProductList = new orderProductListByOrder($db);
 					$OrderProductList->load($order_id);
 					
-					$query = "DELETE FROM #__easysdi_order_product_properties  
-								WHERE order_product_list_id 
-								IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $order_id)";
+					$query = "DELETE FROM #__sdi_order_property  
+								WHERE orderproduct_id 
+								IN(SELECT id FROM #__sdi_order_product WHERE order_id = $order_id)";
 					$db->setQuery($query);
 					$db->query();
 					
@@ -2109,21 +2094,18 @@ if (count($rows)>0){
 			$totalArea = $mainframe->getUserState('totalArea');
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
 
-			//jimport("joomla.utilities.date");
-			//$date = new JDate();
-
-			$queryStatus = "SELECT id from #__easysdi_order_status_list where code = '".$orderStatus."'";
+			$queryStatus = "SELECT id from #__sdi_list_orderstatus where code = '".$orderStatus."'";
 			$db->setQuery($queryStatus );
 			$orderStatus = $db->loadResult();
 
-			$queryType = "SELECT id from #__easysdi_order_type_list where code = '".$order_type."'";
+			$queryType = "SELECT id from #__sdi_list_ordertype where code = '".$order_type."'";
 			$db->setQuery($queryType );
 			$order_type = $db->loadResult();
 			
-			$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AWAIT'";
+			$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AWAIT'";
 			$db->setQuery($queryType );
 			$await_type = $db->loadResult();
-			$queryType = "SELECT id from #__easysdi_order_product_status_list where code = 'AVAILABLE'";
+			$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AVAILABLE'";
 			$db->setQuery($queryType );
 			$available_type = $db->loadResult();
 			
@@ -2135,7 +2117,7 @@ if (count($rows)>0){
 			{
 				$totalArea = 0;
 			}
-			$query = "INSERT INTO #__easysdi_order(third_party,type,order_id,name,status,order_date,user_id,buffer,surface) 
+			$query = "INSERT INTO #__sdi_order(thirdparty,type_id,id,name,status_id,created,user_id,buffer,surface) 
 						VALUES ($db->Quote($third_party) ,'$order_type',0,'".addslashes($order_name)."','$orderStatus',Now(),$user->id,$bufferValue,$totalArea)";
 			$db->setQuery($query );
 			
@@ -2150,7 +2132,7 @@ if (count($rows)>0){
 			//If the order is "SENT" update the order_send_date value
 			if($order_status_value == "SENT")
 			{
-				$query = "UPDATE   #__easysdi_order set order_send_date = Now() WHERE order_id= $order_id ";
+				$query = "UPDATE   #__esdi_order set sent = Now() WHERE order_id= $order_id ";
 				$db->setQuery( $query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";
@@ -2169,7 +2151,7 @@ if (count($rows)>0){
 			foreach ($selSurfaceList as $sel)
 			{
 				//Before the dot, it is the perimeter id, after the dot id of the data
-				$query =  "INSERT INTO #__easysdi_order_product_perimeters (id,order_id,perimeter_id,value,text) 
+				$query =  "INSERT INTO #__sdi_order_perimeter (id,order_id,perimeter_id,value,text) 
 							VALUES (0,$order_id,$perimeter_id,'$sel','".addslashes($selSurfaceListName[$i])."')";
 				$db->setQuery($query );
 				if (!$db->query()) {
@@ -2185,7 +2167,7 @@ if (count($rows)>0){
 			{
 				if ($product_id != "0")
 				{					
-					$query = "INSERT INTO #__easysdi_order_product_list(id,product_id,order_id, status) 
+					$query = "INSERT INTO #__sdi_order_product(id,product_id,order_id, status_id) 
 								VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
 					$db->setQuery($query );
 					if (!$db->query()) 
@@ -2199,10 +2181,10 @@ if (count($rows)>0){
 					$order_product_list_id = $db->insertId();
 
 
-					$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
-														#__easysdi_product_properties_definition  as a ,
-														#__easysdi_product_properties_values_definition as c  
-							WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $product_id." order by a.order";
+					$query = "SELECT DISTINCT a.code as code, a.id as property_id FROM #__sdi_product_property b, 
+														#__sdi_property  as a ,
+														#__sdi_property_value as c  
+							WHERE a.id = c.property_id and b.propertyvalue_id = c.id and b.product_id = ". $product_id." order by a.ordering";
 					$db->setQuery( $query );
 					
 					$rows = $db->loadObjectList();
@@ -2213,9 +2195,10 @@ if (count($rows)>0){
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_list_property_'.$product_id,null);
-							foreach ($productProperties as $property_id)
+							foreach ($productProperties as $propertyvalue_id)
 							{
-								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
+												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
 								$db->setQuery($query );
 								if (!$db->query()) 
 								{
@@ -2231,9 +2214,10 @@ if (count($rows)>0){
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->code.'_mlist_property_'.$product_id,null);
-							foreach ($productProperties as $property_id)
+							foreach ($productProperties as $propertyvalue_id)
 							{
-								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
+												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
 								$db->setQuery($query );
 								if (!$db->query()) {
 									echo "<div class='alert'>";
@@ -2250,9 +2234,10 @@ if (count($rows)>0){
 							$mainframe->setUserState($row->code.'_cbox_property_'.$product_id,null);
 	
 						
-							foreach ($productProperties as $property_id)
+							foreach ($productProperties as $propertyvalue_id)
 							{
-								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_id,code) VALUES (0,".$order_product_list_id.",".$property_id.",'$row->code')";
+								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
+												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
 								$db->setQuery($query );
 								if (!$db->query()) 
 								{
@@ -2268,7 +2253,8 @@ if (count($rows)>0){
 						if ($productProperties != '')
 						{
 							$mainframe->setUserState($row->code.'_text_property_'.$product_id,null);
-							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
+							$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
+											VALUES (0,$order_product_list_id,\"$productProperties\",'$row->property_id')";
 							$db->setQuery($query );
 							if (!$db->query()) 
 							{
@@ -2283,7 +2269,8 @@ if (count($rows)>0){
 						if ($productProperties != '')
 						{
 							$mainframe->setUserState($row->code.'_message_property_'.$product_id,null);
-							$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$productProperties\",'$row->code')";
+							$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
+											VALUES (0,$order_product_list_id,\"$productProperties\",'$row->property_id')";
 							$db->setQuery($query );
 							if (!$db->query()) 
 							{
@@ -2299,9 +2286,10 @@ if (count($rows)>0){
 						{
 							$mainframe->setUserState($row->code.'_textarea_property_'.$product_id,null);
 						
-							foreach ($productProperties as $property_id)
+							foreach ($productProperties as $propertyvalue_id)
 							{
-								$query = "INSERT INTO #__easysdi_order_product_properties(id,order_product_list_id,property_value,code) VALUES (0,$order_product_list_id,\"$property_id\",'$row->code')";
+								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
+												VALUES (0,$order_product_list_id,\"$propertyvalue_id\",'$row->property_id')";
 								$db->setQuery($query );
 								if (!$db->query()) 
 								{
@@ -2324,7 +2312,7 @@ if (count($rows)>0){
 				SITE_cpanel::notifyOrderToDiffusion($order_id);
 			}
 			
-			$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
+			$queryStatus = "select id from #__sdi_list_orderstatus where code ='SENT'";
 			$db->setQuery($queryStatus);
 			$sent = $db->loadResult();
 			
@@ -2333,23 +2321,21 @@ if (count($rows)>0){
 			$query = "SELECT o.name as cmd_name,
 							 u.email as email , 
 							 p.id as product_id, 
-							 p.data_title as data_title , 
-							 p.partner_id as partner_id   
+							 p.name as data_title   
 					  FROM #__users u,
 					  	   #__sdi_account pa, 
-					  	   #__easysdi_order_product_list opl , 
-					  	   #__easysdi_product p,
-					  	   #__easysdi_order o, 
-					  	   #__easysdi_order_type_list otl 
+					  	   #__sdi_order_product opl , 
+					  	   #__sdi_product p,
+					  	   #__sdi_order o, 
+					  	   #__sdi_list_ordertype otl 
 					  WHERE opl.order_id= $order_id 
 					  AND p.id = opl.product_id 
-					  and p.is_free = 1 
-					  and opl.status='".$await_type."' 
-					  and o.type=otl.id 
+					  and p.free = 1 
+					  and opl.status_id='".$await_type."' 
+					  and o.type_id=otl.id 
 					  and otl.code='D' 
-					  AND p.diffusion_partner_id = pa.id 
 					  and pa.user_id = u.id 
-					  and o.order_id=opl.order_id 
+					  and o.id=opl.order_id 
 					  and o.status='".$sent."' ";
 
 			$db->setQuery( $query );
@@ -2361,7 +2347,7 @@ if (count($rows)>0){
 			}
 
 			foreach ($rows as $row){
-				$query = "UPDATE   #__easysdi_order_product_list opl set status = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
+				$query = "UPDATE   #__sdi_order_product opl set status_id = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
 				$db->setQuery( $query );
 				if (!$db->query()) {
 					echo "<div class='alert'>";
@@ -2371,7 +2357,7 @@ if (count($rows)>0){
 				}
 				$user = JFactory::getUser();
 
-				SITE_cpanel::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->name));
+				SITE_cpanel::sendMailByEmail($row->email,JText::_("SHOP_SHOP_MAIL_SUBJECT_REQUEST_FREE_PRODUCT"),JText::sprintf("SHOP_SHOP_MAIL_BODY_REQUEST_FREE_PROUCT",$row->data_title,$row->cmd_name,$user->name));
 					
 			}
 			
@@ -2385,7 +2371,7 @@ if (count($rows)>0){
 				$db->setQuery($queryNot);
 				$not = $db->loadResult();
 				if($not == 1)
-					SITE_cpanel::sendMailByEmail($user->email,JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
+					SITE_cpanel::sendMailByEmail($user->email,JText::sprintf("SHOP_SHOP_MAIL_SUBJECT_ORDER_NOTIFICATION_CUSTOMER", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
 			}
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
 			
@@ -2406,7 +2392,7 @@ if (count($rows)>0){
 		else
 		{
 			?>
-			<div class="alert"><?php echo JText::_("EASYSDI_NOT_ALLOWED"); ?></div>
+			<div class="alert"><?php echo JText::_("SHOP_SHOP_MESSAGE_NOT_ALLOWED"); ?></div>
 			<?php
 		}
 		
@@ -2486,15 +2472,12 @@ if (count($rows)>0){
 			$cid = $mainframe->getUserState('productList');
 			$db =& JFactory::getDBO();
 			
-			//
-			foreach ($cid as $key =>  $id){
-				
-				
-				//$query = "SELECT  a.code as code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $id." order by a.order";
-				$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
-														#__easysdi_product_properties_definition  as a ,
-														#__easysdi_product_properties_values_definition as c  
-							WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $id." order by a.order";
+			foreach ($cid as $key =>  $id)
+			{
+				$query = "SELECT DISTINCT a.code as code FROM #__sdi_product_property b, 
+														#__sdi_property  as a ,
+														#__sdi_property_value as c  
+							WHERE a.id = c.property_id and b.propertyvalue_id = c.id and b.product_id = ". $id." order by a.ordering";
 				
 				$db->setQuery( $query );
 				$rows = $db->loadObjectList();
@@ -3132,7 +3115,7 @@ function validateForm(toStep, fromStep){
 
 		$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->supplier_id;
 		$db->setQuery($queryPartnerLogo);
-		$partner_logo = $db->loadResult();
+		$account_logo = $db->loadResult();
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");

@@ -267,7 +267,7 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 			if ($Order->order_id == 0)
 			{
 				echo "<div class='alert'>";			
-				echo JText::_("EASYSDI_DELETE_ORDER_MSG").$Order->id;
+				echo JText::_("SHOP_SHOP_MESSAGE_DELETE_ORDER").$Order->id;
 				echo "</div>";
 			}
 			else 

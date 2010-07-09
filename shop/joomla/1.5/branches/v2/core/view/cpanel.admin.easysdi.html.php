@@ -121,7 +121,7 @@ class HTMLadmin_cpanel {
 	<th class='title'><?php echo JText::_('CORE_SHARP'); ?></th>
 	<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows)+1; ?>);" /></th>
 	<th class='title'><?php echo JText::_('CORE_ID'); ?></th>
-	<th class='title'><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
+	<th class='title'><?php echo JText::_('SHOP_ORDER_NAME'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_TYPE'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
 	<th class='title'><?php echo JText::_('EASYSDI_ORDER_CREATION_DATE'); ?></th>

@@ -1291,7 +1291,7 @@ class SITE_cpanel {
 			}
 			$user = JFactory::getUser();
 				
-			SITE_cpanel::sendMailByEmail($row->email,JText::_("EASYSDI_REQUEST_FREE_PRODUCT_SUBJECT"),JText::sprintf("EASYSDI_REQEUST_FREE_PROUCT_MAIL_BODY",$row->data_title,$row->cmd_name,$user->username));
+			SITE_cpanel::sendMailByEmail($row->email,JText::_("SHOP_SHOP_MAIL_SUBJECT_REQUEST_FREE_PRODUCT"),JText::sprintf("SHOP_SHOP_MAIL_BODY_REQUEST_FREE_PROUCT",$row->data_title,$row->cmd_name,$user->username));
 		}
 		SITE_cpanel::setOrderStatus($order_id,$response_send);
 	}
