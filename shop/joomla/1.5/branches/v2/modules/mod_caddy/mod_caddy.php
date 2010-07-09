@@ -15,7 +15,7 @@ if (is_array(($cid)))
 
 	if (count($cid)>0)
 	{		
-		$query = "select p.*, u.name from #__easysdi_product p, #__sdi_account a, #__users u where p.id in (";
+		$query = "select p.*, u.name from #__sdi_product p, #__sdi_account a, #__users u where p.id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;

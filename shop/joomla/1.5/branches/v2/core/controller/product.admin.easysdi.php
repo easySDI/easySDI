@@ -48,10 +48,10 @@ class ADMIN_product {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT p.*, t.label as treatment, a.name AS text
+		$query = "SELECT p.*, t.label as treatment
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
-					INNER JOIN (SELECT c.id , u.name FROM #__sdi_account c, #__users  u WHERE c.user_id = u.id ) a ON p.manager_id = a.id ";
+					 ";
 		
 		$where="";
 		if ($search)
@@ -106,31 +106,76 @@ class ADMIN_product {
 		$version->load($version_id);
 		
 		$supplier = new account($database);
+		$object = new object ($database);
 		$object_id = JRequest::getVar('object_id', 0 );
 		if($object_id==0)
 		{
 			$object_id=$version->object_id;
 		}
+		else
+		{
+			if($object_id <> $version->object_id)
+			{
+				$version_id=0;
+				$version->load($version_id);
+			}
+		}
 		if($object_id<>0)
 		{
-			$object = new object ($database);
+			
 			$object->load($object_id);
 			$supplier->load($object->account_id);
+		}
+		
+		$objecttype_id = JRequest::getVar('objecttype_id', 0 );
+		if($objecttype_id==0)
+		{
+			if($object_id<>0)
+			{
+				$objecttype_id=$object->objecttype_id;
+			}
+		}
+		else
+		{
+			if($objecttype_id <>$object->objecttype_id)
+			{
+				$object_id=0;
+				$object->load($object_id);
+				$supplier->load(0);
+				$version_id=0;
+				$version->load($version_id);
+			}
 		}
 				
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 
-		//List of object
-		$object_list = array();
-		$object_list[] = JHTML::_('select.option','0', JText::_("SHOP_OBJECT_LIST") );
+		//List of objecttype
+		$objecttype_list = array();
+		$objecttype_list[] = JHTML::_('select.option','0', JText::_("SHOP_OBJECT_LIST") );
 		$database->setQuery("SELECT id AS value, name AS text 
-							   FROM #__sdi_object
-							   WHERE published = 1 
+							   FROM #__sdi_objecttype
+							   WHERE predefined = 0 
 							   ORDER BY name");
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$object_list = array_merge( $object_list, $database->loadObjectList() );
+		$objecttype_list = array_merge( $objecttype_list, $database->loadObjectList() );
+		
+		//List of object
+		$object_list = array();
+		$object_list[] = JHTML::_('select.option','0', JText::_("SHOP_OBJECT_LIST") );
+		if($objecttype_id <>0)
+			{
+			$database->setQuery("SELECT id AS value, name AS text 
+								   FROM #__sdi_object
+								   WHERE published = 1 
+								   AND objecttype_id = $objecttype_id
+								   ORDER BY name");
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$object_list = array_merge( $object_list, $database->loadObjectList() );
+		}
 		
 		//List of version
 		$version_list = array();
@@ -139,8 +184,7 @@ class ADMIN_product {
 		{
 			$database->setQuery("SELECT id AS value, name AS text 
 							   FROM #__sdi_object_version
-							   WHERE orderable = 1 
-							   AND object_id = $object_id 
+							   WHERE object_id = $object_id 
 							   ORDER BY name");
 			if ($database->getErrorNum()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -148,23 +192,6 @@ class ADMIN_product {
 			$version_list = array_merge( $version_list, $database->loadObjectList() );
 		}
 		
-		//List of partners with ADMIN right
-		$manager_list = array();
-		$manager_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
-		if($object_id<>0)
-		{
-			$database->setQuery("SELECT  a.id AS value, b.name AS text 
-								   FROM #__sdi_account a, #__users b  
-								   WHERE a.user_id = b.id 
-								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id )
-								   AND a.id IN (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
-								   ORDER BY b.name");
-			if ($database->getErrorNum()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$manager_list = array_merge( $manager_list, $database->loadObjectList() );
-		}
-
 		//List of partners with diffusion right
 		$diffusion_list = array();
 		$diffusion_list[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_LIST") );
@@ -185,11 +212,6 @@ class ADMIN_product {
 		//List of available BaseMap
 		$baseMap_list = array();		
 		$baseMap_list [] = JHTML::_('select.option','0', JText::_("SHOP_BASEMAP_LIST") );
-//		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_basemap " );
-//		$baseMap_list = array_merge($baseMap_list, $database->loadObjectList()) ;
-//		if ($database->getErrorNum()) {
-//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//		}
 		$basemap = new basemap( $database );
 		$baseMap_list = array_merge( $baseMap_list,$basemap->getObjectListAsArray());
 	
@@ -213,12 +235,6 @@ class ADMIN_product {
 
 		//List of perimeters
 		$perimeter_list = array();
-//		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter ";
-//		$database->setQuery( $query );
-//		$perimeter_list = $database->loadObjectList() ;
-//		if ($database->getErrorNum()) {						
-//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
-//		}		
 		$perimeter = new perimeter( $database );
 		$perimeter_list = $perimeter->getObjectListAsArray();
 				
@@ -241,7 +257,7 @@ class ADMIN_product {
 		}
 		else
 		{
-			HTML_product::editProduct( $product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option );
+			HTML_product::editProduct( $product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option );
 		}
 	}
 	

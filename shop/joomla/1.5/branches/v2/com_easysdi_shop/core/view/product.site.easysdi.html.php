@@ -19,7 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_product{
 	
-	function editProduct($account,$product,$version,$supplier,$id,$accounts, $object_id,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option ){
+	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		
@@ -35,12 +35,12 @@ class HTML_product{
 		<div id="page">
 		<?php if($id)
 		{ ?>
-		<h2 class="contentheading"><?php echo JText::_("SHOP_TITLE_EDIT_PRODUCT"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("SHOP_PRODUCT_TITLE_EDIT"); ?></h2>
 		<?php
 		}
 		else
 		{ ?>
-		<h2 class="contentheading"><?php echo JText::_("SHOP_TITLE_NEW_PRODUCT"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("SHOP_PRODUCT_TITLE_NEW"); ?></h2>
 		<?php
 		} ?>
 		<div class="contentin">
@@ -63,20 +63,16 @@ class HTML_product{
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_OBJECT_TYPE"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$objecttype_list, 'objecttype_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $objecttype_id ); ?></td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_OBJECT"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $object_id ); ?></td>
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_VERSION"); ?> : </td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_VERSION"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $version->id ); ?></td>
-							</tr>
-							<tr>							
-								<td class="ptitle"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
-								<td><?php echo $supplier->name; ?></td>	
-							</tr>
-							<tr>							
-								<td class="ptitle"><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
-								<td><?php echo $account->name; ?></td>								
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_NAME"); ?> : </td>
@@ -112,7 +108,7 @@ class HTML_product{
 			<tr>
 				<td>
 					<fieldset class="fieldset_properties">
-						<legend><?php echo JText::_("SHOP_FS_PRODUCT_DIFFUSION"); ?></legend>
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
 						<script>
 						   function toggle_state(obj){
 						   	if(obj.checked){
@@ -129,15 +125,23 @@ class HTML_product{
 									$('metadata_external').checked = false;
 							}
 						   }
-							function fileManagement()
+						   function fieldManagement()
 							{
-								if (document.forms['productForm'].available.value == '0')
+								if (document.forms['productForm'].free.value == '0')
 								{
 									document.getElementById('productfile').disabled = true;
+									document.getElementById('available').disabled = true;
+									//document.getElementById('available').value = '0';
+								}
+								else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
+								{
+									document.getElementById('productfile').disabled = true;
+									document.getElementById('available').disabled = false;
 								}
 								else
 								{
 									document.getElementById('productfile').disabled = false;
+									document.getElementById('available').disabled = false;
 								}
 							}
 						</script>
@@ -160,7 +164,11 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
-								<td><input disabled name="free" value="1" type="checkbox" <?php if ($version->free) {echo "checked";};?> > </td>								
+								<td><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
+									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+									</select>
+									</td></td>								
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
@@ -176,12 +184,12 @@ class HTML_product{
 									<table>
 									<tr>
 									<td>
-									<select class="inputbox" name="available" id="available"  onChange="javascript:fileManagement();">								
+									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
 									</td>
-									<td><a target="RAW" href="./index.php?option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>">
+									<td><a target="RAW" href="./index.php?option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>">
 									<?php echo $product->getFileName();?></a></td>
 									</tr>
 									</table>
@@ -190,7 +198,7 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 ) echo "disabled";  ?> ></td>
+								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 || $product->free == 0 ) echo "disabled";  ?> ></td>
 							</tr>
 						</table>
 					</fieldset>

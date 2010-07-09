@@ -2635,9 +2635,9 @@ function validateForm(toStep, fromStep){
 		
 		if(errorMsg != ""){
 			if(errorNum > 1)
-				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERRORS"); ?>';
+				msgHeader = '<?php echo JText::_("SHOP_PROPERTIES_ERRORS"); ?>';
 			else
-				msgHeader = '<?php echo JText::_("EASYSDI_SHOP_PROPERTIES_ERROR"); ?>';
+				msgHeader = '<?php echo JText::_("SHOP_PROPERTIES_ERROR"); ?>';
 			alert(msgHeader+errorMsg);
 			return false;
 		}
@@ -2745,9 +2745,6 @@ function validateForm(toStep, fromStep){
 	function searchProducts($orderable = 1){
 		global $mainframe;
 		$db =& JFactory::getDBO();
-
-		/*	$language=&JFactory::getLanguage();
-		 $language->load('com_easysdi');*/
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',5);
 		
@@ -2770,7 +2767,14 @@ function validateForm(toStep, fromStep){
 		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
 		$filter_date_comparator = JRequest::getVar('update_select');
 		
-		
+		//Public
+		$queryVisibility = "select id from #__sdi_list_visibility where code ='public'";
+		$db->setQuery($queryVisibility);
+		$public = $db->loadResult();
+		//Private
+		$queryVisibility = "select id from #__sdi_list_visibility where code ='private'";
+		$db->setQuery($queryVisibility);
+		$private = $db->loadResult();
 		
 		/* Todo, push the date format in EasySDI config and
 		set it here accordingly */
@@ -2793,9 +2797,12 @@ function validateForm(toStep, fromStep){
 //			  ORDER BY #__users.name";
 		$query = "SELECT  #__sdi_account.id as value, #__users.name as text 
 		          FROM #__users, `#__sdi_account` 
-			  	  INNER JOIN `#__easysdi_product` ON #__sdi_account.id = #__easysdi_product.partner_id 
+			  	  INNER JOIN `#__sdi_object` ON #__sdi_account.id = #__sdi_object.account_id 
 			  	  WHERE #__users.id = #__sdi_account.user_id AND 
-			      #__sdi_account.id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+			      #__sdi_account.id IN (Select o.account_id from #__sdi_object o 
+			      												INNER JOIN #__sdi_object_version v ON o.id = v.object_id 
+			      												INNER JOIN #__sdi_product p ON p.objectversion_id =  v.id  
+			      												WHERE  p.published=1) 
 			      GROUP BY #__sdi_account.id 
 			      ORDER BY #__users.name";
 		$db->setQuery( $query);
@@ -2813,7 +2820,7 @@ function validateForm(toStep, fromStep){
 
 		$productList = $mainframe->getUserState('productList');
 		if (count($productList)>0){
-			$filter = " AND ID NOT IN (";
+			$filter = " AND p.ID NOT IN (";
 			foreach( $productList as $id){
 				$filter = $filter.$id.",";
 			}
@@ -2824,7 +2831,7 @@ function validateForm(toStep, fromStep){
 		if ($freetextcriteria){
 			//replace space with wildcard for one character
 			$freetextcriteria = str_replace(" ", "_", $freetextcriteria);
-			$filter = $filter." AND (DATA_TITLE like '%".$freetextcriteria."%' ";
+			$filter = $filter." AND (p.name like '%".$freetextcriteria."%' ";
 			$filter = $filter." OR METADATA_ID = '$freetextcriteria')";
 		}
 		
@@ -2833,33 +2840,35 @@ function validateForm(toStep, fromStep){
 		}
 		
 		if ($filter_visible){
-			$filter = $filter."  and previewWmsUrl != ''";
+			$filter = $filter."  and previewurlwms != ''";
 		}
 		
 		if ($filter_date && $filter_date_comparator){
 			$filter_date_esc = $db->quote( $db->getEscaped( $filter_date."%" ), false );
 			if($filter_date_comparator == "equal")
-				$filter = $filter." AND update_date like ".$filter_date_esc;
+				$filter = $filter." AND updated like ".$filter_date_esc;
 			if($filter_date_comparator == "different")
-				$filter = $filter." AND update_date not like ".$filter_date_esc;
+				$filter = $filter." AND updated not like ".$filter_date_esc;
 			if($filter_date_comparator == "greaterorequal")
-				$filter = $filter." AND (update_date >= ".$filter_date_esc." OR update_date like ".$filter_date_esc.") "; 
+				$filter = $filter." AND (updated >= ".$filter_date_esc." OR updated like ".$filter_date_esc.") "; 
 			if($filter_date_comparator == "smallerorequal")
-				$filter = $filter." AND (update_date <= ".$filter_date_esc." OR update_date like ".$filter_date_esc.") "; 
+				$filter = $filter." AND (updated <= ".$filter_date_esc." OR updated like ".$filter_date_esc.") "; 
 		}
 		
 		$user = JFactory::getUser();
 		$partner = new accountByUserId($db);
-		if (!$user->guest){
+		if (!$user->guest)
+		{
 			$partner->load($user->id);
-		}else{
+		}else
+		{
 			$partner->id = 0;
 		}
 
 		if($partner->id == 0)
 		{
 			//No user logged, display only external products
-			$filter .= " AND (EXTERNAL=1) ";
+			$filter .= " AND (p.visibility_id=".$public.") ";
 		}
 		else
 		{
@@ -2868,88 +2877,71 @@ function validateForm(toStep, fromStep){
 			{
 				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.EXTERNAL=1
+					$filter .= " AND (p.visibility_id=$public
 					OR
-					(p.INTERNAL =1 AND
-					(p.partner_id =  $partner->id
+					(p.visibility_id =$private AND
+					(o.account_id =  $partner->id
 					OR
-					p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
+					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
 					OR 
-					p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
+					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
 					OR
-					p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
+					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
 					
 					))) ";
 				}
 				else
 				{
-					$filter .= " AND (p.EXTERNAL=1) ";
+					$filter .= " AND (p.visibility_id=$public) ";
 				}
 			}
 			else
 			{
 				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.INTERNAL =1 AND
-					(p.partner_id =  $partner->id
+					$filter .= " AND (p.visibility_id =$private AND
+					(o.account_id =  $partner->id
 					OR
-					p.partner_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
+					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
 					OR 
-					p.partner_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
+					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
 					OR
-					p.partner_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
+					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
 					)) ";
 									
 				}
 				else
 				{
 					//no command right
-					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
+					$filter .= " AND (p.visibility=2000) ";
 				}
 			}
 		}
 
-		//$filter .= " AND (EXTERNAL=1 OR (INTERNAL =1 AND PARTNER_ID IN (SELECT PARTNER_ID FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id OR root_id = $partner->partner_id))) ";
-
-		if ($simpleSearchCriteria == "favoriteProduct"){
-
-			$queryFav = "SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->id ";
-			$db->setQuery( $queryFav);
-			$productList = $db->loadResultArray();
-
-			if (count($productList)>0){
-				$filterFav = " AND p.ID IN (";
-				foreach( $productList as $id){
-					$filterFav  = $filterFav.$id.",";
-				}
-				$filterFav  = substr($filterFav  , 0, -1);
-				$filterFav  = $filterFav.")";
-				$filter .= $filterFav ;
-			}else $filter = " AND 1=0";
-		}
-
-
-		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = ".$orderable;
+		$query  = "SELECT COUNT(*) FROM #__sdi_product p where p.published=1 ";
 		$query  = $query .$filter;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
-		$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;
+		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id FROM #__sdi_product p 
+							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							WHERE p.published=1";
 		$query  = $query .$filter;
-		if ($simpleSearchCriteria == "moreConsultedMD"){
-			$query  = $query." order by weight";
-		}
-		else if ($simpleSearchCriteria == "lastAddedMD"){
-			$query  = $query." order by creation_date";
+//		if ($simpleSearchCriteria == "moreConsultedMD"){
+//			$query  = $query." order by weight";
+//		}
+		if ($simpleSearchCriteria == "lastAddedMD"){
+			$query  = $query." order by p.created";
 		}
 		else if ($simpleSearchCriteria == "lastUpdatedMD"){
-			$query  = $query." order by update_date";
+			$query  = $query." order by p.updated";
 		}
 		else
 		{
-			$query  = $query ." order by data_title";
+			$query  = $query ." order by p.name";
 		}
-		
+	//	echo $query;
 		$db->setQuery($query,$limitstart,$limit);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -3034,30 +3026,6 @@ function validateForm(toStep, fromStep){
 
 </table>
 
-<!--
-<br>
-<b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
-<span class="searchCriteria"> <input name="freetextcriteria" type="text" value="<?php echo JRequest::getVar('freetextcriteria'); ?>">
-<br><br>
-<input type="radio" name="simpleSearchCriteria" value="lastAddedMD" <?php if ($simpleSearchCriteria == "lastAddedMD") echo "checked";?>> 
-	<?php echo JText::_("EASYSDI_LAST_ADDED_MD"); ?>
-<br>
-<input type="radio" name="simpleSearchCriteria" value="moreConsultedMD" <?php if ($simpleSearchCriteria == "moreConsultedMD") echo "checked";?>>
-	<?php echo JText::_("EASYSDI_MORECONSULTED_MD"); ?>
-<br>
-<input type="radio" name="simpleSearchCriteria" value="lastUpdatedMD" <?php if ($simpleSearchCriteria == "lastUpdatedMD") echo "checked";?>> 
-	<?php echo JText::_("EASYSDI_LAST_UPDATED_MD"); ?>
-<br>
-	<?php if (!$user->guest){ ?> <input type="radio" name="simpleSearchCriteria" value="favoriteProduct" <?php if ($simpleSearchCriteria == "favoriteProduct") echo "checked";?>>
-	<?php echo JText::_("EASYSDI_FAVORITE_PRODUCT"); ?>
-<br>
-	<?php  }?> 
-</span> 
-<br>
-<button type="submit" class="searchButton"><?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
-<br>
-<br>
--->
 <?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 <table width="100%">
    <tr>
@@ -3103,11 +3071,13 @@ function validateForm(toStep, fromStep){
 		<?php
 	}
 	foreach ($rows  as $row){
-		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
-		$db->setQuery($queryPartnerID);
-		$partner_id = $db->loadResult();
+//		$queryPartnerID = "SELECT o.account_id FROM #__sdi_object o 
+//											 INNER JOIN #__sdi_object_version v ON v.object_id = o.id
+//											 WHERE v.metadata_id = '".$row->metadata_id."'";
+//		$db->setQuery($queryPartnerID);
+//		$partner_id = $db->loadResult();
 		
-		$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
+		$queryPartnerLogo = "select partner_logo from #__sdi_account where partner_id = ".$row->supplier_id;
 		$db->setQuery($queryPartnerLogo);
 		$partner_logo = $db->loadResult();
 		
@@ -3117,7 +3087,7 @@ function validateForm(toStep, fromStep){
 		$isMdPublic = false;
 		$isMdFree = true;
 		//Define if the md is free or not
-		$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
+		$queryPartnerID = "select free from #__sdi_object_version where metadata_id = '".$row->metadata_id."'";
 		$db->setQuery($queryPartnerID);
 		$is_free = $db->loadResult();
 		if($is_free == 0)
@@ -3126,15 +3096,16 @@ function validateForm(toStep, fromStep){
 		}
 		
 		//Define if the md is public or not
-		$queryPartnerID = "select external from #__easysdi_product where metadata_id = '".$row->metadata_id."'";
+		$queryPartnerID = "select visibility_id from #__sdi_object_version where id = '".$row->objectversion_id."'";
 		$db->setQuery($queryPartnerID);
 		$external = $db->loadResult();
 		if($external == 1)
 		{
 			$isMdPublic = true;
 		}
-		$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$row->metadata_id."'";
-		//$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
+		$query = "select count(*) from #__sdi_product p 
+								INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id 
+								where p.viewurlwms != '' AND v.metadata_id = '".$row->metadata_id."'";
 		$db->setQuery( $query);
 		$hasPreview = $db->loadResult();
 		if ($db->getErrorNum()) {
@@ -3145,7 +3116,7 @@ function validateForm(toStep, fromStep){
 	 <td class="imgHolder" rowspan=3>
 	 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 	  </td>
-	  <td colspan=3><span class="mdtitle"><?php echo $row->data_title; ?></span>
+	  <td colspan=3><span class="mdtitle"><?php echo $row->name; ?></span>
 	  </td>
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
@@ -3162,7 +3133,7 @@ function validateForm(toStep, fromStep){
 	  </td>
 	 </tr>
 	 <tr>
-	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_name;?></span></td>
+	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_id;?></span></td>
 	 </tr>
      <tr>
      	<td class="mdActionViewFile"><span class="mdviewfile">

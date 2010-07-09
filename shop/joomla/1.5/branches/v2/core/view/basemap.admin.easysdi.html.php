@@ -26,7 +26,7 @@ class HTML_basemap {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_BASEMAP_CONTENT"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_BASEMAP_CONTENT_TITLE"), 'generic.png' );
 			
 		?>				
 		<script>
@@ -195,7 +195,7 @@ class HTML_basemap {
 	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search){
 
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("SHOP_TITLE_BASEMAP_CONTENT"));
+		JToolBarHelper::title(JText::_("SHOP_BASEMAP_CONTENT_TITLE"));
 		$order_field = JRequest::getVar ('order_field');
 		
 		?>
@@ -298,7 +298,7 @@ class HTML_basemap {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_BASEMAP"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_BASEMAP_TITLE_EDIT"), 'generic.png' );
 			
 		?>				
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -380,7 +380,7 @@ class HTML_basemap {
 			<tr>
 				<td>
 					<fieldset>
-						<legend><?php echo JText::_("SHOP_TEXT_BASEMAP_STYLE"); ?></legend>
+						<legend><?php echo JText::_("SHOP_BASEMAP_TEXT_STYLE"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_OPENLAYERS_DEFAULT_FILLCOLOR"); ?> : </td>

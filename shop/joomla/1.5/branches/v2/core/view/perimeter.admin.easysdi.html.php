@@ -42,7 +42,7 @@ class HTML_perimeter {
 		//
 		
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PERIMETER"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_PERIMETER_TITLE_EDIT"), 'generic.png' );
 			
 		?>				
 		<script>
@@ -133,7 +133,7 @@ class HTML_perimeter {
 								<td>ex : image/png</td>
 							</tr>
 							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_LAYER_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PERIMETER_LAYER_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowPerimeter->layername; ?>" /></td>
 							</tr>
 							<tr>

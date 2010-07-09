@@ -42,7 +42,7 @@ class HTML_location {
 		//
 		
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_LOCATION"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_LOCATION_TITLE_EDIT"), 'generic.png' );
 			
 		?>	
 		<script>
@@ -252,7 +252,7 @@ class HTML_location {
 	function listLocation($use_pagination, $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("SHOP_LIST_LOCATION"));
+		JToolBarHelper::title(JText::_("SHOP_LOCATION_LIST_LOCATION"));
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">

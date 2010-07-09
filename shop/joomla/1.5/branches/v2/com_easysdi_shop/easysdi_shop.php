@@ -290,7 +290,12 @@ switch($task){
 		SITE_product::suppressProduct($cid,$option);
 		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 		break;
-	
+		
+	case "downloadFinalProduct":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');	
+		
+		SITE_product::downloadFinalProduct();
+		break;
 		
 	/*****************************************************************************************************************************
 	 * Default

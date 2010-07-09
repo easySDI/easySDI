@@ -52,10 +52,6 @@ class SITE_product {
 			exit();
 		}
 		
-		if($account->root_id)
-		{
-			//$product->manager_id = $account->root_id;
-		}
 		if($product->viewbasemap_id == '0')
 		{
 			$product->viewbasemap_id = null;
@@ -188,27 +184,59 @@ class SITE_product {
 		$version = new objectversion($database);
 		$version->load($version_id);
 		
-		//Metadata supplier
 		$supplier = new account($database);
+		$object = new object ($database);
 		$object_id = JRequest::getVar('object_id', 0 );
 		if($object_id==0)
 		{
 			$object_id=$version->object_id;
 		}
+		else
+		{
+			if($object_id <> $version->object_id)
+			{
+				$version_id=0;
+				$version->load($version_id);
+			}
+		}
 		if($object_id<>0)
 		{
-			$object = new object ($database);
+			
 			$object->load($object_id);
 			$supplier->load($object->account_id);
 		}
 		
-		if ($id ==0){
-			//$product->manager_id = $account->id;			
-			if(userManager::hasRight($account->id,"METADATA"))
+		$objecttype_id = JRequest::getVar('objecttype_id', 0 );
+		if($objecttype_id==0)
+		{
+			if($object_id<>0)
 			{
-			//	$rowProduct->metadata_partner_id = $account->id;
+				$objecttype_id=$object->objecttype_id;
 			}
 		}
+		else
+		{
+			if($objecttype_id <>$object->objecttype_id)
+			{
+				$object_id=0;
+				$object->load($object_id);
+				$supplier->load(0);
+				$version_id=0;
+				$version->load($version_id);
+			}
+		}
+		
+		//List of objecttype
+		$objecttype_list = array();
+		$objecttype_list[] = JHTML::_('select.option','0', JText::_("SHOP_OBJECT_LIST") );
+		$database->setQuery("SELECT id AS value, name AS text 
+							   FROM #__sdi_objecttype
+							   WHERE predefined = 0 
+							   ORDER BY name");
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		$objecttype_list = array_merge( $objecttype_list, $database->loadObjectList() );
 		
 		//List of object
 		$object_list = array();
@@ -216,7 +244,7 @@ class SITE_product {
 		$database->setQuery("SELECT id AS value, name AS text 
 							   FROM #__sdi_object
 							   WHERE published = 1 
-							   AND (account_id = $account->id OR account_id= $account->root_id)
+							   AND id IN (SELECT object_id FROM #__sdi_manager_object WHERE account_id = $account->id)
 							   ORDER BY name");
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -230,8 +258,7 @@ class SITE_product {
 		{
 			$database->setQuery("SELECT id AS value, name AS text 
 							   FROM #__sdi_object_version
-							   WHERE orderable = 1 
-							   AND object_id = $object_id 
+							   WHERE object_id = $object_id 
 							   ORDER BY name");
 			if ($database->getErrorNum()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -273,11 +300,6 @@ class SITE_product {
 		//List of basemap
 		$baseMap_list = array();		
 		$baseMap_list [] = JHTML::_('select.option','0', JText::_("SHOP_BASEMAP_LIST") );
-//		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_basemap" );
-//		$baseMap_list = $database->loadObjectList() ;		
-//		if ($database->getErrorNum()) {
-//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//		}
 		$basemap = new basemap( $database );
 		$baseMap_list = array_merge( $baseMap_list,$basemap->getObjectListAsArray());
 			
@@ -301,12 +323,6 @@ class SITE_product {
 		
 		//List of available perimeters
 		$perimeter_list = array();
-//		$query = "SELECT id AS value, name AS text FROM #__sdi_perimeter ";
-//		$database->setQuery( $query );
-//		$perimeter_list = $database->loadObjectList() ;
-//		if ($database->getErrorNum()) {						
-//			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-//		}	
 		$perimeter = new perimeter( $database );
 		$perimeter_list = $perimeter->getObjectListAsArray();
 
@@ -324,7 +340,7 @@ class SITE_product {
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option );
+			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option );
 		}
 	}
 	
@@ -374,26 +390,15 @@ class SITE_product {
 		}
 		
 		//List only the products belonging to the current user
-//		$queryCount = " SELECT COUNT(*) FROM #__sdi_product where manager_id = $account->id " ;
-//		$queryCount .= $filter;
-//		$database->setQuery($queryCount);
-//		$total = $database->loadResult();
-//		if ($database->getErrorNum()) {
-//			echo "<div class='alert'>";			
-//			echo 			$database->getErrorMsg();
-//			echo "</div>";
-//	}	
-		
-		
-		
-		//List only the products belonging to the current user
-		$query = " SELECT p.*, v.metadata_id, v.free , y.code as visibility
+		$query = " SELECT p.*, v.metadata_id, y.code as visibility, m.account_id
 							FROM #__sdi_product p 
-							INNER JOIN #__sdi_object_version v ON p.objectversion_id = v.id 
+							INNER JOIN #__sdi_object_version v ON p.objectversion_id = v.id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
 							INNER JOIN #__sdi_list_visibility y ON  y.id = p.visibility_id 
-							WHERE p.manager_id = $account->id " ;
+							WHERE m.account_id = $account->id " ;
 		$query .= $filter;
-		$query .= " order by name";
+		$query .= " order by p.name";
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
@@ -421,5 +426,48 @@ class SITE_product {
 				}
 	}
 	
+	function downloadFinalProduct(){
+
+		$database =& JFactory::getDBO();
+		$product_id = JRequest::getVar('product_id');
+		
+		$user = JFactory::getUser();
+		$account = new accountByUserId($database);
+		$account->load($user->id);		
+		
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT"))
+		{
+			return;
+		}
+		$query = "SELECT COUNT(*) FROM #__sdi_manager_object 
+						WHERE object_id IN (SELECT v.object_id FROM #__sdi_object_version v 
+																INNER JOIN #__sdi_product p ON p.objectversion_id = v.id 
+																WHERE p.id = $product_id )
+						AND account_id = $account->id";
+		$database->setQuery($query);
+		$result = $database->loadResult();
+		if($result < 1)
+		{
+			return;
+		}
+		
+		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $product_id ";
+		$database->setQuery($query);
+		$row = $database->loadObject();
+
+		error_reporting(0);
+
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Transfer-Encoding: none');
+		header("Content-Length: ".strlen($row->data));
+		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
+		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+
+		echo $row->data;
+		die();
+	}
 }
 ?>

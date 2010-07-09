@@ -32,7 +32,7 @@ if ($curstep == "2")
 	
 	$db =& JFactory::getDBO(); 		
 
-	$query = "SELECT * FROM #__easysdi_location_definition where is_localisation = 1 ";
+	$query = "SELECT * FROM #__sdi_location where islocalisation = 1 ";
 
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
@@ -54,7 +54,7 @@ if ($curstep == "2")
 		//selIndex = document.getElementById('locationListLocation').selectedIndex;
 		//document.getElementById('locationListLocation')[selIndex].value
 		<?php
-		$query2 = "SELECT * FROM #__easysdi_location_definition ";
+		$query2 = "SELECT * FROM #__sdi_location ";
 		$db->setQuery( $query2 );
 		$rows2 = $db->loadObjectList();
 			
@@ -63,10 +63,10 @@ if ($curstep == "2")
 	 		if ( selected == '<?php echo $row->id; ?>')
 	 		{
 	 		 	<?php 
-	 		 	if ($row->id_location_filter>0 )
+	 		 	if ($row->filterlocation_id>0 )
 	 		 	{
 	 		 		?>
-	 		 		selectLocationLocation ('<?php echo $row->id_location_filter?>');
+	 		 		selectLocationLocation ('<?php echo $row->filterlocation_id?>');
 	 		 		<?php 
 	 		 	}else
 	 		 	{?>
@@ -86,9 +86,9 @@ if ($curstep == "2")
 					
 					$proxyhost = config_easysdi::getValue("PROXYHOST");
 					$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
-					$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+					$urlwfs =  $proxyhost.urlencode  (trim($row->urlwfs));
 					?>
-	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
+	 				fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->name; ?>","<?php echo $urlwfs; ?>","<?php echo $row->featuretype; ?>","<?php echo $row->fieldname; ?>","<?php echo $row->fieldid; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				document.getElementById("locationsListLocation<?php echo $row->id; ?>").style.display='block';
 	 				hideLocationParent(<?php echo $row->id; ?>);
 	 				
@@ -121,7 +121,7 @@ if ($curstep == "2")
       	//$("status").innerHTML = 'start'; 
       	<?php
       	
-		$queryAll = "SELECT * FROM #__easysdi_location_definition";
+		$queryAll = "SELECT * FROM #__sdi_location";
 		$db->setQuery( $queryAll );
 		$rowsAll = $db->loadObjectList();
 		
@@ -131,13 +131,13 @@ if ($curstep == "2")
 			
 			if(curId == '<?php echo $rowall->id_location_filter;?>')
 			{
-				if (document.getElementById('filter<?php echo $rowall->id_location_filter;?>')!=null )
+				if (document.getElementById('filter<?php echo $rowall->filterlocation_id;?>')!=null )
 			 	{
-			 		document.getElementById('filter<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 		document.getElementById('filter<?php echo $rowall->filterlocation_id;?>').style.display = 'none';
 			 	}
-			 	if (document.getElementById('search<?php echo $rowall->id_location_filter;?>')!=null )
+			 	if (document.getElementById('search<?php echo $rowall->filterlocation_id;?>')!=null )
 			 	{
-			 		document.getElementById('search<?php echo $rowall->id_location_filter;?>').style.display = 'none';
+			 		document.getElementById('search<?php echo $rowall->filterlocation_id;?>').style.display = 'none';
 			 	}
 				if(document.getElementById('locationsListLocation<?php echo $rowall->id; ?>') != null)
 				{
@@ -185,7 +185,7 @@ if ($curstep == "2")
 	 	}
 	 	
 		<?php
-		$query2 = "SELECT * FROM #__easysdi_location_definition ";
+		$query2 = "SELECT * FROM #__sdi_location ";
 		$db->setQuery( $query2 );
 		$rows2 = $db->loadObjectList();
 			
@@ -193,38 +193,23 @@ if ($curstep == "2")
 		{?>
 	 		if ( parId == 'locationsListLocation<?php echo $row->id; ?>')
 	 		{
-	 			
 	 			var filter ="";
-	 			<?php 
-	 			/*	if ($row->searchbox == 0) 
-	 			{
-	 			  	?>	 			  	
-	 			  	filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
-	 			  	<?php
-	 			}
-	 			else
-	 			{*/
-	 			?>
-	 				if (document.getElementById(filterId)!=null && document.getElementById(filterId).value.length>0)
-	 				{
-	 					//filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-						//Only one occurence
-	 		 			<?php if($row->allowMultipleSelection == 0) {?>
-							filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-						<?php } 
-						//several occurences
-						else {?>	
-	 					filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
-						<?php } ?>
-		 		 	}
-		 		 	else
-		 		 	{
-		 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
-		 		 	}
-		 		 	
+ 				if (document.getElementById(filterId)!=null && document.getElementById(filterId).value.length>0)
+ 				{
+					//Only one occurence
+ 		 			<?php if($row->multipleselection == 0) {?>
+						filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->fieldname ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->fieldfilter ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+					<?php } 
+					//several occurences
+					else {?>	
+ 					filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->fieldname ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->fieldfilter ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+					<?php } ?>
+	 		 	}
+	 		 	else
+	 		 	{
+	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->fieldfilter ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
+	 		 	}
 	 		 	<?php 
-			/*	}*/
-	 		 	
 	 		 	if ($row->maxfeatures!="-1") 
 	 		 	{?>
 	 		 		var maxfeatures = "&MAXFEATURES=<?php echo$row->maxfeatures ?>";
@@ -235,24 +220,11 @@ if ($curstep == "2")
 	 		 		var maxfeatures="";
 	 		 		<?php
 	 		 	}
-	 		 	//if (1==1 && ($row->user !=null && strlen($row->user)>0))
-	 		 	/*if ($row->user!= null && strlen($row->user)>0)
-	 		 	{
-						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
-						$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
-				}
-				else
-				{
-					$wfs_url = $row->wfs_url;						
-				}*/
 				$proxyhost = config_easysdi::getValue("PROXYHOST");
 				$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
-				$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+				$urlwfs =  $proxyhost.urlencode  (trim($row->urlwfs));
 	 		 	 ?>
-	 		 	
-	 			fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->location_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
+	 		 	fillSelectLocationLocation("locationsListLocation<?php echo $row->id; ?>","<?php echo $row->name; ?>","<?php echo $urlwfs; ?>","<?php echo $row->featuretype; ?>","<?php echo $row->fieldname; ?>","<?php echo $row->fieldid; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 		 
 		 <?php 
@@ -270,7 +242,7 @@ if ($curstep == "2")
 		foreach ($rows as $row)
 		{			
 			?>
-			<option value ="<?php echo $row->id ?>"> <?php echo JText::_($row->location_name); ?> </option>
+			<option value ="<?php echo $row->id ?>"> <?php echo JText::_($row->name); ?> </option>
 			<?php 		
 		}
 		?>
@@ -413,52 +385,7 @@ if ($curstep == "2")
 		                
 	}
             
-//    function utf8_encode ( argString ) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Webtoolkit.info (http://www.webtoolkit.info/)
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: sowberry
-    // +    tweaked by: Jack
-    // +   bugfixed by: Onno Marsman
-    // +   improved by: Yves Sucaet
-    // +   bugfixed by: Onno Marsman
-    // *     example 1: utf8_encode('Kevin van Zonneveld');
-    // *     returns 1: 'Kevin van Zonneveld'
- 
-  /*  var string = (argString+'').replace(/\r\n/g, "\n").replace(/\r/g, "\n");
- 
-    /*var utftext = "";
-    var start, end;
-    var stringl = 0;
- 
-    start = end = 0;
-    stringl = string.length;
-    for (var n = 0; n < stringl; n++) {
-        var c1 = string.charCodeAt(n);
-        var enc = null;
- 
-        if (c1 < 128) {
-            end++;
-        } else if((c1 > 127) && (c1 < 2048)) {
-            enc = String.fromCharCode((c1 >> 6) | 192) + String.fromCharCode((c1 & 63) | 128);
-        } else {
-            enc = String.fromCharCode((c1 >> 12) | 224) + String.fromCharCode(((c1 >> 6) & 63) | 128) + String.fromCharCode((c1 & 63) | 128);
-        }
-        if (enc !== null) {
-            if (end > start) {
-                utftext += string.substring(start, end);
-            }
-            utftext += enc;
-            start = end = n+1;
-        }
-    }
- 
-    if (end > start) {
-        utftext += string.substring(start, string.length);
-    }
- 
-    return utftext;
-}*/
+
     /** 
     recenterOnLocationLocation
     */
@@ -496,7 +423,7 @@ class HTML_locationBuilder
 		$db =& JFactory::getDBO();
 
 		if ($row->id_location_filter > 0 ){
-			$query = "SELECT * FROM #__easysdi_location_definition where id = $row->id_location_filter";
+			$query = "SELECT * FROM #__sdi_location where id = $row->filterlocation_id";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
 			HTML_locationBuilder::generateHtmlLocationSelect($rows2,$row->id);

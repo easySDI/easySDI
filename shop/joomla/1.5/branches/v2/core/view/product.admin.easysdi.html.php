@@ -24,13 +24,13 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct($product,$version,$object_id,$supplier, $object_list,$version_list,$manager_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
+	function editProduct($product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		JHTML::_('behavior.calendar');
 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PRODUCT"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_PRODUCT_TITLE_EDIT"), 'generic.png' );
 		?>	
 		<script>
 		function displayAuthentication()
@@ -51,15 +51,24 @@ class HTML_product {
 				document.getElementById('viewaccount_id').value = '0';
 			}
 		}		
-		function fileManagement()
+		
+		function fieldManagement()
 		{
-			if (document.forms['adminForm'].available.value == '0')
+			if (document.forms['adminForm'].free.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
+				document.getElementById('available').disabled = true;
+				//document.getElementById('available').value = '0';
+			}
+			else if (document.forms['adminForm'].free.value == '1' && document.forms['adminForm'].available.value == '0')
+			{
+				document.getElementById('productfile').disabled = true;
+				document.getElementById('available').disabled = false;
 			}
 			else
 			{
 				document.getElementById('productfile').disabled = false;
+				document.getElementById('available').disabled = false;
 			}
 		}
 		</script>			
@@ -77,23 +86,18 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $product->id; ?></td>
-								<input type="hidden" name="id" value="<?php echo $product->id;?>">								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_OBJECT"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_OBJECT_TYPE"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$objecttype_list, 'objecttype_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $objecttype_id ); ?></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_OBJECT"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$object_list, 'object_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $object_id ); ?></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_VERSION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VERSION"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $version->id ); ?></td>
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
-								<td><?php echo $supplier->name; ?></td>	
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_MANAGER_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$manager_list, 'manager_id', 'size="1" class="inputbox" ', 'value', 'text', $product->manager_id  ); ?></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
@@ -126,7 +130,7 @@ class HTML_product {
 							</table>
 					</fieldset>
 					<fieldset>
-						<legend><?php echo JText::_("SHOP_FS_PRODUCT_DIFFUSION"); ?></legend>
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
@@ -146,7 +150,11 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
-								<td><?php if($version->free == 1)echo JText::_("CORE_YES"); else JText::_("CORE_NO");?></td>								
+								<td><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
+									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+									</select>
+									</td></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
@@ -162,7 +170,7 @@ class HTML_product {
 									<table>
 									<tr>
 									<td>
-									<select class="inputbox" name="available" id="available"  onChange="javascript:fileManagement();">								
+									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
@@ -176,7 +184,7 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 ) echo "disabled";  ?> ></td>
+								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 || $product->free == 0 ) echo "disabled";  ?> ></td>
 							</tr>
 						</table>
 					</fieldset>	
@@ -463,7 +471,7 @@ class HTML_product {
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();	
 		?>
-		
+		<input type="hidden" name="id" value="<?php echo $product->id;?>">		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editProduct" />
 		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />

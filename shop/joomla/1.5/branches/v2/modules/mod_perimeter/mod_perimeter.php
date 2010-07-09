@@ -21,7 +21,6 @@
 global  $mainframe;
 global  $areaPrecision;
 global  $meterToKilometerLimit;
-//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 $curstep = JRequest::getVar('step',0);
 $areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");
 $meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");
@@ -35,7 +34,7 @@ if ($curstep == "2")
 {
 	$db =& JFactory::getDBO();
 
-	$query = "select * from #__easysdi_basemap_definition where def = 1";
+	$query = "select * from #__sdi_basemap where def = 1";
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {
@@ -44,15 +43,15 @@ if ($curstep == "2")
 		echo "</div>";
 	}
 
-	$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+	$decimal_precision = $rows[0]->decimalPrecision;
 
 	$cid = 		$mainframe->getUserState('productList');
 
 	if (count($cid)>0){
-		$query = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
+		$query = "SELECT * FROM #__sdi_perimeter order by ordering";
 
 
-		$query = "select count(*)  from #__easysdi_product where id in (";
+		$query = "select count(*)  from #__sdi_product where id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
@@ -63,7 +62,7 @@ if ($curstep == "2")
 		$db->setQuery( $query );
 		$nbProduct = $db->loadResult();
 
-		$query = "SELECT * FROM #__easysdi_perimeter_definition WHERE id in (SELECT perimeter_id  FROM #__easysdi_product_perimeter  where product_id in (";
+		$query = "SELECT * FROM #__sdi_perimeter WHERE id in (SELECT perimeter_id  FROM #__sdi_product_perimeter  where product_id in (";
 
 		foreach( $cid as $id )
 		{
@@ -79,13 +78,13 @@ if ($curstep == "2")
 			echo 			$db->getErrorMsg();
 		}
 
-		$query = "SELECT count(*) as total ,perimeter_id  FROM `#__easysdi_product_perimeter` where product_id in (";
+		$query = "SELECT count(*) as total ,perimeter_id  FROM `#__sdi_product_perimeter` where product_id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query .") AND isBufferAllowed= 1 group by perimeter_id having count(*) = $nbProduct";
+		$query = $query .") AND buffer= 1 group by perimeter_id having count(*) = $nbProduct";
 
 
 		$db->setQuery( $query );
@@ -95,16 +94,11 @@ if ($curstep == "2")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			echo 			$db->getErrorMsg();
 		}
-
-
 		?>
 
 		<script>
-
-
 		function enableBufferByPerimeter(perimId)
 		{
-			//document.getElementById('bufferValue').value=0;
 			<?php	
 					foreach ($bufferRows as $bufferRow)
 			{		
@@ -141,28 +135,28 @@ if ($curstep == "2")
 					$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
 					$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
 
-					if ($row->wfs_url!=null && strlen($row->wfs_url)>0)
+					if ($row->urlwfs!=null && strlen($row->urlwfs)>0)
 					{
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
+						$urlwfs =  $proxyhost.urlencode  (trim($row->urlwfs));
 					}
 					else
 					{
-						$wfs_url ="";
+						$urlwfs ="";
 					}
 
 					$proxyhost = $proxyhostOrig."&type=wms&perimeterdefid=$row->id&url=";
-					if ( $row->wms_url!=null && strlen($row->wms_url)>0)
+					if ( $row->urlwms!=null && strlen($row->urlwms)>0)
 					{
-						$wms_url = $proxyhost.urlencode  (trim($row->wms_url));
+						$urlwms = $proxyhost.urlencode  (trim($row->urlwms));
 					}else{
-						$wms_url ="";
+						$urlwms ="";
 					}
 				}
 				else
 				{
-					$wfs_url = $row->wfs_url;
+					$urlwfs = $row->urlwfs;
 
-					$wms_url=	$row->wms_url;					
+					$urlwms=	$row->urlwms;					
 				}
 				?>
 				if (document.getElementById(perimListName)[selIndex].value == '<?php echo $row->id; ?>')
@@ -172,7 +166,7 @@ if ($curstep == "2")
 						$("shopWarnLogo").className = "shopWarnLogoInactive";
 						$("scaleStatus").innerHTML = "";
 					}
-					if(<?php echo $row->min_resolution;?> == 0 && <?php echo $row->max_resolution; ?> == 0 )
+					if(<?php echo $row->minresolution;?> == 0 && <?php echo $row->maxresolution; ?> == 0 )
 					{
 						//Free selection perimeter case
 						//Always display the button for manual perimeter
@@ -185,15 +179,15 @@ if ($curstep == "2")
 						//hide freeselect
 						document.getElementById('manualAddGeometry').style.display='none';
 						
-						if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->min_resolution; ?>)
+						if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->minresolution; ?>)
 						{
-							text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->perimeter_name); ?>' +  " ("+<?php echo $row->min_resolution; ?>+"," + <?php echo $row->max_resolution; ?> +")<BR>";
+							text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->name); ?>' +  " ("+<?php echo $row->minresolution; ?>+"," + <?php echo $row->maxresolution; ?> +")<BR>";
 							$("shopWarnLogo").className = 'shopWarnLogoActive';
 							$("scaleStatus").innerHTML = text;
 							isOutOfRange = true;
 						}
 						//Display the button for manual perimeter
-						if(<?php echo $row->is_localisation;?> == 0)
+						if(<?php echo $row->islocalisation;?> == 0)
 						{
 							document.getElementById('addPerimeterButton').style.display='none';
 							document.getElementById('manualPerimDivId').style.display='none';
@@ -206,17 +200,17 @@ if ($curstep == "2")
 
 					//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
 					selectWFSPerimeter( document.getElementById(perimListName)[selIndex].value,
-							"<?php echo $row->perimeter_name; ?>",
-							"<?php echo $wfs_url; ?>",
-							"<?php echo $row->feature_type_name; ?>",
-							"<?php echo $row->name_field_name; ?>",
-							"<?php echo $row->id_field_name; ?>",
-							"<?php echo $row->area_field_name; ?>",
-							"<?php echo $wms_url; ?>",
-							"<?php echo $row->layer_name; ?>",
-							"<?php echo $row->img_format; ?>",
-							<?php echo $row->min_resolution; ?>,
-									<?php echo $row->max_resolution; ?>,
+							"<?php echo $row->name; ?>",
+							"<?php echo $urlwfs; ?>",
+							"<?php echo $row->featuretype; ?>",
+							"<?php echo $row->fieldname; ?>",
+							"<?php echo $row->fieldid; ?>",
+							"<?php echo $row->fieldarea; ?>",
+							"<?php echo $urlwms; ?>",
+							"<?php echo $row->layername; ?>",
+							"<?php echo $row->imgformat; ?>",
+							<?php echo $row->minresolution; ?>,
+									<?php echo $row->maxresolution; ?>,
 											isOutOfRange,
 											bFromZoomEnd);
 
@@ -239,7 +233,7 @@ if ($curstep == "2")
 				foreach ($rows as $row)
 		{
 			?>
-		<option value="<?php echo $row->id ?>" <?php if ($row->id == $mainframe->getUserState('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->perimeter_name); ?>
+		<option value="<?php echo $row->id ?>" <?php if ($row->id == $mainframe->getUserState('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->name); ?>
 		</option>
 		<?php
 
@@ -265,8 +259,8 @@ if ($curstep == "2")
 		<br>
 		<?php
 		//$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
-		$querySurfaceMax = "SELECT min(surface_max) as surface_max FROM #__easysdi_product  WHERE id in (";
-		$querySurfaceMin = "SELECT max(surface_min) as surface_min FROM #__easysdi_product  WHERE id in (";
+		$querySurfaceMax = "SELECT min(surfacemax) as surface_max FROM #__sdi_product  WHERE id in (";
+		$querySurfaceMin = "SELECT max(surfacemin) as surface_min FROM #__sdi_product  WHERE id in (";
 		
 		foreach( $cid as $id )
 		{
