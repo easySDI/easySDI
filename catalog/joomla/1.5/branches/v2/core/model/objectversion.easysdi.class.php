@@ -23,8 +23,6 @@ class objectversion extends sdiTable
 	var $object_id=null;
 	var $metadata_id=null;
 	var $parent_id=null;
-	var $orderable=null;
-	var $free=null; 
 	
 	
 	// Class constructor
