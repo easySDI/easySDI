@@ -44,6 +44,7 @@ class TOOLBAR_basemap{
 		JToolBarHelper::editList('editBasemapContent');
 		JToolBarHelper::deleteList('','deleteBasemapContent');		
 		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 }
 ?>

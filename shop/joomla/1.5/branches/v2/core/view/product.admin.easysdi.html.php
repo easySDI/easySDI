@@ -475,6 +475,7 @@ class HTML_product {
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editProduct" />
 		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />
+		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		</form>
 	<?php
 	}

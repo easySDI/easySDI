@@ -121,13 +121,12 @@ class HTML_shop {
 	var isFreeSelectionPerimeter = false;
 	var wfsSelection;
 	var fromZoomEnd = false;
-	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");?>;
-	if(meterToKilometerLimit == '') meterToKilometerLimit = 100000;
+	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT",1000000);?>;
 	var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
 	var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
 	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
-	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");?>;
-	if(MOD_PERIM_AREA_PRECISION == '') MOD_PERIM_AREA_PRECISION = 2;
+	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION",2);?>;
+
 	
 	function onFeatureSelect(feature) 
 	{

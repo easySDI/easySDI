@@ -45,6 +45,7 @@ class TOOLBAR_properties{
 		JToolBarHelper::deleteList('','deletePropertiesValues');				
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
 	}
 }
 ?>

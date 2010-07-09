@@ -22,19 +22,15 @@ global  $mainframe;
 global  $areaPrecision;
 global  $meterToKilometerLimit;
 $curstep = JRequest::getVar('step',0);
-$areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");
-$meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT");
-if($areaPrecision == "")
-	$areaPrecision = 2;
-if($meterToKilometerLimit == "")
-	$meterToKilometerLimit = 100000;
+$areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION",2);
+$meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT",1000000);
 
 
 if ($curstep == "2")
 {
 	$db =& JFactory::getDBO();
 
-	$query = "select * from #__sdi_basemap where def = 1";
+	$query = "select * from #__sdi_basemap b where b.default = 1";
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {
@@ -48,6 +44,7 @@ if ($curstep == "2")
 	$cid = 		$mainframe->getUserState('productList');
 
 	if (count($cid)>0){
+		
 		$query = "SELECT * FROM #__sdi_perimeter order by ordering";
 
 
@@ -69,9 +66,10 @@ if ($curstep == "2")
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query . ") group by perimeter_id  having  count(*)  = ".$nbProduct.")";
+		$query = $query . ") group by id  having  count(*)  = ".$nbProduct.")";
 		$query .= " order by ordering";
 		$db->setQuery( $query );
+	
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -179,7 +177,7 @@ if ($curstep == "2")
 						//hide freeselect
 						document.getElementById('manualAddGeometry').style.display='none';
 						
-						if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->minresolution; ?>)
+						if (map.getScale() < <?php echo $row->maxresolution; ?> || map.getScale() > <?php echo $row->minresolution; ?>)
 						{
 							text = "<?php echo JText::_("SHOP_SHOP_MESSAGE_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->name); ?>' +  " ("+<?php echo $row->minresolution; ?>+"," + <?php echo $row->maxresolution; ?> +")<BR>";
 							$("shopWarnLogo").className = 'shopWarnLogoActive';

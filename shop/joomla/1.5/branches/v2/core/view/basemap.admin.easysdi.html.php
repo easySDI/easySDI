@@ -187,6 +187,8 @@ class HTML_basemap {
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $rowBasemap->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $rowBasemap->createdby; ?>" />
 		</form>
 	<?php
 	}
@@ -353,9 +355,9 @@ class HTML_basemap {
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXEXTEND_IS_RESTRICTIVE"); ?> : </td>
-								<td><select class="inputbox" name="restrictedExtend" >
-										<option value="0" <?php if($rowBasemap->restrictedExtend == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->restrictedExtend == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
+								<td><select class="inputbox" name="restrictedExtent" >
+										<option value="0" <?php if($rowBasemap->restrictedExtent == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->restrictedExtent == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select>
 								</td>															
 							</tr>	
@@ -418,6 +420,8 @@ class HTML_basemap {
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $rowBasemap->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $rowBasemap->createdby; ?>" />
 		</form>
 	<?php
 	}
