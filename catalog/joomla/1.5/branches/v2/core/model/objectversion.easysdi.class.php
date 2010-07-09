@@ -18,22 +18,19 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class objectversion extends JTable
+class objectversion extends sdiTable
 {
-	var $id=null;
-	var $guid=null;
 	var $object_id=null;
 	var $metadata_id=null;
 	var $parent_id=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $createdby=null;
+	var $orderable=null;
+	var $free=null; 
+	
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_objectversion', 'id', $db ) ;
+		parent::__construct ( '#__sdi_object_version', 'id', $db ) ;
 	}
 }
 ?>
