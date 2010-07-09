@@ -197,7 +197,10 @@ class ADMIN_properties {
 			}
 		$accounts = array();
 		$accounts[] = JHTML::_('select.option','0', JText::_("SHOP_ACCOUNT_ROOT") );
-		$accounts = array_merge( $accounts, account::getEasySDIAccountsList() );
+		//$accounts = array_merge( $accounts, account::getEasySDIAccountsList() );
+		$database =& JFactory::getDBO();
+		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id WHERE (p.root_id IS NULL OR p.root_id = 0)" );
+		$accounts = array_merge( $accounts,$database->loadObjectList());
 		
 		
 		$languages = $property->publishedLanguages();
