@@ -1,6 +1,9 @@
 <?php
 global  $mainframe;
 $db =& JFactory::getDBO();
+$language=&JFactory::getLanguage();
+$language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
 //	$cid = JRequest::getVar ('cid', array(0) );
 $cid = 	$mainframe->getUserState('productList');
@@ -15,13 +18,16 @@ if (is_array(($cid)))
 
 	if (count($cid)>0)
 	{		
-		$query = "select p.*, u.name from #__sdi_product p, #__sdi_account a, #__users u where p.id in (";
+		$query = "SELECT  p.*, u.name FROM #__sdi_product p 
+										INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id 
+										INNER JOIN #__sdi_object o ON o.id = v.object_id,
+										#__sdi_account a, #__users u where p.id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query.") AND p.partner_id = a.id AND a.user_id = u.id		";
+		$query = $query.") AND o.account_id = a.id AND a.user_id = u.id		";
 
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
@@ -36,7 +42,7 @@ if (is_array(($cid)))
 		$i = 0;
 		foreach( $cid as $id )
 		{
-			$db->setQuery("SELECT pp.perimeter_id FROM #__easysdi_product_perimeter pp where product_id=".$id);
+			$db->setQuery("SELECT pp.perimeter_id FROM #__sdi_product_perimeter pp where product_id=".$id);
 			if($i == 0){
 				
 				$arCommonsPerim = $db->loadResultArray();
@@ -58,7 +64,7 @@ if (is_array(($cid)))
 		
 		if(count($arCommonsPerim) < 1){
 			echo "<table><tr><td valign=\"top\"><div class='shopWarnLogoActive'/></td>";
-			echo "<td class=\"caddyError\">".JText::_("EASYSDI_SHOP_NO_COMMON_PERIMETER")."</td>";
+			echo "<td class=\"caddyError\">".JText::_("SHOP_CADDY_MESSAGE_NO_COMMON_PERIMETER")."</td>";
 			echo"</tr></table>";
 		}
 		
@@ -71,7 +77,7 @@ if (is_array(($cid)))
 			if ( count($rows)== 0)
 			{
 				?>
-				<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
+				<p><?php echo JText::_('SHOP_CADDY_EMPTY'); ?></p>
 				<?php
 			}
 			?>
@@ -102,7 +108,7 @@ if (is_array(($cid)))
 								  	if($currentPreview == $row->id)
 								  	{
 								  		?> class='previewActivateProductCaddy' 
-										title="<?php echo JText::_('EASYSDI_DEACTIVATE_PREVIEW');?>" 
+										title="<?php echo JText::_('SHOP_CADDY_DEACTIVATE_PREVIEW');?>" 
 										onClick="document.forms['orderForm'].elements['previewProductId'].value='';submitOrderForm();"
 									  	<?php
 								  	}
@@ -116,7 +122,7 @@ if (is_array(($cid)))
 										{
 											?> 
 										  	class='previewActivableProductCaddy' 
-											title="<?php echo JText::_('EASYSDI_ACTIVATE_PREVIEW');?>" 
+											title="<?php echo JText::_('SHOP_CADDY_ACTIVATE_PREVIEW');?>" 
 										  	onClick="document.forms['orderForm'].elements['previewProductId'].value='<?php echo $row->id ; ?>';submitOrderForm();"
 										  	<?php
 										}
@@ -125,7 +131,7 @@ if (is_array(($cid)))
 								  else
 								  {
 								  	echo "class='previewDisableProductCaddy' ";
-									echo "title=\"".JText::_('EASYSDI_PREVIEW_DISABLED')."\"";
+									echo "title=\"".JText::_('SHOP_CADDY_PREVIEW_DISABLED')."\"";
 								  } ;	 ?>>
 				</div>
 				</td>
@@ -133,7 +139,7 @@ if (is_array(($cid)))
 				}
 				 ?>
 				<td>
-				<div id ="delete_product" title="<?php echo JText::_('EASYSDI_REMOVE_FROM_CADDY');?>" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
+				<div id ="delete_product" title="<?php echo JText::_('SHOP_CADDY_REMOVE_FROM_CADDY');?>" onClick="document.forms['orderForm'].elements['task'].value='deleteProduct';
 							<?php if ($currentPreview && $currentPreview == $row->id){ ?>document.forms['orderForm'].elements['previewProductId'].value='';<?php } ?>
 							locOrderForm = document.forms['orderForm'];
 							newInput = document.createElement('input');
@@ -157,14 +163,14 @@ if (is_array(($cid)))
 	else
 	{
 		?>
-		<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
+		<p><?php echo JText::_('SHOP_CADDY_EMPTY'); ?></p>
 		<?php
 	}	
 }
 else
 {
 	?>
-	<p><?php echo JText::_('EASYSDI_EMPTY_CADDY'); ?></p>
+	<p><?php echo JText::_('SHOP_CADDY_EMPTY'); ?></p>
 	<?php
 
 }
