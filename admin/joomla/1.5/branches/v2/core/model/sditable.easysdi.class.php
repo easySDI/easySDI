@@ -188,6 +188,7 @@ class sdiTable extends JTable
 	 	global  $mainframe;
 		 $user =& JFactory::getUser();
 		 $languages = $this->publishedLanguages();
+
 		foreach ($languages as $lang)
 		{
 			$this->_db->setQuery("SELECT count(*) FROM #__sdi_translation WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
@@ -196,7 +197,7 @@ class sdiTable extends JTable
 			if ($total > 0)
 			{
 				//Update
-				$this->_db->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
+				$this->_db->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".date('Y-m-d H:i:s')."', updatedby=".$user->id." WHERE element_guid='".$this->guid."' AND language_id=".$lang->id);
 				if (!$this->_db->query())
 					{	
 						$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
