@@ -434,7 +434,7 @@ class HTML_shop {
 				                { featureClass: OpenLayers.Feature.WFS}
 					                 );
 					
-					//wfs.events.register("loadstart", null, function() {$("loadingPanelPosition").style.display = 'block';$("status").innerHTML = "<?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?>"; })
+					//wfs.events.register("loadstart", null, function() {$("loadingPanelPosition").style.display = 'block';$("status").innerHTML = "<?php echo JText::_("SHOP_SHOP_MESSAGE_LOADING_THE_PERIMETER") ?>"; })
 					wfs.events.register("loadend", null, function() { intersect();})
 					
 					map.addLayer(wfs);
@@ -487,28 +487,28 @@ function setAlpha(imageformat)
 				echo "</div>";
 	}
 	
-	$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+	$decimal_precision = $rows[0]->decimalPrecision;
 	
 	
 			//default style for manually drawed object and selected
-			if($rows[0]->dflt_fillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rows[0]->dflt_fillcolor."';\n";
-			if($rows[0]->dflt_strkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rows[0]->dflt_strkcolor."';\n";
-			if($rows[0]->dflt_strkwidth != '')
-			echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rows[0]->dflt_strkwidth."';\n";
+			if($rows[0]->dfltfillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rows[0]->dfltfillcolor."';\n";
+			if($rows[0]->dfltstrkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rows[0]->dfltstrkcolor."';\n";
+			if($rows[0]->dfltstrkwidth != '')
+			echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rows[0]->dfltstrkwidth."';\n";
 			
 			//style for polygon edition
-			if($rows[0]->select_fillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rows[0]->select_fillcolor."';\n";
-			if($rows[0]->select_strkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rows[0]->select_strkcolor."';\n";
+			if($rows[0]->selectfillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rows[0]->selectfillcolor."';\n";
+			if($rows[0]->selectstrkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rows[0]->selectstrkcolor."';\n";
 			
 			//default style for object being drawn
-			if($rows[0]->temp_fillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rows[0]->temp_fillcolor."';\n";
-			if($rows[0]->temp_strkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rows[0]->temp_strkcolor."';\n";
+			if($rows[0]->tempfillcolor != '')
+			echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rows[0]->tempfillcolor."';\n";
+			if($rows[0]->tempstrkcolor != '')
+			echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rows[0]->tempstrkcolor."';\n";
 			?>
 			
 			map = new OpenLayers.Map('map', {
@@ -544,7 +544,7 @@ function setAlpha(imageformat)
 	
 	<?php
 	
-	$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rows[0]->id." order by ordering"; 
+	$query = "select * from #__sdi_basemap_content where basemap_id = ".$rows[0]->id." order by ordering"; 
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();
 			  
@@ -571,7 +571,7 @@ function setAlpha(imageformat)
 				}					
 				?>
 				
-                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->imgformat; ?>",transparent: "true"},
 		    
 		    <?php if($row->singletile == 1 && strlen($row->attribution)>0){ ?>
 		    {singleTile: <?php echo $row->singletile; ?>,
@@ -595,7 +595,7 @@ function setAlpha(imageformat)
                      }
                     );
                     <?php
-                    if (strtoupper($row->url_type) =="WMS")
+                    if (strtoupper($row->urltype) =="WMS")
                     {
                     ?>
                     layer<?php echo $i; ?>.alpha = setAlpha('image/png');
@@ -613,7 +613,7 @@ function setAlpha(imageformat)
 	$previewProductId = JRequest::getVar('previewProductId');
 	if($previewProductId)
 	{
-		$queryPreviewLayer = "SELECT * FROM #__easysdi_product WHERE id = $previewProductId";
+		$queryPreviewLayer = "SELECT * FROM #__sdi_product WHERE id = $previewProductId";
 		$db->setQuery( $queryPreviewLayer);
 		$product = $db->loadObject();
 		if ($db->getErrorNum()) {						
@@ -625,28 +625,28 @@ function setAlpha(imageformat)
 		
 		previewLayer = new OpenLayers.Layer.WMS('PreviewProduct',
 						<?php 
-						if ($product->previewUser != null && strlen($product->previewUser)>0){
+						if ($product->viewuser != null && strlen($product->viewuser)>0){
 							//if a user and password is requested then use the joomla proxy.
 							$proxyhost = config_easysdi::getValue("PROXYHOST");
 							$proxyhost = $proxyhost."&type=wms&previewId=$previewProductId&url=";
-							echo "\"$proxyhost".urlencode (trim($product->previewWmsUrl))."\",";												
+							echo "\"$proxyhost".urlencode (trim($product->viewurlwms))."\",";												
 						}else{	
 							//if no user and password then don't use any proxy.					
-							echo "\"$product->previewWmsUrl\",";	
+							echo "\"$product->viewurlwms\",";	
 						}					
 						?>
 							
-		                    {layers: '<?php echo $product->previewWmsLayers ; ?>', 
-		                    format : "<?php echo $product->previewImageFormat ; ?>"  ,
+		                    {layers: '<?php echo $product->viewlayers ; ?>', 
+		                    format : "<?php echo $product->viewimgformat ; ?>"  ,
 		                    transparent: "true"},
 		                    {singleTile: true,
 				      ratio:1},                                                    
 		                     {                     
-							  minScale: <?php echo $product->previewMinResolution ; ?>,
-		               		  maxScale: <?php echo $product->previewMaxResolution ; ?>,                                    	     
+							  minScale: <?php echo $product->viewminresolution ; ?>,
+		               		  maxScale: <?php echo $product->viewmaxresolution ; ?>,                                    	     
 		                      maxExtent: map.maxExtent,
-		                      projection:"<?php echo $product->previewProjection ; ?>",
-		                      units: "<?php echo $product->previewUnit ; ?>",
+		                      projection:"<?php echo $product->viewprojection ; ?>",
+		                      units: "<?php echo $product->viewunit ; ?>",
 		                      transparent: "true"
 		                     }
 		                    );
@@ -662,14 +662,14 @@ function setAlpha(imageformat)
 			map.events.register("zoomend", null, function(){
 				fromZoomEnd = true;
 				document.getElementById('previousExtent').value = map.getExtent().toBBOX();
-				$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+				$("scale").innerHTML = "<?php echo JText::_("SHOP_SHOP_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 				//$("scale").innerHTML = document.getElementById('previousExtent').value ;
 				text = "";
 				
 				for (i=0; i<map.layers.length ;i++){
 						//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 						if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
-						 text = text + map.layers[i].name + "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
+						 text = text + map.layers[i].name + "<?php echo JText::_("SHOP_SHOP_MESSAGE_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 						} 
 					}
 				//$("shopWarnLogo").className = 'shopWarnLogoActive';
@@ -682,7 +682,7 @@ function setAlpha(imageformat)
 				vectors = new OpenLayers.Layer.Vector("Vector Layer",{isBaseLayer: false,transparent: true});
 			
 				map.addLayer(vectors);
-					$("scale").innerHTML = "<?php echo JText::_("EASYSDI_MAP_SCALE") ?>"+map.getScale().toFixed(0);
+					$("scale").innerHTML = "<?php echo JText::_("SHOP_SHOP_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 					
 					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
 						if(ctrl != null){
@@ -746,59 +746,59 @@ function setAlpha(imageformat)
 				//enabling navigation history
         	    navHistory = new OpenLayers.Control.NavigationHistory();
         	    map.addControl (navHistory);
-				navHistory.previous.title='<?php echo JText::_("EASYSDI_TOOL_NAVPREVIOUS_HINT") ?>';
- 	    	    navHistory.next.title='<?php echo JText::_("EASYSDI_TOOL_NAVNEXT_HINT") ?>';
+				navHistory.previous.title='<?php echo JText::_("SHOP_OL_TOOL_NAVPREVIOUS_HINT") ?>';
+ 	    	    navHistory.next.title='<?php echo JText::_("SHOP_OL_TOOL_NAVNEXT_HINT") ?>';
 				  
 				//Zoom in
 				oZoomBoxInCtrl = new OpenLayers.Control.ZoomBox({
-        	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMIN_HINT") ?>'
+        	    title: '<?php echo JText::_("SHOP_OL_TOOL_ZOOMIN_HINT") ?>'
 				});
-				oZoomBoxInCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_ZOOMIN_ACTIVATED") ?>"; fromZoomEnd =false;})
+				oZoomBoxInCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_ZOOMIN_ACTIVATED") ?>"; fromZoomEnd =false;})
 
 				//Zoom out
 				oZoomBoxOutCtrl = new OpenLayers.Control.ZoomBox({
         	    out: true, displayClass: "olControlZoomBoxOut",
-        	    title: '<?php echo JText::_("EASYSDI_TOOL_ZOOMOUT_HINT") ?>'
+        	    title: '<?php echo JText::_("SHOP_OL_TOOL_ZOOMOUT_HINT") ?>'
 				});
-				oZoomBoxOutCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_ZOOMOUT_ACTIVATED") ?>"; fromZoomEnd =false;})
+				oZoomBoxOutCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_ZOOMOUT_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				//Pan
 				oDragPanCtrl = new OpenLayers.Control.DragPan({
-        	    title: '<?php echo JText::_("EASYSDI_TOOL_PAN_HINT") ?>'
+        	    title: '<?php echo JText::_("SHOP_OL_TOOL_PAN_HINT") ?>'
 				});
-				oDragPanCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_PAN_ACTIVATED") ?>"; fromZoomEnd =false;})
+				oDragPanCtrl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_PAN_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				//Zoom to full extends
 				oZoomMxExtCtrl = new OpenLayers.Control.ZoomToMaxExtent({
-        	    map: map, title: '<?php echo JText::_("EASYSDI_TOOL_MAXEXTENT_HINT") ?>'
+        	    map: map, title: '<?php echo JText::_("SHOP_OL_TOOL_MAXEXTENT_HINT") ?>'
 				});
 				/*
 					OpenLayers Edition controls
 				*/
 							
 				rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});		
-				rectControl.title = '<?php echo JText::_("EASYSDI_TOOL_RECTCTRL_HINT") ?>';
+				rectControl.title = '<?php echo JText::_("SHOP_OL_TOOL_RECTCTRL_HINT") ?>';
 				rectControl.featureAdded = function() { intersect();};												
 				rectControl.handler.setOptions({irregular: true});                                  
-	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; fromZoomEnd =false; })
+	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_REC_ACTIVATED") ?>"; fromZoomEnd =false; })
 	            
 	            
 	            //Polygonal  bounding box selection
 	            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
-				polyControl.title = '<?php echo JText::_("EASYSDI_TOOL_POLYCTRL_HINT") ?>';
+				polyControl.title = '<?php echo JText::_("SHOP_OL_TOOL_POLYCTRL_HINT") ?>';
 	            polyControl.featureAdded = function() { intersect();};
-				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; fromZoomEnd =false;})
+				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_POLY_ACTIVATED") ?>"; fromZoomEnd =false;})
 			
 				//Point selection
 	            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
-                pointControl.title = '<?php echo JText::_("EASYSDI_TOOL_POINTCTRL_HINT") ?>';
+                pointControl.title = '<?php echo JText::_("SHOP_OL_TOOL_POINTCTRL_HINT") ?>';
 				pointControl.featureAdded = function() { intersect();};
-				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
+				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
 	         
 				//Modify feature shape  
 				modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});				
-				modifyFeatureControl.title = '<?php echo JText::_("EASYSDI_TOOL_MODFEATURE_HINT") ?>';
-				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>"; fromZoomEnd =false;})
+				modifyFeatureControl.title = '<?php echo JText::_("SHOP_OL_TOOL_MODFEATURE_HINT") ?>';
+				modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_MODIFY_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 				vectors.events.on({
 						"afterfeaturemodified": intersect                
@@ -1088,10 +1088,10 @@ function setAlpha(imageformat)
 	    <div id="loadingPanelPosition" class="olControlLoadingPanel"/>
 	  </td>
 	  <td class="shopInfoMessageContainer" colspan="2" align="left">
-	    <div id="status"><?php echo JText::_("EASYSDI_LOADING_THE_PERIMETER") ?></div>
+	    <div id="status"><?php echo JText::_("SHOP_SHOP_MESSAGE_LOADING_THE_PERIMETER") ?></div>
 	  </td>
 	  <td class="toolsStatusContainer">
-	    <div id="toolsStatus"><?php echo JText::_("EASYSDI_TOOL_NOTHING_ACTIVATED") ?> </div>
+	    <div id="toolsStatus"><?php echo JText::_("SHOP_SHOP_MESSAGE_NO_TOOL_ACTIVATED") ?> </div>
 	  </td>
 	 </tr>
 	 
@@ -1112,7 +1112,7 @@ function setAlpha(imageformat)
 	     <div id="scale"/>
 	  </td>
 	  <td class="beforeCoordinateTextHolder">&nbsp;</td>
-	  <td class="coordinateTextHolder"><?php echo JText::_("EASYSDI_MAP_COORDINATE") ?></td>
+	  <td class="coordinateTextHolder"><?php echo JText::_("SHOP_SHOP_MAP_COORDINATE") ?></td>
 	  <td class="coordinateContainer">
 	    <div id="mouseposition"></div>
 	  </td>
@@ -1170,7 +1170,7 @@ function setAlpha(imageformat)
 	     			}
 	     			if (count > 2) {
 	     				//More than 2 intersectios for a line, mean that a line intersects another one.
-	     				alert("<?php echo JText::_("EASYSDI_SELF_INTERSECTING_POLYGON"); ?>");	     			
+	     				alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_SELF_INTERSECTING_POLYGON"); ?>");	     			
 		     			return true;
 	     			}     			     				     		
 	     		}
@@ -1188,7 +1188,7 @@ function setAlpha(imageformat)
 	 	
 		//If feature edition is active, ask the user if he whants to leave edition
 		if(modifyFeatureControl.active == true){
-			if (confirm("<?php echo JText::_("EASYSDI_QUIT_AND_SAVE_EDITION"); ?>")){
+			if (confirm("<?php echo JText::_("SHOP_SHOP_MESSAGE_QUIT_AND_SAVE_EDITION"); ?>")){
 				try
 				{
 					modifyFeatureControl.deactivate();
@@ -1238,13 +1238,13 @@ function setAlpha(imageformat)
 		 	if(!(document.getElementById('step').value <= document.getElementById('fromStep').value) && document.forms['orderForm'].elements['task'].value != 'deleteProduct'){
 				if ((parseFloat(totalArea) > parseFloat(selectedSurfaceMax)))
 		 		{
-		 			alert("<?php echo JText::_("EASYSDI_SELECTED_SURFACE_ABOVE_MAX"); ?>");
+		 			alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_SELECTED_SURFACE_ABOVE_MAX"); ?>");
 					document.getElementById('step').value = document.getElementById('fromStep').value;
 		 			return ;
 		 		}
 				if ((parseFloat(totalArea) < parseFloat(selectedSurfaceMin)) || parseFloat(totalArea) <= 0 )
 		 		{
-		 			alert("<?php echo JText::_("EASYSDI_SELECTED_SURFACE_BELLOW_MIN"); ?>");
+		 			alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_SELECTED_SURFACE_BELLOW_MIN"); ?>");
 					document.getElementById('step').value = document.getElementById('fromStep').value;
 		 			return ;
 		 		}
@@ -1252,7 +1252,7 @@ function setAlpha(imageformat)
 		 	var bufferValue = document.getElementById('bufferValue').value;
 			if( parseFloat(bufferValue) < 0)
 			{
-		 		alert("<?php echo JText::_("EASYSDI_MESSAGE_ERROR_BUFFER_VALUE"); ?>");
+		 		alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_ERROR_BUFFER_VALUE"); ?>");
 		 		return ;
 		 	}
 		 	
@@ -1270,7 +1270,7 @@ function setAlpha(imageformat)
 		 	}else
 		 	{
 	 			document.getElementById('step').value = 2;
-	 			alert("<?php echo JText::_("EASYSDI_NO_SELECTED_DATA"); ?>");
+	 			alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_NO_SELECTED_DATA"); ?>");
 	 		}
 		 }
 	 }
@@ -1389,7 +1389,10 @@ window.addEvent('domready', function() {
 	action='<?php echo JRoute::_("index.php") ?>' method='POST'><?php
 
 
-	$query= "select * from #__easysdi_product where id in (";
+	$query= "SELECT p.*, o.account_id as supplier_id FROM #__sdi_product p 
+						INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+						INNER JOIN #__sdi_object o ON o.id = v.object_id
+						WHERE p.id in (";
 	foreach( $cid as $id ) {
 		$query = $query.$id."," ;
 	}
@@ -1404,28 +1407,29 @@ window.addEvent('domready', function() {
 	}
 
 
+$language =& JFactory::getLanguage();
 	foreach ($products as $product  ){
-		//$query = "SELECT  a.id as id,a.order as property_order, a.mandatory , a.text as property_text ,a.type_code,a.code FROM #__easysdi_product_property b, #__easysdi_product_properties_definition  as a   WHERE a.id = b.property_value_id  and b .product_id = ". $product->id." and a.published=1 order by a.order"
 		$query = "SELECT DISTINCT pd.id as id, 
-							pd.order as property_order, 
+							pd.ordering as property_order, 
 							pd.mandatory as mandatory, 
-							pd.text as property_text, 
-							pd.type_code as type_code, 
-							pd.code as code, 
-							pd.translation as translation 
-				  FROM #__easysdi_product_property p 
-				  inner join #__easysdi_product_properties_values_definition pvd 
-				  		on p.property_value_id=pvd.id 
-				  inner join #__easysdi_product_properties_definition pd 
-				  		on pvd.properties_id=pd.id 
-				  where p.product_id=".$product->id." 
-				  and pd.published=1 
-				  and (pd.partner_id = 0 OR pd.partner_id = ".$product->partner_id." ) 
-				  order by property_order";
+							t.label as property_text, 
+							pd.type as type_code, 
+							pd.code as code							
+				  FROM #__sdi_language l, 
+				  		#__sdi_list_codelang cl,
+				  		#__sdi_product_property p 
+				  INNER JOIN #__sdi_property_value pvd ON p.propertyvalue_id=pvd.id 
+				  INNER JOIN #__sdi_property pd ON pvd.property_id=pd.id ,
+				  LEFT OUTER JOIN #__sdi_translation t ON pd.guid=t.element_guid 
+				  WHERE p.product_id=".$product->id." 
+				  AND t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+				  AND pd.published=1 
+				  AND (pd.account_id = 0 OR pd.account_id = ".$product->supplier_id." ) 
+				  ORDER by property_order";
 ?>
 
 <br/>
-<fieldset id="fieldset_properties" class="fieldset_properties"><legend><?php echo JText::_($product->data_title);?></legend>
+<fieldset id="fieldset_properties" class="fieldset_properties"><legend><?php echo JText::_($product->name);?></legend>
 <?php
 $db->setQuery( $query );
 $rows = $db->loadObjectList();
@@ -1438,12 +1442,29 @@ $rows = $db->loadObjectList();
 if (count($rows)>0){
 	foreach ($rows as $row){
 		echo "<li>";
+		$query="SELECT pd.mandatory as mandatory, 
+								pvd.ordering as value_order, 
+								pvd.name as value_text,
+								t.label as value_trans, 
+								pvd.id as value
+							FROM #__sdi_language l, 
+			  					#__sdi_list_codelang cl,
+			  					#__sdi_product_property p 
+							INNER JOIN #__sdi_property_value pvd on p.propertyvalue_id=pvd.id 
+							INNER JOIN #__sdi_property pd on pvd.property_id=pd.id 
+							LEFT OUTER JOIN #__sdi_translation t ON pd.guid=t.element_guid 
+							WHERE p.product_id=".$product->id." 
+							AND t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+							AND pd.published=1 
+							AND pd.id=".$row->id." 
+							ORDER BY value_order";
 		switch($row->type_code){
 			case "list":
-				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+				
+				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
+				
 				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
 				echo "<select class=\"product_proprety_row_list$isMandatoryClass\" name='".$row->code."_list_property_".$product->id."[]' id='".$row->code."_list_property_".$product->id."[]'>";
 				//add a default option that replaces the text before the list, value = -1 to be sure to not interfer with pvd.id.
@@ -1453,7 +1474,6 @@ if (count($rows)>0){
 					$selProduct = $mainframe->getUserState($row->code.'_list_property_'.$product->id);
 					$selected = "";
 					if ( is_array($selProduct)){
-					//if ($selProduct){
 						if (in_array($rowValue->value,$selProduct)) $selected ="selected";
 					}
 					echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->val_trans)."</option>";
@@ -1463,8 +1483,18 @@ if (count($rows)>0){
 				break;
 			case "mlist":
 				echo "<div id='".$row->code."_mlist_property_".$product->id."[]_label'>".JText::_($row->translation).":</div>";
-				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+//				$query="SELECT pd.mandatory as mandatory, 
+//								pvd.order as value_order, 
+//								pvd.text as value_text, 
+//								pvd.id as value, 
+//								pvd.translation as val_trans 
+//							FROM #__easysdi_product_property p 
+//							inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id 
+//							inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id 
+//							where p.product_id=".$product->id." 
+//							and pd.published=1 
+//							and pd.id=".$row->id." 
+//							order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
@@ -1484,9 +1514,19 @@ if (count($rows)>0){
 				echo "</td></tr></table>";
 				break;
 			case "cbox":
-				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
 				$html = "";
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+//				$query="SELECT pd.mandatory as mandatory, 
+//								pvd.order as value_order, 
+//								pvd.text as value_text, 
+//								pvd.id as value, 
+//								pvd.translation as val_trans 
+//						FROM #__easysdi_product_property p 
+//						inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id 
+//						inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id 
+//						where p.product_id=".$product->id." 
+//						and pd.published=1 
+//						and pd.id=".$row->id." 
+//						order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
@@ -1509,8 +1549,18 @@ if (count($rows)>0){
 				break;
 			case "text":
 				echo "<div id='".$row->code."_text_property_".$product->id."_label'>".JText::_($row->translation).":</div>";
-				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+//				$query="SELECT pd.mandatory as mandatory, 
+//							pvd.order as value_order, 
+//							pvd.text as value_text, 
+//							pvd.id as value, 
+//							pvd.translation as val_trans 
+//						FROM #__easysdi_product_property p
+//						 inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id 
+//						 inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id 
+//						 where p.product_id=".$product->id." 
+//						 and pd.published=1 
+//						 and pd.id=".$row->id." 
+//						 order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
@@ -1536,8 +1586,18 @@ if (count($rows)>0){
 				
 			case "textarea":
 				echo "<div id='".$row->code."_textarea_property_".$product->id."[]_label'>".JText::_($row->translation).":</div>";
-				//$query = "SELECT  b.order as value_order, b.text as value_text ,b.id as value FROM #__easysdi_product_properties_values_definition  as b where b.properties_id  =".$row->id." order by  b.order";
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, pvd.text as value_text, pvd.id as value, pvd.translation as val_trans FROM #__easysdi_product_property p inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id where p.product_id=".$product->id." and pd.published=1 and pd.id=".$row->id." order by value_order";
+//				$query="SELECT pd.mandatory as mandatory, 
+//								pvd.order as value_order, 
+//								pvd.text as value_text, 
+//								pvd.id as value, 
+//								pvd.translation as val_trans 
+//							FROM #__easysdi_product_property p 
+//							inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id 
+//							inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id 
+//							where p.product_id=".$product->id." 
+//							and pd.published=1 
+//							and pd.id=".$row->id." 
+//							order by value_order";
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
 				$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
@@ -1561,19 +1621,18 @@ if (count($rows)>0){
 				break;
 			case "message":
 				echo JText::_(trim($row->translation));
-				$query="SELECT pd.mandatory as mandatory, pvd.order as value_order, 
-							   pvd.text as value_text, 
-							   pvd.id as value, 
-							   pvd.translation as val_trans 
-					    FROM #__easysdi_product_property p 
-						    inner join #__easysdi_product_properties_values_definition pvd 
-						    on p.property_value_id=pvd.id 
-						    inner join #__easysdi_product_properties_definition pd 
-						    on pvd.properties_id=pd.id 
-					    where p.product_id=".$product->id." 
-						    and pd.published=1 
-						    and pd.id=".$row->id." 
-						order by value_order";
+//				$query="SELECT pd.mandatory as mandatory, 
+//							   pvd.order as value_order, 
+//							   pvd.text as value_text, 
+//							   pvd.id as value, 
+//							   pvd.translation as val_trans 
+//					    FROM #__easysdi_product_property p 
+//						inner join #__easysdi_product_properties_values_definition pvd on p.property_value_id=pvd.id 
+//						inner join #__easysdi_product_properties_definition pd on pvd.properties_id=pd.id 
+//					    where p.product_id=".$product->id." 
+//						and pd.published=1 
+//						and pd.id=".$row->id." 
+//						order by value_order";
 				
 				$db->setQuery( $query );
 				$rowsValue = $db->loadObjectList();
@@ -1636,7 +1695,7 @@ if (count($rows)>0){
 		$user = JFactory::getUser();
 		if (!$user->guest){
 			?>
-			<div class="info"><?php echo JText::_("EASYSDI_CONNECTED_WITH_USER").$user->name;  ?></div>
+			<div class="info"><?php echo JText::_("SHOP_SHOP_MESSAGE_CONNECTED_WITH_USER").$user->name;  ?></div>
 			<?php
 		}
 		?>
@@ -1651,12 +1710,12 @@ if (count($rows)>0){
 	 {
 		 if (!document.getElementById('order_type_d').checked && !document.getElementById('order_type_o').checked){
 		 
-		 	alert("<?php echo JText::_("EASYSDI_ORDER_TYPE_NOT_FILL") ?>");
+		 	alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_TYPE_NOT_FILL") ?>");
 		 	return;
 		 }
 		 if (document.getElementById('order_name').value.length == 0){
 		 
-		 	alert("<?php echo JText::_("EASYSDI_ORDER_NAME_NOT_FILL") ?>");
+		 	alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_NAME_NOT_FILL") ?>");
 		 	return;
 		 }
 		 //Limit order name to 40 characters
@@ -2523,7 +2582,7 @@ if (count($rows)>0){
 			$fromStep = '';
 		}
 		?>
-<h2 class="contentheading"><?php echo JText::_("EASYSDI_SHOP_TITLE"); ?></h2>
+<h2 class="contentheading"><?php echo JText::_("SHOP_SHOP_TITLE"); ?></h2>
 <script>
 var tries = 1;
 
@@ -2760,8 +2819,8 @@ function validateForm(toStep, fromStep){
 		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','');
 		$freetextcriteria = JRequest::getVar('freetextcriteria','');
 		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
-		$partner_id = JRequest::getVar('partner_id');
-		$partner_id = $db->getEscaped( trim( strtolower( $partner_id ) ) );		
+		$account_id = JRequest::getVar('partner_id');
+		$account_id = $db->getEscaped( trim( strtolower( $account_id ) ) );		
 		$filter_visible=JRequest::getVar('filter_visible');
 		$filter_date = JRequest::getVar('update_cal');
 		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
@@ -2784,17 +2843,10 @@ function validateForm(toStep, fromStep){
 		}
 		
 		//partner select box
-		$partners = array();
-		$partners[0]='';
+		$suppliers = array();
+		$suppliers[0]='';
 		
 		//Do not display a furnisher without product	
-//		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
-//		          FROM #__users, `#__easysdi_community_partner` 
-//			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
-//			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
-//			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
-//			  GROUP BY #__easysdi_community_partner.partner_id 
-//			  ORDER BY #__users.name";
 		$query = "SELECT  #__sdi_account.id as value, #__users.name as text 
 		          FROM #__users, `#__sdi_account` 
 			  	  INNER JOIN `#__sdi_object` ON #__sdi_account.id = #__sdi_object.account_id 
@@ -2803,10 +2855,11 @@ function validateForm(toStep, fromStep){
 			      												INNER JOIN #__sdi_object_version v ON o.id = v.object_id 
 			      												INNER JOIN #__sdi_product p ON p.objectversion_id =  v.id  
 			      												WHERE  p.published=1) 
+			      AND #__sdi_object.published = 1
 			      GROUP BY #__sdi_account.id 
 			      ORDER BY #__users.name";
 		$db->setQuery( $query);
-		$partners = array_merge( $partners, $db->loadObjectList() );
+		$suppliers = array_merge( $suppliers, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
 		{
 			echo "<div class='alert'>";
@@ -2832,40 +2885,40 @@ function validateForm(toStep, fromStep){
 			//replace space with wildcard for one character
 			$freetextcriteria = str_replace(" ", "_", $freetextcriteria);
 			$filter = $filter." AND (p.name like '%".$freetextcriteria."%' ";
-			$filter = $filter." OR METADATA_ID = '$freetextcriteria')";
+			$filter = $filter." OR v.metadata_id = '$freetextcriteria')";
 		}
 		
-		if ($partner_id){
-			$filter = $filter." and partner_id = '".$partner_id."'";
+		if ($account_id){
+			$filter = $filter." and o.account_id = '".$account_id."'";
 		}
 		
 		if ($filter_visible){
-			$filter = $filter."  and previewurlwms != ''";
+			$filter = $filter."  and viewurlwms != ''";
 		}
 		
 		if ($filter_date && $filter_date_comparator){
 			$filter_date_esc = $db->quote( $db->getEscaped( $filter_date."%" ), false );
 			if($filter_date_comparator == "equal")
-				$filter = $filter." AND updated like ".$filter_date_esc;
+				$filter = $filter." AND m.updated like ".$filter_date_esc;
 			if($filter_date_comparator == "different")
-				$filter = $filter." AND updated not like ".$filter_date_esc;
+				$filter = $filter." AND m.updated not like ".$filter_date_esc;
 			if($filter_date_comparator == "greaterorequal")
-				$filter = $filter." AND (updated >= ".$filter_date_esc." OR updated like ".$filter_date_esc.") "; 
+				$filter = $filter." AND (m.updated >= ".$filter_date_esc." OR m.updated like ".$filter_date_esc.") "; 
 			if($filter_date_comparator == "smallerorequal")
-				$filter = $filter." AND (updated <= ".$filter_date_esc." OR updated like ".$filter_date_esc.") "; 
+				$filter = $filter." AND (m.updated <= ".$filter_date_esc." OR m.updated like ".$filter_date_esc.") "; 
 		}
 		
 		$user = JFactory::getUser();
-		$partner = new accountByUserId($db);
+		$account = new accountByUserId($db);
 		if (!$user->guest)
 		{
-			$partner->load($user->id);
+			$account->load($user->id);
 		}else
 		{
-			$partner->id = 0;
+			$account->id = 0;
 		}
 
-		if($partner->id == 0)
+		if($account->id == 0)
 		{
 			//No user logged, display only external products
 			$filter .= " AND (p.visibility_id=".$public.") ";
@@ -2873,20 +2926,20 @@ function validateForm(toStep, fromStep){
 		else
 		{
 			//User logged, display products according to users's rights
-			if(userManager::hasRight($partner->id,"REQUEST_EXTERNAL"))
+			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
-				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.visibility_id=$public
 					OR
 					(p.visibility_id =$private AND
-					(o.account_id =  $partner->id
+					(o.account_id =  $account->id
 					OR
-					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
+					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id )
 					OR 
-					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
+					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
 					OR
-					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
+					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
 					
 					))) ";
 				}
@@ -2897,16 +2950,16 @@ function validateForm(toStep, fromStep){
 			}
 			else
 			{
-				if(userManager::hasRight($partner->id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.visibility_id =$private AND
-					(o.account_id =  $partner->id
+					(o.account_id =  $account->id
 					OR
-					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id )
+					o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id )
 					OR 
-					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $partner->id ))
+					o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
 					OR
-					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $partner->id ) 
+					o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
 					)) ";
 									
 				}
@@ -2918,15 +2971,20 @@ function validateForm(toStep, fromStep){
 			}
 		}
 
-		$query  = "SELECT COUNT(*) FROM #__sdi_product p where p.published=1 ";
+		$query  = "SELECT COUNT(*)FROM #__sdi_product p 
+							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+							WHERE p.published=1 AND o.published = 1";
 		$query  = $query .$filter;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
-		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id FROM #__sdi_product p 
+		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id, m.visibility_id as md_visibility_id FROM #__sdi_product p 
 							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
-							WHERE p.published=1";
+							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+							WHERE p.published=1 AND o.published = 1";
 		$query  = $query .$filter;
 //		if ($simpleSearchCriteria == "moreConsultedMD"){
 //			$query  = $query." order by weight";
@@ -2990,34 +3048,34 @@ function validateForm(toStep, fromStep){
 <table width="100%" class="mdCatContent">
 
 				<tr>
-					<td align="left"><b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+					<td align="left"><b><?php echo JText::_("SHOP_SHOP_FILTER_TITLE");?></b>&nbsp;
 					<td align="left"><input type="text" id="freetextcriteria"  name="freetextcriteria" value="<?php echo JRequest::getVar('freetextcriteria'); ?>" class="inputbox" /></td>
 	
 					<td class="catalog_controls">
 						<button type="submit" class="easysdi_search_button">
-							<?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>&nbsp;
+							<?php echo JText::_("SHOP_SEARCH_BUTTON"); ?></button>&nbsp;
 						<button id="easysdi_clear_button" class="easysdi_clear_button" type="submit">
-							<?php echo JText::_("EASYSDI_SHOP_CLEAR_BUTTON"); ?></button>
+							<?php echo JText::_("SHOP_CLEAR_BUTTON"); ?></button>
 					</td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_PARTNER");?></td>
-					<td><?php echo JHTML::_("select.genericlist", $partners, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', $partner_id); ?></td>
+					<td><?php echo JText::_("SHOP_SHOP_FILTER_SUPPLIER");?></td>
+					<td><?php echo JHTML::_("select.genericlist", $suppliers, 'partner_id', 'size="1" class="inputbox" ', 'value', 'text', $account_id); ?></td>
 					<td>&nbsp;</td>		
 				</tr>
 				<tr>
-					<td><?php echo JText::_("EASYSDI_SHOP_FILTER_VISIBLE");?></td>
+					<td><?php echo JText::_("SHOP_SHOP_FILTER_VISIBLE");?></td>
 					<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
 					<td>&nbsp;</td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_("EASYSDI_SHOP_UPDATE");?></td>
+					<td><?php echo JText::_("SHOP_SHOP_FILTER_UPDATE");?></td>
 					<td>
 						<select id="update_select" size="1" name="update_select">
-							<option value="equal" <?php if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_EQUAL");?></option>
-							<option value="smallerorequal" <?php if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_BEFORE");?></option>
-							<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_AFTER");?></option>
-							<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("EASYSDI_SHOP_DATE_NOTEQUAL");?></option>
+							<option value="equal" <?php if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("SHOP_SHOP_FILTER_DATE_EQUAL");?></option>
+							<option value="smallerorequal" <?php if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("SHOP_SHOP_FILTER_DATE_BEFORE");?></option>
+							<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("SHOP_SHOP_FILTER_DATE_AFTER");?></option>
+							<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("SHOP_SHOP_FILTER_DATE_NOTEQUAL");?></option>
 						</select>
 					
 						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
@@ -3033,12 +3091,12 @@ function validateForm(toStep, fromStep){
    </tr>
    <tr>
 	<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-	<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
+	<td align="center"><?php echo JText::_("SHOP_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
 	<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
    </tr>
 </table>
 
-<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+<h3><?php echo JText::_("SHOP_SEARCH_RESULTS_TITLE"); ?></h3>
 
 <input type='hidden' name='option' value='<?php echo $option;?>'> 
 <input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
@@ -3051,7 +3109,7 @@ function validateForm(toStep, fromStep){
 
 <table width="100%">
    <tr>
-   	<td colspan="3" align="left"><?php echo JText::_("EASYSDI_SHOP_NUMBER_OF_PRODUCT_FOUND");?><?php echo $total ?></td>
+   	<td colspan="3" align="left"><?php echo JText::_("SHOP_SHOP_NUMBER_OF_PRODUCT_FOUND");?><?php echo $total ?></td>
    </tr>
 </table>
 <table class="mdsearchresult" width="100%">
@@ -3059,50 +3117,33 @@ function validateForm(toStep, fromStep){
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
 	$i=0;
-	if(count($rows) == 0 && !$user->guest && !userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL")){
+	if(count($rows) == 0 && !$user->guest && !userManager::hasRight($account->id,"REQUEST_EXTERNAL")){
 		?>
 		<tr>
 			<td colspan="2">
 				<div class="alert">
-					<?php echo JText::_("EASYSDI_SHOP_NO_ORDER_RIGHTS") ;?>
+					<?php echo JText::_("SHOP_SHOP_MESSAGE_NO_ORDER_RIGHTS") ;?>
 				</div>
 			</td>
 		</tr>
 		<?php
 	}
 	foreach ($rows  as $row){
-//		$queryPartnerID = "SELECT o.account_id FROM #__sdi_object o 
-//											 INNER JOIN #__sdi_object_version v ON v.object_id = o.id
-//											 WHERE v.metadata_id = '".$row->metadata_id."'";
-//		$db->setQuery($queryPartnerID);
-//		$partner_id = $db->loadResult();
-		
-		$queryPartnerLogo = "select partner_logo from #__sdi_account where partner_id = ".$row->supplier_id;
+
+		$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->supplier_id;
 		$db->setQuery($queryPartnerLogo);
 		$partner_logo = $db->loadResult();
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
+		$isMdFree = $row->free;
 		$isMdPublic = false;
-		$isMdFree = true;
-		//Define if the md is free or not
-		$queryPartnerID = "select free from #__sdi_object_version where metadata_id = '".$row->metadata_id."'";
-		$db->setQuery($queryPartnerID);
-		$is_free = $db->loadResult();
-		if($is_free == 0)
-		{
-			$isMdFree = false;
-		}
-		
-		//Define if the md is public or not
-		$queryPartnerID = "select visibility_id from #__sdi_object_version where id = '".$row->objectversion_id."'";
-		$db->setQuery($queryPartnerID);
-		$external = $db->loadResult();
-		if($external == 1)
+		if($row->visibility_id == $public)
 		{
 			$isMdPublic = true;
 		}
+		
 		$query = "select count(*) from #__sdi_product p 
 								INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id 
 								where p.viewurlwms != '' AND v.metadata_id = '".$row->metadata_id."'";
@@ -3121,10 +3162,10 @@ function validateForm(toStep, fromStep){
 	  <td valign="top" rowspan=2>
 	    <table id="info_md">
 		  <tr>
-		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
+		     <td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("SHOP_SHOP_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
 		  </tr>
 		  <tr>
-		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
+		     <td><div <?php if($isMdFree) echo 'title="'.JText::_("SHOP_SHOP_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
 		  </tr>
 		  <tr>
 		  	<td>&nbsp;</td>
@@ -3138,21 +3179,21 @@ function validateForm(toStep, fromStep){
      <tr>
      	<td class="mdActionViewFile"><span class="mdviewfile">
 	  	<a class="modal"
-				title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
+				title="<?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>"
 				href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
-				rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
+				rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>
 			</a></span>
 	  </td>
 	  <td class="mdActionAddToCart"><span class="mdviewfile">
-	  	<a title="<?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>"
-				href="#" onclick="addOrder(<?php echo $row->id.",".$i; ?>)"><?php echo JText::_("EASYSDI_ADD_TO_CART"); ?>
+	  	<a title="<?php echo JText::_("SHOP_SHOP_ADD_TO_CART"); ?>"
+				href="#" onclick="addOrder(<?php echo $row->id.",".$i; ?>)"><?php echo JText::_("SHOP_SHOP_ADD_TO_CART"); ?>
 			</a></span>
 	  </td>
 	  <td class="mdActionViewProduct">
 	  <?php if ($hasPreview > 0){ ?>
 	    <span class="mdviewproduct">
 	    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
-	    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
+	    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
 	    <?php } ?>
       </td>
 	  <td class="shopNoAction">&nbsp;</td>

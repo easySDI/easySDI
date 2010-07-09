@@ -181,7 +181,7 @@ if ($curstep == "2")
 						
 						if (map.getScale() < <?php echo $row->max_resolution; ?> || map.getScale() > <?php echo $row->minresolution; ?>)
 						{
-							text = "<?php echo JText::_("EASYSDI_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->name); ?>' +  " ("+<?php echo $row->minresolution; ?>+"," + <?php echo $row->maxresolution; ?> +")<BR>";
+							text = "<?php echo JText::_("SHOP_SHOP_MESSAGE_OUTSIDE_SCALE_RANGE"); ?>" + " : " + '<?php echo addslashes($row->name); ?>' +  " ("+<?php echo $row->minresolution; ?>+"," + <?php echo $row->maxresolution; ?> +")<BR>";
 							$("shopWarnLogo").className = 'shopWarnLogoActive';
 							$("scaleStatus").innerHTML = text;
 							isOutOfRange = true;
@@ -367,7 +367,7 @@ if ($curstep == "2")
 					document.getElementById('bufferValue2').value = document.getElementById('bufferValue').value;
 					if( parseFloat(bufferValue) < 0)
 					{
-						$("status").innerHTML = "<?php echo JText::_("EASYSDI_MESSAGE_ERROR_BUFFER_VALUE"); ?>";
+						$("status").innerHTML = "<?php echo JText::_("SHOP_SHOP_MESSAGE_ERROR_BUFFER_VALUE"); ?>";
 					}	
 					else
 					{	

@@ -47,7 +47,7 @@ class HTML_cpanel {
 	
 		<table width="100%">
 			<tr>
-				<td align="left"><b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+				<td align="left"><b><?php echo JText::_("SHOP_SHOP_FILTER_TITLE");?></b>&nbsp;
 				<td colspan="4" align="left">
 				   <input type="text" id="searchOrder" name="searchOrder" class="inputbox" value="<?php echo $search;?>" />			
 				</td>
@@ -80,7 +80,7 @@ class HTML_cpanel {
 				<table>
 					<tr>
 						<td>
-							<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+							<button type="submit" class="searchButton" > <?php echo JText::_("SHOP_SEARCH_BUTTON"); ?></button>
 						</td>
 						<td>
 							<button id="newQuery" type="button" onClick="document.getElementById('ordersListForm').Itemid.value='<?php echo $redirectURL; ?>';document.getElementById('ordersListForm').view.value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ORDER_NEW_QUERY"); ?></button>
@@ -511,7 +511,7 @@ class HTML_cpanel {
 		<table class="treatment" width="100%">
 			<tr>
 				<td align="left">
-					<b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
+					<b><?php echo JText::_("SHOP_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
 				<td align="left" colspan="4">
 					<input id="treatmentSearch" type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
@@ -553,7 +553,7 @@ class HTML_cpanel {
 				     -->
 				</td>
 				<td>
-					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+					<button type="submit" class="searchButton" > <?php echo JText::_("SHOP_SEARCH_BUTTON"); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -631,7 +631,7 @@ class HTML_cpanel {
 				</td>
 				<td align="left" id ="product_id">
 					<a class="modal"
-					title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
+					title="<?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>"
 					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;?>"
 					rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->productName ;?>
 					</a>
