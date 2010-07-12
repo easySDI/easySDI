@@ -148,10 +148,11 @@ if ($curstep == "2")
       */
       function fillParent(filterId, curId, parId, parentId)
       {
+    	  hideLocationParent(curId.substring(21,curId.length));
       	if (document.getElementById(curId)[document.getElementById(curId).selectedIndex].value == "-1")
       	{
       		//Hide the next comboboxes
-      		hideLocationParent(curId.substring(21,curId.length));
+      		//hideLocationParent(curId.substring(21,curId.length));
       		return;
       	}
       
