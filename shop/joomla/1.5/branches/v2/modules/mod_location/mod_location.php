@@ -21,38 +21,25 @@ defined('_JEXEC') or die('Restricted access');
 global  $mainframe;
 $curstep = JRequest::getVar('step',0);
 
-$language=&JFactory::getLanguage();
-$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
-
 if ($curstep == "2")
 {
-//	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-//	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
-	
-	
 	$db =& JFactory::getDBO(); 		
-
 	$query = "SELECT * FROM #__sdi_location where islocalisation = 1 ";
-
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");			
 			echo $db->getErrorMsg();
 	}
-	
 	?>
 	
 	<script>	
-	
 	/**
 	On selection in the main combobox of the location module :
 	Build the wfs url and call the fillSelectLocationLocation function
 	*/		
 	function selectLocationLocation(selected)
 	{
-		//selIndex = document.getElementById('locationListLocation').selectedIndex;
-		//document.getElementById('locationListLocation')[selIndex].value
 		<?php
 		$query2 = "SELECT * FROM #__sdi_location ";
 		$db->setQuery( $query2 );
@@ -118,18 +105,15 @@ if ($curstep == "2")
 	 */
  	  function hideLocationParent(curId)
       {
-      	//$("status").innerHTML = 'start'; 
       	<?php
-      	
-		$queryAll = "SELECT * FROM #__sdi_location";
+    	$queryAll = "SELECT * FROM #__sdi_location";
 		$db->setQuery( $queryAll );
 		$rowsAll = $db->loadObjectList();
 		
 		foreach ($rowsAll as $rowall)
 		{	
 			?>
-			
-			if(curId == '<?php echo $rowall->id_location_filter;?>')
+			if(curId == '<?php echo $rowall->filterlocation_id;?>')
 			{
 				if (document.getElementById('filter<?php echo $rowall->filterlocation_id;?>')!=null )
 			 	{
@@ -157,7 +141,6 @@ if ($curstep == "2")
 			
 			<?php
 		}?>
-		//$("status").innerHTML = 'start + end'; 
       }
       
       /**
@@ -169,7 +152,6 @@ if ($curstep == "2")
       	{
       		//Hide the next comboboxes
       		hideLocationParent(curId.substring(21,curId.length));
-      		//$("status").innerHTML = curId.substring(21,curId.length); 
       		return;
       	}
       
@@ -188,7 +170,6 @@ if ($curstep == "2")
 		$query2 = "SELECT * FROM #__sdi_location ";
 		$db->setQuery( $query2 );
 		$rows2 = $db->loadObjectList();
-			
 		foreach ($rows2 as $row)
 		{?>
 	 		if ( parId == 'locationsListLocation<?php echo $row->id; ?>')
@@ -322,7 +303,7 @@ if ($curstep == "2")
 		var elSel = document.getElementById(locationsListLocationId);
 		
 		freeSelectLocationLocation(locationsListLocationId);
-		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
+		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("SHOP_LOCATION_LOADING");?>","");
 		loadingLocation=true;
 		location_id_field = location_id_field_name; 
 		var wfsUrlWithBBox = location_wfs_url+'?request=GetFeature&SERVICE=WFS&TYPENAME='+location_feature_type_name+'&VERSION=1.0.0' ;
@@ -344,7 +325,7 @@ if ($curstep == "2")
 			if(wfs4.features.length == 0)
 			{
 				elSel.remove(0);
-				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_MANUAL_PERIMETER_NO_FEATURE");?>","");
+				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("SHOP_LOCATION_NO_FEATURE");?>","");
 				loadingPerimeter=false;
 			}
 		});
@@ -422,7 +403,7 @@ class HTML_locationBuilder
 	function generateHtmlLocationSelect($row,$parent){
 		$db =& JFactory::getDBO();
 
-		if ($row->id_location_filter > 0 ){
+		if ($row->filterlocation_id > 0 ){
 			$query = "SELECT * FROM #__sdi_location where id = $row->filterlocation_id";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
@@ -443,7 +424,7 @@ class HTML_locationBuilder
 				echo "<tr>";
 				echo "<td><input style='display:none' size=5 length=5 type=\"text\" id =\"filter$row->id\" value=\"\" >"	;
 				echo "<input style='display:none' id=\"search$row->id\" onClick=\"fillParent ('filter$row->id','locationsListLocation$row->id','locationsListLocation$parent','$parent') \" 
-							type=\"button\" value=\"".JText::_("EASYSDI_SEARCH")."\" ></td>"	;
+							type=\"button\" value=\"".JText::_("SHOP_LOCATION_SEARCH")."\" ></td>"	;
 				echo "</tr>";
 			}
 			else

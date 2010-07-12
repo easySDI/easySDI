@@ -122,9 +122,9 @@ class HTML_shop {
 	var wfsSelection;
 	var fromZoomEnd = false;
 	var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT",1000000);?>;
-	var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
-	var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
-	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
+	var SHOP_PERIMETER_SURFACE_M2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_M2");?>';
+	var SHOP_PERIMETER_SURFACE_KM2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_KM2");?>';
+	var SHOP_PERIMETER_SURFACE_SELECTED = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_SELECTED");?>';
 	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION",2);?>;
 
 	
@@ -165,7 +165,7 @@ class HTML_shop {
 		}
 		document.getElementById('totalSurface').value = 0;
 		
-		document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";		
+		document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";		
 		document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION); 		
 		removeSelection();
 	}
@@ -187,7 +187,6 @@ class HTML_shop {
 	        //wfs2 is the OL vector with new selected feature
 		if (!wfs)
 		{
-		//	wfs.destroy();
 	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
@@ -245,8 +244,7 @@ class HTML_shop {
 					}
 				);
 			//Don't remove a layer before beeing sure it is loaded...
-	      		
-           		map.addLayer(wfs2);
+	       		map.addLayer(wfs2);
 			
 			}
 	 
@@ -256,7 +254,6 @@ class HTML_shop {
 	{
 		map.removeLayer(wfs2);
 		wfs2.events.unregister('loadend', null, refreshWfsOnce);
-		//map.addLayer(wfs2);
 	}
 	
 	/**
@@ -466,18 +463,11 @@ function setAlpha(imageformat)
 
 	            
 	function initMap(){
-	 //OpenLayers.ProxyHost="components/com_easysdi_shop/proxy.php?url=";
-	 //OpenLayers.ProxyHost="index.php?option=com_easysdi_shop&no_html=1&task=proxy&url=";
-	
-	
-	
 	<?php
 	global  $mainframe;
 	$db =& JFactory::getDBO(); 
-	
-	
 		
-	$query = "select * from #__easysdi_basemap_definition where def = 1"; 
+	$query = "select * from #__sdi_basemap where `default` = 1"; 
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();		  
 	if ($db->getErrorNum()) {						
@@ -488,27 +478,26 @@ function setAlpha(imageformat)
 	
 	$decimal_precision = $rows[0]->decimalPrecision;
 	
+	//default style for manually drawed object and selected
+	if($rows[0]->dfltfillcolor != '')
+	echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rows[0]->dfltfillcolor."';\n";
+	if($rows[0]->dfltstrkcolor != '')
+	echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rows[0]->dfltstrkcolor."';\n";
+	if($rows[0]->dfltstrkwidth != '')
+	echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rows[0]->dfltstrkwidth."';\n";
 	
-			//default style for manually drawed object and selected
-			if($rows[0]->dfltfillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rows[0]->dfltfillcolor."';\n";
-			if($rows[0]->dfltstrkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rows[0]->dfltstrkcolor."';\n";
-			if($rows[0]->dfltstrkwidth != '')
-			echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rows[0]->dfltstrkwidth."';\n";
-			
-			//style for polygon edition
-			if($rows[0]->selectfillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rows[0]->selectfillcolor."';\n";
-			if($rows[0]->selectstrkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rows[0]->selectstrkcolor."';\n";
-			
-			//default style for object being drawn
-			if($rows[0]->tempfillcolor != '')
-			echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rows[0]->tempfillcolor."';\n";
-			if($rows[0]->tempstrkcolor != '')
-			echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rows[0]->tempstrkcolor."';\n";
-			?>
+	//style for polygon edition
+	if($rows[0]->selectfillcolor != '')
+	echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rows[0]->selectfillcolor."';\n";
+	if($rows[0]->selectstrkcolor != '')
+	echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rows[0]->selectstrkcolor."';\n";
+	
+	//default style for object being drawn
+	if($rows[0]->tempfillcolor != '')
+	echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rows[0]->tempfillcolor."';\n";
+	if($rows[0]->tempstrkcolor != '')
+	echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rows[0]->tempstrkcolor."';\n";
+	?>
 			
 			map = new OpenLayers.Map('map', {
 	                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
@@ -556,7 +545,7 @@ function setAlpha(imageformat)
 	foreach ($rows as $row){				  
 	?>				
 					  
-			layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+			layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->urltype; ?>( "<?php echo $row->name; ?>",
 			
 				<?php 
 				if ($row->user != null && strlen($row->user)>0){
@@ -662,16 +651,13 @@ function setAlpha(imageformat)
 				fromZoomEnd = true;
 				document.getElementById('previousExtent').value = map.getExtent().toBBOX();
 				$("scale").innerHTML = "<?php echo JText::_("SHOP_SHOP_MAP_SCALE") ?>"+map.getScale().toFixed(0);
-				//$("scale").innerHTML = document.getElementById('previousExtent').value ;
 				text = "";
 				
 				for (i=0; i<map.layers.length ;i++){
-						//text = text + map.layers[i].name + " ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 						if (map.getScale() < map.layers[i].maxScale || map.getScale() > map.layers[i].minScale){
 						 text = text + map.layers[i].name + "<?php echo JText::_("SHOP_SHOP_MESSAGE_OUTSIDE_SCALE_RANGE") ?>" +" ("+map.layers[i].minScale+"," + map.layers[i].maxScale +")<BR>";
 						} 
 					}
-				//$("shopWarnLogo").className = 'shopWarnLogoActive';
 				$("shopWarnLogo").className = 'shopWarnLogoInactive';
 				$("scaleStatus").innerHTML = text;
 				
@@ -685,7 +671,7 @@ function setAlpha(imageformat)
 					
 					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
 						if(ctrl != null){
-							//If type buuton, trigger it directly
+							//If type button, trigger it directly
 							if(ctrl.type == OpenLayers.Control.TYPE_BUTTON){
 								ctrl.trigger();
 							}
@@ -706,21 +692,12 @@ function setAlpha(imageformat)
 								//active the clicked button
 								ctrl.activate();
 							}
-							//display edit shap only if freeselction is active
-							/*
-							var selectedOption = document.getElementById("perimeterList").options[document.getElementById("perimeterList").selectedIndex].text;
-							if(selectedOption == 'Périmètre libre')
-								panelEdition.controls[0].div.style.visibility = "hidden";
-							else
-								panelEdition.controls[0].displayClass='';
-						*/
-							}
+						}
 					}
 					
 					
 				<?php
 					if($mainframe->getUserState('previousExtent') != "")
-					//if ( JRequest::getVar('previousExtent') != "")
 					{
 						?>
 							//map.zoomToExtent(new OpenLayers.Bounds(<?php echo JRequest::getVar('previousExtent'); ?>) );
@@ -735,13 +712,6 @@ function setAlpha(imageformat)
 					}
 				?>
 	             
-				/*zb = new OpenLayers.Control.ZoomBox();
-				md = new OpenLayers.Control.MouseDefaults();
-				zo =  new OpenLayers. Control. ZoomOut();*/
-				
-				// var containerPanel = document.getElementById("panelDiv");
-	            // var panel = new OpenLayers.Control.Panel({div: containerPanel});
-				
 				//enabling navigation history
         	    navHistory = new OpenLayers.Control.NavigationHistory();
         	    map.addControl (navHistory);
@@ -774,7 +744,6 @@ function setAlpha(imageformat)
 				/*
 					OpenLayers Edition controls
 				*/
-							
 				rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});		
 				rectControl.title = '<?php echo JText::_("SHOP_OL_TOOL_RECTCTRL_HINT") ?>';
 				rectControl.featureAdded = function() { intersect();};												
@@ -868,9 +837,6 @@ function setAlpha(imageformat)
     	return typeof(input)=='object'&&(input instanceof Array);
     }
 	
-	/*
-	
-	*/
 	function intersect() 
 	{
 		if (isFreeSelectionPerimeter)
@@ -893,7 +859,7 @@ function setAlpha(imageformat)
 	    	}
 	    	
 			document.getElementById('totalSurface').value =  parseFloat(featureArea );
-			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(featureArea) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+			document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(featureArea) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 		        document.getElementById('totalSurfaceDisplayed').value = parseFloat(featureArea) <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(featureArea/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 	     
 	     	if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
@@ -912,7 +878,7 @@ function setAlpha(imageformat)
 			if (feature.geometry instanceof OpenLayers.Geometry.Point)
 			{
 	         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );       
-			document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+			document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 			   	    		
 			   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
@@ -929,7 +895,6 @@ function setAlpha(imageformat)
 	
 			gml = new OpenLayers. Format. GML.v2(gmlOptions);
 	
-			//for(var i=features.length-1; i>=0; i--) {
 	        feature = features[features.length-1];
 	        var doc = format.read(gml.write(feature, true));               
 			
@@ -965,7 +930,6 @@ function setAlpha(imageformat)
 					{
 				        	feat2 = event.feature;
 						var name = feat2.attributes[nameField];
-						//var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
 						var id = feat2.attributes[idField];   
 						var area = feat2.attributes[areaField];
 						var featArea = 0;	
@@ -987,7 +951,7 @@ function setAlpha(imageformat)
 									//Remove the value							
 									document.getElementById("selectedSurface").remove(k);								
 									document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
-									document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+									document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 									document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 																									
 									found=k;																			
@@ -1007,7 +971,6 @@ function setAlpha(imageformat)
 					    		
 					feat2 = event.feature;
 					var name = feat2.attributes[nameField];
-					//var id = document.getElementById('perimeter_id').value +"."+feat2.attributes[idField];
 					var id = feat2.attributes[idField];
 		                       
 					var area = feat2.attributes[areaField];
@@ -1039,7 +1002,7 @@ function setAlpha(imageformat)
 			   		    		document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 			   		    		//Add the new value
 		           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-							document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+							document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 							document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    
 			   		    	}
@@ -1051,7 +1014,7 @@ function setAlpha(imageformat)
 			   		    document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = new Option(name,id);
 					    //Add the new value
 					    document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
-					    document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+					    document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 					    document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
 		   		    }
 		   		    
@@ -1083,7 +1046,6 @@ function setAlpha(imageformat)
 	<!-- second line -->
 	<tr class="shopHeader">
 	  <td class="shopInfoLogoContainer">
-	   <!-- <div id="infoLogo" class="shopInfoLogo"/> -->
 	    <div id="loadingPanelPosition" class="olControlLoadingPanel"/>
 	  </td>
 	  <td class="shopInfoMessageContainer" colspan="2" align="left">
@@ -1165,7 +1127,6 @@ function setAlpha(imageformat)
 		     			if (lines[i].intersects (lines[j])) {
 		     			count++;	     			
 		     			}     	
-		     			//alert (i+" "+j+" "+lines[i].intersects (lines[j]));		
 	     			}
 	     			if (count > 2) {
 	     				//More than 2 intersectios for a line, mean that a line intersects another one.
@@ -1300,14 +1261,19 @@ function setAlpha(imageformat)
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 
-		$query= "select * from #__easysdi_product where id in (";
+		$query= "SELECT p.*, v.metadata_id as metadata_id , a.name as  supplier_name
+					FROM #__easysdi_product p 
+					INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+					INNER JOIN #__sdi_object o ON v.object_id = o.id 
+					INNER JOIN #__sdi_account a ON o.account_id = a.id
+					WHERE p.id in (";
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
 		$query = $query.")";
-		$query =  $query . " and orderable = 1";
+		//$query =  $query . " and orderable = 1";
 		$db->setQuery( $query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -1320,8 +1286,8 @@ function setAlpha(imageformat)
 	<thead class='contentheading'>
 		<tr>
 			<td></td>
-			<td><?php echo JText::_("EASYSDI_DATA_IDENTIFICATION");?></td>
-			<td><?php echo JText::_("EASYSDI_ORGANISATION_NAME");?></td>
+			<td><?php echo JText::_("SHOP_SHOP_DATA_IDENTIFICATION");?></td>
+			<td><?php echo JText::_("SHOP_SHOP_ORGANISATION_NAME");?></td>
 		</tr>
 	</thead>
 	<tbody>
@@ -1335,7 +1301,7 @@ function setAlpha(imageformat)
 			<td><input type="hidden" id="cb<?php echo $i;?>" name="cid[]"
 				value="<?php echo $product->id; ?>" /></td>
 			<td><a
-				href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->data_title; ?></a>
+				href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->name; ?></a>
 			</td>
 			<td><a
 				href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->supplier_name; ?></a>
@@ -2782,7 +2748,6 @@ function validateForm(toStep, fromStep){
 	<?php
 	}
 
-	
 	function searchProducts($orderable = 1){
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -2962,9 +2927,10 @@ function validateForm(toStep, fromStep){
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
-		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id, m.visibility_id as md_visibility_id FROM #__sdi_product p 
+		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id, a.name as supplier_name , a.logo as supplier_logo, m.visibility_id as md_visibility_id FROM #__sdi_product p 
 							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_account a ON a.id = o.account_id
 							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
 							WHERE p.published=1 AND o.published = 1";
 		$query  = $query .$filter;
@@ -3112,9 +3078,10 @@ function validateForm(toStep, fromStep){
 	}
 	foreach ($rows  as $row){
 
-		$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->supplier_id;
-		$db->setQuery($queryPartnerLogo);
-		$account_logo = $db->loadResult();
+//		$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->supplier_id;
+//		$db->setQuery($queryPartnerLogo);
+//		$account_logo = $db->loadResult();
+		$account_logo = $row->supplier_logo;
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
@@ -3156,7 +3123,7 @@ function validateForm(toStep, fromStep){
 	  </td>
 	 </tr>
 	 <tr>
-	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_id;?></span></td>
+	  <td colspan=3><span class="mdsupplier"><?php echo $row->supplier_name;?></span></td>
 	 </tr>
      <tr>
      	<td class="mdActionViewFile"><span class="mdviewfile">

@@ -50,7 +50,7 @@ class basemap extends sdiTable
 
 		$query = 'SELECT *'
 		. ' FROM '.$this->_tbl
-		. ' WHERE default = 1';
+		. ' WHERE `default` = 1';
 		$db->setQuery( $query );
 
 		if ($result = $db->loadAssoc( )) {

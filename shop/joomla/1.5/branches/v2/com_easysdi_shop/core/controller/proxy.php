@@ -70,7 +70,7 @@ class SITE_proxy{
 			global  $mainframe;
 			$db =& JFactory::getDBO(); 
 
-			$query = "select * from #__easysdi_basemap_content where id = $basemapscontentid"; 
+			$query = "select * from #__sdi_basemap_content where id = $basemapscontentid"; 
 			$db->setQuery( $query);
 			$row = $db->loadObject();
 
@@ -87,7 +87,7 @@ class SITE_proxy{
 				global  $mainframe;
 				$db =& JFactory::getDBO(); 
 	
-				$query = $query = "SELECT * FROM #__easysdi_perimeter_definition WHERE id = $perimeterdefid"; 
+				$query = $query = "SELECT * FROM #__sdi_perimeter WHERE id = $perimeterdefid"; 
 				$db->setQuery( $query);
 				$row = $db->loadObject();
 				SITE_proxy::getAuthentication ($row, $user, $password);
@@ -104,7 +104,7 @@ class SITE_proxy{
 					global  $mainframe;
 					$db =& JFactory::getDBO(); 
 		
-					$query = $query = "SELECT * FROM #__easysdi_location_definition WHERE id = $locationid"; 
+					$query = $query = "SELECT * FROM #__sdi_location WHERE id = $locationid"; 
 					$db->setQuery( $query);
 					$row = $db->loadObject();
 					SITE_proxy::getAuthentication ($row, $user, $password);
@@ -121,7 +121,7 @@ class SITE_proxy{
 						global  $mainframe;
 						$db =& JFactory::getDBO(); 
 			
-						$query = $query = "SELECT * FROM #__easysdi_product WHERE id = $previewId"; 
+						$query = $query = "SELECT * FROM #__sdi_product WHERE id = $previewId"; 
 						$db->setQuery( $query);
 						$row = $db->loadObject();
 						SITE_proxy::getAuthentication ($row, $user, $password, "preview");
@@ -281,7 +281,7 @@ class SITE_proxy{
 		if ($object->easysdi_account_id && $object->easysdi_account_id <> 0)
 		{
 			 $db =& JFactory::getDBO(); 
-			 $query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $object->easysdi_account_id)";
+			 $query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $object->account_id)";
 			 $db->setQuery( $query);
 			 $row = $db->loadObject();
 			 $user = $row->username;
@@ -291,8 +291,8 @@ class SITE_proxy{
 		{
 			if($type == "preview")
 			{
-				$user = $object->previewUser;
-				$password = $object->previewPassword;
+				$user = $object->viewuser;
+				$password = $object->viewpassword;
 			}
 			else
 			{

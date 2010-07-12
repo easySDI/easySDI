@@ -17,9 +17,6 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-
-//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'common.easysdi.php');
-
 global  $mainframe;
 $curstep = JRequest::getVar('step',0);
 
@@ -27,7 +24,7 @@ if ($curstep == "2"){
 $db =& JFactory::getDBO(); 		
 
 
- $query = "SELECT * FROM #__easysdi_perimeter_definition where is_localisation = 1 order by ordering";
+ $query = "SELECT * FROM #__sdi_perimeter where islocalisation = 1 order by ordering";
 
 	$db->setQuery( $query );
 	$rows = $db->loadObjectList();
@@ -40,7 +37,7 @@ $db =& JFactory::getDBO();
 	<script>			
 	function selectPerimeterPerimeter(selected){
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering ";
+	$query2 = "SELECT * FROM #__sdi_perimeter order by ordering ";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		
@@ -48,9 +45,9 @@ $db =& JFactory::getDBO();
 		{?>
 	 	if ( selected == '<?php echo $row->id; ?>'){
 	 			
-	 		 	<?php if ($row->id_perimeter_filter>0 ){
+	 		 	<?php if ($row->filterperimeter_id>0 ){
 	 		 		?>
-	 		 		selectPerimeterPerimeter ('<?php echo $row->id_perimeter_filter?>');
+	 		 		selectPerimeterPerimeter ('<?php echo $row->filterperimeter_id?>');
 	 		 		<?php 
 	 		 	}else{?>
 				
@@ -63,24 +60,12 @@ $db =& JFactory::getDBO();
 					var maxfeatures="&MAXFEATURES=<?php echo $row->maxfeatures?>";					
 					<?php
 					}
-					
-					
-					//if (1==1 || ($row->user !=null && strlen($row->user)>0)){
-						
 						//if a user and password is requested then use the joomla proxy.
 						$proxyhost = config_easysdi::getValue("PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
-					//}else{
-						//$wfs_url = $row->wfs_url;						
-					//}
-					
-					
+						$wfs_url =  $proxyhost.urlencode  (trim($row->urlwfs));
 					?>					
-
-					
-						 		 	
-	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>","",<?php echo $row->sort; ?>,maxfeatures);
+	 				fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->featuretype; ?>","<?php echo $row->fieldname; ?>","<?php echo $row->fieldid; ?>","",<?php echo $row->sort; ?>,maxfeatures);
 	 				document.getElementById("perimetersListPerimeter<?php echo $row->id; ?>").style.display='block';
 	 				hideParent('<?php echo $row->id; ?>');
 	 			<?php } ?>
@@ -100,7 +85,7 @@ $db =& JFactory::getDBO();
       
     
       
-       /**
+    /**
 	 In case of unselection in a combobox, disable the display of parent comboboxes already displayed
 	 */
  	  function hideParent(curId)
@@ -108,14 +93,14 @@ $db =& JFactory::getDBO();
       {
       	<?php
       	
-		$queryAll = "SELECT * FROM #__easysdi_perimeter_definition";
+		$queryAll = "SELECT * FROM #__sdi_perimeter";
 		$db->setQuery( $queryAll );
 		$rowsAll = $db->loadObjectList();
 		
 		foreach ($rowsAll as $rowall)
 		{	
 			?>
-			if(curId == '<?php echo $rowall->id_perimeter_filter;?>')
+			if(curId == '<?php echo $rowall->filterperimeter_id;?>')
 			{
 				if(document.getElementById('perimetersListPerimeter<?php echo $rowall->id; ?>') != null)
 				{
@@ -157,7 +142,7 @@ $db =& JFactory::getDBO();
 	 	}
 	 	
 	<?php
-	$query2 = "SELECT * FROM #__easysdi_perimeter_definition order by ordering";
+	$query2 = "SELECT * FROM #__sdi_perimeter order by ordering";
 	$db->setQuery( $query2 );
 	$rows2 = $db->loadObjectList();
 		
@@ -165,24 +150,16 @@ $db =& JFactory::getDBO();
 		{?>
 	 	if ( parId == 'perimetersListPerimeter<?php echo $row->id; ?>'){
 	 			var filter ="";
-	 			  
-	 			  	<?php /*if ($row->searchbox == 0) {
-	 			  	?>	 			  	
-	 			  	filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
-	 			  	<?php
-	 			  	}else{*/?>
-	 			  	
-	 			  	
 	 			if (document.getElementById(filterId)==null || document.getElementById(filterId).value.length==0){
-	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
+	 		 		filter =  "FILTER=<Filter><PropertyIsEqualTo><PropertyName><?php echo $row->fieldname ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></Filter>";
 	 		 	}else{
 					//Only one occurence
 	 		 		<?php if($row->allowMultipleSelection == 0) {?>
-						filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						filter =  "FILTER=<Filter><And><PropertyIsEqualTo><PropertyName><?php echo $row->fieldsearch ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsEqualTo><PropertyIsEqualTo><PropertyName><?php echo $row->fieldfilter ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 					<?php } 
 					//several occurences
 					else {?>	
-						filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->name_field_search_name ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->filter_field_name ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
+						filter =  "FILTER=<Filter><And><PropertyIsLike%20wildCard=\"*\"%20singleChar=\"_\"%20escape=\"!\"><PropertyName><?php echo $row->fieldsearch ?></PropertyName><Literal>"+ document.getElementById(filterId).value+"</Literal></PropertyIsLike><PropertyIsEqualTo><PropertyName><?php echo $row->fieldfilter ?></PropertyName><Literal>"+ document.getElementById(curId).value+"</Literal></PropertyIsEqualTo></And></Filter>";	 		 		
 					<?php } ?>
 				}
 	 		 	<?php /*}*/
@@ -194,20 +171,12 @@ $db =& JFactory::getDBO();
 	 		 		var maxfeatures="";
 	 		 		<?php
 	 		 	} 
-	 		 	
-	 		 	//if (1== 1 || ($row->user !=null && strlen($row->user)>0)){
-						
 						//if a user and password is requested then use the joomla proxy.
 						$proxyhost = config_easysdi::getValue("PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
-						$wfs_url =  $proxyhost.urlencode  (trim($row->wfs_url));
-					//}else{
-						//$wfs_url = $row->wfs_url;						
-					//}
-	 		 	
+						$wfs_url =  $proxyhost.urlencode  (trim($row->urlwfs));
 	 		 	?>
-	 		 	//alert (filter);
-	 		fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->perimeter_name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->feature_type_name; ?>","<?php echo $row->name_field_name; ?>","<?php echo $row->id_field_name; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
+	 		fillSelectPerimeterPerimeter("perimetersListPerimeter<?php echo $row->id; ?>","<?php echo $row->name; ?>","<?php echo $wfs_url; ?>","<?php echo $row->featuretype; ?>","<?php echo $row->fieldname; ?>","<?php echo $row->fieldid; ?>",filter,<?php echo $row->sort; ?>,maxfeatures);	 				 				 			
 	 		}
 	 
 	 <?php } ?>
@@ -224,7 +193,7 @@ $db =& JFactory::getDBO();
 	foreach ($rows as $row)
 		{			
 			?>
-			<option value ="<?php echo $row->id ?>"  > <?php echo JText::_($row->perimeter_name); ?> </option>
+			<option value ="<?php echo $row->id ?>"  > <?php echo JText::_($row->name); ?> </option>
 			<?php 				  		
 		}
 		?>
@@ -297,7 +266,7 @@ $db =& JFactory::getDBO();
 		var elSel = document.getElementById(perimetersListPerimeterId);
 		freeSelectPerimeterPerimeter(perimetersListPerimeterId);
 		
-		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_LOADING_MANUAL_PERIMETER");?>","");
+		elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("SHOP_PERIMETER_MANUAL_LOADING");?>","");
 		loadingPerimeter=true;
 		
 		perimeter_id_field = perimeter_id_field_name; 
@@ -306,7 +275,6 @@ $db =& JFactory::getDBO();
 		if (filter.length > 0) wfsUrlWithBBox = wfsUrlWithBBox +"&"+filter;	
 		else wfsUrlWithBBox = wfsUrlWithBBox + "&BBOX="+map.maxExtent.toBBOX();
 		wfsUrlWithBBox = wfsUrlWithBBox+maxfeatures;
-	//alert (wfsUrlWithBBox);
 		wfs4 = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
@@ -319,13 +287,12 @@ $db =& JFactory::getDBO();
 			if(wfs4.features.length == 0)
 			{
 				elSel.remove(0);
-				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("EASYSDI_MANUAL_PERIMETER_NO_FEATURE");?>","");
+				elSel.options[elSel.options.length] =  new Option("<?php echo JText::_("SHOP_PERIMETER_MANUAL_NO_FEATURE");?>","");
 				loadingPerimeter=false;
 			}
 		});
 		
 		wfs4.events.register("featuresadded", null, function(event) {
-		//if (elSel.options[0].value==""){
 		if (loadingPerimeter==true){
 				elSel.remove(0);
 				elSel.options[0] =  new Option("- "+perimeter_perimeter_name+" -","-1");
@@ -413,13 +380,14 @@ class HTML_perimeterBuilder
 		$db =& JFactory::getDBO();
 		if ($row->id_perimeter_filter > 0 )
 		{
-			$query = "SELECT * FROM #__easysdi_perimeter_definition where id = $row->id_perimeter_filter";
+			$query = "SELECT * FROM #__sdi_perimeter where id = $row->filterperimeter_id";
 			$db->setQuery( $query );
 			$rows2 = $db->loadObject();
 			HTML_perimeterBuilder::generateHtmlPerimeterSelect($rows2,$row->id);
 
 		}
-		if ($parent == 0){
+		if ($parent == 0)
+		{
 			echo "<tr>";
 			echo "<td><select style='display:none' 
 							  id=\"perimetersListPerimeter$row->id\"	
@@ -427,13 +395,11 @@ class HTML_perimeterBuilder
 							  <option > </option></select></td>";
 
 			echo "</tr>";
-		}else{
-			/*echo "<tr>";
-			echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	
-					onChange=\"fillPerimeterParent ('filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent', '$parent') \">
-					<option > </option></select></td>";
-			echo "</tr>";*/
-			if ($row->searchbox == 1) {
+		}
+		else
+		{
+			if ($row->searchbox == 1) 
+			{
 				echo "<tr>";
 				echo "<td><select  style='display:none' id=\"perimetersListPerimeter$row->id\"	
 						onChange=\"hideParent($row->id);
@@ -463,7 +429,7 @@ class HTML_perimeterBuilder
 								onClick=\"fillPerimeterParent ('peri_filter$row->id','perimetersListPerimeter$row->id','perimetersListPerimeter$parent','$parent') \" 
 								id=\"peri_search$row->id\"
 								type=\"button\" 
-								class=\"searchButton\">".JText::_("EASYSDI_SEARCH")."
+								class=\"searchButton\">".JText::_("SHOP_PERIMETER_SEARCH")."
 					 </button></td></tr></table></td>"	;
 				echo "</tr>";
 			}

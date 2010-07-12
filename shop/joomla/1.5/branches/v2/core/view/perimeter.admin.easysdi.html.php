@@ -280,7 +280,7 @@ class HTML_perimeter {
 	function listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
-		JToolBarHelper::title(JText::_("SHOP_LIST_PERIMETER"));
+		JToolBarHelper::title(JText::_("SHOP_PERIMETER_LIST"));
 		
 		$ordering = ($filter_order == 'ordering');
 		

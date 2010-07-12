@@ -1,22 +1,22 @@
 <?php
-		/**
-		 * EasySDI, a solution to implement easily any spatial data infrastructure
-		 * Copyright (C) EasySDI Community
-		 * For more information : www.easysdi.org
-		 *
-		 * This program is free software: you can redistribute it and/or modify
-		 * it under the terms of the GNU General Public License as published by
-		 * the Free Software Foundation, either version 3 of the License, or
-		 * any later version.
-		 * This program is distributed in the hope that it will be useful,
-		 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-		 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-		 * GNU General Public License for more details.
-		 * You should have received a copy of the GNU General Public License
-		 * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
-		 */
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
 
-		defined('_JEXEC') or die('Restricted access');
+defined('_JEXEC') or die('Restricted access');
 
 global  $mainframe;
 global  $areaPrecision;
@@ -30,7 +30,7 @@ if ($curstep == "2")
 {
 	$db =& JFactory::getDBO();
 
-	$query = "select * from #__sdi_basemap b where b.default = 1";
+	$query = "select * from #__sdi_basemap b where b.`default` = 1";
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();
 	if ($db->getErrorNum()) {
@@ -40,14 +40,11 @@ if ($curstep == "2")
 	}
 
 	$decimal_precision = $rows[0]->decimalPrecision;
-
 	$cid = 		$mainframe->getUserState('productList');
 
-	if (count($cid)>0){
-		
+	if (count($cid)>0)
+	{
 		$query = "SELECT * FROM #__sdi_perimeter order by ordering";
-
-
 		$query = "select count(*)  from #__sdi_product where id in (";
 		foreach( $cid as $id )
 		{
@@ -55,12 +52,10 @@ if ($curstep == "2")
 		}
 		$query  = substr($query , 0, -1);
 		$query = $query.")";
-
 		$db->setQuery( $query );
 		$nbProduct = $db->loadResult();
 
 		$query = "SELECT * FROM #__sdi_perimeter WHERE id in (SELECT perimeter_id  FROM #__sdi_product_perimeter  where product_id in (";
-
 		foreach( $cid as $id )
 		{
 			$query = $query.$id."," ;
@@ -75,7 +70,6 @@ if ($curstep == "2")
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			echo 			$db->getErrorMsg();
 		}
-
 		$query = "SELECT count(*) as total ,perimeter_id  FROM `#__sdi_product_perimeter` where product_id in (";
 		foreach( $cid as $id )
 		{
@@ -83,10 +77,7 @@ if ($curstep == "2")
 		}
 		$query  = substr($query , 0, -1);
 		$query = $query .") AND buffer= 1 group by perimeter_id having count(*) = $nbProduct";
-
-
 		$db->setQuery( $query );
-
 		$bufferRows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -98,15 +89,14 @@ if ($curstep == "2")
 		function enableBufferByPerimeter(perimId)
 		{
 			<?php	
-					foreach ($bufferRows as $bufferRow)
+			foreach ($bufferRows as $bufferRow)
 			{		
-				?>
+			?>
 			if (perimId == '<?php echo $bufferRow->perimeter_id ?>')
 			{
 				document.getElementById('bufferValue').disabled=false;
 				document.getElementById('bufferValue').style.display = 'inline';
-				document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?>';
-
+				document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("SHOP_PERIMETER_BUFFER_UNIT"); ?>';
 				return ;
 			}
 			<?php 
@@ -114,10 +104,8 @@ if ($curstep == "2")
 			?>
 			document.getElementById('bufferValue').disabled=true;
 			document.getElementById('bufferValue').style.display = 'none';
-			document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNAVAILABLE"); ?>';
-			
+			document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("SHOP_PERIMETER_BUFFER_UNAVAILABLE"); ?>';
 		}
-
 
 		function selectPerimeter(perimListName, bFromZoomEnd)
 		{
@@ -125,7 +113,7 @@ if ($curstep == "2")
 			selIndex = document.getElementById(perimListName).selectedIndex;
 
 			<?php	
-					foreach ($rows as $row)
+			foreach ($rows as $row)
 			{
 				if (1==1 || ($row->user !=null && strlen($row->user)>0))
 				{
@@ -153,7 +141,6 @@ if ($curstep == "2")
 				else
 				{
 					$urlwfs = $row->urlwfs;
-
 					$urlwms=	$row->urlwms;					
 				}
 				?>
@@ -195,8 +182,6 @@ if ($curstep == "2")
 							document.getElementById('addPerimeterButton').style.display='block';
 						}
 					} 
-
-					//document.getElementById('lastSelectedPerimeterIndex').value = document.getElementById(perimListName).selectedIndex;
 					selectWFSPerimeter( document.getElementById(perimListName)[selIndex].value,
 							"<?php echo $row->name; ?>",
 							"<?php echo $urlwfs; ?>",
@@ -214,27 +199,23 @@ if ($curstep == "2")
 
 					enableBufferByPerimeter('<?php echo $row->id; ?>');
 				}
-
 				<?php 
 			} 
 			?>
 		}
 		</script>
 
-
 		<input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
 		<table>
 		<tr>
 		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList', false)"  >
-		<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 		<?php
-				foreach ($rows as $row)
+		foreach ($rows as $row)
 		{
-			?>
+		?>
 		<option value="<?php echo $row->id ?>" <?php if ($row->id == $mainframe->getUserState('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->name); ?>
 		</option>
 		<?php
-
 		}
 		?>
 		</select></td>
@@ -249,17 +230,15 @@ if ($curstep == "2")
 		</tr>
 		<tr>
 		<td>
-		<?php echo JText::_("EASYSDI_BUFFER");?>
+		<?php echo JText::_("SHOP_PERIMETER_BUFFER");?>
 		<input type="text" id="bufferValue" size="10" value="<?php echo $mainframe->getUserState('bufferValue') ;?>" onchange="checkBufferValue()">
-		<span id="bufferValueSuffix"><?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?></span></td>
+		<span id="bufferValueSuffix"><?php echo JText::_("SHOP_PERIMETER_BUFFER_UNIT"); ?></span></td>
 		</tr>
 		</table>
 		<br>
 		<?php
-		//$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
-		$querySurfaceMax = "SELECT min(surfacemax) as surface_max FROM #__sdi_product  WHERE id in (";
-		$querySurfaceMin = "SELECT max(surfacemin) as surface_min FROM #__sdi_product  WHERE id in (";
-		
+		$querySurfaceMax = "SELECT min(surfacemax) as surfacemax FROM #__sdi_product  WHERE id in (";
+		$querySurfaceMin = "SELECT max(surfacemin) as surfacemin FROM #__sdi_product  WHERE id in (";
 		foreach( $cid as $id )
 		{
 			$querySurfaceMax = $querySurfaceMax.$id."," ;
@@ -269,15 +248,13 @@ if ($curstep == "2")
 		$querySurfaceMin  = substr($querySurfaceMin , 0, -1);
 		$querySurfaceMax = $querySurfaceMax.")";
 		$querySurfaceMin = $querySurfaceMin.")";
-		//$querySurfaceMax = $query." having min(surface_max)";
-		//$querySurfaceMin = $query." having max(surface_min)";
 		$db->setQuery( $querySurfaceMin);
 		$rowsSurfaceMin = $db->loadObjectList();
 		foreach( $rowsSurfaceMin as $surfaceMin )
 		{
-			echo JText::_("EASYSDI_SURFACE_MIN")." ".renderAreaText($surfaceMin->surface_min, true)."<br>";
+			echo JText::_("SHOP_PERIMETER_SURFACE_MIN")." ".renderAreaText($surfaceMin->surfacemin, true)."<br>";
 			?>
-			<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
+			<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surfacemin; ?>">
 			<?php
 
 		}
@@ -286,9 +263,9 @@ if ($curstep == "2")
 		$rowsSurfaceMax = $db->loadObjectList();
 		foreach( $rowsSurfaceMax as $surfaceMax )
 		{
-			echo JText::_("EASYSDI_SURFACE_MAX")." ".renderAreaText($surfaceMax->surface_max, true)."<br>";
+			echo JText::_("SHOP_PERIMETER_SURFACE_MAX")." ".renderAreaText($surfaceMax->surfacemax, true)."<br>";
 			?>
-			<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
+			<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surfacemax; ?>">
 			<?php
 		}
 
@@ -297,11 +274,11 @@ if ($curstep == "2")
 		if (!$totalArea) $totalArea=0;
 		$un = "";
 		if($totalArea <= $meterToKilometerLimit)
-			$un = JText::_("EASYSDI_SURFACE_M2");
+			$un = JText::_("SHOP_PERIMETER_SURFACE_M2");
 		else
-			$un = JText::_("EASYSDI_SURFACE_KM2");
+			$un = JText::_("SHOP_PERIMETER_SURFACE_KM2");
 
-		echo "<div id=\"EASYSDI_SURFACE_SELECTED\">".JText::_("EASYSDI_SURFACE_SELECTED")." ($un):"."</div>";?>
+		echo "<div id=\"SHOP_PERIMETER_SURFACE_SELECTED\">".JText::_("SHOP_PERIMETER_SURFACE_SELECTED")." ($un):"."</div>";?>
 		<input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
 		<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo renderAreaText($totalArea, false); ?>">
 		<br>
@@ -439,9 +416,9 @@ if ($curstep == "2")
 				function drawSelectedSurface()
 				{	
 					var meterToKilometerLimit = <?php echo $meterToKilometerLimit;?>;
-					var EASYSDI_SURFACE_M2 = '<?php echo JText::_("EASYSDI_SURFACE_M2");?>';
-					var EASYSDI_SURFACE_KM2 = '<?php echo JText::_("EASYSDI_SURFACE_KM2");?>';
-					var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
+					var SHOP_PERIMETER_SURFACE_M2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_M2");?>';
+					var SHOP_PERIMETER_SURFACE_KM2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_KM2");?>';
+					var SHOP_PERIMETER_SURFACE_SELECTED = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_SELECTED");?>';
 					var elSel = document.getElementById('selectedSurface');
 					var features = vectors.features;
 					if (features.length == 0 && elSel.options.length == 1) 
@@ -500,7 +477,7 @@ if ($curstep == "2")
 							featureArea = 0;
 						}
 						document.getElementById('totalSurface').value =  parseFloat(featureArea );
-						document.getElementById('EASYSDI_SURFACE_SELECTED').innerHTML = featureArea <= meterToKilometerLimit ? EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_M2+"):" : EASYSDI_SURFACE_SELECTED+" ("+EASYSDI_SURFACE_KM2+"):";
+						document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = featureArea <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
 						document.getElementById('totalSurfaceDisplayed').value = featureArea <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(<?php echo $areaPrecision; ?> ) : parseFloat( parseFloat(featureArea/1000000)).toFixed(<?php echo $areaPrecision; ?> );
 					}
 
@@ -582,7 +559,7 @@ if ($curstep == "2")
 						
 						//Numeric test
 						if(!isNumeric(xVal) || !isNumeric(yVal)){
-							alert('Les coordonnées entrées sont invalides');
+							alert('<?php echo JText::_("SHOP_PERIMETER_MESSAGE__ERROR_COORD_INVALID");?>');
 							return false;
 						}else{
 							xVal = parseFloat(xVal).toFixed(<?php echo $decimal_precision; ?>);
@@ -597,13 +574,10 @@ if ($curstep == "2")
 							{
 								elSel.options[i+1] = new Option (elSel.options[i].text,elSel.options[i].value);
 							}
-
-							//elSel.options[selectedIndex] = new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
 							elSel.options[selectedIndex] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
 						}
 						else
 						{
-							//elSel.options[elSel.options.length] =  new Option(parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>)+" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>),document.getElementById("xText").value+" "+document.getElementById("yText").value);
 							elSel.options[elSel.options.length] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
 						}
 
@@ -616,12 +590,12 @@ if ($curstep == "2")
 					var yVal = document.getElementById("yText").value;
 					
 					if(!isNumeric(xVal)){
-						alert('<?php echo JText::_("EASYSDI_ERROR_COORDX_INVALID");?>' + ' ' + document.getElementById("xText").value);
+						alert('<?php echo JText::_("SHOP_PERIMETER_MESSAGE__ERROR_COORDX_INVALID");?>' + ' ' + document.getElementById("xText").value);
 						return false;
 					}
 					else if (!isNumeric(yVal))
 					{
-						alert('<?php echo JText::_("EASYSDI_ERROR_COORDY_INVALID");?>' + ' '+  document.getElementById("yText").value);
+						alert('<?php echo JText::_("SHOP_PERIMETER_MESSAGE__ERROR_COORDY_INVALID");?>' + ' '+  document.getElementById("yText").value);
 						return false;
 					}
 					else{
@@ -630,7 +604,6 @@ if ($curstep == "2")
 				}
 				
 				function isNumeric(str){
-					//str = alltrim(str);
 					var val = /^[-+]?[0-9]+(\.[0-9]+)?$/.test(str);
 					return val;
 				} 
@@ -649,7 +622,6 @@ if ($curstep == "2")
 							if (elSel.options[i].selected) 
 							{
 								var curValue = elSel.options[i].value;
-								//elSel.options[i].value = document.getElementById("xText").value+" "+document.getElementById("yText").value;
 								elSel.options[i].value = parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>) +" "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>);	
 								elSel.options[i].text = parseFloat(document.getElementById("xText").value).toFixed(<?php echo $decimal_precision; ?>) +" / "+ parseFloat(document.getElementById("yText").value).toFixed(<?php echo $decimal_precision; ?>);				
 								drawSelectedSurface();																		
@@ -712,27 +684,22 @@ if ($curstep == "2")
 				</script>
 
 				<button class="deletePerimeterButton" type="button"
-					onClick="removeSelected();"><?php echo JText::_("EASYSDI_REMOVE_SELECTED_VALUE");?></button>
+					onClick="removeSelected();"><?php echo JText::_("SHOP_PERIMETER_REMOVE_SELECTED_VALUE");?></button>
 
 					<button class="addPerimeterButton" type="button" id="addPerimeterButton"
-						onClick="selectManualPerimeter();"><?php echo JText::_("EASYSDI_SELECT_MANUAL_PERIMETER");?></button>
+						onClick="selectManualPerimeter();"><?php echo JText::_("SHOP_PERIMETER_MANUAL_SELECTION");?></button>
 
 
-						<div id="manualPerimDivId" style="display: none"><?php
-								/*
- <select id="perimetersList"></select>
- <button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("EASYSDI_ADD_MANUAL_PERIMETER");?></button>
- <button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
-								 */
-								?> <?php include 'manual_perimeter.php' ;?></div>
+						<div id="manualPerimDivId" style="display: none">
+						<?php include 'manual_perimeter.php' ;?></div>
 						<div id="manualAddGeometry" style="display: none">
 						<table>
 						<tr>
-						<td><?php echo JText::_("EASYSDI_ADD_Y_TEXT");?></td>
+						<td><?php echo JText::_("SHOP_PERIMETER_ADD_Y_TEXT");?></td>
 						<td><input type="text" id="xText" value=""></td>
 						</tr>
 						<tr>
-						<td><?php echo JText::_("EASYSDI_ADD_X_TEXT");?></td>
+						<td><?php echo JText::_("SHOP_PERIMETER_ADD_X_TEXT");?></td>
 						<td><input type="text" id="yText" value=""></td>
 						</tr>
 						<tr>
@@ -752,9 +719,7 @@ if ($curstep == "2")
 	if ($curstep > 2){
 		$db =& JFactory::getDBO();
 		$bufferValue = $mainframe->getUserState('bufferValue');
-		//$bufferValue = JRequest::getVar('bufferValue');
-
-		$query = "select * from #__easysdi_basemap_definition where def = 1";
+		$query = "select * from #__sdi_basemap where `default` = 1";
 		$db->setQuery( $query);
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -763,7 +728,7 @@ if ($curstep == "2")
 			echo "</div>";
 		}
 
-		$decimal_precision = $rows[0]->decimalPrecisionDisplayed;
+		$decimal_precision = $rows[0]->decimalPrecision;
 		$totalArea = $mainframe->getUserState('totalArea');
 		if (!$totalArea) $totalArea=0;
 		?>
@@ -772,7 +737,7 @@ if ($curstep == "2")
 
 		<?php
 				$perimeter_id = $mainframe->getUserState('perimeter_id');
-				$queryPerimeter = "SELECT perimeter_name FROM #__easysdi_perimeter_definition WHERE id =$perimeter_id";
+				$queryPerimeter = "SELECT name FROM #__sdi_perimeter WHERE id =$perimeter_id";
 				$db->setQuery($queryPerimeter);
 				$perimeter_name = $db->loadResult();
 				if ($db->getErrorNum()) {
@@ -800,14 +765,14 @@ if ($curstep == "2")
 						<div>
 						<h5>
 						<?php
-								echo JText::_("EASYSDI_PERIMETER_SURFACE_TOTALE")." ".renderAreaText($totalArea, true);
+								echo JText::_("SHOP_PERIMETER_SURFACE_TOTALE")." ".renderAreaText($totalArea, true);
 						?></h5>
 						</div>
 						<div>
 						<h5>
 						<?php
 								if ($bufferValue>0){
-									echo JText::_("EASYSDI_BUFFER_VALUE_LABEL")." ".$bufferValue." ".JText::_("EASYSDI_BUFFER_UNIT_LABEL") ;
+									echo JText::_("SHOP_PERIMETER_BUFFER_LABEL")." ".$bufferValue." ".JText::_("SHOP_PERIMETER_BUFFER_UNIT") ;
 								}
 						?>
 						</h5>
@@ -824,13 +789,13 @@ function renderAreaText($surfSqMtr, $langSuffix){
 	if($surfSqMtr <= $meterToKilometerLimit){
 		$text = round($surfSqMtr,$areaPrecision);
 		if($langSuffix)
-			$text .=" ".JText::_("EASYSDI_SURFACE_M2") ;
+			$text .=" ".JText::_("SHOP_PERIMETER_SURFACE_M2") ;
 	}
 	//display km2
 	else if($surfSqMtr > $meterToKilometerLimit){
 		$text = round($surfSqMtr/1000000,$areaPrecision);
 		if($langSuffix)
-			$text .=" ".JText::_("EASYSDI_SURFACE_KM2") ;
+			$text .=" ".JText::_("SHOP_PERIMETER_SURFACE_KM2") ;
 	}
 	return $text;
 }
