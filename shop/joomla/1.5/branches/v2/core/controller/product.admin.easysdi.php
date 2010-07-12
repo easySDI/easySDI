@@ -338,6 +338,7 @@ class ADMIN_product {
 
 		foreach( $_POST['property_id'] as $properties_id )
 		{
+			if($properties_id == -1)continue;
 			$product_property = new product_property($database);
 			$product_property->product_id=$product->id;
 			$product_property->propertyvalue_id=$properties_id;

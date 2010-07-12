@@ -34,6 +34,12 @@ class order extends sdiTable
 	{
 		parent::__construct ( '#__sdi_order', 'id', $db ) ;    		
 	}
+	
+	function updateStatus ($status_id)
+	{
+		$this->status_id = $status_id;
+		return $this->store();
+	}
 
 }
 
@@ -51,9 +57,37 @@ class orderProductListByOrder extends sdiTable
 	{
 		parent::__construct ( '#__sdi_order_product', 'order_id', $db ) ;    		
 	}
+	
+	function delete ()
+	{
+		$this->_db->setQuery( "DELETE FROM #__sdi_order_property  
+								WHERE orderproduct_id 
+								 = $this->id");
+		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			$this->setError($this->_db->getErrorMsg());
+			return false;
+		}
+		return parent::delete();
+	}
 
 }
 
+class orderProduct extends sdiTable
+{	
+	var $order_id=null;
+	var $product_id=null;
+	var $status_id=null;
+	var $filename=null;
+	var $remark=null;
+	var $price=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_order_product', 'id', $db ) ;    		
+	}
+}
 
 class orderProductPerimeterByOrder extends sdiTable
 {	
@@ -70,6 +104,21 @@ class orderProductPerimeterByOrder extends sdiTable
 
 }
 
+class orderPerimeter extends sdiTable
+{	
+	var $order_id=null;
+	var $perimeter_id=null;
+	var $value = null;
+	var $text=null;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_order_perimeter', 'id', $db ) ;    		
+	}
+
+}
+
 class orderProductPropertiesByOrderList extends sdiTable
 {	
 	var $orderproduct_id=null;
@@ -81,6 +130,21 @@ class orderProductPropertiesByOrderList extends sdiTable
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_order_property', 'orderproduct_id', $db ) ;    		
+	}
+
+}
+
+class orderProductProperty extends sdiTable
+{	
+	var $orderproduct_id=null;
+	var $property_id = null;
+	var $propertyvalue_id=null;
+	var $propertyvalue=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_order_property', 'id', $db ) ;    		
 	}
 
 }

@@ -526,7 +526,7 @@ class HTML_cpanel {
 						<option value="-1"><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TREATMENT"); ?></option>
 						 <?php  foreach($treatmentList as $type){ ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($treatmentType==$type->id){?>selected="selected"<?php }?>>
-							<?php echo JText::_($type->translation); ?>
+							<?php echo JText::_($type->label); ?>
 						  </option>
 						 <?php } ?>
 					</select>
@@ -536,7 +536,7 @@ class HTML_cpanel {
 						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TYPE"); ?></option>
 						 <?php  foreach($productTypeFilter as $type){ ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
-							<?php echo JText::_($type->translation); ?>
+							<?php echo JText::_($type->label); ?>
 						  </option>
 						 <?php } ?>
 					</select>
@@ -546,7 +546,7 @@ class HTML_cpanel {
 						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_STATUS"); ?></option>
 						 <?php  foreach($productStatusFilter as $stat){ ?>
 					         <option value="<?php echo $stat->id;?>" <?php if ($orderStatus==$stat->id){?>selected="selected"<?php }?>>
-							<?php echo JText::_($stat->translation); ?>
+							<?php echo JText::_($stat->label); ?>
 						  </option>
 						 <?php } ?>
 					</select>
