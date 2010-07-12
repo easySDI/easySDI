@@ -69,31 +69,6 @@ class TOOLBAR_object{
 		
 		JToolBarHelper::custom( 'backHistoryAssign', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
 	}
-	function _VIEW() {
-		global $mainframe;
-		$database=& JFactory::getDBO();
-		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
-		$object_id = $cid[0];
-		$object = new object($database);
-		$object->load($object_id);
-		$object_name = "\"".$object->name."\"";
-		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTLINK")." ".$object_name);
-		
-		JToolBarHelper::custom( 'backObjectLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
-	}
-	function _MANAGE() {
-		global $mainframe;
-		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
-		
-		$database=& JFactory::getDBO();
-		$object_id = $cid[0]; 
-		$object = new object($database);
-		$object->load($object_id);
-		$object_name = "\"".$object->name."\"";
-		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTLINK")." ".$object_name);
-		
-		//JToolBarHelper::save('saveObjectLink');
-		JToolBarHelper::custom( 'backObjectLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
-	}
+	
 }
 ?>

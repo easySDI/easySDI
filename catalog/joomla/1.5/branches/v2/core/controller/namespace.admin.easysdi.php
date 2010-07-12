@@ -17,36 +17,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-?>
-<script type="text/javascript">
-	function submitbutton(pressbutton) 
-	{
-		var form = document.adminForm;
-		if (pressbutton != 'saveNamespace' && pressbutton != 'applyNamespace') {
-			submitform( pressbutton );
-			return;
-		}
-		// do field validation
-		if (form.name.value == "") 
-		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-		}
-		else if (form.prefix.value == "") 
-		{
-		alert( "<?php echo JText::_( 'You must provide a prefix.', true ); ?>" );
-		} 
-		else if (form.uri.value == "") 
-		{
-		alert( "<?php echo JText::_( 'You must provide an uri.', true ); ?>" );
-		} 
-		else 
-		{
-			submitform( pressbutton );
-		}
-	}
-</script>
-
-<?php 
 class ADMIN_namespace {
 	function listNamespace($option)
 	{
@@ -154,6 +124,36 @@ class ADMIN_namespace {
 	
 	function saveNamespace($option)
 	{
+		?>
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveNamespace' && pressbutton != 'applyNamespace') {
+					submitform( pressbutton );
+					return;
+				}
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+				}
+				else if (form.prefix.value == "") 
+				{
+				alert( "<?php echo JText::_( 'You must provide a prefix.', true ); ?>" );
+				} 
+				else if (form.uri.value == "") 
+				{
+				alert( "<?php echo JText::_( 'You must provide an uri.', true ); ?>" );
+				} 
+				else 
+				{
+					submitform( pressbutton );
+				}
+			}
+		</script>
+		
+		<?php 
 		global $mainframe;
 			
 		$database=& JFactory::getDBO(); 

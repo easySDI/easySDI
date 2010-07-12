@@ -411,6 +411,7 @@ if ($rowObject->updated)
 					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderObject' ); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECT_MANAGEVERSION"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_OBJECT_SUPPLIERNAME"), 'account_name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
@@ -488,6 +489,32 @@ if ($rowObject->updated)
 					}
 					?>
 					</td>
+					<td align="center">
+						<?php 
+						if ($row->hasVersioning)
+						{
+						?>
+							<?php $link =  "index.php?option=$option&amp;task=listObjectVersion&object_id=$row->id";?>
+							<?php 
+							if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+							{
+								?>
+								<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+								<?php
+							} 
+							else 
+							{
+								?>
+								<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_MANAGEVERSION' ); ?>">
+									<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+								</a>
+								<?php
+							}
+							?>
+							<?php
+						}
+						?>							
+					</td>
 					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'object_'); ?></td>
 					<td><?php echo $row->account_name; ?></td>						
 					<td><?php echo JText::_($row->description); ?></td>		
@@ -520,7 +547,7 @@ if ($rowObject->updated)
 			</tbody>
 			<tfoot>
 			<tr>	
-			<td colspan="14"><?php echo $page->getListFooter(); ?></td>
+			<td colspan="15"><?php echo $page->getListFooter(); ?></td>
 			</tr>
 			</tfoot>
 			</table>
@@ -592,447 +619,6 @@ if ($rowObject->updated)
 			
 	}
 	
-	function viewObjectLink($parent_objectlinks, $child_objectlinks, $object_id, $option)
-	{
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-
-		$uri =& JUri::getInstance();
-		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		
-		$javascript = "";
 	
-		?>
-			<form action="index.php" method="post" name="adminForm" id="adminForm"
-			class="adminForm">
-			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
-			</form>
-		<?php
-		
-		$javascript .="
-			var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
-			Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
-			
-			// Column Model shortcut array
-			var cols = [
-				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name'}
-			];
-			
-			var parentGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
-		        data   : ".HTML_metadata::array2json(array ("total"=>count($parent_objectlinks), "links"=>$parent_objectlinks)).",
-				root   : 'links'
-		    });
-		    
-			// declare the source Grid
-		    var parentGrid = new Ext.grid.GridPanel({
-				store            : parentGridStore,
-		        columns          : cols,
-				stripeRows       : true,
-		        autoExpandColumn : 'name',
-		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_PARENTGRID_TITLE"))."'
-		    });
-		
-		    var childGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
-		        data   : ".HTML_metadata::array2json(array ("total"=>count($child_objectlinks), "links"=>$child_objectlinks)).",
-				root   : 'links'
-		    });
-		
-		    // create the destination Grid
-		    var childGrid = new Ext.grid.GridPanel({
-				store            : childGridStore,
-		        columns          : cols,
-				stripeRows       : true,
-		        autoExpandColumn : 'name',
-		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_CHILDGRID_TITLE"))."'
-		    });
-		    
-			// Créer le formulaire qui va contenir la structure
-			var form = new Ext.form.FormPanel(
-				{
-					id:'linksForm',
-					url: 'index.php',
-					border:false,
-			        collapsed:false,
-			        renderTo: document.getElementById('formContainer'),
-			        items        : [
-			        	{
-			        		xtype		 : 'panel',
-							width        : 650,
-							height       : 300,
-							layout       : 'hbox',
-							defaults     : { flex : 1 }, //auto stretch
-							layoutConfig : { align : 'stretch' },
-							items        : [
-								parentGrid,
-								childGrid
-							]
-						}
-					]
-			    }
-			);
-	        
-			// Affichage du formulaire
-    		form.doLayout();
-    	";
-					
-		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
-	}
-	
-	function manageObjectLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $object_id, $option)
-	{
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-		JHTML::script('Components_extjs.js', 'administrator/components/com_easysdi_catalog/js/');
-		
-		$uri =& JUri::getInstance();
-		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		
-		$javascript = "";
-	
-		?>
-			<form action="index.php" method="post" name="adminForm" id="adminForm"
-			class="adminForm">
-			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
-			</form>
-		<?php
-		
-		$javascript .="
-			var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
-			Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
-			
-			// Column Model shortcut array
-			var cols = [
-				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true}
-			];
-			
-			var unselectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
-		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
-				root   : 'links'
-		    });
-		    
-			// declare the source Grid
-		    var unselectedGrid = new Ext.grid.GridPanel({
-		    	id				 : 'unselected',
-				ddGroup          : 'selectedGridDDGroup',
-		        ds				 : getObjectList(),
-				columns          : cols,
-				enableDragDrop   : true,
-		        stripeRows       : true,
-		        autoExpandColumn : 'name',
-		        flex			 : 5,
-		        loadMask		 : true,
-		        frame			 : false,
-				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_UNSELECTEDGRID_TITLE"))."',
-		        viewConfig: {
-							 	forceFit: true,
-								scrollOffset:0
-							 }
-		    });
-			    
-		    var selectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
-		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
-				root   : 'links'
-		    });
-				    
-		    // create the destination Grid
-		    var selectedGrid = new Ext.grid.GridPanel({
-				id				 : 'selected',
-				ddGroup          : 'unselectedGridDDGroup',
-		        store            : selectedGridStore,
-		        columns          : cols,
-				enableDragDrop   : true,
-		        stripeRows       : true,
-		        autoExpandColumn : 'name',
-		        flex			 : 5,
-		        loadMask		 : true,
-		        frame			 : false,
-				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTLINK_SELECTEDGRID_TITLE"))."'
-		    });
-		    
-		    var htmlButtons = new Ext.Panel({
-				id				 : 'htmlButtons',
-				frame			 : false,
-				border			 : false,
-				layout      	 : 'vbox',
-				flex			 : 1,
-				layoutConfig	 : { align : 'center', pack:'center'},
-				defaults		 : {margins:'0 0 5 0'},
-                items			 : [
-									{
-										xtype: 'button',
-										text: '<<',
-										handler: function()
-						                {
-						                	var unselected = Ext.getCmp('unselected');
-						                	var selected = Ext.getCmp('selected');                
-			 								
-											selected.store.removeAll();	
-			 								unselected.store.reload({                    
-			 									params: 
-			 									{ 
-				 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-				 									id:Ext.getCmp('id').getValue(),
-				 									name:Ext.getCmp('name').getValue(),
-				 									status:Ext.getCmp('status').getValue(),
-				 									manager:Ext.getCmp('manager').getValue(),
-				 									editor:Ext.getCmp('editor').getValue(),
-				 									fromDate:Ext.getCmp('fromDate').getValue(),
-				 									toDate:Ext.getCmp('toDate').getValue(),
-				 									selectedObjects: ''
-												}                
-											});	
-						                }
-									},
-									{
-										xtype: 'button',
-										text: '<',
-										handler: function()
-						                {
-						                	var unselected = Ext.getCmp('unselected');
-						                	var selected = Ext.getCmp('selected');                
-			 								
-						                	var records = selected.selModel.getSelections();
-			 								Ext.each(records, selected.store.remove, selected.store);
-	                        				
-			 								var selectedValues = new Array();
-			 								var grid = Ext.getCmp('selected').store.data;
-			 								for (var i = 0 ; i < grid.length ;i++) 
-			 								{
-			 									selectedValues.push(grid.get(i).get('value'));
-											}
-											
-			 								unselected.store.reload({                    
-			 									params: 
-			 									{ 
-				 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
-				 									id:Ext.getCmp('id').getValue(),
-				 									name:Ext.getCmp('name').getValue(),
-				 									status:Ext.getCmp('status').getValue(),
-				 									manager:Ext.getCmp('manager').getValue(),
-				 									editor:Ext.getCmp('editor').getValue(),
-				 									fromDate:Ext.getCmp('fromDate').getValue(),
-				 									toDate:Ext.getCmp('toDate').getValue(),
-				 									selectedObjects: selectedValues.join(', ')
-												}                
-											});	
-						                }
-									},
-									{
-										xtype: 'button',
-										text: '>',
-										handler: function()
-						                {
-						                	var unselected = Ext.getCmp('unselected');
-						                	var selected = Ext.getCmp('selected');                
-			 								var records = unselected.selModel.getSelections();
-			 								Ext.each(records, unselected.store.remove, unselected.store);
-	                        				selected.store.add(records);
-                        					selected.store.sort('name', 'ASC');
-						                }
-									},
-									{
-										xtype: 'button',
-										text: '>>',
-										handler: function()
-						                {
-						                	var unselected = Ext.getCmp('unselected');
-						                	var selected = Ext.getCmp('selected');                
-			 								var records = unselected.store.getRange();
-			 								Ext.each(records, unselected.store.remove, unselected.store);
-	                        				selected.store.add(records);
-                        					selected.store.sort('name', 'ASC');
-						                }
-									}
-								   ]
-		    });
-		    
-		    var objecttype = new Array();
-		    objecttype['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_OBJECTTYPE_LABEL'))."';
-			objecttype['list'] = $listObjecttypes;
-			
-			var id = new Array();
-		    id['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_ID_LABEL'))."';
-			
-			var name = new Array();
-		    name['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_NAME_LABEL'))."';
-			
-		    var status = new Array();
-		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_STATUS_LABEL'))."';
-			status['list'] = $listStatus;
-			
-			var manager = new Array();
-		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_MANAGER_LABEL'))."';
-			manager['list'] = $listManagers;
-			
-			var editor = new Array();
-		    editor['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_EDITOR_LABEL'))."';
-			editor['list'] = $listEditors;
-			
-			var fromDate = new Array();
-		    fromDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_FROMDATE_LABEL'))."';
-			
-		    var toDate = new Array();
-		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTLINK_TODATE_LABEL'))."';
-			
-		    // Créer le formulaire qui va contenir la structure
-			var form = new Ext.form.FormPanel(
-				{
-					id:'linksForm',
-					url: 'index.php',
-					method: 'POST',
-					border: false,
-			        collapsed: false,
-			        labelWidth: 200,
-					renderTo: document.getElementById('formContainer'),
-			        standardSubmit:true,
-			        items        : [
-			        	manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate),
-			        	{
-			        		id			: 'gridPanel',
-			        		xtype		 : 'panel',
-							width        : 650,
-							height       : 300,
-							layout       : 'hbox',
-							border		 : false,
-							layoutConfig : { align: 'stretch', pack : 'start', padding: '10 10 10 10'},
-                            items        : [
-								unselectedGrid,
-								htmlButtons,
-								selectedGrid
-							]
-						},
-				       { 
-				         id:'objectlinks', 
-				         xtype: 'hidden',
-				         value:'' 
-				       },
-				       { 
-				         id:'task', 
-				         xtype: 'hidden',
-				         value:'saveObjectLink' 
-				       },
-				       { 
-				         id:'option', 
-				         xtype: 'hidden',
-				         value:'".$option."' 
-				       },
-				       { 
-				         id:'object_id', 
-				         xtype: 'hidden',
-				         value:'".$object_id."' 
-				       }
-					],
-					buttons: [
-						{
-							text:'".html_Metadata::cleanText(JText::_('CORE_SAVE'))."',
-		                    handler: function(){
-		                    	var selectedValues = new Array();
-					 			var grid = Ext.getCmp('selected').store.data;
-							 	for (var i = 0 ; i < grid.length ;i++) 
-					 			{
-					 				selectedValues.push(grid.get(i).get('value'));
-								}
-								
-		                    	form.getForm().setValues({objectlinks: selectedValues.join(', ')});
-							    form.getForm().submit();
-		                    	}
-						}
-					]
-			    }
-			);
-
-			/****
-	        * Setup Drop Targets
-	        ***/
-	        // This will make sure we only drop to the  view scroller element
-	        var unselectedGridDropTargetEl =  unselectedGrid.getView().scroller.dom;
-	        var unselectedGridDropTarget = new Ext.dd.DropTarget(unselectedGridDropTargetEl, {
-	                ddGroup    : 'unselectedGridDDGroup',
-	                notifyDrop : function(ddSource, e, data){
-	                       var records =  ddSource.dragData.selections;
-	                       Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
-	                        //unselectedGrid.store.add(records);
-	                        //unselectedGrid.store.sort('name', 'ASC');
-	                        
-	                        var selectedValues = new Array();
-				 			var grid = Ext.getCmp('selected').store.data;
-						 	for (var i = 0 ; i < grid.length ;i++) 
-				 			{
-				 				selectedValues.push(grid.get(i).get('value'));
-							}
-							
-				 			unselectedGrid.store.reload({                    
-				 			params: { 
-				 				selectedObjects: selectedValues.join(', ')
-								}                
-							});	
-							
-	                        return true
-	                }
-	        });
-	
-	
-	        // This will make sure we only drop to the view scroller element
-	        var selectedGridDropTargetEl = selectedGrid.getView().scroller.dom;
-	        var selectedGridDropTarget = new Ext.dd.DropTarget(selectedGridDropTargetEl, {
-	                ddGroup    : 'selectedGridDDGroup',
-	                notifyDrop : function(ddSource, e, data){
-	                		var records =  ddSource.dragData.selections;
-	                        Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
-	                        selectedGrid.store.add(records);
-	                        selectedGrid.store.sort('name', 'ASC');
-	                        return true
-	                }
-	        });
-	        
-			// Affichage du formulaire
-    		form.doLayout();
-    		
-    		// Remplir une première fois les valeurs sélectionnées
-    		var selectedValues = new Array();
- 			var grid = Ext.getCmp('selected').store.data;
- 			for (var i = 0 ; i < grid.length ;i++) 
- 			{
- 				selectedValues.push(grid.get(i).get('value'));
-			}
-			
-			unselectedGrid.store.load({params: {selectedObjects: selectedValues.join(', ')}});
-    		
-    		function getObjectList()
-			{
-				var ds = new Ext.data.Store({
-					        proxy: new Ext.data.HttpProxy({
-					            url: 'index.php?option=com_easysdi_catalog&task=getObjectForLink'
-					        }),
-					        reader: new Ext.data.JsonReader({
-					            root: 'links',
-					            totalProperty: 'total',
-					            id: 'value'
-					        }, [
-					            {name: 'value', mapping: 'value'},
-					            {name: 'name', mapping: 'name'}
-					        ]),
-					        // turn on remote sorting
-					        remoteSort: true,
-					        baseParams: {limit:100, dir:'ASC', sort:'name', object_id:'".$object_id."'}
-					    });
-				return ds;
-			}
-    	";
-					
-		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
-	}
 }
 ?>

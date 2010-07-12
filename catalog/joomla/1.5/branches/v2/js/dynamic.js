@@ -183,10 +183,17 @@
 	            '{key}',
 	        '</div></tpl>'
 	    );
-	    
+	    //console.log(store.getAt(1).get('id'));
+	    //console.log(store.getAt(1).get('key'));
+
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
 		optional = !mandatory;
+		
+		displayField='id';
+		//console.log(store.getAt(1).get('id') == '');
+		if (store.getAt(1).get('id') == '')
+			displayField='key';
 		
 		//alert(id + " - " + value);
 		//console.log(id + " - " + value);
@@ -206,7 +213,7 @@
             minOccurs:min,
             maxOccurs:max,
             editable:false,
-            displayField:'id',
+            displayField:displayField,
             valueField:'guid',
             value:value,
             defaultVal:defaultVal,
@@ -385,6 +392,7 @@
 	            blankText: mandatoryMsg,
 	            regex: eval("/"+regex+"/"),
 	            regexText: regexMsg,
+	            invalidText: regexMsg,
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
@@ -424,6 +432,7 @@
 	            blankText: mandatoryMsg,
 	            regex: eval("/"+regex+"/"),
 	            regexText: regexMsg,
+	            invalidText: regexMsg,
 	            minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,

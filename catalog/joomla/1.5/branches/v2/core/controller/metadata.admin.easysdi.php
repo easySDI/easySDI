@@ -411,7 +411,7 @@ class ADMIN_metadata {
 						 rel.classassociation_id as association_id,
 						 a.guid as attribute_guid,
 						 a.name as attribute_name, 
-						 CONCAT(attribute_namespace.prefix,':',a.name) as attribute_isocode, 
+						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
 						 a.default as attribute_default, 
@@ -423,7 +423,7 @@ class ADMIN_metadata {
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
-						 CONCAT(child_namespace.prefix,':',c.name) as child_isocode, 
+						 CONCAT(child_namespace.prefix,':',c.isocode) as child_isocode, 
 						 accountrel_class.account_id as classaccount_id
 				  FROM	 #__sdi_relation as rel 
 						 JOIN #__sdi_relation_profile as prof
@@ -1416,7 +1416,7 @@ class ADMIN_metadata {
 			else if ($child->objecttype_id <> null)
 			{
 				$name = $parentName."-".str_replace(":", "_", $child->rel_isocode);
-	
+				
 				// Récupération des valeurs postées correspondantes
 				$keys = array_keys($_POST);
 				$usefullVals=array();
@@ -1500,8 +1500,9 @@ class ADMIN_metadata {
 					$nextIsocode = $child->rel_isocode;
 					if ($child->association_id <>0)
 					{
+						$associationName = $name."__".($pos+1);
 						// Appel récursif de la fonction pour le traitement du prochain niveau
-						ADMIN_metadata::buildXMLTree($child->association_id, $parent, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						ADMIN_metadata::buildXMLTree($child->association_id, $child->objecttype_id, $associationName, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 					}
 				}
 			}

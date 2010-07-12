@@ -19,6 +19,55 @@ defined('_JEXEC') or die('Restricted access');
 
 
 class TOOLBAR_objectversion {
+	function _EDIT(){
+		global $mainframe;
+		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+		
+		if (intval($cid[0]) == 0) // New
+			$text = JText::_("CORE_NEW");
+		else // Edit
+			$text = JText::_("CORE_EDIT");
+		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
+		
+		JToolBarHelper::save('saveObjectVersion');
+		JToolBarHelper::apply('applyObjectVersion');
+		JToolBarHelper::cancel('cancelObjectVersion');
+		if (intval($cid[0]) <> 0) // Edit
+		{
+			JToolBarHelper::spacer();
+			JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		}
+	}
+	
+	function _DEFAULT() {
+		global $mainframe;
+		
+		$database=& JFactory::getDBO();
+		if (array_key_exists('object_id', $_GET))
+			$object_id = $_GET['object_id'];
+		else
+			$object_id = JRequest::getVar ('object_id', array(0) );
+		 
+		$object = new object($database);
+		$object->load($object_id);
+		$object_name = "\"".$object->name."\"";
+		
+		JToolBarHelper::title(JText::_("CATALOG_OBJECTVERSION_TITLE")." ".$object_name); 
+		
+		JToolBarHelper::addNew('newObjectVersion');
+		JToolBarHelper::editList('editObjectVersion');
+		JToolBarHelper::custom('historyAssignMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_HISTORYASSIGN_METADATA"), false );
+		JToolBarHelper::custom('archiveObjectVersion', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_ARCHIVE_METADATA"), false );
+		JToolBarHelper::deleteList('','deleteObjectVersion');
+		JToolBarHelper::spacer();
+		//JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		JToolBarHelper::custom('viewObjectVersionLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTVERSIONLINK"), false );
+		JToolBarHelper::custom('manageObjectVersionLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTVERSIONLINK"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'backObjectVersion', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+	}
+	
 	function _NEW() {
 		global $mainframe;
 		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
@@ -33,6 +82,34 @@ class TOOLBAR_objectversion {
 		
 		JToolBarHelper::save('saveObjectVersion');
 		JToolBarHelper::cancel('cancelObjectVersion');
+	}
+	
+	function _VIEW() {
+		global $mainframe;
+		$database=& JFactory::getDBO();
+		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+		$objectversion_id = $cid[0];
+		$objectversion = new objectversion($database);
+		$objectversion->load($objectversion_id);
+		
+		$objectversion_name = "\"".$objectversion->name."\"";
+		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$objectversion_name);
+		
+		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+	}
+	function _MANAGE() {
+		global $mainframe;
+		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+		
+		$database=& JFactory::getDBO();
+		$objectversion_id = $cid[0];
+		$objectversion = new objectversion($database);
+		$objectversion->load($objectversion_id);
+		$objectversion_name = "\"".$objectversion->name."\"";
+		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$object_name);
+		
+		//JToolBarHelper::save('saveObjectLink');
+		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
 	}
 }
 ?>

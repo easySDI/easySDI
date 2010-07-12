@@ -246,6 +246,13 @@ class HTML_metadata {
 		
 		$database =& JFactory::getDBO();
 		
+		$language =& JFactory::getLanguage();
+		
+		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else
+			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
 	
@@ -549,7 +556,7 @@ class HTML_metadata {
 													
 													// Retour à la page précédente
 													//history.back();
-													window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+													window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -630,7 +637,7 @@ class HTML_metadata {
 												success: function(form, action) 
 												{
 													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-							  						window.open ('./index.php?tmpl=component&option=".$option."&task=listMetadata','_parent');
+							  						window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -1059,7 +1066,7 @@ class HTML_metadata {
 									handler: function()
 					                {
 					                	//history.back();
-					                	window.open ('./index.php?tmpl=component&option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');
+					                	window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');
 						        	}})
 						        );
 				form.render();";
@@ -1119,7 +1126,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 						 rel.classassociation_id as association_id,
 						 a.guid as attribute_guid,
 						 a.name as attribute_name, 
-						 CONCAT(attribute_namespace.prefix,':',a.name) as attribute_isocode, 
+						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
 						 a.default as attribute_default, 
@@ -1132,7 +1139,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 						 accountrel_attribute.account_id as attributeaccount_id,
 						 c.name as child_name,
 						 c.guid as class_guid, 
-						 CONCAT(child_namespace.prefix,':',c.name) as child_isocode, 
+						 CONCAT(child_namespace.prefix,':',c.isocode) as child_isocode, 
 						 accountrel_class.account_id as classaccount_id
 				  FROM	 #__sdi_relation as rel 
 						 JOIN #__sdi_relation_profile as prof
@@ -3817,9 +3824,34 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 			// On construit le nom de l'occurence qui a forcément l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
-					// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
-					// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
-					$classScope = $scope;
+					// Traitement de la relation entre la classe parent et la classe enfant
+					// S'il y a au moins une occurence de la relation dans le XML, on change le scope
+					//echo "relcount: ".$relCount." - ".$node->item($pos)->nodeName."<br>";
+					if ($relCount > 0)
+						$relScope = $node->item($pos);
+					else
+						$relScope = $scope;
+						
+					// Traitement de la classe enfant
+					if ($relCount > 0)
+					{					
+						// Récupération du noeud XML correspondant au code ISO de la relation
+						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
+						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
+						//echo "Trouve ".$childnode->length." fois<br>";
+						// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
+						//$childCount = $node->length;
+						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
+			
+						// Si on a trouvé des occurences, on modifie le scope.
+						if ($childnode->length > 0)
+							$classScope = $childnode->item(0);
+						else
+							$classScope = $relScope;	
+					}
+					else
+						$classScope = $relScope;
+					
 					
 					// Construction du fieldset
 					$fieldsetName = "fieldset".$child->rel_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -3862,9 +3894,30 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					// On construit le nom de l'occurence qui a forcément l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__".($pos+1);
 				
-					// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
-					// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
-					$classScope = $scope;
+					// Traitement de la relation entre la classe parent et la classe enfant
+					$relScope = $node->item($pos-1);
+					
+					// Traitement de la classe enfant
+					if ($relCount > 0)
+					{					
+						// Récupération du noeud XML correspondant au code ISO de la relation
+						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
+						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
+						//echo "Trouve ".$childnode->length." fois<br>";
+						// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
+						//$childCount = $node->length;
+						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
+			
+						// Si on a trouvé des occurences, on modifie le scope.
+						if ($childnode->length > 0)
+							$classScope = $childnode->item(0);
+						else
+							$classScope = $relScope;	
+					}
+					else
+						$classScope = $relScope;
+							
+					
 						
 					// Construction du fieldset
 					$fieldsetName = "fieldset".$child->rel_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -4763,7 +4816,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		$tbar[] ="{text: '".JText::_('CORE_CANCEL')."',
 					handler: function()
 	                {
-	                	window.open ('./index.php?tmpl=component&option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');
+	                	window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');
 		        	}}";
 				
 		return implode(', ', $tbar);

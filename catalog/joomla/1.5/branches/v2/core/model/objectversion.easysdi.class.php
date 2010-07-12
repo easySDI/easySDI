@@ -24,11 +24,10 @@ class objectversion extends sdiTable
 	var $metadata_id=null;
 	var $parent_id=null;
 	
-	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_object_version', 'id', $db ) ;
+		parent::__construct ( '#__sdi_objectversion', 'id', $db ) ;
 	}
 }
 ?>
