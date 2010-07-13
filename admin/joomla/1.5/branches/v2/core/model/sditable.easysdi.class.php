@@ -42,7 +42,7 @@ class sdiTable extends JTable
 		$user = JFactory::getUser();
 		$account = new accountByUserId($this->_db);
 		$account->load($user->id);
-		if ($this->id == '0'){
+		if ($this->id == null || $this->id == '0'){
 			$this->created =date('Y-m-d H:i:s');
 			$this->createdby = $account->id;	 			 			
 		}
