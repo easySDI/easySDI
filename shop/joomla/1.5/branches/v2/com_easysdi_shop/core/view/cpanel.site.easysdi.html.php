@@ -184,7 +184,7 @@ class HTML_cpanel {
 							 }
 						}
 							
-						document.getElementById('id').value='<?php echo $row->id ;?>';
+						document.getElementById('order_id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='orderDraft';
 						document.getElementById('ordersListForm').submit();
 					}
@@ -201,8 +201,8 @@ class HTML_cpanel {
 					<td class="logo">
 					<div class="savedOrderSuppress" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_SUPPRESS") ?>"
 					onClick="
-					if (confirm('<?php echo JText::_("EASYSDI_ORDER_SUPPRESS_CONFIRM_ACTION") ?>')){
-						document.getElementById('id').value='<?php echo $row->id ;?>';
+					if (confirm('<?php echo JText::_("SHOP_ORDER_SUPPRESS_CONFIRM_ACTION") ?>')){
+						document.getElementById('order_id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='suppressOrder';
 						document.getElementById('ordersListForm').submit();
 						return true;
@@ -224,13 +224,13 @@ class HTML_cpanel {
 					</td>
 					<td class="logo">
 					<div class="savedOrderCopy" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_COPY") ?>"
-					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('order_id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<td class="logo">
 					<div class="savedOrderArchive" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_ARCHIVE") ?>"
 					onClick="
 					if (confirm('<?php echo JText::_("SHOP_ORDER_ARCHIVE_CONFIRM_ACTION") ?>')){
-						document.getElementById('id').value='<?php echo $row->id ;?>';
+						document.getElementById('order_id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='archiveOrder';
 						document.getElementById('ordersListForm').submit();
 						return true;
@@ -253,7 +253,7 @@ class HTML_cpanel {
 					?>
 					<td class="logo">
 					<div class="savedOrderCopy" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_COPY") ?>"
-					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('order_id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<?php 
 					}else{ 
@@ -921,20 +921,18 @@ class HTML_cpanel {
 			</tr>
 			
 			<?php
-			
 			//Get product properties
 			if(!$isInMemory)
 			{
-				$queryPropertiesCode = "SELECT DISTINCT code 
+				$queryPropertiesCode = "SELECT DISTINCT property_id 
 											FROM #__sdi_order_property 
 											WHERE orderproduct_id =$row->plId";
 				$db->setQuery($queryPropertiesCode);
 				$rowsPropertiesCode = $db->loadObjectList();
-				echo $queryPropertiesCode;
 			}
 			else
 			{
-				$query = "SELECT DISTINCT a.code as code 
+				$query = "SELECT DISTINCT a.property_id as property_id 
 						  FROM #__sdi_product_property b, 
 							   #__sdi_property  as a ,
 							   #__sdi_property_value as c  
@@ -952,23 +950,25 @@ class HTML_cpanel {
 				{
 					$queryProductProperties = "SELECT * FROM #__sdi_order_property 
 														where orderproduct_id =$row->plId 
-														AND code = '$rowPropertyCode->code'";
+														AND property_id = '$rowPropertyCode->property_id'";
 					$db->setQuery($queryProductProperties);
 					$rowsProductProperties = $db->loadObjectList();
 				}
 				else
 				{
 					$query = "SELECT b.propertyvalue_id as property_id, 
-									 c.value as property_value, 
-									 a.code as code, 
+									 t.label as propertyvalue, 
+									 a.property_id as property_id, 
 									 a.type as type_code 
 								FROM #__sdi_product_property b, 
 									 #__sdi_property a ,
-									 #__sdi_property_value c  
+									 #__sdi_property_value c, 
+									  #__sdi_translation t
 								WHERE a.id = c.property_id 
 								AND b.propertyvalue_id = c.id 
 								AND b.product_id = ". $row->id." 
-						 		AND a.code = '$rowPropertyCode->code' order by a.ordering";
+								AND t.element_guid = c.guid
+						 		AND a.property_id = '$rowPropertyCode->property_id' order by a.ordering";
 					
 					$db->setQuery( $query );
 					$rowsProductProperties = $db->loadObjectList();
@@ -985,7 +985,7 @@ class HTML_cpanel {
 								$temp[] = $rowProductProperties;
 								break;
 							case "list":
-								$propr  = $mainframe->getUserState($rowPropertyCode->code."_list_property_".$row->id);
+								$propr  = $mainframe->getUserState($rowPropertyCode->property_id."_list_property_".$row->id);
 								if(count($propr)>0){
 									if($propr[0] == $rowProductProperties->property_id)
 										$temp[] = $rowProductProperties;
@@ -995,11 +995,11 @@ class HTML_cpanel {
 								$temp[] = $rowProductProperties;
 								break;
 							case "textarea":
-								$propr  = $mainframe->getUserState($rowPropertyCode->code."_textarea_property_".$row->id);
+								$propr  = $mainframe->getUserState($rowPropertyCode->property_id."_textarea_property_".$row->id);
 								$temp[] = $rowProductProperties;
 								break;
 							case "cbox":
-								$propr  = $mainframe->getUserState($rowPropertyCode->code."_cbox_property_".$row->id);
+								$propr  = $mainframe->getUserState($rowPropertyCode->property_id."_cbox_property_".$row->id);
 								if(count($propr)>0){
 									for($i = 0; $i < count($propr); $i++){
 										if($propr[$i] == $rowProductProperties->property_id)
@@ -1008,7 +1008,7 @@ class HTML_cpanel {
 								}
 								break;
 							case "mlist":
-								$propr  = $mainframe->getUserState($rowPropertyCode->code."_mlist_property_".$row->id);
+								$propr  = $mainframe->getUserState($rowPropertyCode->property_id."_mlist_property_".$row->id);
 								if(count($propr)>0){
 									for($i = 0; $i < count($propr); $i++){
 										if($propr[$i] == $rowProductProperties->property_id)
@@ -1025,10 +1025,10 @@ class HTML_cpanel {
 				<tr>
 				<td class="ortitle4">
 				<?php
-						$queryProperty = "SELECT t.label, 
+						$queryProperty = "SELECT t.label as translation, 
 												 p.type 
 											FROM #__sdi_property p, #__sdi_translation t
-											WHERE code = '$rowPropertyCode->code'
+											WHERE p.id = '$rowPropertyCode->property_id'
 											AND t.element_guid = p.guid";
 						$db->setQuery($queryProperty);
 						$rowProperty = $db->loadObject();
@@ -1045,7 +1045,7 @@ class HTML_cpanel {
 					<tr>
 					<td>
 					<?php 
-					if($rowProductProperties->property_id == 0)
+					if($rowProductProperties->propertyvalue_id == 0)
 					{	
 						if($rowProperty->type == 'message')
 						{
@@ -1059,7 +1059,7 @@ class HTML_cpanel {
 					else
 					{
 						$queryProperty = "SELECT t.label as translation, 
-												 a.type_code as type_code
+												 a.type as type_code
 											FROM #__sdi_product_property b,
 												 #__sdi_property a ,
 												 #__sdi_property_value c,
@@ -1067,18 +1067,23 @@ class HTML_cpanel {
 											WHERE a.id = c.property_id 
 											and b.propertyvalue_id = c.id 
 											AND t.element_guid = c.guid
-											and c.id = $rowProductProperties->property_id";
+											and c.id = $rowProductProperties->propertyvalue_id";
 						
 						$db->setQuery($queryProperty);
 						$rowProperty = $db->loadObject();
 						
-						if($isInMemory && $rowProperty->type_code == "text"){
-							echo $mainframe->getUserState($rowPropertyCode->code."_text_property_".$row->id);
-						}else if($isInMemory && $rowProperty->type_code == "textarea"){
-							$prop = $mainframe->getUserState($rowPropertyCode->code."_textarea_property_".$row->id);
+						if($isInMemory && $rowProperty->type == "text")
+						{
+							echo $mainframe->getUserState($rowPropertyCode->property_id."_text_property_".$row->id);
+						}
+						else if($isInMemory && $rowProperty->type == "textarea")
+						{
+							$prop = $mainframe->getUserState($rowPropertyCode->property_id."_textarea_property_".$row->id);
 							for($i = 0; $i < count($propr); $i++)
 								echo $prop[$i];
-						}else{
+						}
+						else
+						{
 							echo JText::_($rowProperty->translation);
 						}
 						

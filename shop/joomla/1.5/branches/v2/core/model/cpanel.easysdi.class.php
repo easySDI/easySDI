@@ -45,12 +45,21 @@ class order extends sdiTable
 	{
 		$this->_db->setQuery("DELETE FROM #__sdi_order_property WHERE orderproduct_id IN (SELECT id FROM #__sdi_order_product WHERE order_id = $this->id)");
 		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
 		
 		$this->_db->setQuery("DELETE FROM #__sdi_order_product WHERE order_id = $this->id");
 		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
 		
 		$this->_db->setQuery("DELETE FROM #__sdi_order_perimeter WHERE order_id = $this->id");
 		$this->_db->query();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
 		
 		return $this->delete();
 	}
@@ -79,7 +88,6 @@ class orderProductListByOrder extends sdiTable
 								 = $this->id");
 		$this->_db->query();
 		if ($this->_db->getErrorNum()) {
-			$this->setError($this->_db->getErrorMsg());
 			return false;
 		}
 		return parent::delete();

@@ -192,9 +192,6 @@ class SITE_cpanel {
 		$option = JRequest::getVar('option');
 		$devis_to_order = JRequest::getVar('devis_to_order',0);
 		//Order
-//		$query = "SELECT * FROM #__sdi_order WHERE id=$order_id";
-//		$database->setQuery($query);
-//		$order = $database->loadObject();
 		$order = new order ($database);
 		$order->load($order_id);
 		
@@ -254,41 +251,40 @@ class SITE_cpanel {
 			$cboxArray = array();
 			foreach($orderProperties as $orderProperty)
 			{
-				$queryPropertyDefintion = "SELECT * FROM #__sdi_product_property WHERE code='$orderProperty->code'";
+				$queryPropertyDefintion = "SELECT * FROM #__sdi_property WHERE id='$orderProperty->property_id'";
 				$database->setQuery($queryPropertyDefintion);
 				$propertyDefinition = $database->loadObject();
 				switch($propertyDefinition->type)
 				{
 					case "message":
-						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_id);
+						$mainframe->setUserState($orderProperty->property_id."_text_property_".$productItem->product_id,$orderProperty->propertyvalue_id);
 						break;
 					case "list":
 						$a = array();
-						$a[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_list_property_".$productItem->product_id,$a);
+						$a[] = $orderProperty->propertyvalue_id;
+						$mainframe->setUserState($orderProperty->property_id."_list_property_".$productItem->product_id,$a);
 						break;
 					case "text":
-						$mainframe->setUserState($orderProperty->code."_text_property_".$productItem->product_id,$orderProperty->property_value);
+						$mainframe->setUserState($orderProperty->property_id."_text_property_".$productItem->product_id,$orderProperty->propertyvalue);
 						break;
 					case "textarea":
 						$a = array();
-						$a[] = $orderProperty->property_value;
-						$mainframe->setUserState($orderProperty->code."_textarea_property_".$productItem->product_id,$a);
+						$a[] = $orderProperty->propertyvalue;
+						$mainframe->setUserState($orderProperty->property_id."_textarea_property_".$productItem->product_id,$a);
 						break;
 					case "cbox":
-						$cboxArray[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_cbox_property_".$productItem->product_id,$cboxArray);
+						$cboxArray[] = $orderProperty->propertyvalue_id;
+						$mainframe->setUserState($orderProperty->property_id."_cbox_property_".$productItem->product_id,$cboxArray);
 						break;
 					case "mlist":
-						$mlistArray[] = $orderProperty->property_id;
-						$mainframe->setUserState($orderProperty->code."_mlist_property_".$productItem->product_id,$mlistArray);
+						$mlistArray[] = $orderProperty->propertyvalue_id;
+						$mainframe->setUserState($orderProperty->property_id."_mlist_property_".$productItem->product_id,$mlistArray);
 						break;
 				}
 			}
 		
 		}
 		//Get the url for the "order" entry of the menu
-		$database =& JFactory::getDBO();
 		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
 		$database->setQuery($queryURL);
 		$redirectURL = $database->loadResult();
@@ -299,11 +295,14 @@ class SITE_cpanel {
 		global  $mainframe;
 		$option=JRequest::getVar("option");
 		$order_id=JRequest::getVar("order_id",0);
-		if ($order_id == 0){
+		if ($order_id == 0)
+		{
 			echo "<div class='alert'>";
 			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
 			echo "</div>";
-		}else {
+		}
+		else 
+		{
 			$database =& JFactory::getDBO();
 			$user = JFactory::getUser();
 
@@ -323,6 +322,7 @@ class SITE_cpanel {
 				echo "<div class='alert'>";
 				echo JText::_("SHOP_ORDER_MESSAGE_NO_SUCH_ORDER_FOR_USER");
 				echo "</div>";
+				return;
 			}
 			
 			//Only draft are permitted for deletion
@@ -330,10 +330,12 @@ class SITE_cpanel {
 				echo "<div class='alert'>";
 				echo JText::_("SHOP_ORDER_MESSAGE_TRY_DELETE_ORDER_OTHER_THAN_DRAFT");
 				echo "</div>";
+				return;
 			}
 			
 			$order = new order ($database);
 			$order->load($order_id);
+			
 			if (!$order->delete())
 			{
 				echo "<div class='alert'>";

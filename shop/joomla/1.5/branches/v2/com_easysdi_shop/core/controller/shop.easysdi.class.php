@@ -2020,7 +2020,7 @@ if (count($rows)>0){
 				//Delete existing order and then insert the new one
 				$Order = new order( $db );
 				$Order->load( $order_id);
-				if ($Order->order_id == 0)
+				if ($Order->id == 0)
 				{
 					echo "<div class='alert'>";			
 					echo JText::_("SHOP_SHOP_MESSAGE_DELETE_ORDER").$Order->id;
