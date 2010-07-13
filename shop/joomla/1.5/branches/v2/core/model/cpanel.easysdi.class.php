@@ -61,7 +61,7 @@ class order extends sdiTable
 			return false;
 		}
 		
-		return $this->delete();
+		return parent::delete();
 	}
 
 }

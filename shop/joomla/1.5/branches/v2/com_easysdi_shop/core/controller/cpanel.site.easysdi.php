@@ -1335,7 +1335,7 @@ class SITE_cpanel {
 			$rowOrder = array (  
 				'name' => $mainframe->getUserState('order_name'),
 				'type_id' => $mainframe->getUserState('order_type'),
-				'thirdparty' => $mainframe->getUserState('third_party'),
+				'thirdparty_id' => $mainframe->getUserState('third_party'),
 				'user_id' => $u->id,
 				'sent' => '',
 				'buffer' => $mainframe->getUserState('bufferValue'),
@@ -1379,7 +1379,7 @@ class SITE_cpanel {
 		
 		$third_name ='';
 		//Third name
-		$third = $rowOrder->thirdparty; 
+		$third = $rowOrder->thirdparty_id; 
 		if( $third != 0)
 		{
 			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__sdi_account where id= $third)";
