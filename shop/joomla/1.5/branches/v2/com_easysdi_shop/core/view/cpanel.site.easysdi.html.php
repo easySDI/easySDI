@@ -40,10 +40,10 @@ class HTML_cpanel {
 	}
 	</script>
 	<div id="page" class="listOrders">
-	<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS"); ?></h2>
+	<h2 class="contentheading"><?php echo JText::_("SHOP_ORDER_LIST_ORDERS"); ?></h2>
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
-		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+		<h3> <?php echo JText::_("SHOP_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
 		<table width="100%">
 			<tr>
@@ -54,11 +54,11 @@ class HTML_cpanel {
 			</tr>
 			<tr>
 				<td align="left">
-					<?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA"); ?>
+					<?php echo JText::_("SHOP_SEARCH_CRITERIA_TITLE"); ?>
 				</td>
 				<td class="listOrdersContainer">
 				<select name="ordertype" >
-				<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL"); ?></option>
+				<option value=""><?php echo JText::_("SHOP_ORDER_CMD_FILTER_ALL"); ?></option>
 				 <?php  foreach($typeFilter as $type){ ?>
 					 <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
 					<?php echo JText::_($type->translation); ?>
@@ -68,7 +68,7 @@ class HTML_cpanel {
 				</td>
 				<td class="listOrdersContainer">
 				<select name="orderstatus" >
-				 <option value=""><?php echo JText::_("EASYSDI_CMD_STATUS_FILTER_ALL"); ?></option>
+				 <option value=""><?php echo JText::_("SHOP_ORDER_CMD_STATUS_FILTER_ALL"); ?></option>
 				 <?php  foreach($statusFilter as $stat){ ?>
 					 <option value="<?php echo $stat->id;?>" <?php if ($orderstatus==$stat->id){?>selected="selected"<?php }?>>
 					<?php echo JText::_($stat->translation); ?>
@@ -95,13 +95,13 @@ class HTML_cpanel {
 		<table width="100%">
 			<tr>
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-				<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?>
+				<td align="center"><?php echo JText::_("SHOP_ORDER_DISPLAY"); ?>
 				<?php echo $pageNav->getLimitBox(); ?>
 				</td>
 				<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
-	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+	<h3><?php echo JText::_("SHOP_SEARCH_RESULTS_TITLE"); ?></h3>
 	
 	<?php
 	$param=JRequest::getVar("param");
@@ -110,16 +110,16 @@ class HTML_cpanel {
 	?>
 	<?php
 	if(count($rows) == 0){
-		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("EASYSDI_NO_RESULT_FOUND")."</td>";
+		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("SHOP_ORDER_NO_RESULT_FOUND")."</td>";
 	}else{?>
 	<table class="box-table" id="orderList" width="100%">
 	<thead>
 	<tr>
-	<th align="center"><?php echo JText::_('EASYSDI_ID'); ?></th>
+	<th align="center"><?php echo JText::_('CORE_ID'); ?></th>
 	<th class="infoLogo"></th>
 	<th class="logo"></th>
-	<th class="reqDescr"><?php echo JText::_('EASYSDI_ORDER_NAME'); ?></th>
-	<th align="center"><?php echo JText::_('EASYSDI_ORDER_STATUS'); ?></th>
+	<th class="reqDescr"><?php echo JText::_('CORE_NAME'); ?></th>
+	<th align="center"><?php echo JText::_('SHOP_ORDER_STATUS'); ?></th>
 	<th class="logo"></th>
 	<th class="logo"></th>
 	<th class="logo"></th>
@@ -134,14 +134,14 @@ class HTML_cpanel {
 		{	$i++;
 			?>		
 			<tr>
-			<td align="center"><?php echo $row->order_id; ?></td>
-			<td align="center" class="infoLogo"><div class="<?php if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_translation) ;?>"></div></td>
+			<td align="center"><?php echo $row->id; ?></td>
+			<td align="center" class="infoLogo"><div class="<?php if($row->type_id == 1) echo"reqDevis"; if($row->type_id == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_label) ;?>"></div></td>
 			<td align="center" class="logo">
 			<?php
 			if($row->sent == "0000-00-00 00:00:00" && $row->responsesent == 0)
 			{
 				?>
-				<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->created));?>"> </div>
+				<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->created));?>"> </div>
 				<?php
 			}
 			else
@@ -150,13 +150,13 @@ class HTML_cpanel {
 				{
 					
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
+					<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->response));?>" > </div>
 					<?php 
 				}
 				else
 				{
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> " > </div>
+					<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> " > </div>
 					<?php
 				}
 			}
@@ -172,13 +172,12 @@ class HTML_cpanel {
 				//Draft
 				if($saved == $row->status_id)
 				{	
-					//if($row->type == 1) echo"reqDevis"; if($row->type == 2) echo"reqOrder";
 					?>
 					<script>
 					function orderDraft(){
-						var type = <?php echo $row->type ;?>;
+						var type = <?php echo $row->type_id ;?>;
 						if(type == 1){
-							 if (confirm("<?php echo JText::_("EASYSDI_SHOP_DEVIS_TO_ORDER") ?>")) { 
+							 if (confirm("<?php echo JText::_("SHOP_ORDER_DEVIS_TO_ORDER") ?>")) { 
 								 document.getElementById('devis_to_order').value=1;							
 							 }else{
 								 document.getElementById('devis_to_order').value=0;
@@ -191,19 +190,19 @@ class HTML_cpanel {
 					}
 					</script>
 					<td class="logo">
-					<div class="savedOrderOrder" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ORDER") ?>"
+					<div class="savedOrderOrder" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_ORDER") ?>"
 					onClick="orderDraft();"></div>
 					</td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("SHOP_ORDER_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<td class="logo">
-					<div class="savedOrderSuppress" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_SUPPRESS") ?>"
+					<div class="savedOrderSuppress" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_SUPPRESS") ?>"
 					onClick="
 					if (confirm('<?php echo JText::_("EASYSDI_ORDER_SUPPRESS_CONFIRM_ACTION") ?>')){
-						document.getElementById('id').value='<?php echo $row->order_id ;?>';
+						document.getElementById('id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='suppressOrder';
 						document.getElementById('ordersListForm').submit();
 						return true;
@@ -220,17 +219,17 @@ class HTML_cpanel {
 					<td><div class="noLogo"></td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("SHOP_ORDER_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<td class="logo">
-					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
+					<div class="savedOrderCopy" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_COPY") ?>"
 					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<td class="logo">
-					<div class="savedOrderArchive" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_ARCHIVE") ?>"
+					<div class="savedOrderArchive" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_ARCHIVE") ?>"
 					onClick="
-					if (confirm('<?php echo JText::_("EASYSDI_ORDER_ARCHIVE_CONFIRM_ACTION") ?>')){
+					if (confirm('<?php echo JText::_("SHOP_ORDER_ARCHIVE_CONFIRM_ACTION") ?>')){
 						document.getElementById('id').value='<?php echo $row->id ;?>';
 						document.getElementById('task<?php echo $option; ?>').value='archiveOrder';
 						document.getElementById('ordersListForm').submit();
@@ -246,14 +245,14 @@ class HTML_cpanel {
 					<td class="logo"><div class="noLogo"></td>
 					<td class="logo">
 					<div class="particular-order-link">
-					<a  title="<?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
+					<a  title="<?php echo JText::_("SHOP_ORDER_VIEW_RECAP");?>" id="viewOrderLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReport&cid[]=<?php echo $row->id?>" class="modal">&nbsp;</a>
 					</div>
 					</td>
 					<?php 
 					if($archived == $row->status_id || $historized == $row->status_id){
 					?>
 					<td class="logo">
-					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
+					<div class="savedOrderCopy" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_COPY") ?>"
 					onClick="document.getElementById('id').value='<?php echo $row->id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<?php 
@@ -304,7 +303,7 @@ class HTML_cpanel {
 			<!-- client -->
 			<tr>
 				<td>
-				<?php echo JText::_("EASYSDI_PROCESS_ORDER_CLIENT") ;?> :
+				<?php echo JText::_("SHOP_ORDER_PROCESS_ORDER_CLIENT") ;?> :
 				</td>
 				<td>
 				<a title="<?php echo $partner->username; ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForPartner&SummaryForId=<?php echo $partner->id ;?>" rel="{handler:'iframe',size:{x:565,y:450}}"><?php echo $partner->name; ?></a>
@@ -313,7 +312,7 @@ class HTML_cpanel {
 			<!-- sent -->
 			<tr>
 				<td>
-				<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND") ;?> :
+				<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND") ;?> :
 				</td>
 				<td>
 				<?php 
@@ -350,10 +349,10 @@ class HTML_cpanel {
 			<?php if($treatmentTranslation){ ?>
 			<tr>
 				<td>
-				<?php echo JText::_("EASYSDI_PROCESS_ORDER_FILTER") ;?> : 
+				<?php echo JText::_("SHOP_ORDER_PROCESS_ORDER_FILTER") ;?> : 
 				</td>
 				<td>
-				<?php  echo JText::_("EASYSDI_PROCESS_ORDER_FILTER_TREATMENT")." ".JText::_($treatmentTranslation) ;?>
+				<?php  echo JText::_("SHOP_ORDER_PROCESS_ORDER_FILTER_TREATMENT")." ".JText::_($treatmentTranslation) ;?>
 				</td>
 			</tr>
 			<?php } ?>
@@ -361,7 +360,7 @@ class HTML_cpanel {
 			<tr>
 				<td colspan="2">
 					<div class="alert">
-						<?php echo JText::_("EASYSDI_PROCESS_ORDER_AUTO_WARNING") ;?>
+						<?php echo JText::_("SHOP_ORDER_PROCESS_ORDER_AUTO_WARNING") ;?>
 					</div>
 				</td>
 			</tr>
@@ -373,12 +372,12 @@ class HTML_cpanel {
 			<!-- recap -->
 			<tr>
 				<td>&nbsp;</td>
-				<td><span class="mdviewfile"><a title="<?php echo $rowOrder->order_id.": ".$rowOrder->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $rowOrder->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"><?php echo JText::_("EASYSDI_SHOP_VIEW_RECAP") ;?></a>
+				<td><span class="mdviewfile"><a title="<?php echo $rowOrder->order_id.": ".$rowOrder->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $rowOrder->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"><?php echo JText::_("SHOP_ORDER_VIEW_RECAP") ;?></a>
 				</span></td>
 			</tr>
 		</table>
 		<br/>
-		<h3><?php echo JText::_("EASYSDI_PROCESS_ORDER_SELECTED_PRODUCT") ; ?></h3>	
+		<h3><?php echo JText::_("SHOP_ORDER_PROCESS_ORDER_SELECTED_PRODUCT") ; ?></h3>	
 		<form enctype="multipart/form-data" action="index.php?option=<?php echo $option; ?>" method="POST" id="processOrderForm" name="processOrderForm">
 		<?php
 		$i=0;
@@ -502,11 +501,11 @@ class HTML_cpanel {
 	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="", $orderStatus="", $productorderstatus="", $productStatusFilter="", $productTypeFilter="", $treatmentList="", $treatmentType){
 	?>	
 		<div id="page" class="listOrdersForProvider">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS_FOR_PROVIDER"); ?></h2>
+		<h2 class="contentheading"><?php echo JText::_("SHOP_ORDER_LIST_ORDERS_FOR_PROVIDER"); ?></h2>
 		<div class="contentin">
 		<form action="index.php" method="GET" id="ordersListForm" name="ordersListForm">
 	
-		<h3> <?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+		<h3> <?php echo JText::_("SHOP_SEARCH_CRITERIA_TITLE"); ?></h3>
 	
 		<table class="treatment" width="100%">
 			<tr>
@@ -519,11 +518,11 @@ class HTML_cpanel {
 			</tr>
 			<tr>
 				<td align="left">
-					<?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA"); ?>
+					<?php echo JText::_("SHOP_SEARCH_CRITERIA_TITLE"); ?>
 				</td>
 				<td>
 					<select name="treatmentType" id="treatmentType" >
-						<option value="-1"><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TREATMENT"); ?></option>
+						<option value="-1"><?php echo JText::_("SHOP_ORDER_CMD_FILTER_ALL_TREATMENT"); ?></option>
 						 <?php  foreach($treatmentList as $type){ ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($treatmentType==$type->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($type->label); ?>
@@ -533,7 +532,7 @@ class HTML_cpanel {
 				</td>
 				<td>
 					<select name="ordertype" id="ordertype" >
-						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TYPE"); ?></option>
+						<option value=""><?php echo JText::_("SHOP_ORDER_CMD_FILTER_ALL_TYPE"); ?></option>
 						 <?php  foreach($productTypeFilter as $type){ ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($type->label); ?>
@@ -543,7 +542,7 @@ class HTML_cpanel {
 				</td>
 				<td width = "125px">&nbsp;<!--
 					<select name="orderStatus" id="orderStatus" >
-						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_STATUS"); ?></option>
+						 <option value=""><?php echo JText::_("SHOP_ORDER_CMD_FILTER_ALL_STATUS"); ?></option>
 						 <?php  foreach($productStatusFilter as $stat){ ?>
 					         <option value="<?php echo $stat->id;?>" <?php if ($orderStatus==$stat->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($stat->label); ?>
@@ -562,28 +561,28 @@ class HTML_cpanel {
 		<table width="100%">
 			<tr>
 				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-				<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?>
+				<td align="center"><?php echo JText::_("SHOP_ORDER_DISPLAY"); ?>
 				<?php echo $pageNav->getLimitBox(); ?>
 				</td>
 				<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 			</tr>
 		</table>
-	<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
+	<h3><?php echo JText::_("SHOP_SEARCH_RESULTS_TITLE"); ?></h3>
 
 	<?php JHTML::_("behavior.modal","a.modal",$param); ?>
 	<?php
 	if(count($rows) == 0){
-		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("EASYSDI_NO_RESULT_FOUND")."</td>";
+		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("SHOP_ORDER_NO_RESULT_FOUND")."</td>";
 	}else{?>
 	<table id="reqTreatTable" class="box-table">
 	<thead>
 	<tr>
-	<th align="center"><?php echo JText::_('EASYSDI_ID'); ?></th>
+	<th align="center"><?php echo JText::_('CORE_ID'); ?></th>
 	<th class="infoLogo"></th>
 	<th class="logo"></th>
 	<th class="logo"></th>
-	<th align="left"><?php echo JText::_('EASYSDI_PRODUCT_TITLE_NAME'); ?></th>
-	<th align="center"><!--<?php echo JText::_('EASYSDI_ORDER_STATUS'); ?>--></th>
+	<th align="left"><?php echo JText::_('SHOP_ORDER_PRODUCT_NAME'); ?></th>
+	<th align="center"><!--<?php echo JText::_('SHOP_ORDER_STATUS'); ?>--></th>
 	<th class="logo"></th>
 	</tr>
 	</thead>
@@ -603,7 +602,7 @@ class HTML_cpanel {
 				if($row->order_send_date == "0000-00-00 00:00:00" && $row->RESPONSE_SEND == 0)
 				{
 					?>
-					<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_date));?>"> </div>
+					<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_date));?>"> </div>
 					<?php
 				}
 				else
@@ -611,13 +610,13 @@ class HTML_cpanel {
 					if($row->RESPONSE_SEND)
 					{
 						?>
-						<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
+						<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
 						<?php 
 					}
 					else
 					{
 						?>
-						<div class="orderDate" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> " > </div>
+						<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> " > </div>
 						<?php
 					}
 				}
@@ -637,7 +636,7 @@ class HTML_cpanel {
 					</a>
 				</td>
 				<td align="center"><!--<?php echo JText::_($row->status_translation) ;?>--></td>
-				<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_PROCESS_ORDER'); ?>" class="treatRequest" id="treatReqButton" onClick="document.getElementById('product_list_id').value='<?php echo $row->product_list_id; ?>';document.getElementById('ordersListForm').task.value='processOrder'; document.getElementById('ordersListForm').submit();"/></td>
+				<td class="logo" align="center"><div title="<?php echo JText::_('SHOP_ORDER_PROCESS_ORDER'); ?>" class="treatRequest" id="treatReqButton" onClick="document.getElementById('product_list_id').value='<?php echo $row->product_list_id; ?>';document.getElementById('ordersListForm').task.value='processOrder'; document.getElementById('ordersListForm').submit();"/></td>
 			</tr>
 			<?php
 			?>
@@ -681,26 +680,26 @@ class HTML_cpanel {
 		});
 		</script>
 		
-		<div title ="<?php echo JText::_("EASYSDI_SHOP_PRINT"); ?>" id="printOrderRecap"></div>
+		<div title ="<?php echo JText::_("SHOP_ORDER_PRINT"); ?>" id="printOrderRecap"></div>
 		<div id="divOrderRecap">
 		<h2 class="orderRecapTitle"><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h2>
 		<table class="orderRecap" width="100%">
 		<tr>
 		<td colspan="2" class="ortitle2">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_REQUEST"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_REQUEST"); ?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_ID"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_ID"); ?>
 		</td>
 		<td>
-		<?php echo $id == 0 ? JText::_("EASYSDI_RECAP_ORDER_NO_ID") : $id ?>
+		<?php echo $id == 0 ? JText::_("SHOP_ORDER_RECAP_NO_ID") : $id ?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_NAME"); ?>
 		</td>
 		<td>
 		<?php echo $rowOrder->order_name; ?>
@@ -708,19 +707,19 @@ class HTML_cpanel {
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_TYPE"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_TYPE"); ?>
 		</td>
 		<td>
 		<?php echo JText::_($rowOrder->tlT); ?>
 		</td>
 		</tr>
 		<?php 
-		if($rowOrder->order_send_date == ""){
+		if($rowOrder->sent == ""){
 			?>
 			<tr>
 			<td class="ortitle3">
 			<?php 
-			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
+			echo JText::_("SHOP_ORDER_RECAP_CREATIONDATE"); ?>
 			</td>
 			<td>
 			<?php echo "-" ?>
@@ -728,16 +727,16 @@ class HTML_cpanel {
 			</tr>
 			<?php 
 		}
-		else if($rowOrder->order_send_date == "0000-00-00 00:00:00")
+		else if($rowOrder->sent == "0000-00-00 00:00:00")
 		{
 			?>
 			<tr>
 			<td class="ortitle3">
 			<?php 
-			echo JText::_("EASYSDI_RECAP_ORDER_CREATIONDATE"); ?>
+			echo JText::_("SHOP_ORDER_RECAP_CREATIONDATE"); ?>
 			</td>
 			<td>
-			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->order_date)); ?>
+			<?php echo date(JText::_("SHOP_ORDER_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->created)); ?>
 			</td>
 			</tr>
 			<?php 
@@ -748,24 +747,24 @@ class HTML_cpanel {
 			<tr>
 			<td class="ortitle3">
 			<?php 
-			echo JText::_("EASYSDI_RECAP_ORDER_SENDDATE"); ?>
+			echo JText::_("SHOP_ORDER_RECAP_SENDDATE"); ?>
 			</td>
 			<td>
-			<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->order_send_date)); ?>
+			<?php echo date(JText::_("SHOP_ORDER_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->sent)); ?>
 			</td>
 			</tr>
 			<tr>
 			<td class="ortitle3">
 			<?php
-			echo JText::_("EASYSDI_RECAP_ORDER_RESPONSEDATE"); 
+			echo JText::_("SHOP_ORDER_RECAP_RESPONSEDATE"); 
 			?>
 			</td>
 			<?php 
-			if($rowOrder->RESPONSE_DATE != "0000-00-00 00:00:00" && $rowOrder->RESPONSE_SEND == 1)
+			if($rowOrder->RESPONSE_DATE != "0000-00-00 00:00:00" && $rowOrder->responsesent == 1)
 			{
 				?>
 				<td>
-				<?php echo date(JText::_("EASYSDI_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->RESPONSE_DATE)); ?>
+				<?php echo date(JText::_("SHOP_ORDER_DATEFORMAT_DAY_MONTH_YEAR_HOUR_MINUTE"), strtotime($rowOrder->response)); ?>
 				</td>
 				<?php 
 			}
@@ -778,7 +777,7 @@ class HTML_cpanel {
 		
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_STATUS"); ?>
 		</td>
 		<td>
 		<?php echo $rowOrder->slT == "" ? "-" : JText::_($rowOrder->slT); ?>
@@ -787,12 +786,12 @@ class HTML_cpanel {
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_CLIENT"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_CLIENT"); ?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_NAME"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_NAME"); ?>
 		</td>
 		<td>
 		<?php echo $user_name; ?>
@@ -800,7 +799,7 @@ class HTML_cpanel {
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_THIRD"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_THIRD"); ?>
 		</td>
 		<td>
 		<?php echo $third_name; ?>
@@ -809,16 +808,16 @@ class HTML_cpanel {
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_PERIMETER"); ?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_TYPE"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_PERIMETER_TYPE"); ?>
 		</td>
 		<td>
 		<?php
-		$query = "SELECT * FROM  #__easysdi_perimeter_definition where id = ".$perimeterRows[0]->perimeter_id;
+		$query = "SELECT * FROM  #__sdi_perimeter where id = ".$perimeterRows[0]->perimeter_id;
 		$db->setQuery($query );
 		$rowsPerimeter = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -827,17 +826,17 @@ class HTML_cpanel {
 			echo "</div>";
 		}
 		if ($perimeterRows[0]->perimeter_id > 0){
-			echo $rowsPerimeter[0]->perimeter_desc;
+			echo $rowsPerimeter[0]->description;
 		}else
 		{
-			echo JText::_("EASYSDI_GEOMETRY_TEXT");
+			echo JText::_("SHOP_ORDER_GEOMETRY");
 
 		} ?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_PERIMETER_CONTENT"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_PERIMETER_CONTENT"); ?>
 		</td>
 		<td>
 		<table width="100%">
@@ -855,30 +854,30 @@ class HTML_cpanel {
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_SURFACE"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_SURFACE"); ?>
 		</td>
 		<td>
 		<?php if($rowOrder->surface != 0)
 		{
 			echo ($rowOrder->surface)/1000000; 
-			echo JText::_("EASYSDI_RECAP_ORDER_KM2") ; 
+			echo JText::_("SHOP_ORDER_RECAP_KM2") ; 
 		}
 		?>
 		</td>
 		</tr>
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_BUFFER"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_BUFFER"); ?>
 		</td>
 		<td>
 		<?php if($rowOrder->buffer != 0)
 		{
 			echo $rowOrder->buffer; 
-			echo JText::_("EASYSDI_RECAP_ORDER_METER") ; 
+			echo JText::_("SHOP_ORDER_RECAP_METER") ; 
 		} 
 		else
 		{
-			echo JText::_("EASYSDI_RECAP_ORDER_NONE") ; 
+			echo JText::_("SHOP_ORDER_RECAP_NONE") ; 
 		}
 		?>
 		</td>
@@ -886,51 +885,36 @@ class HTML_cpanel {
 		
 		<tr>
 		<td class="ortitle3">
-		<?php echo JText::_("EASYSDI_RECAP_ORDER_PREVIEW"); ?>
+		<?php echo JText::_("SHOP_ORDER_RECAP_PREVIEW"); ?>
 		</td>
 		<td>
-		<?php HTML_cpanel::viewOrderRecapPerimeterExtent($rowOrder->order_id,$perimeterRows[0]->perimeter_id , $isfrontEnd, $isInMemory); ?>
+		<?php HTML_cpanel::viewOrderRecapPerimeterExtent($rowOrder->id,$perimeterRows[0]->perimeter_id , $isfrontEnd, $isInMemory); ?>
 		</td>
 		</tr>
 		<tr><td colspan="2">&nbsp;</td></tr>
 		<tr>
 		<td colspan="2" class="ortitle2">
-		<?php echo JText::_("EASYSDI_ORDERED_PRODUCT_LIST"); ?>
+		<?php echo JText::_("SHOP_ORDER_ORDERED_PRODUCT_LIST"); ?>
 		</td>
 		</tr>
 		
 		<?php
 		$i=0;
 		
-		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
-		$db->setQuery($queryStatus);
-		$status_available_id = $db->loadResult();
-				
+//		$queryStatus = "select id from #__sdi_list_productstatus where code ='AVAILABLE'";
+//		$db->setQuery($queryStatus);
+//		$status_available_id = $db->loadResult();
+		$status_available_id = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
+		
 		foreach ($rowsProduct as $row){ ?>
 		<tr>
 		   <td colspan="2" >
-		     <fieldset class="orderRecapTreatment"><legend class="orderRecapTreatmentLegend"><?php echo $row->data_title?><?php if ($row->is_free)  {echo " (".JText::_("EASYSDI_FREE_PRODUCT").")" ; }?></legend>
+		     <fieldset class="orderRecapTreatment"><legend class="orderRecapTreatmentLegend"><?php echo $row->name?><?php if ($row->free)  {echo " (".JText::_("SHOP_PRODUCT_FREE").")" ; }?></legend>
 			<table width="100%">
 			<tr>
 			<td colspan="2" >
 			<table >
 				<tr>
-  				  <?php
-				/*	if ($row->status == $status_available_id){
-						$queryType = "select id from #__easysdi_order_type_list where code='O'";
-						$db->setQuery($queryType);
-						$type = $db->loadResult();
-					
-						if($rowOrder->type==$type){?>
-			
-					<td ><a target="RAW"
-						href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&order_id=<?php echo $row->order_id?>&product_id=<?php echo $row->product_id?>">
-						<?php echo JText::_("EASYSDI_DOWNLOAD_PRODUCT");?></a></td>
-						<?php
-						}
-						
-					}*/
-					?>
 				</tr>
 			</table>
 			</td>
@@ -939,16 +923,24 @@ class HTML_cpanel {
 			<?php
 			
 			//Get product properties
-			if(!$isInMemory){
-				$queryPropertiesCode = "SELECT DISTINCT code FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId";
+			if(!$isInMemory)
+			{
+				$queryPropertiesCode = "SELECT DISTINCT code 
+											FROM #__sdi_order_property 
+											WHERE orderproduct_id =$row->plId";
 				$db->setQuery($queryPropertiesCode);
 				$rowsPropertiesCode = $db->loadObjectList();
-			}else{
-				
-				$query = "SELECT DISTINCT a.code as code FROM #__easysdi_product_property b, 
-						#__easysdi_product_properties_definition  as a ,
-						#__easysdi_product_properties_values_definition as c  
-						WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $row->id." order by a.order";
+				echo $queryPropertiesCode;
+			}
+			else
+			{
+				$query = "SELECT DISTINCT a.code as code 
+						  FROM #__sdi_product_property b, 
+							   #__sdi_property  as a ,
+							   #__sdi_property_value as c  
+						  WHERE a.id = c.property_id 
+						  AND b.propertyvalue_id = c.id 
+						  AND b.product_id = ". $row->id." order by a.ordering";
 				$db->setQuery($query);
 				$rowsPropertiesCode = $db->loadObjectList();
 			}
@@ -956,21 +948,31 @@ class HTML_cpanel {
 			
 			foreach($rowsPropertiesCode as $rowPropertyCode)
 			{
-				if(!$isInMemory){
-					$queryProductProperties = "SELECT * FROM #__easysdi_order_product_properties where order_product_list_id =$row->plId AND code = '$rowPropertyCode->code'";
+				if(!$isInMemory)
+				{
+					$queryProductProperties = "SELECT * FROM #__sdi_order_property 
+														where orderproduct_id =$row->plId 
+														AND code = '$rowPropertyCode->code'";
 					$db->setQuery($queryProductProperties);
 					$rowsProductProperties = $db->loadObjectList();
-				}else{
-					
-					$query = "SELECT b.property_value_id as property_id, c.value as property_value, a.code as code, a.type_code as type_code 
-						FROM #__easysdi_product_property b, 
-						#__easysdi_product_properties_definition a ,
-						#__easysdi_product_properties_values_definition c  
-						WHERE a.id = c.properties_id and b.property_value_id = c.id and b.product_id = ". $row->id." 
-						 AND a.code = '$rowPropertyCode->code' order by a.order";
+				}
+				else
+				{
+					$query = "SELECT b.propertyvalue_id as property_id, 
+									 c.value as property_value, 
+									 a.code as code, 
+									 a.type as type_code 
+								FROM #__sdi_product_property b, 
+									 #__sdi_property a ,
+									 #__sdi_property_value c  
+								WHERE a.id = c.property_id 
+								AND b.propertyvalue_id = c.id 
+								AND b.product_id = ". $row->id." 
+						 		AND a.code = '$rowPropertyCode->code' order by a.ordering";
 					
 					$db->setQuery( $query );
 					$rowsProductProperties = $db->loadObjectList();
+					
 					
 					//Filter out unselected options
 					$temp = Array();
@@ -990,16 +992,10 @@ class HTML_cpanel {
 								}
 								break;
 							case "text":
-								//$propr  = $mainframe->getUserState($rowPropertyCode->code."_text_property_".$row->id);
-								//echo $propr;
-								//print_r($rowProductProperties);
-								
 								$temp[] = $rowProductProperties;
 								break;
 							case "textarea":
 								$propr  = $mainframe->getUserState($rowPropertyCode->code."_textarea_property_".$row->id);
-								//Array ( [0] => my aire texte )
-								//print_r($propr);
 								$temp[] = $rowProductProperties;
 								break;
 							case "cbox":
@@ -1022,29 +1018,21 @@ class HTML_cpanel {
 								break;
 								
 						}
-						//print_r ($propr);
-						
 					}
 					$rowsProductProperties = $temp;
-					//print_r($rowsProductProperties);
-					/*
-					echo $rowPropertyCode->code."_list_property_".$row->id;
-					$productProperties  = $mainframe->getUserState($rowPropertyCode->code."_list_property_".$row->id);
-					print_r($productProperties);
-					print_r($rowsProductProperties);
-					*/
 				}
-				//print_r($rowsProductProperties);
-				
 				?>
 				<tr>
 				<td class="ortitle4">
 				<?php
-						$queryProperty = "SELECT translation, type_code FROM #__easysdi_product_properties_definition WHERE code = '$rowPropertyCode->code'";
+						$queryProperty = "SELECT t.label, 
+												 p.type 
+											FROM #__sdi_property p, #__sdi_translation t
+											WHERE code = '$rowPropertyCode->code'
+											AND t.element_guid = p.guid";
 						$db->setQuery($queryProperty);
 						$rowProperty = $db->loadObject();
 						echo JText::_($rowProperty->translation);
-				//echo JText::_($rowPropertyCode->code);
 				?>
 				</td>
 				
@@ -1059,28 +1047,31 @@ class HTML_cpanel {
 					<?php 
 					if($rowProductProperties->property_id == 0)
 					{	
-						if($rowProperty->type_code == 'message')
+						if($rowProperty->type == 'message')
 						{
-							echo JText::_($rowProductProperties->property_value);
+							echo JText::_($rowProductProperties->propertyvalue);
 						}
 						else
 						{
-							echo $rowProductProperties->property_value;
+							echo $rowProductProperties->propertyvalue;
 						}
 					}
 					else
 					{
-						$queryProperty = "SELECT c.translation as translation, a.type_code as type_code
-						FROM #__easysdi_product_property b,
-						#__easysdi_product_properties_definition a ,
-						#__easysdi_product_properties_values_definition c
-						WHERE a.id = c.properties_id and b.property_value_id = c.id and c.id = $rowProductProperties->property_id";
+						$queryProperty = "SELECT t.label as translation, 
+												 a.type_code as type_code
+											FROM #__sdi_product_property b,
+												 #__sdi_property a ,
+												 #__sdi_property_value c,
+												 #__sdi_translation t
+											WHERE a.id = c.property_id 
+											and b.propertyvalue_id = c.id 
+											AND t.element_guid = c.guid
+											and c.id = $rowProductProperties->property_id";
 						
 						$db->setQuery($queryProperty);
 						$rowProperty = $db->loadObject();
 						
-						//textarea
-						//text
 						if($isInMemory && $rowProperty->type_code == "text"){
 							echo $mainframe->getUserState($rowPropertyCode->code."_text_property_".$row->id);
 						}else if($isInMemory && $rowProperty->type_code == "textarea"){
@@ -1113,16 +1104,16 @@ class HTML_cpanel {
 				<td rowspan="3" class="orderRecapResult">
 				</td>
 				<td class="ortitle4">
-				<?php echo JText::_("EASYSDI_RECAP_ORDER_PRICE"); ?>			
+				<?php echo JText::_("SHOP_ORDER_RECAP_PRICE"); ?>			
 				</td>
 				<td>
-				<?php echo $row->price.JText::_("EASYSDI_RECAP_ORDER_MONEY"); ?>
+				<?php echo $row->price.JText::_("SHOP_ORDER_RECAP_MONEY"); ?>
 				</td>
 				</tr>
 				
 				<tr>
 				<td class="ortitle4">
-				<?php echo JText::_("EASYSDI_RECAP_ORDER_REM"); ?>			
+				<?php echo JText::_("SHOP_ORDER_RECAP_REM"); ?>			
 				</td>
 				<td>
 				<?php echo $row->remark; ?>
@@ -1131,10 +1122,14 @@ class HTML_cpanel {
 				
 				<tr>
 				<td class="ortitle4">
-				<?php echo JText::_("EASYSDI_RECAP_ORDER_FILE")?>			
+				<?php echo JText::_("SHOP_ORDER_RECAP_FILE")?>			
 				</td>
 				<?php
-				$queryOrderStatus = "select l.code from #__easysdi_order_status_list l, #__easysdi_order o where l.id=o.status AND o.order_id=".$id;
+				$queryOrderStatus = "select l.code 
+									 from #__sdi_list_orderstatus l, 
+									 	  #__sdi_order o 
+									 where l.id=o.status_id 
+									 AND o.id=".$id;
 				$db->setQuery($queryOrderStatus);
 				$status_code = $db->loadResult();
 				if($status_code != "HISTORIZED"){
@@ -1147,7 +1142,7 @@ class HTML_cpanel {
 				<?php }else{ ?>
 				<td>
 					<div class='info'>
-					<?php echo JText::_("EASYSDI_ORDER_HISTORIZED MESSAGE"); ?>
+					<?php echo JText::_("SHOP_ORDER_HISTORIZED_MESSAGE"); ?>
 					</div>
 				</td>
 				<?php } ?>
@@ -1207,7 +1202,7 @@ class HTML_cpanel {
 	global  $mainframe;
 	$db =& JFactory::getDBO(); 
 	$isFreeSelectionPerimeter = false;
-	$queryPerimeter = "select * from #__easysdi_perimeter_definition where id = $perimeter_id";
+	$queryPerimeter = "select * from #__sdi_perimeter where id = $perimeter_id";
 	$db->setQuery($queryPerimeter);
 	$perimeterDef = $db->loadObject();
 	if ($db->getErrorNum()) {						
@@ -1216,12 +1211,12 @@ class HTML_cpanel {
 			echo "</div>";
 	}	
 	
-	if($perimeterDef->wfs_url == '' && $perimeterDef->wms_url == '')
+	if($perimeterDef->urlwfs == '' && $perimeterDef->urlwms == '')
 	{	
 		$isFreeSelectionPerimeter = true;
 	}
 	
-	$query = "select * from #__easysdi_basemap_definition where def=1"; 
+	$query = "select * from #__sdi_basemap where `default`=1"; 
 	$db->setQuery( $query);
 	$rowsBaseMap = $db->loadObject();		  
 	if ($db->getErrorNum()) {						
@@ -1245,24 +1240,24 @@ function initMap()
 {
 <?php
 	    //default style for manually drawed object and selected
-	    if($rowsBaseMap->dflt_fillcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rowsBaseMap->dflt_fillcolor."';\n";
-	    if($rowsBaseMap->dflt_strkcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rowsBaseMap->dflt_strkcolor."';\n";
-	    if($rowsBaseMap->dflt_strkwidth != '')
-	    echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rowsBaseMap->dflt_strkwidth."';\n";
+	    if($rowsBaseMap->dfltfillcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['default']['fillColor'] = '".$rowsBaseMap->dfltfillcolor."';\n";
+	    if($rowsBaseMap->dfltstrkcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['default']['strokeColor'] = '".$rowsBaseMap->dfltstrkcolor."';\n";
+	    if($rowsBaseMap->dfltstrkwidth != '')
+	    echo "OpenLayers.Feature.Vector.style['default']['strokeWidth'] = '".$rowsBaseMap->dfltstrkwidth."';\n";
 	    
 	    //style for polygon edition
-	    if($rowsBaseMap->select_fillcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rowsBaseMap->select_fillcolor."';\n";
-	    if($rowsBaseMap->select_strkcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rowsBaseMap->select_strkcolor."';\n";
+	    if($rowsBaseMap->selectfillcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['select']['fillColor'] = '".$rowsBaseMap->selectfillcolor."';\n";
+	    if($rowsBaseMap->selectstrkcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['select']['strokeColor'] = '".$rowsBaseMap->selectstrkcolor."';\n";
 	    
 	    //default style for object being drawn
-	    if($rowsBaseMap->temp_fillcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rowsBaseMap->temp_fillcolor."';\n";
-	    if($rowsBaseMap->temp_strkcolor != '')
-	    echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rowsBaseMap->temp_strkcolor."';\n";
+	    if($rowsBaseMap->tempfillcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['temporary']['fillColor'] = '".$rowsBaseMap->tempfillcolor."';\n";
+	    if($rowsBaseMap->tempstrkcolor != '')
+	    echo "OpenLayers.Feature.Vector.style['temporary']['strokeColor'] = '".$rowsBaseMap->tempstrkcolor."';\n";
 ?>    
 	    var options = {
 	    projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
@@ -1288,7 +1283,7 @@ function initMap()
 <?php
 $print = JRequest::getVar('print');
 
-$query = "select * from #__easysdi_basemap_content where basemap_def_id = ".$rowsBaseMap->id." order by ordering"; 
+$query = "select * from #__sdi_basemap_content where basemap_id = ".$rowsBaseMap->id." order by ordering"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();
 		  
@@ -1301,7 +1296,7 @@ $i=0;
 foreach ($rows as $row){				  
 ?>				
 				  
-		layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->url_type; ?>( "<?php echo $row->name; ?>",
+		layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->urltype; ?>( "<?php echo $row->name; ?>",
                     
 			<?php 
 			if ($row->user != null && strlen($row->user)>0){
@@ -1315,7 +1310,7 @@ foreach ($rows as $row){
 			}					
 			?>
 			
-                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->img_format; ?>",transparent: "true"},                                          
+                    {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->imgformat; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
@@ -1329,7 +1324,7 @@ foreach ($rows as $row){
                      }
                     );
                     <?php
-                    if (strtoupper($row->url_type) =="WMS")
+                    if (strtoupper($row->urltype) =="WMS")
                     {
                     	?>
                     	layer<?php echo $i; ?>.alpha = setAlpha('image/png');
@@ -1344,7 +1339,7 @@ $i++;
 		<?php
 		//Add the command perimeter
 		if(!$isInMemory){
-			$queryPerimeterValue = "SELECT value FROM #__easysdi_order_product_perimeters WHERE order_id = $order_id order by id";
+			$queryPerimeterValue = "SELECT value FROM #__sdi_order_perimeter WHERE order_id = $order_id order by id";
 			$db->setQuery( $queryPerimeterValue);
 			$rowsPerimeterValue = $db->loadObjectList();
 		}else{
@@ -1398,14 +1393,14 @@ $i++;
 			
 			$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$perimeterDef->id&url=";
 				
-			if ($perimeterDef->wfs_url!=null && strlen($perimeterDef->wfs_url)>0){
-				$wfs_url =  $proxyhost.urlencode  (trim($perimeterDef->wfs_url));
+			if ($perimeterDef->urlwfs!=null && strlen($perimeterDef->urlwfs)>0){
+				$wfs_url =  $proxyhost.urlencode  (trim($perimeterDef->urlwfs));
 			}else{
 				$wfs_url ="";
 			}
 			
 			?>
-			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeterDef->feature_type_name; ?>&VERSION=1.0.0';
+			wfsUrlWithFilter = '<?php echo $wfs_url ;?>' + '?request=GetFeature&SERVICE=WFS&TYPENAME=<?php echo $perimeterDef->featuretype; ?>&VERSION=1.0.0';
 			wfsUrlWithFilter = wfsUrlWithFilter + '&FILTER=';
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">');
 			<?php
@@ -1418,7 +1413,7 @@ $i++;
 			foreach ( $rowsPerimeterValue as $value)
 			{
 				?>
-				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->id_field_name; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $value->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
+				wfsUrlWithFilter = wfsUrlWithFilter + escape('<ogc:PropertyIsEqualTo><ogc:PropertyName>' + '<?php echo $perimeterDef->fieldid; ?>' +'</ogc:PropertyName><ogc:Literal>'+ '<?php echo $value->value; ?>' +'</ogc:Literal></ogc:PropertyIsEqualTo>');
 				<?php 
 			}
 			if(count($rowsPerimeterValue) >1)
@@ -1431,8 +1426,7 @@ $i++;
 			wfsUrlWithFilter = wfsUrlWithFilter + escape('</ogc:Filter>');
 			
 			var wfs;
-			//map.zoomToMaxExtent();
-	     	wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
+			wfs = new OpenLayers.Layer.Vector("selectedFeatures", {
                     strategies: [new OpenLayers.Strategy.Fixed()],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: wfsUrlWithFilter

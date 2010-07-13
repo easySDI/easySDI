@@ -3067,7 +3067,7 @@ function validateForm(toStep, fromStep){
 	action='<?php echo JRoute::_("index.php") ?>' method='GET'>
 
 
-<h3><?php echo JText::_("EASYSDI_SEARCH_CRITERIA_TITLE"); ?></h3>
+<h3><?php echo JText::_("SHOP_SEARCH_CRITERIA_TITLE"); ?></h3>
 <script  type="text/javascript">
 	window.addEvent('domready', function() {
 		//Handler for the clear button

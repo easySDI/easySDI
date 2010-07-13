@@ -649,7 +649,7 @@ class SITE_cpanel {
 		
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
 		// Ni les requêtes de type brouillon
-		$query = "SELECT o.order_id as order_id, 
+		$query = "SELECT o.id as order_id, 
 						 v.metadata_id as metadata_id,
 						 p.name as productName,
 						 opl.id as product_list_id,
@@ -669,9 +669,8 @@ class SITE_cpanel {
 				  FROM  #__sdi_order o, 
 				  		#__sdi_order_product opl, 
 						#__sdi_list_productstatus psl,
-				  		#__sdi_product p
-				  		INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
-				  		INNER JOIN #__sdi_object ob ON ob.id = v.object_id, 
+				  		#__sdi_product p,
+				  		#__sdi_object_version v ,
 				  		#__sdi_account a, 
 				  		#__users u, 
 				  		#__users uClient,
@@ -686,6 +685,7 @@ class SITE_cpanel {
 				  and a.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type_id
+				  AND v.id = p.objectversion_id
 				  and o.status_id <> $status_saved
 				  and opl.status_id = $productOrderStatus 
 				  $orderStatusQuery 
@@ -717,14 +717,13 @@ class SITE_cpanel {
 
 		$query .= $filter;
 		$query .= " order by o.id";
-		
-		$queryCount ="SELECT COUNT(o.order_id)
+		echo $query;
+		$queryCount ="SELECT COUNT(o.id)
 				  FROM  #__sdi_order o, 
 				  		#__sdi_order_product opl, 
 						#__sdi_list_productstatus psl,
-				  		#__sdi_product p
-				  		INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
-				  		INNER JOIN #__sdi_object ob ON ob.id = v.object_id, 
+				  		#__sdi_product p,
+				  		#__sdi_object_version v ,
 				  		#__sdi_account a, 
 				  		#__users u, 
 				  		#__users uClient,
@@ -739,6 +738,7 @@ class SITE_cpanel {
 				  and a.user_id =".$user->id." 
 				  and o.user_id = uClient.id
 				  and tl.id = o.type_id
+				  AND v.id = p.objectversion_id
 				  and o.status_id <> $status_saved
 				  and opl.status_id = $productOrderStatus 
 				  $orderStatusQuery 
@@ -1079,7 +1079,7 @@ class SITE_cpanel {
 		$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
 			
 		$query = "UPDATE #__sdi_order SET status_id=".$status_id.", 
-					updated = NOW().updatedby =".$rootAccount->id."  
+					updated = NOW(), updatedby =".$rootAccount->id."  
 					WHERE user_id = ".$user->id." 
 					AND DATEDIFF(NOW() ,updated) > $archive_delay 
 					AND DATEDIFF(NOW() ,updated) < $history_delay ";
@@ -1107,7 +1107,7 @@ class SITE_cpanel {
 //		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
 //		$database->setQuery($queryStatus);
 //		$archive = $database->loadResult();
-		$history = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
+		$archive = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
 
 		$query = "SELECT id FROM #__sdi_order 
 							WHERE user_id = ".$user->id." 
@@ -1295,13 +1295,13 @@ class SITE_cpanel {
 		
 		if(!$isInMemory){
 			//fetch order in database			
-			$query = "SELECT *, 
+			$query = "SELECT a.*, 
 							 sl.label as slT, 
 							 tl.label as tlT, 
 							 a.name as order_name  
 					  FROM  #__sdi_order a ,  
 					  		#__sdi_list_orderstatus sl, 
-					  		#__sdi_order_type_list tl 
+					  		#__sdi_list_ordertype tl 
 					  WHERE a.id = $id 
 					  AND tl.id = a.type_id 
 					  AND sl.id = a.status_id";
@@ -1362,13 +1362,12 @@ class SITE_cpanel {
 
 		//Customer name
 		$user =$rowOrder->user_id;
-		
 		if($isfrontEnd == true && $isForProvider == false)
 		{
 			//Check if the current order belongs to the current logged user
 			if($user != $u->id)
 			{
-				$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+				$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT").$user,"INFO");
 				return;
 			}
 		}

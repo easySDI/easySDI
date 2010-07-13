@@ -70,7 +70,7 @@ class HTML_cpanel_partner {
 			});
 		});
 		</script>
-		<div title ="<?php echo JText::_("EASYSDI_SHOP_PRINT"); ?>" id="printPartnerRecap"></div>
+		<div title ="<?php echo JText::_("SHOP_ORDER_PRINT"); ?>" id="printPartnerRecap"></div>
 		
 		<?php
 		}
