@@ -90,7 +90,7 @@ class SITE_cpanel {
 			
 			$order = new order($database);
 			$order->load($order_id);
-			if (!$order->updateStatus($status_id))
+			if (!$order->setStatus($status_id))
 			{
 				echo "<div class='alert'>";
 				echo $database->getErrorMsg();
@@ -115,7 +115,7 @@ class SITE_cpanel {
 		if ($account_id == 0)
 		{
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
+			echo JText::_("SHOP_ORDER_MESSAGE_NO_PRODUCT_ID");
 			echo "</div>";
 		}
 		else 
@@ -321,14 +321,14 @@ class SITE_cpanel {
 			//User must own this order to delete it
 			if ($order_status == ""){
 				echo "<div class='alert'>";
-				echo JText::_("EASYSDI_ERROR_NO_SUCH_ORDER_FOR_USER");
+				echo JText::_("SHOP_ORDER_MESSAGE_NO_SUCH_ORDER_FOR_USER");
 				echo "</div>";
 			}
 			
 			//Only draft are permitted for deletion
 			if ($order_status <> $status_id){
 				echo "<div class='alert'>";
-				echo JText::_("EASYSDI_ERROR_TRY_DELETE_ORDER_OTHER_THAN_DRAFT");
+				echo JText::_("SHOP_ORDER_MESSAGE_TRY_DELETE_ORDER_OTHER_THAN_DRAFT");
 				echo "</div>";
 			}
 			
@@ -401,14 +401,14 @@ class SITE_cpanel {
 			
 			if ($order_status == ""){
 				echo "<div class='alert'>";
-				echo JText::_("EASYSDI_ERROR_NO_SUCH_ORDER_FOR_USER");
+				echo JText::_("SHOP_ORDER_MESSAGE_NO_SUCH_ORDER_FOR_USER");
 				echo "</div>";
 			}
 			
 			//Only finish, historized and archived are permitted for copy
 			if ($order_status != $finish && $order_status != $archived && $order_status != $historized){
 				echo "<div class='alert'>";
-				echo JText::_("EASYSDI_ERROR_TRY_COPY_ORDER_WITH_UNALLOWEDSTATUS");
+				echo JText::_("SHOP_ORDER_MESSAGE_TRY_COPY_ORDER_WITH_UNALLOWEDSTATUS");
 				echo "</div>";
 			}
 			
@@ -431,9 +431,9 @@ class SITE_cpanel {
 			{    
 				//truncate the name to have max 40 characters:
 				if(strlen($currentOrder->name) <= 31)
-					$order_name=$currentOrder->name.JText::_("EASYSDI_TEXT_COPY").$l;
+					$order_name=$currentOrder->name.JText::_("SHOP_ORDER_COPY").$l;
 				else
-					$order_name=substr($currentOrder->name,0,31).JText::_("EASYSDI_TEXT_COPY").$l;
+					$order_name=substr($currentOrder->name,0,31).JText::_("SHOP_ORDER_COPY").$l;
 				$query_count_name = "select status_id from #__sdi_order where user_id = ".$user->id." AND name ='".addslashes($order_name)."'";
 				$database->setQuery($query_count_name);
 				$order_occ = $database->loadResult();
@@ -831,18 +831,19 @@ class SITE_cpanel {
 
 	}
 
-	/*
-	 * Statuts de la commande
-	 * SENT => A traiter
-	 * SAVED => Sauvée et ne dois pas être traitée par le fournisseur
-	 * AWAIT => En cours de traitement chez le fournisseur
-	 * PROGESS => Partiellement traitée par le fournisseur
-	 * FINISH => Complètement traitée
-	 * ARCHIVED => Archivée
-	 * HISTORIZED => Archivée et BLOB de donn�es vid�
-	 */
+	
 	function saveOrdersForProvider($order_id)
 	{
+		/*
+		 * Statuts de la commande
+		 * SENT => A traiter
+		 * SAVED => Sauvée et ne dois pas être traitée par le fournisseur
+		 * AWAIT => En cours de traitement chez le fournisseur
+		 * PROGESS => Partiellement traitée par le fournisseur
+		 * FINISH => Complètement traitée
+		 * ARCHIVED => Archivée
+		 * HISTORIZED => Archivée et BLOB de donn�es vid�
+		 */
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$products_id = JRequest::getVar("product_id");
@@ -854,11 +855,30 @@ class SITE_cpanel {
 			$price = JRequest::getVar("price".$product_id,"0");
 			if (strlen($price)!=0)
 			{
-				$queryStatus = "select id from #__sdi_list_productstatus where code ='AVAILABLE'";
-				$database->setQuery($queryStatus);
-				$status_id = $database->loadResult();
+//				$queryStatus = "select id from #__sdi_list_productstatus where code ='AVAILABLE'";
+//				$database->setQuery($queryStatus);
+//				$status_id = $database->loadResult();
+				$status_id = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
 				
-				$query = "UPDATE #__sdi_order_product SET status = ".$status_id.", remark= ".$remark.",price = $price ";
+				$query = "SELECT id FROM #__sdi_order_product WHERE order_id=".$order_id." AND product_id = ".$product_id;
+				$database->setQuery( $query );
+				$orderproduct_id =  $database->loadResult();
+				
+				$orderProduct = new orderProduct($database);
+				$orderProduct->load($orderproduct_id);
+				$orderProduct->status_id=$status_id;
+				$orderProduct->remark = $remark;
+				$orderProduct->price=$price;
+				if (!$orderProduct->store())
+				{
+					echo "<div class='alert'>";
+				 	echo JText::_($database->getErrorMsg());
+				 	echo "</div>";
+				 	break;
+				}
+				
+				
+//				$query = "UPDATE #__sdi_order_product SET status = ".$status_id.", remark= ".$remark.",price = $price ";
 				$fileName = $_FILES['file'.$product_id]["name"];
 			 	if (strlen($fileName)>0)
 			 	{
@@ -867,40 +887,41 @@ class SITE_cpanel {
 				 	$content = fread($fp, filesize($tmpName));
 				 	$content = addslashes($content);
 				 	fclose($fp);
-				 	$query .= ", filename = '$fileName' , data = '$content' ";
+//				 	$query .= ", filename = '$fileName' , data = '$content' ";
+					$orderProduct->setFile($fileName,$content);
 				 }
-				 $query .= "WHERE order_id=".$order_id." AND product_id = ".$product_id;
-	
-				 $database->setQuery( $query );
-				 if (!$database->query()) {
-				 	echo "<div class='alert'>";
-				 	echo JText::_($database->getErrorMsg());
-				 	echo "</div>";
-	
-				 	break;
-				 }
+//				 $query .= "WHERE order_id=".$order_id." AND product_id = ".$product_id;
+//				 $database->setQuery( $query );
+//				 if (!$database->query()) {
+//				 	echo "<div class='alert'>";
+//				 	echo JText::_($database->getErrorMsg());
+//				 	echo "</div>";
+//	
+//				 	break;
+//				 }
 			}
 		}
 		 SITE_cpanel::setOrderStatus($order_id,1);
 	}
 
-	function notifyUserByEmail($order_id, $subject, $body){
-		/*
-		 * Envois un mail à l'utilisateur pour le prévenir que la commande est traitée.
-		 */
-
+	function notifyUserByEmail($order_id, $subject, $body)
+	{
+		// Envois un mail à l'utilisateur pour le prévenir que la commande est traitée.
 		$database =& JFactory::getDBO();
-			
-
-		$query = "SELECT o.user_id as user_id,u.email as email,o.name as data_title, o.order_id as order_id FROM  #__sdi_order o,#__users u WHERE order_id=$order_id and o.user_id = u.id";
+		$query = "SELECT o.user_id as user_id,
+						 u.email as email,
+						 o.name as data_title, 
+						 o.id as order_id 
+				  FROM  #__sdi_order o,#__users u 
+				  WHERE order_id=$order_id and o.user_id = u.id";
 		$database->setQuery($query);
 		$row = $database->loadObject();
 
-		$partner = new partnerByUserId($database);
-		$partner->load($row->user_id);
-		echo $partner->notify_order_ready;
+		$account = new accountByUserId($database);
+		$account->load($row->user_id);
+		//echo $account->notify_order_ready;
 
-		if ($partner->notify_order_ready == 1) {
+		if ($account->notify_order_ready == 1) {
 			SITE_cpanel::sendMailByEmail($row->email,JText::sprintf($subject, $row->data_title, $row->order_id),JText::sprintf($body,$row->data_title, $row->order_id));
 			//SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
 
@@ -911,17 +932,12 @@ class SITE_cpanel {
 	function processOrder(){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
-			
 		$option=JRequest::getVar("option");
-		//Allows Pathway with mod_menu_easysdi
-//		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_PROCESS_TREATMENT",
-//											"EASYSDI_MENU_ITEM_MYTREATMENT",  
-//											"index.php?option=$option&task=listOrdersForProvider");
 		
 		$product_list_id=JRequest::getVar("product_list_id","0");
 		if($product_list_id == 0)
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_PROCESS_ORDER_ERROR_NO_SELECTION"),'info');						
+			$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NO_SELECTION"),'info');						
 			$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
 			exit();
 		}
@@ -935,53 +951,54 @@ class SITE_cpanel {
 
 		//Build the query on product treatment type
 		$treatmentTypeQuery = "";
-		$database->setQuery("SELECT t.code as code, p.treatment_type as treatment_type 
-								FROM #__easysdi_product_treatment_type t, #__easysdi_product p 
-								WHERE p.treatment_type=t.id AND p.id = $product_id");
+		$database->setQuery("SELECT t.code as code, p.treatmenttype_id as treatment_type 
+								FROM #__sdi_list_treatmenttype t, #__sdi_product p 
+								WHERE p.treatmenttype_id=t.id AND p.id = $product_id");
 		$result = $database->loadObject();
 		$treatmentType = $result->treatment_type;
 		$treatmentCode = $result->code;
 		$treatmentTranslation = "";
 		if($treatmentType != "")
 		{
-			$treatmentTypeQuery = " AND p.treatment_type = $treatmentType ";
-			$queryTreatment = "SELECT translation FROM #__easysdi_product_treatment_type WHERE id = $treatmentType";
+			$treatmentTypeQuery = " AND p.treatmenttype_id = $treatmentType ";
+			$queryTreatment = "SELECT label FROM #__sdi_list_treatmenttype WHERE id = $treatmentType";
 			$database->setQuery($queryTreatment);
 			$treatmentTranslation = $database->loadResult();
 		}
 
 		$query = "SELECT p.id as product_id, 
-						 o.order_id as order_id, 
+						 o.id as order_id, 
 						 u.name as username,
-						 p.metadata_id as metadata_id, 
-						 p.data_title as data_title,
+						 v.metadata_id as metadata_id, 
+						 p.name as data_title,
 						 o.name as name,
-						 o.type as type, 
-						 opl.status as status,
-						 otl.translation as type_translation,
-						 o.order_send_date as order_send_date
+						 o.type_id as type, 
+						 opl.status_id as status,
+						 otl.label as type_translation,
+						 o.sent as order_send_date
 				  FROM  #__sdi_order o, 
 				  		#__sdi_list_orderstatus osl, 
 				  		#__sdi_order_product opl, 
-				  		#__sdi_order_product_status_list psl, 
-				  		#__easysdi_product p,
+				  		#__sdi_list_productstatus psl, 
+				  		#__sdi_product p
+				  		INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id,
 				  		#__sdi_account a, 
-				  		#__sdi_order_type_list otl,
+				  		#__sdi_list_ordertype otl,
 				  		#__users u 
-				  WHERE o.status=osl.id 
-				  AND o.type = otl.id  
-				  AND opl.status=psl.id 
+				  WHERE o.status_id=osl.id 
+				  AND o.type_id = otl.id  
+				  AND opl.status_id=psl.id 
 				  AND a.user_id = u.id 
-				  AND o.order_id = opl.order_id 
+				  AND o.id = opl.order_id 
 				  AND opl.product_id = p.id 
-				  AND p.diffusion_partner_id = a.id 
+				  AND p.diffusion_id = a.id 
 				  AND a.user_id =".$user->id." 
 				  AND psl.code='AWAIT' 
 				  AND osl.code <> 'ARCHIVED' 
 				  $treatmentTypeQuery
-				  AND o.order_id=".$order_id;
+				  AND o.id=".$order_id;
 					
-		$query .= " order by o.order_id";
+		$query .= " order by o.id";
 
 		$database->setQuery($query);
 		$rows = $database->loadObjectList() ;
@@ -991,7 +1008,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 
-		$query = "SELECT * FROM  #__sdi_order WHERE order_id=".$order_id;
+		$query = "SELECT * FROM  #__sdi_order WHERE id=".$order_id;
 		$database->setQuery($query);
 		$rowOrder = $database->loadObject();
 		if ($database->getErrorNum()) {
@@ -1009,7 +1026,7 @@ class SITE_cpanel {
 			$third_party = $database->loadObject();
 		}
 
-		$query = "SELECT translation FROM #__sdi_list_orderstatus where id = ".$rowOrder->status;
+		$query = "SELECT label FROM #__sdi_list_orderstatus where id = ".$rowOrder->status;
 		$database->setQuery($query);
 		$status = $database->loadResult();
 		
@@ -1029,12 +1046,12 @@ class SITE_cpanel {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
-		$rootPartner = new accountByUserId($database);
-		$rootPartner->load($user->id);
+		$rootAccount = new accountByUserId($database);
+		$rootAccount->load($user->id);
 
 		//Check the use rights
-		if(!userManager::hasRight($rootPartner->id,"REQUEST_INTERNAL") &&
-		!userManager::hasRight($rootPartner->id,"REQUEST_EXTERNAL"))
+		if(!userManager::hasRight($rootAccount->id,"REQUEST_INTERNAL") &&
+		!userManager::hasRight($rootAccount->id,"REQUEST_EXTERNAL"))
 		{
 			$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
 			return;
@@ -1051,24 +1068,26 @@ class SITE_cpanel {
 		
 		if($history_delay <= $archive_delay){
 			echo "<div class='alert'>";
-			echo JText::_("EASYSDI_HISTORY_ARCHIVE_DELAYS_ERROR");	
+			echo JText::_("SHOP_ORDER_MESSAGE_HISTORY_ARCHIVE_DELAYS_ERROR");	
 			echo "</div>";
 		}
 		
 		//Archive
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
-		$database->setQuery($queryStatus);
-		$status_id = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
+//		$database->setQuery($queryStatus);
+//		$status_id = $database->loadResult();
+		$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
 			
 		$query = "UPDATE #__sdi_order SET status_id=".$status_id.", 
-					updated = NOW() 
+					updated = NOW().updatedby =".$rootAccount->id."  
 					WHERE user_id = ".$user->id." 
 					AND DATEDIFF(NOW() ,updated) > $archive_delay 
 					AND DATEDIFF(NOW() ,updated) < $history_delay ";
 
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
-		$database->setQuery($queryStatus);
-		$status_id = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
+//		$database->setQuery($queryStatus);
+//		$status_id = $database->loadResult();
+		$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','FINISH' );
 
 		$query .= " AND status_id = ".$status_id;
 		$database->setQuery($query);
@@ -1080,15 +1099,17 @@ class SITE_cpanel {
 		}
 		
 		//History
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
-		$database->setQuery($queryStatus);
-		$history = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
+//		$database->setQuery($queryStatus);
+//		$history = $database->loadResult();
+		$history = sdilist::getIdByCode('#__sdi_list_orderstatus','HISTORIZED' );
 
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
-		$database->setQuery($queryStatus);
-		$archive = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
+//		$database->setQuery($queryStatus);
+//		$archive = $database->loadResult();
+		$history = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
 
-		$query = "SELECT order_id FROM #__sdi_order 
+		$query = "SELECT id FROM #__sdi_order 
 							WHERE user_id = ".$user->id." 
 							AND DATEDIFF(NOW() ,updated) > $history_delay 
 							AND (status_id = ".$archive." OR status_id = ".$status_id.")";
@@ -1096,11 +1117,10 @@ class SITE_cpanel {
 		$toUpdate = $database->loadResultArray();
 
 		$query = "UPDATE #__sdi_order 
-					SET status_id=".$history.", updated = NOW() 
+					SET status_id=".$history.", updated = NOW() , updatedby =".$rootAccount->id." 
 					WHERE user_id = ".$user->id." 
 					AND DATEDIFF(NOW() ,updated) > $history_delay 
 					AND (status_id = ".$archive." OR status_id = ".$status_id.")";
-		
 		$database->setQuery($query);
 
 		if (!$database->query()) {
@@ -1112,9 +1132,9 @@ class SITE_cpanel {
 
 		foreach ($toUpdate as $field)
 		{
-			$query = "UPDATE #__sdi_orderproduct_file f 
+			$query = "DELETE FROM #__sdi_orderproduct_file  f
 						INNER JOIN #__sdi_order_product o ON o.id=f.orderproduct_id
-					   SET f.data=NULL where o.order_id = ".$field;
+					   WHERE o.order_id = ".$field;
 			$database->setQuery($query);
 				
 			if (!$database->query()) {
@@ -1158,7 +1178,14 @@ class SITE_cpanel {
 		elseif (count($filterList) == 1)
 		$filter .= " AND ".$filterList[0];
 
-		$query = "select o.*, osl.code, osl.label as status_label, tl.label as type_label from #__sdi_order o inner join #__sdi_list_orderstatus osl on o.status_id=osl.id inner join #__sdi_list_ordertype tl on o.type_id=tl.id AND  o.user_id = ".$user->id;
+		$query = "SELECT o.*, 
+						 osl.code, 
+						 osl.label as status_label, 
+						 tl.label as type_label 
+				 FROM #__sdi_order o 
+				 INNER JOIN #__sdi_list_orderstatus osl ON o.status_id=osl.id 
+				 INNER JOIN #__sdi_list_ordertype tl ON o.type_id=tl.id 
+				 WHERE  o.user_id = ".$user->id;
 		$query .= $filter;
 		
 		if ($orderstatus ==""){
@@ -1199,21 +1226,25 @@ class SITE_cpanel {
 		$redirectURL = $database->loadResult();
 		
 		//$redirectURL = "index.php?option=com_easysdi_shop&view=shop&ItemId=".$ItemId;
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SAVED'";
-		$database->setQuery($queryStatus);
-		$saved = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SAVED'";
+//		$database->setQuery($queryStatus);
+//		$saved = $database->loadResult();
+		$saved = sdilist::getIdByCode('#__sdi_list_orderstatus','SAVED' );
 		
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
-		$database->setQuery($queryStatus);
-		$finish = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
+//		$database->setQuery($queryStatus);
+//		$finish = $database->loadResult();
+		$finish = sdilist::getIdByCode('#__sdi_list_orderstatus','FINISH' );
 		
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
-		$database->setQuery($queryStatus);
-		$archived = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
+//		$database->setQuery($queryStatus);
+//		$archived = $database->loadResult();
+		$archived = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
 		
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
-		$database->setQuery($queryStatus);
-		$historized = $database->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='HISTORIZED'";
+//		$database->setQuery($queryStatus);
+//		$historized = $database->loadResult();
+		$historized = sdilist::getIdByCode('#__sdi_list_orderstatus','HISTORIZED' );
 		
 		HTML_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter,$redirectURL, $saved,$finish,$archived,$historized);
 
@@ -1242,7 +1273,7 @@ class SITE_cpanel {
 			//Check if a user is logged
 			if ($u->guest)
 			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
+				$mainframe->enqueueMessage(JText::_("SHOP_ACCOUNT_NOT_CONNECTED"),"INFO");
 				return;
 			}
 			if($isForProvider == false)
@@ -1251,7 +1282,7 @@ class SITE_cpanel {
 				if(!userManager::hasRight($account->id,"REQUEST_INTERNAL") &&
 					!userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 				{
-					$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+					$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
 					return;
 				}
 			}
@@ -1264,11 +1295,26 @@ class SITE_cpanel {
 		
 		if(!$isInMemory){
 			//fetch order in database			
-			$query = "SELECT *, sl.translation as slT, tl.translation as tlT, a.name as order_name  FROM  #__sdi_order a ,  #__sdi_list_orderstatus sl, #__sdi_order_type_list tl where a.order_id = $id and tl.id = a.type and sl.id = a.status";
+			$query = "SELECT *, 
+							 sl.label as slT, 
+							 tl.label as tlT, 
+							 a.name as order_name  
+					  FROM  #__sdi_order a ,  
+					  		#__sdi_list_orderstatus sl, 
+					  		#__sdi_order_type_list tl 
+					  WHERE a.id = $id 
+					  AND tl.id = a.type_id 
+					  AND sl.id = a.status_id";
 			$db->setQuery($query);
 			$rowOrder = $db->loadObject();
 			
-			$query = "SELECT b.perimeter_id, b.text, b.value FROM  #__sdi_order a, #__sdi_order_product_perimeters b where a.order_id = b.order_id and a.order_id = $id order by b.id";
+			$query = "SELECT b.perimeter_id, 
+							 b.text, 
+							 b.value 
+					  FROM  #__sdi_order a, 
+					  		#__sdi_order_perimeter b 
+					  WHERE a.id = b.order_id 
+					  AND a.id = $id order by b.id";
 			$db->setQuery($query);
 			$perimeterRows = $db->loadObjectList();
 			
@@ -1281,20 +1327,20 @@ class SITE_cpanel {
 		else
 		{
 			//fetch order in memory
-			$queryTranslation = "SELECT translation from #__sdi_order_type_list where code = '".$mainframe->getUserState('order_type')."'";
+			$queryTranslation = "SELECT label from #__sdi_list_ordertype WHERE code = '".$mainframe->getUserState('order_type')."'";
 			$db->setQuery($queryTranslation );
 			$translation = $db->loadResult();
 			$rowOrder = array (  
-				'order_name' => $mainframe->getUserState('order_name'),
-				'type' => $mainframe->getUserState('order_type'),
-				'third_party' => $mainframe->getUserState('third_party'),
+				'name' => $mainframe->getUserState('order_name'),
+				'type_id' => $mainframe->getUserState('order_type'),
+				'thirdparty' => $mainframe->getUserState('third_party'),
 				'user_id' => $u->id,
-				'order_send_date' => '',
+				'sent' => '',
 				'buffer' => $mainframe->getUserState('bufferValue'),
 				'surface' =>  $mainframe->getUserState('totalArea'),
 				'tlT' => $translation,
 				'slT' => "",
-				'status' => ""
+				'status_id' => ""
 			);
 			$rowOrder = (object) $rowOrder;  
 			
@@ -1322,7 +1368,7 @@ class SITE_cpanel {
 			//Check if the current order belongs to the current logged user
 			if($user != $u->id)
 			{
-				$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+				$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
 				return;
 			}
 		}
@@ -1332,7 +1378,7 @@ class SITE_cpanel {
 		
 		$third_name ='';
 		//Third name
-		$third = $rowOrder->third_party; 
+		$third = $rowOrder->thirdparty; 
 		if( $third != 0)
 		{
 			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__sdi_account where id= $third)";
@@ -1347,18 +1393,18 @@ class SITE_cpanel {
 			{
 				$query = "SELECT *, a.id as plId 
 					  FROM #__sdi_order_product  a, 
-					  	   #__easysdi_product b 
+					  	   #__sdi_product b 
 					  WHERE a.product_id  = b.id 
-					  AND order_id = $id 
-					  AND b.diffusion_partner_id = $rootPartner->id";
+					  AND a.order_id = $id 
+					  AND b.diffusion_id = $account->id";
 			}
 			else
 			{
 				$query = "SELECT *, a.id as plId 
 					  FROM #__sdi_order_product  a, 
-					       #__easysdi_product b 
+					       #__sdi_product b 
 					  WHERE a.product_id  = b.id 
-					  AND order_id = $id";
+					  AND a.order_id = $id";
 			}
 			
 			$db->setQuery($query );
@@ -1374,7 +1420,7 @@ class SITE_cpanel {
 			$rowsProduct = Array();
 			if (count($cid)>0){
 				for ($i = 0; $i < count($cid); $i ++){
-					$query = "SELECT * FROM #__easysdi_product WHERE id =".$cid[$i];
+					$query = "SELECT * FROM #__sdi_product WHERE id =".$cid[$i];
 					$db->setQuery($query );
 					$rowsProduct[] = $db->loadObject();
 				}
@@ -1385,7 +1431,7 @@ class SITE_cpanel {
 		{
 			//The connected user does not have any product to provide in this order
 			//Do not display any information and quit with error message
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
+			$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NOT_ALLOWED_TO_ACCESS_ORDER_REPORT") ,"INFO");
 			return;
 		}
 		
@@ -1395,32 +1441,74 @@ class SITE_cpanel {
 	function sendOrder($order_id){
 		global $mainframe;
 		$db =& JFactory::getDBO();
+		$user = JFactory::getUser();
+		$account = new accountByUserId($db);
+		$account->load($user->id);
 
-		$date = new JDate();
+//		$date = new JDate();
 
-		$queryType = "SELECT id from #__sdi_order_product_status_list where code = 'AWAIT'";
-		$db->setQuery($queryType );
-		$await_type = $db->loadResult();
-		$queryType = "SELECT id from #__sdi_order_product_status_list where code = 'AVAILABLE'";
-		$db->setQuery($queryType );
-		$available_type = $db->loadResult();
+//		$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AWAIT'";
+//		$db->setQuery($queryType );
+//		$await_type = $db->loadResult();
+		$await_type = sdilist::getIdByCode('#__sdi_list_productstatus','AWAIT' );
+//		$queryType = "SELECT id from #__sdi_order_product_status_list where code = 'AVAILABLE'";
+//		$db->setQuery($queryType );
+//		$available_type = $db->loadResult();
+		$available_type = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
 
-		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SENT'";
-		$db->setQuery($queryStatus);
-		$status_id = $db->loadResult();
+//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SENT'";
+//		$db->setQuery($queryStatus);
+//		$status_id = $db->loadResult();
+		$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','SENT' );
 
-		$query = "UPDATE  #__sdi_order set status = ".$status_id.", order_update ='". $date->toMySQL()."',order_send_date='". $date->toMySQL()."' WHERE order_id = ".$order_id;
-		$db->setQuery($query );
-
-		if (!$db->query()) {
-			echo "<div class='alert'>";
-			echo $db->getErrorMsg();
-			echo "</div>";
-		}
+//		$query = "UPDATE  #__sdi_order 
+//					SET status_id = ".$status_id.", 
+//						updated ='". $date->toMySQL()."',
+//						updatedby = $account->id,
+//						sent='". $date->toMySQL()."' 
+//					WHERE id = ".$order_id;
+//		$db->setQuery($query );
+//
+//		if (!$db->query()) {
+//			echo "<div class='alert'>";
+//			echo $db->getErrorMsg();
+//			echo "</div>";
+//		}
+		$order = new order ($db);
+		$order->load($order_id);
+		$order->setStatus($status_id);
+		$order->store();
+		
 			
 		SITE_cpanel::notifyOrderToDiffusion($order_id);
 			
-		$query = "SELECT o.name as cmd_name,u.email as email , p.id as product_id, p.data_title as data_title , p.partner_id as partner_id   FROM #__users u,#__easysdi_community_partner pa, #__sdi_order_product opl , #__easysdi_product p,#__sdi_order o, #__sdi_order_product_status_list psl, #__sdi_list_orderstatus osl, #__sdi_order_type_list tl WHERE opl.status=psl.id and o.status=osl.id and opl.order_id= $order_id AND p.id = opl.product_id and p.is_free = 1 and psl.code='AWAIT' and o.type=tl.id and tl.code='D' AND p.partner_id = pa.partner_id and pa.user_id = u.id and o.order_id=opl.order_id and osl.code='SENT' ";
+		$query = "SELECT o.name as cmd_name,
+						 u.email as email , 
+						 p.id as product_id, 
+						 p.name as data_title , 
+						 ob.account_id as partner_id   
+				  FROM #__users u,
+				  	   #__sdi_account pa, 
+				  	   #__sdi_order_product opl , 
+				  	   #__sdi_product p
+				  	   INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+				  	   INNER JOIN #__sdi_object ob ON ob.id=v.object_id,
+				  	   #__sdi_order o, 
+				  	   #__sdi_list_productstatus psl, 
+				  	   #__sdi_list_orderstatus osl, 
+				  	   #__sdi_list_ordertype tl 
+				  WHERE opl.status_id=psl.id 
+				  AND o.status_id=osl.id 
+				  AND opl.order_id= $order_id 
+				  AND p.id = opl.product_id 
+				  AND p.free = 1 
+				  AND psl.code='AWAIT' 
+				  AND o.type_id=tl.id 
+				  AND tl.code='D' 
+				  AND ob.account_id = pa.id 
+				  AND pa.user_id = u.id 
+				  AND o.id=opl.order_id 
+				  AND osl.code='SENT' ";
 			
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
@@ -1433,7 +1521,7 @@ class SITE_cpanel {
 		$response_send = 0;
 		foreach ($rows as $row){
 			$response_send = 1;
-			$query = "UPDATE   #__sdi_order_product opl set status = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
+			$query = "UPDATE   #__sdi_order_product opl set status_id = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
 			$db->setQuery( $query );
 			if (!$db->query()) {
 				echo "<div class='alert'>";
@@ -1468,28 +1556,39 @@ class SITE_cpanel {
 		 */
 		global $mainframe;
 		$db =& JFactory::getDBO();
-//		jimport("joomla.utilities.date");
 		$date = new JDate();
 		
-		$query = "SELECT status FROM #__sdi_order WHERE order_id=$order_id";
-		$db->setQuery($query);
-		$status_id = $db->loadResult();
+//		$query = "SELECT status_id FROM #__sdi_order WHERE id=$order_id";
+//		$db->setQuery($query);
+//		$status_id = $db->loadResult();
+		$order = new order ($db);
+		$order->load($order_id);
+		$status_id=$order->status_id;
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_order_product p, #__sdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id AND sl.code = 'AWAIT' ";
+		$query = "SELECT COUNT(*) 
+				  FROM #__sdi_order_product p, 
+					   #__sdi_list_productstatus sl 
+				  WHERE p.status_id=sl.id 
+				  AND p.order_id=$order_id 
+				  AND sl.code = 'AWAIT' ";
 		$db->setQuery($query);
 		$total = $db->loadResult();
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_order_product_list p, #__sdi_order_product_status_list sl WHERE p.status=sl.id and p.order_id=$order_id  ";
+		$query = "SELECT COUNT(*) 
+				  FROM #__sdi_order_product p, 
+				  	   #__sdi_list_productstatus sl 
+				  WHERE p.status_id=sl.id 
+				  AND p.order_id=$order_id  ";
 		$db->setQuery($query);
 		$totalProduct = $db->loadResult();
-			
-//		jimport("joomla.utilities.date");
+	
 		$date = new JDate();
 		if ( $total == 0)
 		{
-			$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
-			$db->setQuery($queryStatus);
-			$status_id = $db->loadResult();
+//			$queryStatus = "select id from #__sdi_list_orderstatus where code ='FINISH'";
+//			$db->setQuery($queryStatus);
+//			$status_id = $db->loadResult();
+			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','FINISH' );
 		}
 		else if ($total == $totalProduct)
 		{
@@ -1498,37 +1597,50 @@ class SITE_cpanel {
 		}
 		else
 		{
-			$queryStatus = "select id from #__sdi_list_orderstatus where code ='PROGRESS'";
-			$db->setQuery($queryStatus);
-			$status_id = $db->loadResult();
+//			$queryStatus = "select id from #__sdi_list_orderstatus where code ='PROGRESS'";
+//			$db->setQuery($queryStatus);
+//			$status_id = $db->loadResult();
+			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','PROGRESS' );
 		}
 
 		if($response_send)
 		{
-			$query = "UPDATE   #__sdi_order  SET 
-							status =".$status_id." , 
-							order_update ='".$date->toMySQL()."' ,
-							response_date ='".$date->toMySQL()."' ,
-							response_send =".$response_send."  
-					WHERE order_id=$order_id ";
+//			$query = "UPDATE   #__sdi_order  SET 
+//							status_id =".$status_id." , 
+//							order_update ='".$date->toMySQL()."' ,
+//							response_date ='".$date->toMySQL()."' ,
+//							response_send =".$response_send."  
+//					WHERE order_id=$order_id ";
+			$order->status_id = $status_id;
+			$order->responsesent = $response_send;
+			$order->response = $date->toMySQL();
 		}
 		else
 		{
-			$query = "UPDATE   #__sdi_order  SET 
-							status =".$status_id." , 
-							order_update ='".$date->toMySQL()."' ,
-							response_date ='".$date->toMySQL()."' 
-					WHERE order_id=$order_id ";
+//			$query = "UPDATE   #__sdi_order  SET 
+//							status =".$status_id." , 
+//							order_update ='".$date->toMySQL()."' ,
+//							response_date ='".$date->toMySQL()."' 
+//					WHERE order_id=$order_id ";
+			$order->status_id = $status_id;
+			$order->response = $date->toMySQL();
 		}
-			
-		$db->setQuery($query);
-		if (!$db->query()) {
-			echo "<div class='alert'>";
-			echo $db->getErrorMsg();
-			echo "</div>";
-		}
+//			
+//		$db->setQuery($query);
+//		if (!$db->query()) {
+//			echo "<div class='alert'>";
+//			echo $db->getErrorMsg();
+//			echo "</div>";
+//		}
+		$order->store();
 		
-		$db->setQuery("SELECT o.name as order_name, u.id as user_id, u.email as email FROM #__sdi_order o, #__users u where o.user_id = u.id and order_id=".$order_id);
+		$db->setQuery("SELECT o.name as order_name, 
+							  u.id as user_id, 
+							  u.email as email 
+					   FROM #__sdi_order o, 
+					   		#__users u 
+					   WHERE o.user_id = u.id 
+					   AND o.id=".$order_id);
 		$results = $db->loadObjectList();
 		$order_name = $results[0]->order_name;
 		$email = $results[0]->email;
@@ -1540,11 +1652,11 @@ class SITE_cpanel {
 		$not = $db->loadResult();
 		if ($total ==0 && $not == 1)
 		{
-			SITE_cpanel::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
+			SITE_cpanel::sendMailByEmail($email,JText::sprintf("SHOP_ORDER_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("SHOP_ORDER_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 		else if ($total == $totalProduct -1 && $not == 1)
 		{
-			SITE_cpanel::sendMailByEmail($email,JText::sprintf("EASYSDI_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$order_name,$order_id));
+			SITE_cpanel::sendMailByEmail($email,JText::sprintf("SHOP_ORDER_CMD_READY_MAIL_SUBJECT", $order_name, $order_id),JText::sprintf("SHOP_ORDER_CMD_READY_MAIL_BODY",$order_name,$order_id));
 		}
 	}
 	
@@ -1554,7 +1666,7 @@ class SITE_cpanel {
 	{
 		$db =& JFactory::getDBO();
 
-		$queryOrderName = "SELECT name FROM #__sdi_order WHERE order_id = $order_id";
+		$queryOrderName = "SELECT name FROM #__sdi_order WHERE id = $order_id";
 		$db->setQuery($queryOrderName);
 		$order_name = $db->loadResult();
 		if ($db->getErrorNum()) {
@@ -1563,7 +1675,7 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 		
-		$queryOrderType = "SELECT l.code FROM #__sdi_order o, #__sdi_order_type_list l WHERE o.type = l.id and order_id = $order_id";
+		$queryOrderType = "SELECT l.code FROM #__sdi_order o, #__sdi_list_ordertype l WHERE o.type_id = l.id and id = $order_id";
 		$db->setQuery($queryOrderType);
 		$order_type = $db->loadResult();
 		if ($db->getErrorNum()) {
@@ -1572,11 +1684,21 @@ class SITE_cpanel {
 			echo "</div>";
 		}
 		
-		$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__sdi_order_product l WHERE l.product_id = p.id AND order_id = $order_id";
+		$orderQuery = "SELECT distinct l.product_id 
+					   FROM #__sdi_product p, 
+					   		#__sdi_order_product l 
+					   WHERE l.product_id = p.id 
+					   AND l.order_id = $order_id";
 		if($order_type == "D")
+		{
 			//Filter out the products that are free if it is a devis, they should not be notificated
-			$orderQuery = "SELECT distinct l.product_id FROM #__easysdi_product p, #__sdi_order_product l WHERE l.product_id = p.id AND p.is_free=0 AND order_id = $order_id";
-			
+			$orderQuery = "SELECT distinct l.product_id 
+						   FROM #__sdi_product p, 
+						   		#__sdi_order_product l 
+						   WHERE l.product_id = p.id 
+						   AND p.free=0 
+						   AND l.order_id = $order_id";
+		}
 		$db->setQuery($orderQuery);
 		$cid = $db->loadResultArray();
 		if ($db->getErrorNum()) {
@@ -1593,7 +1715,11 @@ class SITE_cpanel {
 		}
 		$productList = substr ($productList,0,strlen($productList)-1);
 
-		$queryNotitification = "SELECT DISTINCT diffusion_partner_id ,notification_email FROM #__easysdi_product WHERE id IN ($productList)AND treatment_type = (SELECT id from #__easysdi_product_treatment_type WHERE code = 'MANU')";
+		$queryNotitification = "SELECT DISTINCT diffusion_id ,
+												notification 
+								FROM #__sdi_product 
+								WHERE id IN ($productList)
+								AND treatmenttype_id = (SELECT id from #__sdi_list_treatmenttype WHERE code = 'MANU')";
 		$db->setQuery($queryNotitification);
 		$results = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -1608,11 +1734,11 @@ class SITE_cpanel {
 			$diffusionEmail = "";
 			if($result->diffusion_partner_id)
 			{
-				$queryDiffusionPartnerEmail = "SELECT email FROM #__users WHERE id = (SELECT user_id from #__sdi_account WHERE id = $result->diffusion_partner_id)";
+				$queryDiffusionPartnerEmail = "SELECT email FROM #__users WHERE id = (SELECT user_id from #__sdi_account WHERE id = $result->diffusion_id)";
 				$db->setQuery($queryDiffusionPartnerEmail);
 				$diffusionEmail = $db->loadResult();
 			}
-			SITE_cpanel::getEmailNotificationList($result->notification_email, $list);
+			SITE_cpanel::getEmailNotificationList($result->notification, $list);
 			SITE_cpanel::sendEmailToNotificationList($diffusionEmail,$list, $order_id, $order_name);
 		}
 	}
@@ -1643,8 +1769,8 @@ class SITE_cpanel {
 		{
 			$mailer->AddAddress($email);
 		}
-		$mailer->setSubject(JText::_("EASYSDI_ORDER_NOTIFICATION_SUBJECT"));
-		$mailer->setBody(JText::sprintf("EASYSDI_ORDER_NOTIFICATION_BODY",$order_id,$order_name));
+		$mailer->setSubject(JText::_("SHOP_ORDER_CMD_NOTIFICATION_SUBJECT"));
+		$mailer->setBody(JText::sprintf("SHOP_ORDER_CMD_NOTIFICATION_BODY",$order_id,$order_name));
 		if ($mailer->send() !==true)
 		{
 			//

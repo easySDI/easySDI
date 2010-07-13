@@ -35,10 +35,24 @@ class order extends sdiTable
 		parent::__construct ( '#__sdi_order', 'id', $db ) ;    		
 	}
 	
-	function updateStatus ($status_id)
+	function setStatus ($status_id)
 	{
 		$this->status_id = $status_id;
 		return $this->store();
+	}
+	
+	function delete ()
+	{
+		$this->_db->setQuery("DELETE FROM #__sdi_order_property WHERE orderproduct_id IN (SELECT id FROM #__sdi_order_product WHERE order_id = $this->id)");
+		$this->_db->query();
+		
+		$this->_db->setQuery("DELETE FROM #__sdi_order_product WHERE order_id = $this->id");
+		$this->_db->query();
+		
+		$this->_db->setQuery("DELETE FROM #__sdi_order_perimeter WHERE order_id = $this->id");
+		$this->_db->query();
+		
+		return $this->delete();
 	}
 
 }
@@ -87,6 +101,34 @@ class orderProduct extends sdiTable
 	{
 		parent::__construct ( '#__sdi_order_product', 'id', $db ) ;    		
 	}
+	function setStatus ($status_id)
+	{
+		$this->status_id = $status_id;
+		return $this->store();
+	}
+	function setFile($filename, $file)
+	{
+		$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_orderproduct_file WHERE orderproduct_id = ".$this->id );
+		$result = $this->_db->loadResult();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
+		if($result > 0)
+		{
+			$this->_db->setQuery( "UPDATE  #__sdi_orderproduct_file SET data='".$file."', filename='".$filename."' WHERE orderproduct_id = ".$this->id );
+			if (!$this->_db->query()) {
+				return false;
+			}
+		}
+		else
+		{
+			$this->_db->setQuery( "INSERT INTO  #__sdi_orderproduct_file (filename, data,orderproduct_id) VALUES ('".$fileName."' ,'".$file."', ".$this->id.")" );
+			if (!$this->_db->query()) {
+				return false;
+			}
+		}
+	}
+	
 }
 
 class orderProductPerimeterByOrder extends sdiTable

@@ -75,7 +75,6 @@ class product extends sdiTable
 				}
 				if($result > 0)
 				{
-					$mainframe->enqueueMessage("Update");
 					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."' WHERE product_id = ".$this->id );
 					if (!$this->_db->query()) {
 						return false;
@@ -83,7 +82,6 @@ class product extends sdiTable
 				}
 				else
 				{
-					$mainframe->enqueueMessage("Insert");
 					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id) VALUES ('".$fileName."' ,'".$content."', ".$this->id.")" );
 					if (!$this->_db->query()) {
 						return false;
