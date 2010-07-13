@@ -2072,6 +2072,7 @@ if (count($rows)>0){
 			if($order_status_value == "SENT")
 			{
 				$order->sent =date('Y-m-d H:i:s');
+				$order->responsesent =1;
 			}
 			if(!$order->store())
 			{
@@ -2080,9 +2081,7 @@ if (count($rows)>0){
 				echo "</div>";
 				return;
 			}
-			
 			$order_id	= $db->insertid();
-			//$order_id = $order->id;
 			
 			$perimeter_id = $mainframe->getUserState('perimeter_id');
 			$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
@@ -2103,16 +2102,6 @@ if (count($rows)>0){
 					echo "</div>";
 					return;
 				}
-				//Before the dot, it is the perimeter id, after the dot id of the data
-//				$query =  "INSERT INTO #__sdi_order_perimeter (id,order_id,perimeter_id,value,text) 
-//							VALUES (0,$order_id,$perimeter_id,'$sel','".addslashes($selSurfaceListName[$i])."')";
-//				$db->setQuery($query );
-//				if (!$db->query()) {
-//					echo "<div class='alert'>";
-//					echo $db->getErrorMsg();
-//					echo "</div>";
-//					exit;
-//				}
 				$i++;
 			}
 
@@ -2131,19 +2120,8 @@ if (count($rows)>0){
 						echo "</div>";
 						return;
 					}
-//					$query = "INSERT INTO #__sdi_order_product(id,product_id,order_id, status_id) 
-//								VALUES (0,".$product_id.",".$order_id.",".$await_type.")";
-//					$db->setQuery($query );
-//					if (!$db->query()) 
-//					{
-//						echo "<div class='alert'>";
-//						echo $db->getErrorMsg();
-//						echo "</div>";
-//						exit;
-//					}
 
 					$order_product_list_id = $db->insertid();
-					//$order_product_list_id = $order_product->;
 					$query = "SELECT DISTINCT a.code as code, 
 											  a.id as property_id 
 								FROM #__sdi_product_property b, 
@@ -2176,16 +2154,6 @@ if (count($rows)>0){
 									echo "</div>";
 									return;
 								}
-//								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
-//												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
-//								$db->setQuery($query );
-//								if (!$db->query()) 
-//								{
-//									echo "<div class='alert'>";
-//									echo $db->getErrorMsg();
-//									echo "</div>";
-//									exit;
-//								}
 							}
 						}
 	
@@ -2206,24 +2174,13 @@ if (count($rows)>0){
 									echo "</div>";
 									return;
 								}
-//								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
-//												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
-//								$db->setQuery($query );
-//								if (!$db->query()) {
-//									echo "<div class='alert'>";
-//									echo $db->getErrorMsg();
-//									echo "</div>";
-//								}
 							}
 						}
-						
 						
 						$productProperties  = $mainframe->getUserState($row->property_id."_cbox_property_".$product_id);
 						if (count($productProperties)>0)
 						{
 							$mainframe->setUserState($row->property_id.'_cbox_property_'.$product_id,null);
-	
-						
 							foreach ($productProperties as $propertyvalue_id)
 							{
 								$orderProductProperty = new orderProductProperty($db)	;
@@ -2237,16 +2194,6 @@ if (count($rows)>0){
 									echo "</div>";
 									return;
 								}
-//								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue_id,property_id) 
-//												VALUES (0,".$order_product_list_id.",".$propertyvalue_id.",'$row->property_id')";
-//								$db->setQuery($query );
-//								if (!$db->query()) 
-//								{
-//									echo "<div class='alert'>";
-//									echo $db->getErrorMsg();
-//									echo "</div>";
-//									exit;
-//								}
 							}
 						}
 						
@@ -2265,16 +2212,6 @@ if (count($rows)>0){
 									echo "</div>";
 									return;
 								}
-//							$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
-//											VALUES (0,$order_product_list_id,\"$productProperties\",'$row->property_id')";
-//							$db->setQuery($query );
-//							if (!$db->query()) 
-//							{
-//								echo "<div class='alert'>";
-//								echo $db->getErrorMsg();
-//								echo "</div>";
-//								exit;
-//							}
 						}
 						
 						$productProperties  = $mainframe->getUserState($row->property_id."_message_property_".$product_id);
@@ -2292,16 +2229,6 @@ if (count($rows)>0){
 									echo "</div>";
 									exit;
 								}
-//							$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
-//											VALUES (0,$order_product_list_id,\"$productProperties\",'$row->property_id')";
-//							$db->setQuery($query );
-//							if (!$db->query()) 
-//							{
-//								echo "<div class='alert'>";
-//								echo $db->getErrorMsg();
-//								echo "</div>";
-//								exit;
-//							}
 						}
 						
 						$productProperties  = $mainframe->getUserState($row->property_id."_textarea_property_".$product_id);
@@ -2322,16 +2249,6 @@ if (count($rows)>0){
 									echo "</div>";
 									exit;
 								}
-//								$query = "INSERT INTO #__sdi_order_property(id,orderproduct_id,propertyvalue,property_id) 
-//												VALUES (0,$order_product_list_id,\"$propertyvalue_id\",'$row->property_id')";
-//								$db->setQuery($query );
-//								if (!$db->query()) 
-//								{
-//									echo "<div class='alert'>";
-//									echo $db->getErrorMsg();
-//									echo "</div>";
-//									exit;
-//								}
 							}
 						}					
 					}
@@ -2394,7 +2311,6 @@ if (count($rows)>0){
 			
 			//Send an email to the customer to inform that his order has been sent
 			//only if status is SENT
-			
 			if($order_status_value == "SENT")
 			{
 				//verify the notification is active.

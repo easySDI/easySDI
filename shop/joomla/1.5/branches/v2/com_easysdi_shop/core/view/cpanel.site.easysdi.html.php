@@ -138,7 +138,7 @@ class HTML_cpanel {
 			<td align="center" class="infoLogo"><div class="<?php if($row->type_id == 1) echo"reqDevis"; if($row->type_id == 2) echo"reqOrder";  ?>" title="<?php echo JText::_($row->type_label) ;?>"></div></td>
 			<td align="center" class="logo">
 			<?php
-			if($row->sent == "0000-00-00 00:00:00" && $row->responsesent == 0)
+			if(($row->sent == "0000-00-00 00:00:00" || $row->sent == null) && $row->responsesent == 0)
 			{
 				?>
 				<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_CREATION")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->created));?>"> </div>

@@ -83,12 +83,7 @@ class SITE_cpanel {
 			$database =& JFactory::getDBO();
 			$user = JFactory::getUser();
 				
-//			$queryStatus = "select id from #__sdi_list_orderstatus where code ='ARCHIVED'";
-//			$database->setQuery($queryStatus);
-//			$status_id = $database->loadResult();
 			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
-			
-			$date = new JDate();
 			
 			$order = new order($database);
 			$order->load($order_id);
@@ -99,14 +94,6 @@ class SITE_cpanel {
 				echo "</div>";
 				exit;
 			}
-//			$query = "update #__sdi_order set status_id = ".$status_id.", updated = '".$date->toMySQL()."' where user_id = ".$user->id." AND id =".$order_id;
-//			$database->setQuery($query);
-//			if (!$database->query()) {
-//				echo "<div class='alert'>";
-//				echo $database->getErrorMsg();
-//				echo "</div>";
-//				exit;
-//			}
 		}
 	}
 	
@@ -373,12 +360,10 @@ class SITE_cpanel {
 			$user = JFactory::getUser();
 
 			$await = sdilist::getIdByCode('#__sdi_list_productstatus','AWAIT' );
-			$saved = sdilist::getIdByCode('#__sdi_list_productstatus','SAVED' );
-			$finish = sdilist::getIdByCode('#__sdi_list_productstatus','FINISH' );
-			$archived = sdilist::getIdByCode('#__sdi_list_productstatus','ARCHIVED' );
-			$historized = sdilist::getIdByCode('#__sdi_list_productstatus','HISTORIZED' );
-			
-			$date = new JDate();
+			$saved = sdilist::getIdByCode('#__sdi_list_orderstatus','SAVED' );
+			$finish = sdilist::getIdByCode('#__sdi_list_orderstatus','FINISH' );
+			$archived = sdilist::getIdByCode('#__sdi_list_orderstatus','ARCHIVED' );
+			$historized = sdilist::getIdByCode('#__sdi_list_orderstatus','HISTORIZED' );
 			
 			$query_order_status = "select status_id from #__sdi_order where user_id = ".$user->id." AND id =".$order_id;
 			$database->setQuery($query_order_status);
@@ -398,20 +383,14 @@ class SITE_cpanel {
 			}
 			
 			//Do the copy
-//			$query = "SELECT * FROM #__sdi_order where id=".$order_id;
-//			$database->setQuery($query);
-//			$currentOrder = $database->loadObjectList();
-//			$currentOrder = $currentOrder[0];
 			$currentOrder = new order ($database);
 			$currentOrder->load($order_id);
-			
 			//Do not give the same name twice and limit the name to 40 characters
 			$order_name="";
 			$query_count_name = "select status_id from #__sdi_order where user_id = ".$user->id." AND name ='".addslashes($order_name)."'";
 			$database->setQuery($query_count_name);
 			$order_occ = $database->loadResult();
 			$l = 1;
-			
 			do
 			{    
 				//truncate the name to have max 40 characters:
@@ -430,7 +409,14 @@ class SITE_cpanel {
 			
 			//insert new order
 			$currentOrder->id = 0;
+			$currentOrder->guid = 0;
 			$currentOrder->name = addslashes($order_name);
+			$currentOrder->status_id = $saved;
+			$date = new JDate();
+			$currentOrder->created = $date->toMySQL();
+			$currentOrder->response=NULL;
+			$currentOrder->responsesent=0;
+			$currentOrder->sent=NULL;
 			if(!$currentOrder->store())
 			{
 				echo "<div class='alert'>";
@@ -439,16 +425,6 @@ class SITE_cpanel {
 				exit;
 			}
 			
-			//insert new order
-//			$query = "insert into #__sdi_order (remark, user_id, name, type_id, status_id, thirdparty, user_id, buffer, order_date, surface) ";
-//			$query .= "values('$currentOrder->remark', $currentOrder->user_id, '".addslashes($order_name)."', $currentOrder->type, $saved, $currentOrder->third_party, $currentOrder->user_id, $currentOrder->buffer, now(), $currentOrder->surface)";
-//			$database->setQuery($query);
-//			if (!$database->query()) {
-//				echo "<div class='alert'>";
-//				echo $database->getErrorMsg();
-//				echo "</div>";
-//				exit;
-//			}		
 			$order_copy_id = $database->insertid();
 			
 			//fill in dependency tables
@@ -457,15 +433,6 @@ class SITE_cpanel {
 			$rows = $database->loadObjectList();
 			foreach ($rows as $row)
 			{
-//				$query = "insert into #__sdi_order_product (product_id, order_id, status_id) ";
-//				$query .= "values($row->product_id, $order_copy_id, $await)";
-//				$database->setQuery($query);
-//				if (!$database->query()) {
-//					echo "<div class='alert'>";
-//					echo $database->getErrorMsg();
-//					echo "</div>";
-//					exit;
-//				}
 				$orderProduct = new orderProduct($database);
 				$orderProduct->product_id=$row->product_id;
 				$orderProduct->order_id=$order_copy_id;
@@ -484,21 +451,12 @@ class SITE_cpanel {
 				$rows1 = $database->loadObjectList();
 				foreach ($rows1 as $row1)
 				{
-//					$query = "insert into #__sdi_order_property (orderproduct_id, property_id, propertyvalue, code) ";
-//					$query .= "values($list_copy_id, $row1->property_id, '$row1->propertyvalue', '$row1->code')";
-//					$database->setQuery($query);
-//					if (!$database->query()) {
-//						echo "<div class='alert'>";
-//						echo $database->getErrorMsg();
-//						echo "</div>";
-//						exit;
-//					}
 					$orderProductProperty = new orderProductProperty($database);
 					$orderProductProperty->orderproduct_id=$list_copy_id;
 					$orderProductProperty->property_id=$row1->property_id;
 					$orderProductProperty->propertyvalue=$row1->propertyvalue;
 					$orderProductProperty->propertyvalue_id=$row1->propertyvalue_id;
-					$orderProductProperty->code=$row1->$row1->code;
+					$orderProductProperty->code=$row1->code;
 					if(!$orderProductProperty->store())
 					{
 						echo "<div class='alert'>";
@@ -514,15 +472,6 @@ class SITE_cpanel {
 			$rows = $database->loadObjectList();
 			foreach ($rows as $row)
 			{
-//				$query = "insert into #__sdi_order_perimeter (perimeter_id, order_id, value, text) ";
-//				$query .= "values($row->perimeter_id, $order_copy_id, '$row->value', '$row->text')";
-//				$database->setQuery($query);
-//				if (!$database->query()) {
-//					echo "<div class='alert'>";
-//					echo $database->getErrorMsg();
-//					echo "</div>";
-//					exit;
-//				}
 				$orderPerimeter = new orderPerimeter($database);
 				$orderPerimeter->perimeter_id=$row->perimeter_id;
 				$orderPerimeter->order_id=$order_copy_id;
@@ -1266,11 +1215,9 @@ class SITE_cpanel {
 			else
 			{
 				$query = "SELECT *, a.id as plId , opf.filename as filename
-					  FROM #__sdi_order_product  a, 
-					       #__sdi_product b, 
-					       #__sdi_orderproduct_file opf
+					  FROM #__sdi_order_product  a LEFT OUTER JOIN #__sdi_orderproduct_file opf ON opf.orderproduct_id = a.id, 
+					       #__sdi_product b
 					  WHERE a.product_id  = b.id 
-					  AND opf.orderproduct_id = a.id
 					  AND a.order_id = $id";
 			}
 			$db->setQuery($query );
@@ -1314,38 +1261,17 @@ class SITE_cpanel {
 		$account = new accountByUserId($db);
 		$account->load($user->id);
 
-//		$date = new JDate();
+		$date = new JDate();
 
-//		$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AWAIT'";
-//		$db->setQuery($queryType );
-//		$await_type = $db->loadResult();
+
 		$await_type = sdilist::getIdByCode('#__sdi_list_productstatus','AWAIT' );
-//		$queryType = "SELECT id from #__sdi_order_product_status_list where code = 'AVAILABLE'";
-//		$db->setQuery($queryType );
-//		$available_type = $db->loadResult();
 		$available_type = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
-
-//		$queryStatus = "select id from #__sdi_list_orderstatus where code ='SENT'";
-//		$db->setQuery($queryStatus);
-//		$status_id = $db->loadResult();
 		$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','SENT' );
 
-//		$query = "UPDATE  #__sdi_order 
-//					SET status_id = ".$status_id.", 
-//						updated ='". $date->toMySQL()."',
-//						updatedby = $account->id,
-//						sent='". $date->toMySQL()."' 
-//					WHERE id = ".$order_id;
-//		$db->setQuery($query );
-//
-//		if (!$db->query()) {
-//			echo "<div class='alert'>";
-//			echo $db->getErrorMsg();
-//			echo "</div>";
-//		}
 		$order = new order ($db);
 		$order->load($order_id);
 		$order->setStatus($status_id);
+		$order->sent=$date->toMySQL();
 		$order->store();
 		
 			
@@ -1430,6 +1356,7 @@ class SITE_cpanel {
 		
 		$order = new order ($db);
 		$order->load($order_id);
+		$status_id =$order->status_id;
 		
 		$query = "SELECT COUNT(*) 
 				  FROM #__sdi_order_product p, 
