@@ -721,54 +721,17 @@ class ADMIN_metadata {
 	}
 
 	function PostXMLRequest($url,$xmlBody){
-		//$args = http_build_query($array);
-		$url = parse_url($url);
-		$port="";
-		$scheme="";
-		$fp = null;
-		if(isset($url['port'])){
-			$port = $url['port'];
-		}else{
-			$port = 80;
-		}
-		$scheme = strtolower($url['scheme']);
-		//could not open socket
-		if($scheme == "http"){
-			$fp = fsockopen ($url['host'], $port, $errno, $errstr);
-		}
-		if($scheme == "https"){
-			$fp = fsockopen ("ssl://".$url['host'], 443, $errno, $errstr);
-		}
-		if(!$fp){
-			//...
-		}
-		//socket ok
-		else{
-			//$size = strlen($args);
-			$size = strlen($xmlBody);
-			$request = "POST ".$url['path']." HTTP/1.1\n";
-			$request .= "Host: ".$url['host']."\n";
-			//add auth header if necessary
-			if(isset($url['user']) && isset($url['pass'])){
-			   $user = $url['user'];
-			   $pass = $url['pass'];
-			   $request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
-			}
-			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/x-www-form-urlencoded\n";
-			$request .= "Content-length: ".$size."\n\n";
-			$request .= $xmlBody."\n";
-			//send req
-			$fput = fputs($fp, $request);
-			//read response, do only send back the xml part, not the headers
-			$strResponse = "";
-			while (!feof($fp)) {
-			   $strResponse .= fgets($fp, 128);
-			}
-			$out = strstr($strResponse, '<?xml');
-			fclose ($fp);
-		}
-		return $out;
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_MUTE, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		return $output;
 	}
 
 
