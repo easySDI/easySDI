@@ -2046,20 +2046,10 @@ if (count($rows)>0){
 			$bufferValue = $mainframe->getUserState('bufferValue');
 			$totalArea = $mainframe->getUserState('totalArea');
 	
-			$queryStatus = "SELECT id from #__sdi_list_orderstatus where code = '".$orderStatus."'";
-			$db->setQuery($queryStatus );
-			$orderStatus = $db->loadResult();
-
-			$queryType = "SELECT id from #__sdi_list_ordertype where code = '".$order_type."'";
-			$db->setQuery($queryType );
-			$order_type = $db->loadResult();
-			
-			$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AWAIT'";
-			$db->setQuery($queryType );
-			$await_type = $db->loadResult();
-			$queryType = "SELECT id from #__sdi_list_productstatus where code = 'AVAILABLE'";
-			$db->setQuery($queryType );
-			$available_type = $db->loadResult();
+			$orderStatus = sdilist::getIdByCode('#__sdi_list_orderstatus',$orderStatus);
+			$order_type = sdilist::getIdByCode('#__sdi_list_ordertype',$order_type);
+			$await_type = sdilist::getIdByCode('#__sdi_list_productstatus','AWAIT');
+			$available_type = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE');
 			
 			if( $bufferValue == '')
 			{
@@ -2069,6 +2059,7 @@ if (count($rows)>0){
 			{
 				$totalArea = 0;
 			}
+
 			$order = new order ($db);
 			$order->type_id=$order_type;
 			$order->status_id=$orderStatus;
@@ -2080,7 +2071,7 @@ if (count($rows)>0){
 			//If the order is "SENT" update the 'sent' value
 			if($order_status_value == "SENT")
 			{
-			//	$order->sent =date('Y-m-d H:i:s');
+				$order->sent =date('Y-m-d H:i:s');
 			}
 			if(!$order->store())
 			{
@@ -2089,6 +2080,7 @@ if (count($rows)>0){
 				echo "</div>";
 				return;
 			}
+			
 			$order_id	= $db->insertid();
 			//$order_id = $order->id;
 			
@@ -2353,10 +2345,8 @@ if (count($rows)>0){
 			{
 				SITE_cpanel::notifyOrderToDiffusion($order_id);
 			}
-			
-			$queryStatus = "select id from #__sdi_list_orderstatus where code ='SENT'";
-			$db->setQuery($queryStatus);
-			$sent = $db->loadResult();
+
+			$sent = sdilist::getIdByCode('#__sdi_list_orderstatus','SENT' );
 			
 			/* Met à jour le status pour un devis dont le prix est connu comme étant gratuit 
 				et envoi un mail pour dire qu'un devis sur la donnée gratuite à été demandé*/
@@ -2378,8 +2368,7 @@ if (count($rows)>0){
 					  and otl.code='D' 
 					  and pa.user_id = u.id 
 					  and o.id=opl.order_id 
-					  and o.status='".$sent."' ";
-
+					  and o.status_id='".$sent."' ";
 			$db->setQuery( $query );
 			$rows = $db->loadObjectList();
 			if ($db->getErrorNum()) {

@@ -372,7 +372,7 @@ class HTML_cpanel {
 			<!-- recap -->
 			<tr>
 				<td>&nbsp;</td>
-				<td><span class="mdviewfile"><a title="<?php echo $rowOrder->order_id.": ".$rowOrder->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $rowOrder->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}"><?php echo JText::_("SHOP_ORDER_VIEW_RECAP") ;?></a>
+				<td><span class="mdviewfile"><a title="<?php echo $rowOrder->id.": ".$rowOrder->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $rowOrder->id?>" rel="{handler:'iframe',size:{x:600,y:600}}"><?php echo JText::_("SHOP_ORDER_VIEW_RECAP") ;?></a>
 				</span></td>
 			</tr>
 		</table>
@@ -446,7 +446,7 @@ class HTML_cpanel {
 		<input type="hidden" id="ordertype" name="ordertype" value="<?php echo JRequest::getVar("ordertype",""); ?>" />
 		<input type="hidden" id="treatmentType" name="treatmentType" value="<?php echo JRequest::getVar("treatmentType",""); ?>" />
 		<input type="hidden" id="orderStatus" name="orderStatus" value="<?php echo JRequest::getVar("orderStatus",""); ?>" />
-		<input type="hidden" id="order_id" name="order_id" value="<?php echo $rowOrder->order_id;?>">
+		<input type="hidden" id="order_id" name="order_id" value="<?php echo $rowOrder->id;?>">
 		<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
 		<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
 		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
@@ -1035,7 +1035,6 @@ class HTML_cpanel {
 						echo JText::_($rowProperty->translation);
 				?>
 				</td>
-				
 				<td>
 				<table>
 				<?php 
@@ -1100,7 +1099,7 @@ class HTML_cpanel {
 				<?php
 			}
 			
-			if ($row->status == $status_available_id)
+			if ($row->status_id == $status_available_id)
 			{?>
 				<tr>
 				<td colspan=2>				

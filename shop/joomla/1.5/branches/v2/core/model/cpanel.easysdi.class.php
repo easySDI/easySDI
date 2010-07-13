@@ -130,11 +130,12 @@ class orderProduct extends sdiTable
 		}
 		else
 		{
-			$this->_db->setQuery( "INSERT INTO  #__sdi_orderproduct_file (filename, data,orderproduct_id) VALUES ('".$fileName."' ,'".$file."', ".$this->id.")" );
+			$this->_db->setQuery( "INSERT INTO  #__sdi_orderproduct_file (filename, data,orderproduct_id) VALUES ('".$filename."' ,'".$file."', ".$this->id.")" );
 			if (!$this->_db->query()) {
 				return false;
 			}
 		}
+		return true;
 	}
 	
 }

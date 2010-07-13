@@ -141,6 +141,7 @@ switch($task){
 		
 	case "archiveOrder":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		
 		SITE_cpanel::archiveOrder($order_id);
 		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
@@ -148,6 +149,7 @@ switch($task){
 		
 	case "copyOrder":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		
 		SITE_cpanel::copyOrder($order_id);
 		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
@@ -169,6 +171,7 @@ switch($task){
 		
 	case "saveOrdersForProvider":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		
 		SITE_cpanel::saveOrdersForProvider($order_id);
 		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit" );
