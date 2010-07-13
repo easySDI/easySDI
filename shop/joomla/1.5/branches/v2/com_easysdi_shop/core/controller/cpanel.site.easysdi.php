@@ -1388,9 +1388,9 @@ class SITE_cpanel {
 		}
 
 		$order->status_id = $status_id;
-		$order->response = $date->toMySQL();
 		if($response_send)
 		{
+			$order->response = $date->toMySQL();
 			$order->responsesent = $response_send;
 		}
 

@@ -2072,7 +2072,7 @@ if (count($rows)>0){
 			if($order_status_value == "SENT")
 			{
 				$order->sent =date('Y-m-d H:i:s');
-				$order->responsesent =1;
+				//$order->responsesent =1;
 			}
 			if(!$order->store())
 			{
