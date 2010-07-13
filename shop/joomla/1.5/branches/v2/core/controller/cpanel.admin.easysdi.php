@@ -19,35 +19,6 @@
 defined('_JEXEC') or die('Restricted access');
 class ADMIN_cpanel {
 		
-	function archiveOrder(){
-		global  $mainframe;
-		$option=JRequest::getVar("option");
-		$order_id=JRequest::getVar("order_id",0);
-		if ($order_id == 0){
-			echo "<div class='alert'>";			
-			echo JText::_("SHOP_ERROR_NO_ORDER_ID");
-			echo "</div>";
-		}else {
-		$database =& JFactory::getDBO();		 	
-		$user = JFactory::getUser();
-		
-		$rootPartner = new accountByUserId($database);
-		$rootPartner->load($user->id);		
-		$query = "update #__easysdi_order set archived = 1 where user_id = ".$user->id." AND ORDER_ID =".$order_id;
-		$database->setQuery($query);
-		if (!$database->query()) {
-				echo "<div class='alert'>";			
-				echo $database->getErrorMsg();
-				echo "</div>";
-				exit;
-		}
-		
-		
-		}		
-		
-		
-	}
-	
 	function listOrders(){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -71,9 +42,9 @@ class ADMIN_cpanel {
 				$filterList[] = "(o.status_id ='$orderstatus')";
 		}
 		
-		$orderpartner= JRequest::getVar("orderpartner","");
-		if ($orderpartner !=""){
-				$filterList[] = "(p.id ='$orderpartner')";
+		$orderAccount= JRequest::getVar("orderAccount","");
+		if ($orderAccount !=""){
+				$filterList[] = "(p.id ='$orderAccount')";
 		}
 		
 		$ordersupplier = JRequest::getVar("ordersupplier","");
@@ -127,39 +98,21 @@ class ADMIN_cpanel {
 		$database->setQuery($queryStatus);
 		$statusFilter = $database->loadObjectList();
 		
-		$queryPartner = "select p.id as partner_id, u.name AS name 
-						 from #__users u, #__sdi_account p 
-						 inner join #__sdi_address a on p.id=a.account_id ,
-						 #__sdi_order o
-						 where a.type_id=1 
-						 AND u.id = p.user_id
+		$queryAccount = "select a.id as account_id, 
+								u.name AS name 
+						 from #__users u, 
+						 	  #__sdi_account a,
+						 	  #__sdi_order o
+						 where u.id = a.user_id
 						 AND o.user_id = u.id
 						 group by name order by name ";
-		$database->setQuery($queryPartner);
-		$partnerFilter = $database->loadObjectList();
+		$database->setQuery($queryAccount);
+		$accountFilter = $database->loadObjectList();
 		
-//		$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
-//							FROM #__sdi_account p 
-//							INNER JOIN	#__sdi_address a ON p.id = a.account_id 
-//							INNER JOIN	#__users u ON p.user_id = u.id,
-//							#__sdi_product prd 
-//							where a.type_id=1 AND p.id 
-//							IN (SELECT account_id FROM #__sdi_actor 
-//								WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE role_code ='PRODUCT'))
-//							AND prd.partner_id = p.id
-//							AND prd.orderable = 1
-//							AND prd.published = 1
-//							group by name ORDER BY u.name";
-$querySupplier = "SELECT p.id AS partner_id, u.name AS name 
-							FROM #__sdi_account p 
-							INNER JOIN	#__sdi_address a ON p.id = a.account_id 
-							INNER JOIN	#__users u ON p.user_id = u.id,
-							#__sdi_product prd INNER JOIN #__sdi_object_version v ON v.id=prd.obectversion_id 
-							where a.type_id=1 AND p.id 
-							IN (SELECT account_id FROM #__sdi_actor 
-								WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE role_code ='PRODUCT'))
-							AND prd.manager_id = p.id
-							AND v.orderable = 1
+		$querySupplier = "SELECT a.id AS account_id, u.name AS name 
+							FROM #__sdi_account a  INNER JOIN	#__users u ON a.user_id = u.id,
+							#__sdi_product prd INNER JOIN #__sdi_object_version v ON v.id=prd.objectversion_id INNER JOIN #__sdi_object o ON o.id = v.object_id  
+							WHERE  o.account_id = a.id
 							AND prd.published = 1
 							group by name ORDER BY u.name";
 		$database->setQuery($querySupplier);
@@ -167,7 +120,7 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 		$supplierFilter = $database->loadObjectList();
 		
 		$queryProduct = "select p.* from #__sdi_product p INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id
-							 WHERE v.orderable = 1 and p.published = 1 order by p.name";
+							 WHERE  p.published = 1 order by p.name";
 		$database->setQuery($queryProduct);
 		$productFilter = $database->loadObjectList();
 		
@@ -187,7 +140,7 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 				 left outer join #__sdi_product prod on opl.product_id=prod.id
 				 ";
 		$query .= $filter;
-		$query .= "order by response";
+		$query .= "order by responseDate";
 
 		$queryCount = "select count(*) 
 						from #__sdi_order o 
@@ -206,7 +159,7 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
-		
+
 		$pageNav = new JPagination($total,$limitstart,$limit);
 				
 		$database->setQuery($query,$limitstart,$limit);		
@@ -217,39 +170,15 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 			echo "</div>";
 		}	
 		
-		HTMLadmin_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter, $partnerFilter, $supplierFilter, $productFilter, $orderpartner, $ordersupplier, $orderproduct ,$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo);
+		HTMLadmin_cpanel::listOrders($pageNav,$rows,$option,$orderstatus,$ordertype,$search, $statusFilter, $typeFilter, $accountFilter, $supplierFilter, $productFilter, $orderAccount, $ordersupplier, $orderproduct ,$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo);
 		
 	}
-		
-	function sendOrder(){
-		global $mainframe;
-		
-		$db =& JFactory::getDBO();
-		
-		 jimport("joomla.utilities.date");
-		$date = new JDate();
-		
-		$queryStatus = "select id from #__easysdi_order_status_list where code ='SENT'";
-		$database->setQuery($queryStatus);
-		$status_id = $database->loadResult();
-		
-		$order_id=JRequest::getVar("order_id",0);
-		$query = "UPDATE  #__easysdi_order set status = ".$status_id.", order_update ='". $date->toMySQL()."' WHERE order_id = $order_id";
-		
-		$db->setQuery($query );
-		
-		if (!$db->query()) {		
-			echo "<div class='alert'>";
-				echo $db->getErrorMsg();
-				echo "</div>";						
-			}
-}
-
+	
 	function deleteOrder($cid,$option){
 		global  $mainframe;
 		?>
 		<script>
-		alert("<?php echo JText::_("EASYSDI_CONFIRM_ORDER_DELETE"); ?>");
+		alert("<?php echo JText::_("SHOP_ORDER_SUPPRESS_CONFIRM_ACTION"); ?>");
 		</script>	   
 		<?php
 		$database =& JFactory::getDBO();
@@ -276,46 +205,12 @@ $querySupplier = "SELECT p.id AS partner_id, u.name AS name
 				{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
-				
-				$OrderProductList = new orderProductListByOrder($database);
-				$OrderProductList->load($id);
-				
-				$query = "DELETE FROM #__easysdi_order_product_properties  WHERE order_product_list_id IN(SELECT id FROM #__easysdi_order_product_list WHERE order_id = $id)";
-				$database->setQuery($query);
-				$database->query();
-				
-				if(!$OrderProductList->delete())
-				{
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				}
-				
-				$OrderProductPerimeters = new orderProductPerimeterByOrder($database);
-				$OrderProductPerimeters->load($id);
-				if(!$OrderProductPerimeters->delete())
-				{
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				}
 			}												
 		}
 		
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 	}
 	
-	function saveOrder($option){
-		global  $mainframe;
-		$database=& JFactory::getDBO(); 
-		
-		$rowOrder =& new Order($database);
-				
-		if (!$rowOrder->bind( $_POST )) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			exit();
-		}
-		
-		if (!$rowOrder->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			exit();
-		}
-	}
+
 }
 ?>

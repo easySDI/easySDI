@@ -62,11 +62,11 @@ switch($task){
 	 * Order
 	 *****************************************************************************************************************************/
 	case "orderReport":
-		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'view'.DS.'cpanel.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		
 		SITE_cpanel::orderReport($cid[0], false,false);
 		break;
@@ -89,27 +89,6 @@ switch($task){
 		
 		ADMIN_cpanel::deleteOrder($cid,$option);
 		break;
-		
-	case "saveOrder":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'cpanel.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'cpanel.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'cpanel.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
-		
-		ADMIN_cpanel::saveOrder($option);
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		break;
-		
-	case "cancelOrder":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'cpanel.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'cpanel.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'cpanel.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
-		
-		$mainframe->redirect("index.php?option=$option&task=listOrders" );
-		break;
-			
-	
 	
 	/*****************************************************************************************************************************
 	 * BasemapContent

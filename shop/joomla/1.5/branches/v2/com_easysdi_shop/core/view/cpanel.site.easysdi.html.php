@@ -682,7 +682,7 @@ class HTML_cpanel {
 		
 		<div title ="<?php echo JText::_("SHOP_ORDER_PRINT"); ?>" id="printOrderRecap"></div>
 		<div id="divOrderRecap">
-		<h2 class="orderRecapTitle"><?php echo JText::_("EASYSDI_RECAP_ORDER_GTITLE"); ?></h2>
+		<h2 class="orderRecapTitle"><?php echo JText::_("SHOP_ORDER_RECAP_GENERAL_TITLE"); ?></h2>
 		<table class="orderRecap" width="100%">
 		<tr>
 		<td colspan="2" class="ortitle2">
@@ -900,10 +900,6 @@ class HTML_cpanel {
 		
 		<?php
 		$i=0;
-		
-//		$queryStatus = "select id from #__sdi_list_productstatus where code ='AVAILABLE'";
-//		$db->setQuery($queryStatus);
-//		$status_available_id = $db->loadResult();
 		$status_available_id = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
 		
 		foreach ($rowsProduct as $row){ ?>
@@ -1175,29 +1171,29 @@ class HTML_cpanel {
 	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd, $isInMemory){
 	if($isfrontEnd == true)
 	{
-	?>
-	<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
-	
-	<script
-	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
-	
-	</script>
-	<?php
+		?>
+		<script
+		type="text/javascript"
+		src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+		
+		<script
+		type="text/javascript"
+		src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
+		
+		</script>
+		<?php
 	}
 	else
-	{ ?>
-	<script
-	type="text/javascript"
-	src="./components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
-	
-	<script
-	type="text/javascript"
-	src="./components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
-	</script>
-	<?php
+		{ ?>
+		<script
+		type="text/javascript"
+		src="components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+		
+		<script
+		type="text/javascript"
+		src="components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
+		</script>
+		<?php
 	} ?>
 
 	
