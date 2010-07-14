@@ -1174,11 +1174,11 @@ class HTML_cpanel {
 		?>
 		<script
 		type="text/javascript"
-		src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+		src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
 		
 		<script
 		type="text/javascript"
-		src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
+		src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
 		
 		</script>
 		<?php
@@ -1187,11 +1187,11 @@ class HTML_cpanel {
 		{ ?>
 		<script
 		type="text/javascript"
-		src="components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+		src="components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
 		
 		<script
 		type="text/javascript"
-		src="components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js">
+		src="components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
 		</script>
 		<?php
 	} ?>
@@ -1264,16 +1264,16 @@ function initMap()
             displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
             units: "<?php echo $rowsBaseMap->unit; ?>",
 			<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-            minScale: <?php echo $rowsBaseMap->minResolution; ?>,
-            maxScale: <?php echo $rowsBaseMap->maxResolution; ?>,                
+            minScale: <?php echo $rowsBaseMap->minresolution; ?>,
+            maxScale: <?php echo $rowsBaseMap->maxresolution; ?>,                
 			<?php } ?>
-            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxExtent; ?>),
+            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>),
             controls: [] 
 	    <?php
-			if($rowsBaseMap->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rowsBaseMap->maxExtent.")\n"
+			if($rowsBaseMap->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rowsBaseMap->maxextent.")\n"
 	    ?>
 		<?php
-			if($rowsBaseMap->restrictedScales != '') echo  ",scales: [".$rowsBaseMap->restrictedScales."]\n"
+			if($rowsBaseMap->restrictedscales != '') echo  ",scales: [".$rowsBaseMap->restrictedscales."]\n"
 	    ?>
 	};
 	map = new OpenLayers.Map("map", options);
@@ -1283,7 +1283,7 @@ function initMap()
 <?php
 $print = JRequest::getVar('print');
 
-$query = "select * from #__sdi_basemap_content where basemap_id = ".$rowsBaseMap->id." order by ordering"; 
+$query = "select * from #__sdi_basemapcontent where basemap_id = ".$rowsBaseMap->id." order by ordering"; 
 $db->setQuery( $query);
 $rows = $db->loadObjectList();
 		  
@@ -1313,10 +1313,10 @@ foreach ($rows as $row){
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->imgformat; ?>",transparent: "true"},                                          
                      {singleTile: <?php echo $row->singletile; ?>},                                                    
                      {     
-                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
+                      maxExtent: new OpenLayers.Bounds(<?php echo $row->maxextent; ?>),
                    <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-                      	minScale: <?php echo $row->minResolution; ?>,
-                        maxScale: <?php echo $row->maxResolution; ?>,
+                      	minScale: <?php echo $row->minresolution; ?>,
+                        maxScale: <?php echo $row->maxresolution; ?>,
                         <?php } ?>                 
                      projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",

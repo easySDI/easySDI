@@ -102,9 +102,9 @@ class HTML_shop {
 		global  $mainframe;
 	
 	?>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers/Control/LoadingPanel.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers/Control/LoadingPanel.js"></script>
 	
 	<script>
 	var map;
@@ -476,7 +476,7 @@ function setAlpha(imageformat)
 				echo "</div>";
 	}
 	
-	$decimal_precision = $rows[0]->decimalPrecision;
+	$decimal_precision = $rows[0]->decimalprecision;
 	
 	//default style for manually drawed object and selected
 	if($rows[0]->dfltfillcolor != '')
@@ -503,15 +503,15 @@ function setAlpha(imageformat)
 	                projection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"), 
 					displayProjection: new OpenLayers.Projection("<?php echo $rows[0]->projection; ?>"),
 	                units: "<?php echo $rows[0]->unit; ?>",
-	                minScale: <?php echo $rows[0]->minResolution; ?>,
-	                maxScale: <?php echo $rows[0]->maxResolution; ?>,
-	                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxExtent; ?>),
+	                minScale: <?php echo $rows[0]->minresolution; ?>,
+	                maxScale: <?php echo $rows[0]->maxresolution; ?>,
+	                maxExtent: new OpenLayers.Bounds(<?php echo $rows[0]->maxextent; ?>),
 	                controls: []
 					<?php
-						if($rows[0]->restrictedExtent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxExtent.")\n"
+						if($rows[0]->restrictedextent == '1') echo  ",restrictedExtent: new OpenLayers.Bounds(".$rows[0]->maxextent.")\n"
 				    ?>
 					<?php
-						if($rows[0]->restrictedScales != '') echo  ",scales: [".$rows[0]->restrictedScales."]\n"
+						if($rows[0]->restrictedscales != '') echo  ",scales: [".$rows[0]->restrictedscales."]\n"
 				    ?>
 	            });
 					map.addControl(new OpenLayers.Control.MousePosition({ 
@@ -532,7 +532,7 @@ function setAlpha(imageformat)
 	
 	<?php
 	
-	$query = "select * from #__sdi_basemap_content where basemap_id = ".$rows[0]->id." order by ordering"; 
+	$query = "select * from #__sdi_basemapcontent where basemap_id = ".$rows[0]->id." order by ordering"; 
 	$db->setQuery( $query);
 	$rows = $db->loadObjectList();
 			  
@@ -575,8 +575,8 @@ function setAlpha(imageformat)
 		     <?php }?>
                      {     
                       maxExtent: new OpenLayers.Bounds(<?php echo $row->maxExtent; ?>),
-                      minScale: <?php echo $row->minResolution; ?>,
-                      maxScale: <?php echo $row->maxResolution; ?>,                 
+                      minScale: <?php echo $row->minresolution; ?>,
+                      maxScale: <?php echo $row->maxresolution; ?>,                 
                       projection:"<?php echo $row->projection; ?>",
                       units: "<?php echo $row->unit; ?>",
                       transparent: "true"

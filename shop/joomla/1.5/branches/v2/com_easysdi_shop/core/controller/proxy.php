@@ -70,7 +70,7 @@ class SITE_proxy{
 			global  $mainframe;
 			$db =& JFactory::getDBO(); 
 
-			$query = "select * from #__sdi_basemap_content where id = $basemapscontentid"; 
+			$query = "select * from #__sdi_basemapcontent where id = $basemapscontentid"; 
 			$db->setQuery( $query);
 			$row = $db->loadObject();
 

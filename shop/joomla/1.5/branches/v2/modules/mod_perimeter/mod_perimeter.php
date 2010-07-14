@@ -39,7 +39,7 @@ if ($curstep == "2")
 		echo "</div>";
 	}
 
-	$decimal_precision = $rows[0]->decimalPrecision;
+	$decimal_precision = $rows[0]->decimalprecision;
 	$cid = 		$mainframe->getUserState('productList');
 
 	if (count($cid)>0)
@@ -728,7 +728,7 @@ if ($curstep == "2")
 			echo "</div>";
 		}
 
-		$decimal_precision = $rows[0]->decimalPrecision;
+		$decimal_precision = $rows[0]->decimalprecision;
 		$totalArea = $mainframe->getUserState('totalArea');
 		if (!$totalArea) $totalArea=0;
 		?>

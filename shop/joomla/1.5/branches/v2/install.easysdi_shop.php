@@ -623,7 +623,6 @@ function com_install(){
 					`order_id`  bigint(20) NOT NULL ,
 					`product_id`  bigint(20) NOT NULL ,
 					`status_id`  bigint(20) NOT NULL ,
-					`filename`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`remark`  varchar(4000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`price`  decimal(10,0) NULL DEFAULT NULL ,
 					PRIMARY KEY (`id`),
@@ -709,6 +708,52 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		
+		$query="INSERT INTO `#__sdi_list_orderstatus` ( `guid`, `code`, `name`, `description`, `created`, `updated`, `createdby`, `updatedby`, `label`, `ordering`) VALUES 
+						( '".helper_easysdi::getUniqueId()."', 'ARCHIVED', 'Archived', 'Archived', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_ARCHIVED', 6),
+						( '".helper_easysdi::getUniqueId()."', 'HISTORIZED', 'Historized', 'Historized', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_HISTORIZED', 7),
+						( '".helper_easysdi::getUniqueId()."', 'FINISH', 'Finish', 'Finish', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_FINISH', 5),
+						( '".helper_easysdi::getUniqueId()."', 'AWAIT', 'Await', 'Await', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_AWAIT', 4),
+						( '".helper_easysdi::getUniqueId()."', 'PROGRESS', 'Progress', 'Progress', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_PROGRESS', 3),
+						( '".helper_easysdi::getUniqueId()."', 'SENT', 'Sent', 'Sent', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_SENT', 2),
+						( '".helper_easysdi::getUniqueId()."', 'SAVED', 'Saved', 'Saved', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_STATUS_SAVED', 1)
+						";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="INSERT INTO `#__sdi_list_ordertype` ( `guid`, `code`, `name`, `description`, `created`, `updated`, `createdby`, `updatedby`, `label`, `ordering`) VALUES 
+						( '".helper_easysdi::getUniqueId()."', 'O', 'Order', 'Order', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_TYPE_O', 1),
+						( '".helper_easysdi::getUniqueId()."', 'D', 'Devis', 'Devis', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_ORDER_TYPE_D', 2)
+						";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="INSERT INTO `#__sdi_list_productstatus` ( `guid`, `code`, `name`, `description`, `created`, `updated`, `createdby`, `updatedby`, `label`, `ordering`) VALUES 
+						( '".helper_easysdi::getUniqueId()."', 'AVAILABLE', 'Available', 'Available', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_PRODUCT_STATUS_AVAILABLE', 1),
+						( '".helper_easysdi::getUniqueId()."', 'AWAIT', 'Await', 'Await', '".date('Y-m-d H:i:s')."', NULL, ".$user_id.", NULL, 'SHOP_PRODUCT_STATUS_AWAIT', 2)
+						";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="INSERT INTO `#__sdi_list_treatmenttype` ( `guid`, `code`, `name`, `description`, `created`, `updated`, `createdby`, `updatedby`, `label`, `ordering`) VALUES 
+						( '".helper_easysdi::getUniqueId()."', 'MANU', 'Manuel', 'Traitement manuel', '".date('Y-m-d H:i:s')."', NULL, $user_id, NULL, 'SHOP_TREATMENT_MANU', 1),
+						( '".helper_easysdi::getUniqueId()."', 'AUTO', 'Automatique', 'Traitment automatique', '".date('Y-m-d H:i:s')."', NULL, $user_id, NULL, 'SHOP_TREATMENT_AUTO', 2)
+						";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 	 }
 
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)

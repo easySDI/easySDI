@@ -21,13 +21,13 @@ class basemap extends sdiTable
 {	
 	var $projection=null;
 	var $unit=null;
-	var $minResolution=null;
-	var $maxResolution=null;
+	var $minresolution=null;
+	var $maxresolution=null;
 	var $default=0;	
-	var $maxExtent=null;
-	var $restrictedExtent=null;
-	var $restrictedScales=null;
-	var $decimalPrecision=null;
+	var $maxextent=null;
+	var $restrictedextent=null;
+	var $restrictedscales=null;
+	var $decimalprecision=null;
 	var $dfltfillcolor=null;
 	var $dfltstrkcolor=null;
 	var $dfltstrkwidth=null;
@@ -71,9 +71,9 @@ class basemap_content extends sdiTable
 	var $url=null;
 	var $urltype=null;
 	var $singletile=null;
-	var $maxExtent=null;	
-	var $minResolution=null;
-	var $maxResolution=null;
+	var $maxextent=null;	
+	var $minresolution=null;
+	var $maxresolution=null;
 	var $projection=null;
 	var $unit=null;
 	var $layers=null;
@@ -86,7 +86,7 @@ class basemap_content extends sdiTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_basemap_content', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_basemapcontent', 'id', $db ) ;    		
 	}
 	
 	function store ()
