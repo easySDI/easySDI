@@ -83,16 +83,16 @@ class HTML_basemap {
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minResolution" value="<?php echo $rowBasemap->minResolution; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxResolution" value="<?php echo $rowBasemap->maxResolution; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
 							</tr>
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXEXTENT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxExtent" value="<?php echo $rowBasemap->maxExtent; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" value="<?php echo $rowBasemap->maxextent; ?>" /></td>							
 							</tr>
 							<tr>
 							

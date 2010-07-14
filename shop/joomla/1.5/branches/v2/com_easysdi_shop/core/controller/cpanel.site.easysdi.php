@@ -295,9 +295,6 @@ class SITE_cpanel {
 			$database =& JFactory::getDBO();
 			$user = JFactory::getUser();
 
-//			$queryStatus = "select id from #__sdi_list_orderstatus where code ='SAVED'";
-//			$database->setQuery($queryStatus);
-//			$status_id = $database->loadResult();
 			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','SAVED' );
 			
 			$date = new JDate();
@@ -332,15 +329,6 @@ class SITE_cpanel {
 				echo "</div>";
 				exit;
 			}
-			
-//			$query = "delete from #__sdi_order where user_id = ".$user->id." AND id =".$order_id;
-//			$database->setQuery($query);
-//			if (!$database->query()) {
-//				echo "<div class='alert'>";
-//				echo $database->getErrorMsg();
-//				echo "</div>";
-//				exit;
-//			}
 		}
 	}
 	
@@ -777,8 +765,6 @@ class SITE_cpanel {
 
 		if ($account->notify_order_ready == 1) {
 			SITE_cpanel::sendMailByEmail($row->email,JText::sprintf($subject, $row->data_title, $row->order_id),JText::sprintf($body,$row->data_title, $row->order_id));
-			//SITE_product::sendMailByEmail($row->email,JText::_("EASYSDI_CMD_READY_MAIL_SUBJECT"),JText::sprintf("EASYSDI_CMD_READY_MAIL_BODY",$row->data_title));
-
 		}
 	}
 

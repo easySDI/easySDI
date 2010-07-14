@@ -61,9 +61,10 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'proxy.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 						
-		HTML_shop::order();
+		SITE_shop::order();
 		break;
 
 	/*****************************************************************************************************************************
@@ -80,8 +81,9 @@ switch($task){
 	 *****************************************************************************************************************************/
 	case "deleteProduct":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-					
-		HTML_shop::deleteProduct();
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
+							
+		SITE_shop::deleteProduct();
 
 	/*****************************************************************************************************************************
 	 * Order
@@ -90,9 +92,10 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'proxy.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 			
-		HTML_shop::order();
+		SITE_shop::order();
 		break;
 		
 	case "orderReport":
@@ -210,8 +213,9 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 			
-		HTML_shop::saveOrder("SENT");
+		SITE_shop::saveOrder("SENT");
 		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 
@@ -219,8 +223,9 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		
-		HTML_shop::saveOrder("SAVED");
+		SITE_shop::saveOrder("SAVED");
 		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
 		break;
 
