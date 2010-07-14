@@ -416,7 +416,7 @@ class HTML_product{
 							}
 							if ($curProperty->mandatory == 0 )
 							{
-								$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("EASYSDI_PROPERTY_NONE") );
+								$propertiesValueList3[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE") );
 								$propertiesValueList = array_merge( $res , $propertiesValueList3  );
 							}
 							?>

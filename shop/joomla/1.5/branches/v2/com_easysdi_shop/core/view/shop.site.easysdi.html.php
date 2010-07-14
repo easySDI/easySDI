@@ -466,7 +466,7 @@ class HTML_shop
 			catch (err)
 			{
 			}
-			if($("toolsStatus").innerHTML == "<?php echo JText::_("EASYSDI_TOOL_MODIFY_ACTIVATED") ?>")
+			if($("toolsStatus").innerHTML == "<?php echo JText::_("SHOP_OL_TOOL_MODIFY_ACTIVATED") ?>")
 			{
 				$("toolsStatus").innerHTML = "";
 			}

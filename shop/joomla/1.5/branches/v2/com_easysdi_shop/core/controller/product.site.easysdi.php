@@ -143,7 +143,7 @@ class SITE_product {
 		$product->checkin();
 		
 		if ($returnList == true) {
-			if ($product->id == 0)$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
+			if ($product->id == 0)$mainframe->enqueueMessage(JText::_("SHOP_MESSAGE_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$limitstart = JRequest::getVar("limitstart");
 			$limit = JRequest::getVar("limit");
 			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );

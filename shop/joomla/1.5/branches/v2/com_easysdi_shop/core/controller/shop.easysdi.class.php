@@ -571,7 +571,7 @@ class SITE_shop {
 				$db->setQuery($queryNot);
 				$not = $db->loadResult();
 				if($not == 1)
-					SITE_cpanel::sendMailByEmail($user->email,JText::sprintf("SHOP_SHOP_MAIL_SUBJECT_ORDER_NOTIFICATION_CUSTOMER", $order_name, $order_id),JText::sprintf("EASYSDI_ORDER_NOTIFICATION_CUSTOMER_BODY",$order_name,$order_id));
+					SITE_cpanel::sendMailByEmail($user->email,JText::sprintf("SHOP_SHOP_MAIL_SUBJECT_ORDER_NOTIFICATION_CUSTOMER", $order_name, $order_id),JText::sprintf("SHOP_SHOP_MAIL_BODY_ORDER_NOTIFICATION_CUSTOMER",$order_name,$order_id));
 			}
 			SITE_cpanel::setOrderStatus($order_id,$response_send);
 			
@@ -896,73 +896,73 @@ function validateForm(toStep, fromStep){
 		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
 			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
-			<table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			<table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
 		<div
 			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php }else {?>
 		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("EASYSDI_STEP".$curStep); ?></td></tr></table>
+			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
 		</div>
 		<?php } ?></div>
 		</td>

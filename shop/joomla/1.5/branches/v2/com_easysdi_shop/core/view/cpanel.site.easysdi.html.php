@@ -83,7 +83,7 @@ class HTML_cpanel {
 							<button type="submit" class="searchButton" > <?php echo JText::_("SHOP_SEARCH_BUTTON"); ?></button>
 						</td>
 						<td>
-							<button id="newQuery" type="button" onClick="document.getElementById('ordersListForm').Itemid.value='<?php echo $redirectURL; ?>';document.getElementById('ordersListForm').view.value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("EASYSDI_ORDER_NEW_QUERY"); ?></button>
+							<button id="newQuery" type="button" onClick="document.getElementById('ordersListForm').Itemid.value='<?php echo $redirectURL; ?>';document.getElementById('ordersListForm').view.value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("SHOP_ORDER_NEW_QUERY"); ?></button>
 						</td>
 					</tr>
 				</table>
@@ -150,7 +150,7 @@ class HTML_cpanel {
 				{
 					
 					?>
-					<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->response));?>" > </div>
+					<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->sent));?> - <?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->response));?>" > </div>
 					<?php 
 				}
 				else
@@ -323,12 +323,12 @@ class HTML_cpanel {
 			<!-- Third party -->
 			<tr>
 				<td>
-				<?php echo JText::_("EASYSDI_ORDER_THIRD_PARTY") ;?> :
+				<?php echo JText::_("SHOP_ORDER_RECAP_THIRD") ;?> :
 				</td>
 				<td>
 				<?php 
 				if($third_party == false){
-					 echo JText::_("EASYSDI_RECAP_ORDER_NONE") ;
+					 echo JText::_("SHOP_ORDER_RECAP_NONE") ;
 				}else{?>
 					<a title="<?php echo $third_party->username; ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForPartner&SummaryForId=<?php echo $third_party->id ;?>" rel="{handler:'iframe',size:{x:565,y:450}}"><?php echo $third_party->name; ?></a>
 				<?php }?>
@@ -338,7 +338,7 @@ class HTML_cpanel {
 			<!--
 			<tr>
 				<td>
-				<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS") ;?> :
+				<?php echo JText::_("SHOP_ORDER_RECAP_STATUS") ;?> :
 				</td>
 				<td>
 				<?php echo JText::_($status); ?>
@@ -390,12 +390,12 @@ class HTML_cpanel {
 				<table class="orderInfo">
 				<tbody>
 				<tr>
-				<td><?php echo JText::_("EASYSDI_DATA")." ".$i?> : </td>
-				<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->data_title ;?></a></td>
+				<td><?php echo JText::_("SHOP_ORDER_DATA")." ".$i?> : </td>
+				<td><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->data_title ;?></a></td>
 				</tr>
-				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>
+				<tr><td><?php echo JText::_("SHOP_ORDER_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
+				<tr><td><?php echo JText::_("SHOP_ORDER_REM") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
+				<tr><td><?php echo JText::_("SHOP_ORDER_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>
 				</tbody>
 				</table>
 				<input type="hidden" name="product_id[]" value="<?php echo $row->product_id?>">
@@ -423,14 +423,14 @@ class HTML_cpanel {
 				<table class="orderInfo">
 				<thead>
 				<tr>
-				<th class="orderInfoTitle"><?php echo JText::_("EASYSDI_DATA")." ".$i?> : </th>
-				<th><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->data_title ;?></a></th>
+				<th class="orderInfoTitle"><?php echo JText::_("SHOP_ORDER_DATA")." ".$i?> : </th>
+				<th><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->data_title ;?></a></th>
 				</tr>
 				</thead>
 				<tbody>
-				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
+				<tr><td><?php echo JText::_("SHOP_ORDER_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
+				<tr><td><?php echo JText::_("SHOP_ORDER_REM") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
+				<tr><td><?php echo JText::_("SHOP_ORDER_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
 				<!-- separator -->
 				<?php
 				if($i > 2){?>
@@ -462,7 +462,7 @@ class HTML_cpanel {
 				}
 			}
 			if(boolPrice){
-				if (confirm("<?php echo JText::_("EASYSDI_HAS_PRICE_NULL"); ?>")){
+				if (confirm("<?php echo JText::_("SHOP_ORDER_HAS_PRICE_NULL"); ?>")){
 					document.getElementById('processOrderForm').task<?php echo $option; ?>.value='saveOrdersForProvider';
 					document.getElementById('processOrderForm').submit();
 					return true;
@@ -482,10 +482,10 @@ class HTML_cpanel {
 		<table>
 			<tr>
 				<td>
-					<button type="button" onClick="return validateForm();" ><?php echo JText::_("EASYSDI_SEND_RESULT"); ?></button>
+					<button type="button" onClick="return validateForm();" ><?php echo JText::_("SHOP_ORDER_PROCESS_ORDER"); ?></button>
 				</td>
 				<td>
-					<button type="button" onClick="document.getElementById('processOrderForm').task<?php echo $option; ?>.value='listOrdersForProvider';document.getElementById('processOrderForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
+					<button type="button" onClick="document.getElementById('processOrderForm').task<?php echo $option; ?>.value='listOrdersForProvider';document.getElementById('processOrderForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -610,7 +610,7 @@ class HTML_cpanel {
 					if($row->RESPONSE_SEND)
 					{
 						?>
-						<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("EASYSDI_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
+						<div class="orderDate" title="<?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_SEND")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->order_send_date));?> - <?php echo JText::_("SHOP_ORDER_TOOLTIP_DATE_RECEIVE")." : ".date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($row->RESPONSE_DATE));?>" > </div>
 						<?php 
 					}
 					else
