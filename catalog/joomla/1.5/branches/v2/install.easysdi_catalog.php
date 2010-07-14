@@ -71,7 +71,7 @@ function com_install(){
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY `guid` (`guid`),
 			  UNIQUE KEY `code` (`code`)
-			)";
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 	 		
 	$db->setQuery( $query);
 	if (!$db->query()) {
@@ -133,7 +133,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`),
 				  UNIQUE KEY `code` (`code`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -171,7 +171,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`),
 				  UNIQUE KEY `code` (`code`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -205,7 +205,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`),
 				  UNIQUE KEY `code` (`code`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -233,7 +233,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `attributetype_id` (`attributetype_id`),
 				  KEY `rendertype_id` (`rendertype_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -289,7 +289,7 @@ function com_install(){
 				  UNIQUE KEY `guid` (`guid`),
 				  KEY `profile_id` (`profile_id`),
 				  KEY `class_id` (`class_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -316,7 +316,7 @@ function com_install(){
 				  `class_id` bigint(20) NOT NULL,
 				  PRIMARY KEY (`id`),
 				  KEY `class_id` (`class_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -347,7 +347,7 @@ function com_install(){
 				  `isrootclass` tinyint(1),
 				  PRIMARY KEY (`id`),
 				  KEY `package_id` (`package_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -380,7 +380,7 @@ function com_install(){
 				  KEY `parent_id` (`parent_id`),
 				  KEY `child_id` (`child_id`),
 				  KEY `relationtype_id` (`relationtype_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -416,7 +416,7 @@ function com_install(){
 				  `codeList` varchar(200),
 				  PRIMARY KEY (`id`),
 				  KEY `attributetype_id` (`attributetype_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -449,7 +449,7 @@ function com_install(){
 				  KEY `class_id` (`class_id`),
 				  KEY `attribute_id` (`attribute_id`),
 				  KEY `rendertype_id` (`rendertype_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -479,7 +479,7 @@ function com_install(){
 				  `attribute_id` bigint(20) NOT NULL,
 				  PRIMARY KEY (`id`),
 				  KEY `attribute_id` (`attribute_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -664,7 +664,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `attributerelation_id` (`attributerelation_id`),
 				  KEY `profile_id` (`profile_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -688,7 +688,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `classrelation_id` (`classrelation_id`),
 				  KEY `profile_id` (`profile_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -794,7 +794,7 @@ function com_install(){
 				  `updatedby` bigint(20) NULL,
 				  PRIMARY KEY (`id`),
 				  KEY `language_id` (`language_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -938,7 +938,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `attribute_id` (`attribute_id`),
 				  KEY `codevalue_id` (`codevalue_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -993,7 +993,7 @@ function com_install(){
 				  KEY `rendertype_id` (`rendertype_id`),
 				  KEY `relationtype_id` (`relationtype_id`),
 				  KEY `classassociation_id` (`classassociation_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1019,7 +1019,7 @@ function com_install(){
 			  PRIMARY KEY (`id`),
 			  KEY `relation_id` (`relation_id`,`profile_id`),
 			  KEY `profile_id` (`profile_id`)
-			)";
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1130,7 +1130,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `account_id` (`account_id`),
 				  KEY `object_id` (`object_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1153,7 +1153,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `account_id` (`account_id`),
 				  KEY `object_id` (`object_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1177,7 +1177,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `account_id` (`account_id`),
 				  KEY `objecttype_id` (`objecttype_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1212,7 +1212,7 @@ function com_install(){
 				  `checked_out_time` datetime DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1331,7 +1331,7 @@ function com_install(){
 				  PRIMARY KEY (`id`),
 				  KEY `state_id` (`state_id`),
 				  KEY `nextstate_id` (`nextstate_id`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -1421,7 +1421,7 @@ function com_install(){
 				  `account_id` bigint(20) DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1463,7 +1463,7 @@ function com_install(){
 				  `checked_out_time` datetime DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)";
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
@@ -1569,7 +1569,7 @@ function com_install(){
 				  `label` varchar(100) NOT NULL default '',
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)"; 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
@@ -1621,7 +1621,7 @@ function com_install(){
 				  `checked_out_time` datetime DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)"; 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
@@ -1645,7 +1645,7 @@ function com_install(){
 				  `checked_out_time` datetime DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`)
-				)"; 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
@@ -1658,7 +1658,7 @@ function com_install(){
 				  `parent_id` bigint(20) NOT NULL,
 				  `child_id` bigint(20) NOT NULL,
 				  PRIMARY KEY (`id`)
-				)"; 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
@@ -1683,7 +1683,7 @@ function com_install(){
 			  	  `created` datetime NOT NULL,
 				  `createdby` bigint(20) NOT NULL,
 				  PRIMARY KEY (`id`)
-				)"; 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
