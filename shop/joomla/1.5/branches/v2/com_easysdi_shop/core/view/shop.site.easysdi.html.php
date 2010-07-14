@@ -137,6 +137,7 @@ class HTML_shop
 				$logoWidth = config_easysdi::getValue("logo_width");
 				$logoHeight = config_easysdi::getValue("logo_height");
 				$isMdFree = $row->free;
+				$isAvailable = $row->available;
 				$isMdPublic = false;
 				if($row->visibility_id == $public)
 				{
@@ -149,6 +150,14 @@ class HTML_shop
 				$hasPreview = $db->loadResult();
 				if ($db->getErrorNum()) {
 					$hasPreview = 0;
+				}
+				$query = "select count(*) from #__sdi_product p 
+										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+										where  p.id = $row->id";
+				$db->setQuery( $query);
+				$hasProductFile = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasProductFile = 0;
 				}
 				?>
 		<tr>
@@ -182,11 +191,33 @@ class HTML_shop
 						rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>
 					</a></span>
 			  </td>
-			  <td class="mdActionAddToCart"><span class="mdviewfile">
+			  <?php 
+			  if($isAvailable  && $hasProductFile>0)
+			  {
+			  	?>
+			  	 <td class="mdActionDownloadProduct"><span class="mdviewfile">
+			  	
+				<a title="<?php echo JText::_("SHOP_SHOP_DOWNLOAD_AVAILABLE_PRODUCT"); ?>" 
+					class="modal" 
+					href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=downloadAvailableProduct&cid[]=<?php echo $row->id?>" 
+					rel="{handler:'iframe',size:{x:500,y:550}}"> 
+				<?php echo JText::_("SHOP_SHOP_DOWNLOAD_AVAILABLE_PRODUCT"); ?>
+					</a></span>
+			 	 </td>
+			  	<?php 
+			  }
+			  else
+			  {
+			  	?>
+			  	 <td class="mdActionAddToCart"><span class="mdviewfile">
 			  	<a title="<?php echo JText::_("SHOP_SHOP_ADD_TO_CART"); ?>"
 						href="#" onclick="addOrder(<?php echo $row->id.",".$i; ?>)"><?php echo JText::_("SHOP_SHOP_ADD_TO_CART"); ?>
 					</a></span>
-			  </td>
+			  	</td>
+			  	<?php 
+			  }
+			  ?>
+			 
 			  <td class="mdActionViewProduct">
 			  <?php if ($hasPreview > 0){ ?>
 			    <span class="mdviewproduct">
@@ -1693,12 +1724,13 @@ class HTML_shop
 				<td class="orderstepsTitle"><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?>:</td>
 				<td><input type="password" class="infoClient" name="password" value=""></td>
 			</tr>
+			<tr>
+					<td colspan="2"><div class="separator" /></td>
+				</tr>
 			<?php
 			}
 			 ?>  
-				<tr>
-					<td colspan="2"><div class="separator" /></td>
-				</tr>
+				
 				<tr>
 					<td class="orderstepsTitle"><?php echo JText::_("SHOP_SHOP_ORDER_THIRD_PARTY"); ?>:</td>
 					<td>
@@ -1720,7 +1752,7 @@ class HTML_shop
 		</form>
 
 			<!--
-      //Call here the include content item plugin, or a specific article.
+      		//Call here the include content item plugin, or a specific article.
 			//Insert into the EasySDI config a key SHOP_ARTICLE_STEP4 with
 			//the value like {include_content_item 148} refering to the plugin and
 			//article you would like to call.
@@ -1849,16 +1881,16 @@ class HTML_shop
 				echo $row->text;
 				
 				?>
-			        </table>
-					<input
-					onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
-					type="button"
-					class="button"
-					value='<?php echo JText::_("SHOP_SHOP_ORDER_SAVE_BUTTON"); ?>'> <input
-					onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
-					type="button"
-					class="button"
-					value='<?php echo JText::_("SHOP_SHOP_ORDER_SEND_BUTTON"); ?>'> <?php
+		        </table>
+				<input
+				onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
+				type="button"
+				class="button"
+				value='<?php echo JText::_("SHOP_SHOP_ORDER_SAVE_BUTTON"); ?>'> <input
+				onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
+				type="button"
+				class="button"
+				value='<?php echo JText::_("SHOP_SHOP_ORDER_SEND_BUTTON"); ?>'> <?php
 				}
 			}
 			else
@@ -1882,5 +1914,75 @@ class HTML_shop
 		</div>
 		<?php 
 	}
+	
+	function downloadAvailableProduct($id, $option, $task,$view,$step,$row)
+	{
+		
+		?>
+		<form name="dlProductForm" id="dlProductForm" 	 action='index.php' method='GET'>
+		<script>
+		window.addEvent('domready', function() {
+		$('printOrderRecap').addEvent( 'click' , function() { 
+			window.open('./index.php?tmpl=component&option=<?php echo $option; ?>&task=<?php echo $task; ?>&cid[]=<?php echo $id; ?>&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
+			});
+		});
+		</script>
+		<table>
+		<tr>
+		<td colspan = "5">
+		
+		<table width="100%" >
+		<tr>
+		<td colspan ="4" >
+		<?php
+		echo $row->text;
+		?>
+		</td>
+		</tr>
+		</table>
+		</td></tr>
+		<tr>
+		<td>
+		<table>
+		<tr>
+		<td width="20%"></td>
+   		<td width="20%" align="right" >    
+		<input
+		onClick="document.getElementById('task').value = 'shop'; window.parent.document.getElementById('sbox-window').close();"
+		type="button"
+		class="button"
+		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
+		</td>
+		<td width="20%" align="left">
+		<input 
+		onClick="document.getElementById('dl').disabled = false;"
+		type="button"
+		class="button"
+		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
+		</td>
+		<td width="20%"></td>
+		<td align="right" width="20%">
+		<input disabled
+		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();window.parent.document.getElementById('sbox-window').close();"
+		type="button"
+		class="button"
+		id="dl"
+		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_DOWNLAD"); ?>'> 
+		</td>
+		</tr>
+		</table>
+		</td></tr>
+		</table>
+		<input type='hidden' name='option' value='<?php echo $option;?>'> 
+		<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+		<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
+		<input type='hidden' id="fromStep" name='fromStep' value='1'> 
+		<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+		<input type='hidden' id="product_id" name='product_id' value=''>
+	
+		</form>
+		<?php
+	}
+	
 }
 ?>

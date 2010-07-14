@@ -1162,7 +1162,13 @@ function validateForm(toStep, fromStep){
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
-		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id, a.name as supplier_name , a.logo as supplier_logo, m.visibility_id as md_visibility_id FROM #__sdi_product p 
+		$query  = "SELECT p.*, 
+							v.metadata_id as metadata_id, 
+							o.account_id as supplier_id, 
+							a.name as supplier_name , 
+							a.logo as supplier_logo, 
+							m.visibility_id as md_visibility_id 
+							FROM #__sdi_product p 
 							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_account a ON a.id = o.account_id
@@ -1189,6 +1195,46 @@ function validateForm(toStep, fromStep){
 		}
 
 		HTML_shop::searchProducts ($suppliers, $account_id, $user,$rows,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
+	}
+	
+	function downloadAvailableProduct($id)
+	{
+		$option = JRequest::getVar('option');
+		$task = JRequest::getVar('task');
+		$view = JRequest::getVar('view');
+		$step = JRequest::getVar('step');
+	
+		$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
+		$args = array( 1,&$row,&$params);
+		JPluginHelper::importPlugin( 'content' );
+		$dispatcher =& JDispatcher::getInstance();
+		$results = $dispatcher->trigger('onPrepareContent', 
+		array(&$row,&$params,0));
+		
+		HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
+	}
+	
+	function doDownloadAvailableProduct(){
+
+		$database =& JFactory::getDBO();
+		$id = JRequest::getVar('product_id');
+	
+		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $id ";
+		$database->setQuery($query);
+		$row = $database->loadObject();
+
+		error_reporting(0);
+
+		ini_set('zlib.output_compression', 0);
+		header('Pragma: public');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Content-Transfer-Encoding: none');
+		header("Content-Length: ".strlen($row->data));
+		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
+		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+
+		echo $row->data;
+		die();
 	}
 }
 	?>
