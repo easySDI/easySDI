@@ -23,7 +23,7 @@ class HTMLadmin_cpanel {
 	
 	function listOrders($pageNav,$rows,$option,$orderstatus="",$ordertype="",$search="", $statusFilter="", $typeFilter="", $accountFilter="", $supplierFilter="", $productFilter="", $orderAccount="", $ordersupplier="", $orderproduct="",$ResponsDateFrom, $ResponsDateTo, $SendDateFrom, $SendDateTo)
 	{
-		JToolBarHelper::title( JText::_("EASYSDI_LIST_ORDERS"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_ORDER_LIST_ORDERS"), 'generic.png' );
 		$database =& JFactory::getDBO();
 		?>	
 		<form action="index.php" method="GET" id="adminForm" name="adminForm">		
