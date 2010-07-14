@@ -30,6 +30,8 @@ class sdiTable extends JTable
 	var $updatedby=null;
 	var $label=null;
 	var $ordering=0;
+	var $checked_out=null;
+	var $checked_out_time=null;
 		
 	// Class constructor
 	function __construct( $table, $id, &$db )
@@ -235,6 +237,18 @@ class sdiTable extends JTable
 	 	$this->_db->setQuery( "SELECT id AS value, name AS text FROM ".$this->_tbl." order by name" );
 	 	return  $this->_db->loadObjectList();
 	 }
+
+	function tryCheckOut($option, $task)
+	{
+		global $mainframe;
+		$user = & JFactory::getUser();
+		if ( JTable::isCheckedOut($user->get('id'), $this->checked_out ))
+		{
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $this->name);
+			$mainframe->redirect("index.php?option=$option&task=$task", $msg );
+		}
+		$this->checkout($user->get('id'));
+	}
 }
 
 
