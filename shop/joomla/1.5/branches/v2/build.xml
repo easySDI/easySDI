@@ -61,29 +61,12 @@
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Site\sdiv2\language\fr-FR">
-		     <fileset dir="./language/site">
-		      <include name="**/fr-FR.com_easysdi_shop.ini" />
-		     </fileset>
-		    </copy>
-		<copy		   
-		   todir="C:\www\Site\sdiv2\language\en-GB">
-		     <fileset dir="./language/site">
-		      <include name="**/en-GB.com_easysdi_shop.ini" />
-		     </fileset>
-		    </copy>
-		<copy		   
 		   todir="C:\www\Site\sdiv2\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
-		<copy		   
-		   todir="C:\www\Site\sdiv2\administrator\language\en-GB">
-		     <fileset dir="./language/admin">
-		      <include name="**/en-GB.com_easysdi_shop.ini" />
-		     </fileset>
-		    </copy>
+	
 	</target>
 	
 
