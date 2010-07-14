@@ -1339,5 +1339,548 @@ class HTML_shop
 		</div>
 		<?php
 	}
+	
+	function orderRecap ($product)
+	{
+		?>
+		<table>
+		<thead class='contentheading'>
+			<tr>
+				<td></td>
+				<td><?php echo JText::_("SHOP_SHOP_DATA_IDENTIFICATION");?></td>
+				<td><?php echo JText::_("SHOP_SHOP_ORGANISATION_NAME");?></td>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+		$i = 0;
+		foreach( $rows as $product ){
+			?>
+			<tr>
+				<td><input type="hidden" id="cb<?php echo $i;?>" name="cid[]"
+					value="<?php echo $product->id; ?>" /></td>
+				<td><a
+					href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->name; ?></a>
+				</td>
+				<td><a
+					href='index.php?option=com_easysdi_core&task=showMetadata&id=<?php echo $product->metadata_id;?>'><?php echo $product->supplier_name; ?></a>
+				</td>
+			</tr>
+			<?php
+			$i = $i +1;
+		}
+		?>
+		</tbody>
+	</table>
+	<?php
+	}
+	
+	function orderProperties ($products, $option, $task, $step)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		?>
+		<script>
+		var initFields = false;
+		window.addEvent('domready', function() {
+		 // select automatically properties that have only one choice
+		 if(initFields == false){
+			var aSel = $('orderForm').getElementsByTagName("select");
+			for(var i=0;i<aSel.length;i++){
+				if(aSel[i].options.length == 3){
+					aSel[i].options[2].selected = true;
+				}
+			}
+			initFields = true;
+		 }
+		});
+		 function submitOrderForm()
+		 {
+		 	document.getElementById('orderForm').submit();
+		 }
+		 </script>
+		<form name="orderForm" id="orderForm"
+			action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+			<?php
+			$language =& JFactory::getLanguage();
+			foreach ($products as $product  ){
+				$query = "SELECT DISTINCT pd.id as id, 
+									pd.ordering as property_order, 
+									pd.mandatory as mandatory, 
+									t.label as property_text, 
+									pd.type as type, 
+									pd.id as property_id							
+						  FROM #__sdi_language l, 
+						  		#__sdi_list_codelang cl,
+						  		#__sdi_product_property p 
+						  INNER JOIN #__sdi_property_value pvd ON p.propertyvalue_id=pvd.id 
+						  INNER JOIN #__sdi_property pd ON pvd.property_id=pd.id 
+						  LEFT OUTER JOIN #__sdi_translation t ON pd.guid=t.element_guid 
+						  WHERE p.product_id=".$product->id." 
+						  AND t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+						  AND pd.published=1 
+						  AND (pd.account_id = 0 OR pd.account_id = ".$product->supplier_id." ) 
+						  ORDER by property_order";
+		
+				$db->setQuery( $query );
+				$rows = $db->loadObjectList();
+			?>
+			<br/>
+			<fieldset id="fieldset_properties" class="fieldset_properties"><legend><?php echo JText::_($product->name);?></legend>
+			<ol class="product_proprety_row_list">
+			<?php
+				if (count($rows)>0){
+				foreach ($rows as $row){
+					echo "<li>";
+					$query="SELECT pd.mandatory as mandatory, 
+											pvd.ordering as value_order, 
+											pvd.name as value_text,
+											t.label as value_trans, 
+											pvd.id as value
+										FROM #__sdi_language l, 
+						  					#__sdi_list_codelang cl,
+						  					#__sdi_product_property p 
+										INNER JOIN #__sdi_property_value pvd on p.propertyvalue_id=pvd.id 
+										INNER JOIN #__sdi_property pd on pvd.property_id=pd.id 
+										LEFT OUTER JOIN #__sdi_translation t ON pvd.guid=t.element_guid 
+										WHERE p.product_id=".$product->id." 
+										AND t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
+										AND pd.published=1 
+										AND pd.id=".$row->id." 
+										ORDER BY value_order";
+					
+					switch($row->type){
+						case "list":
+							$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
+							echo "<select class=\"product_proprety_row_list$isMandatoryClass\" 
+										  name='".$row->property_id."_list_property_".$product->id."[]' 
+										  id='".$row->property_id."_list_property_".$product->id."[]'>";
+							//add a default option that replaces the text before the list, value = -1 to be sure to not interfer with pvd.id.
+							echo "<option value='-1'>-". JText::_($row->property_text)."-</option>";
+							foreach ($rowsValue as $rowValue){
+								$selProduct = $mainframe->getUserState($row->property_id.'_list_property_'.$product->id);
+								$selected = "";
+								if ( is_array($selProduct)){
+									if (in_array($rowValue->value,$selProduct)) $selected ="selected";
+								}
+								echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_trans)."</option>";
+							}
+							echo "</select>";
+							if($rowValue->mandatory == 1) echo "<span class=\"mdtyProperty\">*</span>"; else echo "&nbsp;";
+							break;
+						case "mlist":
+							echo "<div id='".$row->property_id."_mlist_property_".$product->id."[]_label'>".JText::_($row->property_text).":</div>";
+								$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
+							echo "<table><tr><td>";
+							echo "<select class=\"product_proprety_row_list$isMandatoryClass\" 
+									      multiple size='".count($rowsValue)."' 
+									      name='".$row->property_id."_mlist_property_".$product->id."[]' 
+									      id='".$row->property_id."_mlist_property_".$product->id."[]'>";
+							foreach ($rowsValue as $rowValue){
+								$selProduct = $mainframe->getUserState($row->property_id.'_mlist_property_'.$product->id);
+								$selected = "";
+								if ( is_array($selProduct)){
+									if (in_array($rowValue->value,$selProduct)) $selected ="selected";
+								}
+								echo "<option ".$selected." value='".$rowValue->value."'>". JText::_($rowValue->value_trans)."</option>";
+							}
+							echo "</select>";
+							echo "</td><td>";
+							if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+							echo "</td></tr></table>";
+							break;
+						case "cbox":
+							$html = "";
+								$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
+							$html .= "<div class=\"product_proprety_cbox_group\">";
+							foreach ($rowsValue as $rowValue){
+								$selProduct = $mainframe->getUserState($row->property_id.'_cbox_property_'.$product->id);
+								$selected = "";
+								if ( is_array($selProduct)){
+									if (in_array($rowValue->value,$selProduct)) $selected ="checked";
+								}
+								
+								$html .= "&nbsp;&nbsp;<input type='checkbox' 
+														class='".$isMandatoryClass."' 
+														name='".$row->property_id."_cbox_property_".$product->id."[]' 
+														id='".$row->property_id."_cbox_property_".$product->id."[]' ".$selected." 
+														value='".$rowValue->value."'/>&nbsp;".JText::_($rowValue->value_trans)."&nbsp;";
+								$html .="<br/>";
+							}
+							$html .= "</div>";
+							echo "<span id='".$row->property_id."_cbox_property_".$product->id."[]_label'>".JText::_($row->property_text).": "."</span>";
+							if($rowValue->mandatory == 1) 
+								echo "<span id='".$row->property_id."_cbox_property_".$product->id."[]_group' class=\"mdtyProperty\">*</span><br/>";
+							echo $html;
+							break;
+						case "text":
+							echo "<div id='".$row->property_id."_text_property_".$product->id."_label'>".JText::_($row->property_text).":</div>";
+							$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							$isMandatoryClass = $row->mandatory == 1 ?  " mdtryElem" : "";
+							foreach ($rowsValue as $rowValue){
+								$valueText = $mainframe->getUserState($row->property_id.'_text_property_'.$product->id);
+			
+								if ($valueText){
+									$selected = $valueText;
+								}else{
+									$selected = "";
+									//$selected = $rowValue->val_trans;
+								}
+								echo "<table><tr><td>";
+								//value: 
+								echo "<input class=\"msgProperty$isMandatoryClass\" 
+											 type='text' 
+											 name='".$row->property_id."_text_property_".$product->id."' 
+											 id='".$row->property_id."_text_property_".$product->id."' 
+											 value='".JText::_($selected)."' />";
+								echo "</td><td>";
+								if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+								echo "</td></tr></table>";
+								break;
+							}
+							break;
+							
+							
+						case "textarea":
+							echo "<div id='".$row->property_id."_textarea_property_".$product->id."[]_label'>".JText::_($row->property_text).":</div>";
+							$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							$isMandatoryClass = $row->mandatory == 1 ?  "mdtryElem" : "";
+							
+						foreach ($rowsValue as $rowValue){
+								$selProduct = $mainframe->getUserState($row->property_id.'_textarea_property_'.$product->id);
+												
+								if (count($selProduct)>0){
+									$selected = $selProduct[0];
+								}else{
+									$selected = "";
+									//$selected = $rowValue->val_trans;
+								}
+								echo "<table><tr><td>";
+								echo "<TEXTAREA class='".$isMandatoryClass."' 
+										rows=3 COLS=62 
+										name='".$row->property_id."_textarea_property_".$product->id."[]' 
+										id='".$row->property_id."_textarea_property_".$product->id."[]'>".JText::_($selected)."</textarea>";
+								echo "</td><td>";
+								if($rowValue->mandatory == 1) echo "<div class=\"mdtyProperty\">*</div>"; else echo "&nbsp;";
+								echo "</td></tr></table>";
+								break;
+							}
+							break;
+						case "message":
+							echo JText::_(trim($row->property_text));
+							$db->setQuery( $query );
+							$rowsValue = $db->loadObjectList();
+							foreach ($rowsValue as $rowValue){
+								$selected = $rowValue->val_trans;
+								?>
+								<div class="product_proprety_message_title">
+								<?php 
+								echo JText::_($selected);
+								?>
+								<input type='hidden' name='<?php echo $row->property_id; ?>_message_property_<?php echo $product->id; ?>' id='<?php echo $row->property_id; ?>_message_property_<?php echo $product->id; ?>' value='<?php echo $selected;?>'></input>
+								</div>
+								<?php 
+								break;
+							}
+			
+							break;
+					}
+					echo "</li>";
+				}
+
+				}
+				?>
+				</ol>
+				</fieldset>
+				<?php
+				}
+				?> 
+				<input type='hidden' id="fromStep" name='fromStep' value='3'> 
+				<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+				<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
+				<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'>
+				<input type='hidden' id="view" name='view' value='<?php echo JRequest::getVar('view'); ?>'>
+				<input type='hidden' id="totalArea" name='totalArea' value='<?php echo JRequest::getVar('totalArea'); ?>'> 
+				<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+				</form>
+				<?php 
+			
+	}
+	
+	function orderDefinition($cid,$user, $rows, $option,$task,$step){
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		if (!$user->guest){
+			?>
+			<div class="info"><?php echo JText::_("SHOP_SHOP_MESSAGE_CONNECTED_WITH_USER").$user->name;  ?></div>
+			<?php
+		}
+		?>
+		<script>
+		 function submitOrderForm(){
+			 if(document.getElementById('step').value <= document.getElementById('fromStep').value)
+			 {
+			 	//Step back in the tab, don't need to check the values filled in the form
+			 }
+			 else
+			 {
+				 if (!document.getElementById('order_type_d').checked && !document.getElementById('order_type_o').checked){
+				 
+				 	alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_TYPE_NOT_FILL") ?>");
+				 	return;
+				 }
+				 if (document.getElementById('order_name').value.length == 0){
+				 
+				 	alert("<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_NAME_NOT_FILL") ?>");
+				 	return;
+				 }
+				 //Limit order name to 40 characters
+				 if(document.getElementById('order_name').value.length > 40){
+					alert('<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_NAME_TOO_LONG"); ?>');
+					return;
+				}
+			 }
+		 	document.getElementById('orderForm').submit();
+		 }
+		 </script>
+	 <form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='GET'>
+		<input type='hidden' id="fromStep" name='fromStep' value='4'> 
+		<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+		<input type='hidden' id="option" name='option' value='<?php echo $option; ?>'>
+		<input type='hidden' id="task" name='task' value='order'> 
+		<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+		<table class="ordersteps">
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_NAME"); ?>:</td>
+				<td><input type="text" class="infoClient" name="order_name" id="order_name" value="<?php echo $mainframe->getUserState('order_name'); ?>"></td>
+			</tr>
+			<tr>
+				<td colspan="2"><div class="separator" /></td>
+			</tr>
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_TYPE_D"); ?>:</td>
+				<td><input type="radio" name="order_type" id="order_type_d" value="D" <?php if ("D" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
+			</tr>
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_ORDER_TYPE_O"); ?>:</td>
+				<td><input type="radio" name="order_type" id="order_type_o" value="O" <?php if ("O" == $mainframe->getUserState('order_type')) echo "checked"; ?>></td>
+			</tr>
+			<tr>
+				<td colspan="2"><div class="separator" /></td>
+			</tr>
+		
+			<?php
+		
+			if ($user->guest )
+			{
+			?>
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_SHOP_MESSAGE_USER_NOT_CONNECTED"); ?>:</td>
+			</tr>
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_AUTH_USER"); ?>:</td>
+				<td><input type="text" class="infoClient" name="user" value=""></td>
+			</tr>
+			<tr>
+				<td class="orderstepsTitle"><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?>:</td>
+				<td><input type="password" class="infoClient" name="password" value=""></td>
+			</tr>
+			<?php
+			}
+			 ?>  
+				<tr>
+					<td colspan="2"><div class="separator" /></td>
+				</tr>
+				<tr>
+					<td class="orderstepsTitle"><?php echo JText::_("SHOP_SHOP_ORDER_THIRD_PARTY"); ?>:</td>
+					<td>
+						<select class="thirdPartySelect" name="third_party">
+							<option value="0"><?php echo JText::_("SHOP_SHOP_ORDER_FOR_NOBODY"); ?></option>
+							<?php
+							$third_party = $mainframe->getUserState('third_party');
+							echo $third_party;
+							foreach ($rows as $row){
+								$selected="";
+								if ($third_party == $row->account_id) $selected="selected";
+								echo "<option ".$selected." value=\"".$row->account_id."\">".$row->name."</option>";
+							}
+							?>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</form>
+
+			<!--
+      //Call here the include content item plugin, or a specific article.
+			//Insert into the EasySDI config a key SHOP_ARTICLE_STEP4 with
+			//the value like {include_content_item 148} refering to the plugin and
+			//article you would like to call.
+			//-->       
+		
+			<table width="100%" id="infoStep4">
+			<?php
+
+			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP4");
+			$args = array( 1,&$row,&$params);
+			JPluginHelper::importPlugin( 'content' );
+			$dispatcher =& JDispatcher::getInstance();
+			$results = $dispatcher->trigger('onPrepareContent', 
+			array(&$row,&$params,0));
+			echo $row->text;
+			?>
+		    </table>
+		<?php
+	}
+	
+	function orderSend ($account,$user,$rows,$step,$hasExternal,$hasInternal,$public,$private)
+	{
+		$db =& JFactory::getDBO();
+		?>
+		<div class="contentin">
+		<br>
+		<br>
+		<script>
+		 function submitOrderForm()
+		 {
+		 	document.getElementById('orderForm').submit();
+		 }
+		 </script>
+		<form id="orderForm" name="orderForm" action="<?php echo JRoute::_("index.php"); ?>">
+			<input type='hidden' id="fromStep" name='fromStep' value='5'> 
+			<input type="hidden" name="task" id="taskOrderForm" value="order"> 
+			<input type="hidden" name="option" value="<?php echo JRequest::getVar('option'); ?>"> 
+			<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'> 
+			<input type='hidden' name='Itemid' value="<?php echo  JRequest::getVar ('Itemid' );?>">
+		</form>
+			<?php
+			if (!$user->guest)
+			{
+				$isProductAllowed = true;
+				
+				foreach ($rows as $row)
+				{
+					if($row->published == '0' ||  ($row->visibility_id <> $public && $row->visibility_id <> $private))
+					{
+						HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_PRODUCT_NOT_ORDERABLE", $row->name );
+						$isProductAllowed = false;
+						break;
+					}
+					
+					$query = "SELECT COUNT(*) FROM #__sdi_product p 
+									INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
+									INNER JOIN #__sdi_object o ON o.id = v.object_id
+									INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+									WHERE p.published=1 AND o.published = 1
+									AND p.id = $row->id
+									AND
+									 (o.account_id =  $account->id
+									OR
+									o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id )
+									OR 
+									o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									OR
+									o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ))" ;
+							$db->SetQuery($query);
+							$countProduct = $db->loadResult();
+					if($row->visibility_id == $private)
+					{	
+						//User needs to belong to the product's partner group
+						if($countProduct == 1 && $hasInternal == true )
+						{
+							//The product belongs to the current user's group and the user has the internal right
+						}
+						else
+						{
+							//The product does not belong to the current user's group, or the user does not have the internal right
+							HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+							$isProductAllowed = false;
+							break;
+						}		
+						
+					}
+					else if($row->visibility_id == $public)
+					{
+						if($hasExternal == false)
+						{
+							//User does not have the right to order external product
+							HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+							$isProductAllowed = false;
+							break;
+						}
+					}
+					else
+					{
+						//Product is not orderable
+						HTML_shop::displayErrorMessage("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
+						$isProductAllowed = false;
+						break;
+					}
+					
+				}
+				
+				
+				if($isProductAllowed == true)
+				{
+				//	
+				//Call here the include content item plugin, or a specific article.
+				//Insert into the EasySDI config a key SHOP_ARTICLE_STEP5 with
+				//the value like {include_content_item 148} refering to the plugin and
+				//article you would like to call.
+				//
+				?>
+				<table width="100%" id="generalConditions">
+				<?php
+				$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
+				$args = array( 1,&$row,&$params);
+				JPluginHelper::importPlugin( 'content' );
+				$dispatcher =& JDispatcher::getInstance();
+				$results = $dispatcher->trigger('onPrepareContent', 
+				array(&$row,&$params,0));
+				
+				echo $row->text;
+				
+				?>
+			        </table>
+					<input
+					onClick="document.getElementById('taskOrderForm').value = 'saveOrder';submitOrderForm();"
+					type="button"
+					class="button"
+					value='<?php echo JText::_("SHOP_SHOP_ORDER_SAVE_BUTTON"); ?>'> <input
+					onClick="document.getElementById('taskOrderForm').value = 'sendOrder';submitOrderForm();"
+					type="button"
+					class="button"
+					value='<?php echo JText::_("SHOP_SHOP_ORDER_SEND_BUTTON"); ?>'> <?php
+				}
+			}
+			else
+			{
+				//User not connected
+				?>
+				<div class="alert"><?php echo JText::_("SHOP_SHOP_MESSAGE_NOT_CONNECTED");?></div>
+				<?php
+			}
+			?></div><?php 
+	}
+	
+	function displayErrorMessage ($error, $product)
+	{
+		?>
+		<div class="alert">
+			<span class="alertheader"><?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_IN_ORDER");?><br></span>
+			<?php echo JText::_($error);?>
+			<span class="alerthighlight"><?php echo $product;?><br></span>
+			<?php echo JText::_("SHOP_SHOP_MESSAGE_ORDER_PROBLEM_ACTION");?><br>
+		</div>
+		<?php 
+	}
 }
 ?>
