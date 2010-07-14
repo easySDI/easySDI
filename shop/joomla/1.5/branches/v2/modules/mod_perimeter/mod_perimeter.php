@@ -704,11 +704,11 @@ if ($curstep == "2")
 						</tr>
 						<tr>
 						<td colspan="2" align="left"><button class="searchButton" type="button"
-						onClick="if(isValidCoordinates()){addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button></td>
+						onClick="if(isValidCoordinates()){addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("SHOP_PERIMETER_ADD_GEOMETRY");?></button></td>
 							</tr>
 							<tr>
 							<td colspan="2" align="left"><button class="searchButton" type="button"
-							onClick="if(isValidCoordinates()){modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button></td>
+							onClick="if(isValidCoordinates()){modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("SHOP_PERIMETER_MODIFY_GEOMETRY");?></button></td>
 								</tr>
 								</table>
 								</div>
