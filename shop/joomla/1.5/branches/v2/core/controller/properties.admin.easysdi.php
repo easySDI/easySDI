@@ -191,7 +191,10 @@ class ADMIN_properties {
 	function editProperties( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$property = new property( $database );
-		$property->load( $id );					
+		$property->load( $id );			
+
+		$property->tryCheckOut($option,'listProperties');
+		
 			if ($id==0){
 				$property->order="0";
 			}
@@ -230,6 +233,8 @@ class ADMIN_properties {
 			$mainframe->redirect("index.php?option=$option&task=listProperties" );			
 		}
 		
+		$property->checkin();
+		
 		$mainframe->redirect("index.php?option=$option&task=listProperties" );
 	}
 	
@@ -247,6 +252,8 @@ class ADMIN_properties {
 		{
 			$property = new property( $database );
 			$property->load( $id );
+			
+			$property->tryCheckOut($option,'listProperties');
 					
 			if (!$property->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -326,6 +333,8 @@ class ADMIN_properties {
 		$property = new property( $database );
 		$property->load( JRequest::getVar('property_id',-1) );
 		
+		$property_value->tryCheckOut($option,'listPropertiesValues&cid[]='.$property->id);
+		
 		$languages = $property_value->publishedLanguages();
 		$labels = $property_value->loadLabels();
 		
@@ -353,11 +362,12 @@ class ADMIN_properties {
 			$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$property_id );			
 		}
 		
+		$property_value->checkin();
+		
 		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$property_id );
 	}
 	
 	function deletePropertiesValues($cid ,$option){
-		
 		global $mainframe;
 		$database =& JFactory::getDBO();
 		
@@ -371,6 +381,8 @@ class ADMIN_properties {
 			$property_value = new property_value( $database );
 			$property_value->load( $id );
 			
+			$property_value->tryCheckOut($option,'listPropertiesValues&cid[]='.$property_value->property_id);
+			
 			//Delete the current property value
 			if (!$property_value->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -382,6 +394,27 @@ class ADMIN_properties {
 				
 	}
 	
+	function cancelProperty($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$property = new property( $database );
+		$property->bind(JRequest::get('post'));
+		$property->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listProperties" );
+	}
+	
+	function cancelPropertyValue($option, $id)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$property = new property_value( $database );
+		$property->bind(JRequest::get('post'));
+		$property->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&cid[]=".$id );
+	}
 }
 	
 ?>

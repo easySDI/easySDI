@@ -118,6 +118,8 @@ class HTML_properties {
 		<input type="hidden" name="guid" value="<?php echo $property->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $property->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $property->createdby; ?>" /> 
+		<input type="hidden" name="checked_out" value="<?php echo $property->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $property->checked_out_time; ?>" />
 		</form>
 	<?php
 	}
@@ -313,6 +315,8 @@ class HTML_properties {
 		<input type="hidden" name="guid" value="<?php echo $property_value->guid; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $property_value->createdby; ?>" />
 		<input type="hidden" name="created" value="<?php echo $property_value->created; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $property_value->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $property_value->checked_out_time; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>

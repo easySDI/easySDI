@@ -111,7 +111,7 @@ class ADMIN_cpanel {
 		
 		$querySupplier = "SELECT a.id AS account_id, u.name AS name 
 							FROM #__sdi_account a  INNER JOIN	#__users u ON a.user_id = u.id,
-							#__sdi_product prd INNER JOIN #__sdi_object_version v ON v.id=prd.objectversion_id INNER JOIN #__sdi_object o ON o.id = v.object_id  
+							#__sdi_product prd INNER JOIN #__sdi_objectversion v ON v.id=prd.objectversion_id INNER JOIN #__sdi_object o ON o.id = v.object_id  
 							WHERE  o.account_id = a.id
 							AND prd.published = 1
 							group by name ORDER BY u.name";
@@ -119,7 +119,7 @@ class ADMIN_cpanel {
 		$database->setQuery($querySupplier);
 		$supplierFilter = $database->loadObjectList();
 		
-		$queryProduct = "select p.* from #__sdi_product p INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id
+		$queryProduct = "select p.* from #__sdi_product p INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id
 							 WHERE  p.published = 1 order by p.name";
 		$database->setQuery($queryProduct);
 		$productFilter = $database->loadObjectList();

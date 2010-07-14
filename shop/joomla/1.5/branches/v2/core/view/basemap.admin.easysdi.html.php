@@ -189,6 +189,8 @@ class HTML_basemap {
 		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowBasemap->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowBasemap->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $rowBasemap->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $rowBasemap->checked_out_time; ?>" />
 		</form>
 	<?php
 	}
@@ -422,6 +424,8 @@ class HTML_basemap {
 		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowBasemap->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowBasemap->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $rowBasemap->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $rowBasemap->checked_out_time; ?>" />
 		</form>
 	<?php
 	}

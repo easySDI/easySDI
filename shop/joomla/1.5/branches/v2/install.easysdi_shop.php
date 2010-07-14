@@ -79,7 +79,7 @@ function com_install(){
 	/**
 	 * Gets the component version
 	 */
-	$version = '0.0';
+	//$version = '0.0';
 	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'SHOP'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();

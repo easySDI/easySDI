@@ -1263,7 +1263,7 @@ function setAlpha(imageformat)
 
 		$query= "SELECT p.*, v.metadata_id as metadata_id , a.name as  supplier_name
 					FROM #__easysdi_product p 
-					INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+					INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 					INNER JOIN #__sdi_object o ON v.object_id = o.id 
 					INNER JOIN #__sdi_account a ON o.account_id = a.id
 					WHERE p.id in (";
@@ -1355,7 +1355,7 @@ window.addEvent('domready', function() {
 
 
 	$query= "SELECT p.*, o.account_id as supplier_id FROM #__sdi_product p 
-						INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+						INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 						INNER JOIN #__sdi_object o ON o.id = v.object_id
 						WHERE p.id in (";
 	foreach( $cid as $id ) {
@@ -1894,7 +1894,7 @@ if (count($rows)>0){
 				}
 				
 				$query = "SELECT COUNT(*) FROM #__sdi_product p 
-								INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+								INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 								INNER JOIN #__sdi_object o ON o.id = v.object_id
 								INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
 								WHERE p.published=1 AND o.published = 1
@@ -2781,7 +2781,7 @@ function validateForm(toStep, fromStep){
 			  	  INNER JOIN `#__sdi_object` ON #__sdi_account.id = #__sdi_object.account_id 
 			  	  WHERE #__users.id = #__sdi_account.user_id AND 
 			      #__sdi_account.id IN (Select o.account_id from #__sdi_object o 
-			      												INNER JOIN #__sdi_object_version v ON o.id = v.object_id 
+			      												INNER JOIN #__sdi_objectversion v ON o.id = v.object_id 
 			      												INNER JOIN #__sdi_product p ON p.objectversion_id =  v.id  
 			      												WHERE  p.published=1) 
 			      AND #__sdi_object.published = 1
@@ -2901,7 +2901,7 @@ function validateForm(toStep, fromStep){
 		}
 
 		$query  = "SELECT COUNT(*)FROM #__sdi_product p 
-							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
 							WHERE p.published=1 AND o.published = 1";
@@ -2910,7 +2910,7 @@ function validateForm(toStep, fromStep){
 		$total = $db->loadResult();
 
 		$query  = "SELECT p.*, v.metadata_id as metadata_id, o.account_id as supplier_id, a.name as supplier_name , a.logo as supplier_logo, m.visibility_id as md_visibility_id FROM #__sdi_product p 
-							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_account a ON a.id = o.account_id
 							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
@@ -3076,7 +3076,7 @@ function validateForm(toStep, fromStep){
 		}
 		
 		$query = "select count(*) from #__sdi_product p 
-								INNER JOIN #__sdi_object_version v ON v.id=p.objectversion_id 
+								INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id 
 								where p.viewurlwms != '' AND v.metadata_id = '".$row->metadata_id."'";
 		$db->setQuery( $query);
 		$hasPreview = $db->loadResult();

@@ -97,6 +97,8 @@ class ADMIN_product {
 		$product = new product( $database );
 		$product->load( $id );
 				
+		$product->tryCheckOut($option,'listProduct');
+		
 		$version_id = JRequest::getVar('objectversion_id', 0 );
 		if($version_id == 0)
 		{
@@ -183,7 +185,7 @@ class ADMIN_product {
 		if($object_id<>0)
 		{
 			$database->setQuery("SELECT id AS value, name AS text 
-							   FROM #__sdi_object_version
+							   FROM #__sdi_objectversion
 							   WHERE object_id = $object_id 
 							   ORDER BY name");
 			if ($database->getErrorNum()) {
@@ -349,6 +351,8 @@ class ADMIN_product {
 			}
 		}
 		
+		$product->checkin();
+		
 		if ($returnList == true) {
 			$mainframe->redirect("index.php?option=$option&task=listProduct");
 		}
@@ -405,6 +409,16 @@ class ADMIN_product {
 		die();
 	}
 	
+	function cancelProduct($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$product = new product( $database );
+		$product->bind(JRequest::get('post'));
+		$product->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
+	}
 }
 
 ?>

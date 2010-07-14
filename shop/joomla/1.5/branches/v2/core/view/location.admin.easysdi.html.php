@@ -243,6 +243,8 @@ class HTML_location {
 		<input type="hidden" name="guid" value="<?php echo $rowLocation->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowLocation->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowLocation->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $rowLocation->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $rowLocation->checked_out_time; ?>" />
 		</form>
 	<?php
 	}

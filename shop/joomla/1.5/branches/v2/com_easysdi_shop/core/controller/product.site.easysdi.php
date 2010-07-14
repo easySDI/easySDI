@@ -140,7 +140,8 @@ class SITE_product {
 			}
 		}	
 			
-		 
+		$product->checkin();
+		
 		if ($returnList == true) {
 			if ($product->id == 0)$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$limitstart = JRequest::getVar("limitstart");
@@ -176,6 +177,7 @@ class SITE_product {
 		//Product
 		$product = new product( $database );
 		$product->load( $id );
+		$product->tryCheckOut($option,'listProduct');
 		
 		//Version
 		$version_id = JRequest::getVar('objectversion_id', 0 );
@@ -259,7 +261,7 @@ class SITE_product {
 		if($object_id<>0)
 		{
 			$database->setQuery("SELECT id AS value, name AS text 
-							   FROM #__sdi_object_version
+							   FROM #__sdi_objectversion
 							   WHERE object_id = $object_id 
 							   ORDER BY name");
 			if ($database->getErrorNum()) {
@@ -394,7 +396,7 @@ class SITE_product {
 		//List only the products belonging to the current user
 		$query = " SELECT p.*, v.metadata_id, y.code as visibility, m.account_id
 							FROM #__sdi_product p 
-							INNER JOIN #__sdi_object_version v ON p.objectversion_id = v.id
+							INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
 							INNER JOIN #__sdi_list_visibility y ON  y.id = p.visibility_id 
@@ -443,7 +445,7 @@ class SITE_product {
 			return;
 		}
 		$query = "SELECT COUNT(*) FROM #__sdi_manager_object 
-						WHERE object_id IN (SELECT v.object_id FROM #__sdi_object_version v 
+						WHERE object_id IN (SELECT v.object_id FROM #__sdi_objectversion v 
 																INNER JOIN #__sdi_product p ON p.objectversion_id = v.id 
 																WHERE p.id = $product_id )
 						AND account_id = $account->id";
@@ -470,6 +472,17 @@ class SITE_product {
 
 		echo $row->data;
 		die();
+	}
+
+	function cancelProduct($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$product = new product( $database );
+		$product->bind(JRequest::get('post'));
+		$product->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listProduct" );
 	}
 }
 ?>

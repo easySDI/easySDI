@@ -260,7 +260,10 @@ switch($task){
 		break;
 	
 	case "cancelEditProduct":
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');
+		
+		SITE_product::cancelProduct($option);
 		break;
 		
 	case "saveProduct":

@@ -88,9 +88,11 @@ class ADMIN_basemap {
 	function editBasemapContent( $id, $option ) {
 		$database =& JFactory::getDBO(); 
 		$rowBasemap = new basemap_content( $database );
-		$rowBasemap->load( $id );					
-	
+		$rowBasemap->load( $id );	
+		
 		$rowBasemap->basemap_id = JRequest::getVar('basemap_id',-1); 
+		
+		$rowBasemap->tryCheckOut($option,'listBasemapContent&cid[]='.$rowBasemap->basemap_id);
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
@@ -130,6 +132,8 @@ class ADMIN_basemap {
 			exit();
 		}
 		
+		$rowBasemap->checkin();
+		
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$basemap_id);
 		}		
@@ -143,7 +147,7 @@ class ADMIN_basemap {
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
+			$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_id') );
 			exit;
 		}
 		foreach( $cid as $id )
@@ -153,7 +157,7 @@ class ADMIN_basemap {
 
 			if (!$Basemap->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listBasemapContent" );
+				$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".JRequest::getVar('basemap_id') );
 			}
 		}
 
@@ -197,6 +201,8 @@ class ADMIN_basemap {
 		$database =& JFactory::getDBO(); 
 		$rowBasemap = new basemap( $database );
 		$rowBasemap->load( $id );	
+		
+		$rowBasemap->tryCheckOut($option,'listBasemap');
 			
 		HTML_Basemap::editBasemap( $rowBasemap,$id, $option );
 	}
@@ -205,14 +211,12 @@ class ADMIN_basemap {
 		global  $mainframe;
 		$database=& JFactory::getDBO(); 
 		$rowBasemap =&	 new basemap($database);
-				
 		
 		if (!$rowBasemap->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listBasemap" );
 			exit();
 		}
-				
 		
 		if (!$rowBasemap->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -220,11 +224,11 @@ class ADMIN_basemap {
 			exit();
 		}
 		
+		$rowBasemap->checkin();
+		
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listBasemap");
 		}
-		
-		
 	}
 	
 	function deleteBasemap($cid ,$option){
@@ -249,6 +253,28 @@ class ADMIN_basemap {
 		}
 
 		$mainframe->redirect("index.php?option=$option&task=listBasemap" );		
+	}
+	
+	function cancelBasemap($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$Basemap = new Basemap( $database );
+		$Basemap->bind(JRequest::get('post'));
+		$Basemap->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listBasemap" );
+	}
+	
+	function cancelBasemapContent($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$Basemap_content = new basemap_content( $database );
+		$Basemap_content->bind(JRequest::get('post'));
+		$Basemap_content->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listBasemapContent&cid[]=".$Basemap_content->basemap_id );
 	}
 		
 }

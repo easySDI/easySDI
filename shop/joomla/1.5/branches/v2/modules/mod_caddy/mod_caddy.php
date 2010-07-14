@@ -19,7 +19,7 @@ if (is_array(($cid)))
 	if (count($cid)>0)
 	{		
 		$query = "SELECT  p.*, u.name as user_name, v.metadata_id as metadata_id  FROM #__sdi_product p 
-										INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id 
+										INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id 
 										INNER JOIN #__sdi_object o ON o.id = v.object_id,
 										#__sdi_account a, #__users u where p.id in (";
 		foreach( $cid as $id )

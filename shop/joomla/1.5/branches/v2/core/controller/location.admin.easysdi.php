@@ -77,6 +77,8 @@ class ADMIN_location {
 		$rowLocation = new location( $database );
 		$rowLocation->load( $id );					
 		
+		$rowLocation->tryCheckOut($option,'listLocation');
+		
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
@@ -127,6 +129,8 @@ class ADMIN_location {
 			$mainframe->redirect("index.php?option=$option&task=listLocation" );
 			exit();
 		}
+		
+		$location->checkin();
 		
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listLocation");
@@ -180,6 +184,16 @@ class ADMIN_location {
 		$mainframe->redirect("index.php?option=$option&task=listLocation" );		
 	}
 	
+	function cancelLocation($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$Location = new location( $database );
+		$Location->bind(JRequest::get('post'));
+		$Location->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listLocation" );
+	}
 }
 	
 ?>

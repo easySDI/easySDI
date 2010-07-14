@@ -32,7 +32,7 @@ class SITE_cpanel {
 		
 		$query = "SELECT u.id FROM #__users u, 
 								   #__sdi_product p
-								   INNER JOIN #__sdi_object_version v ON v.id = p.objectversion:id
+								   INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion:id
 								   INNER JOIN #__sdi_object o ON o.id = v.object_id, 
 								   #__sdi_account a 
 							  WHERE u.id=a.user_id 
@@ -113,7 +113,7 @@ class SITE_cpanel {
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			
 			$query = "SELECT p.* FROM #__sdi_product p 
-							INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 					 		WHERE o.account_id =".$account_id;
 			//echo $query;
@@ -593,7 +593,7 @@ class SITE_cpanel {
 				  		#__sdi_order_product opl, 
 						#__sdi_list_productstatus psl,
 				  		#__sdi_product p,
-				  		#__sdi_object_version v ,
+				  		#__sdi_objectversion v ,
 				  		#__sdi_account a, 
 				  		#__users u, 
 				  		#__users uClient,
@@ -636,7 +636,7 @@ class SITE_cpanel {
 				  		#__sdi_order_product opl, 
 						#__sdi_list_productstatus psl,
 				  		#__sdi_product p,
-				  		#__sdi_object_version v ,
+				  		#__sdi_objectversion v ,
 				  		#__sdi_account a, 
 				  		#__users u, 
 				  		#__users uClient,
@@ -834,7 +834,7 @@ class SITE_cpanel {
 				  		#__sdi_order_product opl, 
 				  		#__sdi_list_productstatus psl, 
 				  		#__sdi_product p,
-				  		#__sdi_object_version v ,
+				  		#__sdi_objectversion v ,
 				  		#__sdi_account a, 
 				  		#__sdi_list_ordertype otl,
 				  		#__users u 
@@ -1286,7 +1286,7 @@ class SITE_cpanel {
 				  	   #__sdi_account pa, 
 				  	   #__sdi_order_product opl , 
 				  	   #__sdi_product p
-				  	   INNER JOIN #__sdi_object_version v ON v.id = p.objectversion_id
+				  	   INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 				  	   INNER JOIN #__sdi_object ob ON ob.id=v.object_id,
 				  	   #__sdi_order o, 
 				  	   #__sdi_list_productstatus psl, 

@@ -502,6 +502,8 @@ class HTML_product{
 		<input type="hidden" name="supplier_id" value="<?php echo $supplier->id; ?>" />
 		<input type="hidden" name="manager_id" value="<?php echo $account->id; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
 		</form>
 		</div>
 		<table>

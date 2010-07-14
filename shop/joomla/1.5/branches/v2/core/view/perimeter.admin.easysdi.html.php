@@ -271,6 +271,8 @@ class HTML_perimeter {
 		<input type="hidden" name="guid" value="<?php echo $rowPerimeter->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowPerimeter->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowPerimeter->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $rowPerimeter->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $rowPerimeter->checked_out_time; ?>" />
 		</form>
 	<?php
 	}

@@ -134,6 +134,7 @@ class ADMIN_perimeter {
 		$perimeter = new perimeter( $database );
 		$perimeter->load( $id );					
 		 
+		$perimeter->tryCheckOut($option,'listPerimeter');
 		
 		$perimList = array();
 		$perimList [] = JHTML::_('select.option','-1', JText::_("SHOP_PERIMETER_LIST") );
@@ -189,6 +190,8 @@ class ADMIN_perimeter {
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
 			exit();
 		}
+		
+		$rowPerimeter->checkin();
 		
 		if ($returnList == true) {			
 			$mainframe->redirect("index.php?option=$option&task=listPerimeter");
@@ -246,6 +249,16 @@ class ADMIN_perimeter {
 		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );		
 	}
 		
+	function cancelPerimeter($option)
+	{
+		global $mainframe;
+		$database = & JFactory::getDBO();
+		$Perimeter = new Perimeter( $database );
+		$Perimeter->bind(JRequest::get('post'));
+		$Perimeter->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+	}
 }
 	
 ?>
