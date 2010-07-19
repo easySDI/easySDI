@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="component" version="1.5.0">
+	<name>EasySDI_Monitor</name>
+	<creationDate>2010</creationDate>
+	<author>Rémy Baud</author>
+	<authorEmail>support@asitvd.ch</authorEmail>
+	<version>1.0</version>
+	<description>OGC web services monitoring application</description>
+	<installfile>install.easysdi_monitor.php</installfile>
+	<uninstallfile>uninstall.easysdi_monitor.php</uninstallfile>	
+	<administration>
+		<!-- Administration Menu Section -->
+		<menu>Easy SDI</menu>
+		<submenu>
+			<menu link="option=com_easysdi_monitor&amp;view=services">Monitor</menu>
+		</submenu>
+		<!-- Administration Main File Copy Section -->
+		<files>
+			<filename>license.txt</filename>
+			<filename>easysdi_monitor.php</filename>
+			<filename>index.html</filename>
+			<filename>controller.php</filename>
+			<folder>models</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
+			<folder>controllers</folder>
+			<folder>lib</folder>
+			<folder>ressources</folder>
+			<folder>language</folder>
+		</files>
+		<languages folder="language/admin">
+			<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>
+			<language tag="en-GB">en-GB.com_easysdi_monitor.ini</language>
+		</languages>
+	</administration>
+</install>
