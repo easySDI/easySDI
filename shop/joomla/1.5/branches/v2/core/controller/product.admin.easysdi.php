@@ -381,7 +381,7 @@ class ADMIN_product {
 			$results = $database->loadObjectList();
 			if(count($results)>0)
 			{
-				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_DELETE_ERROR"),"INFO");
+				$mainframe->enqueueMessage(JText::sprintf("SHOP_PRODUCT_DELETE_ERROR",$product->name),"INFO");
 				foreach($results as $result)
 				{
 					$mainframe->enqueueMessage(" - ".$result->name,"INFO");

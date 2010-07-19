@@ -254,6 +254,22 @@ class ADMIN_properties {
 			$property->load( $id );
 			
 			$property->tryCheckOut($option,'listProperties');
+			
+			$query = "SELECT DISTINCT p.name as name FROM #__sdi_product p 
+											INNER JOIN #__sdi_product_property pp ON p.id = pp.product_id 
+											INNER JOIN #__sdi_propertyvalue pv ON pv.id = pp.propertyvalue_id  
+											WHERE pv.property_id=$id ";
+			$database->setQuery($query);
+			$results = $database->loadObjectList();
+			if(count($results)>0)
+			{
+				$mainframe->enqueueMessage(JText::sprintf("SHOP_PROPERTY_DELETE_ERROR", $property->name),"INFO");
+				foreach($results as $result)
+				{
+					$mainframe->enqueueMessage(" - ".$result->name,"INFO");
+				}
+				$mainframe->redirect("index.php?option=$option&task=listProperties" );
+			}
 					
 			if (!$property->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
