@@ -9,7 +9,26 @@ defined('_JEXEC') or die('Restricted access');
 			var form = document.adminForm;
 			var text = '';
 			var index = 0;
-			
+			if (pressbutton == "deleteBasemap")
+			{
+//				if (form.elements['countRelatedBasemapContent'].value != '0' && form.elements['countRelatedBasemapContent'].value != '')
+//				{
+					var answer = confirm  ('<?php echo JText::_("SHOP_BASEMAP_MESSAGE_DELETE_CONTENT");?>' );
+					if (answer)
+						submitform( pressbutton );
+					else
+						return;
+//				}
+//				submitform( pressbutton );
+			}
+			if (pressbutton == "deleteProperties")
+			{
+					var answer = confirm  ('<?php echo JText::_("SHOP_PROPERTY_MESSAGE_DELETE_VALUE");?>' );
+					if (answer)
+						submitform( pressbutton );
+					else
+						return;
+			}
 			if (pressbutton == "saveBasemap")
 			{
 				if (   form.elements['name'].value == '')

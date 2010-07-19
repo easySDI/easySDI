@@ -48,7 +48,7 @@ class SITE_shop {
 						$query = "SELECT  pd.id as property_id 
 							  FROM #__sdi_product_property p, 
 							  	   #__sdi_property  as pd,
-							  	   #__sdi_property_value as pv   
+							  	   #__sdi_propertyvalue as pv   
 							  WHERE pv.id = p.propertyvalue_id
 							  and   pv.property_id = pd.id
 							  and p.product_id = ".$id." group by pd.property_id order by pd.ordering";
@@ -379,7 +379,7 @@ class SITE_shop {
 											  a.id as property_id 
 								FROM #__sdi_product_property b, 
 									 #__sdi_property  as a ,
-									 #__sdi_property_value as c  
+									 #__sdi_propertyvalue as c  
 								WHERE a.id = c.property_id 
 								and b.propertyvalue_id = c.id 
 								and b.product_id = ". $product_id." 
@@ -676,7 +676,7 @@ class SITE_shop {
 			{
 				$query = "SELECT DISTINCT a.id as property_id FROM #__sdi_product_property b, 
 														#__sdi_property  as a ,
-														#__sdi_property_value as c  
+														#__sdi_propertyvalue as c  
 							WHERE a.id = c.property_id and b.propertyvalue_id = c.id and b.product_id = ". $id." order by a.ordering";
 				
 				$db->setQuery( $query );

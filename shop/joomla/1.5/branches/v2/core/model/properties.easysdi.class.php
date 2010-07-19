@@ -44,14 +44,30 @@ class property extends sdiTable
 	
 	function loadPropertyValues ()
 	{
-		$this->_db->setQuery( "SELECT * FROM #__sdi_property_value where property_id=".$this->id );
+		$this->_db->setQuery( "SELECT * FROM #__sdi_propertyvalue where property_id=".$this->id );
 		$property = $this->_db->loadObject();
 		if ($this->_db->getErrorNum()) {						
 			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");						 		
 		}
 		return $property;
 	}
-
+	function delete ()
+	{
+		$this->_db->setQuery( 'SELECT id FROM #__sdi_propertyvalue WHERE property_id ='.$this->id );
+		$results = $this->_db->loadObjectList();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
+		foreach ($results as $result)
+		{
+			$property_value = new property_value($this->_db);
+			$property_value->load($result->id);
+			if (!$property_value->delete()) {
+				return false;
+			}
+		}
+		return parent::delete();
+	}
 }
 
 class property_value extends sdiTable
@@ -61,7 +77,7 @@ class property_value extends sdiTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_property_value', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_propertyvalue', 'id', $db ) ;    		
 	}
 	
 	function store ()

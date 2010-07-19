@@ -492,6 +492,7 @@ class HTML_basemap {
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
+<!--				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);if(this.checked){document.getElementById('countRelatedBasemapContent').value = '<?php echo $row->count;?>';};" /></td>-->
 				<td><?php echo $row->id; ?></td>
 				<td>
 				<?php 
@@ -532,6 +533,7 @@ class HTML_basemap {
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listBasemap" />
 	  	<input type="hidden" name="boxchecked" value="0" />
+<!--	  	<input type="hidden" id="countRelatedBasemapContent"  name="countRelatedBasemapContent" value="0" />-->
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  </form>
 <?php

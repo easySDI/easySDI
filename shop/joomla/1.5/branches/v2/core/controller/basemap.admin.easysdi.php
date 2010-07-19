@@ -186,11 +186,17 @@ class ADMIN_basemap {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
 		// Recherche des enregistrements selon les limites
+//		$query = "SELECT * FROM ".$basemap->_tbl;	
+//		$query .= " LEFT JOIN (SELECT count(*)as count, cc.basemap_id as bsp_id 
+//							FROM #__sdi_basemapcontent cc,
+//							(SELECT DISTINCT basemap_id FROM #__sdi_basemapcontent ) ccc 
+//														WHERE cc.basemap_id = ccc.basemap_id) builtin ON builtin.bsp_id = $basemap->_tbl.id ";
 		$query = "SELECT * FROM ".$basemap->_tbl;	
 		if($search)
 		{
 			$query .= " WHERE LOWER(name) like ".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}	
+
 		if ($use_pagination) {
 			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
 		}

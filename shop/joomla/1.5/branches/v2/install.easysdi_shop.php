@@ -548,7 +548,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_property`  (
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_propertyvalue`  (
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
@@ -595,7 +595,7 @@ function com_install(){
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_property_value` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_ppv_value` USING BTREE (`propertyvalue_id`) ,
 					INDEX `fk_ppv_prod` USING BTREE (`product_id`) 
 					)
@@ -665,7 +665,7 @@ function com_install(){
 					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`orderproduct_id`) REFERENCES `#__sdi_order_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_property_value` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_orp_op` USING BTREE (`orderproduct_id`) ,
 					INDEX `fk_orp_prop` USING BTREE (`property_id`) ,
 					INDEX `fk_orp_val` USING BTREE (`propertyvalue_id`) 

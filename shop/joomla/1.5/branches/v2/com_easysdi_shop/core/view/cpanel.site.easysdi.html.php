@@ -931,7 +931,7 @@ class HTML_cpanel {
 				$query = "SELECT DISTINCT a.property_id as property_id 
 						  FROM #__sdi_product_property b, 
 							   #__sdi_property  as a ,
-							   #__sdi_property_value as c  
+							   #__sdi_propertyvalue as c  
 						  WHERE a.id = c.property_id 
 						  AND b.propertyvalue_id = c.id 
 						  AND b.product_id = ". $row->id." order by a.ordering";
@@ -958,7 +958,7 @@ class HTML_cpanel {
 									 a.type as type_code 
 								FROM #__sdi_product_property b, 
 									 #__sdi_property a ,
-									 #__sdi_property_value c, 
+									 #__sdi_propertyvalue c, 
 									  #__sdi_translation t
 								WHERE a.id = c.property_id 
 								AND b.propertyvalue_id = c.id 
@@ -1057,7 +1057,7 @@ class HTML_cpanel {
 												 a.type as type_code
 											FROM #__sdi_product_property b,
 												 #__sdi_property a ,
-												 #__sdi_property_value c,
+												 #__sdi_propertyvalue c,
 												 #__sdi_translation t
 											WHERE a.id = c.property_id 
 											and b.propertyvalue_id = c.id 

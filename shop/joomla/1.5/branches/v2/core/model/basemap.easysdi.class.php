@@ -62,6 +62,23 @@ class basemap extends sdiTable
 			return false;
 		}
 	}
+	function delete ()
+	{
+		$this->_db->setQuery( 'SELECT id FROM #__sdi_basemapcontent WHERE basemap_id ='.$this->id );
+		$results = $this->_db->loadObjectList();
+		if ($this->_db->getErrorNum()) {
+			return false;
+		}
+		foreach ($results as $result)
+		{
+			$basemapcontent = new basemap_content($this->_db);
+			$basemapcontent->load($result->id);
+			if (!$basemapcontent->delete()) {
+				return false;
+			}
+		}
+		return parent::delete();
+	}
 
 }
 
