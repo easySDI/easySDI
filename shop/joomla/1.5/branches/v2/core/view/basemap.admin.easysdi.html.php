@@ -199,6 +199,7 @@ class HTML_basemap {
 	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search){
 
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_BASEMAP_CONTENT_TITLE"));
 		$order_field = JRequest::getVar ('order_field');
 		
@@ -253,7 +254,20 @@ class HTML_basemap {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><?php echo $row->id; ?></td>
-				<td><a href="<?php echo $link ?>"><?php echo $row->name; ?></a></td>
+				<td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
 				<td><?php echo $row->description; ?></a></td>
 				<td><?php echo $row->url; ?></a></td>
 				<td class="order" nowrap="nowrap">
@@ -435,6 +449,7 @@ class HTML_basemap {
 	function listBasemap($use_pagination, $rows, $pageNav,$option, $search){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_BASEMAP"));
 		?>
 		<form action="index.php" method="post" name="adminForm">
@@ -478,7 +493,20 @@ class HTML_basemap {
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><?php echo $row->id; ?></td>
-				<td><a href="<?php echo $link ?>"><?php echo $row->name; ?></a></td>
+				<td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>

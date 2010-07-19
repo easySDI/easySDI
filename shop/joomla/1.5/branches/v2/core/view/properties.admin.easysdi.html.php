@@ -126,6 +126,7 @@ class HTML_properties {
 	
 	function listProperties($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES"));
 		$ordering = ($filter_order == 'ordering');
 		?>
@@ -167,7 +168,8 @@ class HTML_properties {
 				$k = 0;
 				for ($i=0, $n=count($rows); $i < $n; $i++)
 				{
-					$row = $rows[$i];	  				
+					$row = $rows[$i];	  		
+					$link = 'index.php?option='.$option.'&task=editProperties&cid[]='.$row->id;		
 			?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -207,7 +209,20 @@ class HTML_properties {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-	            <td><a href="<?php echo 'index.php?option='.$option.'&task=editProperties&cid[]='.$row->id ; ?>"><?php echo $row->name; ?></td>
+	            <td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
 	            <td><?php echo $row->description; ?></td>
 				<td><?php echo $row->mandatory; ?></td>
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->updated)); ?></td>
@@ -326,6 +341,7 @@ class HTML_properties {
 	
 	function listPropertiesValues($use_pagination, $rows,$property, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES")." ".JText::_($property->name));
+		$user	=& JFactory::getUser();
 		$ordering = ($filter_order == 'ordering');
 		?>
 		<form action="index.php" method="post" name="adminForm">
@@ -365,6 +381,7 @@ class HTML_properties {
 			for ($i=0, $n=count($rows); $i < $n; $i++)
 			{
 				$row = $rows[$i];	  				
+				$link = 'index.php?option='.$option.'&task=editPropertiesValues&cid[]='.$row->id.'&property_id='.$property->id; 
 			?>
 				<tr class="<?php echo "row$k"; ?>">
 					<td align="center" width="10px"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -403,7 +420,20 @@ class HTML_properties {
 						}?>
 						<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 		            </td>
-					<td><a href="<?php echo 'index.php?option='.$option.'&task=editPropertiesValues&cid[]='.$row->id.'&property_id='.$property->id; ?>"><?php echo $row->name; ?></td>				
+		            <td>
+					<?php 
+					if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+					{
+						echo $row->name;
+					} 
+					else 
+					{
+						?>
+						<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+						<?php
+					}
+					?>
+					</td>
 					<td><?php echo $row->description; ?></td>
 					<td><?php echo date('d.m.Y H:i:s',strtotime($row->updated)); ?></td>
 				</tr>

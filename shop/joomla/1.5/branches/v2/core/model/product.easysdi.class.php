@@ -63,6 +63,8 @@ class product extends sdiTable
 		 	{
 		 		$fileName = $_FILES['productfile']["name"];
 		 		$tmpName =  $_FILES['productfile']["tmp_name"];
+		 		$type = strtolower(substr($fileName, strrpos($fileName, '.')+1)) ;
+  				$size = ($_FILES['productfile']["size"] / 1024) ;
 			 	$fp      = fopen($tmpName, 'r');
 			 	$content = fread($fp, filesize($tmpName));
 			 	$content = addslashes($content);
@@ -75,14 +77,14 @@ class product extends sdiTable
 				}
 				if($result > 0)
 				{
-					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."' WHERE product_id = ".$this->id );
+					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."', size =".$size.", type='".$type."' WHERE product_id = ".$this->id );
 					if (!$this->_db->query()) {
 						return false;
 					}
 				}
 				else
 				{
-					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id) VALUES ('".$fileName."' ,'".$content."', ".$this->id.")" );
+					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" );
 					if (!$this->_db->query()) {
 						return false;
 					}

@@ -254,6 +254,7 @@ class HTML_location {
 	function listLocation($use_pagination, $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
 	
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LOCATION_LIST_LOCATION"));
 		
 		?>
@@ -290,13 +291,27 @@ class HTML_location {
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
-			$row = $rows[$i];	  				
+			$row = $rows[$i];
+			$link = 'index.php?option='.$option.'&task=editLocation&cid[]='.$row->id;	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><?php echo $row->id; ?></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editLocation')"><?php echo $row->name; ?></td>
+				<td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
 				<td><?php echo $row->description; ?></td>
 				<td><?php echo $row->urlwfs; ?></td>				
 				<td><?php echo $row->updated; ?></td>	

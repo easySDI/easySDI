@@ -184,7 +184,7 @@ class ADMIN_product {
 		$version_list[] = JHTML::_('select.option','0', JText::_("SHOP_VERSION_LIST") );
 		if($object_id<>0)
 		{
-			$database->setQuery("SELECT id AS value, name AS text 
+			$database->setQuery("SELECT id AS value, title AS text 
 							   FROM #__sdi_objectversion
 							   WHERE object_id = $object_id 
 							   ORDER BY name");

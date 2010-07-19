@@ -282,6 +282,7 @@ class HTML_perimeter {
 	function listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_PERIMETER_LIST"));
 		
 		$ordering = ($filter_order == 'ordering');
@@ -324,7 +325,8 @@ class HTML_perimeter {
 		$k = 0;
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
-			$row = $rows[$i];	  				
+			$row = $rows[$i];
+			$link = 'index.php?option='.$option.'&task=editPerimeter&cid[]='.$row->id;		  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td width="10px" align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -364,8 +366,21 @@ class HTML_perimeter {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="order[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>	
-	            <td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPerimeter')"><?php echo $row->name; ?></td>
-				<td><?php echo $row->description; ?></td>
+	            <td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
+	            <td><?php echo $row->description; ?></td>
 				<td><?php echo $row->urlwfs; ?></td>				
 				<td><?php echo $row->updated; ?></td>
 				

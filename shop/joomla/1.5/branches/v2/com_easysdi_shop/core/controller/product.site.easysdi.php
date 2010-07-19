@@ -109,6 +109,7 @@ class SITE_product {
 
 		foreach( $_POST['property_id'] as $properties_id )
 		{
+			if($properties_id == -1)continue;
 			$product_property = new product_property($database);
 			$product_property->product_id=$product->id;
 			$product_property->propertyvalue_id=$properties_id;
@@ -260,7 +261,7 @@ class SITE_product {
 		$version_list[] = JHTML::_('select.option','0', JText::_("SHOP_VERSION_LIST") );
 		if($object_id<>0)
 		{
-			$database->setQuery("SELECT id AS value, name AS text 
+			$database->setQuery("SELECT id AS value, title AS text 
 							   FROM #__sdi_objectversion
 							   WHERE object_id = $object_id 
 							   ORDER BY name");
@@ -339,12 +340,19 @@ class SITE_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 		}
 		
+		//Select all available easysdi Account
+		$rowsAccount = array();
+		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
+		$database->setQuery( "SELECT a.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account a ON u.id = a.user_id 
+							WHERE (a.root_id = $account->root_id OR a.root_id = $account->id OR a.id = $account->id OR a.id = $account->root_id)  " );
+		$rowsAccount = array_merge($rowsAccount,$database->loadObjectList());
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option );
+			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option );
 		}
 	}
 	

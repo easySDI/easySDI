@@ -19,7 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_product{
 	
-	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$option ){
+	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		
@@ -444,6 +444,26 @@ class HTML_product{
 		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PREVIEW"),"productPane");
 		?>
 		<br>
+		<script>
+		function displayAuthentication()
+		{
+			if (document.forms['productForm'].service_type[0].checked)
+			{
+				document.getElementById('viewpassword').disabled = true;
+				document.getElementById('viewpassword').value = "";
+				document.getElementById('viewuser').disabled = true;
+				document.getElementById('viewuser').value ="";
+				document.getElementById('viewaccount_id').disabled = false;
+			}
+			else
+			{
+				document.getElementById('viewpassword').disabled = false;
+				document.getElementById('viewuser').disabled = false;
+				document.getElementById('viewaccount_id').disabled = true;
+				document.getElementById('viewaccount_id').value = '0';
+			}
+		}	
+		</script>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
@@ -490,6 +510,47 @@ class HTML_product{
 					</fieldset>
 				</td>
 			</tr>
+			<tr>
+				<td >
+				<fieldset class="fieldset_properties">
+				<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
+					<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td >
+							<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
+						</td>
+						<td class="ptitle" colspan="2">
+							<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+						<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
+					</tr>
+					<tr>
+						<td >
+						 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
+					 	</td>
+					 	<td class="ptitle" colspan="2">
+						 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+					 	</td>
+				 	</tr>
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
+					</tr>							
+					<tr>
+						<td></td>
+						<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
+					</tr>
+					
+					</table>
+				</fieldset>	
+				</td>	
+			</tr>
 		</table>
 		<?php
 		echo $tabs->endPanel();
@@ -533,6 +594,7 @@ class HTML_product{
 	}
 	
 	function listProduct($pageNav,$rows,$option,$account,$search){
+		$user	=& JFactory::getUser();
 		?>	
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("SHOP_LIST_PRODUCT"); ?></h2>
@@ -599,12 +661,23 @@ class HTML_product{
 			<tr>
 			<td class="logo2"><div <?php if($row->visibility == 'public' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->visibility == 'private' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
 			<td width="100%"><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
-			<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
+			<?php 
+			if (JTable::isCheckedOut($user->get ('id'), $row->checked_out ) )
+			{
+				?>
+				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT_CHECKED_OUT'); ?>" id="editObjectCheckedOut" /></td>
+				<?php
+			} 
+			else
+			{
+				?>
+				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
+				<?php
+			}
+			?>
 			<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" /></td>
-			
 			</tr>
-			
-				<?php		
+			<?php		
 		}
 		
 	?>

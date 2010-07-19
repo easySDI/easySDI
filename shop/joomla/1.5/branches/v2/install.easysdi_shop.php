@@ -698,10 +698,15 @@ function com_install(){
 					`product_id`  bigint(20) NOT NULL ,
 					`filename`  varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`data`  longblob NULL DEFAULT NULL ,
+					`type`  varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`size`  int(20) NULL DEFAULT NULL ,	
 					PRIMARY KEY (`id`),
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 					INDEX `fk_product_file` USING BTREE (`product_id`) 
 					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8 
+					ROW_FORMAT=COMPACT
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 

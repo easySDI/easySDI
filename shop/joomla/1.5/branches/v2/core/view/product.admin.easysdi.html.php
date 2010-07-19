@@ -484,6 +484,7 @@ class HTML_product {
 	
 	function listProduct($use_pagination, $rows, $search,$pageNav, $option){
 		$database =& JFactory::getDBO();
+		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_PRODUCT")); 
 		$partners = array(); ?>
 		<form action="index.php" method="post" name="adminForm">
@@ -519,13 +520,27 @@ class HTML_product {
 		$k = 0;
 		$i=0;
 		foreach ($rows as $row)
-		{				  				
+		{				  		
+			$link = 'index.php?option='.$option.'&task=editProduct&cid[]='.$row->id;			
 		?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td> <?php echo JHTML::_('grid.published',$row,$i); ?></td>
-				<td><a href="<?php echo "index.php?option=$option&amp;task=editProduct&cid[]=$row->id";?>"><?php echo $row->name; ?></a></td>																												
+				<td>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					echo $row->name;
+				} 
+				else 
+				{
+					?>
+					<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+					<?php
+				}
+				?>
+				</td>
 				<td><?php echo $row->description; ?></a></td>
 				<td><?php echo JText::_($row->treatment); ?></td>								
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->created)); ?></td>
