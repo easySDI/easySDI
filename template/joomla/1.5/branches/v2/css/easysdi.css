@@ -77,6 +77,7 @@ div .freeMd{
 	background-image:url(../images/money_dollar_disabled.png);
 }
 
+
 div .easysdi_product_does_not_exist{
 	background-image:url(../images/cart_disabled.png);
 }
@@ -1284,6 +1285,15 @@ div#editObject{
 	width:16px;	
 }
 
+div#editObjectCheckedOut{
+	background-color:transparent;
+	background-image:url(../icons/silk/lock_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
 div#deleteObject{
 	background-color:transparent;
 	background-image:url(../icons/silk/page_delete.png);
@@ -1622,7 +1632,7 @@ div .savedOrderCopy{
 	font-weight:bold;
 	padding:5px 5px 12px 10px;
 	background-color:#d4deff none repeat scroll 0 0;
-	color:#FFFFFF;
+	color:#000000;
 }
 .orderRecap .ortitle2{
 	font-weight: bold;
