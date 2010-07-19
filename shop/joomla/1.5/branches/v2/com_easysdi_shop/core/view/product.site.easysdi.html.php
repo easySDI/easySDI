@@ -570,13 +570,61 @@ class HTML_product{
 		<table>
 			<tr>
 				<td>
-					<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
+					<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';validateForm();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
 				</td>
 				<td>
 					<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
 				</td>
 			</tr>
 		</table>
+		<script>
+		function validateForm()
+		{
+			var form = document.getElementById('productForm');
+			var text = '';
+			var index = 0;
+
+			if (   form.elements['name'].value == '')
+			{
+				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_NAME");?>";	
+				index = 1;			
+			} 
+			if (form.elements['objectversion_id'].value == '0')
+			{
+				if(index != 0)text += ", ";
+				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_VERSION");?>"; 
+				index = 1;	
+			}
+			if (form.elements['diffusion_id'].value == '0')
+			{
+				if(index != 0)text += ", ";
+				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_DIFFUSION");?>"; 
+				index = 1;	
+			}
+			if (form.elements['surfacemin'].value == '')
+			{
+				if(index != 0)text += ", ";
+				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMIN");?>"; 
+				index = 1;	
+			}
+			if (form.elements['surfacemax'].value == '')
+			{
+				if(index != 0)text += ", ";
+				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";
+				index = 1;	
+			}
+			if(index ==1)
+			{
+				text += ".";
+				alert( "<?php echo JText::_("SHOP_MESSAGE_PROVIDE_VALUES");?> : "+text);
+				return;
+			}
+			else
+			{
+				form.submit();
+			}
+		}
+		</script>
 		</div>
 		</div>
 	<?php

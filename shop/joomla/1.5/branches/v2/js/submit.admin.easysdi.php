@@ -3,6 +3,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 <script>
+		
 		function submitbutton(pressbutton)
 		{
 			var form = document.adminForm;
@@ -293,25 +294,26 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					submitform( pressbutton );
 				}
-				if (pressbutton == "saveProperties" || pressbutton == "savePropertiesValues")
+			}
+			if (pressbutton == "saveProperties" || pressbutton == "savePropertiesValues")
+			{
+				if (   form.elements['name'].value == '')
 				{
-					if (   form.elements['name'].value == '')
-					{
-						text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_NAME");?>";	
-						index = 1;			
-					}
-					if(index ==1)
-					{
-						text += ".";
-						alert( "<?php echo JText::_("SHOP_MESSAGE_PROVIDE_VALUES");?> : "+text);
-						return;
-					}
-					else
-					{
-						submitform( pressbutton );
-					}
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_NAME");?>";	
+					index = 1;			
+				}
+				if(index ==1)
+				{
+					text += ".";
+					alert( "<?php echo JText::_("SHOP_MESSAGE_PROVIDE_VALUES");?> : "+text);
+					return;
+				}
+				else
+				{
+					submitform( pressbutton );
 				}
 			}
+			
 			submitform( pressbutton );
 			
 		}
