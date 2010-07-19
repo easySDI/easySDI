@@ -21,12 +21,12 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_basemap {
 
-	function editBasemapContent( $rowBasemap,$rowsAccount,$id, $option ){
+	function editBasemapContent( $rowBasemap,$basemap_name,$rowsAccount,$id, $option ){
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_BASEMAP_CONTENT_TITLE"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_BASEMAP_CONTENT_TITLE")." : ".$basemap_name, 'generic.png' );
 			
 		?>				
 		<script>
@@ -60,13 +60,16 @@ class HTML_basemap {
 								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowBasemap->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
-							</tr>			
+							</tr>	
 							<tr>
-								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
-								<td><?php echo $rowBasemap->basemap_id; ?></td>
-								<input type="hidden" name="basemap_id" value="<?php echo $rowBasemap->basemap_id;?>">								
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>							
 							</tr>
+							<tr>
 							
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_DESCRIPTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowBasemap->description; ?>" /></td>							
+							</tr>	
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowBasemap->projection; ?>" /></td>
@@ -118,8 +121,8 @@ class HTML_basemap {
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_SINGLE_TILE"); ?> : </td>
 								<td><select class="inputbox" name="singletile" >
-										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("CORE__TRUE"); ?></option>
-										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("CORE__FALSE"); ?></option>
+										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
+										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
 								</select>
 								</td>															
 							</tr>
@@ -128,11 +131,7 @@ class HTML_basemap {
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_LAYERS"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" value="<?php echo $rowBasemap->layers; ?>" /></td>							
 							</tr>
-							<tr>
 							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowBasemap->name; ?>" /></td>							
-							</tr>
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_ATTRIBUTION"); ?> : </td>
@@ -186,6 +185,7 @@ class HTML_basemap {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="basemap_id" value="<?php echo $rowBasemap->basemap_id;?>">
 		<input type="hidden" name="guid" value="<?php echo $rowBasemap->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowBasemap->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowBasemap->createdby; ?>" />
@@ -196,11 +196,11 @@ class HTML_basemap {
 	}
 	
 	
-	function listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search){
+	function listBasemapContent($basemap_id,$basemap_name,$use_pagination, $rows, $pageNav,$option, $search){
 
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
-		JToolBarHelper::title(JText::_("SHOP_BASEMAP_CONTENT_TITLE"));
+		JToolBarHelper::title(JText::_("SHOP_BASEMAP_CONTENT_TITLE")." : ".$basemap_name);
 		$order_field = JRequest::getVar ('order_field');
 		
 		?>

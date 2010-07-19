@@ -39,7 +39,14 @@ class HTML_properties {
 								<td><?php echo $property->id; ?>
 								<input type="hidden" name="id" value="<?php echo $id;?>"></td>								
 							</tr>
-			
+							<tr>							
+								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property->name; ?>" /></td>
+							</tr>							
+							<tr>							
+								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property->description; ?>" /></td>
+							</tr>
   							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_MANDATORY"); ?> : </td>
 								<td><select class="inputbox" name="mandatory" >								
@@ -62,14 +69,7 @@ class HTML_properties {
 								<td class="key"><?php echo JText::_("CORE_UPDATED"); ?> : </td>																
 								<td><?php echo date('d.m.Y H:i:s',strtotime($property->updated)); ?></td>
 							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $property->name; ?>" /></td>
-							</tr>							
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property->description; ?>" /></td>
-							</tr>
+							
 							<tr>							
 								<td class="key"><?php echo JText::_("CORE_CODE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property->code; ?>" /></td>
@@ -262,7 +262,7 @@ class HTML_properties {
 	function editPropertiesValues( $property_value, $property, $id, $languages, $labels,$option ){
 		global  $mainframe;
 		$tabs =& JPANE::getInstance('Tabs');
-		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PROPERTIES_VALUE"), 'generic.png' );
+		JToolBarHelper::title( JText::_("SHOP_TITLE_EDIT_PROPERTIES_VALUE")." : ".$property->name, 'generic.png' );
 		if ($property->id == -1){
 			$mainframe->enqueueMessage(JText::_("SHOP_ERROR_NO_PROPERTY_ID"),"ERROR");	
 		}
@@ -340,7 +340,7 @@ class HTML_properties {
 	}
 	
 	function listPropertiesValues($use_pagination, $rows,$property, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
-		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES")." ".JText::_($property->name));
+		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES_VALUES")." : ".JText::_($property->name));
 		$user	=& JFactory::getUser();
 		$ordering = ($filter_order == 'ordering');
 		?>

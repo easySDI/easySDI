@@ -56,6 +56,9 @@ class ADMIN_basemap {
 		{
 			$basemap_id = JRequest::getVar('basemap_id');
 		}
+		$query = "SELECT name FROM #__sdi_basemap where id = $basemap_id ";
+		$db->setQuery( $query );
+		$basemap_name = $db->loadResult();
 		
 		$basemap_content = new basemap_content( $db );
 		$total = $basemap_content->getObjectCount($basemap_id);
@@ -82,7 +85,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemapContent($basemap_id,$use_pagination, $rows, $pageNav,$option, $search);	
+		HTML_Basemap::listBasemapContent($basemap_id,$basemap_name,$use_pagination, $rows, $pageNav,$option, $search);	
 	}
 	
 	function editBasemapContent( $id, $option ) {
@@ -90,7 +93,11 @@ class ADMIN_basemap {
 		$rowBasemap = new basemap_content( $database );
 		$rowBasemap->load( $id );	
 		
-		$rowBasemap->basemap_id = JRequest::getVar('basemap_id',-1); 
+		$rowBasemap->basemap_id = JRequest::getVar('basemap_id',-1);
+
+		$query = "SELECT name FROM #__sdi_basemap where id = $rowBasemap->basemap_id ";
+		$database->setQuery( $query );
+		$basemap_name = $database->loadResult();
 		
 		$rowBasemap->tryCheckOut($option,'listBasemapContent&cid[]='.$rowBasemap->basemap_id);
 		
@@ -99,7 +106,7 @@ class ADMIN_basemap {
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
-		HTML_Basemap::editBasemapContent( $rowBasemap, $rowsAccount, $id, $option );
+		HTML_Basemap::editBasemapContent( $rowBasemap,$basemap_name, $rowsAccount, $id, $option );
 	}
 	
 	function saveBasemapContent($returnList ,$option){

@@ -100,12 +100,20 @@ class HTML_perimeter {
 								<td><?php echo $rowPerimeter->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
-
+							<tr>
+							
+								<td class="key"><?php echo JText::_("SHOP_PERIMETER_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowPerimeter->name; ?>" /></td>							
+							</tr>
+							<tr>
+							
+								<td class="key"><?php echo JText::_("SHOP_PERIMETER_DESC"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowPerimeter->description; ?>" /></td>							
+							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_WFS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowPerimeter->urlwfs; ?>" /></td>
 							</tr>
-							
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowPerimeter->featuretype; ?>" /></td>
@@ -118,10 +126,7 @@ class HTML_perimeter {
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowPerimeter->minresolution; ?>" /></td>
-							</tr>
-							
-
-							<tr>
+							</tr>							<tr>
 								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowPerimeter->maxresolution; ?>" /></td>
 							</tr>
@@ -135,16 +140,6 @@ class HTML_perimeter {
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_PERIMETER_LAYER_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowPerimeter->layername; ?>" /></td>
-							</tr>
-							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_PERIMETER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowPerimeter->name; ?>" /></td>							
-							</tr>
-							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_PERIMETER_DESC"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowPerimeter->description; ?>" /></td>							
 							</tr>
 							<tr>
 							

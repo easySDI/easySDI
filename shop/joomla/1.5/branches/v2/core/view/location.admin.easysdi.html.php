@@ -101,17 +101,6 @@ class HTML_location {
 								<td><?php echo $rowLocation->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
-
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_WFS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowLocation->urlwfs; ?>" /></td>
-							</tr>
-							
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowLocation->featuretype; ?>" /></td>
-							</tr>
-						
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_LOCATION_NAME"); ?> : </td>
@@ -123,7 +112,15 @@ class HTML_location {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowLocation->description; ?>" /></td>							
 							</tr>
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_WFS_URL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowLocation->urlwfs; ?>" /></td>
+							</tr>
 							
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowLocation->featuretype; ?>" /></td>
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_LOCATION_NAME_FIELD_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldname" value="<?php echo $rowLocation->fieldname; ?>" /></td>							
 							</tr>
