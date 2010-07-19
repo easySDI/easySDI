@@ -368,6 +368,20 @@ class SITE_product {
 		
 		$rowProduct = new product( $database );
 		$rowProduct->load( $cid[0] );	
+		
+		$query = "SELECT o.name as name FROM #__sdi_order_product p INNER JOIN #__sdi_order o ON o.id = p.order_id  WHERE p.product_id=$cid[0] ";
+		$database->setQuery($query);
+		$results = $database->loadObjectList();
+		if(count($results)>0)
+		{
+			$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_DELETE_ERROR"),"INFO");
+			foreach($results as $result)
+			{
+				$mainframe->enqueueMessage(" - ".$result->name,"INFO");
+			}
+			return;
+		}
+
 		if(!$rowProduct->delete())
 		{
 			$mainframe->enqueueMessage("SHOP_MESSAGE_ERROR_SUPPRESS_PRODUCT","ERROR");

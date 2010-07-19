@@ -362,10 +362,12 @@ class ADMIN_product {
 	function deleteProduct($cid ,$option){
 		global $mainframe;
 		$database =& JFactory::getDBO();
-
+		$limitstart = JRequest::getVar("limitstart");
+		$limit = JRequest::getVar("limit");
+		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 			exit;
 		}
 		
@@ -373,15 +375,27 @@ class ADMIN_product {
 		{
 			$product = new product( $database );
 			$product->load( $id );
-			//if(!$product->deleteProduct())$mainframe->enqueueMessage("ERROR SUPPRESS PRODUCT","ERROR");
+			
+			$query = "SELECT o.name as name FROM #__sdi_order_product p INNER JOIN #__sdi_order o ON o.id = p.order_id  WHERE p.product_id=$id ";
+			$database->setQuery($query);
+			$results = $database->loadObjectList();
+			if(count($results)>0)
+			{
+				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_DELETE_ERROR"),"INFO");
+				foreach($results as $result)
+				{
+					$mainframe->enqueueMessage(" - ".$result->name,"INFO");
+				}
+				$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+			}
+			
 			if (!$product->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 			}			
 		}
 		
-		$limitstart = JRequest::getVar("limitstart");
-		$limit = JRequest::getVar("limit");
+		
 		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 	}
 
