@@ -634,8 +634,8 @@ if ($shopItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_PROXYHOST' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_PROXYHOST' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>
 											</span>
 										</td>
 										<td>
@@ -644,8 +644,8 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARCHIVE_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_ARCHIVE_DELAY' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>
 											</span>
 										</td>
 										<td>
@@ -654,8 +654,8 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_HISTORY_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_HISTORY_DELAY' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_HISTORY_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_HISTORY_DELAY' ); ?>
 											</span>
 										</td>
 										<td>
@@ -665,8 +665,8 @@ if ($shopItem > 0){
 									
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_CADDY_DESC_LENGTH' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_CADDY_DESC_LENGTH' ); ?>
 											</span>
 										</td>
 										<td>
@@ -675,8 +675,8 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_AREAPRECISION' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_AREAPRECISION' ); ?>
 											</span>
 										</td>
 										<td>
@@ -685,8 +685,8 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>
 											</span>
 										</td>
 										<td>
@@ -695,8 +695,8 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP4' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP4' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>
 											</span>
 										</td>
 										<td>
@@ -704,17 +704,17 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
-											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
+											<div  ><?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_CONTENT_FORMAT' ); ?></div>
 										</td>
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP5' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP5' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP5' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP5' ); ?>
 											</span>
 										</td>
 										<td>
@@ -722,17 +722,17 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
-											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
+											<div  ><?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_CONTENT_FORMAT' ); ?></div>
 										</td>
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_TERMS_OF_USE' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_TERMS_OF_USE' ); ?>
 											</span>
 										</td>
 										<td>
@@ -740,11 +740,11 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
-											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
+											<div  ><?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_CONTENT_FORMAT' ); ?></div>
 										</td>
 									</tr>
 									</tbody>
