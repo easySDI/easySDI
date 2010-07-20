@@ -211,6 +211,76 @@ class ADMIN_cpanel {
 		$mainframe->redirect("index.php?option=$option&task=listOrders" );
 	}
 	
+	function orderReport($id)
+	{
+		global $mainframe;
+		
+		$db =& JFactory::getDBO();
+		$rowOrder = null;
+		$perimeterRows = null;			
+		$query = "SELECT a.*, 
+						 sl.label as slT, 
+						 tl.label as tlT, 
+						 a.name as order_name  
+				  FROM  #__sdi_order a ,  
+				  		#__sdi_list_orderstatus sl, 
+				  		#__sdi_list_ordertype tl 
+				  WHERE a.id = $id 
+				  AND tl.id = a.type_id 
+				  AND sl.id = a.status_id";
+		$db->setQuery($query);
+		$rowOrder = $db->loadObject();
+		
+		$query = "SELECT b.perimeter_id, 
+						 b.text, 
+						 b.value 
+				  FROM  #__sdi_order a, 
+				  		#__sdi_order_perimeter b 
+				  WHERE a.id = b.order_id 
+				  AND a.id = $id order by b.id";
+		$db->setQuery($query);
+		$perimeterRows = $db->loadObjectList();
+		
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$db->getErrorMsg();
+			echo "</div>";
+		}
+		
+
+		//Customer name
+		$user =$rowOrder->user_id;
+		$queryUser = "SELECT name FROM #__users WHERE id = $user";
+		$db->setQuery($queryUser );
+		$user_name =  $db->loadResult();
+		
+		$third_name ='';
+		//Third name
+		$third = $rowOrder->thirdparty_id; 
+		if( $third != 0)
+		{
+			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__sdi_account where id= $third)";
+			$db->setQuery($queryUser );
+			$third_name =  $db->loadResult();
+		}
+		
+		$query = "SELECT *, a.id as plId , opf.filename as filename
+			  FROM #__sdi_order_product  a LEFT OUTER JOIN #__sdi_orderproduct_file opf ON opf.orderproduct_id = a.id, 
+			       #__sdi_product b
+			  WHERE a.product_id  = b.id 
+			  AND a.order_id = $id";
+			
+		$db->setQuery($query );
+		$rowsProduct = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo $db->getErrorMsg();
+			echo "</div>";
+		}
+		
+		HTMLadmin_cpanel::orderReportRecap($id,$rowOrder, $perimeterRows, $user_name, $third_name, $rowsProduct);
+	}
+	
 
 }
 ?>

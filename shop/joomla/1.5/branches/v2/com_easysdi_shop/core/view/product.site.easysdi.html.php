@@ -708,7 +708,7 @@ class HTML_product{
 			?>		
 			<tr>
 			<td class="logo2"><div <?php if($row->visibility == 'public' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->visibility == 'private' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
-			<td width="100%"><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
+			<td width="100%"><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
 			<?php 
 			if (JTable::isCheckedOut($user->get ('id'), $row->checked_out ) )
 			{

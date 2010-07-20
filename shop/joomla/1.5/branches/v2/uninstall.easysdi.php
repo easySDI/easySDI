@@ -24,21 +24,7 @@ function com_uninstall(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 	
-	/**
-	 * Check dependencies
-	 */
-	/*$count = 0;
-	$query = "SELECT COUNT(*) FROM `#__components` where `option` = 'com_asitvd' ";
-	$db->setQuery( $query);
-	$count = $db->loadResult();
-	if ($count > 0) {
-		$mainframe->enqueueMessage("WARNING : Dependent component AsitVD is installed. You must uninstall it.","INFO");
-		//return false;		
-	}*/
-	
-	/**
-	 * Delete components
-	 */
+	//Delete component
 	$db =& JFactory::getDBO();
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop'";
 	$db->setQuery( $query);
@@ -46,24 +32,12 @@ function com_uninstall(){
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		return false;
 	}
-	
-/*	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'metadata.xml');
-	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.xml');
-	unlink(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl'.DS.'default.php');
-	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl')) {
-    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop'.DS.'tmpl');
-	}
-	if (is_dir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop')) {
-    	rmdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'shop');
-	}*/
 		
 	$mainframe->enqueueMessage("Congratulation EasySdi shop is uninstalled.
 	Pay attention the database is not deleted and could still be used if you install Easysdi again. 
 	","INFO");
 	
 	return true;
-	
-
 }
 
 

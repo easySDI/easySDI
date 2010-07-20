@@ -1170,33 +1170,17 @@ class HTML_cpanel {
 	}
 	
 	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd, $isInMemory){
-	if($isfrontEnd == true)
-	{
-		?>
-		<script
-		type="text/javascript"
-		src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
-		
-		<script
-		type="text/javascript"
-		src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
-		
-		</script>
-		<?php
-	}
-	else
-		{ ?>
-		<script
-		type="text/javascript"
-		src="components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
-		
-		<script
-		type="text/javascript"
-		src="components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
-		</script>
-		<?php
-	} ?>
 
+	?>
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
+	
+	<script
+	type="text/javascript"
+	src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
+	
+	</script>
 	
 	<?php	
 		

@@ -48,9 +48,11 @@ class ADMIN_product {
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT p.*, t.label as treatment
+		$query = "SELECT p.*, t.label as treatment, m.guid as metadata_guid
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
+					INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id=v.id 
+					INNER JOIN #__sdi_metadata m ON v.metadata_id = m.id
 					 ";
 		
 		$where="";
@@ -73,6 +75,7 @@ class ADMIN_product {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		$query = $query.$orderby;
+		
 		if ($use_pagination) {
 			$db->setQuery( $query ,$limitstart,$limit);
 		}

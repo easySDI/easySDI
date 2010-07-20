@@ -510,6 +510,7 @@ class HTML_product {
 						<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 						<th class='title'><?php echo JText::_("CORE_PUBLISHED"); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JText::_("SHOP_PRODUCT_METADATA"); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCT_TREATMENT"), 'treatment', @$filter_order_Dir, @$filter_order); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>	
@@ -519,8 +520,9 @@ class HTML_product {
 		<?php
 		$k = 0;
 		$i=0;
+		JHTML::_("behavior.modal","a.modal",$param); 
 		foreach ($rows as $row)
-		{				  		
+		{			
 			$link = 'index.php?option='.$option.'&task=editProduct&cid[]='.$row->id;			
 		?>
 			<tr class="<?php echo "row$k"; ?>">
@@ -540,6 +542,10 @@ class HTML_product {
 					<?php
 				}
 				?>
+				</td>
+				<td align="center">
+					<a class="modal" href="<?php echo JURI::root(); ?>index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}" title="<?php echo JText::_( 'SHOP_PRODUCT_VIEW_METADATA' ); ?>">
+					<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/document.png" border="0" /></a>
 				</td>
 				<td><?php echo $row->description; ?></a></td>
 				<td><?php echo JText::_($row->treatment); ?></td>								
@@ -565,8 +571,8 @@ class HTML_product {
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listProduct" />
 	  	<input type="hidden" name="boxchecked" value="0" />
-	  	<input type="hidden" name="hidemainmenu" value="0">
-	  	<input type="hidden" name="publishedobject" value="product">
+	  	<input type="hidden" name="hidemainmenu" value="0" />
+	  	<input type="hidden" name="publishedobject" value="product" />
 	  </form>
 		<?php
 	}	

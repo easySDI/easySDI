@@ -1087,6 +1087,15 @@ class SITE_cpanel {
 				}
 			}
 		}
+		else
+		{
+			echo "usertype : ".$u->name." - ".$u->usertype;
+			if($u->usertype!= 'Super Administrator' && $u->usertype!= 'Administrator'   )
+			{
+				$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE")." :  ".JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE_REQUEST"),"INFO");
+				return;
+			}
+		}
 		
 		$db =& JFactory::getDBO();
 		

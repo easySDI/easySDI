@@ -416,10 +416,11 @@ class SITE_product {
 		}
 		
 		//List only the products belonging to the current user
-		$query = " SELECT p.*, v.metadata_id, y.code as visibility, m.account_id
+		$query = " SELECT p.*, v.metadata_id, y.code as visibility, m.account_id, md.guid as metadata_guid
 							FROM #__sdi_product p 
 							INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_metadata md ON md.id = v.metadata_id
 							INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
 							INNER JOIN #__sdi_list_visibility y ON  y.id = p.visibility_id 
 							WHERE m.account_id = $account->id " ;

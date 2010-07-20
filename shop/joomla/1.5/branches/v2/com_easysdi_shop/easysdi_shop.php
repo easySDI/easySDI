@@ -27,6 +27,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'list.easysdi.class.php');
 
+global $mainframe;
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 $language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
