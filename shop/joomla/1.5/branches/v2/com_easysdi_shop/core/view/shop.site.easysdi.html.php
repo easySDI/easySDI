@@ -1917,23 +1917,14 @@ class HTML_shop
 	
 	function downloadAvailableProduct($id, $option, $task,$view,$step,$row)
 	{
-		
 		?>
 		<form name="dlProductForm" id="dlProductForm" 	 action='index.php' method='GET'>
-		<script>
-		window.addEvent('domready', function() {
-		$('printOrderRecap').addEvent( 'click' , function() { 
-			window.open('./index.php?tmpl=component&option=<?php echo $option; ?>&task=<?php echo $task; ?>&cid[]=<?php echo $id; ?>&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
-			});
-		});
-		</script>
 		<table>
 		<tr>
-		<td colspan = "5">
-		
+		<td >
 		<table width="100%" >
 		<tr>
-		<td colspan ="4" >
+		<td colspan ="2" >
 		<?php
 		echo $row->text;
 		?>
@@ -1945,29 +1936,19 @@ class HTML_shop
 		<td>
 		<table>
 		<tr>
-		<td width="20%"></td>
-   		<td width="20%" align="right" >    
+		<td width="50%" align="right" >    
 		<input
 		onClick="document.getElementById('task').value = 'shop'; window.parent.document.getElementById('sbox-window').close();"
 		type="button"
 		class="button"
 		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
 		</td>
-		<td width="20%" align="left">
+		<td width="50%" align="left">
 		<input 
-		onClick="document.getElementById('dl').disabled = false;"
-		type="button"
-		class="button"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
-		</td>
-		<td width="20%"></td>
-		<td align="right" width="20%">
-		<input disabled
 		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();window.parent.document.getElementById('sbox-window').close();"
 		type="button"
 		class="button"
-		id="dl"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_DOWNLAD"); ?>'> 
+		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
 		</td>
 		</tr>
 		</table>
