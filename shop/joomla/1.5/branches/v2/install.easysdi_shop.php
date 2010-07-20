@@ -68,7 +68,6 @@ function com_install(){
 
 		
 	// Gets the component version
-	$version = '0.0';
 	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'SHOP'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
@@ -90,6 +89,24 @@ function com_install(){
 		$db->setQuery( $query);		
 		if (!$db->query()) 
 		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		//Insert configuration keys
+		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+						 (	'".helper_easysdi::getUniqueId()."', 
+					 		'CATALOG_URL', 
+					 		'CATALOG_URL', 
+					 		'CATALOG', 
+					 		'".date('Y-m-d H:i:s')."', 
+					 		'".$user_id."', 
+					 		null, 
+					 		'http://localhost:8081/proxy/ogc/geonetwork', 
+					 		'".$module_id."')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
 		}

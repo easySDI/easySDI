@@ -56,6 +56,12 @@ class ADMIN_basemap {
 		{
 			$basemap_id = JRequest::getVar('basemap_id');
 		}
+		if (!$basemap_id) {
+			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listBasemap");
+			exit;
+		}
+		
 		$query = "SELECT name FROM #__sdi_basemap where id = $basemap_id ";
 		$db->setQuery( $query );
 		$basemap_name = $db->loadResult();
