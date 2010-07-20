@@ -94,16 +94,17 @@ function com_install(){
 		}
 		
 		//Insert configuration keys
-		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
-						 (	'".helper_easysdi::getUniqueId()."', 
-					 		'CATALOG_URL', 
-					 		'CATALOG_URL', 
-					 		'CATALOG', 
-					 		'".date('Y-m-d H:i:s')."', 
-					 		'".$user_id."', 
-					 		null, 
-					 		'http://localhost:8081/proxy/ogc/geonetwork', 
-					 		'".$module_id."')";
+		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby,  value, module_id) VALUES
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_PROXYHOST', 'SHOP_CONFIGURATION_PROXYHOST', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  'index.php?option=com_easysdi_shop&no_html=1&task=proxy', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_ARCHIVE_DELAY', 'SHOP_CONFIGURATION_ARCHIVE_DELAY', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '10', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_HISTORY_DELAY', 'SHOP_CONFIGURATION_HISTORY_DELAY', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '20', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH', 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '10', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION', 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '2', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT', 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '1000000', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_ARTICLE_STEP4', 'SHOP_CONFIGURATION_ARTICLE_STEP4', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_ARTICLE_STEP5', 'SHOP_CONFIGURATION_ARTICLE_STEP5', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '', '".$module_id."'),
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE', 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '', '".$module_id."')
+				";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -111,12 +112,6 @@ function com_install(){
 			return false;
 		}
 	
-		$query ="SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
 		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_basemap` (
 							`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 							`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
@@ -150,7 +145,9 @@ function com_install(){
 							PRIMARY KEY (`id`),
 							UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 							UNIQUE INDEX `code` USING BTREE (`code`)
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -197,14 +194,21 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`),
-						FOREIGN KEY (`filterperimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `id` USING BTREE (`id`, `filterperimeter_id`) ,
 						INDEX `filterperimeter_id` USING BTREE (`filterperimeter_id`) 
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE `#__sdi_perimeter` ADD CONSTRAINT `#__sdi_perimeter_pfk_1` FOREIGN KEY (`filterperimeter_id`) REFERENCES `#__sdi_perimeter` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 
 		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_location`  (
@@ -238,15 +242,23 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`),
-						FOREIGN KEY (`filterlocation_id`) REFERENCES `#__sdi_location` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `id` USING BTREE (`id`, `filterlocation_id`) ,
 						INDEX `filterlocation_id` USING BTREE (`filterlocation_id`) 
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		
+		$query="ALTER TABLE `#__sdi_location` ADD CONSTRAINT `#__sdi_location_pfk_1` FOREIGN KEY (`filterlocation_id`) REFERENCES `#__sdi_location` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
 		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_basemapcontent` (
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
@@ -281,7 +293,9 @@ function com_install(){
 					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`basemap_id`) REFERENCES `#__sdi_basemap` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_bc_basemap` USING BTREE (`basemap_id`) 
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -305,7 +319,9 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`)
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -329,7 +345,9 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`)
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -353,7 +371,9 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`)
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -377,7 +397,9 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`)
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -415,7 +437,9 @@ function com_install(){
 						FOREIGN KEY (`type_id`) REFERENCES `#__sdi_list_ordertype` (`id`) ON DELETE NO ACTION ON UPDATE NO CASCADE,
 						INDEX `fk_order_status` USING BTREE (`status_id`) ,
 						INDEX `fk_order_type` USING BTREE (`type_id`) 
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -447,7 +471,9 @@ function com_install(){
 						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `fk_oper_peri` USING BTREE (`perimeter_id`) ,
 						INDEX `fk_oper_order` USING BTREE (`order_id`) 
-						)";
+						)
+						ENGINE=InnoDB
+						DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -478,7 +504,9 @@ function com_install(){
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_pp_peri` USING BTREE (`perimeter_id`) ,
 					INDEX `fk_pp_prod` USING BTREE (`product_id`) 
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -529,7 +557,9 @@ function com_install(){
 					INDEX `fk_p_treatment` USING BTREE (`treatmenttype_id`) ,
 					INDEX `fk_p_basemap` USING BTREE (`viewbasemap_id`) ,
 					INDEX `fk_p_version` USING BTREE (`objectversion_id`) 
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -558,7 +588,9 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`)
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -585,7 +617,9 @@ function com_install(){
 					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_pv_property` USING BTREE (`property_id`) 
-					)";
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -616,6 +650,8 @@ function com_install(){
 					INDEX `fk_ppv_value` USING BTREE (`propertyvalue_id`) ,
 					INDEX `fk_ppv_prod` USING BTREE (`product_id`) 
 					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -652,6 +688,8 @@ function com_install(){
 					INDEX `fk_op_order` USING BTREE (`order_id`) ,
 					INDEX `fk_op_status` USING BTREE (`status_id`) 
 					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -687,6 +725,8 @@ function com_install(){
 					INDEX `fk_orp_prop` USING BTREE (`property_id`) ,
 					INDEX `fk_orp_val` USING BTREE (`propertyvalue_id`) 
 					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -703,6 +743,8 @@ function com_install(){
 					FOREIGN KEY (`orderproduct_id`) REFERENCES `#__sdi_order_product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 					INDEX `fk_order_file` USING BTREE (`orderproduct_id`) 
 					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -722,8 +764,7 @@ function com_install(){
 					INDEX `fk_product_file` USING BTREE (`product_id`) 
 					)
 					ENGINE=InnoDB
-					DEFAULT CHARACTER SET=utf8 
-					ROW_FORMAT=COMPACT
+					DEFAULT CHARACTER SET=utf8
 		";
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -777,6 +818,13 @@ function com_install(){
 		}
 		
 	 }
+	 
+	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
+	$db->setQuery( $query);
+	if (!$db->query()) 
+	{
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+	}
 
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('EasySDI - Shop','option=com_easysdi_shop','Easysdi Shop','com_easysdi_shop','js/ThemeOffice/component.png','')";
