@@ -20,15 +20,12 @@
 			<filename>admin.easysdi_shop.php</filename>
 			<filename>license.txt</filename>
 			<folder>core</folder>
-			<folder>language</folder>			
-			<folder>xml</folder>
 			<folder>templates</folder>
-			<folder>ext</folder>
 			<folder>js</folder>
+			<folder>lib</folder>
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_shop.ini</language>
-			<language tag="en-GB">en-GB.com_easysdi_shop.ini</language>
 		</languages>
 		
 	</administration>
@@ -44,10 +41,4 @@
 			<folder>ext</folder>
 			<folder>js</folder>
 		</files>
-	
-	
-	<languages folder="language/site">
-		<language tag="fr-FR">fr-FR.com_easysdi_shop.ini</language>
-		<language tag="en-GB">en-GB.com_easysdi_shop.ini</language>
-	</languages>
 </install>

@@ -433,8 +433,8 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`), 
-						FOREIGN KEY (`status_id`) REFERENCES `#__sdi_list_orderstatus` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-						FOREIGN KEY (`type_id`) REFERENCES `#__sdi_list_ordertype` (`id`) ON DELETE NO ACTION ON UPDATE NO CASCADE,
+						FOREIGN KEY (`status_id`) REFERENCES `#__sdi_list_orderstatus` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+						FOREIGN KEY (`type_id`) REFERENCES `#__sdi_list_ordertype` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `fk_order_status` USING BTREE (`status_id`) ,
 						INDEX `fk_order_type` USING BTREE (`type_id`) 
 						)
@@ -467,8 +467,8 @@ function com_install(){
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`), 
-						FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+						FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 						INDEX `fk_oper_peri` USING BTREE (`perimeter_id`) ,
 						INDEX `fk_oper_order` USING BTREE (`order_id`) 
 						)
@@ -500,8 +500,8 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`), 
-					FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_pp_peri` USING BTREE (`perimeter_id`) ,
 					INDEX `fk_pp_prod` USING BTREE (`product_id`) 
 					)
@@ -615,7 +615,7 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
-					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_pv_property` USING BTREE (`property_id`) 
 					)
 					ENGINE=InnoDB
@@ -645,8 +645,8 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
-					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_ppv_value` USING BTREE (`propertyvalue_id`) ,
 					INDEX `fk_ppv_prod` USING BTREE (`product_id`) 
 					)
