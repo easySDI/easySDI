@@ -670,11 +670,12 @@ class HTML_cpanel {
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$print = JRequest::getVar('print');
-		
+
+		JHTML::_( 'behavior.mootools' );
 		?>
-		<script>
+		<script  type="text/javascript" >
 		window.addEvent('domready', function() {
-		$('printOrderRecap').addEvent( 'click' , function() { 
+			$('printOrderRecap').addEvent( 'click' , function() { 
 			window.open('./index.php?tmpl=component&option=<?php echo $option; ?>&task=<?php echo $task; ?>&cid[]=<?php echo $id; ?>&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
 			});
 		});
