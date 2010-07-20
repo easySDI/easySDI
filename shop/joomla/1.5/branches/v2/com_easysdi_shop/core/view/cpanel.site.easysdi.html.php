@@ -1169,8 +1169,8 @@ class HTML_cpanel {
 		<?php
 	}
 	
-	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd, $isInMemory){
-
+	function viewOrderRecapPerimeterExtent($order_id, $perimeter_id,$isfrontEnd, $isInMemory)
+	{
 	?>
 	<script
 	type="text/javascript"
@@ -1179,9 +1179,7 @@ class HTML_cpanel {
 	<script
 	type="text/javascript"
 	src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js">
-	
 	</script>
-	
 	<?php	
 		
 	global  $mainframe;
