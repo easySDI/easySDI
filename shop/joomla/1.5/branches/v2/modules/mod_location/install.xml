@@ -12,5 +12,4 @@
 	<files>
 		<filename module="mod_location">mod_location.php</filename>
 	</files>
-
 </install>
