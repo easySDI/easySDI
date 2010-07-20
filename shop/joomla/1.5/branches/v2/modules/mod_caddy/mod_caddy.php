@@ -83,7 +83,7 @@ if (is_array(($cid)))
 			?>
 			<table>
 			<?php
-			$descriptionLength =  config_easysdi::getValue("CADDY_DESCRIPTION_LENGTH");
+			$descriptionLength =  config_easysdi::getValue("SHOP_CONFIGURATION_CADDY_DESC_LENGTH");
 			foreach($rows as $row )
 			{
 				?>

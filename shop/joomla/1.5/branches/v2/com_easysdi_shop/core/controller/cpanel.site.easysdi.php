@@ -903,8 +903,8 @@ class SITE_cpanel {
 		
 		//Automatic Archive and/or Historize of the orders
 		//Get the delays in days unit
-		$archive_delay = config_easysdi::getValue("ARCHIVE_DELAY", 30);
-		$history_delay = config_easysdi::getValue("HISTORY_DELAY", 60);
+		$archive_delay = config_easysdi::getValue("SHOP_CONFIGURATION_ARCHIVE_DELAY", 30);
+		$history_delay = config_easysdi::getValue("SHOP_CONFIGURATION_HISTORY_DELAY", 60);
 		
 		if($history_delay <= $archive_delay){
 			echo "<div class='alert'>";

@@ -71,7 +71,7 @@ if ($curstep == "2")
 						<?php
 					}
 					
-					$proxyhost = config_easysdi::getValue("PROXYHOST");
+					$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 					$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 					$urlwfs =  $proxyhost.urlencode  (trim($row->urlwfs));
 					?>
@@ -202,7 +202,7 @@ if ($curstep == "2")
 	 		 		var maxfeatures="";
 	 		 		<?php
 	 		 	}
-				$proxyhost = config_easysdi::getValue("PROXYHOST");
+				$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 				$proxyhost = $proxyhost."&type=wfs&locationid=$row->id&url=";
 				$urlwfs =  $proxyhost.urlencode  (trim($row->urlwfs));
 	 		 	 ?>

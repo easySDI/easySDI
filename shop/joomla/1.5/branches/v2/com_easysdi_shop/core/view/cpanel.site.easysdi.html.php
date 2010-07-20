@@ -1301,7 +1301,7 @@ foreach ($rows as $row){
 			<?php 
 			if ($row->user != null && strlen($row->user)>0){
 				//if a user and password is requested then use the joomla proxy.
-				$proxyhost = config_easysdi::getValue("PROXYHOST");
+				$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 				$proxyhost = $proxyhost."&type=wms&basemapscontentid=$row->id&url=";
 				echo "\"$proxyhost".urlencode  (trim($row->url))."\",";												
 			}else{	
@@ -1389,7 +1389,7 @@ $i++;
 		{
 			//Call wfs
 			
-			$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+			$proxyhostOrig = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 			
 			$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$perimeterDef->id&url=";
 				

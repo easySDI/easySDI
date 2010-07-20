@@ -1204,7 +1204,7 @@ function validateForm(toStep, fromStep){
 		$view = JRequest::getVar('view');
 		$step = JRequest::getVar('step');
 	
-		$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
+		$row->text = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
 		$args = array( 1,&$row,&$params);
 		JPluginHelper::importPlugin( 'content' );
 		$dispatcher =& JDispatcher::getInstance();

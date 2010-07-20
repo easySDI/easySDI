@@ -61,7 +61,7 @@ $db =& JFactory::getDBO();
 					<?php
 					}
 						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
 						$wfs_url =  $proxyhost.urlencode  (trim($row->urlwfs));
 					?>					
@@ -172,7 +172,7 @@ $db =& JFactory::getDBO();
 	 		 		<?php
 	 		 	} 
 						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 						$proxyhost = $proxyhost."&type=wfs&perimeterdefid=$row->id&url=";
 						$wfs_url =  $proxyhost.urlencode  (trim($row->urlwfs));
 	 		 	?>

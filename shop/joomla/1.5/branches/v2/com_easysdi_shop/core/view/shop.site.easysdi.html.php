@@ -274,11 +274,11 @@ class HTML_shop
 		var isFreeSelectionPerimeter = false;
 		var wfsSelection;
 		var fromZoomEnd = false;
-		var meterToKilometerLimit = <?php echo config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT",1000000);?>;
+		var meterToKilometerLimit = <?php echo config_easysdi::getValue("SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT",1000000);?>;
 		var SHOP_PERIMETER_SURFACE_M2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_M2");?>';
 		var SHOP_PERIMETER_SURFACE_KM2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_KM2");?>';
 		var SHOP_PERIMETER_SURFACE_SELECTED = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_SELECTED");?>';
-		var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION",2);?>;
+		var SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION = <?php echo config_easysdi::getValue("SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION",2);?>;
 		
 		function onFeatureSelect(feature) 
 		{
@@ -317,7 +317,7 @@ class HTML_shop
 			document.getElementById('totalSurface').value = 0;
 			
 			document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";		
-			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION); 		
+			document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION); 		
 			removeSelection();
 		}
 		
@@ -669,7 +669,7 @@ class HTML_shop
 					<?php 
 					if ($basemap_content->user != null && strlen($basemap_content->user)>0){
 						//if a user and password is requested then use the joomla proxy.
-						$proxyhost = config_easysdi::getValue("PROXYHOST");
+						$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 						$proxyhost = $proxyhost."&type=wms&basemapscontentid=$basemap_content->id&url=";
 						echo "\"$proxyhost".urlencode  (trim($basemap_content->url))."\",";												
 					}else{	
@@ -733,7 +733,7 @@ class HTML_shop
 							<?php 
 							if ($product->viewuser != null && strlen($product->viewuser)>0){
 								//if a user and password is requested then use the joomla proxy.
-								$proxyhost = config_easysdi::getValue("PROXYHOST");
+								$proxyhost = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 								$proxyhost = $proxyhost."&type=wms&previewId=$previewProductId&url=";
 								echo "\"$proxyhost".urlencode (trim($product->viewurlwms))."\",";												
 							}else{	
@@ -978,7 +978,7 @@ class HTML_shop
 		    	
 				document.getElementById('totalSurface').value =  parseFloat(featureArea );
 				document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(featureArea) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
-			        document.getElementById('totalSurfaceDisplayed').value = parseFloat(featureArea) <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(featureArea/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+			        document.getElementById('totalSurfaceDisplayed').value = parseFloat(featureArea) <= meterToKilometerLimit ? parseFloat( parseFloat(featureArea)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(featureArea/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION);
 		     
 		     	if (feature.geometry instanceof OpenLayers.Geometry.Polygon)
 		     	{
@@ -997,7 +997,7 @@ class HTML_shop
 				{
 		         	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featureArea );       
 				document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
-				document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+				document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION);
 				   	    		
 				   	document.getElementById("selectedSurface").options[document.getElementById("selectedSurface").options.length] = 
 					new Option(feature.geometry,feature.geometry);
@@ -1070,7 +1070,7 @@ class HTML_shop
 										document.getElementById("selectedSurface").remove(k);								
 										document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(featArea);
 										document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
-										document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+										document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION);
 																										
 										found=k;																			
 									}            				
@@ -1121,7 +1121,7 @@ class HTML_shop
 				   		    		//Add the new value
 			           				document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
 								document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
-								document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+								document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION);
 			   		    
 				   		    	}
 				   		    }
@@ -1133,7 +1133,7 @@ class HTML_shop
 						    //Add the new value
 						    document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) + parseFloat(featArea);                       	                       	                         
 						    document.getElementById('SHOP_PERIMETER_SURFACE_SELECTED').innerHTML = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_M2+"):" : SHOP_PERIMETER_SURFACE_SELECTED+" ("+SHOP_PERIMETER_SURFACE_KM2+"):";
-						    document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(MOD_PERIM_AREA_PRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(MOD_PERIM_AREA_PRECISION);
+						    document.getElementById('totalSurfaceDisplayed').value = parseFloat(document.getElementById('totalSurface').value) <= meterToKilometerLimit ? parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value))).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION) : parseFloat( parseFloat(parseFloat(document.getElementById('totalSurface').value)/1000000)).toFixed(SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION);
 			   		    }
 			   		    
 				});
@@ -1753,7 +1753,7 @@ class HTML_shop
 
 			<!--
       		//Call here the include content item plugin, or a specific article.
-			//Insert into the EasySDI config a key SHOP_ARTICLE_STEP4 with
+			//Insert into the EasySDI config a key SHOP_CONFIGURATION_ARTICLE_STEP4 with
 			//the value like {include_content_item 148} refering to the plugin and
 			//article you would like to call.
 			//-->       
@@ -1761,7 +1761,7 @@ class HTML_shop
 			<table width="100%" id="infoStep4">
 			<?php
 
-			$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP4");
+			$row->text = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_STEP4");
 			$args = array( 1,&$row,&$params);
 			JPluginHelper::importPlugin( 'content' );
 			$dispatcher =& JDispatcher::getInstance();
@@ -1864,14 +1864,14 @@ class HTML_shop
 				{
 				//	
 				//Call here the include content item plugin, or a specific article.
-				//Insert into the EasySDI config a key SHOP_ARTICLE_STEP5 with
+				//Insert into the EasySDI config a key SHOP_CONFIGURATION_ARTICLE_STEP5 with
 				//the value like {include_content_item 148} refering to the plugin and
 				//article you would like to call.
 				//
 				?>
 				<table width="100%" id="generalConditions">
 				<?php
-				$row->text = config_easysdi::getValue("SHOP_ARTICLE_STEP5");
+				$row->text = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_STEP5");
 				$args = array( 1,&$row,&$params);
 				JPluginHelper::importPlugin( 'content' );
 				$dispatcher =& JDispatcher::getInstance();

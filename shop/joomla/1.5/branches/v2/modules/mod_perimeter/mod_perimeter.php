@@ -22,8 +22,8 @@ global  $mainframe;
 global  $areaPrecision;
 global  $meterToKilometerLimit;
 $curstep = JRequest::getVar('step',0);
-$areaPrecision = config_easysdi::getValue("MOD_PERIM_AREA_PRECISION",2);
-$meterToKilometerLimit = config_easysdi::getValue("MOD_PERIM_METERTOKILOMETERLIMIT",1000000);
+$areaPrecision = config_easysdi::getValue("SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION",2);
+$meterToKilometerLimit = config_easysdi::getValue("SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT",1000000);
 
 
 if ($curstep == "2")
@@ -118,7 +118,7 @@ if ($curstep == "2")
 				if (1==1 || ($row->user !=null && strlen($row->user)>0))
 				{
 					//if a user and password is requested then use the joomla proxy.
-					$proxyhostOrig = config_easysdi::getValue("PROXYHOST");
+					$proxyhostOrig = config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 					$proxyhost = $proxyhostOrig."&type=wfs&perimeterdefid=$row->id&url=";
 
 					if ($row->urlwfs!=null && strlen($row->urlwfs)>0)
