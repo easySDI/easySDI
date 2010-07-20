@@ -634,32 +634,117 @@ if ($shopItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'ARCHIVE_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'ARCHIVE_DELAY' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_PROXYHOST' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_PROXYHOST' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="archive_delay" value="<?php echo $shopList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="proxyhost" value="<?php echo $shopList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'HISTORY_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'HISTORY_DELAY' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARCHIVE_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_ARCHIVE_DELAY' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="history_delay" value="<?php echo $shopList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="archive_delay" value="<?php echo $shopList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'PROXYHOST' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'PROXYHOST' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_HISTORY_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_HISTORY_DELAY' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="proxyhost" value="<?php echo $shopList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="history_delay" value="<?php echo $shopList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="caddy_description_length" value="<?php echo $shopList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="mod_perim_area_precision" value="<?php echo $shopList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="mod_perim_metertokilometerlimit" value="<?php echo $shopList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP4' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP4' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="shop_article_step4" value="<?php echo $shopList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+										<td>
+											<div style="font-weight: bold" >
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+											</div>
+										</td>
+										<td>
+											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP5' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_STEP5' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="shop_article_step5" value="<?php echo $shopList[7]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+										<td>
+											<div style="font-weight: bold" >
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+											</div>
+										</td>
+										<td>
+											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+												<?php echo JText::_( 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="shop_article_terms_of_use" value="<?php echo $shopList[8]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+										<td>
+											<div style="font-weight: bold" >
+												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_REQUIREMENTS' ); ?>
+											</div>
+										</td>
+										<td>
+											<div  ><?php echo JText::_( 'SHOP_CONFIGURATION_PLUGIN_CONTENT_FORMAT' ); ?></div>
 										</td>
 									</tr>
 									</tbody>

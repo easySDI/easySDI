@@ -155,7 +155,7 @@ class ADMIN_config {
 		
 		if ($shopItem>0)
 		{
-			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='SHOP'";
+			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='SHOP' order by c.ordering";
 			$db->setQuery( $query );
 			$shopList = $db->loadObjectList();
 		}
@@ -279,15 +279,39 @@ class ADMIN_config {
 		// Sauvegarde des clés SHOP
 		if ($_POST['shop_item'] > 0)
 		{
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['archive_delay']."' WHERE code = 'ARCHIVE_DELAY'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['proxyhost']."' WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['history_delay']."' WHERE code = 'HISTORY_DELAY'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['archive_delay']."' WHERE code = 'SHOP_CONFIGURATION_ARCHIVE_DELAY'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['proxyhost']."' WHERE code = 'PROXYHOST'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['history_delay']."' WHERE code = 'SHOP_CONFIGURATION_HISTORY_DELAY'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['caddy_description_length']."' WHERE code = 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['mod_perim_area_precision']."' WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['mod_perim_metertokilometerlimit']."' WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_step4']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP4'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_step5']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP5'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_terms_of_use']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
