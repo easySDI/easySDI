@@ -25,7 +25,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Site\sdiv2_test\administrator\components\com_easysdi_shop">
+			todir="C:\www\Site\sdiv2\administrator\components\com_easysdi_shop">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -40,7 +40,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\sdiv2_test\components\com_easysdi_shop">
+			todir="C:\www\Site\sdiv2\components\com_easysdi_shop">
 			<fileset dir="./com_easysdi_shop">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -54,14 +54,14 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\sdiv2_test\components\com_easysdi_shop\views">
+			todir="C:\www\Site\sdiv2t\components\com_easysdi_shop\views">
 			<fileset dir="./com_easysdi_shop/views">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Site\sdiv2_test\administrator\language\fr-FR">
+		   todir="C:\www\Site\sdiv2\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>

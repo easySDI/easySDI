@@ -70,10 +70,7 @@ class HTML_properties {
 								<td><?php echo date('d.m.Y H:i:s',strtotime($property->updated)); ?></td>
 							</tr>
 							
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_CODE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property->code; ?>" /></td>
-							</tr>
+							
 							
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_PROPERTIES_TYPE_CODE"); ?> : </td>
@@ -294,10 +291,7 @@ class HTML_properties {
 								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $property_value->description; ?>" /></td>
 							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_CODE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="code" value="<?php echo $property_value->code; ?>" /></td>
-							</tr>
+							
 							<tr>
 							<td colspan="2">
 							
