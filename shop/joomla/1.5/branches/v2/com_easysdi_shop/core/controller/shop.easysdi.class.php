@@ -1157,7 +1157,7 @@ function validateForm(toStep, fromStep){
 							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
-							WHERE p.published=1 AND o.published = 1";
+							WHERE p.published=1 ";
 		$query  = $query .$filter;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
@@ -1166,15 +1166,14 @@ function validateForm(toStep, fromStep){
 							v.metadata_id as metadata_id, 
 							o.account_id as supplier_id, 
 							a.name as supplier_name , 
-							a.logo as supplier_logo, 
-							m.visibility_id as md_visibility_id ,
+							a.logo as supplier_logo,
 							m.guid as metadata_guid
 							FROM #__sdi_product p 
 							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id
 							INNER JOIN #__sdi_account a ON a.id = o.account_id
 							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
-							WHERE p.published=1 AND o.published = 1";
+							WHERE p.published=1 ";
 		$query  = $query .$filter;
 		if ($simpleSearchCriteria == "lastAddedMD"){
 			$query  = $query." order by p.created";
