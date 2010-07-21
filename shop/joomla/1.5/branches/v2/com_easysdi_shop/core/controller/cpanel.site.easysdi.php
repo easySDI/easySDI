@@ -297,8 +297,6 @@ class SITE_cpanel {
 
 			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','SAVED' );
 			
-			$date = new JDate();
-			
 			$query_order_status = "select status_id from #__sdi_order where user_id = ".$user->id." AND id =".$order_id;
 			$database->setQuery($query_order_status);
 			$order_status = $database->loadResult();
@@ -400,8 +398,7 @@ class SITE_cpanel {
 			$currentOrder->guid = 0;
 			$currentOrder->name = addslashes($order_name);
 			$currentOrder->status_id = $saved;
-			$date = new JDate();
-			$currentOrder->created = $date->toMySQL();
+			$currentOrder->created = date('Y-m-d H:i:s');
 			$currentOrder->response=NULL;
 			$currentOrder->responsesent=0;
 			$currentOrder->sent=NULL;
@@ -1256,7 +1253,7 @@ class SITE_cpanel {
 		$account = new accountByUserId($db);
 		$account->load($user->id);
 
-		$date = new JDate();
+		//$date = new JDate();
 
 
 		$await_type = sdilist::getIdByCode('#__sdi_list_productstatus','AWAIT' );
@@ -1266,7 +1263,7 @@ class SITE_cpanel {
 		$order = new order ($db);
 		$order->load($order_id);
 		$order->setStatus($status_id);
-		$order->sent=$date->toMySQL();
+		$order->sent=date('Y-m-d H:i:s');
 		$order->store();
 		
 			
@@ -1310,7 +1307,7 @@ class SITE_cpanel {
 
 		$response_send = 0;
 		foreach ($rows as $row){
-			$response_send = 1;
+			//$response_send = 1;
 			$query = "UPDATE   #__sdi_order_product opl set status_id = ".$available_type." WHERE opl.order_id= $order_id AND opl.product_id = $row->product_id";
 			$db->setQuery( $query );
 			if (!$db->query()) {
@@ -1347,7 +1344,6 @@ class SITE_cpanel {
 		 */
 		global $mainframe;
 		$db =& JFactory::getDBO();
-		$date = new JDate();
 		
 		$order = new order ($db);
 		$order->load($order_id);
@@ -1368,7 +1364,7 @@ class SITE_cpanel {
 		$db->setQuery($query);
 		$totalProduct = $db->loadResult();
 	
-		$date = new JDate();
+		
 		if ( $total == 0)
 		{
 			$status_id = sdilist::getIdByCode('#__sdi_list_orderstatus','FINISH' );
@@ -1385,7 +1381,7 @@ class SITE_cpanel {
 		$order->status_id = $status_id;
 		if($response_send)
 		{
-			$order->response = $date->toMySQL();
+			$order->response = date('Y-m-d H:i:s');
 			$order->responsesent = $response_send;
 		}
 

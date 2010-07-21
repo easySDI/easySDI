@@ -274,7 +274,7 @@ class HTMLadmin_cpanel {
 			?>
 			</td>
 			<?php 
-			if($rowOrder->RESPONSE_DATE != "0000-00-00 00:00:00" && $rowOrder->responsesent == 1)
+			if($rowOrder->response != "0000-00-00 00:00:00" && $rowOrder->responsesent == 1)
 			{
 				?>
 				<td>
