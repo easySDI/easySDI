@@ -30,23 +30,23 @@ defined('_JEXEC') or die('Restricted access');
 		// do field validation
 		if (form.name.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_ATTRIBUTE_SUBMIT_NONAME', true ); ?>" );
 		}
 		else if (getSelectedValue('adminForm','namespace_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_ATTRIBUTE_SUBMIT_NONAMESPACE', true ); ?>" );
 		}
 		else if (form.isocode.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_ATTRIBUTE_SUBMIT_NOISOCODE', true ); ?>" );
 		} 
 		else if (getSelectedValue('adminForm','attributetype_id') == 6 && getSelectedValue('adminForm','listnamespace_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'You must provide a namespace for the list.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_ATTRIBUTE_SUBMIT_NOLISTNAMESPACE', true ); ?>" );
 		} 
 		else if (getSelectedValue('adminForm','attributetype_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'Please select an attribute type.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_ATTRIBUTE_SUBMIT_NOATTRIBUTETYPE', true ); ?>" );
 		}
 		else 
 		{

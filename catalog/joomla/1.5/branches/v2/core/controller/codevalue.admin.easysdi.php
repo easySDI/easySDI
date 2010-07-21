@@ -32,14 +32,14 @@ defined('_JEXEC') or die('Restricted access');
 		// do field validation
 		if (form.name.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_CODEVALUE_SUBMIT_NONAME', true ); ?>" );
 			$ok = false;
 		}
 		if (form.task.value != "editCodeValue_Choice")
 		{
 			if (form.val.value == "") 
 			{
-				alert( "<?php echo JText::_( 'You must provide a value.', true ); ?>" );
+				alert( "<?php echo JText::_( 'CATALOG_CODEVALUE_SUBMIT_NOVALUE', true ); ?>" );
 				$ok = false;
 			}
 		}
@@ -56,7 +56,7 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					if (el.value == "") 
 					{
-						alert( "<?php echo JText::_( 'You must fill the content in every language.', true ); ?>" );
+						alert( "<?php echo JText::_( 'CATALOG_CODEVALUE_SUBMIT_NOCONTENT', true ); ?>" );
 						$ok = false;
 						break;
 					}
@@ -67,7 +67,7 @@ defined('_JEXEC') or die('Restricted access');
 			{
 				if (form.val.value == "") 
 				{
-					alert( "<?php echo JText::_( 'You must provide a value.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_CODEVALUE_SUBMIT_NOVALUE', true ); ?>" );
 					$ok = false;
 				}
 			}

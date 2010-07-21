@@ -29,15 +29,15 @@ defined('_JEXEC') or die('Restricted access');
 		// do field validation
 		if (form.name.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_CLASS_SUBMIT_NONAME', true ); ?>" );
 		}
 		else if (getSelectedValue('adminForm','namespace_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_CLASS_SUBMIT_NONAMESPACE', true ); ?>" );
 		} 
 		else if (form.isocode.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_CLASS_SUBMIT_NOISOCODE', true ); ?>" );
 		}
 		else 
 		{

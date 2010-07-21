@@ -180,7 +180,7 @@ class HTML_objecttype {
 				</tr>	
 				<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php

@@ -32,9 +32,12 @@
 				<include name="**/*.jar" />
 				<include name="**/*.xml" />
 				<include name="**/*.png" />
+				<include name="**/*.gif" />
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
+				<include name="**/*.js" />
 				<include name="**/*.css" />
+				<include name="**/*.swf" />
 			</fileset>
 		</copy>
 		<copy

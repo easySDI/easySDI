@@ -128,6 +128,11 @@ function listProfile(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['description']; else echo $row->description;?></textarea></td>							
 				</tr>
 				<tr>
+					<td><?php echo JText::_("CATALOG_ROOT"); ?></td>
+					<?php if ($pageReloaded) $classid = $_POST['class_id']; else $classid = $row->class_id; ?>
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'class_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editProfile\');"', 'value', 'text', $classid ); ?></td>							
+				</tr>
+				<tr>
 					<td><?php echo JText::_("CATALOG_METADATAID"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$metadataids, 'metadataid', 'size="1" class="inputbox"', 'value', 'text', $row->metadataid ); ?></td>							
 				</tr>
@@ -146,13 +151,8 @@ function listProfile(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 				</tr>
 				 -->	
 				<tr>
-					<td><?php echo JText::_("CATALOG_ROOT"); ?></td>
-					<?php if ($pageReloaded) $classid = $_POST['class_id']; else $classid = $row->class_id; ?>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'class_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editProfile\');"', 'value', 'text', $classid ); ?></td>							
-				</tr>
-				<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php

@@ -24,7 +24,7 @@ class TOOLBAR_codevalue {
 		
 		JToolBarHelper::addNew('newCodeValue');
 		JToolBarHelper::editList('editCodeValue');
-		JToolBarHelper::deleteList('','removeCodeValue');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_CODEVALUE_DELETE_CONFIRM_MSG'), 'removeCodeValue', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		//JToolBarHelper::back();

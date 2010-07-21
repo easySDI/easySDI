@@ -166,9 +166,14 @@
 		 return ta;
 	}
 	
-	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, mandatoryMsg)
+	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, mandatoryMsg, master, clone)
 	{
 		//console.log(data);
+		optional = !mandatory;
+		if (master) 
+			master.clones_count=master.clones_count+1;
+		if (clone) optional=true;
+		var clones_count = (master) ? master.clones_count : 1;
 		
 		var store = new Ext.data.ArrayStore({
 						    //fields: ['id', 'key', 'translation'],
@@ -188,7 +193,6 @@
 
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
-		optional = !mandatory;
 		
 		displayField='id';
 		//console.log(store.getAt(1).get('id') == '');
@@ -226,7 +230,10 @@
 	        //pageSize:10,
 	        tpl: resultTpl,
 	        itemSelector: 'div.search-item',
-	        qTip: tip
+	        qTip: tip,
+            clone: clone,
+			clones_count: clones_count,
+            template: master
          });
 		
 		 return c;

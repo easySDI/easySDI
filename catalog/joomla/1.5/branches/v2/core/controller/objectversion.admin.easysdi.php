@@ -17,55 +17,13 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-?>
-<script type="text/javascript">
-	function submitbutton(pressbutton) 
-	{
-		var form = document.adminForm;
-		if (pressbutton != 'saveObjectVersion' && pressbutton != 'applyObjectVersion') {
-			submitform( pressbutton );
-			return;
-		}
-
-		var versionNames = form.versionNames.value;
-		listVersionNames = versionNames.split(', ');
-		
-		var unique = true;
-		for (i=0;i<listVersionNames.length;i++)
-		{
-			if (listVersionNames[0] == form.name.value)
-			{
-				unique = false;
-				break;
-			}
-		}
-		
-		// do field validation
-		if (form.name.value == "") 
-		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-		}
-		else if (!unique) 
-		{
-			alert( "<?php echo JText::_( 'You must provide a version name that does not exist.', true ); ?>" );
-		}
-		else 
-		{
-			submitform( pressbutton );
-		}
-	}
-</script>
-
-<?php 
 class ADMIN_objectversion {
 	
 	function listObjectVersion($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
-
 		$object_id = JRequest::getVar ('object_id');
-		 
-		$context	= $option.'.listObjectVersion';
+		$context	= 'listObjectVersion';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 
@@ -73,22 +31,22 @@ class ADMIN_objectversion {
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 
 		// table ordering
-		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
-		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		$filter_order		= $mainframe->getUserStateFromRequest( $option.$context.".filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.$context.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
 		if ($filter_order <> "id" 
-			and $filter_order <> "name" 
 			and $filter_order <> "ordering" 
+			and $filter_order <> "created" 
 			and $filter_order <> "description" 
-			and $filter_order <> "updated"
-			and $filter_order <> "state")
+			and $filter_order <> "state"
+			and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
 		}
 		
-		$orderby 	= ' order by ov.'. $filter_order .' '. $filter_order_Dir;
+		$orderby 	= ' ORDER BY ov.'. $filter_order .' '. $filter_order_Dir;
 		
 		$query = "SELECT COUNT(*) FROM #__sdi_objectversion ov INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id WHERE ov.object_id=".$object_id;					
 		$db->setQuery( $query );
@@ -108,6 +66,7 @@ class ADMIN_objectversion {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			//exit();
 		}
+		
 		
 		HTML_objectversion::listObjectVersion($rows, $object_id, $pagination, $filter_order_Dir, $filter_order, $option);
 
@@ -155,6 +114,22 @@ class ADMIN_objectversion {
 
 	function editObjectVersion($id, $option)
 	{
+		?>
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveObjectVersion' && pressbutton != 'applyObjectVersion') {
+					submitform( pressbutton );
+					return;
+				}
+		
+				// do field validation
+				submitform( pressbutton );
+			}
+		</script>
+		
+		<?php 
 		global $mainframe;
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
@@ -188,236 +163,413 @@ class ADMIN_objectversion {
 		{
 			// Generate automatic guid for metadata id
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-			$row->guid= helper_easysdi::getUniqueId();
+			$row->guid = helper_easysdi::getUniqueId();
+			
+			$metadata_guid = helper_easysdi::getUniqueId();
+		}
+		else
+		{
+			$rowMetadata = new metadata($database);
+			$rowMetadata->load($row->metadata_id);
+			$metadata_guid = $rowMetadata->guid;
 		}
 		
 		
-		// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
-		$listVersionNames = array();
-		$database->setQuery( "SELECT name FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY created DESC" );
-		$listVersionNames = array_merge( $listVersionNames, $database->loadResultArray() );
-		
-		HTML_objectversion::editObjectVersion($row, $object_id, $fieldsLength, $listVersionNames, $option);
+		HTML_objectversion::editObjectVersion($row, $object_id, $fieldsLength, $metadata_guid, $option);
 	}
 	
 	function saveObjectVersion($option)
-	{
+	{	
 		global $mainframe;
 			
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
 		
+		$objectversion_id = $_POST['objectversion_id'];
 		$object_id = $_POST['object_id'];
 		$metadata_guid = $_POST['metadata_guid'];
 		
-		// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
-		$listVersions = array();
-		$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY created DESC" );
-		$listVersions = array_merge( $listVersions, $database->loadObjectList() );
-		
-		// Récupérer la métadonnée de la dernière version de l'objet
-		$rowLastMetadata = new metadata( $database );
-		if (count($listVersions) > 0)
-			$rowLastMetadata->load($listVersions[0]->metadata_id);
-		
-		// Récupérer l'objet
-		$rowObject = new object($database);
-		$rowObject->load($_POST['object_id']);
-		
-		// Créer une nouvelle métadonnée
-		$rowMetadata = new metadata( $database );
-		$rowMetadata->guid = $_POST['metadata_guid'];
-		$rowMetadata->name = $_POST['metadata_guid'];
-		$rowMetadata->created = $_POST['created'];
-		$rowMetadata->createdby = $_POST['createdby'];
-		$rowMetadata->metadatastate_id = 4;
-		if (count($listVersions) > 0)
-			$rowMetadata->visibility_id = $rowLastMetadata->visibility_id;
-		
-		
-		// S'il y a une version précédente, la copier, sinon créer un nouveau contenu
-		if (count($listVersions) > 0)
+		if ($objectversion_id == 0) // Nouvelle version
 		{
-			ADMIN_objectversion::createVersion($rowObject, $rowLastMetadata->guid, $_POST['metadata_guid'], $option);
-		}
-		else
-		{
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			// Récupérer l'attribut qui correspond au stockage de l'id
-			$idrow = "";
-			//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, at.isocode as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
-			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
-			$idrow = $database->loadObjectList();
+			// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
+			$listVersions = array();
+			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY created DESC" );
+			$listVersions = array_merge( $listVersions, $database->loadObjectList() );
 			
-			// Récupérer la classe racine
-			$root = array();
-			$database->setQuery("SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id);
-			$root = array_merge( $root, $database->loadObjectList() );
-			
-			// Création de la métadonnée pour le nouveau guid
-			// Insérer dans Geonetwork la nouvelle version de la métadonnée
-			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<csw:Transaction service=\"CSW\"
-			version=\"2.0.2\"
-			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-				<csw:Insert>
-					<".$root[0]->isocode."
-						xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-						xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
-						xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-						xmlns:gml=\"http://www.opengis.net/gml\" 
-						xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
-						xmlns:srv=\"http://www.isotc211.org/2005/srv\"
-						xmlns:ext=\"http://www.depth.ch/2008/ext\">
-						
-						<".$idrow[0]->attribute_isocode.">
-							<".$idrow[0]->type_isocode.">".$_POST['metadata_guid']."</".$idrow[0]->type_isocode.">
-						</".$idrow[0]->attribute_isocode.">
-					</".$root[0]->isocode.">
-				</csw:Insert>
-			</csw:Transaction>";
-			
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			
-			$insertResults = DOMDocument::loadXML($result);
-			
-			$xpathInsert = new DOMXPath($insertResults);
-			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-			
-			if ($inserted <> 1)
+			// Récupérer la métadonnée de la dernière version de l'objet
+			$rowLastMetadata = new metadata( $database );
+			$rowLastObjectVersion = new objectversion( $database );
+			if (count($listVersions) > 0)
 			{
-				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+				$rowLastMetadata->load($listVersions[0]->metadata_id);
+				$rowLastObjectVersion->load($listVersions[0]->id);
+			}
+			// Récupérer l'objet
+			$rowObject = new object($database);
+			$rowObject->load($_POST['object_id']);
+			
+			// Créer une nouvelle métadonnée
+			$rowMetadata = new metadata( $database );
+			$rowMetadata->guid = $_POST['metadata_guid'];
+			$rowMetadata->name = $_POST['metadata_guid'];
+			$rowMetadata->created = $_POST['created'];
+			$rowMetadata->createdby = $_POST['createdby'];
+			$rowMetadata->metadatastate_id = 4;
+			/*if (count($listVersions) > 0)
+				$rowMetadata->visibility_id = $rowLastMetadata->visibility_id;*/
+			
+			
+			// S'il y a une version précédente, la copier, sinon créer un nouveau contenu
+			if (count($listVersions) > 0)
+			{
+				ADMIN_objectversion::createVersion($rowObject, $object_id, $rowLastMetadata->guid, $_POST['metadata_guid'], $option);
+			}
+			else
+			{
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+				$catalogUrlBase = config_easysdi::getValue("catalog_url");
+				// Récupérer l'attribut qui correspond au stockage de l'id
+				$idrow = "";
+				//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, at.isocode as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+				$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
+				$idrow = $database->loadObjectList();
+				
+				// Récupérer la classe racine
+				$root = array();
+				$database->setQuery("SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id);
+				$root = array_merge( $root, $database->loadObjectList() );
+				
+				// Création de la métadonnée pour le nouveau guid
+				// Insérer dans Geonetwork la nouvelle version de la métadonnée
+				$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+				<csw:Transaction service=\"CSW\"
+				version=\"2.0.2\"
+				xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+					<csw:Insert>
+						<".$root[0]->isocode."
+							xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
+							xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
+							xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+							xmlns:gml=\"http://www.opengis.net/gml\" 
+							xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
+							xmlns:srv=\"http://www.isotc211.org/2005/srv\"
+							xmlns:ext=\"http://www.depth.ch/2008/ext\">
+							
+							<".$idrow[0]->attribute_isocode.">
+								<".$idrow[0]->type_isocode.">".$_POST['metadata_guid']."</".$idrow[0]->type_isocode.">
+							</".$idrow[0]->attribute_isocode.">
+						</".$root[0]->isocode.">
+					</csw:Insert>
+				</csw:Transaction>";
+				
+				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				
+				$insertResults = DOMDocument::loadXML($result);
+				
+				$xpathInsert = new DOMXPath($insertResults);
+				$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+				$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+				
+				if ($inserted <> 1)
+				{
+					$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+					exit();
+				}
+			}
+			
+			if (!$rowMetadata->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
 				exit();
 			}
-		}
-		
-		if (!$rowMetadata->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
-			exit();
-		}
-				
-		// Construire la nouvelle version
-		$rowObjectVersion= new objectversion( $database );
-		
-		if (!$rowObjectVersion->bind( $_POST )) {
-		
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
-			exit();
-		}		
-		$rowObjectVersion->object_id=$object_id;
-		$rowObjectVersion->metadata_id=$rowMetadata->id;
-		if (count($listVersions) > 0)
-			$rowObjectVersion->parent_id=$listVersions[0]->id;
-		
-		// Générer un guid
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-		if ($rowObjectVersion->guid == null)
-			$rowObjectVersion->guid = helper_easysdi::getUniqueId();
-		
-		if (!$rowObjectVersion->store(false)) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
-			exit();
-		}
-		
-		/* GESTION VIRALE DES VERSIONS
-		 * 
-		 * Si l'objet en question à des liens enfants, les étudier afin de voir s'il faut créer de nouvelles versions des enfants également
-		*/
-		/*
-		// Récupérer tous les liens enfants
-		$child_objectlinks=array();
-		$query = 'SELECT l.child_id as child_id, child.objecttype_id as child_objecttype' .
-				' FROM #__sdi_objectlink l
-				  INNER JOIN #__sdi_object child ON child.id=l.child_id' .
-				' WHERE parent_id=' . $rowObject->id.
-				' ORDER BY child.name';
-		$database->setQuery($query);
-		
-		$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
-		
-		if (count($child_objectlinks) >0)
-		{
-			foreach($child_objectlinks as $ol)
+					
+			// Construire la nouvelle version
+			$rowObjectVersion= new objectversion( $database );
+			
+			if (!$rowObjectVersion->bind( $_POST )) {
+			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+				exit();
+			}		
+			$rowObjectVersion->object_id=$object_id;
+			$rowObjectVersion->metadata_id=$rowMetadata->id;
+			$rowObjectVersion->title=$_POST['title'];
+			if (count($listVersions) > 0)
+				$rowObjectVersion->parent_id=$listVersions[0]->id;
+			
+			// Générer un guid
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+			if ($rowObjectVersion->guid == null)
+				$rowObjectVersion->guid = helper_easysdi::getUniqueId();
+			
+			if (!$rowObjectVersion->store(false)) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+				exit();
+			}
+			
+			/* GESTION VIRALE DES VERSIONS
+			 * 
+			 * Si l'objet en question à des liens enfants, les étudier afin de voir s'il faut créer de nouvelles versions des enfants également
+			*/
+			// Récupérer tous les liens enfants de la dernière version
+			$child_objectlinks=array();
+			$query = 'SELECT l.child_id as child_id, 
+							 o_parent.id as parentobject_id, 
+							 o_child.id as childobject_id, 
+							 o_child.objecttype_id as child_objecttype, 
+							 o_parent.objecttype_id as parent_objecttype' .
+					' FROM #__sdi_objectversionlink l
+					  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+					  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
+					  INNER JOIN #__sdi_object o_parent ON o_parent.id=parent.object_id
+					  INNER JOIN #__sdi_object o_child ON o_child.id=child.object_id' .
+					' WHERE l.parent_id=' . $rowLastObjectVersion->id;
+			$database->setQuery($query);
+			
+			$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
+			 
+			if (count($child_objectlinks) >0)
 			{
-				// Regarder le type d'objet de l'enfant
-				$rowChild = new object($database);
-				$rowChild->load($ol->child_id);
-				
-				// Regarder s'il existe un lien entre ces types d'objet
-				$rowObjectTypeLink =array();
-				$query = 'SELECT *' .
-						' FROM #__sdi_objecttypelink' .
-						' WHERE parent_id=' . $rowObject->objecttype_id.
-						' 	AND child_id=' . $rowChild->objecttype_id;
-				
-				$database->setQuery($query);
-				
-				$rowObjectTypeLink = array_merge($rowObjectTypeLink, $database->loadObjectList());
-							
-				// Si le lien existe, regarder s'il demande une gestion virale des versions
-				if (count($rowObjectTypeLink) >0)
+				foreach($child_objectlinks as $ol)
 				{
-					foreach($rowObjectTypeLink as $otl)
+					// Récupérer l'objet lié à la version enfant
+					$rowChildObject = new object($database);
+					$rowChildObject->load($ol->childobject_id);
+					
+					// Regarder s'il existe un lien entre ces types d'objet
+					$rowObjectTypeLink =array();
+					$query = 'SELECT *' .
+							' FROM #__sdi_objecttypelink' .
+							' WHERE parent_id=' . $ol->parent_objecttype.
+							' 	AND child_id=' . $ol->child_objecttype;
+					
+					$database->setQuery($query);
+					$rowObjectTypeLink = array_merge($rowObjectTypeLink, $database->loadObjectList());
+					
+					// Si le lien existe, regarder s'il demande une gestion virale des versions
+					if (count($rowObjectTypeLink) >0)
 					{
-						if ($otl->flowdown_versioning)
+						foreach($rowObjectTypeLink as $otl)
 						{
 							// Récupérer toutes les versions de l'objet enfant, ordonnées de la plus récente à la plus ancienne
 							$childListVersions = array();
-							$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$rowChild->id." ORDER BY created DESC" );
+							$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$rowChildObject->id." ORDER BY created DESC" );
 							$childListVersions = array_merge( $childListVersions, $database->loadObjectList() );
 							
 							// Récupérer la métadonnée de la dernière version de l'objet
+							$childLastObjectVersion = new objectversion( $database );
 							$childLastMetadata = new metadata( $database );
 							if (count($childListVersions) > 0)
+							{
 								$childLastMetadata->load($childListVersions[0]->metadata_id);
-								
-							// Generate automatic guid for metadata id
-							require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-							$new_metadata_guid = helper_easysdi::getUniqueId();
-							
-							// Créer une nouvelle version de l'enfant
-							ADMIN_objectversion::createVersion($rowChild, $childLastMetadata->guid, $new_metadata_guid, $option);
-							
-							// Construire la nouvelle version
-							$childObjectVersion= new objectversion( $database );
-							
-							if (!$childObjectVersion->bind( $_POST )) {
-							
-								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
-								$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
-								exit();
+								$childLastObjectVersion->load($childListVersions[0]->id);
 							}
-
-							// ET LE NOM? ET LA DESCRIPTION?
-							$childObjectVersion->object_id=$rowChild->id;
-							$childObjectVersion->metadata_id=$new_metadata_guid;
-							if (count($childListVersions) > 0)
-								$childObjectVersion->parent_id=$childListVersions[0]->id;
+								
+							// Le lien indique qu'il faut répercuter la création de nouvelles versions sur les liens enfants
+							if ($otl->flowdown_versioning)
+							{
+								/*
+								 * FLOWDOWN_VERSIONING
+								 * Faire une nouvelle version de la version liée
+								 */
+								// Generate automatic guid for metadata id
+								require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+								$new_metadata_guid = helper_easysdi::getUniqueId();
+								
+								// Créer une nouvelle métadonnée
+								$childMetadata = new metadata( $database );
+								$childMetadata->guid = $new_metadata_guid;
+								$childMetadata->name = $new_metadata_guid;
+								$childMetadata->created = $_POST['created'];
+								$childMetadata->createdby = $_POST['createdby'];
+								$childMetadata->metadatastate_id = 4;
+								
+								// Créer une nouvelle version de l'enfant
+								ADMIN_objectversion::createVersion($rowChildObject, $object_id, $childLastMetadata->guid, $new_metadata_guid, $option);
+	
+								if (!$childMetadata->store()) 
+								{
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
+									$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+									exit();
+								}
+								
+								// Construire la nouvelle version
+								$childObjectVersion= new objectversion( $database );
+								
+								if (!$childObjectVersion->bind( $_POST )) {
+								
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
+									$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+									exit();
+								}
+	
+								// Indiquer l'objet, la métadonnée et la description de la nouvelle version enfant
+								$childObjectVersion->object_id=$rowChildObject->id;
+								$childObjectVersion->metadata_id=$childMetadata->id;
+								$childObjectVersion->description=$_POST['description'];
+								$childObjectVersion->title=$_POST['title'];
+								
+								// Indiquer le parent de cette nouvelle version enfant
+								if (count($childListVersions) > 0)
+									$childObjectVersion->parent_id=$childListVersions[0]->id;
+								
+								// Générer un guid
+								require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+								if ($childObjectVersion->guid == null)
+									$childObjectVersion->guid = helper_easysdi::getUniqueId();
+								
+								if (!$childObjectVersion->store(false)) {			
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+									$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+									exit();
+								}
 							
-							// Générer un guid
-							require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-							if ($childObjectVersion->guid == null)
-								$childObjectVersion->guid = helper_easysdi::getUniqueId();
-							
-							if (!$childObjectVersion->store(false)) {			
-								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-								$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
-								exit();
+								/*
+								 * NOUVEAUX LIENS
+								 * Lier la nouvelle version de l'enfant à la nouvelle version du parent
+								 */
+								$newLink = new objectversionlink($database);
+								$newLink->parent_id=$rowObjectVersion->id;
+								$newLink->child_id=$childObjectVersion->id;
+								
+								if (!$newLink->store(false)) 
+								{			
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+									$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+									exit();
+								}
+							}
+							else // Sinon lier ces enfants à la nouvelle version
+							{
+								/*
+								 * NOUVEAUX LIENS
+								 * Lier la version de l'enfant à la nouvelle version du parent
+								 */
+								$newLink = new objectversionlink($database);
+								$newLink->parent_id=$rowObjectVersion->id;
+								$newLink->child_id=$childLastObjectVersion->id;
+								
+								if (!$newLink->store(false)) 
+								{			
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+									$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+									exit();
+								}
 							}
 						}
 					}
 				}
 			}
-		}*/
+		}
+		else // Mettre à jour la version
+		{
+			$rowObjectVersion= new objectversion( $database );
+			
+			$rowObjectVersion->load( $objectversion_id);		
+			$rowObjectVersion->description = $_POST['description'];
+			
+			if (!$rowObjectVersion->store()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+				exit();
+			}
+		}
 	}
 	
-	function createVersion($rowObject, $metadata_guid, $new_metadata_guid, $option)
+	function deleteObjectVersion($cid, $option)
+	{
+		global $mainframe;
+		$database =& JFactory::getDBO();
+
+		if (!is_array( $cid ) || count( $cid ) < 1) {
+			$mainframe->enqueueMessage("Sï¿½lectionnez un enregistrement ï¿½ supprimer","error");
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			exit;
+		}
+		
+		$object_id = JRequest::getVar('object_id',0);
+		
+		/*
+		 * L'objet doit avoir au minimum une version, impossible donc de supprimer plus de versions
+		 * que count - 1 
+		 */
+		$total = "";
+		$database->setQuery( "SELECT count(*) FROM #__sdi_objectversion WHERE object_id=".$object_id);
+		$total = $database->loadResult();
+		
+		if (count( $cid ) > $total-1) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_COUNTVERSIONS_MSG"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			exit;
+		}
+		
+		foreach( $cid as $id )
+		{
+			$objectversion = new objectversion( $database );
+			$objectversion->load( $id );
+
+			$metadata = new metadata($database);
+			$metadata->load( $objectversion->metadata_id );
+			
+			if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
+			{
+				$mainframe->enqueueMessage("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error");
+				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				exit;
+			}
+			
+			// Supprimer de Geonetwork la métadonnée
+			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+				    <csw:Delete>
+				        <csw:Constraint version="1.0.0">
+				            <ogc:Filter>
+				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+				                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
+				                </ogc:PropertyIsLike>
+				            </ogc:Filter>
+				        </csw:Constraint>
+				    </csw:Delete>
+				</csw:Transaction>'; 
+			
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			
+			$deleteResults = DOMDocument::loadXML($result);
+			
+			$xpathDelete = new DOMXPath($deleteResults);
+			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			
+			if ($deleted <> 1)
+			{
+				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				exit();
+			}
+			
+			if (!$objectversion->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+			
+			if (!$metadata->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+	}
+	
+	function createVersion($rowObject, $object_id, $metadata_guid, $new_metadata_guid, $option)
 	{
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
@@ -484,7 +636,7 @@ class ADMIN_objectversion {
 		if ($inserted <> 1)
 		{
 			$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
 			exit();
 		}
 	}
@@ -506,6 +658,47 @@ class ADMIN_objectversion {
 		$rowObject->checkin();
 	}
 	
+	function archiveObjectVersion($cid ,$option)
+	{
+		global $mainframe;
+		$database =& JFactory::getDBO();
+
+		$object_id = JRequest::getVar('object_id',0);
+		
+		if (!is_array( $cid ) or count( $cid ) < 1 or $cid[0] == 0) {
+			$msg = JText::_('CATALOG_OBJECTVERSION_ARCHIVE_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id", $msg);
+			exit;
+		}		
+		
+		foreach( $cid as $id )
+		{
+			$objectversion = new objectversion( $database );
+			$objectversion->load( $id );
+
+			$metadata = new metadata($database);
+			$metadata->load( $objectversion->metadata_id );
+			
+			if ($metadata->metadatastate_id <> 1) // Impossible d'archiver si le statut n'est pas "PUBLISHED"
+			{
+				if ($metadata->metadatastate_id == 2) // Message particulier si on est déjà dans l'état ARCHIVED
+					$msg = JText::sprintf('CATALOG_OBJECTVERSION_ARCHIVEMETADATA_ARCHIVED_MSG', $object->name);
+				else
+					$msg = JText::sprintf('CATALOG_OBJECTVERSION_ARCHIVEMETADATA_MSG', $object->name);
+				$mainframe->enqueueMessage($msg, "error");
+				continue;
+			}
+			
+			$metadata->metadatastate_id=2;
+			
+			if (!$metadata->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}
+
+		$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+	}
+	
 	/**
 	* Back
 	*/
@@ -516,6 +709,11 @@ class ADMIN_objectversion {
 		// Initialize variables
 		$database = & JFactory::getDBO();
 		$object_id = JRequest::getVar('object_id',0);
+		
+		// Récupérer les états du listing des objets, pour éviter que les états des versions soient utilisés
+		// alors qu'on change de contexte
+		JRequest::setVar('filter_order', $mainframe->getUserState($option."listObject.filter_order"));
+		JRequest::setVar('filter_order_Dir', $mainframe->getUserState($option."listObject.filter_order_Dir"));
 		
 		// Check the attribute in if checked out
 		$rowObject = new objectversion( $database );
@@ -531,7 +729,7 @@ class ADMIN_objectversion {
 		if ($objectversion_id == 0 and !JRequest::getVar('objectversion_id'))
 		{
 			$msg = JText::_('CATALOG_OBJECT_VIEWOBJECTVERSIONLINK_MSG');
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion", $msg);
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id", $msg);
 			exit;
 		}
 		
@@ -539,20 +737,22 @@ class ADMIN_objectversion {
 		
 		// get list of parents for this object
 		$parent_objectlinks=array();
-		$query = 'SELECT parent.id as value, parent.name as name' .
+		$query = 'SELECT parent.id as value, CONCAT(o.name, " ", parent.title)  as name' .
 				' FROM #__sdi_objectversionlink l
-				  INNER JOIN #__sdi_object parent ON parent.id=l.parent_id' .
-				' WHERE child_id=' . $objectversion_id.
+				  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
+				  INNER JOIN #__sdi_object o ON o.id=parent.object_id' .
+				' WHERE l.child_id=' . $objectversion_id.
 				' ORDER BY parent.name';
 		$database->setQuery($query);
 		$parent_objectlinks = array_merge($parent_objectlinks, $database->loadObjectList());
 		
 		// get list of childs for this object
 		$child_objectlinks=array();
-		$query = 'SELECT child.id as value, child.name as name' .
+		$query = 'SELECT child.id as value, CONCAT(o.name, " ", child.title) as name' .
 				' FROM #__sdi_objectversionlink l
-				  INNER JOIN #__sdi_object child ON child.id=l.child_id' .
-				' WHERE parent_id=' . $objectversion_id.
+				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_object o ON o.id=child.object_id' .
+				' WHERE l.parent_id=' . $objectversion_id.
 				' ORDER BY child.name';
 		$database->setQuery($query);
 		$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
@@ -560,35 +760,39 @@ class ADMIN_objectversion {
 		HTML_objectversion::viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option);
 	}
 	
-	function manageObjectVersionLink($object_id, $option)
+	function manageObjectVersionLink($objectversion_id, $option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
-		if ($object_id == 0 and !JRequest::getVar('object_id'))
+		if ($objectversion_id == 0 and !JRequest::getVar('objectversion_id'))
 		{
-			$msg = JText::_('CATALOG_OBJECT_MANAGEOBJECTLINK_MSG');
-			$mainframe->redirect("index.php?option=$option&task=listObject", $msg);
+			$msg = JText::_('CATALOG_OBJECT_MANAGEOBJECTVERSIONLINK_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id", $msg);
 			exit;
 		}
 		
+		$object_id = JRequest::getVar('object_id',0);
+		
 		// get list of childs for this object
 		$selected_objectlinks=array();
-		$query = 'SELECT child.id as value, child.name as name' .
-				' FROM #__sdi_objectlink l
-				  INNER JOIN #__sdi_object child ON child.id=l.child_id' .
-				' WHERE parent_id=' . $object_id.
+		$query = 'SELECT child.id as value, CONCAT(o.name, " ", child.title) as name' .
+				' FROM #__sdi_objectversionlink l
+				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_object o ON o.id=child.object_id' .
+				' WHERE l.parent_id=' . $objectversion_id.
 				' ORDER BY child.name';
 		$database->setQuery($query);
 		$selected_objectlinks = array_merge($selected_objectlinks, $database->loadObjectList());
 		
-		// get list of objects which are not childs
+		// get list of versions which are not childs
 		$unselected_objectlinks=array();
 		$temp_objectlinks=array();
 		$objectlinks=array();
-		$query = 'SELECT id as value, name as name' .
-				' FROM #__sdi_object' .
-				' WHERE id<>' . $object_id.
+		$query = 'SELECT ov.id as value, CONCAT(o.name, " ", ov.title) as name' .
+				' FROM #__sdi_objectversion ov
+				  INNER JOIN #__sdi_object o ON o.id=ov.object_id' .
+				' WHERE ov.id<>' . $objectversion_id.
 				' ORDER BY name';
 		$database->setQuery($query);
 		$unselected_objectlinks = array_merge($unselected_objectlinks, $database->loadObjectList());
@@ -640,7 +844,7 @@ class ADMIN_objectversion {
 		}
 		$listEditors = HTML_metadata::array2extjs($listEditors, true);
 		
-		HTML_objectversion::manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $object_id, $option);
+		HTML_objectversion::manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $option);
 	}
 	
 	function getObjectVersionForLink($option)
@@ -651,6 +855,7 @@ class ADMIN_objectversion {
 		$dir = $_POST['dir'];
 		$sort = $_POST['sort'];
 		$object_id = $_POST['object_id'];
+		$objectversion_id = $_POST['objectversion_id'];
 		$selectedObjects = $_POST['selectedObjects'];
 		
 		$objecttype_id = null;
@@ -680,19 +885,19 @@ class ADMIN_objectversion {
 		
 		// Récupérer tous les objets du type d'objet sélectionné,
 		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés
-		$query = "SELECT DISTINCT o.id as value, o.name as name 
-				  FROM #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_object o
+		$query = "SELECT DISTINCT ov.id as value, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name 
+				  FROM #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov, #__sdi_object o
 				  LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
 				  LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
-				  WHERE o.metadata_id=m.id AND o.objecttype_id=ot.id AND o.id<>".$object_id;
+				  WHERE ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ov.object_id=o.id AND ov.id<>".$objectversion_id;
 	
 		// Ajout des filtres
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;
 		if ($id)
-			$query .= " AND o.id LIKE '%".$id."%'";
+			$query .= " AND ov.id LIKE '%".$id."%'";
 		if ($name)
-			$query .= " AND o.name LIKE '%".$name."%'";
+			$query .= " AND (o.name LIKE '%".$name."%' OR ov.name LIKE '%".$name."%')";
 		if ($status)
 			$query .= " AND m.metadatastate_id=".$status;
 		if ($editor)
@@ -700,13 +905,13 @@ class ADMIN_objectversion {
 		if ($manager)
 			$query .= " AND ma.account_id=".$manager;
 		if ($fromDate)
-			$query .= " AND o.updated >= '".$fromDate."'";
+			$query .= " AND ov.updated >= '".$fromDate."'";
 		if ($toDate)
-			$query .= " AND o.updated <= '".$toDate."'";
+			$query .= " AND ov.updated <= '".$toDate."'";
 		
 		// Suppression des entrées déjà sélectionnées
 		if (strlen($selectedObjects) > 0)
-			$query .= " AND o.id NOT IN (".$selectedObjects.")";
+			$query .= " AND ov.id NOT IN (".$selectedObjects.")";
 			
 		$query .= " ORDER BY $sort $dir";
 			
@@ -727,28 +932,77 @@ class ADMIN_objectversion {
 		$database =& JFactory::getDBO();
 		
 		$object_id = $_POST['object_id'];
-		$objectlinks = explode(",", $_POST['objectlinks']);
+		$objectversion_id = $_POST['objectversion_id'];
+		$objectversionlinks = explode(",", $_POST['objectlinks']);
 		
 		/* Supprimer les liens existants pour ce parent*/
-		$database->setQuery("DELETE FROM #__sdi_objectlink WHERE parent_id=".$object_id);
+		$database->setQuery("DELETE FROM #__sdi_objectversionlink WHERE parent_id=".$objectversion_id);
 		if (!$database->query())
 		{	
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		
 		/* Insérer les nouveaux liens*/
-		foreach ($objectlinks as $link)
+		foreach ($objectversionlinks as $link)
 		{
-			$rowObjectLink = new objectlink($database);
-			$rowObjectLink->parent_id = $object_id;
-			$rowObjectLink->child_id = $link;
+			$rowObjectVersionLink = new objectversionlink($database);
+			$rowObjectVersionLink->parent_id = $objectversion_id;
+			$rowObjectVersionLink->child_id = $link;
 			
-			if (!$rowObjectLink->store()) {
+			if (!$rowObjectVersionLink->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion" );
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
 				exit();
 			}
 		}
+	}
+	
+	function historyAssignMetadata($id, $option)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO();
+		$object_id = $_POST['object_id'];
+		
+		if ($id == 0 and !JRequest::getVar('objectversion_id'))
+		{
+			$msg = JText::_('CATALOG_OBJECT_HISTORYASSIGN_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id", $msg);
+			exit;
+		}
+		
+		if (JRequest::getVar('objectversion_id'))
+			$id = JRequest::getVar('objectversion_id');
+		
+		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest('limitstart', 'limitstart', 0, 'int');
+		
+		// In case limit has been changed, adjust limitstart accordingly
+		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
+		
+		$rowObjectVersion = new objectversion($database);
+		$rowObjectVersion->load($id);
+		
+		$query = "SELECT COUNT(*) FROM #__sdi_history_assign h
+				  WHERE h.objectversion_id=".$rowObjectVersion->id;					
+		$database->setQuery($query);
+		$total = $database->loadResult();
+		
+		// Create the pagination object
+		jimport('joomla.html.pagination');
+		$pagination = new JPagination($total, $limitstart, $limit);
+		
+		$query = "SELECT h.assigned as date, aa.username as assignedby, bb.username as assignedto, o.name as object_name, ov.name as objectversion_name 
+                  FROM #__sdi_history_assign h
+					INNER JOIN #__sdi_account a ON h.assignedby=a.id
+					INNER JOIN #__users aa ON a.user_id=aa.id
+					INNER JOIN #__sdi_account b ON h.account_id=a.id
+					INNER JOIN #__users bb ON b.user_id=bb.id
+					INNER JOIN #__sdi_objectversion ov ON h.objectversion_id=ov.id
+					INNER JOIN #__sdi_object o ON o.id=ov.object_id
+				  WHERE h.objectversion_id=".$rowObjectVersion->id." ORDER BY date DESC";
+		$database->setQuery( $query, $pagination->limitstart, $pagination->limit);
+		$rowHistory = $database->loadObjectList();
+		
+		HTML_objectversion::historyAssignMetadata($rowHistory, $pagination, $id, $object_id, $option);
 	}
 }
 ?>

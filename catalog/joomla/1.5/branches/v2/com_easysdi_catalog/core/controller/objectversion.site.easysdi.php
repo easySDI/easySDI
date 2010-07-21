@@ -48,25 +48,9 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php 
 
-class SITE_object {
-
-	function publish($cid,$published){
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		if ($published){
-			$query = "update #__sdi_object  set published = 1  where id=$cid[0]";
-
-		}else{
-			$query = "update #__sdi_object  set published = 0  where id=$cid[0]";
-		}
-		$db->setQuery( $query ,$limitstart,$limit);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
-	}
-
-	function listObject($option) {
+class SITE_objectversion 
+{
+	function listObjectVersion($object_id, $option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$user = JFactory::getUser();
@@ -78,77 +62,42 @@ class SITE_object {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
-		//Check user's rights
-		if(!userManager::isUserAllowed($user,"PRODUCT"))
-		{
-			return;
-		}
-		
-		$rootAccount = new accountByUserId($db);
-		$rootAccount->load($user->id);		
-		
-		$account= new accountByUserId($db);
-		$account->load($user->id);
-		
-		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-		
-		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (o.name LIKE '%$search%')";			
-		}
-		
-		//$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
-		$query = "	SELECT count(*)
-						FROM 	jos_sdi_manager_object e, 
-								jos_sdi_account a, 
-								jos_users u,
-								jos_sdi_object o
-						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
-					WHERE e.object_id=o.id  
-						AND e.account_id=a.id 
-						AND a.user_id = u.id
-						AND ot.predefined=false
-						AND e.account_id = ".$account->id;
-		$query .= $filter;
+		$query = "	SELECT COUNT(*) 
+					FROM #__sdi_objectversion ov 
+					INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
+					INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
+					WHERE ov.object_id=".$object_id;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		
 		// Create the pagination object
 		jimport('joomla.html.pagination');
 		$pagination = new JPagination($total, $limitstart, $limit);
-		//print_r($pagination);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "	SELECT o.* 
-						FROM 	jos_sdi_manager_object e,  
-								jos_sdi_account a, 
-								jos_users u,
-								jos_sdi_object o
-						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
-					WHERE e.object_id=o.id  
-						AND e.account_id=a.id 
-						AND a.user_id = u.id
-						AND ot.predefined=false
-						AND e.account_id = ".$account->id;
-		$query .= $filter;
-		//$query .= $filter;
-		$query .= " ORDER BY o.name ASC";
+		$query = "	SELECT 	ov.*, 
+							s.label as state,
+							m.guid as metadata_guid,
+							m.metadatastate_id as metadatastate_id 
+					FROM #__sdi_objectversion ov 
+					INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
+					INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
+					WHERE ov.object_id=".$object_id;
+		$query .= " ORDER BY created DESC";
 		
 		$db->setQuery($query, $pagination->limitstart, $pagination->limit);
-		//echo "<br>".$db->getQuery()."<br>";
 		$rows = $db->loadObjectList();
-		//print_r($rows);
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			//exit();
 		}
 		
-		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$search);
-
+		$rowObject = new object($db);
+		$rowObject->load($object_id);
+		HTML_objectversion::listObjectVersion($pagination, $rows, $object_id, $rowObject->name, $option);
 	}
 
-	function editObject( $id, $option ) {
+	function editObjectVersion( $id, $option ) {
 		global  $mainframe;
 		$user = JFactory::getUser();
 		$database =& JFactory::getDBO();
@@ -362,7 +311,7 @@ class SITE_object {
 		//HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $option );
 	}
 
-	function saveObject($option){
+	function saveObjectVersion($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();
 		$option =  JRequest::getVar("option");
@@ -609,104 +558,97 @@ class SITE_object {
 		$rowObject->checkin();
 	}
 
-	function deleteObject($cid ,$option){
-
+function deleteObjectVersion($cid, $option)
+	{
 		global $mainframe;
 		$database =& JFactory::getDBO();
 
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			//$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->enqueueMessage("Sï¿½lectionnez un enregistrement ï¿½ supprimer","error");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 			exit;
 		}
+		
+		$object_id = JRequest::getVar('object_id',0);
+		
+		/*
+		 * L'objet doit avoir au minimum une version, impossible donc de supprimer plus de versions
+		 * que count - 1 
+		 */
+		$total = "";
+		$database->setQuery( "SELECT count(*) FROM #__sdi_objectversion WHERE object_id=".$object_id);
+		$total = $database->loadResult();
+		
+		if (count( $cid ) > $total-1) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_COUNTVERSIONS_MSG"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			exit;
+		}
+		
 		foreach( $cid as $id )
 		{
-			$object = new object( $database );
-			$object->load( $id );
+			$objectversion = new objectversion( $database );
+			$objectversion->load( $id );
 
-			// Récupérer toutes les versions
-			$listVersion = array();
-			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
-			$listVersion = array_merge( $listVersion, $database->loadResultArray() );
+			$metadata = new metadata($database);
+			$metadata->load( $objectversion->metadata_id );
 			
-			//S'assurer que toutes les versions sont dans l'état archivé ou en travail
-			$total=0;
-			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (state == 'unpublished' or state == 'archived') ORDER BY v.created DESC" );
-			$total = $database->loadResult();
-			if ($total <> count($listVersion))
+			if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
 			{
-				$mainframe->enqueueMessage("CATALOG_OBJECT_DELETE_VERSIONSTATE_MSG","error");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->enqueueMessage("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error");
+				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 				exit;
 			}
 			
-			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur métadonnée
-			foreach( $listVersion as $version )
+			// Supprimer de Geonetwork la métadonnée
+			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+				    <csw:Delete>
+				        <csw:Constraint version="1.0.0">
+				            <ogc:Filter>
+				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+				                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
+				                </ogc:PropertyIsLike>
+				            </ogc:Filter>
+				        </csw:Constraint>
+				    </csw:Delete>
+				</csw:Transaction>'; 
+			
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			
+			$deleteResults = DOMDocument::loadXML($result);
+			
+			$xpathDelete = new DOMXPath($deleteResults);
+			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+			
+			if ($deleted <> 1)
 			{
-				$objectversion = new objectversion($database);
-				$objectversion->load($version->id); 
-				
-				$metadata = new metadata($database);
-				$metadata->load( $objectversion->metadata_id );
-				
-				// Supprimer de Geonetwork la métadonnée
-				$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-					<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-					    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-					    <csw:Delete>
-					        <csw:Constraint version="1.0.0">
-					            <ogc:Filter>
-					                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-					                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-					                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
-					                </ogc:PropertyIsLike>
-					            </ogc:Filter>
-					        </csw:Constraint>
-					    </csw:Delete>
-					</csw:Transaction>'; 
-				
-				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-				$catalogUrlBase = config_easysdi::getValue("catalog_url");
-				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-				
-				$deleteResults = DOMDocument::loadXML($result);
-				
-				$xpathDelete = new DOMXPath($deleteResults);
-				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-				
-				if ($deleted <> 1)
-				{
-					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();
-				}
-				
-				if (!$metadata->delete()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
-				}
-				
-				if (!$objectversion->delete()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
-				}
+				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				exit();
 			}
 			
-			if (!$object->delete()) {
-				$mainframe->enqueueMessage('CATALOG_OBJECT_DELETE_SHOPLINK_MSG',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+			if (!$objectversion->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+			
+			if (!$metadata->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 			}
 		}
-
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
 	}
 	
 	/**
 	* Cancels an edit operation
 	*/
-	function cancelObject($option)
+	function cancelObjectVersion($option)
 	{
 		global $mainframe;
 
@@ -719,118 +661,6 @@ class SITE_object {
 		$rowObject->checkin();
 
 		$mainframe->redirect("index.php?option=$option&task=listObject" );
-	}
-	
-	function changeContent( $state = 0 )
-	{
-		global $mainframe;
-		
-		// Initialize variables
-		$db		= & JFactory::getDBO();
-		
-		$cid = JRequest::getVar('cid', array());
-		JArrayHelper::toInteger($cid);
-		$option	= JRequest::getCmd( 'option' );
-		$task	= JRequest::getCmd( 'task' );
-		$total	= count($cid);
-		$cids	= implode(',', $cid);
-		
-		$query = 'UPDATE #__sdi_object' .
-				' SET published = '. (int) $state .
-				' WHERE id IN ( '. $cids .' )';
-		$db->setQuery($query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
-		}
-
-		if (count($cid) == 1) {
-			$row = new object( $db );
-			$row->checkin($cid[0]);
-		}
-
-		switch ($state)
-		{
-			case 1 :
-				$msg = $total." ".JText::sprintf('Item(s) successfully Published');
-				break;
-
-			case 0 :
-			default :
-				$msg = $total." ".JText::sprintf('Item(s) successfully Unpublished');
-				break;
-		}
-
-		$cache = & JFactory::getCache('com_easysdi_core');
-		$cache->clean();
-		
-		$mainframe->enqueueMessage($msg,"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
-		exit();
-	}
-	
-	function saveOrder($option)
-	{
-		global $mainframe;
-
-		// Initialize variables
-		$db			= & JFactory::getDBO();
-
-		$cid		= JRequest::getVar( 'cid', array(0));
-		$order		= JRequest::getVar( 'ordering', array (0));
-		$total		= count($cid);
-		$conditions	= array ();
-
-		JArrayHelper::toInteger($cid, array(0));
-		JArrayHelper::toInteger($order, array(0));
-
-		// Update the ordering for items in the cid array
-		for ($i = 0; $i < $total; $i ++)
-		{
-			// Instantiate an article table object
-			$row = new object( $db );
-			
-			$row->load( (int) $cid[$i] );
-			if ($row->ordering != $order[$i]) {
-				$row->ordering = $order[$i];
-				if (!$row->store()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
-					exit();
-				}
-			}
-		}
-
-		$cache = & JFactory::getCache('com_easysdi_catalog');
-		$cache->clean();
-
-		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
-		exit();
-	}
-	
-	function orderContent($direction, $option)
-	{
-		global $mainframe;
-
-		// Initialize variables
-		$db		= & JFactory::getDBO();
-
-		$cid	= JRequest::getVar( 'cid', array());
-
-		if (isset( $cid[0] ))
-		{
-			$row = new object( $db );
-			$row->load( (int) $cid[0] );
-			$row->move($direction);
-
-			$cache = & JFactory::getCache('com_easysdi_catalog');
-			$cache->clean();
-		}
-
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
-		exit();
 	}
 }
 

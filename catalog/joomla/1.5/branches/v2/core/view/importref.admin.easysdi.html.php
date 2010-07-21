@@ -142,7 +142,7 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 			<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php

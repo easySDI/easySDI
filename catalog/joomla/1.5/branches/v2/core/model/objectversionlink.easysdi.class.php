@@ -18,7 +18,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class objectlink extends JTable
+class objectversionlink extends JTable
 {
 	var $id=null;
 	var $parent_id=null;
@@ -27,7 +27,7 @@ class objectlink extends JTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_objectlink', 'id', $db ) ;
+		parent::__construct ( '#__sdi_objectversionlink', 'id', $db ) ;
 	}
 }
 ?>

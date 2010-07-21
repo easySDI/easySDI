@@ -27,7 +27,45 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}
 
-		submitform( pressbutton );
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		var labelEmpty = 0;
+		labels = document.getElementById('labels');
+		fields = labels.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				labelEmpty=1;
+		}
+		
+		// Récuperer toutes les coordonnées et contrôler qu'elles soient saisies
+		var boudaryEmpty = 0;
+		boundaries = document.getElementById('boundaries');
+		fields = boundaries.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				boudaryEmpty=1;
+		}
+		
+		// do field validation
+		if (form.name.value == "") 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_NONAME', true ); ?>" );
+		}
+		else if (labelEmpty > 0) 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_NOLABELS', true ); ?>" );
+		}
+		else if (boudaryEmpty >0) 
+		{
+		alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_BOUNDARIES', true ); ?>" );
+		} 
+		else 
+		{
+			submitform( pressbutton );
+		}
 	}
 </script>
 

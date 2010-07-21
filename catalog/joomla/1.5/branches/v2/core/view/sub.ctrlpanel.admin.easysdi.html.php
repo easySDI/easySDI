@@ -34,6 +34,22 @@
 												<span><?php echo $text; ?></span></a>
 										</div>
 									</div>
+									
+										
+									<?php
+										$link = "index.php?option=$option&amp;task=listObjectTypeLink";
+								?>
+										<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+											<div class="icon">
+												<a href="<?php echo $link; ?>">
+												
+													<?php 
+													$text = JText::_( 'CORE_OBJECTTYPELINK_PANEL' );
+													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
+													<span><?php echo $text; ?></span></a>
+											</div>
+										</div>
+										
 										<?php
 										$link = "index.php?option=$option&amp;task=listBoundary";
 								?>
@@ -163,20 +179,6 @@
 												
 													<?php 
 													$text = JText::_( 'CORE_RELATION_PANEL' );
-													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
-													<span><?php echo $text; ?></span></a>
-											</div>
-										</div>
-										
-										<?php
-										$link = "index.php?option=$option&amp;task=listObjectTypeLink";
-								?>
-										<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-											<div class="icon">
-												<a href="<?php echo $link; ?>">
-												
-													<?php 
-													$text = JText::_( 'CORE_OBJECTTYPELINK_PANEL' );
 													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 													<span><?php echo $text; ?></span></a>
 											</div>

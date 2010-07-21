@@ -23,11 +23,40 @@ class objectversion extends sdiTable
 	var $object_id=null;
 	var $metadata_id=null;
 	var $parent_id=null;
+	var $title=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_objectversion', 'id', $db ) ;
+	}
+}
+
+class objectversionByObject_id extends sdiTable
+{
+	var $object_id=null;
+	var $metadata_id=null;
+	var $parent_id=null;
+	var $title=null;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_objectversion', 'object_id', $db ) ;
+	}
+}
+
+class objectversionByMetadata_id extends sdiTable
+{
+	var $object_id=null;
+	var $metadata_id=null;
+	var $parent_id=null;
+	var $title=null;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_objectversion', 'metadata_id', $db ) ;
 	}
 }
 ?>

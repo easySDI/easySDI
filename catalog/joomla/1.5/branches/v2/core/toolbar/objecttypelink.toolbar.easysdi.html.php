@@ -24,7 +24,7 @@ class TOOLBAR_objecttypelink {
 		
 		JToolBarHelper::addNew('newObjectTypeLink');
 		JToolBarHelper::editList('editObjectTypeLink');
-		JToolBarHelper::deleteList('','removeObjectTypeLink');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_OBJECTTYPELINK_DELETE_CONFIRM_MSG'), 'removeObjectTypeLink', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );

@@ -87,6 +87,36 @@ class ADMIN_namespace {
 	
 	function editNamespace($id, $option)
 	{
+		?>
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveNamespace' && pressbutton != 'applyNamespace') {
+					submitform( pressbutton );
+					return;
+				}
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_NAMESPACE_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (form.prefix.value == "") 
+				{
+				alert( "<?php echo JText::_( 'CATALOG_NAMESPACE_SUBMIT_NOPREFIX', true ); ?>" );
+				} 
+				else if (form.uri.value == "") 
+				{
+				alert( "<?php echo JText::_( 'CATALOG_NAMESPACE_SUBMIT_NOURI', true ); ?>" );
+				} 
+				else 
+				{
+					submitform( pressbutton );
+				}
+			}
+		</script>
+		
+		<?php 
 		global $mainframe;
 		$database =& JFactory::getDBO(); 
 		$rowNamespace = new namespace( $database );
@@ -124,36 +154,6 @@ class ADMIN_namespace {
 	
 	function saveNamespace($option)
 	{
-		?>
-		<script type="text/javascript">
-			function submitbutton(pressbutton) 
-			{
-				var form = document.adminForm;
-				if (pressbutton != 'saveNamespace' && pressbutton != 'applyNamespace') {
-					submitform( pressbutton );
-					return;
-				}
-				// do field validation
-				if (form.name.value == "") 
-				{
-					alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-				}
-				else if (form.prefix.value == "") 
-				{
-				alert( "<?php echo JText::_( 'You must provide a prefix.', true ); ?>" );
-				} 
-				else if (form.uri.value == "") 
-				{
-				alert( "<?php echo JText::_( 'You must provide an uri.', true ); ?>" );
-				} 
-				else 
-				{
-					submitform( pressbutton );
-				}
-			}
-		</script>
-		
-		<?php 
 		global $mainframe;
 			
 		$database=& JFactory::getDBO(); 

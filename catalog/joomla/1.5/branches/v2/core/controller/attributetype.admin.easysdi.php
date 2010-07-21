@@ -26,35 +26,8 @@ defined('_JEXEC') or die('Restricted access');
 			submitform( pressbutton );
 			return;
 		}
-		// do field validation
-		//if (form.name.value == "") 
-		//{
-			//alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-			//}
-		//else if (getSelectedValue('adminForm','class_id') < 1) 
-			//{
-			//alert( "<?php echo JText::_( 'Please select a parent class.', true ); ?>" );
-			//}
-		//else if (getSelectedValue('adminForm','attribute_id') < 1) 
-			//{
-			//alert( "<?php echo JText::_( 'Please select a child attribute.', true ); ?>" );
-			//}
-		//else if (form.lowerbound.value == "") 
-			//{
-			//alert( "<?php echo JText::_( 'You must provide a lowerbound.', true ); ?>" );
-			//} 
-		//else if (form.upperbound.value == "") 
-			//{
-			//alert( "<?php echo JText::_( 'You must provide a upperbound.', true ); ?>" );
-			//} 
-		//else if (getSelectedValue('adminForm','rendertype_id') < 1) 
-			//{
-			//alert( "<?php echo JText::_( 'Please select a render type.', true ); ?>" );
-			//}
-		//else 
-		//{
-			submitform( pressbutton );
-		//}
+		
+		submitform( pressbutton );
 	}
 </script>
 

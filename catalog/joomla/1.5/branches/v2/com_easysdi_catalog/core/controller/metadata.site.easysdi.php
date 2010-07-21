@@ -86,16 +86,18 @@ class SITE_metadata {
 								OR (ma.account_id=".$account->id."
 									AND s.id=1)
 								)";*/
-		$queryCount = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
+		$queryCount = "	SELECT DISTINCT o.*, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
 								#__sdi_account a, 
 								#__users u,
 								#__sdi_objecttype ot,
-								#__sdi_object o 
+								#__sdi_objectversion ov,
+								#__sdi_object o
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-						WHERE o.metadata_id=m.id
+						WHERE ov.object_id=o.id
+							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
 							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
@@ -135,16 +137,18 @@ class SITE_metadata {
 								OR (ma.account_id=".$account->id."
 									AND s.id=1)
 								)";*/
-		$query = "	SELECT DISTINCT o.*, s.label as state, m.guid as metadata_guid 
+		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
 								#__sdi_account a, 
 								#__users u,
 								#__sdi_objecttype ot,
+								#__sdi_objectversion ov,
 								#__sdi_object o 
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-						WHERE o.metadata_id=m.id
+						WHERE ov.object_id=o.id
+							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
 							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
@@ -198,12 +202,15 @@ class SITE_metadata {
 		}
 		
 		// Récupérer l'objet lié à cette métadonnée
+		$rowObjectVersion = new objectversion( $database );
+		$rowObjectVersion->load( $id );
+		
 		$rowObject = new object( $database );
-		$rowObject->load( $id );
+		$rowObject->load( $rowObjectVersion->object_id );
 		
 		// Récupérer la métadonnée choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
-		$rowMetadata->load( $rowObject->metadata_id );
+		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
 		if ($rowMetadata->id == 0)
 		{
@@ -464,6 +471,27 @@ class SITE_metadata {
 		$rowHistory = $database->loadObjectList();
 		//print_r($rowHistory);
 		HTML_metadata::historyAssignMetadata($rowHistory, $pagination, $id, $option);
+	}
+	
+	function archiveMetadata($cid ,$option)
+	{
+		global $mainframe;
+		$database =& JFactory::getDBO();
+
+		if ($cid == 0)
+		{
+			$msg = JText::_('CATALOG_OBJECT_ARCHIVEMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg);
+			exit;
+		}
+		
+		$metadata = new metadata($database);
+		$metadata->load($cid[0]);
+		$metadata->metadatastate_id=2;
+		
+		if (!$metadata->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
 	}
 }
 ?>

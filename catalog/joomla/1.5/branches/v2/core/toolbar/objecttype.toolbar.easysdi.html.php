@@ -23,7 +23,7 @@ class TOOLBAR_objecttype {
 		
 		JToolBarHelper::addNew('newObjectType');
 		JToolBarHelper::editList('editObjectType');
-		JToolBarHelper::deleteList('','removeObjectType');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_OBJECTTYPE_DELETE_CONFIRM_MSG'), 'removeObjectType', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );

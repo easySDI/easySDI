@@ -35,7 +35,7 @@ class ADMIN_metadata {
 		
 		$objectversion = array();
 		$listObjectversion = array();
-		$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objectversion WHERE object_id=".$id." ORDER BY name" );
+		$database->setQuery( "SELECT id as value, title as text FROM #__sdi_objectversion WHERE object_id=".$id." ORDER BY name" );
 		$objectversion= array_merge( $objectversion, $database->loadObjectList() );
 		
 		foreach($objectversion as $ov)
@@ -43,11 +43,11 @@ class ADMIN_metadata {
 			$listObjectversion[$ov->value] = $ov->text;
 		}
 		$listObjectversion = HTML_metadata::array2extjs($listObjectversion, false);
-		
+			
 		if (count($objectversion) <= 1)
 		{
 			TOOLBAR_metadata::_EDIT();
-			ADMIN_metadata::editMetadata($id,$option);
+			ADMIN_metadata::editMetadata($objectversion[0]->value,$option);
 		}
 		else
 		{
@@ -107,7 +107,7 @@ class ADMIN_metadata {
 					       { 
 					         id:'cid[]', 
 					         xtype: 'hidden',
-					         value:'".$id."' 
+					         value: ''
 					       },
 					       { 
 					         id:'task', 
@@ -125,7 +125,8 @@ class ADMIN_metadata {
 			                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 			                    handler: function(){
 			                    	myMask.show();
-			                    	selectEditWin.items.get(0).getForm().submit();
+			                    	selectEditWin.items.get(0).getForm().setValues({'cid[]': Ext.getCmp('version_id').getValue()});
+							        selectEditWin.items.get(0).getForm().submit();
 			                    }
 			                },
 			                {
@@ -138,11 +139,6 @@ class ADMIN_metadata {
 					   }] 
 			  });
 	  		selectEditWin.show(true);
-	  		/*Ext.MessageBox.prompt('Name', 'Please enter your name:', showResultText);
-	  		
-	  		function showResultText(text){
-		        Ext.example.msg('Button Click', 'You entered the text \"{1}\".', text);
-		    };*/
 			";
 			
 			print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
@@ -166,12 +162,16 @@ class ADMIN_metadata {
 		}
 		
 		// Récupérer l'objet
+		$rowObjectVersion = new objectversion( $database );
+		$rowObjectVersion->load( $id );
+		
 		$rowObject = new object( $database );
-		$rowObject->load( $id );
+		$rowObject->load( $rowObjectVersion->object_id );
 		
 		// Récupérer la métadonnée choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
-		$rowMetadata->load( $rowObject->metadata_id );
+		//$rowMetadata->load( $rowObject->metadata_id );
+		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
 		if ($rowMetadata->id == 0)
 		{
@@ -342,13 +342,13 @@ class ADMIN_metadata {
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = $cswResults->childNodes->item(0)->nodeValue;
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		else
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
@@ -373,7 +373,6 @@ class ADMIN_metadata {
         
         //$xpathResults->registerNamespace('ext','http://www.depth.ch/2008/ext');
         //$xpathResults->registerNamespace('dc','http://purl.org/dc/elements/1.1/');
-        
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
@@ -381,6 +380,7 @@ class ADMIN_metadata {
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
+	
 	}
 
 	/*
@@ -2507,6 +2507,9 @@ class ADMIN_metadata {
 		//$rowMetadata->load( $rowObject->metadata_id );
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
+		// Récupérer la version
+		$rowObjectVersion = new objectversionByMetadata_id( $database );
+		$rowObjectVersion->load( $rowMetadata->id );
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -2580,6 +2583,14 @@ class ADMIN_metadata {
 		else
 			$isManager = false;
 		
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
+		
+		
 		// Est-ce que la métadonnée est publiée?
 		if ($rowMetadata->metadatastate_id == 1)
 			$isPublished = true;
@@ -2651,7 +2662,7 @@ class ADMIN_metadata {
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_IMPORTXML_NOMETADATA_MSG');
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
@@ -2672,7 +2683,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
 	}
 
 	function importCSWMetadata($option)
@@ -2693,6 +2704,9 @@ class ADMIN_metadata {
 		// Récupérer la métadonnée
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
+		// Récupérer la version
+		$rowObjectVersion = new objectversionByMetadata_id( $database );
+		$rowObjectVersion->load( $rowMetadata->id );
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -2765,6 +2779,14 @@ class ADMIN_metadata {
 			$isManager = true;
 		else
 			$isManager = false;
+		
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
+		
 		
 		// Est-ce que la métadonnée est publiée?
 		if ($rowMetadata->metadatastate_id == 1)
@@ -2809,10 +2831,9 @@ class ADMIN_metadata {
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
-		
 		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
         $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
-
+	
         foreach ($nodeList as $node)
         {
         	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
@@ -2828,17 +2849,23 @@ class ADMIN_metadata {
         		}
         	}
         }
-        
-        // Construction du DOMXPath à utiliser pour générer la vue d'édition
+
+        $cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
+		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		// Le document a été créé correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => résultat retourné
-		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
+		
+		$controlPos = 0;
+		if ($cswResults->childNodes->item(0)->nodeName == "#text")
+			$controlPos = 1;
+			
+		if ($cswResults <> false and $cswResults->childNodes->item($controlPos)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_IMPORTCSW_NOMETADATA_MSG');
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
@@ -2859,7 +2886,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
 	}
 
 	function replicateMetadata($option)
@@ -2878,6 +2905,9 @@ class ADMIN_metadata {
 		// Récupérer la métadonnée
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
+		// Récupérer la version
+		$rowObjectVersion = new objectversionByMetadata_id( $database );
+		$rowObjectVersion->load( $rowMetadata->id );
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -2950,6 +2980,14 @@ class ADMIN_metadata {
 			$isManager = true;
 		else
 			$isManager = false;
+		
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
+		
 		
 		// Est-ce que la métadonnée est publiée?
 		if ($rowMetadata->metadatastate_id == 1)
@@ -3015,7 +3053,7 @@ class ADMIN_metadata {
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_REPLICATE_NOMETADATA_MSG');
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$object_id, $msg );
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
@@ -3035,7 +3073,239 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		
+	}
+	
+	function resetMetadata($option)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+		$user = JFactory::getUser();
+		
+		$metadata_id = $_POST['metadata_id'];
+		$object_id = $_POST['object_id'];
+		
+		// Récupérer l'objet lié à cette métadonnée
+		$rowObject = new object( $database );
+		$rowObject->load( $object_id );
+		// Récupérer la métadonnée
+		$rowMetadata = new metadataByGuid( $database );
+		$rowMetadata->load($metadata_id);
+		
+		// Regarder si une version précède celle-ci
+		$rowObjectVersion = new objectversionByMetadata_id( $database );
+		$rowObjectVersion->load($rowMetadata->id);
+		
+		if ($rowObjectVersion->parent_id == null) // Aucune version qui précède => Vider le formulaire
+		{
+			// Construire un XMl vide
+			// Récupérer l'attribut qui correspond au stockage de l'id
+			$idrow = "";
+			//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, at.isocode as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
+			$idrow = $database->loadObjectList();
+			
+			// Récupérer la classe racine
+			$root = array();
+			$database->setQuery("SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id);
+			$root = array_merge( $root, $database->loadObjectList() );
+			
+			// Création d'un xml vide avec juste le fileIdentifier
+			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+							<".$root[0]->isocode."
+								xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
+								xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
+								xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
+								xmlns:gml=\"http://www.opengis.net/gml\" 
+								xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
+								xmlns:srv=\"http://www.isotc211.org/2005/srv\"
+								xmlns:ext=\"http://www.depth.ch/2008/ext\">
+								
+								<".$idrow[0]->attribute_isocode.">
+									<".$idrow[0]->type_isocode.">".$rowMetadata->guid."</".$idrow[0]->type_isocode.">
+								</".$idrow[0]->attribute_isocode.">
+							</".$root[0]->isocode.">";
+			
+			$cswResults = DOMDocument::loadXML($xmlstr);
+				
+			
+		}
+		else  // Une version qui précède => Charger la dernière version
+		{
+			// Récupérer la version précédente
+			$rowLastObjectVersion = new objectversion( $database );
+			$rowLastObjectVersion->load($rowObjectVersion->parent_id);
+			$rowLastMetadata = new metadata( $database );
+			$rowLastMetadata->load($rowLastObjectVersion->metadata_id);
+			
+			// Récupérer le XML de la version précédente
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowLastMetadata->guid;
+			$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		
+			// Récupérer la classe racine du profile du type d'objet
+			$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+			$database->setQuery( $query );
+			$root = $database->loadObjectList();
+			
+			// Récupérer l'attribut qui correspond au stockage de l'id
+			$idrow = "";
+			//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
+			$idrow = $database->loadObjectList();
+			
+			/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
+	        $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
+	
+	        foreach ($nodeList as $node)
+	        {
+	        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
+	        	// la métadonnée importée prenne son nouvel id 
+	        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
+	        	{
+	        		foreach ($node->childNodes as $child)
+	        		{
+	        			if ($child->nodeName == $idrow[0]->list_isocode)
+	        			{
+	        				$child->nodeValue = $metadata_id;
+	        			}
+	        		}
+	        	}
+	        }
+	        
+	        
+		}
+		
+       	// Stocker en mémoire toutes les traductions de label, valeur par défaut et information pour la langue courante
+		$language =& JFactory::getLanguage();
+		
+		$newTraductions = array();
+		$database->setQuery( "SELECT t.element_guid, t.label, t.defaultvalue, t.information, t.regexmsg, t.title, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang c WHERE t.language_id=l.id AND l.codelang_id=c.id AND c.code='".$language->_lang."'" );
+		$newTraductions = array_merge( $newTraductions, $database->loadObjectList() );
+		
+		$array = array();
+		foreach ($newTraductions as $newTraduction)
+		{
+			if ($newTraduction->label <> "" and $newTraduction->label <> null)
+				$array[strtoupper($newTraduction->element_guid."_LABEL")] = $newTraduction->label;
+			
+			if ($newTraduction->defaultvalue <> "" and $newTraduction->defaultvalue <> null)
+				$array[strtoupper($newTraduction->element_guid."_DEFAULTVALUE")] = $newTraduction->defaultvalue;
+			
+			if ($newTraduction->information <> "" and $newTraduction->information <> null)
+				$array[strtoupper($newTraduction->element_guid."_INFORMATION")] = $newTraduction->information;
+			
+			if ($newTraduction->regexmsg <> "" and $newTraduction->regexmsg <> null)
+				$array[strtoupper($newTraduction->element_guid."_REGEXMSG")] = $newTraduction->regexmsg;
+			
+			if ($newTraduction->title <> "" and $newTraduction->title <> null)
+				$array[strtoupper($newTraduction->element_guid."_TITLE")] = $newTraduction->title;
+			
+			if ($newTraduction->content <> "" and $newTraduction->content <> null)
+				$array[strtoupper($newTraduction->element_guid."_CONTENT")] = $newTraduction->content;
+		}
+		$language->_strings = array_merge( $language->_strings, $array);
+		
+		$metadatastates = array();
+		$metadatastates[] = JHTML::_('select.option','0', JText::_("CORE_METADATASTATE_LIST") );
+		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
+		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
+		
+		// Récupérer la classe racine du profile du type d'objet
+		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
+		$database->setQuery( $query );
+		$root = $database->loadObjectList();
+		
+		// Récupérer le profil lié à cet objet
+		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
+		$database->setQuery( $query );
+		$profile_id = $database->loadResult();
+		
+		// Récupérer l'attribut qui correspond au stockage de l'id
+		$idrow = "";
+		//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+		$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(atns.prefix, ':', at.isocode) as list_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
+		$idrow = $database->loadObjectList();
+		//echo $database->getQuery()." - ".$idrow;
+		// Est-ce que cet utilisateur est un manager?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		if ($total == 1)
+			$isManager = true;
+		else
+			$isManager = false;
+		
+		// Est-ce que cet utilisateur est un editeur?
+		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
+		$total = $database->loadResult();
+		$isEditor = false;
+		if ($total == 1)
+			$isEditor = true;
+		
+		
+		// Est-ce que la métadonnée est publiée?
+		if ($rowMetadata->metadatastate_id == 1)
+			$isPublished = true;
+		else
+			$isPublished = false;
+		
+		// Est-ce que la métadonnée est publiée?
+		if ($rowMetadata->metadatastate_id == 3)
+			$isValidated = true;
+		else
+			$isValidated = false;
+			
+		// Récupérer les périmètres administratifs
+		$boundaries = array();
+		$database->setQuery( "SELECT name, guid, northbound, southbound, westbound, eastbound FROM #__sdi_boundary") ;
+		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
+		
+		// Récupérer la métadonnée en CSW
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		
+		// Type d'attribut pour les périmètres prédéfinis 
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$database->setQuery( $query );
+		$rowAttributeType = $database->loadObject();
+		$type_isocode = $rowAttributeType->attributetype_isocode;
+		
+		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		
+		// Construction du DOMXPath à utiliser pour générer la vue d'édition
+		$doc = new DOMDocument('1.0', 'UTF-8');
+		
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
+			$xpathResults = new DOMXPath($cswResults);
+		else
+		{
+			$msg = JText::_('CATALOG_METADATA_RESET_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
+		}
+		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+        $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
+        $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
+        $xpathResults->registerNamespace('gts','http://www.isotc211.org/2005/gts');
+        
+        // Récupération des namespaces à inclure
+		$namespacelist = array();
+		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
+		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
+		
+		foreach ($namespacelist as $namespace)
+        {
+        	$xpathResults->registerNamespace($namespace->prefix,$namespace->uri);
+        } 
+        
+       
+        // Parcourir les noeuds enfants de la classe racine.
+		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
+		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		
 		
 	}
 	

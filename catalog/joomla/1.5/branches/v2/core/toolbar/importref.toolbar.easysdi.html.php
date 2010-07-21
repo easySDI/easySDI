@@ -24,7 +24,7 @@ class TOOLBAR_importref {
 		
 		JToolBarHelper::addNew('newImportRef');
 		JToolBarHelper::editList('editImportRef');
-		JToolBarHelper::deleteList('','removeImportRef');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_IMPORTREF_DELETE_CONFIRM_MSG'), 'removeImportRef', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );

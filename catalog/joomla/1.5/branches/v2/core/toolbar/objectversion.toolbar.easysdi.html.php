@@ -30,7 +30,7 @@ class TOOLBAR_objectversion {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveObjectVersion');
-		JToolBarHelper::apply('applyObjectVersion');
+		//JToolBarHelper::apply('applyObjectVersion');
 		JToolBarHelper::cancel('cancelObjectVersion');
 		if (intval($cid[0]) <> 0) // Edit
 		{
@@ -58,7 +58,7 @@ class TOOLBAR_objectversion {
 		JToolBarHelper::editList('editObjectVersion');
 		JToolBarHelper::custom('historyAssignMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_HISTORYASSIGN_METADATA"), false );
 		JToolBarHelper::custom('archiveObjectVersion', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_ARCHIVE_METADATA"), false );
-		JToolBarHelper::deleteList('','deleteObjectVersion');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_OBJECTVERSION_DELETE_CONFIRM_MSG'), 'deleteObjectVersion', JText::_( 'DELETE'));		
 		JToolBarHelper::spacer();
 		//JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
 		JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
@@ -92,7 +92,7 @@ class TOOLBAR_objectversion {
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
 		
-		$objectversion_name = "\"".$objectversion->name."\"";
+		$objectversion_name = "\"".$objectversion->title."\"";
 		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$objectversion_name);
 		
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
@@ -105,11 +105,20 @@ class TOOLBAR_objectversion {
 		$objectversion_id = $cid[0];
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$objectversion_name = "\"".$objectversion->name."\"";
-		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$object_name);
+		$objectversion_name = "\"".$objectversion->title."\"";
+		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$objectversion_name);
 		
 		//JToolBarHelper::save('saveObjectLink');
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
 	}
+	
+	function _HISTORY() {
+		global $mainframe;
+		
+		JToolBarHelper::title(JText::_("CATALOG_HISTORYASSIGN_METADATA")); 
+		
+		JToolBarHelper::custom( 'backHistoryAssign', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+	}
+	
 }
 ?>

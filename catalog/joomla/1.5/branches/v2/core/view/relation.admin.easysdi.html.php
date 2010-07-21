@@ -251,7 +251,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php
@@ -764,7 +764,7 @@ foreach ($languages as $lang)
 				<table width=540>
 					<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php
@@ -957,7 +957,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				</tr>	
 				<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php
@@ -1148,7 +1148,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				</tr>	
 				<tr>
 					<td colspan="2">
-						<fieldset>
+						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
 <?php

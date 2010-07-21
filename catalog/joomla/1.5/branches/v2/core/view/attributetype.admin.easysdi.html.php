@@ -153,27 +153,6 @@ else
 			<table border="0" cellpadding="3" cellspacing="0">
 <?php
 $user =& JFactory::getUser();
-if ($row->created)
-{ 
-?>
-				<tr>
-					<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
-					<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
-					<td>, </td>
-					<?php
-						if ($row->createdby and $row->createdby<> 0)
-						{
-							$query = "SELECT name FROM #__users WHERE id=".$row->createdby ;
-							$database->setQuery($query);
-							$createUser = $database->loadResult();
-						}
-						else
-							$createUser = "";
-					?>
-					<td><?php echo $createUser; ?></td>
-				</tr>
-<?php
-}
 if ($row->updated)
 { 
 ?>
@@ -201,8 +180,6 @@ if ($row->updated)
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
-			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
-			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 			

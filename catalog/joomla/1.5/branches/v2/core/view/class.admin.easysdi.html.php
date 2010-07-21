@@ -192,7 +192,7 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_NAMESPACE"); ?></td>
+					<td><?php echo JText::_("CATALOG_CLASS_ISOCODE"); ?></td>
 					<td>
 						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?>
 						<input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> 

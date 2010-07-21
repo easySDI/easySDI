@@ -37,7 +37,7 @@ class HTML_objectversion {
 					<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderObject' ); ?></th>
-					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'title', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
@@ -99,12 +99,12 @@ class HTML_objectversion {
 					<?php 
 					if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 					{
-						echo $row->name;
+						echo date('d.m.Y H:i:s',strtotime($row->title));
 					} 
 					else 
 					{
 						?>
-						<a href="<?php echo $link;?>"><?php echo $row->name; ?></a>
+						<a href="<?php echo $link;?>"><?php echo date('d.m.Y H:i:s',strtotime($row->title)); ?></a>
 						<?php
 					}
 					?>
@@ -127,7 +127,7 @@ class HTML_objectversion {
 			</tfoot>
 			</table>
 		  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		  	<input type="hidden" name="task" value="listObject" />
+		  	<input type="hidden" name="task" value="listObjectVersion" />
 		  	<input type="hidden" name="boxchecked" value="0" />
 		  	<input type="hidden" name="hidemainmenu" value="0">
 		  	<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
@@ -138,7 +138,7 @@ class HTML_objectversion {
 			
 	}	
 
-	function newObjectVersion($object_id, $fieldsLength, $metadata_guid, $listVersionNames, $option)
+	/*function newObjectVersion($object_id, $fieldsLength, $metadata_guid, $listVersionNames, $option)
 	{
 		global  $mainframe;
 		
@@ -147,35 +147,39 @@ class HTML_objectversion {
 		
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table class="adminTable" border="0" cellpadding="0" cellspacing="0">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
+					<td class="key"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
 					<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" /></td>								
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CORE_NAME"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="name"/></td>								
+				<!-- <tr>
+					<td class="key"><?php //echo JText::_("CORE_NAME"); ?> : </td>
+					<td><input class="inputbox" type="text" size="50" maxlength="<?php //echo $fieldsLength['name'];?>" name="name"/></td>								
 				</tr>
+				 -->
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"></textarea></td>								
 				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
+					<td><?php echo date('d.m.Y h:i:s'); ?></td>
+				</tr>
 			</table>
-			
 			<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
 			<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
 			<input type="hidden" name="created" value="<?php echo date ('Y-m-d H:i:s');?>" />
 			<input type="hidden" name="createdby" value="<?php echo $user->id; ?>" /> 
 			
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
-			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="task" value="newObjectVersion" />
 			
 			<input type="hidden" name="versionNames" value="<?php echo implode(", ", $listVersionNames);?>" />
 		</form>
 			<?php 	
-	}
+	}*/
 	
-	function editObjectVersion($row, $object_id, $fieldsLength, $listVersionNames, $option)
+	function editObjectVersion($row, $object_id, $fieldsLength, $metadata_guid, $option)
 	{
 		global  $mainframe;
 		
@@ -184,32 +188,93 @@ class HTML_objectversion {
 		
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table class="admintable" border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $row->guid; ?>" disabled="disabled" /></td>								
+					<td class="key"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
+					<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" /></td>								
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CORE_NAME"); ?> : </td>
+				<!-- <tr>
+					<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
 					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php echo $row->name; ?>"/></td>								
 				</tr>
+				 -->
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
+					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea></td>								
 				</tr>
 			</table>
-			
+			<br></br>
+			<table class=admintable border="0" cellpadding="3" cellspacing="0">
+<?php
+$user =& JFactory::getUser();
+if ($row->created)
+{ 
+?>
+				<tr>
+					<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
+					<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->createdby and $row->createdby<> 0)
+						{
+							$query = "SELECT name FROM #__sdi_account WHERE id=".$row->createdby ;
+							$database->setQuery($query);
+							$createUser = $database->loadResult();
+						}
+						else
+							$createUser = "";
+					?>
+					<td><?php echo $createUser; ?></td>
+				</tr>
+<?php
+}
+else
+{
+?>
+				<tr>
+					<td class="key"><?php echo JText::_("CORE_CREATED"); ?> : </td>
+					<td><?php echo date('d.m.Y h:i:s'); ?></td>
+				</tr>
+<?php
+}
+if ($row->updated)
+{ 
+?>
+				<tr>
+					<td class="key"><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+					<td><?php if ($row->updated and $row->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->updatedby and $row->updatedby<> 0)
+						{
+							$query = "SELECT name FROM #__sdi_account WHERE id=".$row->updatedby ;
+							$database->setQuery($query);
+							$updateUser = $database->loadResult();
+						}
+						else
+							$updateUser = "";
+					?>
+					<td><?php echo $updateUser; ?></td>
+				</tr>
+<?php
+}
+?>
+			</table>
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
-			<input type="hidden" name="metadata_guid" value="<?php echo $row->guid?>" />
-			<input type="hidden" name="created" value="<?php echo date ('Y-m-d H:i:s');?>" />
-			<input type="hidden" name="createdby" value="<?php echo $user->id; ?>" /> 
+			<input type="hidden" name="objectversion_id" value="<?php echo $row->id?>" />
+			<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
 			
+			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
+			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+			
+			<input type="hidden" name="title" value="<?php echo ($row->title)? $row->title : date ('Y-m-d H:i:s');?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
+			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="task" value="" />
-			
-			<input type="hidden" name="versionNames" value="<?php echo implode(", ", $listVersionNames);?>" />
 		</form>
 			<?php 	
 	}
@@ -306,7 +371,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
 	}
 	
-	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $object_id, $option)
+	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $option)
 	{
 		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
@@ -343,7 +408,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				root   : 'links'
 		    });
 		    
-			// declare the source Grid
+		    // declare the source Grid
 		    var unselectedGrid = new Ext.grid.GridPanel({
 		    	id				 : 'unselected',
 				ddGroup          : 'selectedGridDDGroup',
@@ -543,7 +608,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				       { 
 				         id:'task', 
 				         xtype: 'hidden',
-				         value:'saveObjectLink' 
+				         value:'saveObjectVersionLink' 
 				       },
 				       { 
 				         id:'option', 
@@ -554,6 +619,11 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				         id:'object_id', 
 				         xtype: 'hidden',
 				         value:'".$object_id."' 
+				       },
+				       { 
+				         id:'objectversion_id', 
+				         xtype: 'hidden',
+				         value:'".$objectversion_id."' 
 				       }
 					],
 					buttons: [
@@ -636,7 +706,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			{
 				var ds = new Ext.data.Store({
 					        proxy: new Ext.data.HttpProxy({
-					            url: 'index.php?option=com_easysdi_catalog&task=getObjectForLink'
+					            url: 'index.php?option=com_easysdi_catalog&task=getObjectVersionForLink'
 					        }),
 					        reader: new Ext.data.JsonReader({
 					            root: 'links',
@@ -648,13 +718,61 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
-					        baseParams: {limit:100, dir:'ASC', sort:'name', object_id:'".$object_id."'}
+					        baseParams: {limit:100, dir:'ASC', sort:'name', objectversion_id:'".$objectversion_id."', object_id:'".$object_id."'}
 					    });
 				return ds;
 			}
     	";
 					
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
+	}
+	
+	
+	
+	function historyAssignMetadata($rows, $page, $objectversion_id, $object_id, $option)
+	{
+		?>
+		<form action="index.php" method="post" name="adminForm">
+			<table class="adminlist">
+			<thead>
+				<tr>					 			
+					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDBY"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDTO"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_DATE"); ?></th>
+				</tr>
+			</thead>
+			<tbody>		
+	<?php
+			$k = 0;
+			$i=0;
+			foreach ($rows as $row)
+			{		  				
+	?>
+				<tr>
+					<td><?php echo $row->assignedby; ?></td>						
+					<td><?php echo $row->assignedto; ?></td>						
+					<td><?php echo date('d.m.Y h:i:s',strtotime($row->date)); ?></td>
+				</tr>
+	<?php
+				$k = 1 - $k;
+				$i ++;
+			}
+			
+				?>
+			</tbody>
+			<tfoot>
+			<tr>	
+			<td colspan="3"><?php echo $page->getListFooter(); ?></td>
+			</tr>
+			</tfoot>
+			</table>
+		  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+		  	<input type="hidden" name="task" value="historyAssignMetadata" />
+		  	<input type="hidden" name="object_id" value="<?php echo $object_id; ?>" />
+		  	<input type="hidden" name="objectversion_id" value="<?php echo $objectversion_id; ?>" />
+		  </form>
+	<?php
+			
 	}
 }
 ?>

@@ -26,18 +26,34 @@ defined('_JEXEC') or die('Restricted access');
 			submitform( pressbutton );
 			return;
 		}
+
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		var labelEmpty = 0;
+		labels = document.getElementById('labels');
+		fields = labels.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				labelEmpty=1;
+		}
+		
 		// do field validation
 		if (form.name.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPE_SUBMIT_NONAME', true ); ?>" );
 		}
 		else if (form.code.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide an XSL prefix.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPE_SUBMIT_NOXSL', true ); ?>" );
 		}
 		else if (getSelectedValue('adminForm','profile_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'Please select a profile.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPE_SUBMIT_NOPROFILE', true ); ?>" );
+		}
+		else if (labelEmpty > 0) 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPE_SUBMIT_NOLABELS', true ); ?>" );
 		}
 		else 
 		{

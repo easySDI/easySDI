@@ -140,7 +140,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 						else 
 						{
 							?>
-							<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'EDIT_LIST_ITEMS' ); ?>">
+							<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'CATALOG_ATTRIBUTE_EDIT_LIST_ITEMS' ); ?>">
 								<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
 							</a>
 							<?php

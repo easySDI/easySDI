@@ -48,30 +48,7 @@ class object extends JTable
 	var $checked_out=null;
 	var $checked_out_time=null;
 	var $metadatastate_id=null;
-	/*
-	
-	var $update_date=null;
-	var $creation_date=null;
-	var $supplier_name=null;	
-	var $surface_min=0;	
-	var $surface_max=0;
-	var $data_title=null;
-	var $orderable=null;
-	var $internal=0;
-	var $external=0;
-	var $metadata_standard_id=null;
-	var $is_free=0;
-	var $metadata_partner_id=0;
-	var $previewBaseMapId=0;
-	var $previewProjection=null;
-	var $previewUnit=null;
-	var $diffusion_partner_id=0;
-	var $treatment_type=null;
-	var $notification_email=null;
-	var $metadata_internal=0;
-	var $metadata_external=0;
-	var $admin_partner_id=0;
-	*/
+	var $visibility_id=2;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -109,6 +86,10 @@ class objectByMetadataId extends JTable
 	var $view_user=null;
 	var $view_password=null;
 	var $account_id=null;
+	var $checked_out=null;
+	var $checked_out_time=null;
+	var $metadatastate_id=null;
+	var $visibility_id=2;
 	
 	// Class constructor
 	function __construct( &$db )

@@ -17,36 +17,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-?>
-<script type="text/javascript">
-	function submitbutton(pressbutton) 
-	{
-		var form = document.adminForm;
-		if (pressbutton != 'saveProfile' && pressbutton != 'applyProfile') {
-			submitform( pressbutton );
-			return;
-		}
-		// do field validation
-		if (form.name.value == "") 
-		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-		}
-		//else if (getSelectedValue('adminForm','class_id') < 1) 
-		//{
-		//	alert( "<?php echo JText::_( 'Please select a root class.', true ); ?>" );
-		//}
-		//else if (getSelectedValue('adminForm','metadataid') < 1) 
-		//{
-		//	alert( "<?php echo JText::_( 'Please select an attribute for the metadata id field.', true ); ?>" );
-		//}
-		else 
-		{
-			submitform( pressbutton );
-		}
-	}
-</script>
-
-<?php 
 class ADMIN_profile {
 	function listProfile($option)
 	{
@@ -99,6 +69,52 @@ class ADMIN_profile {
 	
 	function editProfile($id, $option)
 	{
+		?>
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveProfile' && pressbutton != 'applyProfile') {
+					submitform( pressbutton );
+					return;
+				}
+
+				// Récuperer tous les labels et contrôler qu'ils soient saisis
+				var labelEmpty = 0;
+				var labels = Array();
+				labels = document.getElementById('labels');
+				fields = labels.getElementsByTagName('input');
+				
+				for (var i = 0; i < fields.length; i++)
+				{
+					if (fields.item(i).value == "")
+						labelEmpty=1;
+				}
+				
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (getSelectedValue('adminForm','class_id') < 1) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOCLASSID', true ); ?>" );
+				}
+				else if (getSelectedValue('adminForm','metadataid') < 1) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOMETADATAID', true ); ?>" );
+				}
+				else if (labelEmpty > 0) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOLABELS', true ); ?>" );
+				}
+				else 
+				{
+					submitform( pressbutton );
+				}
+			}
+		</script>
+		<?php 
 		$database =& JFactory::getDBO(); 
 		$rowProfile = new profile( $database );
 		$rowProfile->load( $id );

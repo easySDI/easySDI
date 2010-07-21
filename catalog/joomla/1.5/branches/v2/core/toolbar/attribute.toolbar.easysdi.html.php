@@ -24,7 +24,7 @@ class TOOLBAR_attribute {
 		
 		JToolBarHelper::addNew('newAttribute');
 		JToolBarHelper::editList('editAttribute');
-		JToolBarHelper::deleteList('','removeAttribute');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_ATTRIBUTE_DELETE_CONFIRM_MSG'), 'removeAttribute', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );

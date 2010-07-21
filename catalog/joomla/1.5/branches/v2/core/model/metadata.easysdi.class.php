@@ -30,7 +30,7 @@ class metadata extends JTable
 	var $ordering=null;
 	var $published=null;
 	var $metadatastate_id=null;
-	var $visibility_id=3;
+	//var $visibility_id=3;
 	var $editor_id=null;
 	
 	function __construct( &$db )
@@ -54,7 +54,7 @@ class metadataByGuid extends JTable
 	var $ordering=null;
 	var $published=null;
 	var $metadatastate_id=null;
-	var $visibility_id=3;
+	//var $visibility_id=3;
 	var $editor_id=null;
 	
 	function __construct( &$db )

@@ -92,17 +92,15 @@ class HTML_metadata {
 	<table class="box-table" id="manageMetadata">
 	<thead>
 	<tr>
-	<!-- <th></th> -->
 	<th><?php echo JText::_('CATALOG_METADATA_OBJECTNAME'); ?></th>
-	<!-- <th><?php //echo JText::_('CATALOG_METADATA_VERSIONNAME'); ?></th> -->
+	<th><?php echo JText::_('CATALOG_METADATA_VERSIONTITLE'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_STATE'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
 	<th><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
-	<!-- <th><?php echo JText::_('CORE_CREATED'); ?></th> -->
-	<th><?php echo JText::_('CORE_UPDATED'); ?></th>
+	<!-- <th><?php //echo JText::_('CORE_CREATED'); ?></th> -->
+	<!-- <th><?php //echo JText::_('CORE_UPDATED'); ?></th> -->
 	<th></th>
 	<th></th>
-	<!-- <th></th> -->
 	</tr>
 	</thead>
 	<?php } ?>
@@ -116,15 +114,12 @@ class HTML_metadata {
 			
 			?>		
 			<tr>
-				<!-- <td class="logo2"><div <?php if($row->id) echo 'class="publicMd" title="'.JText::_("EASYSDI_METADATA_EXTERNAL").'"'; else if($row->metadata_internal && !$row->metadata_external) echo '"class="privateMd" title="'.JText::_("EASYSDI_METADATA_INTERNAL").'"';?>></div></td> -->
 				<td >
-					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a>
+					<?php echo $row->name;  ?>
 				</td>
-				<!-- <td ><?php //echo JText::_($row->name); ?></td>
 				<td >
-					<a class="modal" title="<?php //echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php //echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php //echo $row->version_name ;?></a>
+					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
-				 -->
 				<td ><?php echo JText::_($row->state); ?></td>
 				<?php 		
 				$managers = "";
@@ -138,7 +133,7 @@ class HTML_metadata {
 				<td ><?php echo $managers; ?></td>
 				<td ><?php echo $editors; ?></td>
 				<!-- <td ><?php //echo date('d.m.Y h:i:s',strtotime($row->version_created)); ?></td> -->
-				<td ><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
+				<!-- <td ><?php //if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td> -->
 				<?php 
 				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 				{
@@ -166,15 +161,15 @@ class HTML_metadata {
 					
 					$rowMetadata = new metadataByGuid($database);
 					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rôle de manager prime sur celui d'éditeur, au cas où l'utilisateur a les deux
+					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
 					{
 						if ($rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Validé
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published >= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
+							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
 							)
 						{
 							?>
-								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
+								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						}
 						else
@@ -193,7 +188,7 @@ class HTML_metadata {
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tâche d'édition assignée
 						{
 							?>
-							<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
+							<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						} 
 						else
@@ -202,6 +197,49 @@ class HTML_metadata {
 								<td></td>
 							<?php 
 						}
+					}
+				}
+			?>
+				<?php 
+				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+				{
+					?>
+					<td></td>
+					<?php 
+				} 
+				else 
+				{
+					// Est-ce que cet utilisateur est un manager?
+					$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
+					$total = $database->loadResult();
+					if ($total == 1)
+						$isManager = true;
+					else
+						$isManager = false;
+					
+					$rowMetadata = new metadataByGuid($database);
+					$rowMetadata->load($row->metadata_guid);
+					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
+					{
+						if (($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
+							)
+						{
+							?>
+								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_ARCHIVE_METADATA'); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
+							<?php
+						}
+						else
+						{
+							?>
+								<td></td>
+							<?php 
+						}
+					}
+					else
+					{
+						?>
+							<td></td>
+						<?php
 					}
 				}
 			?>
@@ -465,7 +503,7 @@ class HTML_metadata {
 						       			buttonAlign: 'right',
 						       			layout: 'toolbar',
 						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns',
-						       			items: [".HTML_metadata::buildTBar($isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)."]
+						       			items: [".HTML_metadata::buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)."]
 						       			})
 						    });
 							
@@ -1974,6 +2012,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										$content = array();
 										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
 										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
+										//$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE published=true AND attribute_id = ".$child->attribute_id." AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 										$database->setQuery( $query );
 										$content = $database->loadObjectList();
 	
@@ -2030,11 +2069,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associé au texte localisé souhaité et 
-								 			foreach ($content as $cont)
+								 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+											foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
-									 				$nodeValues[] = JText::_($cont->guid."_TITLE");
+													$nodeValues[] = $cont->guid;
+									 			
 									 		}
 											//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
 											//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -2055,8 +2095,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	// Construction de la liste
 										 	foreach ($selectedContent as $cont)
 										 	{
-										 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		$nodeValues[] = $cont->guid;
+												$nodeDefaultValues[] = $cont->guid;
 									 		}
 										}
 									 	
@@ -2172,19 +2214,25 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												
 										 		if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associé au texte localisé souhaité et 
-													$query = "SELECT t.title FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
+										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
 													//$cont_guid = $database->loadResult();
 													
-													$nodeValues[] = $database->loadResult();
+													//$nodeValues[] = $database->loadResult();
+													$result = $database->loadObject();
+													if ($result->title <> "")
+														$nodeValues[] = $result->title;
+													else
+														$nodeValues[] = $result->guid;
+
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
 													//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
 										 		}
-												else
-													$nodeValues[] = "";
+												/*else
+													$nodeValues[] = "";*/
 											}
 										}
 
@@ -2202,8 +2250,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	// Construction de la liste
 										 	foreach ($selectedContent as $cont)
 										 	{
-										 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		$nodeValues[] = $cont->guid;
+												$nodeDefaultValues[] = $cont->guid;
 									 		}
 										}
 									 	
@@ -2271,6 +2321,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 	
 						$queryPath = $queryPath."/".$child->attribute_isocode."/".$type_isocode;
 						
+						
 						//$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 						$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__1";
 						//$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__1";
@@ -2283,20 +2334,22 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 						
 						//echo $master." - ".$name." - ".$currentName."<br>";
 						
-						//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
-						// Traitement de l'attribut enfant
-						//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
-						$node = $xpathResults->query($type_isocode, $attributeScope);
-						//echo $node->length." - ".$node->item(0)->nodeName."<br>";
-						
-						$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
-						
-						// Récupération de la valeur par défaut, s'il y a lieu
-						if ($child->attribute_default <> "" and $nodeValue == "")
-							$nodeValue = html_Metadata::cleanText($child->attribute_default);
-	
-						//echo $nodeValue."<br>";
-						
+						if ($child->attribute_type <> 9 and $child->attribute_type <> 10)
+						{
+							//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
+							// Traitement de l'attribut enfant
+							//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
+							$node = $xpathResults->query($type_isocode, $attributeScope);
+							//echo $node->length." - ".$node->item(0)->nodeName."<br>";
+							
+							$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
+							
+							// Récupération de la valeur par défaut, s'il y a lieu
+							if ($child->attribute_default <> "" and $nodeValue == "")
+								$nodeValue = html_Metadata::cleanText($child->attribute_default);
+		
+							//echo $nodeValue."<br>";
+						}
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');						
 						";
@@ -2467,6 +2520,23 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								break;
 							// TextChoice
 							case 9:
+								// Traitement de la classe enfant
+								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
+								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
+								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
+								//echo "Trouve ".$node->length."<br>";
+								
+								if ($node->length >0)
+									$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
+								else
+									$nodeValue = "";
+								//echo "Trouve ".$nodeValue."<br>";
+								//echo "Valeur en 0: ".$nodeValue."<br>";
+									
+								// Récupération de la valeur par défaut, s'il y a lieu
+								if ($child->attribute_default <> "" and $nodeValue == "")
+									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+			
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
@@ -2485,8 +2555,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 									 	// Traitement de la multiplicité
 									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
-									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-									 	 
+									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
+					  
 									 	// Construction de la liste
 									 	foreach ($content as $cont)
 									 	{
@@ -2538,7 +2610,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
-									 			$nodeValues[] = JText::_($cont->guid."_TITLE");
+													$nodeValues[] = $cont->guid;
 									 		}
 											//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
 											//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -2559,9 +2631,11 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	// Construction de la liste
 										 	foreach ($selectedContent as $cont)
 										 	{
-										 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-									 		}
+										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+												$nodeValues[] = $cont->guid;
+												$nodeDefaultValues[] = $cont->guid;
+										 	}
 										}
 									 	
 										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
@@ -2571,11 +2645,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											$simple = false;
 										
 										$this->javascript .="
+										var master = Ext.getCmp('".$masterlistName."'); 
 										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
 									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 									     // La liste
-									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".JText::_($this->mandatoryMsg)."'));
+									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".JText::_($this->mandatoryMsg)."', master, true));
 									    ";
 										
 								 	break;
@@ -2584,6 +2659,23 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								break;
 							// LocaleChoice
 							case 10:
+								// Traitement de la classe enfant
+								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
+								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
+								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
+								//echo "Trouve ".$node->length."<br>";
+								
+								if ($node->length >0)
+									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								else
+									$nodeValue = "";
+								//echo "Trouve ".$nodeValue."<br>";
+								//echo "Valeur en 0: ".$nodeValue."<br>";
+									
+								// Récupération de la valeur par défaut, s'il y a lieu
+								if ($child->attribute_default <> "" and $nodeValue == "")
+									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+			
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
@@ -2602,8 +2694,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 									 	// Traitement de la multiplicité
 									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
-									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-									 	 
+									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
+					  
 									 	// Construction de la liste
 									 	foreach ($content as $cont)
 									 	{
@@ -2659,19 +2753,25 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 												if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associé au texte localisé souhaité et 
-													$query = "SELECT t.title FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
+										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
 													//$cont_guid = $database->loadResult();
 													
-													$nodeValues[] = $database->loadResult();
+													//$nodeValues[] = $database->loadResult();
+													$result = $database->loadObject();
+													if ($result->title <> "")
+														$nodeValues[] = $result->title;
+													else
+														$nodeValues[] = $result->guid;
+
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
 													//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
 										 		}
-												else
-													$nodeValues[] = "";
+												/*else
+													$nodeValues[] = "";*/
 											}
 										}
 										
@@ -2687,9 +2787,11 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	// Construction de la liste
 										 	foreach ($selectedContent as $cont)
 										 	{
-										 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-									 		}
+										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+												$nodeValues[] = $cont->guid;
+												$nodeDefaultValues[] = $cont->guid;
+										 	}
 										}
 									 	
 										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
@@ -2699,11 +2801,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											$simple = false;
 										
 								 		$this->javascript .="
+										var master = Ext.getCmp('".$masterlistName."'); 
 										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
 									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 									     // La liste
-									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".JText::_($this->mandatoryMsg)."'));
+									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".JText::_($this->mandatoryMsg)."', master, true));
 									    ";
 									break;
 								}
@@ -3331,9 +3434,11 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									 	// Construction de la liste
 									 	foreach ($selectedContent as $cont)
 									 	{
-									 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-									 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-								 		}
+									 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+									 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+											$nodeValues[] = $cont->guid;
+											$nodeDefaultValues[] = $cont->guid;
+									 	}
 								 										 		
 								 		$simple=true;
 										if ($child->rel_lowerbound>0)
@@ -3341,7 +3446,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										
 										$this->javascript .="
 										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-									    var selectedValueList = '';
+									    var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 									    var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 									     // La liste
 									    ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".JText::_($this->mandatoryMsg)."'));
@@ -3405,8 +3510,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									 	// Construction de la liste
 									 	foreach ($selectedContent as $cont)
 									 	{
-									 		$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-									 		$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+									 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+									 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+									 		$nodeValues[] = $cont->guid;
+											$nodeDefaultValues[] = $cont->guid;
 								 		}
 
 								 		$simple=true;
@@ -4265,7 +4372,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 	<?php
 	}
 	
-	function buildTBar($isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)
+	function buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -4328,420 +4435,34 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				        allCollapsed: false
 		        }";
 		
-		// Boutons d'import
-		if(!$isPublished)
+		if ($isManager)
 		{
-			$importxml_url = 'index.php?option='.$option.'&task=importXMLMetadata';
-			$importcsw_url = 'index.php?option='.$option.'&task=importCSWMetadata';
-			
-			$importrefs = array();
-			$database->setQuery( "SELECT * FROM #__sdi_importref ORDER BY ordering" );
-			$importrefs= array_merge( $importrefs, $database->loadObjectList() );
-			
-			$menu = "[";
-			foreach($importrefs as $key => $importref)
+			// Boutons d'import
+			if(!$isPublished)
 			{
-				$menu .= "{ xtype: 'menuitem', 
-							text: '".JText::_($importref->guid."_LABEL")."', ";
+				$importxml_url = 'index.php?option='.$option.'&task=importXMLMetadata';
+				$importcsw_url = 'index.php?option='.$option.'&task=importCSWMetadata';
 				
-				if ($importref->url == "") // Import depuis un fichier xml
-				{
-			       $menu .= "handler: function()
-				                {
-				                	// Créer une iframe pour demander à l'utilisateur le type d'import
-									if (!winxml)
-										winxml = new Ext.Window({
-										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
-										                width:500,
-										                height:130,
-										                closeAction:'hide',
-										                layout:'fit', 
-													    border:true, 
-													    closable:true, 
-													    renderTo:Ext.getBody(), 
-													    frame:true,
-													    items:[{ 
-														     xtype:'form' 
-														     ,id:'importxmlform' 
-														     ,defaultType:'textfield' 
-														     ,frame:true 
-														     ,method:'post' 
-														     ,enctype: 'multipart/form-data'
-														     ,fileUpload: true
-															 ,url:'".$importxml_url."'
-															 ,standardSubmit: true
-														     ,defaults:{anchor:'95%'} 
-														     ,items:[ 
-														       { 
-														       	 xtype: 'fileuploadfield',
-													             id: 'xmlfile',
-													             name: 'xmlfile',
-													             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_XMLFILE_LABEL'))."'
-														       },
-														       { 
-														         id:'metadata_id', 
-														         xtype: 'hidden',
-														         value:'".$metadata_id."' 
-														       },
-														       { 
-														         id:'object_id', 
-														         xtype: 'hidden',
-														         value:'".$object_id."' 
-														       },
-														       { 
-														         id:'xslfile', 
-														         xtype: 'hidden',
-														         value:'".html_Metadata::cleanText($importref->xslfile)."' 
-														       },
-														       { 
-														         id:'task', 
-														         xtype: 'hidden',
-														         value:'importXMLMetadata' 
-														       },
-														       { 
-														         id:'option', 
-														         xtype: 'hidden',
-														         value:'".$option."' 
-														       }
-														    ] 
-														     ,buttonAlign:'right' 
-														     ,buttons: [{ 
-												                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-												                    handler: function(){
-												                    	myMask.show();
-												                    	winxml.items.get(0).getForm().submit();
-												                    }
-												                },
-												                {
-												                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-												                    handler: function(){
-												                        winxml.hide();
-												                    }
-												                }]
-														   }] 
-										                
-										            });
-										else
-										{
-											winxml.items.get(0).findById('xmlfile').setValue('');
-										}	
-				  						winxml.show();
-						        	}
-						";
-				}
-				else // Import depuis un serveur CSW
-				{
-					$menu .= "handler: function()
-				                {
-				                	// Créer une iframe pour demander à l'utilisateur le type d'import
-									if (!wincsw)
-										wincsw = new Ext.Window({
-										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_CSW_ALERT'))."',
-										                width:500,
-										                height:130,
-										                closeAction:'hide',
-										                layout:'fit', 
-													    border:true, 
-													    closable:true, 
-													    renderTo:Ext.getBody(), 
-													    frame:true,
-													    items:[{ 
-														     xtype:'form' 
-														     ,id:'importcswform' 
-														     ,frame:true 
-														     ,method:'POST' 
-														     ,url:'".$importcsw_url."'
-															 ,standardSubmit: true
-														     ,defaults:{anchor:'95%'} 
-														     ,items:[ 
-														       { 
-														       	 xtype: 'textfield',
-													             id: 'id',
-													             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_METADATAID_LABEL'))."'
-														       },
-														       { 
-														         id:'metadata_id', 
-														         xtype: 'hidden',
-														         value:'".$metadata_id."' 
-														       },
-														       { 
-														         id:'object_id', 
-														         xtype: 'hidden',
-														         value:'".$object_id."' 
-														       },
-														       { 
-														         id:'xslfile', 
-														         xtype: 'hidden',
-														         value:'".html_Metadata::cleanText($importref->xslfile)."' 
-														       },
-														       { 
-														         id:'url', 
-														         xtype: 'hidden',
-														         value:'".html_Metadata::cleanText($importref->url)."' 
-														       },
-														       { 
-														         id:'task', 
-														         xtype: 'hidden',
-														         value:'importCSWMetadata' 
-														       },
-														       { 
-														         id:'option', 
-														         xtype: 'hidden',
-														         value:'".$option."' 
-														       }
-														    ] 
-														     ,buttonAlign:'right' 
-														     ,buttons: [{
-												                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-												                    handler: function(){
-												                    	myMask.show();
-												                    	wincsw.items.get(0).getForm().submit();
-												                    }},
-												                {
-												                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-												                    handler: function(){
-												                        wincsw.hide();
-												                    }
-												                }]
-														   }] 
-										                
-										            });
-										else
-										{
-											wincsw.items.get(0).findById('id').setValue('');
-										}	
-				  						wincsw.show();
-						        	}
-						";
-				}
+				$importrefs = array();
+				$database->setQuery( "SELECT * FROM #__sdi_importref ORDER BY ordering" );
+				$importrefs= array_merge( $importrefs, $database->loadObjectList() );
 				
-
-				if ($key <> count($importrefs)-1)
-					$menu .= "}, ";
-				else
-					$menu .= "}";
-				
-			}
-			$menu .= "]";
-			
-			$tbar[] = "
+				$menu = "[";
+				foreach($importrefs as $key => $importref)
 				{
-		            text: '".JText::_('CATALOG_IMPORT')."',
-					menu: {
-			                xtype: 'menu',
-			                id: 'importMenu',
-			                plain: true,
-			                items: ".$menu."
-		    	        }
-	            }
-			";
-		}
-		// Boutons de réplication
-		if (!$isPublished)
-		{
-			$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
-		
-			// Réplication de métadonnée
-			$objecttypes = array();
-			$listObjecttypes = array();
-			$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
-			$objecttypes= array_merge( $objecttypes, $database->loadObjectList() );
-			foreach($objecttypes as $ot)
-			{
-				$listObjecttypes[$ot->value] = $ot->text;
-			}
-			$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
-			
-			$this->javascript .="
-			var replicateDataStore = new Ext.data.Store({
-							id: 'objectListStore',
-					        proxy: new Ext.data.HttpProxy({
-					            url: 'index.php?option=com_easysdi_catalog&task=getObject'
-					        }),
-					        reader: new Ext.data.JsonReader({
-					            root: 'objects',
-					            totalProperty: 'total',
-					            remoteSort: true,
-					            id: 'object_id'
-					        }, [
-					            {name: 'object_id', mapping: 'object_id'},
-					            {name: 'object_name', mapping: 'object_name'},
-					            {name: 'metadata_guid', mapping: 'metadata_guid'}
-					        ]),
-					        // turn on remote sorting
-					        remoteSort: true,
-					        totalProperty: 'total',
-					        baseParams: {dir:'ASC', sort:'object_name'}
-					    });";
-			$tbar[] ="
-				{
-		            text: '".JText::_('CATALOG_REPLICATE')."',
-					handler: function()
-	                {
-	                	// Créer une iframe pour demander à l'utilisateur le type d'import
-						if (!winrct)
-							winrct = new Ext.Window({
-							                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
-							                width:500,
-							                height:430,
-							                closeAction:'hide',
-							                layout:'fit', 
-										    border:true, 
-										    closable:true, 
-										    renderTo:Ext.getBody(), 
-										    frame:true,
-										    items:[{ 
-											     xtype:'form' 
-											     ,id:'replicateform' 
-											     ,defaultType:'textfield' 
-											     ,frame:true 
-											     ,method:'post' 
-											     ,url:'".$replicate_url."'
-												 ,standardSubmit: true
-											     //,defaults:{anchor:'95%'} 
-											     ,items:[ 
-											       { 
-											       	 typeAhead:true,
-											       	 triggerAction:'all',
-											       	 mode:'local',
-											         fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTTYPE_LABEL'))."', 
-											         id:'objecttype_id', 
-											         hiddenName:'objecttypeid_hidden', 
-											         xtype: 'combo',
-											         editable: false,
-											         store: new Ext.data.ArrayStore({
-														        id: 0,
-														        fields: [
-														            'value',
-														            'text'
-														        ],
-														        data: ".$listObjecttypes."
-														    }),
-													 valueField:'value',
-													 displayField:'text',
-													 listeners: {        
-													 				select: {            
-													 							fn:function(combo, value) {
-													 								var modelDest = Ext.getCmp('objectselector');                
-													 								modelDest.store.removeAll();                
-													 								//reload region store and enable region                 
-													 								modelDest.store.reload({                    
-													 								params: { 
-													 									objecttype_id: combo.getValue() 
-																						}                
-																					});																						}        
-																			}	
-																}
-											       },
-											       {
-											       	 id:'objectselector',
-											       	 itemId:'objectselector',
-											       	 xtype:'grid',
-											       	 autoExpandColumn:'object_name',
-											       	 autoHeight: true,
-											       	 loadMask: true,
-											       	 frame:true,
-											       	 cm: new Ext.grid.ColumnModel([
-													        {id:'object_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTID_COLUMN'))."', hidden: true, dataIndex: 'object_id'},
-													        {id:'object_name', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTNAME_COLUMN'))."', sortable: true, editable:false, dataIndex: 'object_name', menuDisabled: true},
-													        {header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_METADATAGUID_COLUMN'))."', width: 150, sortable: true, editable:false, dataIndex: 'metadata_guid', menuDisabled: true}
-													    ]),
-													 ds: replicateDataStore, 
-													 viewConfig: {
-													 	forceFit: true,
-													 	scrollOffset:0
-													 },
-													 selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),														 
-													 bbar: new Ext.PagingToolbar({
-											            pageSize: 10,
-											            store: replicateDataStore
-											        })
-											       },
-											       { 
-											         id:'metadata_id', 
-											         xtype: 'hidden',
-											         value:'".$metadata_id."' 
-											       },
-											       { 
-											         id:'object_id', 
-											         xtype: 'hidden',
-											         value:'".$object_id."' 
-											       },
-											       { 
-											         id:'metadata_guid', 
-											         xtype: 'hidden',
-											         value:'' 
-											       },
-											       { 
-											         id:'task', 
-											         xtype: 'hidden',
-											         value:'replicateMetadata' 
-											       },
-											       { 
-											         id:'option', 
-											         xtype: 'hidden',
-											         value:'".$option."' 
-											       }
-											    ] 
-											     ,buttonAlign:'right' 
-											     ,buttons: [{ 
-									                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-									                    handler: function(){
-									                    	var grid = winrct.items.get(0).findById('objectselector');
-									                    	if (grid.getSelectionModel().hasSelection())
-															{
-									                    		myMask.show();
-									                    		selectedObject=grid.getSelectionModel().getSelected();
-									                    		//console.log(selectedObject.get('metadata_guid'));
-									                    		//winrct.items.get(0).getForm().setValues({object_id: selectedObject.id});
-									                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
-									                    		winrct.items.get(0).getForm().submit();
-									                    	}
-									                    	else
-									                    	{
-									                    		alert('".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_EMPTY_ALERT'))."');
-									                    	}
-									                    }
-									                },
-									                {
-									                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-									                    handler: function(){
-									                        winrct.hide();
-									                    }
-									                }]
-											   }] 
-							                
-							            });
-							else
-							{
-								winrct.items.get(0).findById('objecttype_id').setValue('');
-								winrct.items.get(0).findById('objectselector').store.removeAll();
-							}
-
-							Ext.getCmp('objectselector').store.load();
-							
-							// Masquer le bouton de rafraîchissement
-							Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
-							winrct.show();
-			        	}
-	            }";
-		}
-		
-		// Bouton de reset
-		if (!$isPublished)
-		{
-			$reset_url = 'index.php?option='.$option.'&task=editMetadata';
-		
-			// Ajout de bouton de reset
-				$tbar[] ="{text: '".JText::_('CORE_RESET')."',
-									handler: function()
+					$menu .= "{ xtype: 'menuitem', 
+								text: '".JText::_($importref->guid."_LABEL")."', ";
+					
+					if ($importref->url == "") // Import depuis un fichier xml
+					{
+				       $menu .= "handler: function()
 					                {
-					                	// Créer une iframe pour confirmer la réinitialisation
-										if (!winrst)
-											winrst = new Ext.Window({
-											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',
-											                width:370,
-											                height:100,
+					                	// Créer une iframe pour demander à l'utilisateur le type d'import
+										if (!winxml)
+											winxml = new Ext.Window({
+											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
+											                width:500,
+											                height:130,
 											                closeAction:'hide',
 											                layout:'fit', 
 														    border:true, 
@@ -4750,19 +4471,21 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 														    frame:true,
 														    items:[{ 
 															     xtype:'form' 
-															     ,id:'resetform' 
+															     ,id:'importxmlform' 
 															     ,defaultType:'textfield' 
 															     ,frame:true 
 															     ,method:'post' 
-															     ,url:'".$reset_url."'
+															     ,enctype: 'multipart/form-data'
+															     ,fileUpload: true
+																 ,url:'".$importxml_url."'
 																 ,standardSubmit: true
+															     ,defaults:{anchor:'95%'} 
 															     ,items:[ 
 															       { 
-															       	 typeAhead:true,
-															       	 triggerAction:'all',
-															       	 mode:'local',
-															         xtype: 'label',
-															         text: '".JText::_('CATALOG_METADATA_CONFIRM_RESET')."'
+															       	 xtype: 'fileuploadfield',
+														             id: 'xmlfile',
+														             name: 'xmlfile',
+														             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_XMLFILE_LABEL'))."'
 															       },
 															       { 
 															         id:'metadata_id', 
@@ -4775,14 +4498,14 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															         value:'".$object_id."' 
 															       },
 															       { 
-															         id:'cid[]', 
+															         id:'xslfile', 
 															         xtype: 'hidden',
-															         value:'".$object_id."' 
+															         value:'".html_Metadata::cleanText($importref->xslfile)."' 
 															       },
 															       { 
 															         id:'task', 
 															         xtype: 'hidden',
-															         value:'editMetadata' 
+															         value:'importXMLMetadata' 
 															       },
 															       { 
 															         id:'option', 
@@ -4790,26 +4513,413 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															         value:'".$option."' 
 															       }
 															    ] 
-															     ,buttonAlign:'center' 
+															     ,buttonAlign:'right' 
 															     ,buttons: [{ 
-													                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CONFIRM'))."',
+													                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 													                    handler: function(){
 													                    	myMask.show();
-													                    	winrst.items.get(0).getForm().submit();
+													                    	winxml.items.get(0).getForm().submit();
 													                    }
 													                },
 													                {
 													                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 													                    handler: function(){
-													                        winrst.hide();
+													                        winxml.hide();
 													                    }
 													                }]
 															   }] 
 											                
 											            });
-					  						winrst.show();
-									}
-						}";
+											else
+											{
+												winxml.items.get(0).findById('xmlfile').setValue('');
+											}	
+					  						winxml.show();
+							        	}
+							";
+					}
+					else // Import depuis un serveur CSW
+					{
+						$menu .= "handler: function()
+					                {
+					                	// Créer une iframe pour demander à l'utilisateur le type d'import
+										if (!wincsw)
+											wincsw = new Ext.Window({
+											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_CSW_ALERT'))."',
+											                width:500,
+											                height:130,
+											                closeAction:'hide',
+											                layout:'fit', 
+														    border:true, 
+														    closable:true, 
+														    renderTo:Ext.getBody(), 
+														    frame:true,
+														    items:[{ 
+															     xtype:'form' 
+															     ,id:'importcswform' 
+															     ,frame:true 
+															     ,method:'POST' 
+															     ,url:'".$importcsw_url."'
+																 ,standardSubmit: true
+															     ,defaults:{anchor:'95%'} 
+															     ,items:[ 
+															       { 
+															       	 xtype: 'textfield',
+														             id: 'id',
+														             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_METADATAID_LABEL'))."'
+															       },
+															       { 
+															         id:'metadata_id', 
+															         xtype: 'hidden',
+															         value:'".$metadata_id."' 
+															       },
+															       { 
+															         id:'object_id', 
+															         xtype: 'hidden',
+															         value:'".$object_id."' 
+															       },
+															       { 
+															         id:'xslfile', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->xslfile)."' 
+															       },
+															       { 
+															         id:'url', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->url)."' 
+															       },
+															       { 
+															         id:'task', 
+															         xtype: 'hidden',
+															         value:'importCSWMetadata' 
+															       },
+															       { 
+															         id:'option', 
+															         xtype: 'hidden',
+															         value:'".$option."' 
+															       }
+															    ] 
+															     ,buttonAlign:'right' 
+															     ,buttons: [{
+													                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+													                    handler: function(){
+													                    	myMask.show();
+													                    	wincsw.items.get(0).getForm().submit();
+													                    }},
+													                {
+													                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+													                    handler: function(){
+													                        wincsw.hide();
+													                    }
+													                }]
+															   }] 
+											                
+											            });
+											else
+											{
+												wincsw.items.get(0).findById('id').setValue('');
+											}	
+					  						wincsw.show();
+							        	}
+							";
+					}
+					
+	
+					if ($key <> count($importrefs)-1)
+						$menu .= "}, ";
+					else
+						$menu .= "}";
+					
+				}
+				$menu .= "]";
+				
+				$tbar[] = "
+					{
+			            text: '".JText::_('CATALOG_IMPORT')."',
+						menu: {
+				                xtype: 'menu',
+				                id: 'importMenu',
+				                plain: true,
+				                items: ".$menu."
+			    	        }
+		            }
+				";
+			}
+			// Boutons de réplication
+			if (!$isPublished)
+			{
+				$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
+			
+				// Réplication de métadonnée
+				$objecttypes = array();
+				$listObjecttypes = array();
+				$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
+				$objecttypes= array_merge( $objecttypes, $database->loadObjectList() );
+				foreach($objecttypes as $ot)
+				{
+					$listObjecttypes[$ot->value] = $ot->text;
+				}
+				$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
+				
+				$this->javascript .="
+				var replicateDataStore = new Ext.data.Store({
+								id: 'objectListStore',
+						        proxy: new Ext.data.HttpProxy({
+						            url: 'index.php?option=com_easysdi_catalog&task=getObject'
+						        }),
+						        reader: new Ext.data.JsonReader({
+						            root: 'objects',
+						            totalProperty: 'total',
+						            remoteSort: true,
+						            id: 'object_id'
+						        }, [
+						            {name: 'object_id', mapping: 'object_id'},
+						            {name: 'object_name', mapping: 'object_name'},
+						            {name: 'metadata_guid', mapping: 'metadata_guid'}
+						        ]),
+						        // turn on remote sorting
+						        remoteSort: true,
+						        totalProperty: 'total',
+						        baseParams: {dir:'ASC', sort:'object_name'}
+						    });";
+				$tbar[] ="
+					{
+			            text: '".JText::_('CATALOG_REPLICATE')."',
+						handler: function()
+		                {
+		                	// Créer une iframe pour demander à l'utilisateur le type d'import
+							if (!winrct)
+								winrct = new Ext.Window({
+								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
+								                width:500,
+								                height:430,
+								                closeAction:'hide',
+								                layout:'fit', 
+											    border:true, 
+											    closable:true, 
+											    renderTo:Ext.getBody(), 
+											    frame:true,
+											    items:[{ 
+												     xtype:'form' 
+												     ,id:'replicateform' 
+												     ,defaultType:'textfield' 
+												     ,frame:true 
+												     ,method:'post' 
+												     ,url:'".$replicate_url."'
+													 ,standardSubmit: true
+												     //,defaults:{anchor:'95%'} 
+												     ,items:[ 
+												       { 
+												       	 typeAhead:true,
+												       	 triggerAction:'all',
+												       	 mode:'local',
+												         fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTTYPE_LABEL'))."', 
+												         id:'objecttype_id', 
+												         hiddenName:'objecttypeid_hidden', 
+												         xtype: 'combo',
+												         editable: false,
+												         store: new Ext.data.ArrayStore({
+															        id: 0,
+															        fields: [
+															            'value',
+															            'text'
+															        ],
+															        data: ".$listObjecttypes."
+															    }),
+														 valueField:'value',
+														 displayField:'text',
+														 listeners: {        
+														 				select: {            
+														 							fn:function(combo, value) {
+														 								var modelDest = Ext.getCmp('objectselector');                
+														 								modelDest.store.removeAll();                
+														 								//reload region store and enable region                 
+														 								modelDest.store.reload({                    
+														 								params: { 
+														 									objecttype_id: combo.getValue() 
+																							}                
+																						});																						}        
+																				}	
+																	}
+												       },
+												       {
+												       	 id:'objectselector',
+												       	 itemId:'objectselector',
+												       	 xtype:'grid',
+												       	 autoExpandColumn:'object_name',
+												       	 autoHeight: true,
+												       	 loadMask: true,
+												       	 frame:true,
+												       	 cm: new Ext.grid.ColumnModel([
+														        {id:'object_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTID_COLUMN'))."', hidden: true, dataIndex: 'object_id'},
+														        {id:'object_name', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTNAME_COLUMN'))."', sortable: true, editable:false, dataIndex: 'object_name', menuDisabled: true},
+														        {header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_METADATAGUID_COLUMN'))."', width: 150, sortable: true, editable:false, dataIndex: 'metadata_guid', menuDisabled: true}
+														    ]),
+														 ds: replicateDataStore, 
+														 viewConfig: {
+														 	forceFit: true,
+														 	scrollOffset:0
+														 },
+														 selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),														 
+														 bbar: new Ext.PagingToolbar({
+												            pageSize: 10,
+												            store: replicateDataStore
+												        })
+												       },
+												       { 
+												         id:'metadata_id', 
+												         xtype: 'hidden',
+												         value:'".$metadata_id."' 
+												       },
+												       { 
+												         id:'object_id', 
+												         xtype: 'hidden',
+												         value:'".$object_id."' 
+												       },
+												       { 
+												         id:'metadata_guid', 
+												         xtype: 'hidden',
+												         value:'' 
+												       },
+												       { 
+												         id:'task', 
+												         xtype: 'hidden',
+												         value:'replicateMetadata' 
+												       },
+												       { 
+												         id:'option', 
+												         xtype: 'hidden',
+												         value:'".$option."' 
+												       }
+												    ] 
+												     ,buttonAlign:'right' 
+												     ,buttons: [{ 
+										                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+										                    handler: function(){
+										                    	var grid = winrct.items.get(0).findById('objectselector');
+										                    	if (grid.getSelectionModel().hasSelection())
+																{
+										                    		myMask.show();
+										                    		selectedObject=grid.getSelectionModel().getSelected();
+										                    		//console.log(selectedObject.get('metadata_guid'));
+										                    		//winrct.items.get(0).getForm().setValues({object_id: selectedObject.id});
+										                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
+										                    		winrct.items.get(0).getForm().submit();
+										                    	}
+										                    	else
+										                    	{
+										                    		alert('".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_EMPTY_ALERT'))."');
+										                    	}
+										                    }
+										                },
+										                {
+										                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+										                    handler: function(){
+										                        winrct.hide();
+										                    }
+										                }]
+												   }] 
+								                
+								            });
+								else
+								{
+									winrct.items.get(0).findById('objecttype_id').setValue('');
+									winrct.items.get(0).findById('objectselector').store.removeAll();
+								}
+	
+								Ext.getCmp('objectselector').store.load();
+								
+								// Masquer le bouton de rafraîchissement
+								Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
+								winrct.show();
+				        	}
+		            }";
+			}
+			
+			// Bouton de reset
+			if (!$isPublished)
+			{
+				$reset_url = 'index.php?option='.$option.'&task=resetMetadata';
+			
+				// Ajout de bouton de reset
+					$tbar[] ="{text: '".JText::_('CORE_RESET')."',
+										handler: function()
+						                {
+						                	// Créer une iframe pour confirmer la réinitialisation
+											if (!winrst)
+												winrst = new Ext.Window({
+												                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',
+												                width:370,
+												                height:100,
+												                closeAction:'hide',
+												                layout:'fit', 
+															    border:true, 
+															    closable:true, 
+															    renderTo:Ext.getBody(), 
+															    frame:true,
+															    items:[{ 
+																     xtype:'form' 
+																     ,id:'resetform' 
+																     ,defaultType:'textfield' 
+																     ,frame:true 
+																     ,method:'post' 
+																     ,url:'".$reset_url."'
+																	 ,standardSubmit: true
+																     ,items:[ 
+																       { 
+																       	 typeAhead:true,
+																       	 triggerAction:'all',
+																       	 mode:'local',
+																         xtype: 'label',
+																         text: '".JText::_('CATALOG_METADATA_CONFIRM_RESET')."'
+																       },
+																       { 
+																         id:'metadata_id', 
+																         xtype: 'hidden',
+																         value:'".$metadata_id."' 
+																       },
+																       { 
+																         id:'object_id', 
+																         xtype: 'hidden',
+																         value:'".$object_id."' 
+																       },
+																       { 
+																         id:'cid[]', 
+																         xtype: 'hidden',
+																         value:'".$object_id."' 
+																       },
+																       { 
+																         id:'task', 
+																         xtype: 'hidden',
+																         value:'editMetadata' 
+																       },
+																       { 
+																         id:'option', 
+																         xtype: 'hidden',
+																         value:'".$option."' 
+																       }
+																    ] 
+																     ,buttonAlign:'center' 
+																     ,buttons: [{ 
+														                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CONFIRM'))."',
+														                    handler: function(){
+														                    	myMask.show();
+														                    	winrst.items.get(0).getForm().submit();
+														                    }
+														                },
+														                {
+														                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+														                    handler: function(){
+														                        winrst.hide();
+														                    }
+														                }]
+																   }] 
+												                
+												            });
+						  						winrst.show();
+										}
+							}";
+			}
 		}
 		
 		// Ajout de bouton de retour

@@ -24,7 +24,7 @@ class TOOLBAR_boundary {
 		
 		JToolBarHelper::addNew('newBoundary');
 		JToolBarHelper::editList('editBoundary');
-		JToolBarHelper::deleteList('','removeBoundary');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_BOUNDARY_DELETE_CONFIRM_MSG'), 'removeBoundary', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );

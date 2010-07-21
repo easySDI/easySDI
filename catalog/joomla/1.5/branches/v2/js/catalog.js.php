@@ -31,7 +31,7 @@ function TransfertAll(idOrigine, idDestination)
 function Transfert(idOrigine, idDestination)
 {	var objOrigine = document.getElementById(idOrigine);
 	var objDestination = document.getElementById(idDestination);
-
+	var toBeDeleted = new Array();
 	for (var i = 0; i < objOrigine.length; i++)
 	{
 		selectedOne = objOrigine.options[i];
@@ -42,10 +42,17 @@ function Transfert(idOrigine, idDestination)
 	    	var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
 	    	objDestination.options[objDestination.length]=ADeplacer;
 	    	objOrigine.options[i].selected == false;
-	    	objOrigine.options[i]=null; 
+	    	//objOrigine.options[i]=null;
+	    	toBeDeleted[toBeDeleted.length]=i; 
 	    }
 	 }
 
+	 // Supprimer du dernier au premier, pour assurer la bonne suppression de tous les objets
+	for (var i = toBeDeleted.length-1; i >= 0; i--)
+	{
+		objOrigine.options[toBeDeleted[i]]=null;
+	}
+	//console.log(toBeDeleted);
 	sortArray(idDestination);
 }
 

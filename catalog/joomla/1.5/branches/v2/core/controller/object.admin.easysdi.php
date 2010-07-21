@@ -38,8 +38,7 @@ class ADMIN_object {
 	function listObject($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
-
-		$context	= $option.'.listObject';
+		$context	= 'listObject';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 
@@ -48,19 +47,19 @@ class ADMIN_object {
 
 		
 		// table ordering
-		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
-		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		$filter_order		= $mainframe->getUserStateFromRequest( $option.$context.".filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.$context.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
 		if ($filter_order <> "id" 
-			and $filter_order <> "name" 
 			and $filter_order <> "ordering" 
+			and $filter_order <> "name" 
+			and $filter_order <> "hasVersioning" 
 			and $filter_order <> "published" 
 			and $filter_order <> "account_name" 
-			and $filter_order <> "description" 
-			and $filter_order <> "updated"
-			and $filter_order <> "state"  
-			and $filter_order <> "objecttype_name")
+			and $filter_order <> "description"
+			and $filter_order <> "objecttype_name" 
+			and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -69,8 +68,12 @@ class ADMIN_object {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		
 		// Filtering
-		$filter_objecttype_id = $mainframe->getUserStateFromRequest( 'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
-		$filter_state = $mainframe->getUserStateFromRequest( 'filter_state',	'filter_state',	'',	'word' );
+		$filter_account_id = $mainframe->getUserStateFromRequest( $option.$context.'filter_account_id',	'filter_account_id',	-1,	'int' );
+		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.$context.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
+		$filter_state = $mainframe->getUserStateFromRequest( $option.$context.'filter_state',	'filter_state',	'',	'word' );
+		
+		$searchObject				= $mainframe->getUserStateFromRequest( 'searchObject', 'searchObject', '', 'string' );
+		$searchObject				= JString::strtolower($searchObject);
 		
 		/*
 		 * Add the filter specific information to the where clause
@@ -90,6 +93,18 @@ class ADMIN_object {
 			$where[] = 'o.objecttype_id = ' . (int) $filter_objecttype_id;
 		}
 		
+		// Account filter
+		if ($filter_account_id > 0) {
+			$where[] = 'o.account_id = ' . (int) $filter_account_id;
+		}
+		
+		// Text filter
+		if ($searchObject) {
+			$where[] = '(o.id LIKE '. (int) $searchObject .
+				' OR LOWER( o.name ) LIKE ' .$db->Quote( '%'.$db->getEscaped( $searchObject, true ).'%', false ) .
+				' OR LOWER( o.description ) LIKE ' .$db->Quote( '%'.$db->getEscaped( $searchObject, true ).'%', false ).
+				')';
+		}
 		
 		// Build the where clause of the content record query
 		$where = (count($where) ? implode(' AND ', $where) : '');
@@ -105,7 +120,7 @@ class ADMIN_object {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT o.*, b.name as account_name, s.label as state, ot.name as objecttype_name, ot.hasVersioning as hasVersioning FROM #__sdi_account a, #__users b, #__sdi_object o LEFT OUTER JOIN #__sdi_metadata m ON o.metadata_id=m.id LEFT OUTER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id WHERE a.root_id is null AND a.user_id = b.id AND a.id=o.account_id AND ot.predefined=false";
+		$query = "SELECT o.*, b.name as account_name, ot.name as objecttype_name, ot.hasVersioning as hasVersioning FROM #__sdi_account a, #__users b, #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id WHERE a.root_id is null AND a.user_id = b.id AND a.id=o.account_id AND ot.predefined=false";
 		if ($where)
 			$query .= ' AND '.$where;
 		$query .= $orderby;
@@ -117,18 +132,35 @@ class ADMIN_object {
 			//exit();
 		}
 		
+		// get list of accounts for dropdown filter
+		// Liste de tous les comptes root qui sont fournisseur d'un objet
+		$query = '	SELECT DISTINCT a.id AS value, b.name AS text 
+					FROM #__sdi_account a, #__users b 
+					WHERE a.user_id = b.id AND a.id IN ( 
+						SELECT account_id 
+						FROM #__sdi_object
+					)
+					ORDER BY b.name';
+		$accounts[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_ACCOUNT').' -', 'value', 'text');
+		$db->setQuery($query);
+		$accounts = array_merge($accounts, $db->loadObjectList());
+		$lists['account_id'] = JHTML::_('select.genericlist',  $accounts, 'filter_account_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_account_id);
+		
 		// get list of objecttypes for dropdown filter
 		$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
 				' WHERE predefined=false' .
 				' ORDER BY name';
-		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$db->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $db->loadObjectList());
 		$lists['objecttype_id'] = JHTML::_('select.genericlist',  $objecttypes, 'filter_objecttype_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_objecttype_id);
 		
 		// get list of published states for dropdown filter
 		$lists['state'] = JHTML::_('grid.state', $filter_state, 'Published', 'Unpublished');
+		
+		// searchAttributeRelation filter
+		$lists['searchObject'] = $searchObject;
 		
 		HTML_object::listObject($rows, $lists, $pagination, $filter_order_Dir, $filter_order, $option);
 
@@ -147,16 +179,16 @@ class ADMIN_object {
 				// do field validation
 				if (form.name.value == "") 
 				{
-					alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_OBJECT_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (getSelectedValue('adminForm','objecttype_id') < 1) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_OBJECT_SUBMIT_NOOBJECTTYPE', true ); ?>" );
 				}
 				else if (getSelectedValue('adminForm','account_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select an account.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_OBJECT_SUBMIT_NOACCOUNT', true ); ?>" );
 				} 
-				else if (getSelectedValue('adminForm','objecttype_id') < 1) 
-				{
-					alert( "<?php echo JText::_( 'Please select an object type.', true ); ?>" );
-				}
 				else 
 				{
 					submitform( pressbutton );
@@ -223,11 +255,11 @@ class ADMIN_object {
 		$database->setQuery("SELECT id AS value, name as text FROM #__sdi_list_projection ORDER BY name");
 		$projections = array_merge( $projections, $database->loadObjectList() );
 		
-		$visibilities=array();
+		/*$visibilities=array();
 		$visibilities[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_VISIBILITY_SELECT") );
 		$database->setQuery("SELECT id AS value, name as text FROM #__sdi_list_visibility ORDER BY name");
 		$visibilities = array_merge( $visibilities, $database->loadObjectList() );
-		
+		*/
 		
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObject->metadata_id );
@@ -373,7 +405,36 @@ class ADMIN_object {
 		$unselected_editors=array();
 		$unselected_editors=helper_easysdi::array_obj_diff($editors, $selected_editors);
 		
-		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $visibilities, $pageReloaded, $option );
+		// Gestion des versions ou pas
+		$rowObjectType = new objecttype($database);
+		if (!$pageReloaded)
+		{
+			$rowObjectType->load($rowObject->objecttype_id);
+		}
+		else
+		{
+			$rowObjectType->load($_POST['objecttype_id']);
+		}
+		
+		// Objet d'un type qui n'a pas de gestion des versions
+		if ($rowObjectType->id <>0 and !$rowObjectType->hasVersioning)
+		{
+			$rowObjectVersion = new objectversionByObject_id( $database );
+			$rowObjectVersion->load( $rowObject->id );
+			
+			$rowMetadata = new metadata( $database );
+			$rowMetadata->load( $rowObjectVersion->metadata_id );
+		}
+		
+		$visibilities=array();
+		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_list_visibility " );
+		$visibilities = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
+				
+		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $visibilities, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
 	}
 
 	function saveObject($option){
@@ -381,7 +442,7 @@ class ADMIN_object {
 		$database=& JFactory::getDBO();
 		$option =  JRequest::getVar("option");
 		$rowObject =& new object($database);
-		$rowMetadata = new metadataByGuid( $database );
+		
 		$user =& JFactory::getUser();
 		
 		if (!$rowObject->bind( $_POST )) {
@@ -390,19 +451,12 @@ class ADMIN_object {
 			exit();
 		}
 
-		$rowMetadata->load($_POST['metadata_guid']);
-		
-		// Générer un guid
+		// Générer un guid pour l'objet
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObject->guid == null)
 			$rowObject->guid = helper_easysdi::getUniqueId();
 		
-		// Comme projection_id n'est pas obligatoire et que par défaut $rowObject->projection_id == '0',
-		// on passe $rowObject->projection_id à NULL pour que la sauvegarde fonctionne
-		if ($rowObject->projection_id == '0')
-			$rowObject->projection_id = NULL;
-		
-		// Si le produit n'existe pas encore, créer la métadonnée
+		// Si l'objet n'existe pas encore, créer une version et une métadonnée
 		if ($rowObject->id == 0)
 		{
 			// Récupérer l'attribut qui correspond au stockage de l'id
@@ -456,58 +510,61 @@ class ADMIN_object {
 				exit();
 			}
 		
+			// Créer l'entrée de métadonnée dans la base
 			$rowMetadata = new metadata($database);
 			$rowMetadata->guid = $_POST['metadata_guid'];
 			$rowMetadata->name = $_POST['metadata_guid'];
 			$rowMetadata->created = $_POST['created'];
 			$rowMetadata->createdby = $_POST['createdby'];
 			$rowMetadata->metadatastate_id = 4;
+			
+			//$rowMetadata->visibility_id = $_POST['visibility_id'];
+			if (!$rowMetadata->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
+			
+			// Stocker l'objet
+			if (!$rowObject->store()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
+			// Construire la première version
+			$rowObjectVersion= new objectversion( $database );
+			$rowObjectVersion->object_id=$rowObject->id;
+			$rowObjectVersion->metadata_id=$rowMetadata->id;
+			$rowObjectVersion->description=$_POST['version_description'];
+			$rowObjectVersion->title=$_POST['created'];
+			$rowObjectVersion->created=$_POST['created'];
+			$rowObjectVersion->createdby=$_POST['createdby'];
+			
+			// Générer un guid
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+			if ($rowObjectVersion->guid == null)
+				$rowObjectVersion->guid = helper_easysdi::getUniqueId();
+			
+			if (!$rowObjectVersion->store(false)) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
+		}
+		else
+		{
+			if (!$rowObject->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
 		}
 		
-	
-		$rowMetadata->visibility_id = $_POST['visibility_id'];
-		if (!$rowMetadata->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
-		}
-		/* Obsolète, maintenant on passe par une version */
-		// Créer une entrée dans la table des métadonnées pour la nouvelle métadonnée associée à cet objet
-		$rowObject->metadata_id = $rowMetadata->id;	
-		if (!$rowObject->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
-		}
-		
-		// Construire la nouvelle version
-		/*$rowObjectVersion= new objectversion( $database );
-		
-		$rowObjectVersion->object_id=$rowObject->id;
-		$rowObjectVersion->metadata_id=$rowMetadata->id;
-		$rowObjectVersion->name=$_POST['version_name'];
-		$rowObjectVersion->description=$_POST['version_description'];
-		$rowObjectVersion->created=$_POST['created'];
-		$rowObjectVersion->createdby=$_POST['createdby'];
-		
-		// Générer un guid
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-		if ($rowObjectVersion->guid == null)
-			$rowObjectVersion->guid = helper_easysdi::getUniqueId();
-		
-		if (!$rowObjectVersion->store(false)) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
-		}	
-		*/	
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
-	
-	
 		// Stocker les labels
 		foreach ($languages as $lang)
 		{
@@ -650,56 +707,80 @@ class ADMIN_object {
 			$object = new object( $database );
 			$object->load( $id );
 
-			$metadata = new metadata($database);
-			$metadata->load( $object->metadata_id );
+			// Récupérer toutes les versions
+			$listVersion = array();
+			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
+			$listVersion = array_merge( $listVersion, $database->loadObjectList() );
 			
-			if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED
+			//S'assurer que toutes les versions sont dans l'état archivé ou en travail
+			$total=0;
+			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (s.code = 'unpublished' or s.code = 'archived') ORDER BY v.created DESC" );
+			$total = $database->loadResult();
+			
+			if ($total <> count($listVersion))
 			{
-				$msg = JText::sprintf('CATALOG_OBJECT_DELETEMETADATA_MSG', $object->name);
-				$mainframe->enqueueMessage($msg, "error");
-				continue;
-			}
-			
-			// Supprimer de Geonetwork la métadonnée
-			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-				    <csw:Delete>
-				        <csw:Constraint version="1.0.0">
-				            <ogc:Filter>
-				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-				                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
-				                </ogc:PropertyIsLike>
-				            </ogc:Filter>
-				        </csw:Constraint>
-				    </csw:Delete>
-				</csw:Transaction>'; 
-			
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			
-			$deleteResults = DOMDocument::loadXML($result);
-			
-			$xpathDelete = new DOMXPath($deleteResults);
-			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-			
-			if ($deleted <> 1)
-			{
-				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
-			}
-			
-			if (!$metadata->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECT_DELETE_VERSIONSTATE_MSG"),"error");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit;
+			}
+			
+			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur métadonnée
+			foreach( $listVersion as $version )
+			{
+				$objectversion = new objectversion($database);
+				$objectversion->load($version->id); 
+				
+				$metadata = new metadata($database);
+				$metadata->load( $objectversion->metadata_id );
+				
+				// Supprimer de Geonetwork la métadonnée
+				$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+					<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+					    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+					    <csw:Delete>
+					        <csw:Constraint version="1.0.0">
+					            <ogc:Filter>
+					                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+					                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+					                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
+					                </ogc:PropertyIsLike>
+					            </ogc:Filter>
+					        </csw:Constraint>
+					    </csw:Delete>
+					</csw:Transaction>'; 
+				
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+				$catalogUrlBase = config_easysdi::getValue("catalog_url");
+				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				
+				$deleteResults = DOMDocument::loadXML($result);
+				
+				$xpathDelete = new DOMXPath($deleteResults);
+				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				
+				if ($deleted <> 1)
+				{
+					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					exit();
+				}
+				
+				if (!$objectversion->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					exit;
+				}
+				
+				if (!$metadata->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					exit;
+				}
 			}
 			
 			if (!$object->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->enqueueMessage('CATALOG_OBJECT_DELETE_SHOPLINK_MSG',"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 			}
 		}
@@ -707,44 +788,7 @@ class ADMIN_object {
 		$mainframe->redirect("index.php?option=$option&task=listObject" );
 	}
 	
-	function archiveObject($cid ,$option)
-	{
-		global $mainframe;
-		$database =& JFactory::getDBO();
-
-		if (!is_array( $cid ) or count( $cid ) < 1 or $cid[0] == 0) {
-			$msg = JText::_('CATALOG_OBJECT_ARCHIVE_MSG');
-			$mainframe->redirect("index.php?option=$option&task=listObject", $msg);
-			exit;
-		}		
-		
-		foreach( $cid as $id )
-		{
-			$object = new object( $database );
-			$object->load( $id );
-
-			$metadata = new metadata($database);
-			$metadata->load( $object->metadata_id );
-			
-			if ($metadata->metadatastate_id <> 1) // Impossible d'archiver si le statut n'est pas "PUBLISHED"
-			{
-				if ($metadata->metadatastate_id == 2) // Message particulier si on est déjà dans l'état ARCHIVED
-					$msg = JText::sprintf('CATALOG_OBJECT_ARCHIVEMETADATA_ARCHIVED_MSG', $object->name);
-				else
-					$msg = JText::sprintf('CATALOG_OBJECT_ARCHIVEMETADATA_MSG', $object->name);
-				$mainframe->enqueueMessage($msg, "error");
-				continue;
-			}
-			
-			$metadata->metadatastate_id=2;
-			
-			if (!$metadata->store()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-		}
-
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
-	}
+	
 	
 	/**
 	* Cancels an edit operation
@@ -876,56 +920,7 @@ class ADMIN_object {
 		exit();
 	}
 	
-	function historyAssignMetadata($id, $option)
-	{
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-		
-		if ($id == 0 and !JRequest::getVar('object_id'))
-		{
-			$msg = JText::_('CATALOG_OBJECT_HISTORYASSIGN_MSG');
-			$mainframe->redirect("index.php?option=$option&task=listObject", $msg);
-			exit;
-		}
-		
-		if (JRequest::getVar('object_id'))
-			$id = JRequest::getVar('object_id');
-			
-		//$limit = JRequest::getVar('limit', 20 );
-		//$limitstart = JRequest::getVar('limitstart', 0 );
-		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart	= $mainframe->getUserStateFromRequest('limitstart', 'limitstart', 0, 'int');
-		
-		// In case limit has been changed, adjust limitstart accordingly
-		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
-		
-		$rowObject = new object($database);
-		$rowObject->load($id);
-		
-		$query = "SELECT COUNT(*) FROM #__sdi_history_assign h
-				  WHERE h.object_id=".$rowObject->id;					
-		$database->setQuery($query);
-		$total = $database->loadResult();
-		
-		// Create the pagination object
-		jimport('joomla.html.pagination');
-		$pagination = new JPagination($total, $limitstart, $limit);
-		
-		$query = "SELECT h.assigned as date, aa.username as assignedby, bb.username as assignedto, o.name as object_name 
-                  FROM #__sdi_history_assign h
-					INNER JOIN #__sdi_account a ON h.assignedby=a.id
-					INNER JOIN #__users aa ON a.user_id=aa.id
-					INNER JOIN #__sdi_account b ON h.account_id=a.id
-					INNER JOIN #__users bb ON b.user_id=bb.id
-					INNER JOIN #__sdi_object o ON h.object_id=o.id
-				  WHERE h.object_id=".$rowObject->id." ORDER BY date DESC";
-		$database->setQuery( $query, $pagination->limitstart, $pagination->limit);
-		$rowHistory = $database->loadObjectList();
-		
-		HTML_object::historyAssignMetadata($rowHistory, $pagination, $id, $option);
-	}
 	
-			
 }
 
 ?>

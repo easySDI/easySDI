@@ -37,7 +37,7 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_PARENT"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_CHILD"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING"), 'xslfile', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
+				<!-- <th class='title'><?php //echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE"), 'url', @$filter_order_Dir, @$filter_order); ?></th> -->
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -100,19 +100,20 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
 					</a>
 				</td>
-				<td width="100px" align="center">
+				<!-- <td width="100px" align="center">
 					<?php 
-						$imgY = 'tick.png';
+						/*$imgY = 'tick.png';
 						$imgX = 'publish_x.png';
 						$img 	= $row->escalate_versioning_update ? $imgY : $imgX;
 						$prefix = "objecttypelink_escalate_versioning_update_";
 						$task 	= $row->escalate_versioning_update ? 'unpublish' : 'publish';
-						$alt = $row->escalate_versioning_update ? JText::_( 'Yes' ) : JText::_( 'No' );		
+						$alt = $row->escalate_versioning_update ? JText::_( 'Yes' ) : JText::_( 'No' );*/		
 					?>
-					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
-						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
+					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php //echo $i;?>','<?php //echo $prefix.$task;?>');">
+						<img src="images/<?php //echo $img;?>" width="16" height="16" border="0" alt="<?php //echo $alt;?>" />
 					</a>
 				</td>
+				 -->
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
 <?php
@@ -158,10 +159,11 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING_LABEL"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'flowdown_versioning', '', $row->flowdown_versioning); ?> </td>							
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE_LABEL"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'escalate_versioning_update', '', $row->escalate_versioning_update); ?> </td>							
+				<!-- <tr>
+					<td><?php //echo JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE_LABEL"); ?></td>
+					<td><?php //echo JHTML::_('select.booleanlist', 'escalate_versioning_update', '', $row->escalate_versioning_update); ?> </td>							
 				</tr>
+				 -->
 			</table>
 			<br></br>
 			<table border="0" cellpadding="3" cellspacing="0">

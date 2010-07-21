@@ -35,11 +35,11 @@ class TOOLBAR_object{
 		JToolBarHelper::save('saveObject');
 		JToolBarHelper::apply('applyObject');
 		JToolBarHelper::cancel('cancelObject');
-		if (intval($cid[0]) <> 0) // Edit
+		/*if (intval($cid[0]) <> 0) // Edit
 		{
 			JToolBarHelper::spacer();
 			JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
-		}
+		}*/
 	}
 	
 	function _DEFAULT() {
@@ -49,26 +49,17 @@ class TOOLBAR_object{
 		
 		JToolBarHelper::addNew('newObject');
 		JToolBarHelper::editList('editObject');
-		JToolBarHelper::custom('historyAssignMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_HISTORYASSIGN_METADATA"), false );
-		JToolBarHelper::custom('archiveObject', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_ARCHIVE_METADATA"), false );
+		//JToolBarHelper::custom('historyAssignMetadata', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_HISTORYASSIGN_METADATA"), false );
+		//JToolBarHelper::custom('archiveObject', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_ARCHIVE_METADATA"), false );
 		//JToolBarHelper::custom('versionaliseObject', 'copy.png', 'copy.png', JTEXT::_("CATALOG_VERSIONALISE_METADATA"), false );
-		JToolBarHelper::deleteList('','deleteObject');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_OBJECT_DELETE_CONFIRM_MSG'), 'deleteObject', JText::_( 'DELETE'));		
 		JToolBarHelper::spacer();
-		//JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
-		JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		JToolBarHelper::custom('askForEditMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
+		//JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
 		//JToolBarHelper::custom('viewObjectLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTTYPELINK"), false );
 		//JToolBarHelper::custom('manageObjectLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTTYPELINK"), false );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
-	
-	function _HISTORY() {
-		global $mainframe;
-		
-		JToolBarHelper::title(JText::_("CATALOG_HISTORYASSIGN_METADATA")); 
-		
-		JToolBarHelper::custom( 'backHistoryAssign', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
-	}
-	
 }
 ?>

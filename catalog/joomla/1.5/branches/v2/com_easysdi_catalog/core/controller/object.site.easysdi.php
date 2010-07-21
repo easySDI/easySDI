@@ -101,15 +101,11 @@ class SITE_object {
 		//$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
 		$query = "	SELECT count(*)
 						FROM 	jos_sdi_manager_object e, 
-								jos_sdi_metadata m, 
-								jos_sdi_list_metadatastate s, 
 								jos_sdi_account a, 
 								jos_users u,
 								jos_sdi_object o
 						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
-					WHERE e.object_id=o.id 
-						AND o.metadata_id=m.id 
-						AND m.metadatastate_id=s.id 
+					WHERE e.object_id=o.id  
 						AND e.account_id=a.id 
 						AND a.user_id = u.id
 						AND ot.predefined=false
@@ -124,18 +120,13 @@ class SITE_object {
 		//print_r($pagination);
 		
 		// Recherche des enregistrements selon les limites
-		//$query = "SELECT o.*, b.name as account_name, s.code as state FROM #__sdi_account a, #__users b, #__sdi_object o LEFT OUTER JOIN #__sdi_metadata m ON o.metadata_id=m.id LEFT OUTER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id WHERE a.user_id = b.id AND a.id=o.account_id AND o.account_id=".$rootAccount->id;
-		$query = "	SELECT o.*, s.id as metadatastate_id, s.label as state, m.guid as metadata_guid 
-						FROM 	jos_sdi_manager_object e, 
-								jos_sdi_metadata m, 
-								jos_sdi_list_metadatastate s, 
+		$query = "	SELECT o.* 
+						FROM 	jos_sdi_manager_object e,  
 								jos_sdi_account a, 
 								jos_users u,
 								jos_sdi_object o
 						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
-					WHERE e.object_id=o.id 
-						AND o.metadata_id=m.id 
-						AND m.metadatastate_id=s.id 
+					WHERE e.object_id=o.id  
 						AND e.account_id=a.id 
 						AND a.user_id = u.id
 						AND ot.predefined=false
@@ -217,12 +208,6 @@ class SITE_object {
 		$projections[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_PROJECTION_SELECT") );
 		$database->setQuery("SELECT id AS value, name as text FROM #__sdi_list_projection ORDER BY name");
 		$projections = array_merge( $projections, $database->loadObjectList() );
-		
-		$visibilities=array();
-		$visibilities[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_VISIBILITY_SELECT") );
-		$database->setQuery("SELECT id AS value, name as text FROM #__sdi_list_visibility ORDER BY name");
-		$visibilities = array_merge( $visibilities, $database->loadObjectList() );
-		
 		
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObject->metadata_id );
@@ -352,7 +337,28 @@ class SITE_object {
 		$unselected_editors=array();
 		$unselected_editors=helper_easysdi::array_obj_diff($editors, $selected_editors);
 		
-		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $visibilities, $pageReloaded, $option );
+		// Gestion des versions ou pas
+		$rowObjectType = new objecttype($database);
+		if (!$pageReloaded)
+		{
+			$rowObjectType->load($rowObject->objecttype_id);
+		}
+		else
+		{
+			$rowObjectType->load($_POST['objecttype_id']);
+		}
+		
+		// Objet d'un type qui n'a pas de gestion des versions
+		if ($rowObjectType->id <>0 and !$rowObjectType->hasVersioning)
+		{
+			$rowObjectVersion = new objectversionByObject_id( $database );
+			$rowObjectVersion->load( $rowObject->id );
+			
+			$rowMetadata = new metadata( $database );
+			$rowMetadata->load( $rowObjectVersion->metadata_id );
+		}
+		
+		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
 		//HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $option );
 	}
 
@@ -619,49 +625,77 @@ class SITE_object {
 			$object = new object( $database );
 			$object->load( $id );
 
-			$metadata = new metadata($database);
-			$metadata->load( $object->metadata_id );
+			// Récupérer toutes les versions
+			$listVersion = array();
+			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
+			$listVersion = array_merge( $listVersion, $database->loadResultArray() );
 			
-			// Supprimer de Geonetwork la métadonnée
-			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-				    <csw:Delete>
-				        <csw:Constraint version="1.0.0">
-				            <ogc:Filter>
-				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-				                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
-				                </ogc:PropertyIsLike>
-				            </ogc:Filter>
-				        </csw:Constraint>
-				    </csw:Delete>
-				</csw:Transaction>'; 
-			
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			
-			$deleteResults = DOMDocument::loadXML($result);
-			
-			$xpathDelete = new DOMXPath($deleteResults);
-			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-			
-			if ($deleted <> 1)
+			//S'assurer que toutes les versions sont dans l'état archivé ou en travail
+			$total=0;
+			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (state == 'unpublished' or state == 'archived') ORDER BY v.created DESC" );
+			$total = $database->loadResult();
+			if ($total <> count($listVersion))
 			{
-				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
+				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECT_DELETE_VERSIONSTATE_MSG"),"error");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit;
 			}
 			
-			if (!$metadata->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur métadonnée
+			foreach( $listVersion as $version )
+			{
+				$objectversion = new objectversion($database);
+				$objectversion->load($version->id); 
+				
+				$metadata = new metadata($database);
+				$metadata->load( $objectversion->metadata_id );
+				
+				// Supprimer de Geonetwork la métadonnée
+				$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+					<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+					    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+					    <csw:Delete>
+					        <csw:Constraint version="1.0.0">
+					            <ogc:Filter>
+					                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+					                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+					                    <ogc:Literal>'.$metadata->guid.'</ogc:Literal>
+					                </ogc:PropertyIsLike>
+					            </ogc:Filter>
+					        </csw:Constraint>
+					    </csw:Delete>
+					</csw:Transaction>'; 
+				
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+				$catalogUrlBase = config_easysdi::getValue("catalog_url");
+				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				
+				$deleteResults = DOMDocument::loadXML($result);
+				
+				$xpathDelete = new DOMXPath($deleteResults);
+				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				
+				if ($deleted <> 1)
+				{
+					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+				}
+				
+				if (!$metadata->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObject" );
+				}
+				
+				if (!$objectversion->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObject" );
+				}
 			}
 			
 			if (!$object->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->enqueueMessage('CATALOG_OBJECT_DELETE_SHOPLINK_MSG',"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 			}
 		}

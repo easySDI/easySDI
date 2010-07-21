@@ -26,8 +26,8 @@ class attributetype extends JTable
 	var $name=null;
 	var $description=null;
 	var $created=null;
-	var $updated=null;
 	var $createdby=null;
+	var $updated=null;
 	var $updatedby=null;
 	var $label=null;
 	var $ordering=0;

@@ -37,27 +37,46 @@ defined('_JEXEC') or die('Restricted access');
 				profiles_checked++;
 		}
 		
-
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		var labelEmpty = 0;
+		var labels = Array();
+		labels = document.getElementById('labels');
+		fields = labels.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				labelEmpty=1;
+		}
+		
 		// do field validation
 		if (form.name.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NONAME', true ); ?>" );
 		}
 		else if (getSelectedValue('adminForm','parent_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'Please select a parent class.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOPARENTID', true ); ?>" );
 		}
 		else if (form.lowerbound.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a lowerbound.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOLOWERBOUND', true ); ?>" );
 		} 
 		else if (form.upperbound.value == "") 
 		{
-			alert( "<?php echo JText::_( 'You must provide a upperbound.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOUPPERBOUND', true ); ?>" );
 		} 
 		else if (profiles_checked < 1) 
 		{
-			alert( "<?php echo JText::_( 'Please select at least one profile.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOPROFILE', true ); ?>" );
+		}
+		else if (labelEmpty > 0) 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOLABELS', true ); ?>" );
+		}
+		else if (getSelectedValue('adminForm','type') < 1) 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
 		else // Contrôles dépendants du type de relation
 		{
@@ -65,11 +84,11 @@ defined('_JEXEC') or die('Restricted access');
 			{
 				if (getSelectedValue('adminForm','attributechild_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select a child attribute.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOATTRIBUTE', true ); ?>" );
 				}
 				else if (getSelectedValue('adminForm','rendertype_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select a render type.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORENDERTYPE', true ); ?>" );
 				}
 				else 
 				{
@@ -80,20 +99,20 @@ defined('_JEXEC') or die('Restricted access');
 			{
 				if (getSelectedValue('adminForm','classchild_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select a child class.', true ); ?>" );
-				}
-				else if (form.isocode.value == "") 
-				{
-					alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
-				}
-				else if (getSelectedValue('adminForm','relationtype_id') < 1) 
-				{
-					alert( "<?php echo JText::_( 'Please select a relation type.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCLASS', true ); ?>" );
 				}
 				else if (getSelectedValue('adminForm','namespace_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NONAMESPACE', true ); ?>" );
 				} 
+				else if (form.isocode.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOISOCODE', true ); ?>" );
+				}
+				else if (getSelectedValue('adminForm','relationtype_id') < 1) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORELATIONTYPE', true ); ?>" );
+				}
 				else 
 				{
 					submitform( pressbutton );
@@ -103,20 +122,20 @@ defined('_JEXEC') or die('Restricted access');
 			{
 				if (getSelectedValue('adminForm','objecttypechild_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'Please select an objecttype child.', true ); ?>" );
-				}
-				else if (form.isocode.value == "") 
-				{
-					alert( "<?php echo JText::_( 'You must provide an isocode.', true ); ?>" );
-				}
-				else if (getSelectedValue('adminForm','relationtype_id') < 1) 
-				{
-					alert( "<?php echo JText::_( 'Please select a relation type.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOOBJECTTYPE', true ); ?>" );
 				}
 				else if (getSelectedValue('adminForm','namespace_id') < 1) 
 				{
-					alert( "<?php echo JText::_( 'You must provide a namespace.', true ); ?>" );
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NONAMESPACE', true ); ?>" );
 				} 
+				else if (form.isocode.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOISOCODE', true ); ?>" );
+				}
+				else if (getSelectedValue('adminForm','relationtype_id') < 1) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORELATIONTYPE', true ); ?>" );
+				}
 				else 
 				{
 					submitform( pressbutton );
@@ -245,7 +264,7 @@ class ADMIN_relation {
 			return false;
 		}		
 		
-		// get list of relationtypes for dropdown filter
+		// get list of rendertypes for dropdown filter
 		$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_list_rendertype' .
 				' ORDER BY name';

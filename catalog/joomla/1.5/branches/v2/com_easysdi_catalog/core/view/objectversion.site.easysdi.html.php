@@ -19,7 +19,123 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_objectversion {
 	
-	function newObjectVersion($object_id, $fieldsLength, $metadata_guid, $listVersionNames, $option)
+	function listObjectVersion($pageNav, $rows, $object_id, $object_name, $option)
+	{
+		$database =& JFactory::getDBO(); 
+		$user	=& JFactory::getUser();
+		?>	
+		<div id="page">
+		<h2 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h2>
+		<div class="contentin">
+		<form action="index.php" method="GET" id="objectversionListForm" name="objectversionListForm">
+	
+		<table width="100%">
+			<tr>
+				<td colspan="3" align="right">
+					<button type="button" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=0', '_self');" ><?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3" align="right">
+					<button type="button" onClick="document.getElementById('task').value='cancelObjectVersion';document.getElementById('objectversionListForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
+				</td>
+			</tr>
+		</table>
+		<br/>		
+		<table width="100%">
+			<tr>																																						
+				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+				<td align="center"><?php echo JText::_("CORE_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
+				<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+			</tr>
+		</table>
+	<script>
+		function suppressObjectVersion_click(id, object_id){
+			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_DELETE"); ?>');
+			if(!conf)
+				return false;
+			window.open('./index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id='+ object_id + '&cid[]='+id, '_self');
+		}
+	</script>
+	<table id="myProducts" class="box-table">
+	<thead>
+	<tr>
+	<th><?php echo JText::_('CATALOG_OBJECTVERSION_NAME'); ?></th>
+	<th><?php echo JText::_('CATALOG_OBJECTVERSION_DESCRIPTION'); ?></th>
+	<!-- <th><?php //echo JText::_('CORE_UPDATED'); ?></th> -->
+	<th class="logo">&nbsp;</th>
+	<th class="logo">&nbsp;</th>
+	<th class="logo">&nbsp;</th>
+	<th class="logo">&nbsp;</th>
+	</tr>
+	</thead>
+	<tbody>
+	<?php
+		$i=0;
+		$param = array('size'=>array('x'=>800,'y'=>800) );
+		JHTML::_("behavior.modal","a.modal",$param);
+		foreach ($rows as $row)
+		{	$i++;
+			
+			?>		
+			<tr>
+			<td ><a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><?php echo $row->description; ?></td>
+			<!-- <td ><?php //if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td> -->
+			<?php 
+			if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+			{
+				?>
+				<td class="logo"></td>
+				<td class="logo"></td>
+				<?php 
+			} 
+			else 
+			{
+				?>
+				<td class="logo"><div title="<?php echo JText::_('CORE_EDIT_OBJECTVERSION'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
+				<?php
+				if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
+				{
+				?> 
+				<td class="logo"><div title="<?php echo JText::_('CORE_DELETE_OBJECTVERSION'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>');" ></div></td>
+				<?php 
+				}
+				else {
+				?>
+				<td class="logo"></td>
+				<?php 
+				}
+			}
+			?>
+			<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_VIEWLINK'); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			<td class="logo"><div title="<?php echo JText::_('CATALOF_OBJECTVERSION_MANAGELINK'); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			</tr>
+			<?php		
+		}
+		
+	?>
+	</tbody>
+	</table>
+	<br/>
+	<table width="100%">
+		<tr>																																						
+			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
+			<td align="center">&nbsp;</td>
+			<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
+		</tr>
+	</table>
+	
+		<input type="hidden" name="option" value="<?php echo $option; ?>">
+		<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
+		<input type="hidden" id="task" name="task" value="listObjectVersion">
+		</form>
+		</div>
+		</div>
+	<?php
+	}
+	
+	function editObjectVersion($row, $object_id, $fieldsLength, $metadata_guid, $option)
 	{
 		global  $mainframe;
 		
@@ -32,7 +148,20 @@ class HTML_objectversion {
 		
 		?>
 		<div id="page">
-		    <h2 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name.': <small><small>[ '.JText::_("CORE_NEW").' ]</small></small>' ?></h2>
+<?php 
+if ($row->id == 0)
+{
+?>
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h2>
+<?php 
+}
+else
+{
+?>
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h2>
+<?php 
+}
+?>
 		    <div id="contentin" class="contentin">
 		    <table width="100%">
 				<tr>
@@ -53,28 +182,556 @@ class HTML_objectversion {
 						<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" /></td>								
 					</tr>
 					<tr>
-						<td><?php echo JText::_("CORE_NAME"); ?> : </td>
-						<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="name"/></td>								
-					</tr>
-					<tr>
 						<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 						<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"></textarea></td>								
 					</tr>
 				</table>
 				
+				<input type="hidden" name="cid[]" value="<?php echo $object_id?>" />
 				<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
+				<input type="hidden" name="objectversion_id" value="<?php echo $row->id?>" />
 				<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
-				<input type="hidden" name="created" value="<?php echo date ('Y-m-d H:i:s');?>" />
-				<input type="hidden" name="createdby" value="<?php echo $user->id; ?>" /> 
 				
+				<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+				<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
+				<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+				<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+				
+				<input type="hidden" name="title" value="<?php echo ($row->title)? $row->title : date ('Y-m-d h:i:s');?>" />
+				<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
+				<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 				<input type="hidden" name="option" value="<?php echo $option; ?>" />
 				<input type="hidden" name="task" value="" />
-				
-				<input type="hidden" name="versionNames" value="<?php echo implode(", ", $listVersionNames);?>" />
 			</form>
 			</div>
 		</div>
 			<?php 	
+	}
+	
+	function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
+	{
+		$database =& JFactory::getDBO(); 
+		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+
+		$uri =& JUri::getInstance();
+		$document =& JFactory::getDocument();
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		
+		$language =& JFactory::getLanguage();
+		
+		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else
+			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
+		
+		$javascript = "";
+	
+		$objectversion = new objectversion($database);
+		$objectversion->load($objectversion_id);
+		$title = "\"".$objectversion->title."\"";
+		
+		?>
+		<div id="page">
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_VIEW_OBJECTVERSIONLINK' )." ".$title ?></h2>
+		    <div id="contentin" class="contentin">
+		    <table width="100%">
+				<tr>
+					<td width="100%" align="right">
+						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink'; document.getElementById('adminForm').submit();"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<br></br>
+					</td>
+				</tr>
+		   </table>
+			<table width="100%">
+			<tr>
+				<td width="100%"><div id="viewLinksOutput"></div></td>
+			</tr>
+		   </table>
+		   <form action="index.php" method="post" name="adminForm" id="adminForm"
+			class="adminForm">
+			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
+			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
+			</form>
+			</div>
+			</div>
+		<?php
+		
+		$javascript .="
+			//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
+			//Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
+			var domNode = Ext.DomQuery.selectNode('div#viewLinksOutput')
+			Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
+				
+			// Column Model shortcut array
+			var cols = [
+				{ id : 'value', hidden: true, dataIndex: 'value'},
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name'}
+			];
+			
+			var parentGridStore = new Ext.data.JsonStore({
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        data   : ".HTML_metadata::array2json(array ("total"=>count($parent_objectlinks), "links"=>$parent_objectlinks)).",
+				root   : 'links'
+		    });
+		    
+			// declare the source Grid
+		    var parentGrid = new Ext.grid.GridPanel({
+				store            : parentGridStore,
+		        columns          : cols,
+				stripeRows       : true,
+		        autoExpandColumn : 'name',
+		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_PARENTGRID_TITLE"))."'
+		    });
+		
+		    var childGridStore = new Ext.data.JsonStore({
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        data   : ".HTML_metadata::array2json(array ("total"=>count($child_objectlinks), "links"=>$child_objectlinks)).",
+				root   : 'links'
+		    });
+		
+		    // create the destination Grid
+		    var childGrid = new Ext.grid.GridPanel({
+				store            : childGridStore,
+		        columns          : cols,
+				stripeRows       : true,
+		        autoExpandColumn : 'name',
+		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_CHILDGRID_TITLE"))."'
+		    });
+		    
+			// Créer le formulaire qui va contenir la structure
+			var form = new Ext.form.FormPanel(
+				{
+					id:'linksForm',
+					url: 'index.php',
+					border:false,
+			        collapsed:false,
+			        renderTo: document.getElementById('formContainer'),
+			        items        : [
+			        	{
+			        		xtype		 : 'panel',
+							width        : 650,
+							height       : 300,
+							layout       : 'hbox',
+							defaults     : { flex : 1 }, //auto stretch
+							layoutConfig : { align : 'stretch' },
+							items        : [
+								parentGrid,
+								childGrid
+							]
+						}
+					]
+			    }
+			);
+	        
+			// Affichage du formulaire
+    		form.doLayout();
+    	";
+					
+		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
+	}
+	
+	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $option)
+	{
+		$database =& JFactory::getDBO(); 
+		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		JHTML::script('Components_extjs.js', 'administrator/components/com_easysdi_catalog/js/');
+		
+		$uri =& JUri::getInstance();
+		$document =& JFactory::getDocument();
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		
+		$language =& JFactory::getLanguage();
+		
+		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else
+			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
+		
+		$javascript = "";
+	
+		$objectversion = new objectversion($database);
+		$objectversion->load($objectversion_id);
+		$title = "\"".$objectversion->title."\"";
+		
+		?>
+		<div id="page">
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_MANAGE_OBJECTVERSIONLINK' )." ".$title ?></h2>
+		    <div id="contentin" class="contentin">
+		    <table width="100%">
+				<tr>
+					<td width="100%" align="right">
+						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink'; document.getElementById('adminForm').submit();"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<br></br>
+					</td>
+				</tr>
+		   </table>
+			<table width="100%">
+			<tr>
+				<td width="100%"><div id="viewLinksOutput"></div></td>
+			</tr>
+		   </table>
+		   <form action="index.php" method="post" name="adminForm" id="adminForm"
+			class="adminForm">
+			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
+			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
+			</form>
+			</div>
+			</div>
+		<?php
+		
+		$javascript .="
+			//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
+			//Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
+			var domNode = Ext.DomQuery.selectNode('div#viewLinksOutput')
+			Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
+			
+			// Column Model shortcut array
+			var cols = [
+				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true}
+			];
+			
+			var unselectedGridStore = new Ext.data.JsonStore({
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
+				root   : 'links'
+		    });
+		    
+		    // declare the source Grid
+		    var unselectedGrid = new Ext.grid.GridPanel({
+		    	id				 : 'unselected',
+				ddGroup          : 'selectedGridDDGroup',
+		        ds				 : getObjectList(),
+				columns          : cols,
+				enableDragDrop   : true,
+		        stripeRows       : true,
+		        autoExpandColumn : 'name',
+		        flex			 : 5,
+		        loadMask		 : true,
+		        frame			 : false,
+				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_UNSELECTEDGRID_TITLE"))."',
+		        viewConfig: {
+							 	forceFit: true,
+								scrollOffset:0
+							 }
+		    });
+			    
+		    var selectedGridStore = new Ext.data.JsonStore({
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
+				root   : 'links'
+		    });
+				    
+		    // create the destination Grid
+		    var selectedGrid = new Ext.grid.GridPanel({
+				id				 : 'selected',
+				ddGroup          : 'unselectedGridDDGroup',
+		        store            : selectedGridStore,
+		        columns          : cols,
+				enableDragDrop   : true,
+		        stripeRows       : true,
+		        autoExpandColumn : 'name',
+		        flex			 : 5,
+		        loadMask		 : true,
+		        frame			 : false,
+				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_SELECTEDGRID_TITLE"))."'
+		    });
+		    
+		    var htmlButtons = new Ext.Panel({
+				id				 : 'htmlButtons',
+				frame			 : false,
+				border			 : false,
+				layout      	 : 'vbox',
+				flex			 : 1,
+				layoutConfig	 : { align : 'center', pack:'center'},
+				defaults		 : {margins:'0 0 5 0'},
+                items			 : [
+									{
+										xtype: 'button',
+										text: '<<',
+										handler: function()
+						                {
+						                	var unselected = Ext.getCmp('unselected');
+						                	var selected = Ext.getCmp('selected');                
+			 								
+											selected.store.removeAll();	
+			 								unselected.store.reload({                    
+			 									params: 
+			 									{ 
+				 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+				 									id:Ext.getCmp('id').getValue(),
+				 									name:Ext.getCmp('name').getValue(),
+				 									status:Ext.getCmp('status').getValue(),
+				 									manager:Ext.getCmp('manager').getValue(),
+				 									editor:Ext.getCmp('editor').getValue(),
+				 									fromDate:Ext.getCmp('fromDate').getValue(),
+				 									toDate:Ext.getCmp('toDate').getValue(),
+				 									selectedObjects: ''
+												}                
+											});	
+						                }
+									},
+									{
+										xtype: 'button',
+										text: '<',
+										handler: function()
+						                {
+						                	var unselected = Ext.getCmp('unselected');
+						                	var selected = Ext.getCmp('selected');                
+			 								
+						                	var records = selected.selModel.getSelections();
+			 								Ext.each(records, selected.store.remove, selected.store);
+	                        				
+			 								var selectedValues = new Array();
+			 								var grid = Ext.getCmp('selected').store.data;
+			 								for (var i = 0 ; i < grid.length ;i++) 
+			 								{
+			 									selectedValues.push(grid.get(i).get('value'));
+											}
+											
+			 								unselected.store.reload({                    
+			 									params: 
+			 									{ 
+				 									objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+				 									id:Ext.getCmp('id').getValue(),
+				 									name:Ext.getCmp('name').getValue(),
+				 									status:Ext.getCmp('status').getValue(),
+				 									manager:Ext.getCmp('manager').getValue(),
+				 									editor:Ext.getCmp('editor').getValue(),
+				 									fromDate:Ext.getCmp('fromDate').getValue(),
+				 									toDate:Ext.getCmp('toDate').getValue(),
+				 									selectedObjects: selectedValues.join(', ')
+												}                
+											});	
+						                }
+									},
+									{
+										xtype: 'button',
+										text: '>',
+										handler: function()
+						                {
+						                	var unselected = Ext.getCmp('unselected');
+						                	var selected = Ext.getCmp('selected');                
+			 								var records = unselected.selModel.getSelections();
+			 								Ext.each(records, unselected.store.remove, unselected.store);
+	                        				selected.store.add(records);
+                        					selected.store.sort('name', 'ASC');
+						                }
+									},
+									{
+										xtype: 'button',
+										text: '>>',
+										handler: function()
+						                {
+						                	var unselected = Ext.getCmp('unselected');
+						                	var selected = Ext.getCmp('selected');                
+			 								var records = unselected.store.getRange();
+			 								Ext.each(records, unselected.store.remove, unselected.store);
+	                        				selected.store.add(records);
+                        					selected.store.sort('name', 'ASC');
+						                }
+									}
+								   ]
+		    });
+		    
+		    var objecttype = new Array();
+		    objecttype['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_OBJECTTYPE_LABEL'))."';
+			objecttype['list'] = $listObjecttypes;
+			
+			var id = new Array();
+		    id['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_ID_LABEL'))."';
+			
+			var name = new Array();
+		    name['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_NAME_LABEL'))."';
+			
+		    var status = new Array();
+		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_STATUS_LABEL'))."';
+			status['list'] = $listStatus;
+			
+			var manager = new Array();
+		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';
+			manager['list'] = $listManagers;
+			
+			var editor = new Array();
+		    editor['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_EDITOR_LABEL'))."';
+			editor['list'] = $listEditors;
+			
+			var fromDate = new Array();
+		    fromDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FROMDATE_LABEL'))."';
+			
+		    var toDate = new Array();
+		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_TODATE_LABEL'))."';
+			
+		    // Créer le formulaire qui va contenir la structure
+			var form = new Ext.form.FormPanel(
+				{
+					id:'linksForm',
+					url: 'index.php',
+					method: 'POST',
+					border: false,
+			        collapsed: false,
+			        labelWidth: 200,
+					renderTo: document.getElementById('formContainer'),
+			        standardSubmit:true,
+			        items        : [
+			        	manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate),
+			        	{
+			        		id			: 'gridPanel',
+			        		xtype		 : 'panel',
+							width        : 650,
+							height       : 300,
+							layout       : 'hbox',
+							border		 : false,
+							layoutConfig : { align: 'stretch', pack : 'start', padding: '10 10 10 10'},
+                            items        : [
+								unselectedGrid,
+								htmlButtons,
+								selectedGrid
+							]
+						},
+				       { 
+				         id:'objectlinks', 
+				         xtype: 'hidden',
+				         value:'' 
+				       },
+				       { 
+				         id:'task', 
+				         xtype: 'hidden',
+				         value:'saveObjectVersionLink' 
+				       },
+				       { 
+				         id:'option', 
+				         xtype: 'hidden',
+				         value:'".$option."' 
+				       },
+				       { 
+				         id:'object_id', 
+				         xtype: 'hidden',
+				         value:'".$object_id."' 
+				       },
+				       { 
+				         id:'objectversion_id', 
+				         xtype: 'hidden',
+				         value:'".$objectversion_id."' 
+				       }
+					],
+					buttons: [
+						{
+							text:'".html_Metadata::cleanText(JText::_('CORE_SAVE'))."',
+		                    handler: function(){
+		                    	var selectedValues = new Array();
+					 			var grid = Ext.getCmp('selected').store.data;
+							 	for (var i = 0 ; i < grid.length ;i++) 
+					 			{
+					 				selectedValues.push(grid.get(i).get('value'));
+								}
+								
+		                    	form.getForm().setValues({objectlinks: selectedValues.join(', ')});
+							    form.getForm().submit();
+		                    	}
+						}
+					]
+			    }
+			);
+
+			/****
+	        * Setup Drop Targets
+	        ***/
+	        // This will make sure we only drop to the  view scroller element
+	        var unselectedGridDropTargetEl =  unselectedGrid.getView().scroller.dom;
+	        var unselectedGridDropTarget = new Ext.dd.DropTarget(unselectedGridDropTargetEl, {
+	                ddGroup    : 'unselectedGridDDGroup',
+	                notifyDrop : function(ddSource, e, data){
+	                       var records =  ddSource.dragData.selections;
+	                       Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
+	                        //unselectedGrid.store.add(records);
+	                        //unselectedGrid.store.sort('name', 'ASC');
+	                        
+	                        var selectedValues = new Array();
+				 			var grid = Ext.getCmp('selected').store.data;
+						 	for (var i = 0 ; i < grid.length ;i++) 
+				 			{
+				 				selectedValues.push(grid.get(i).get('value'));
+							}
+							
+				 			unselectedGrid.store.reload({                    
+				 			params: { 
+				 				selectedObjects: selectedValues.join(', ')
+								}                
+							});	
+							
+	                        return true
+	                }
+	        });
+	
+	
+	        // This will make sure we only drop to the view scroller element
+	        var selectedGridDropTargetEl = selectedGrid.getView().scroller.dom;
+	        var selectedGridDropTarget = new Ext.dd.DropTarget(selectedGridDropTargetEl, {
+	                ddGroup    : 'selectedGridDDGroup',
+	                notifyDrop : function(ddSource, e, data){
+	                		var records =  ddSource.dragData.selections;
+	                        Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
+	                        selectedGrid.store.add(records);
+	                        selectedGrid.store.sort('name', 'ASC');
+	                        return true
+	                }
+	        });
+	        
+			// Affichage du formulaire
+    		form.doLayout();
+    		
+    		// Remplir une première fois les valeurs sélectionnées
+    		var selectedValues = new Array();
+ 			var grid = Ext.getCmp('selected').store.data;
+ 			for (var i = 0 ; i < grid.length ;i++) 
+ 			{
+ 				selectedValues.push(grid.get(i).get('value'));
+			}
+			
+			unselectedGrid.store.load({params: {selectedObjects: selectedValues.join(', ')}});
+    		
+    		function getObjectList()
+			{
+				var ds = new Ext.data.Store({
+					        proxy: new Ext.data.HttpProxy({
+					            url: 'index.php?option=com_easysdi_catalog&task=getObjectVersionForLink'
+					        }),
+					        reader: new Ext.data.JsonReader({
+					            root: 'links',
+					            totalProperty: 'total',
+					            id: 'value'
+					        }, [
+					            {name: 'value', mapping: 'value'},
+					            {name: 'name', mapping: 'name'}
+					        ]),
+					        // turn on remote sorting
+					        remoteSort: true,
+					        baseParams: {limit:100, dir:'ASC', sort:'name', objectversion_id:'".$objectversion_id."', object_id:'".$object_id."'}
+					    });
+				return ds;
+			}
+    	";
+					
+		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
 	}
 }
 ?>

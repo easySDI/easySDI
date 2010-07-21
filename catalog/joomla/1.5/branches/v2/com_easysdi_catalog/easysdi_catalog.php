@@ -100,7 +100,7 @@ else
 			break;
 		case "editMetadata":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
-			//require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'metadata.toolbar.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
@@ -251,6 +251,18 @@ else
 			SITE_metadata::historyAssignMetadata($cid[0],$option);
 			break;
 			
+		case "archiveMetadata":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
+			
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+			SITE_metadata::archiveMetadata($cid,$option);				
+			SITE_metadata::listMetadata($option);
+			break;
+
 		case "listObject":			
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
@@ -324,36 +336,33 @@ else
 			SITE_object::listObject($option);
 			break;
 		
-		case "archiveObject":
+		case "viewObjectVersionLink":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'object.site.easysdi.php');
-			
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objectversion.admin.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
-			
-			ADMIN_object::archiveObject($cid,$option);				
-			SITE_object::listObject($option);
+			ADMIN_objectversion::viewObjectVersionLink($cid[0],$option);
 			break;
-
-		case "viewObjectLink":
+		case "manageObjectVersionLink":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
-			ADMIN_object::viewObjectLink($cid[0],$option);
-			break;
-		case "manageObjectLink":
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objectversion.admin.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-			ADMIN_object::manageObjectLink($cid[0],$option);
+			ADMIN_objectversion::manageObjectVersionLink($cid[0],$option);
 			break;
-	
+		
+		case "cancelObjectVersionLink":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
+			$object_id = JRequest::getVar ('object_id');
+			SITE_objectversion::listObjectVersion($object_id, $option);
+			break;
+			
 		case "getObjectForLink":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
@@ -361,7 +370,16 @@ else
 			ADMIN_object::getObjectForLink($option);
 			break;
 		
-		case "versionaliseObject":
+		case "listObjectVersion":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			$object_id = JRequest::getVar ('object_id');
+			SITE_objectversion::listObjectVersion($object_id, $option);
+			break;
+			
+		case "newObjectVersion":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttype.easysdi.class.php');
@@ -369,21 +387,48 @@ else
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
-			ADMIN_objectversion::newObjectVersion($cid[0], $option);
+			ADMIN_objectversion::editObjectVersion(0, $option);
+			break;
+			
+		case "editObjectVersion":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttype.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objectversion.admin.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+			ADMIN_objectversion::editObjectVersion($cid[0], $option);
 			break;
 		
 		case "saveObjectVersion":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversionlink.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objectversion.admin.easysdi.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'object.site.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 			ADMIN_objectversion::saveObjectVersion($option);
-			SITE_object::listObject($option);
+			$object_id = JRequest::getVar ('object_id');
+			SITE_objectversion::listObjectVersion($object_id, $option);
+			break;
+			
+		case "deleteObjectVersion":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			SITE_objectversion::deleteObjectVersion($cid, $option);
+			$object_id = JRequest::getVar ('object_id');
+			SITE_objectversion::listObjectVersion($object_id, $option);
 			break;
 			
 		case "cancelObjectVersion":

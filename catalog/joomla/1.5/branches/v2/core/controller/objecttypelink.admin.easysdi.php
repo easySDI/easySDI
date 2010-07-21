@@ -30,11 +30,11 @@ defined('_JEXEC') or die('Restricted access');
 		// do field validation
 		if (getSelectedValue('adminForm','parent_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'You must select a parent for the link.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_SUBMIT_NOPARENT', true ); ?>" );
 		}
 		else if (getSelectedValue('adminForm','parent_id') < 1) 
 		{
-			alert( "<?php echo JText::_( 'You must select a child for the link.', true ); ?>" );
+			alert( "<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_SUBMIT_NOCHILD', true ); ?>" );
 		} 
 		else 
 		{
