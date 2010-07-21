@@ -206,10 +206,6 @@ class ADMIN_config {
 		$database=& JFactory::getDBO(); 
 		
 		// Sauvegarde des clés CORE
-		$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['java_bridge_url']."' WHERE code = 'JAVA_BRIDGE_URL'");
-		if (!$database->query()) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
 		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['description_length']."' WHERE code = 'DESCRIPTION_LENGTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -227,10 +223,6 @@ class ADMIN_config {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['welcome_redirect_url']."' WHERE code = 'WELCOME_REDIRECT_URL'");
-		if (!$database->query()) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['fop_url']."' WHERE code = 'FOP_URL'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
@@ -271,6 +263,10 @@ class ADMIN_config {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_type']."' WHERE code = 'CATALOG_BOUNDARY_TYPE'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['java_bridge_url']."' WHERE code = 'JAVA_BRIDGE_URL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

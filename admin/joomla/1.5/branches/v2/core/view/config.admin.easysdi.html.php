@@ -436,17 +436,7 @@ if ($proxyItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_JAVABRIDGE_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_JAVABRIDGE_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="java_bridge_url" value="<?php echo $coreList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_DESCRIPTIONLENGTH_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_DESCRIPTIONLENGTH_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_DESCRIPTIONLENGTH_LABEL' ); ?>
 											</span>
 										</td>
@@ -456,7 +446,7 @@ if ($proxyItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOWIDTH_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOWIDTH_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOWIDTH_LABEL' ); ?>
 											</span>
 										</td>
@@ -466,7 +456,7 @@ if ($proxyItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOHEIGHT_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOHEIGHT_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_LOGOHEIGHT_LABEL' ); ?>
 											</span>
 										</td>
@@ -476,7 +466,7 @@ if ($proxyItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_PAGINATIONMETADATA_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_PAGINATIONMETADATA_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_PAGINATIONMETADATA_LABEL' ); ?>
 											</span>
 										</td>
@@ -486,22 +476,12 @@ if ($proxyItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_WELCOMEREDIRECT_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_WELCOMEREDIRECT_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_WELCOMEREDIRECT_LABEL' ); ?>
 											</span>
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="welcome_redirect_url" value="<?php echo $coreList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_FOP_LABEL' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_FOP_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="fop_url" value="<?php echo $coreList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									</tbody>
@@ -524,12 +504,22 @@ if ($catalogItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_JAVABRIDGE_LABEL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_JAVABRIDGE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="java_bridge_url" value="<?php echo $catalogList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_URL_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_URL_LABEL' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_url" value="<?php echo $catalogList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_url" value="<?php echo $catalogList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -539,7 +529,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_encoding_code" value="<?php echo $catalogList[7]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_encoding_code" value="<?php echo $catalogList[8]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -549,7 +539,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_encoding_val" value="<?php echo $catalogList[8]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_encoding_val" value="<?php echo $catalogList[9]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -559,7 +549,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -569,7 +559,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -579,7 +569,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -589,7 +579,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -599,7 +589,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -634,7 +624,8 @@ if ($shopItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>
 											</span>
 										</td>
@@ -644,7 +635,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>
 											</span>
 										</td>
@@ -654,7 +645,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_HISTORY_DELAY' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_HISTORY_DELAY' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_HISTORY_DELAY' ); ?>
 											</span>
 										</td>
@@ -665,7 +656,7 @@ if ($shopItem > 0){
 									
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_CADDY_DESC_LENGTH' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_CADDY_DESC_LENGTH' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_CADDY_DESC_LENGTH' ); ?>
 											</span>
 										</td>
@@ -675,7 +666,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_AREAPRECISION' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_AREAPRECISION' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_AREAPRECISION' ); ?>
 											</span>
 										</td>
@@ -685,7 +676,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MOD_PERIM_METERTOKILOMETERLIMIT' ); ?>
 											</span>
 										</td>
@@ -695,9 +686,10 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>
 											</span>
+										</td>
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="shop_article_step4" value="<?php echo $shopList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
@@ -713,7 +705,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP5' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP5' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP5' ); ?>
 											</span>
 										</td>
@@ -731,7 +723,7 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_TERMS_OF_USE' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_TERMS_OF_USE' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_TERMS_OF_USE' ); ?>
 											</span>
 										</td>
@@ -770,7 +762,7 @@ if ($proxyItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'PROXY_CONFIG' ); ?>::<?php echo JText::_( 'TIPTMPFOLDER' ); ?>">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'PROXY_CONFIG' ); ?>">
 												<?php echo JText::_( 'PROXY_CONFIG' ); ?>
 											</span>
 										</td>
