@@ -480,38 +480,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_product_perimeter`  (
-					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
-					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`created`  datetime NOT NULL ,
-					`updated`  datetime NULL DEFAULT NULL ,
-					`createdby`  bigint(20) NOT NULL ,
-					`updatedby`  bigint(20) NULL DEFAULT NULL ,
-					`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`ordering`  bigint(20) NULL DEFAULT NULL ,
-					`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
-					`checked_out_time`  datetime NULL DEFAULT NULL ,
-					`product_id`  bigint(20) NOT NULL ,
-					`perimeter_id`  bigint(20) NOT NULL ,
-					`buffer`  tinyint(1) NOT NULL DEFAULT 0 ,
-					PRIMARY KEY (`id`),
-					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`), 
-					FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-					INDEX `fk_pp_peri` USING BTREE (`perimeter_id`) ,
-					INDEX `fk_pp_prod` USING BTREE (`product_id`) 
-					)
-					ENGINE=InnoDB
-					DEFAULT CHARACTER SET=utf8";
-		$db->setQuery( $query);
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
+
 		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_product`  (
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
@@ -557,6 +526,39 @@ function com_install(){
 					INDEX `fk_p_treatment` USING BTREE (`treatmenttype_id`) ,
 					INDEX `fk_p_basemap` USING BTREE (`viewbasemap_id`) ,
 					INDEX `fk_p_version` USING BTREE (`objectversion_id`) 
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_product_perimeter`  (
+					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`created`  datetime NOT NULL ,
+					`updated`  datetime NULL DEFAULT NULL ,
+					`createdby`  bigint(20) NOT NULL ,
+					`updatedby`  bigint(20) NULL DEFAULT NULL ,
+					`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`ordering`  bigint(20) NULL DEFAULT NULL ,
+					`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+					`checked_out_time`  datetime NULL DEFAULT NULL ,
+					`product_id`  bigint(20) NOT NULL ,
+					`perimeter_id`  bigint(20) NOT NULL ,
+					`buffer`  tinyint(1) NOT NULL DEFAULT 0 ,
+					PRIMARY KEY (`id`),
+					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
+					UNIQUE INDEX `code` USING BTREE (`code`), 
+					FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					INDEX `fk_pp_peri` USING BTREE (`perimeter_id`) ,
+					INDEX `fk_pp_prod` USING BTREE (`product_id`) 
 					)
 					ENGINE=InnoDB
 					DEFAULT CHARACTER SET=utf8";

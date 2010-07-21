@@ -34,11 +34,7 @@
 			<filename>easysdi_shop.php</filename>
 			<filename>license.txt</filename>
 			<folder>core</folder>
-			<folder>img</folder>	
 			<folder>views</folder>		
 		</files>
-		<files>
-			<folder>ext</folder>
-			<folder>js</folder>
-		</files>
+
 </install>
