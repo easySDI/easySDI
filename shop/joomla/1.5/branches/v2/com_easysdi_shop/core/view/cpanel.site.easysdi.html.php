@@ -306,7 +306,7 @@ class HTML_cpanel {
 				<?php echo JText::_("SHOP_ORDER_PROCESS_ORDER_CLIENT") ;?> :
 				</td>
 				<td>
-				<a title="<?php echo $partner->username; ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForPartner&SummaryForId=<?php echo $partner->id ;?>" rel="{handler:'iframe',size:{x:565,y:450}}"><?php echo $partner->name; ?></a>
+				<a title="<?php echo $partner->username; ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&toolbar=1&task=showSummaryForAccount&SummaryForId=<?php echo $partner->id ;?>" rel="{handler:'iframe',size:{x:565,y:450}}"><?php echo $partner->name; ?></a>
 				</td>
 			</tr>
 			<!-- sent -->

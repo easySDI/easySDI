@@ -18,9 +18,9 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_cpanel_partner {
+class HTML_cpanel_account {
 	
-	function showSummaryForPartner($summaryForId, $print, $toolbar){
+	function showSummaryForAccount($summaryForId, $print, $toolbar){
 		$database = & JFactory::getDBO();
 		
 		$request="SELECT * FROM #__sdi_account p 

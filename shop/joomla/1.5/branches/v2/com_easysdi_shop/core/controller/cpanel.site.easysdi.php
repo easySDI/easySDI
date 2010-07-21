@@ -1541,11 +1541,11 @@ class SITE_cpanel {
 		}
 	}
 	
-	function showSummaryForPartner(){
+	function showSummaryForAccount(){
 		$summaryForId = JRequest::getVar('SummaryForId');
 		$print = JRequest::getVar('print');
 		$toolbar = JRequest::getVar('toolbar');
-		HTML_cpanel_partner::showSummaryForPartner($summaryForId, $print, $toolbar);
+		HTML_cpanel_account::showSummaryForAccount($summaryForId, $print, $toolbar);
 	}
 }
 ?>

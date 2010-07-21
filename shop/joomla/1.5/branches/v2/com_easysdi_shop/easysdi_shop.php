@@ -131,11 +131,11 @@ switch($task){
 		SITE_cpanel::orderReport($cid[0], true, true);
 		break;
 		
-	case "showSummaryForPartner":
+	case "showSummaryForAccount":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'cpanel.partner.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'cpanel.account.site.easysdi.html.php');
 		
-		SITE_cpanel::showSummaryForPartner();
+		SITE_cpanel::showSummaryForAccount();
 		break;
 		
 	case "downloadProduct":
