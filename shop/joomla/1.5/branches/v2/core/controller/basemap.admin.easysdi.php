@@ -191,21 +191,28 @@ class ADMIN_basemap {
 		$total = $basemap->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 	
-		// Recherche des enregistrements selon les limites
-//		$query = "SELECT * FROM ".$basemap->_tbl;	
-//		$query .= " LEFT JOIN (SELECT count(*)as count, cc.basemap_id as bsp_id 
-//							FROM #__sdi_basemapcontent cc,
-//							(SELECT DISTINCT basemap_id FROM #__sdi_basemapcontent ) ccc 
-//														WHERE cc.basemap_id = ccc.basemap_id) builtin ON builtin.bsp_id = $basemap->_tbl.id ";
 		$query = "SELECT * FROM ".$basemap->_tbl;	
 		if($search)
 		{
 			$query .= " WHERE LOWER(name) like ".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query .= " WHERE LOWER(projection) like ".$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}	
 
-		if ($use_pagination) {
-			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "projection" and $filter_order <> "unit"   and $filter_order <> "maxextent" and  $filter_order <> "updated" )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
 		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query = $query.$orderby;
+		
+		if ($use_pagination) {
+			$db->setQuery( $query ,$limitstart,$limit);
+		}
+		
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -213,7 +220,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option, $search);	
+		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order,$search);	
 	}
 	
 	function editBasemap( $id, $option ) {

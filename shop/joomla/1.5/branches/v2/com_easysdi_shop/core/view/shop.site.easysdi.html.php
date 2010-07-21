@@ -1444,7 +1444,7 @@ class HTML_shop
 						  FROM #__sdi_language l, 
 						  		#__sdi_list_codelang cl,
 						  		#__sdi_product_property p 
-						  INNER JOIN #__sdi_property_value pvd ON p.propertyvalue_id=pvd.id 
+						  INNER JOIN #__sdi_propertyvalue pvd ON p.propertyvalue_id=pvd.id 
 						  INNER JOIN #__sdi_property pd ON pvd.property_id=pd.id 
 						  LEFT OUTER JOIN #__sdi_translation t ON pd.guid=t.element_guid 
 						  WHERE p.product_id=".$product->id." 
@@ -1471,7 +1471,7 @@ class HTML_shop
 										FROM #__sdi_language l, 
 						  					#__sdi_list_codelang cl,
 						  					#__sdi_product_property p 
-										INNER JOIN #__sdi_property_value pvd on p.propertyvalue_id=pvd.id 
+										INNER JOIN #__sdi_propertyvalue pvd on p.propertyvalue_id=pvd.id 
 										INNER JOIN #__sdi_property pd on pvd.property_id=pd.id 
 										LEFT OUTER JOIN #__sdi_translation t ON pvd.guid=t.element_guid 
 										WHERE p.product_id=".$product->id." 

@@ -446,7 +446,7 @@ class HTML_basemap {
 	
 	
 	
-	function listBasemap($use_pagination, $rows, $pageNav,$option, $search){
+	function listBasemap($use_pagination, $rows, $pageNav,$option,$filter_order_Dir, $filter_order, $search){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
@@ -474,11 +474,12 @@ class HTML_basemap {
 				<tr>					 			
 					<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 					<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title'><?php echo JText::_("CORE_ID"); ?></th>
-					<th class='title'><?php echo JText::_("CORE_NAME"); ?></th>
-					<th class='title'><?php echo JText::_("SHOP_PROJECTION"); ?></th>
-					<th class='title'><?php echo JText::_("SHOP_UNIT"); ?></th>
-					<th class='title'><?php echo JText::_("SHOP_MAXEXTENT"); ?></th>				
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PROJECTION"), 'projection', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_UNIT"), 'unit', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_MAXEXTENT"), 'maxextent', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
 			</thead>
 			<tbody>		
@@ -511,6 +512,7 @@ class HTML_basemap {
 				<td><?php echo $row->projection; ?></td>				
 				<td><?php echo $row->unit; ?></td>				
 				<td><?php echo $row->maxExtent; ?></td>
+				<td><?php echo $row->updated; ?></td>
 			</tr>
 		<?php
 			$k = 1 - $k;
@@ -535,6 +537,8 @@ class HTML_basemap {
 	  	<input type="hidden" name="boxchecked" value="0" />
 <!--	  	<input type="hidden" id="countRelatedBasemapContent"  name="countRelatedBasemapContent" value="0" />-->
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
 		

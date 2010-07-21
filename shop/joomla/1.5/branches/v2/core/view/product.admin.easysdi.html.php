@@ -482,7 +482,7 @@ class HTML_product {
 	<?php
 	}
 	
-	function listProduct($use_pagination, $rows, $search,$pageNav, $option){
+	function listProduct($use_pagination, $rows, $filter_order_Dir, $filter_order,$search,$pageNav, $option){
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_PRODUCT")); 
@@ -512,6 +512,8 @@ class HTML_product {
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 						<th class='title'><?php echo JText::_("SHOP_PRODUCT_METADATA"); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCT_OBJECT"), 'object_name', @$filter_order_Dir, @$filter_order); ?></th>
+						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCT_VERSION"), 'version_title', @$filter_order_Dir, @$filter_order); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCT_TREATMENT"), 'treatment', @$filter_order_Dir, @$filter_order); ?></th>
 						<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>	
 					</tr>
@@ -548,6 +550,8 @@ class HTML_product {
 					<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/document.png" border="0" /></a>
 				</td>
 				<td><?php echo $row->description; ?></a></td>
+				<td><?php echo $row->object_name; ?></a></td>
+				<td><?php echo $row->version_title; ?></a></td>
 				<td><?php echo JText::_($row->treatment); ?></td>								
 				<td><?php echo date('d.m.Y H:i:s',strtotime($row->created)); ?></td>
 			</tr>
@@ -561,7 +565,7 @@ class HTML_product {
 		{?>
 		<tfoot>
 		<tr>	
-		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
+		<td colspan="10"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		<?php
@@ -573,6 +577,8 @@ class HTML_product {
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0" />
 	  	<input type="hidden" name="publishedobject" value="product" />
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 		<?php
 	}	

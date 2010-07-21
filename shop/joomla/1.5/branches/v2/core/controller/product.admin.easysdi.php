@@ -47,11 +47,11 @@ class ADMIN_product {
 		$total = $product->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		// Recherche des enregistrements selon les limites
-		$query = "SELECT p.*, t.label as treatment, m.guid as metadata_guid
+		$query = "SELECT p.*, t.label as treatment, m.guid as metadata_guid, v.title as version_title, o.name as object_name
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
 					INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id=v.id 
+					INNER JOIN #__sdi_object o ON o.id = v.object_id
 					INNER JOIN #__sdi_metadata m ON v.metadata_id = m.id
 					 ";
 		
@@ -61,19 +61,20 @@ class ADMIN_product {
 			$where = ' where LOWER(p.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(p.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$where .= ' or LOWER(p.description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(o.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(v.title) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		$query .= $where;
 		
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "treatment" and $filter_order <> "created" and $filter_order <> "ordering")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "description" and $filter_order <> "treatment"   and $filter_order <> "object_name" and $filter_order <> "version_title" and $filter_order <> "updated" )
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
 		}
-		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
-		
+		$orderby 	= ' order by p.'. $filter_order .' '. $filter_order_Dir;
 		$query = $query.$orderby;
 		
 		if ($use_pagination) {
@@ -88,7 +89,7 @@ class ADMIN_product {
 			exit();
 		}
 
-		HTML_product::listProduct($use_pagination, $rows, $search,$pageNav,$option);
+		HTML_product::listProduct($use_pagination, $rows,$filter_order_Dir, $filter_order, $search,$pageNav,$option);
 	}
 
 	function editProduct( $id, $option ) {

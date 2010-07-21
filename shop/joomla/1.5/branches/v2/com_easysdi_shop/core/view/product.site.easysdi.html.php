@@ -316,7 +316,7 @@ class HTML_product{
 								FROM 
 									#__sdi_list_codelang cl,
 									#__sdi_language l,
-									#__sdi_property_value a 
+									#__sdi_propertyvalue a 
 								LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid 
 							WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' 
 								AND a.property_id =".$curProperty->property_id." 
@@ -407,7 +407,7 @@ class HTML_product{
 							   }
 							</script>
 							<?php
-							$query = "SELECT a.id as value, a.text as text FROM #__sdi_product_property_value a where a.property_id =".$curProperty->property_id." order by a.ordering";				 
+							$query = "SELECT a.id as value, a.text as text FROM #__sdi_product_propertyvalue a where a.property_id =".$curProperty->property_id." order by a.ordering";				 
 							$database->setQuery( $query );
 							$res = $database->loadObjectList() ;
 							if ($database->getErrorNum()) 
