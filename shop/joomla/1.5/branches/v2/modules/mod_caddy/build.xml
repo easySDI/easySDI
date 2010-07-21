@@ -38,18 +38,6 @@
 				<include name="**/*.txt" />
 			</fileset>
 		</copy>
-		<copy		   
-			   todir="C:\www\Site\sdiv2\language\fr-FR">
-			     <fileset dir="./language/site">
-			      <include name="**/fr-FR.mod_caddy.ini" />
-			     </fileset>
-			    </copy>
-			<copy		   
-			   todir="C:\www\Site\sdiv2\language\en-GB">
-			     <fileset dir="./language/site">
-			      <include name="**/en-GB.mod_caddy.ini" />
-			     </fileset>
-			    </copy>
 	</target>
 
 

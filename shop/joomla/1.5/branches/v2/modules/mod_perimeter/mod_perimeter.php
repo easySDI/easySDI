@@ -206,7 +206,7 @@ if ($curstep == "2")
 		</script>
 
 		<input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
-		<table>
+		<table >
 		<tr>
 		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList', false)"  >
 		<?php
@@ -224,9 +224,6 @@ if ($curstep == "2")
 		<td>
 		<div id="panelEdition" class="olControlEditingToolbar"></div>
 		</td>
-		</tr>
-		<tr>
-		<td></td>
 		</tr>
 		<tr>
 		<td>

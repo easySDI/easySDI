@@ -862,7 +862,7 @@ class HTML_shop
 					/*
 						OpenLayers Edition controls
 					*/
-					rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});		
+					rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeaturePolygon'});		
 					rectControl.title = '<?php echo JText::_("SHOP_OL_TOOL_RECTCTRL_HINT") ?>';
 					rectControl.featureAdded = function() { intersect();};												
 					rectControl.handler.setOptions({irregular: true});                                  
@@ -882,7 +882,7 @@ class HTML_shop
 					pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
 		         
 					//Modify feature shape  
-					modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});				
+					modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlDrawFeaturePath'});				
 					modifyFeatureControl.title = '<?php echo JText::_("SHOP_OL_TOOL_MODFEATURE_HINT") ?>';
 					modifyFeatureControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_MODIFY_ACTIVATED") ?>"; fromZoomEnd =false;})
 					
