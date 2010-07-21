@@ -18,9 +18,10 @@ if (is_array(($cid)))
 
 	if (count($cid)>0)
 	{		
-		$query = "SELECT  p.*, u.name as user_name, v.metadata_id as metadata_id  FROM #__sdi_product p 
+		$query = "SELECT  p.*, u.name as user_name, v.metadata_id as metadata_id  , m.guid as metadata_guid FROM #__sdi_product p 
 										INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id 
-										INNER JOIN #__sdi_object o ON o.id = v.object_id,
+										INNER JOIN #__sdi_object o ON o.id = v.object_id 
+										INNER JOIN #__sdi_metadata m on m.id = v.metadata_id,
 										#__sdi_account a, #__users u where p.id in (";
 		foreach( $cid as $id )
 		{
@@ -91,7 +92,7 @@ if (is_array(($cid)))
 				<td>
 				<a class="modal"
 					title="<?php echo $row->name." (". $row->user_name.")";  ?>"
-					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;  ?>"
+					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>"
 
 					rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo mb_substr($row->name, 0, $descriptionLength, 'UTF-8');  ?>[...]</a>
 
