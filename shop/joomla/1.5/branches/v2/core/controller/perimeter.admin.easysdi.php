@@ -213,6 +213,22 @@ class ADMIN_perimeter {
 			$Perimeter = new Perimeter( $database );
 			$Perimeter->load( $id );
 			
+			$query = "SELECT DISTINCT o.name as name FROM #__sdi_order o 
+											INNER JOIN #__sdi_order_perimeter pp ON o.id = pp.order_id 
+											INNER JOIN #__sdi_perimeter p ON p.id = pp.perimeter_id  
+											WHERE p.id=$id ";
+			$database->setQuery($query);
+			$results = $database->loadObjectList();
+			if(count($results)>0)
+			{
+				$mainframe->enqueueMessage(JText::sprintf("SHOP_PERIMETER_DELETE_ERROR", $Perimeter->name),"INFO");
+				foreach($results as $result)
+				{
+					$mainframe->enqueueMessage(" - ".$result->name,"INFO");
+				}
+				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
+			}
+			
 			if (!$Perimeter->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );

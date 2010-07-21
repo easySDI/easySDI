@@ -1067,7 +1067,7 @@ function validateForm(toStep, fromStep){
 			//replace space with wildcard for one character
 			$freetextcriteria = str_replace(" ", "_", $freetextcriteria);
 			$filter = $filter." AND (p.name like '%".$freetextcriteria."%' ";
-			$filter = $filter." OR v.metadata_id = '$freetextcriteria')";
+			$filter = $filter." OR m.guid = '$freetextcriteria')";
 		}
 		
 		if ($account_id){
@@ -1167,7 +1167,8 @@ function validateForm(toStep, fromStep){
 							o.account_id as supplier_id, 
 							a.name as supplier_name , 
 							a.logo as supplier_logo, 
-							m.visibility_id as md_visibility_id 
+							m.visibility_id as md_visibility_id ,
+							m.guid as metadata_guid
 							FROM #__sdi_product p 
 							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
 							INNER JOIN #__sdi_object o ON o.id = v.object_id

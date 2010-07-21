@@ -468,7 +468,7 @@ function com_install(){
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 						UNIQUE INDEX `code` USING BTREE (`code`), 
 						FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `fk_oper_peri` USING BTREE (`perimeter_id`) ,
 						INDEX `fk_oper_order` USING BTREE (`order_id`) 
 						)
@@ -646,7 +646,7 @@ function com_install(){
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_ppv_value` USING BTREE (`propertyvalue_id`) ,
 					INDEX `fk_ppv_prod` USING BTREE (`product_id`) 
 					)
@@ -681,7 +681,7 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
-					FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					FOREIGN KEY (`status_id`) REFERENCES `#__sdi_list_productstatus` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_op_prod` USING BTREE (`product_id`) ,
@@ -718,9 +718,9 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
 					UNIQUE INDEX `code` USING BTREE (`code`),
-					FOREIGN KEY (`orderproduct_id`) REFERENCES `#__sdi_order_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+					FOREIGN KEY (`orderproduct_id`) REFERENCES `#__sdi_order_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_orp_op` USING BTREE (`orderproduct_id`) ,
 					INDEX `fk_orp_prop` USING BTREE (`property_id`) ,
 					INDEX `fk_orp_val` USING BTREE (`propertyvalue_id`) 

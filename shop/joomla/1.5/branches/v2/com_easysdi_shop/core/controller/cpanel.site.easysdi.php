@@ -806,6 +806,7 @@ class SITE_cpanel {
 						 o.id as order_id, 
 						 u.name as username,
 						 v.metadata_id as metadata_id, 
+						 m.guid as metadata_guid,
 						 p.name as data_title,
 						 o.name as name,
 						 o.type_id as type, 
@@ -818,6 +819,7 @@ class SITE_cpanel {
 				  		#__sdi_list_productstatus psl, 
 				  		#__sdi_product p,
 				  		#__sdi_objectversion v ,
+				  		#__sdi_metadata m,
 				  		#__sdi_account a, 
 				  		#__sdi_list_ordertype otl,
 				  		#__users u 
@@ -826,6 +828,7 @@ class SITE_cpanel {
 				  AND opl.status_id=psl.id 
 				  AND a.user_id = u.id 
 				  AND  v.id = p.objectversion_id
+				  AND  v.metadata_id = m.id
 				  AND o.id = opl.order_id 
 				  AND opl.product_id = p.id 
 				  AND p.diffusion_id = a.id 
