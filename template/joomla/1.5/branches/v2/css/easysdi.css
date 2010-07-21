@@ -857,7 +857,7 @@ height:16px;
   background-repeat: no-repeat;
 }
 .olControlEditingToolbar  {
-    float:right;
+    float:left;
     right: 0px;
     height: 30px; 
     width: 200px;
@@ -866,47 +866,11 @@ height:16px;
   background-image: url("../images/editing_tool_bar.png");
   background-repeat: no-repeat;
   float:left;
-  width:  25px;
+  width:  24px;
   height: 24px;
   margin: 5px;
 }
-.olControlEditingToolbar .olControlNavigationItemActive { 
-  background-position: -103px -24px; 
-}
-.olControlEditingToolbar .olControlNavigationItemInactive { 
-  background-position: -103px -0px; 
-}
-.olControlEditingToolbar .olControlDrawFeaturePointItemActive { 
-  background-position: -77px -24px; 
-  background-image: url("../images/draw_point_on.png");
-}
-.olControlEditingToolbar .olControlDrawFeaturePointItemInactive { 
-  background-position: -77px -0px; 
-  background-image: url("../images/draw_point_off.png");
-}
-.olControlEditingToolbar .olControlDrawFeaturePathItemInactive { 
-  background-position: -51px 0px; 
-}
-.olControlEditingToolbar .olControlDrawFeaturePathItemActive { 
-  background-position: -51px -24px; 
-}
-.olControlEditingToolbar .olControlDrawFeaturePolygonItemInactive  { 
-  background-position: -26px 0px; 
-  background-image: url("../images/draw_polygon_off.png");
-}
-.olControlEditingToolbar  .olControlDrawFeaturePolygonItemActive { 
-  background-position: -26px -24px ;                        
-  background-image: url("../images/draw_polygon_on.png");                                           
-}
 
-.olControlEditingToolbar .olControlDrawFeatureRectangleItemInactive  { 
-  background-position: -26px 0px; 
-  background-image: url("../images/draw_rectangle_off.png");
-}
-.olControlEditingToolbar  .olControlDrawFeatureRectangleItemActive { 
-  background-position: -26px -24px ;
-  background-image: url("../images/draw_rectangle_on.png");                                                                   
-}
 
 
 .olControlSaveFeaturesItemActive { 
