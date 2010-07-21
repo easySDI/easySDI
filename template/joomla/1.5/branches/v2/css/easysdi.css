@@ -1267,7 +1267,16 @@ div#deleteObject{
 	width:16px;
 }
 
-div#archiveObject{
+div#listObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_white_stack.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+	
+div#archiveMetadata{
 	background-color:transparent;
 	background-image:url(../icons/silk/folder_database.png);
 	background-position:0 0;
@@ -1276,7 +1285,7 @@ div#archiveObject{
 	width:16px;
 }
 
-div#manageObjectLink{
+div#manageObjectVersionLink{
 	background-color:transparent;
 	background-image:url(../icons/silk/link_edit.png);
 	background-position:0 0;
@@ -1285,7 +1294,7 @@ div#manageObjectLink{
 	width:16px;
 }
 
-div#viewObjectLink{
+div#viewObjectVersionLink{
 	background-color:transparent;
 	background-image:url(../icons/silk/link.png);
 	background-position:0 0;
