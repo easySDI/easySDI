@@ -50,7 +50,7 @@ class ADMIN_product {
 		$query = "SELECT p.*, t.label as treatment, m.guid as metadata_guid, v.title as version_title, o.name as object_name
 					FROM $product->_tbl p 
 					INNER JOIN #__sdi_list_treatmenttype t ON  p.treatmenttype_id=t.id 
-					INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id=v.id 
+					INNER JOIN #__sdi_objectversion v ON v.id=p.objectversion_id
 					INNER JOIN #__sdi_object o ON o.id = v.object_id
 					INNER JOIN #__sdi_metadata m ON v.metadata_id = m.id
 					 ";

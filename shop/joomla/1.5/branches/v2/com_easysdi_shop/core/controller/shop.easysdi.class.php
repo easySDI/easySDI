@@ -1194,7 +1194,7 @@ function validateForm(toStep, fromStep){
 			echo "</div>";
 		}
 
-		HTML_shop::searchProducts ($suppliers, $account_id, $user,$rows,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
+		HTML_shop::searchProducts ($suppliers, $account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
 	}
 	
 	function downloadAvailableProduct($id)
