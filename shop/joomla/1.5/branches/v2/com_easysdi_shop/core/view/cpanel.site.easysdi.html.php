@@ -631,7 +631,7 @@ class HTML_cpanel {
 				<td align="left" id ="product_id">
 					<a class="modal"
 					title="<?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>"
-					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;?>"
+					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;?>"
 					rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->productName ;?>
 					</a>
 				</td>

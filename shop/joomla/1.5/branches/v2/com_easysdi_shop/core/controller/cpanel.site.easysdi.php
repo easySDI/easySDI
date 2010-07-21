@@ -559,6 +559,7 @@ class SITE_cpanel {
 		// Ni les requêtes de type brouillon
 		$query = "SELECT o.id as order_id, 
 						 v.metadata_id as metadata_id,
+						 m.guid as metadata_guid,
 						 p.name as productName,
 						 opl.id as product_list_id,
 					     uClient.name as username,
@@ -579,6 +580,7 @@ class SITE_cpanel {
 						#__sdi_list_productstatus psl,
 				  		#__sdi_product p,
 				  		#__sdi_objectversion v ,
+				  		#__sdi_metadata m,
 				  		#__sdi_account a, 
 				  		#__users u, 
 				  		#__users uClient,
@@ -594,6 +596,7 @@ class SITE_cpanel {
 				  and o.user_id = uClient.id
 				  and tl.id = o.type_id
 				  AND v.id = p.objectversion_id
+				  AND m.id = v.metadata_id
 				  and o.status_id <> $status_saved
 				  and opl.status_id = $productOrderStatus 
 				  $orderStatusQuery 
