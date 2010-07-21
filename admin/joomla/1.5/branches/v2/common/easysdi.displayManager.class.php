@@ -677,7 +677,7 @@ class displayManager{
 			$myHtml .= "window.addEvent('domready', function() {
 			
 			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', 'w');
 			});
 			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
@@ -753,13 +753,13 @@ class displayManager{
 		
 		$temp = explode(" ", $product_creation_date);
 		$temp = explode("-", $temp[0]);
-		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		//$product_creation_date="";
+		//$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		$product_creation_date="";
 		$temp = explode(" ", $product_update_date);
 		$temp = explode("-", $temp[0]);
 		if ($product_update_date <> "-")
-			$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
-		//$product_update_date="";
+			//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+			$product_update_date="";
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
 		
