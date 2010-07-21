@@ -85,7 +85,7 @@ function com_install(){
 		$module_id = $db->insertid();
 		
 		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'SHOP_PANEL', 'Shop Panel', 'Shop Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_shop\\core\\view\\sub.ctrlpanel.admin.easysdi.html.php', '3')";
+										VALUES ('".helper_easysdi::getUniqueId()."', 'SHOP_PANEL', 'Shop Panel', 'Shop Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_shop/core/view/sub.ctrlpanel.admin.easysdi.html.php', '3')";
 		$db->setQuery( $query);		
 		if (!$db->query()) 
 		{			
