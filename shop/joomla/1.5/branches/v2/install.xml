@@ -20,7 +20,6 @@
 			<filename>admin.easysdi_shop.php</filename>
 			<filename>license.txt</filename>
 			<folder>core</folder>
-			<folder>templates</folder>
 			<folder>js</folder>
 			<folder>lib</folder>
 		</files>

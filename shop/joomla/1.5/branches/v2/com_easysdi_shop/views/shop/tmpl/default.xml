@@ -2,11 +2,11 @@
 <metadata>
 	<layout title="Order">
 		<message>
-			<![CDATA[STANDARD ORDER LAYOUT DESC]]>
+			<![CDATA[SHOP_MENU_ENTRY_STANDARD_ORDER_LAYOUT_DESC]]>
 		</message>
 	</layout>
 	<state>
 		<name><![CDATA[SHOP]]></name>
-		<description><![CDATA[STANDARD ORDER LAYOUT LONG DESC]]></description>
+		<description><![CDATA[SHOP_MENU_ENTRY_STANDARD_ORDER_LAYOUT_LONG_DESC]]></description>
 	</state>
 </metadata>
