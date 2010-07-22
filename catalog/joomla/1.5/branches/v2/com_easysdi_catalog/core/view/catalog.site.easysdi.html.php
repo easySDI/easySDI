@@ -413,7 +413,10 @@ class HTML_catalog{
 		$pOrderableExt = 0;
 		$pOrderableInt = 0;
 		
-		$query = "select o.visibility_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
+		$query = "select DISTINCT o.visibility_id from #__sdi_object o
+				INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
+				INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
+				where m.guid = '".$md->getFileIdentifier()."'";
 		$db->setQuery( $query);
 		//$pOrderableExt = $db->loadResult();
 		$pOrderable = $db->loadResult();
@@ -470,7 +473,7 @@ class HTML_catalog{
 		}
 			
 		//Define if the md is public or not
-		$queryAccountID = "select m.visibility_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
+		$queryAccountID = "select o.visibility_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
 		$db->setQuery($queryAccountID);
 		$external = $db->loadResult();
 		if($external == 1)
@@ -479,12 +482,31 @@ class HTML_catalog{
 		}
 		//}
 			
+		// Récupérer le type d'objet
+		$queryObjecttype = "select DISTINCT ot.id from #__sdi_objecttype ot
+							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
+							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
+							 where m.guid = ".$md->getFileIdentifier();
+		$db->setQuery($queryObjecttype);
+		$objecttype_id = $db->loadResult();
+		
+		// Récupérer le logo du type d'objet
+		$queryObjecttypeLogo = "select logo from #__sdi_objecttype where id = ".$objecttype_id;
+		$db->setQuery($queryObjecttypeLogo);
+		$objecttype_logo = $db->loadResult();
 			
-		// Créer une entrée pour le logo
-		$XMLLogo = $doc->createElement("sdi:logo", $account_logo);
-		$XMLLogo->setAttribute('width', $logoWidth);
-		$XMLLogo->setAttribute('height', $logoHeight);
-		$XMLSdi->appendChild($XMLLogo);
+		// Créer une entrée pour le logo du compte
+		$XMLALogo = $doc->createElement("sdi:account_logo", $account_logo);
+		$XMLALogo->setAttribute('width', $logoWidth);
+		$XMLALogo->setAttribute('height', $logoHeight);
+		$XMLSdi->appendChild($XMLALogo);
+		
+		// Créer une entrée pour le logo du type d'objet
+		$XMLOTLogo = $doc->createElement("sdi:objecttype_logo", $objecttype_logo);
+		$XMLOTLogo->setAttribute('width', $logoWidth);
+		$XMLOTLogo->setAttribute('height', $logoHeight);
+		$XMLSdi->appendChild($XMLOTLogo);
 		
         // Créer une entrée pour la visibilité de la métadonnée
 		$XMLMDVisibility = $doc->createElement("sdi:metadata_visibility", (int)$isMdPublic);

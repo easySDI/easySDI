@@ -34,6 +34,7 @@ class objecttype extends JTable
 	var $profile_id=null;
  	var $predefined=0;
  	var $hasVersioning=0;
+ 	var $logo=null;
  	
 	// Class constructor
 	function __construct( &$db )

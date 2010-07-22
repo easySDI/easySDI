@@ -3321,7 +3321,15 @@ class ADMIN_metadata {
 			$searchPattern = "";
 		// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 		$results = array();
-		$database->setQuery( "SELECT o.id as id, m.guid as guid, o.name as name FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m where o.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.id=".$objecttype_id."  AND o.name LIKE '%".$searchPattern."%'" );
+		$database->setQuery( "	SELECT o.id as id, m.guid as guid, o.name as name 
+								FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m 
+								WHERE 	o.metadata_id=m.id 
+										AND o.objecttype_id=ot.id 
+										AND ot.id=".$objecttype_id."  
+										AND o.name LIKE '%".$searchPattern."%'
+										AND o.published=true 
+										"
+							);
 		$results= array_merge( $results, $database->loadObjectList() );
 		
 		// Construire le tableau de résultats

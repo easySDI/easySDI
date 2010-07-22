@@ -163,6 +163,10 @@ class HTML_objecttype {
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
 				</tr>
 				<tr>
+					<td><?php echo JText::_("CATALOG_OBJECTTYPE_LOGO"); ?> : </td>
+					<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['logo'];?>" name="logo" value="<?php echo $row->logo; ?>" /></td>
+				</tr>
+				<tr>
 					<td><?php echo JText::_("CATALOG_OBJECTTYPE_PREDEFINED"); ?> : </td>
 					<td><?php echo JHTML::_('select.booleanlist', 'predefined', '', $row->predefined); ?> </td>																
 				</tr>

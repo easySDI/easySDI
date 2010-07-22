@@ -87,14 +87,14 @@ class SITE_catalog {
 			if($account->id == 0)
 			{
 				//No user logged, display only external products
-				$filter .= " AND (m.visibility_id=1) ";
+				$filter .= " AND (o.visibility_id=1) ";
 			}
 			else
 			{
 				// User logged in. (Return also products of the root's current account)
-				$filter .= " AND (m.visibility_id=1
+				$filter .= " AND (o.visibility_id=1
 						OR
-						(m.visibility_id =2 AND
+						(o.visibility_id =2 AND
 						(o.account_id =  $account->id
 						OR
 						o.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id )
