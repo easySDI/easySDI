@@ -441,7 +441,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="description_length" value="<?php echo $coreList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="description_length" value="<?php echo $coreList['DESCRIPTION_LENGTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -451,7 +451,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="logo_width" value="<?php echo $coreList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="logo_width" value="<?php echo $coreList['LOGO_WIDTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -461,7 +461,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="logo_height" value="<?php echo $coreList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="logo_height" value="<?php echo $coreList['LOGO_HEIGHT']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -471,7 +471,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="pagination_metadata" value="<?php echo $coreList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="pagination_metadata" value="<?php echo $coreList['PAGINATION_METADATA']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -481,7 +481,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="welcome_redirect_url" value="<?php echo $coreList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="welcome_redirect_url" value="<?php echo $coreList['WELCOME_REDIRECT_URL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									</tbody>
@@ -509,7 +509,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="java_bridge_url" value="<?php echo $catalogList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="java_bridge_url" value="<?php echo $catalogList['JAVA_BRIDGE_URL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -519,7 +519,22 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_url" value="<?php echo $catalogList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_url" value="<?php echo $catalogList['CATALOG_URL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_COLLAPSE' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_COLLAPSE' ); ?>
+											</span>
+										</td>
+										<td>
+											<?php
+												$collapseState = array();
+												$collapseState[] = JHTML::_('select.option','true', JText::_("CORE_CONFIGURATION_CATALOG_METADATA_COLLAPSE_CLOSE") );
+												$collapseState[] = JHTML::_('select.option','false', JText::_("CORE_CONFIGURATION_CATALOG_METADATA_COLLAPSE_OPEN") ); 
+											
+												echo JHTML::_("select.genericlist",$collapseState, 'metadata_collapse', 'size="1" class="inputbox"', 'value', 'text', $catalogList['METADATA_COLLAPSE']->value ); ?>
 										</td>
 									</tr>
 									<tr>
@@ -529,7 +544,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_encoding_code" value="<?php echo $catalogList[8]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_encoding_code" value="<?php echo $catalogList['CATALOG_ENCODING_CODE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -539,7 +554,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_encoding_val" value="<?php echo $catalogList[9]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_encoding_val" value="<?php echo $catalogList['CATALOG_ENCODING_VAL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -549,7 +564,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_isocode" value="<?php echo $catalogList['CATALOG_BOUNDARY_ISOCODE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -559,7 +574,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_north" value="<?php echo $catalogList['CATALOG_BOUNDARY_NORTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -569,7 +584,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_south" value="<?php echo $catalogList['CATALOG_BOUNDARY_SOUTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -579,7 +594,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_east" value="<?php echo $catalogList['CATALOG_BOUNDARY_EAST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -589,7 +604,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_boundary_west" value="<?php echo $catalogList['CATALOG_BOUNDARY_WEST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -599,7 +614,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<?php echo JHTML::_("select.genericlist",$attributetypelist, 'catalog_boundary_type', 'size="1" class="inputbox"', 'value', 'text', $catalogList[6]->value ); ?>
+											<?php echo JHTML::_("select.genericlist",$attributetypelist, 'catalog_boundary_type', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_BOUNDARY_TYPE']->value ); ?>
 										</td>
 									</tr>
 									</tbody>
@@ -624,13 +639,12 @@ if ($shopItem > 0){
 									<tbody>
 									<tr>
 										<td valign="top" class="key">
-											<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PROXYHOST' ); ?>
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="proxyhost" value="<?php echo $shopList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="proxyhost" value="<?php echo $shopList['SHOP_CONFIGURATION_PROXYHOST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -640,7 +654,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="archive_delay" value="<?php echo $shopList[1]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="archive_delay" value="<?php echo $shopList['SHOP_CONFIGURATION_ARCHIVE_DELAY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -650,7 +664,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="10" name="history_delay" value="<?php echo $shopList[2]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="10" name="history_delay" value="<?php echo $shopList['SHOP_CONFIGURATION_HISTORY_DELAY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									
@@ -661,7 +675,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="caddy_description_length" value="<?php echo $shopList[3]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="caddy_description_length" value="<?php echo $shopList['SHOP_CONFIGURATION_CADDY_DESC_LENGTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -671,7 +685,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="mod_perim_area_precision" value="<?php echo $shopList[4]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="mod_perim_area_precision" value="<?php echo $shopList['SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -681,7 +695,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="mod_perim_metertokilometerlimit" value="<?php echo $shopList[5]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="mod_perim_metertokilometerlimit" value="<?php echo $shopList['SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -692,7 +706,7 @@ if ($shopItem > 0){
 										</td>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="shop_article_step4" value="<?php echo $shopList[6]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="shop_article_step4" value="<?php echo $shopList['SHOP_CONFIGURATION_ARTICLE_STEP4']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 										<td>
 											<div style="font-weight: bold" >
@@ -710,7 +724,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="shop_article_step5" value="<?php echo $shopList[7]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="shop_article_step5" value="<?php echo $shopList['SHOP_CONFIGURATION_ARTICLE_STEP5']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 										<td>
 											<div style="font-weight: bold" >
@@ -728,7 +742,7 @@ if ($shopItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="shop_article_terms_of_use" value="<?php echo $shopList[8]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="shop_article_terms_of_use" value="<?php echo $shopList['SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 										<td>
 											<div style="font-weight: bold" >
@@ -767,7 +781,7 @@ if ($proxyItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="proxy_config" value="<?php echo $proxyList[0]->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="proxy_config" value="<?php echo $proxyList['PROXY_CONFIG']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									</tbody>

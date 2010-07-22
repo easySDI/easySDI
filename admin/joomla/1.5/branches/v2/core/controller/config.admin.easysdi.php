@@ -134,9 +134,14 @@ class ADMIN_config {
 		$shopList=array();
 		$proxyList=array();
 		
+		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
 		$db->setQuery( $query );
-		$coreList = $db->loadObjectList();
+		$result = $db->loadObjectList();
+		foreach($result as $row)
+		{
+			$coreList[$row->code] = $row;
+		}
 			
 		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CATALOG'";
 		$db->setQuery( $query );
@@ -144,9 +149,14 @@ class ADMIN_config {
 
 		if ($catalogItem>0)
 		{
+			$result=array();
 			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CATALOG'";
 			$db->setQuery( $query );
-			$catalogList = $db->loadObjectList();
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$catalogList[$row->code] = $row;
+			}
 		}
 		
 		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='SHOP'";
@@ -155,9 +165,14 @@ class ADMIN_config {
 		
 		if ($shopItem>0)
 		{
+			$result=array();
 			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='SHOP' order by c.ordering";
 			$db->setQuery( $query );
-			$shopList = $db->loadObjectList();
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$shopList[$row->code] = $row;
+			}
 		}
 		
 		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='PROXY'";
@@ -166,9 +181,14 @@ class ADMIN_config {
 
 		if ($proxyItem>0)
 		{
+			$result=array();
 			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='PROXY'";
 			$db->setQuery( $query );
-			$proxyList = $db->loadObjectList();
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$proxyList[$row->code] = $row;
+			}
 		}
 		
 		// Récupération des types mysql pour les champs
@@ -231,6 +251,10 @@ class ADMIN_config {
 		if ($_POST['catalog_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_url']."' WHERE code = 'CATALOG_URL'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['metadata_collapse']."' WHERE code = 'METADATA_COLLAPSE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
