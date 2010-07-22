@@ -280,6 +280,8 @@ class HTML_metadata {
 	
 	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
 	{
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		
 		$uri =& JUri::getInstance();
 		
 		$database =& JFactory::getDBO();
@@ -290,6 +292,8 @@ class HTML_metadata {
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		else
 			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
+		$metadata_collapse = config_easysdi::getValue("metadata_collapse");
 		
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
@@ -305,8 +309,6 @@ class HTML_metadata {
 		//print_r($this->boundaries);
 		$this->catalogBoundaryIsocode = $catalogBoundaryIsocode;
 	
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$this->paths[] = array(	'northbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_north")."-".str_replace(":", "_", $type_isocode)."__1"), 
 								'southbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_south")."-".str_replace(":", "_", $type_isocode)."__1"), 
@@ -503,7 +505,7 @@ class HTML_metadata {
 						       			buttonAlign: 'right',
 						       			layout: 'toolbar',
 						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns',
-						       			items: [".HTML_metadata::buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)."]
+						       			items: [".HTML_metadata::buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $metadata_collapse, $option)."]
 						       			})
 						    });
 							
@@ -1119,7 +1121,40 @@ class HTML_metadata {
 					form.add(createHidden('fieldsets', 'fieldsets', ''));
 		    		// Affichage du formulaire
 		    		form.doLayout();";
-					
+
+		// Tout fermer ou tout ouvrir, selon la clé de config METADATA_COLLAPSE 
+		if ($metadata_collapse == 'true')
+		{
+			$this->javascript .="
+				form.cascade(function(cmp)
+        		{
+        			if (cmp.xtype=='fieldset')
+         			{
+         				if (cmp.clone == true)
+						{
+         					if (cmp.collapsible == true && cmp.rendered == true)
+								cmp.collapse(true);
+         				}
+         			}
+        		});
+        	";
+		}
+		else
+		{
+			$this->javascript .="
+				form.cascade(function(cmp)
+        		{
+        			if (cmp.xtype=='fieldset')
+         			{
+         				if (cmp.clone == true)
+						{
+         					if (cmp.collapsible == true && cmp.rendered == true)
+								cmp.expand(true);
+         				}
+         			}
+        		});
+        	";
+		}
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
 	
@@ -4372,15 +4407,17 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 	<?php
 	}
 	
-	function buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $option)
+	function buildTBar($isManager, $isEditor, $isPublished, $isValidated, $object_id, $metadata_id, $account_id, $metadata_collapse, $option)
 	{
 		$database =& JFactory::getDBO();
 		
 		$tbar = array();
 		
+		$collapse_title=($metadata_collapse == 'true')? JText::_('CORE_OPENALL') : JText::_('CORE_CLOSEALL');
+		
 		// Tout ouvrir ou tout fermer
 		$tbar[] = "{
-						text: '".JText::_('CORE_CLOSEALL')."',
+						text: '".$collapse_title."',
 				        listeners: {        
 						 				click: {            
 						 							fn:function() {
@@ -4432,7 +4469,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 											        		}																				}        
 												}	
 									},
-				        allCollapsed: false
+				        allCollapsed: ".$metadata_collapse."
 		        }";
 		
 		if ($isManager)

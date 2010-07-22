@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,10 +57,37 @@ class HTML_object {
 		$geoMD = new geoMetadata($cswResults);				 
 		*/
 		$database =& JFactory::getDBO(); 
-		$tabs =& JPANE::getInstance('Tabs');
 		
-		?>				
-	<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
+		?>	
+		<div id="page">
+		<?php 
+if ($rowObject->id == 0)
+{
+?>
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECT' )?></h2>
+<?php 
+}
+else
+{
+?>
+			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECT' )?></h2>
+<?php 
+}
+?>			
+	<div id="contentin" class="contentin">
+		    <table width="100%">
+				<tr>
+					<td width="100%" align="right">
+						<button type="button" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
+						<br></br>
+					</td>
+					<td width="100%" align="right">
+						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObject';document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<br></br>
+					</td>
+				</tr>
+		   </table>
+			<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
 		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
@@ -309,13 +336,12 @@ if ($rowObject->updated)
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		</form>
-		<button type="button" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
-		<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObject';document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-		
+		</div>
+		</div>
 	<?php
 	}
 	
-	function listObject($pageNav,$rows,$option,$rootAccount,$search)
+	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $search)
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
@@ -331,9 +357,19 @@ if ($rowObject->updated)
 				<td align="left">
 					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
+			</tr>
+			<tr>
 				<td align="left">
 					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
 				</td>
+			</tr>
+			<tr>
+				<td align="left">
+					<br/>
+					<?php echo $listObjectType; ?>
+				</td>
+			</tr>
+			<tr>
 				<td align="right">
 					<button type="submit" class="searchButton" onClick="document.getElementById('task').value='listObject';document.getElementById('productListForm').submit();"> <?php echo JText::_("CORE_SEARCH_BUTTON"); ?></button>
 				</td>
@@ -376,10 +412,11 @@ if ($rowObject->updated)
 			window.open('./index.php?option=com_easysdi_catalog&task=versionaliseObject&cid[]='+id, '_self');
 		}
 	</script>
-	<table id="myProducts" class="box-table">
+	<table id="myProducts" class="box-table" width="100%">
 	<thead>
 	<tr>
 	<th><?php echo JText::_('CORE_NAME'); ?></th>
+	<th><?php echo JText::_('CATALOG_OBJECT_OBJECTTYPE'); ?></th>
 	<!-- <th><?php //echo JText::_('CORE_METADATA_STATE'); ?></th> -->
 	<!--<th><?php //echo JText::_('CATALOG_OBJECT_VERSION_COL'); ?></th>-->
 	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
@@ -405,6 +442,7 @@ if ($rowObject->updated)
 			<tr>
 			<!-- <td ><a class="modal" title="<?php //echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php //echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php //echo $row->name ;?></a></td> -->
 			<td ><?php echo $row->name ;?></td>
+			<td ><?php echo $row->objecttype ;?></td>
 			<!-- <td ><?php //echo JText::_($row->state); ?></td> -->
 			<?php 		
 			/*$versions = "";

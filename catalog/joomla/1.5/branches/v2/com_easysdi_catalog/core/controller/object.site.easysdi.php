@@ -78,6 +78,8 @@ class SITE_object {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
+		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.$context.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
+		
 		//Check user's rights
 		if(!userManager::isUserAllowed($user,"PRODUCT"))
 		{
@@ -96,6 +98,11 @@ class SITE_object {
 		$filter = "";
 		if ( $search ) {
 			$filter .= " AND (o.name LIKE '%$search%')";			
+		}
+		
+		// Objecttype filter
+		if ($filter_objecttype_id > 0) {
+			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
 		}
 		
 		//$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
@@ -120,7 +127,7 @@ class SITE_object {
 		//print_r($pagination);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "	SELECT o.* 
+		$query = "	SELECT o.*, ot.name as objecttype 
 						FROM 	jos_sdi_manager_object e,  
 								jos_sdi_account a, 
 								jos_users u,
@@ -144,7 +151,16 @@ class SITE_object {
 			//exit();
 		}
 		
-		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$search);
+		$query = 'SELECT id as value, name as text' .
+				' FROM #__sdi_objecttype' .
+				' WHERE predefined=false' .
+				' ORDER BY name';
+		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$db->setQuery($query);
+		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
+		$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
+		
+		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$search);
 
 	}
 
@@ -358,7 +374,14 @@ class SITE_object {
 			$rowMetadata->load( $rowObjectVersion->metadata_id );
 		}
 		
-		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
+		$visibilities=array();
+		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_list_visibility " );
+		$visibilities = $database->loadObjectList() ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
+		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $visibilities, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
 		//HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $option );
 	}
 
@@ -367,7 +390,7 @@ class SITE_object {
 		$database=& JFactory::getDBO();
 		$option =  JRequest::getVar("option");
 		$rowObject =& new object($database);
-		$rowMetadata = new metadataByGuid( $database );
+		
 		$user =& JFactory::getUser();
 		
 		if (!$rowObject->bind( $_POST )) {
@@ -376,17 +399,10 @@ class SITE_object {
 			exit();
 		}
 
-		$rowMetadata->load($_POST['metadata_guid']);
-		
 		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObject->guid == null)
 			$rowObject->guid = helper_easysdi::getUniqueId();
-		
-		// Comme projection_id n'est pas obligatoire et que par défaut $rowObject->projection_id == '0',
-		// on passe $rowObject->projection_id à NULL pour que la sauvegarde fonctionne
-		if ($rowObject->projection_id == '0')
-			$rowObject->projection_id = NULL;
 		
 		// Fournisseur = compte racine du compte courant
 		$rowAccount = new accountByUserId($database);
@@ -397,12 +413,12 @@ class SITE_object {
 			
 		$rowObject->account_id = $root_account;
 		
-		// Si le produit n'existe pas encore, créer la métadonnée
+		// Si l'objet n'existe pas encore, créer une version et une métadonnée
 		if ($rowObject->id == 0)
 		{
 			// Récupérer l'attribut qui correspond au stockage de l'id
 			$idrow = array();
-			//$database->setQuery("SELECT CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, CONCAT(atns.prefix,':',at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id LEFT OUTER JOIN #__sdi_namespace atns ON atns.id=a.namespace_id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
+			//$database->setQuery("SELECT CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, CONCAT(atns.prefix,':',at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace as ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace as atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
 			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 			$idrow = array_merge( $idrow, $database->loadObjectList() );
 			
@@ -451,29 +467,54 @@ class SITE_object {
 				exit();
 			}
 		
+			// Créer l'entrée de métadonnée dans la base
 			$rowMetadata = new metadata($database);
 			$rowMetadata->guid = $_POST['metadata_guid'];
 			$rowMetadata->name = $_POST['metadata_guid'];
 			$rowMetadata->created = $_POST['created'];
 			$rowMetadata->createdby = $_POST['createdby'];
 			$rowMetadata->metadatastate_id = 4;
-		}
-		
-		$rowMetadata->visibility_id = $_POST['visibility_id'];
-		if (!$rowMetadata->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
-		}
-		
-		// Créer une entrée dans la table des métadonnées pour la nouvelle métadonnée associée à cet objet
-		$rowObject->metadata_id = $rowMetadata->id;	
 			
+			//$rowMetadata->visibility_id = $_POST['visibility_id'];
+			if (!$rowMetadata->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
 			
-		if (!$rowObject->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
-			exit();
+			// Stocker l'objet
+			if (!$rowObject->store()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
+			// Construire la première version
+			$rowObjectVersion= new objectversion( $database );
+			$rowObjectVersion->object_id=$rowObject->id;
+			$rowObjectVersion->metadata_id=$rowMetadata->id;
+			$rowObjectVersion->description=$_POST['version_description'];
+			$rowObjectVersion->title=$_POST['created'];
+			$rowObjectVersion->created=$_POST['created'];
+			$rowObjectVersion->createdby=$_POST['createdby'];
+			
+			// Générer un guid
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+			if ($rowObjectVersion->guid == null)
+				$rowObjectVersion->guid = helper_easysdi::getUniqueId();
+			
+			if (!$rowObjectVersion->store(false)) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
+		}
+		else
+		{
+			if (!$rowObject->store()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit();
+			}
 		}
 		
 		// Langues à gérer
@@ -481,8 +522,6 @@ class SITE_object {
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
-	
-	
 		// Stocker les labels
 		foreach ($languages as $lang)
 		{
@@ -559,10 +598,9 @@ class SITE_object {
 		}
 		
 		// Récupérer toutes les relations avec les editeurs existantes
-		$editor_rows = array();
 		$query = "SELECT * FROM #__sdi_editor_object WHERE object_id=".$rowObject->id;
 		$database->setQuery($query);
-		$editor_rows = array_merge($editor_rows, $database->loadObjectList());
+		$editor_rows = $database->loadObjectList();
 		
 		if ($database->getErrorNum()) {
 			echo $database->stderr();
@@ -607,6 +645,7 @@ class SITE_object {
 			}
 		}
 		$rowObject->checkin();
+		
 	}
 
 	function deleteObject($cid ,$option){

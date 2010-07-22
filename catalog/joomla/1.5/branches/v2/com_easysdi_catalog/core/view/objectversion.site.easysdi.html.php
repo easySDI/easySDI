@@ -93,12 +93,12 @@ class HTML_objectversion {
 			else 
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('CORE_EDIT_OBJECTVERSION'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
+				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_EDIT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
 				if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
 				?> 
-				<td class="logo"><div title="<?php echo JText::_('CORE_DELETE_OBJECTVERSION'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>');" ></div></td>
+				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>');" ></div></td>
 				<?php 
 				}
 				else {
@@ -109,7 +109,7 @@ class HTML_objectversion {
 			}
 			?>
 			<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_VIEWLINK'); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
-			<td class="logo"><div title="<?php echo JText::_('CATALOF_OBJECTVERSION_MANAGELINK'); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_MANAGELINK'); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
 			</tr>
 			<?php		
 		}
@@ -170,7 +170,7 @@ else
 						<br></br>
 					</td>
 					<td width="100%" align="right">
-						<button type="button" onClick="window.open ('./index.php?tmpl=component&option=com_easysdi_catalog&task=cancelObjectVersion','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<button type="button" onClick="window.open ('./index.php?option=com_easysdi_catalog&task=cancelObjectVersion','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
 						<br></br>
 					</td>
 				</tr>
@@ -183,11 +183,11 @@ else
 					</tr>
 					<tr>
 						<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-						<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"></textarea></td>								
+						<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea></td>								
 					</tr>
 				</table>
 				
-				<input type="hidden" name="cid[]" value="<?php echo $object_id?>" />
+				<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 				<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
 				<input type="hidden" name="objectversion_id" value="<?php echo $row->id?>" />
 				<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
@@ -197,11 +197,12 @@ else
 				<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 				<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 				
-				<input type="hidden" name="title" value="<?php echo ($row->title)? $row->title : date ('Y-m-d h:i:s');?>" />
+				<input type="hidden" name="title" value="<?php echo ($row->title)? $row->title : date ('Y-m-d H:i:s');?>" />
 				<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
 				<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 				<input type="hidden" name="option" value="<?php echo $option; ?>" />
 				<input type="hidden" name="task" value="" />
+				
 			</form>
 			</div>
 		</div>
