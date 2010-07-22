@@ -688,6 +688,23 @@ class ADMIN_object {
 			}
 		}
 		$rowObject->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyObject' :
+				// Vider le flag qui permet de savoir si on est en train de recharger la page en cours d'édition
+				unset($_POST['metadata_guid']);
+				// Reprendre en édition l'objet
+				TOOLBAR_object::_EDIT();
+				ADMIN_object::editObject($rowObject->id,$option);
+				break;
+
+			case 'saveObject' :
+			default :
+				break;
+		}
 	}
 
 	function deleteObject($cid ,$option){

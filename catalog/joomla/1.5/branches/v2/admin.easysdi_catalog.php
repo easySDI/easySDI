@@ -124,8 +124,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'profile.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'profile.admin.easysdi.php');
 		ADMIN_profile::saveProfile($option);
-		TOOLBAR_profile::_EDIT();
-		ADMIN_profile::editProfile($cid[0], $option);
 		break;
 	case "cancelProfile":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'profile.easysdi.class.php');
@@ -207,8 +205,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'package.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'package.admin.easysdi.php');
 		ADMIN_package::savePackage($option);
-		TOOLBAR_package::_EDIT();
-		ADMIN_package::editPackage($cid[0], $option);
 		break;
 	case "cancelPackage":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'package.easysdi.class.php');
@@ -290,8 +286,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'class.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'class.admin.easysdi.php');
 		ADMIN_class::saveClass($option);
-		TOOLBAR_class::_EDIT();		
-		ADMIN_class::editClass($cid[0],$option);
 		break;
 	case "cancelClass":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'class.easysdi.class.php');
@@ -566,8 +560,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'codevalue.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
 		ADMIN_codevalue::saveCodeValue($option);
-		TOOLBAR_codevalue::_EDIT();
-		ADMIN_codevalue::editCodeValue($cid[0], $option);
 		break;
 	case "cancelCodeValue":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'codevalue.easysdi.class.php');
@@ -1332,8 +1324,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objecttype.admin.easysdi.php');
 
 		ADMIN_objecttype::saveObjectType($option);
-		TOOLBAR_objecttype::_EDIT();
-		ADMIN_objecttype::editObjectType($cid[0], $option);
 		break;
 	
 	case "cancelObjectType":
@@ -1454,8 +1444,6 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
 		ADMIN_object::saveObject($option);				
-		TOOLBAR_object::_EDIT();
-		ADMIN_object::editObject($cid[0],$option);
 		break;
 		
 	case "deleteObject":		
@@ -1714,8 +1702,6 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
 		ADMIN_objectversion::saveObjectVersion($option);
-		TOOLBAR_objectversion::_EDIT();
-		ADMIN_objectversion::editObjectVersion($cid[0], $option);
 		break;
 		
 	case "archiveObjectVersion":		

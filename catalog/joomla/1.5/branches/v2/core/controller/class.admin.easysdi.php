@@ -306,6 +306,21 @@ class ADMIN_class {
 		}
 		
 		$rowClass->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyClass' :
+				// Reprendre en édition l'objet
+				TOOLBAR_class::_EDIT();
+				ADMIN_class::editClass($rowClass->id,$option);
+				break;
+
+			case 'saveClass' :
+			default :
+				break;
+		}
 	}
 	
 	function removeClass($id, $option)
