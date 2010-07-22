@@ -200,29 +200,35 @@ class ADMIN_resources {
 		$file = $_POST['filename'];
 		$content = $_POST['filecontent'];
 		
-		$enable_write = $_POST['enable_write'];
+		// $enable_write = $_POST['enable_write']; // Option pour permettre de modifier un fichier quels que soient ses droits
 		$oldperms = fileperms($file);
-		if ($enable_write) @chmod($file, $oldperms | 0222);
+		//if ($enable_write) // Modifier les droits du fichiers pour pouvoir le modifier 
+		if (!is_writable($file)) // Si le fichier n'est pas modifiable, le rendre modifiable
+			@chmod($file, $oldperms | 0222);
 
 		clearstatcache();
-		if (!is_writable( $file )) {
+		/*if (!is_writable( $file )) {
 			$mainframe->enqueueMessage("Operation Failed: The file is not writable.","error");
 			$mainframe->redirect("index.php?option=$option&task=listResources" );
-		}
+		}*/
 		
-		if ($fp = fopen( $file, "w" )) {
+		if ($fp = fopen( $file, "w" )) 
+		{
 			$content = htmlspecialchars_decode( $content );
 			fwrite( $fp, $content);
 			
-			if ($enable_write) {
-				@chmod($file, $oldperms);
-			} else {
-				if ($_POST['disable_write'])
+			//if ($enable_write) { // Remettre les bons droits sur le fichier
+			@chmod($file, $oldperms);
+			/*} 
+			else {
+				if ($_POST['disable_write']) // Rendre le fichier non modifiable
 					@chmod($file, $oldperms & 0777555);
 			} // if
+			*/
 			$mainframe->redirect("index.php?option=$option&task=listResources" );
 		} else {
-			if ($enable_write) @chmod($file, $oldperms);
+			//if ($enable_write) // Remettre les bons droits sur le fichier 
+			@chmod($file, $oldperms);
 			$mainframe->enqueueMessage("Operation Failed: Could not save $file","error");
 			$mainframe->redirect("index.php?option=$option&task=listResources" );
 		}

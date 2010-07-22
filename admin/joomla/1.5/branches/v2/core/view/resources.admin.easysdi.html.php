@@ -107,14 +107,14 @@ class HTML_resources {
 					<th class="langmanager">
 					
 					<span class="componentheading">
-						&nbsp;[<?php echo basename($file).' : '; ?>
-						<?php echo is_writable($file) ? '<b><font color="green"> '.JText::_("CORE_RESOURCES_WRITABLE").'</font></b>' : '<font color="red"> '.JText::_("CORE_RESOURCES_READONLY").'</font></b>' ?>]
+						&nbsp;[<?php echo basename($file); //.' : '; ?>
+						<?php //echo is_writable($file) ? '<b><font color="green"> '.JText::_("CORE_RESOURCES_WRITABLE").'</font></b>' : '<font color="red"> '.JText::_("CORE_RESOURCES_READONLY").'</font></b>' ?>]
 					</span>
 					</th>
 			</tr></table></td>
 			<?php
+			/*
 			jimport('joomla.filesystem.path');
-			
 			if (JPath::canChmod($file)) {
 				if (is_writable($file)) { ?>
 			<td align="right">
@@ -133,6 +133,7 @@ class HTML_resources {
 			<?php
 				} // if
 			} // if
+			*/
 			?>
 		</tr>
 		</table>

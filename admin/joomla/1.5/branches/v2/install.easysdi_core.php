@@ -167,13 +167,6 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', '	FOP_URL', '	FOP_URL', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost:8080/fop', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
 	
 			/*
 			 * Create and complete system tables 
