@@ -65,6 +65,12 @@
 		      <include name="**/en-GB.com_easysdi_core.ini" />
 		     </fileset>
 		    </copy>
+		<copy		   
+		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\de-DE">
+		     <fileset dir="./language/admin">
+		      <include name="**/de-DE.com_easysdi_core.ini" />
+		     </fileset>
+		    </copy>
 	</target>
 
 
