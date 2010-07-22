@@ -93,6 +93,12 @@
 		      <include name="**/de-DE.com_easysdi_catalog.ini" />
 		     </fileset>
 		    </copy>
+		<copy		   
+		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_catalog.ini" />
+		     </fileset>
+		    </copy>
 	</target>
 	
 
