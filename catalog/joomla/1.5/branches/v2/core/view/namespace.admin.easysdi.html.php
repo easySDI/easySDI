@@ -134,6 +134,7 @@ function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 		
 		$database =& JFactory::getDBO(); 
 
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<table border="0" cellpadding="3" cellspacing="0">	
