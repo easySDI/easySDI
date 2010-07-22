@@ -294,6 +294,21 @@ class ADMIN_objecttype {
 				//}
 			}
 		}
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyObjectType' :
+				// Reprendre en édition l'objet
+				TOOLBAR_objecttype::_EDIT();
+				ADMIN_objecttype::editObjectType($rowObjecttype->id,$option);
+				break;
+
+			case 'saveObjectType' :
+			default :
+				break;
+		}
 	}
 	
 	function removeObjectType($id, $option)

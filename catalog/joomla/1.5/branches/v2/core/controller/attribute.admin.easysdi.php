@@ -336,6 +336,21 @@ class ADMIN_attribute {
 		}
 		
 		$rowAttribute->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyAttribute' :
+				// Reprendre en édition l'objet
+				TOOLBAR_attribute::_EDIT();
+				ADMIN_attribute::editAttribute($rowAttribute->id,$option);
+				break;
+
+			case 'saveAttribute' :
+			default :
+				break;
+		}
 	}
 	
 	function removeAttribute($id, $option)

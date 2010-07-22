@@ -576,6 +576,21 @@ class ADMIN_codevalue {
 		}
 		
 		$rowCodeValue->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyCodeValue' :
+				// Reprendre en édition l'objet
+				TOOLBAR_codevalue::_EDIT();
+				ADMIN_codevalue::editCodeValue($rowCodeValue->id,$option);
+				break;
+
+			case 'saveCodeValue' :
+			default :
+				break;
+		}
 	}
 	
 	function removeCodeValue($id, $option)

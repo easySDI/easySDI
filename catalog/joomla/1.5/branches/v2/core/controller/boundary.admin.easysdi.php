@@ -257,6 +257,21 @@ class ADMIN_boundary {
 		}
 		
 		$rowBoundary->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyBoundary' :
+				// Reprendre en édition l'objet
+				TOOLBAR_boundary::_EDIT();
+				ADMIN_boundary::editBoundary($rowBoundary->id,$option);
+				break;
+
+			case 'saveBoundary' :
+			default :
+				break;
+		}
 	}
 	
 	function removeBoundary($id, $option)

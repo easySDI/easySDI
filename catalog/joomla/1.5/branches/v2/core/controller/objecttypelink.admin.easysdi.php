@@ -191,6 +191,21 @@ class ADMIN_objecttypelink {
 		}
 		
 		$rowObjectTypeLink->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyObjectTypeLink' :
+				// Reprendre en édition l'objet
+				TOOLBAR_objecttypelink::_EDIT();
+				ADMIN_objecttypelink::editObjectTypeLink($rowObjectTypeLink->id,$option);
+				break;
+
+			case 'saveObjectTypeLink' :
+			default :
+				break;
+		}
 	}
 	
 	function removeObjectTypeLink($id, $option)

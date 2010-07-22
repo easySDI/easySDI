@@ -177,6 +177,21 @@ class ADMIN_namespace {
 			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
 			exit();
 		}
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyNamespace' :
+				// Reprendre en édition l'objet
+				TOOLBAR_namespace::_EDIT();
+				ADMIN_namespace::editNamespace($rowNamespace->id,$option);
+				break;
+
+			case 'saveNamespace' :
+			default :
+				break;
+		}
 	}
 	
 	function removeNamespace($id, $option)

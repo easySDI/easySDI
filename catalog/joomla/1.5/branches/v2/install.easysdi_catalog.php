@@ -1718,12 +1718,21 @@ function com_install(){
 		$module_id = $db->loadResult();
 		
 		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'CATALOG_PANEL', 'Catalog Panel', 'Catalog Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_catalog\\core\\view\\sub.ctrlpanel.admin.easysdi.html.php', '3')";
+										VALUES ('".helper_easysdi::getUniqueId()."', 'CATALOG_PANEL', 'Catalog Panel', 'Catalog Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_catalog\\core\\view\\sub.ctrlpanel.admin.easysdi.html.php', '2')";
 		$db->setQuery( $query);		
 		if (!$db->query()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
+		}
+		
+		// Configuration key
+		$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
+										values('".helper_easysdi::getUniqueId()."', 'METADATA_COLLAPSE', 'METADATA_COLLAPSE', 'CATALOG', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '0', '".$module_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
 		// Update component version

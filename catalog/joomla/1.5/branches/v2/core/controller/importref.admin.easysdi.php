@@ -248,6 +248,21 @@ class ADMIN_importref {
 		}
 		
 		$rowImportRef->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyImportRef' :
+				// Reprendre en édition l'objet
+				TOOLBAR_importref::_EDIT();
+				ADMIN_importref::editImportRef($rowImportRef->id,$option);
+				break;
+
+			case 'saveImportRef' :
+			default :
+				break;
+		}
 	}
 	
 	function removeImportRef($id, $option)

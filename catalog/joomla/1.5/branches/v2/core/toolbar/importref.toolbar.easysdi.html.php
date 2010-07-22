@@ -40,6 +40,7 @@ class TOOLBAR_importref {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_IMPORTREF' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveImportRef');
+		JToolBarHelper::apply('applyImportRef');
 		JToolBarHelper::cancel('cancelImportRef');
 	}
 }

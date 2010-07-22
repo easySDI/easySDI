@@ -441,6 +441,13 @@ switch($task){
 		TOOLBAR_attribute::_DEFAULT();
 		ADMIN_attribute::listAttribute($option);
 		break;
+	case "applyAttribute":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attribute.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
+		ADMIN_attribute::saveAttribute($option);
+		break;
 	case "cancelAttribute":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
@@ -640,6 +647,15 @@ switch($task){
 		TOOLBAR_relation::_DEFAULT();
 		ADMIN_relation::listRelation($option);
 		break;
+	case "applyRelation":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'relation.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'relation.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'relation.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'relation.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'relationprofile.easysdi.class.php');
+		ADMIN_relation::saveRelation($option);
+		break;
 	case "cancelRelation":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'relation.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'relation.toolbar.easysdi.html.php');
@@ -717,6 +733,13 @@ switch($task){
 		TOOLBAR_attributetype::_DEFAULT();
 		ADMIN_attributetype::listAttributeType($option);
 		break;
+	case "applyAttributeType":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
+		ADMIN_attributetype::saveAttributeType($option);
+		break;
 	case "cancelAttributeType":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
@@ -780,6 +803,13 @@ switch($task){
 		ADMIN_namespace::saveNamespace($option);
 		TOOLBAR_namespace::_DEFAULT();
 		ADMIN_namespace::listNamespace($option);
+		break;
+	case "applyNamespace":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'namespace.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'namespace.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'namespace.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'namespace.admin.easysdi.php');
+		ADMIN_namespace::saveNamespace($option);
 		break;
 	case "removeNamespace":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'namespace.easysdi.class.php');
@@ -871,6 +901,13 @@ switch($task){
 		TOOLBAR_boundary::_DEFAULT();
 		ADMIN_boundary::listBoundary($option);
 		break;
+	case "applyBoundary":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'boundary.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'boundary.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'boundary.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'boundary.admin.easysdi.php');
+		ADMIN_boundary::saveBoundary($option);
+		break;
 	case "removeBoundary":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'boundary.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'boundary.toolbar.easysdi.html.php');
@@ -947,6 +984,13 @@ switch($task){
 		TOOLBAR_importref::_DEFAULT();
 		ADMIN_importref::listImportRef($option);
 		break;
+	case "applyImportRef":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'importref.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		ADMIN_importref::saveImportRef($option);
+		break;
 	case "removeImportRef":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'importref.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
@@ -1022,6 +1066,13 @@ switch($task){
 		ADMIN_objecttypelink::saveObjectTypeLink($option);
 		TOOLBAR_objecttypelink::_DEFAULT();
 		ADMIN_objecttypelink::listObjectTypeLink($option);
+		break;
+	case "applyObjectTypeLink":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttypelink.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'objecttypelink.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'objecttypelink.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'objecttypelink.admin.easysdi.php');
+		ADMIN_objecttypelink::saveObjectTypeLink($option);
 		break;
 	case "removeObjectTypeLink":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttypelink.easysdi.class.php');

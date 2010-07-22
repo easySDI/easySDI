@@ -40,6 +40,7 @@ class TOOLBAR_relation {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_RELATION' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveRelation');
+		JToolBarHelper::apply('applyRelation');
 		JToolBarHelper::cancel('cancelRelation');
 	}
 }

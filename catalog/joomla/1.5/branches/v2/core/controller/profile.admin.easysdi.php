@@ -291,6 +291,21 @@ class ADMIN_profile {
 				}
 			}
 		}*/
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyProfile' :
+				// Reprendre en édition l'objet
+				TOOLBAR_profile::_EDIT();
+				ADMIN_profile::editProfile($rowProfile->id,$option);
+				break;
+
+			case 'saveProfile' :
+			default :
+				break;
+		}
 	}
 	
 	function removeProfile($id, $option)

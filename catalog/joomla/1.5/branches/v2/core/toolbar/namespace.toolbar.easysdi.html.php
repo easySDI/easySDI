@@ -40,6 +40,7 @@ class TOOLBAR_namespace {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_NAMESPACE' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveNamespace');
+		JToolBarHelper::apply('applyNamespace');
 		JToolBarHelper::cancel('cancelNamespace');
 	}
 }

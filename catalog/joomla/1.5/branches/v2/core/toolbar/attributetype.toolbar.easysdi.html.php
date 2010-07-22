@@ -38,6 +38,7 @@ class TOOLBAR_attributetype {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_ATTRIBUTETYPE' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveAttributeType');
+		JToolBarHelper::apply('applyAttributeType');
 		JToolBarHelper::cancel('cancelAttributeType');
 	}
 }

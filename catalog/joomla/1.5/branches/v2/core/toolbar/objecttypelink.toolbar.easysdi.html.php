@@ -40,6 +40,7 @@ class TOOLBAR_objecttypelink {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTTYPELINK' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveObjectTypeLink');
+		JToolBarHelper::apply('applyObjectTypeLink');
 		JToolBarHelper::cancel('cancelObjectTypeLink');
 	}
 }

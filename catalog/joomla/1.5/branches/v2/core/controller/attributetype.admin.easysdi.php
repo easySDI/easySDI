@@ -152,6 +152,21 @@ class ADMIN_attributetype {
 			$mainframe->redirect("index.php?option=$option&task=listAttributeType" );
 			exit();
 		}
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyAttributeType' :
+				// Reprendre en édition l'objet
+				TOOLBAR_attributetype::_EDIT();
+				ADMIN_attributetype::editAttributeType($rowAttributeType->id,$option);
+				break;
+
+			case 'saveAttributeType' :
+			default :
+				break;
+		}
 	}
 	
 	function saveOrder($option)

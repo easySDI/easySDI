@@ -478,6 +478,21 @@ class ADMIN_objectversion {
 				exit();
 			}
 		}
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyObjectVersion' :
+				// Reprendre en édition l'objet
+				TOOLBAR_objectversion::_EDIT();
+				ADMIN_objectversion::editObjectVersion($rowObjectVersion->id,$option);
+				break;
+
+			case 'saveObjectVersion' :
+			default :
+				break;
+		}
 	}
 	
 	function deleteObjectVersion($cid, $option)

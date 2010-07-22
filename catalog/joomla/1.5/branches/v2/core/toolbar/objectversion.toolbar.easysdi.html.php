@@ -30,7 +30,7 @@ class TOOLBAR_objectversion {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveObjectVersion');
-		//JToolBarHelper::apply('applyObjectVersion');
+		JToolBarHelper::apply('applyObjectVersion');
 		JToolBarHelper::cancel('cancelObjectVersion');
 		if (intval($cid[0]) <> 0) // Edit
 		{

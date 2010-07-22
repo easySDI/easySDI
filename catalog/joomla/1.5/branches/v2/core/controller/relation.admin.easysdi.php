@@ -1296,6 +1296,24 @@ class ADMIN_relation {
 		}
 				
 		$rowRelation->checkin();
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyRelation' :
+				// Vider les flags qui permettent de savoir si on est en train de recharger la page en cours d'édition
+				unset($_POST['reload']);
+				unset($_POST['attributechild_id']);
+				// Reprendre en édition l'objet
+				TOOLBAR_relation::_EDIT();
+				ADMIN_relation::editRelation($rowRelation->id,$option);
+				break;
+
+			case 'saveRelation' :
+			default :
+				break;
+		}
 	}
 	
 	function removeRelation($id, $option)

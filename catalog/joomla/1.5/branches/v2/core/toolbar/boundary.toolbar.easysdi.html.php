@@ -40,6 +40,7 @@ class TOOLBAR_boundary {
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_BOUNDARY' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveBoundary');
+		JToolBarHelper::apply('applyBoundary');
 		JToolBarHelper::cancel('cancelBoundary');
 	}
 }
