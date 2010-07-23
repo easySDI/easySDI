@@ -1148,7 +1148,7 @@ function validateForm(toStep, fromStep){
 				else
 				{
 					//no command right
-					$filter .= " AND (p.visibility=2000) ";
+					$filter .= " AND (p.visibility_id=2000) ";
 				}
 			}
 		}
@@ -1194,7 +1194,7 @@ function validateForm(toStep, fromStep){
 			echo "</div>";
 		}
 
-		HTML_shop::searchProducts ($suppliers, $account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
+		HTML_shop::searchProducts ($suppliers, $account,$account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
 	}
 	
 	function downloadAvailableProduct($id)

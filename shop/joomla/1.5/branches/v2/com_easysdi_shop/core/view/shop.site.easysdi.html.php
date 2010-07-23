@@ -20,7 +20,7 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_shop
 {
-	function searchProducts ($suppliers, $account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view, $step)
+	function searchProducts ($suppliers,$account, $account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view, $step)
 	{
 		$db =& JFactory::getDBO();
 		?>
