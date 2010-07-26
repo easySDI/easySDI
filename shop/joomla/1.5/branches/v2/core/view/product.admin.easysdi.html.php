@@ -546,8 +546,8 @@ class HTML_product {
 				?>
 				</td>
 				<td align="center">
-					<a class="modal" href="<?php echo JURI::root(); ?>index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}" title="<?php echo JText::_( 'SHOP_PRODUCT_VIEW_METADATA' ); ?>">
-					<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/document.png" border="0" /></a>
+					<a class="modal" href="<?php echo JURI::root(true); ?>/index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}" title="<?php echo JText::_( 'SHOP_PRODUCT_VIEW_METADATA' ); ?>">
+					<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/document.png" border="0" /></a>
 				</td>
 				<td><?php echo $row->description; ?></a></td>
 				<td><?php echo $row->object_name; ?></a></td>
