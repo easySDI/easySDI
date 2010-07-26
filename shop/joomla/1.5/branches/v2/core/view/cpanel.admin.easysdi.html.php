@@ -195,7 +195,7 @@ class HTMLadmin_cpanel {
 		$task = JRequest::getVar('task');
 		
 		?>
-		 <link rel="stylesheet" href="<?php echo JURI::root()?>templates/easysdi/css/easysdi.css" type="text/css" />
+		 <link rel="stylesheet" href="<?php echo JURI::root(true)?>/templates/easysdi/css/easysdi.css" type="text/css" />
 		<h2 class="orderRecapTitle"><?php echo JText::_("SHOP_ORDER_RECAP_GENERAL_TITLE"); ?></h2>
 		<table class="orderRecap" width="100%">
 		<tr>
