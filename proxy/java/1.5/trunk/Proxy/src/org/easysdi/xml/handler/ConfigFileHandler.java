@@ -404,7 +404,12 @@ public class ConfigFileHandler extends DefaultHandler {
 				Date date = new Date();
 				period = dateFormat.format(date);
 			}
-			logFile = logPath + "/" + logSuffix + "." + period + "." + logPrefix + "." + logExtension;
+			
+			logFile = logPath + "/" + logPrefix + "." + period + "." + logSuffix  ;
+			if(!logExtension.equals(""))
+			{
+				logFile += "." + logExtension;
+			}
 			isFileStructure = false;
 		}
 
