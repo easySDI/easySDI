@@ -297,13 +297,26 @@ document.getElementById('specificGeonetowrk').style.display="none";
 }
 
 
-function submitbutton(pressbutton){
-
-if (pressbutton=="addNewServer"){	
-	addNewServer();
+function submitbutton(pressbutton)
+{
+	if (pressbutton=="addNewServer")
+	{	
+		addNewServer();
 	}
-	else{	
-	submitform(pressbutton);
+	else if (pressbutton=="saveConfig")
+	{	
+		if(document.getElementById('logPath').value == "" || 
+		   document.getElementById('logPrefix').value == "" || 
+		   document.getElementById('logSuffix').value == "" )
+		{
+			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_ERROR');?>');	
+			return;
+		}
+		submitform(pressbutton);
+	}
+	else
+	{
+		submitform(pressbutton);
 	}
 }
 </script>
@@ -329,8 +342,8 @@ if (pressbutton=="addNewServer"){
 
 	<tr>
 		<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
-			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.wfs.SimpleWFSProxyServlet">org.easysdi.proxy.wfs.SimpleWFSProxyServlet</option>
+<!--			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>-->
+<!--				value="org.easysdi.proxy.wfs.SimpleWFSProxyServlet">org.easysdi.proxy.wfs.SimpleWFSProxyServlet</option>-->
 			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
 				value="org.easysdi.proxy.wfs.WFSProxyServlet">org.easysdi.proxy.wfs.WFSProxyServlet</option>
 			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
@@ -504,15 +517,15 @@ function addNewServer(){
 		<table class="admintable">
 			<tr>
 				<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
 				<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
+				<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
 				<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
 			</tr>
 			<tr>
-				<td><input name="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-				<td><input name="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-				<td><input name="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-				<td><input name="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+				<td><input name="logPath" id="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
+				<td><input name="logPrefix" id="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
+				<td><input name="logSuffix" id="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
+				<td><input name="logExt" id="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
 			</tr>
 		</table>
 		</td>
@@ -1019,10 +1032,16 @@ function activateLayer(server,layerName){
 </table>
 </fieldset>
 
-<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
-	HTML_proxy::generateWFSHTML($config,$thePolicy);
-}
-?> <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
+<?php 
+//if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
+//	HTML_proxy::generateWFSHTML($config,$thePolicy);
+//}
+	if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0)
+	{
+		HTML_proxy::generateWFSHTML($config,$thePolicy);
+	}
+?> 
+<?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
 	HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 
 	if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){
@@ -1568,10 +1587,10 @@ function activateLayer(server,layerName){
 			{
 				echo "<b>".CSW."  </b>";
 			}
-			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.SimpleWFSProxyServlet")
-			{
-				echo "<b>".WFS."  </b>";
-			}
+//			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.SimpleWFSProxyServlet")
+//			{
+//				echo "<b>".WFS."  </b>";
+//			}
 			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
 			{
 				echo "<b>".WFS."  </b>";
