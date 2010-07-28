@@ -286,7 +286,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 		
 		$javascript = "";
 	
@@ -379,7 +379,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 		
 		$javascript = "";
 	
