@@ -55,7 +55,7 @@ class ADMIN_metadata {
 			JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
 					
 			$document =& JFactory::getDocument();
-			$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+			$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 			
 			$javascript ="
 			//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
@@ -153,6 +153,14 @@ class ADMIN_metadata {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$user = JFactory::getUser();
+		$task = JRequest::getVar('task');
+		
+		$language =& JFactory::getLanguage();
+		if ($language->_lang == "fr-FR") 
+			JHTML::script('ext-lang-fr.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		else if ($language->_lang == "de-DE") 
+			JHTML::script('ext-lang-de.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
+		
 		
 		if ($id == 0)
 		{
@@ -342,13 +350,25 @@ class ADMIN_metadata {
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = $cswResults->childNodes->item(0)->nodeValue;
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
+			switch ($task)
+			{
+				case "askForEditMetadata":
+					$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+				case "editMetadata":
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$rowObject->id, $msg );
+			}
 		}
 		else
 		{
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
+			switch ($task)
+			{
+				case "askForEditMetadata":
+					$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+				case "editMetadata":
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$rowObject->id, $msg );
+			}
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
@@ -659,16 +679,16 @@ class ADMIN_metadata {
 									{
 										$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
 										$xmlLocParent->appendChild($XMLNode);
-										$xmlLocParent = $XMLNode;
+										$xmlLocParent_temp = $XMLNode;
 										$XMLNode = $XMLDoc->createElement("gmd:textGroup");
-										$xmlLocParent->appendChild($XMLNode);
-										$xmlLocParent = $XMLNode;
+										$xmlLocParent_temp->appendChild($XMLNode);
+										$xmlLocParent_temp = $XMLNode;
 										// Ajout de la valeur
 										$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-										$xmlLocParent->appendChild($XMLNode);
+										$xmlLocParent_temp->appendChild($XMLNode);
 										// Indication de la langue concernée
 										$XMLNode->setAttribute('locale', "#".$lang->code);
-										$xmlParent = $XMLNode;
+										//$xmlParent = $XMLNode;
 									}
 								}
 							}
@@ -1238,7 +1258,7 @@ class ADMIN_metadata {
 
 							// Récupérer la valeur liée à cette entrée de liste
 							$locValues = array();
-							$query = "SELECT cl.code, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE t.language_id=l.id AND l.codelang_id=cl.id AND t.element_guid = '".$nodeValue."'";
+							$query = "SELECT cl.code, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE t.language_id=l.id AND l.codelang_id=cl.id AND t.element_guid = '".$nodeValue."' ORDER BY l.ordering";
 							$database->setQuery( $query );
 							//echo $database->getQuery()."<br>";
 							$locValues = $database->loadObjectList();
@@ -1283,16 +1303,16 @@ class ADMIN_metadata {
 								{
 									$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
 									$xmlLocParent->appendChild($XMLNode);
-									$xmlLocParent = $XMLNode;
+									$xmlLocParent_temp = $XMLNode;
 									$XMLNode = $XMLDoc->createElement("gmd:textGroup");
-									$xmlLocParent->appendChild($XMLNode);
-									$xmlLocParent = $XMLNode;
+									$xmlLocParent_temp->appendChild($XMLNode);
+									$xmlLocParent_temp = $XMLNode;
 									// Ajout de la valeur
 									$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-									$xmlLocParent->appendChild($XMLNode);
+									$xmlLocParent_temp->appendChild($XMLNode);
 									// Indication de la langue concernée
 									$XMLNode->setAttribute('locale', "#".$codeToSave);
-									$xmlParent = $XMLNode;
+									//$xmlParent = $XMLNode;
 								}
 							}
 							/*
@@ -1573,9 +1593,9 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
 		
 		// Langue par défaut
@@ -1863,9 +1883,9 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode = array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
 		
 		// Langue par défaut
@@ -2095,8 +2115,10 @@ class ADMIN_metadata {
 		$rowMetadata->metadatastate_id=4;
 		$rowMetadata->updated = date('Y-m-d H:i:s');
 		$rowMetadata->updatedby = $account_id;
+		$rowMetadata->editor_id = null;
+		$rowMetadata->published = null;
 		
-		if (!$rowMetadata->store()) 
+		if (!$rowMetadata->store(true)) 
 		{
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			exit();
@@ -2139,9 +2161,9 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
 		
 		// Langue par défaut
@@ -2296,6 +2318,67 @@ class ADMIN_metadata {
 		$object_id= $_POST['object_id'];
 		$account_id= $_POST['account_id'];
 		
+		// Est-ce que tous les enfants sont publiés?
+		$rowMetadata = new metadataByGuid($database);
+		$rowMetadata->load($metadata_id);
+		
+		$rowObjectVersion = new objectversionByMetadata_id($database);
+		$rowObjectVersion->load($rowMetadata->id);
+
+		$child_objectlinks=array();
+		$query = 'SELECT count(*)' .
+				' FROM #__sdi_objectversionlink l
+				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_metadata child_metadata ON child_metadata.id=child.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate child_metadatastate ON child_metadatastate.id=child_metadata.metadatastate_id
+				  WHERE l.parent_id=' . $rowObjectVersion->id .
+				'       AND child_metadatastate.code <> "PUBLISHED"';
+		$database->setQuery($query);
+		$child_objectlinks = $database->loadResult();
+		//	echo $database->getQuery()."<br>".$child_objectlinks."<br>";
+		
+		if ($child_objectlinks > 0)
+		{
+			$errorMsg = "CATALOG_METADATA_PUBLISH_CHILDSNOTPUBLISHED";
+			
+			$response = '{
+				    		success: false,
+						    errors: {
+						        xml: "'.html_Metadata::cleanText(JText::_($errorMsg)).'"
+						    }
+						}';
+			print_r($response);
+			die();
+		}
+		
+		// Est-ce que tous les enfants sont publiés à la date indiquée?
+		$child_published=array();
+		$query = 'SELECT count(*)' .
+				' FROM #__sdi_objectversionlink l
+				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_metadata child_metadata ON child_metadata.id=child.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate child_metadatastate ON child_metadatastate.id=child_metadata.metadatastate_id
+				  WHERE l.parent_id=' . $rowObjectVersion->id .
+				'       AND child_metadata.published <= "'.$publishdate.'"';
+		$database->setQuery($query);
+		$child_published = $database->loadResult();
+		//echo $database->getQuery()."<br>".$child_published."<br>";
+		
+		if ($child_published > 0)
+		{
+			$errorMsg = "CATALOG_METADATA_PUBLISH_CHILDSDATE";
+			
+			$response = '{
+				    		success: false,
+						    errors: {
+						        xml: "'.html_Metadata::cleanText(JText::_($errorMsg)).'"
+						    }
+						}';
+			print_r($response);
+			die();
+		}
+		//break;
+		
 		$xml= $_POST['xml'];
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		$XMLDoc = DOMDocument::loadXML($xml);
@@ -2379,7 +2462,7 @@ class ADMIN_metadata {
 			// Enregistrer la date de publication
 			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($metadata_id);
-			$rowMetadata->published=date('Y-m-d h:i:s', strtotime($publishdate));
+			$rowMetadata->published=date('Y-m-d', strtotime($publishdate))." 00:00:00";
 			$rowMetadata->metadatastate_id=1;
 			$rowMetadata->updated = date('Y-m-d H:i:s');
 			$rowMetadata->updatedby = $account_id;
@@ -2655,6 +2738,7 @@ class ADMIN_metadata {
         
         // Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
+		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
 		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
@@ -2850,7 +2934,7 @@ class ADMIN_metadata {
         	}
         }
 
-        $cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
+        //$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		// Le document a été créé correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => résultat retourné
@@ -3233,10 +3317,10 @@ class ADMIN_metadata {
 		// Est-ce que cet utilisateur est un manager?
 		$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
 		$total = $database->loadResult();
+		$isManager = false;
 		if ($total == 1)
 			$isManager = true;
-		else
-			$isManager = false;
+			
 		
 		// Est-ce que cet utilisateur est un editeur?
 		$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$rowObject->id) ;
@@ -3305,8 +3389,7 @@ class ADMIN_metadata {
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
-		
-		
+			
 	}
 	
 	function getContact($option)
@@ -3321,9 +3404,10 @@ class ADMIN_metadata {
 			$searchPattern = "";
 		// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 		$results = array();
-		$database->setQuery( "	SELECT o.id as id, m.guid as guid, o.name as name 
-								FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m 
-								WHERE 	o.metadata_id=m.id 
+		$database->setQuery( "	SELECT DISTINCT o.id as id, m.guid as guid, CONCAT(o.name, ' ' , ov.title) as name 
+								FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov
+								WHERE 	o.id=ov.object_id
+										AND ov.metadata_id=m.id 
 										AND o.objecttype_id=ot.id 
 										AND ot.id=".$objecttype_id."  
 										AND o.name LIKE '%".$searchPattern."%'
@@ -3339,7 +3423,7 @@ class ADMIN_metadata {
 		die();
 	}
 	
-	function getObject($option)
+	function getObjectVersion($option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -3357,7 +3441,7 @@ class ADMIN_metadata {
 		
 		// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 		$results = array();
-		$query = "SELECT o.id as object_id, m.guid as metadata_guid, o.name as object_name FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.predefined=false";
+		$query = "SELECT ov.id as version_id, m.guid as metadata_guid, o.name as object_name, ov.title as version_title FROM #__sdi_object o, #__sdi_objectversion ov, #__sdi_objecttype ot, #__sdi_metadata m WHERE ov.object_id=o.id AND ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.predefined=false";
 		
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;

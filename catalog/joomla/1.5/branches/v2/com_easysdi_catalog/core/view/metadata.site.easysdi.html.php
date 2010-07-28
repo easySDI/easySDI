@@ -4056,7 +4056,18 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
 					//echo "Trouve ".$guid."<br>";
 					$results = array();
-					$database->setQuery( "SELECT o.id as id, m.guid as guid, o.name as name FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m where o.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.id=".$child->objecttype_id." AND m.guid ='".$guid."'" );
+					$database->setQuery( "SELECT o.id as id, 
+												 m.guid as guid, 
+												 CONCAT(o.name, ' ', ov.title) as name 
+										  FROM 	 #__sdi_object o, 
+										  		 #__sdi_objecttype ot, 
+										  		 #__sdi_metadata m,
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND ov.metadata_id=m.id 
+										  		 AND o.objecttype_id=ot.id 
+										  		 AND ot.id=".$child->objecttype_id." 
+										  		 AND m.guid ='".$guid."'" );
 					$results= array_merge( $results, $database->loadObjectList() );
 					//$results = HTML_metadata::array2json(array ("total"=>count($results), "contacts"=>$results));
 					$results = HTML_metadata::array2json($results);

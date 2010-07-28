@@ -62,7 +62,7 @@ class HTML_metadata {
 		$database =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
 		
-		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		else
 			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
@@ -92,21 +92,21 @@ class HTML_metadata {
 		
 		
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/templates/css/form_layout_backend.css');
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/templates/css/MultiSelect.css');
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
 		
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/templates/css/shCore.css');
-		$document->addStyleSheet($uri->base() . 'components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
-		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
+		//$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
 		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
 		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
-		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
+		//$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		
 		$user =& JFactory::getUser();
 		$user_id = $user->get('id');
@@ -152,7 +152,7 @@ class HTML_metadata {
 		
 		// Langues à gérer
 		$this->langList = array();
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -347,12 +347,12 @@ class HTML_metadata {
 													clientValidation: false,
 													success: function(form, action) 
 													{
-														//alert('Metadata saved successfully.');
-														
 														// Retour à la page précédente
-														//history.back();
-														window.open ('./index.php?option=".$option."&task=listObject','_parent');
-														
+														Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata','_parent');});
+												
+													
 														myMask.hide();
 													},
 													failure: function(form, action) 
@@ -460,7 +460,7 @@ class HTML_metadata {
 				}
 				else if($isValidated)
 				{
-					$this->javascript .="
+					/*	$this->javascript .="
 						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
 										handler: function()
 						                {
@@ -629,10 +629,10 @@ class HTML_metadata {
 							        	}})
 							        );
 					form.render();";
-					
+					*/
 				// Ajout du bouton INVALIDATE seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est validée
-				$this->javascript .="
+				/*$this->javascript .="
 				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
 								handler: function()
 				                {
@@ -663,6 +663,7 @@ class HTML_metadata {
 					        	}})
 					        );
 				form.render();";
+				*/
 				}
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est publiée
@@ -695,9 +696,10 @@ class HTML_metadata {
 												clientValidation: true,
 												success: function(form, action) 
 												{
-													//history.back();
-													window.open ('./index.php?option=".$option."&task=listObject','_parent');
-														
+													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata','_parent');});
+												
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -3649,11 +3651,13 @@ class HTML_metadata {
 					$results = array();
 					$database->setQuery( "SELECT o.id as id, 
 												 m.guid as guid, 
-												 o.name as name 
+												 CONCAT(o.name, ' ', ov.title) as name 
 										  FROM 	 #__sdi_object o, 
 										  		 #__sdi_objecttype ot, 
-										  		 #__sdi_metadata m 
-										  WHERE  o.metadata_id=m.id 
+										  		 #__sdi_metadata m,
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND ov.metadata_id=m.id 
 										  		 AND o.objecttype_id=ot.id 
 										  		 AND ot.id=".$child->objecttype_id." 
 										  		 AND m.guid ='".$guid."'" );
@@ -4075,10 +4079,19 @@ class HTML_metadata {
 														     ,buttons: [{ 
 												                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 												                    handler: function(){
-												                    	Ext.MessageBox.prompt('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-									  						
-												                    	myMask.show();
-												                    	winxml.items.get(0).getForm().submit();
+												                    	Ext.MessageBox.show({
+												                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TITLE'))."', 
+												                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TEXT'))."',
+												                    						buttons: Ext.MessageBox.OKCANCEL,
+												                    						icon: Ext.MessageBox.QUESTION, 
+												                    						fn: function (btn, text){
+										                    									  	if (btn == 'ok')
+										                    									  	{
+										                    									  		myMask.show();
+										                    											winxml.items.get(0).getForm().submit();
+										                    									  	}
+										                    									  } 
+												                    						});        	
 												                    }
 												                },
 												                {
@@ -4163,8 +4176,19 @@ class HTML_metadata {
 														     ,buttons: [{
 												                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 												                    handler: function(){
-												                    	myMask.show();
-												                    	wincsw.items.get(0).getForm().submit();
+												                    	Ext.MessageBox.show({
+												                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTCSW_MSG_CONFIRM_TITLE'))."', 
+												                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTCSW_MSG_CONFIRM_TEXT'))."',
+												                    						buttons: Ext.MessageBox.OKCANCEL,
+												                    						icon: Ext.MessageBox.QUESTION, 
+												                    						fn: function (btn, text){
+										                    									  	if (btn == 'ok')
+										                    									  	{
+										                    									  		myMask.show();
+										                    											wincsw.items.get(0).getForm().submit();
+										                    									  	}
+										                    									  } 
+												                    						}); 
 												                    }},
 												                {
 												                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
@@ -4225,22 +4249,31 @@ class HTML_metadata {
 			var replicateDataStore = new Ext.data.Store({
 							id: 'objectListStore',
 					        proxy: new Ext.data.HttpProxy({
-					            url: 'index.php?option=com_easysdi_catalog&task=getObject'
+					            url: 'index.php?option=com_easysdi_catalog&task=getObjectVersion'
 					        }),
 					        reader: new Ext.data.JsonReader({
 					            root: 'objects',
 					            totalProperty: 'total',
 					            remoteSort: true,
-					            id: 'object_id'
+					            id: 'version_id'
 					        }, [
-					            {name: 'object_id', mapping: 'object_id'},
+					            {name: 'version_id', mapping: 'version_id'},
 					            {name: 'object_name', mapping: 'object_name'},
+					            {name: 'version_title', mapping: 'version_title'},
 					            {name: 'metadata_guid', mapping: 'metadata_guid'}
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
 					        totalProperty: 'total',
-					        baseParams: {dir:'ASC', sort:'object_name'}
+					        baseParams: {dir:'ASC', sort:'object_name', start:0, limit:10, objecttype_id:''},
+				       	    listeners: {
+							            beforeload: {
+							            				fn:function(store, options) {
+							            					options.params.objecttype_id = Ext.getCmp('objecttype_id').getValue();
+															return true;		
+											            }
+											         }
+									}
 					    });";
 			$tbar[] ="
 				{
@@ -4251,7 +4284,7 @@ class HTML_metadata {
 						if (!winrct)
 							winrct = new Ext.Window({
 							                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
-							                width:500,
+							                width:600,
 							                height:430,
 							                closeAction:'hide',
 							                layout:'fit', 
@@ -4299,7 +4332,7 @@ class HTML_metadata {
 													 									objecttype_id: combo.getValue() 
 																						}                
 																					});																						}        
-																			}	
+																			}
 																}
 											       },
 											       {
@@ -4311,8 +4344,9 @@ class HTML_metadata {
 											       	 loadMask: true,
 											       	 frame:true,
 											       	 cm: new Ext.grid.ColumnModel([
-													        {id:'object_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTID_COLUMN'))."', hidden: true, dataIndex: 'object_id'},
+													        {id:'version_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_VERSIONID_COLUMN'))."', hidden: true, dataIndex: 'version_id'},
 													        {id:'object_name', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTNAME_COLUMN'))."', sortable: true, editable:false, dataIndex: 'object_name', menuDisabled: true},
+													        {id:'version_title', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_VERSIONTITLE_COLUMN'))."', sortable: true, editable:false, dataIndex: 'version_title', menuDisabled: true},
 													        {header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_METADATAGUID_COLUMN'))."', width: 150, sortable: true, editable:false, dataIndex: 'metadata_guid', menuDisabled: true}
 													    ]),
 													 ds: replicateDataStore, 
@@ -4322,6 +4356,7 @@ class HTML_metadata {
 													 },
 													 selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),														 
 													 bbar: new Ext.PagingToolbar({
+													 	id: 'bbar',
 											            pageSize: 10,
 											            store: replicateDataStore
 											        })
@@ -4359,12 +4394,21 @@ class HTML_metadata {
 									                    	var grid = winrct.items.get(0).findById('objectselector');
 									                    	if (grid.getSelectionModel().hasSelection())
 															{
-									                    		myMask.show();
-									                    		selectedObject=grid.getSelectionModel().getSelected();
-									                    		//console.log(selectedObject.get('metadata_guid'));
-									                    		//winrct.items.get(0).getForm().setValues({object_id: selectedObject.id});
-									                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
-									                    		winrct.items.get(0).getForm().submit();
+									                    		Ext.MessageBox.show({
+										                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_MSG_CONFIRM_TITLE'))."', 
+										                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_MSG_CONFIRM_TEXT'))."',
+										                    						buttons: Ext.MessageBox.OKCANCEL,
+										                    						icon: Ext.MessageBox.QUESTION, 
+										                    						fn: function (btn, text){
+								                    									  	if (btn == 'ok')
+								                    									  	{
+								                    									  		myMask.show();
+																	                    		selectedObject=grid.getSelectionModel().getSelected();
+																	                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
+																	                    		winrct.items.get(0).getForm().submit();
+								                    									  	}
+								                    									  } 
+										                    						});
 									                    	}
 									                    	else
 									                    	{
@@ -4391,7 +4435,8 @@ class HTML_metadata {
 							
 							// Masquer le bouton de rafraîchissement
 							Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
-							winrct.show();
+							
+				            winrct.show();
 			        	}
 	            }";
 		}
