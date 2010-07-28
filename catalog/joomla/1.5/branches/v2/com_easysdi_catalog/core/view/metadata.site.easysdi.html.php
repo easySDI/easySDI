@@ -89,7 +89,7 @@ class HTML_metadata {
 	if(count($rows) == 0){
 		echo "<table><tbody><tr><td colspan=\"11\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
 	}else{?>
-	<table class="box-table" id="manageMetadata">
+	<table class="box-table" id="MyProducts">
 	<thead>
 	<tr>
 	<th><?php echo JText::_('CATALOG_METADATA_OBJECTNAME'); ?></th>
@@ -99,6 +99,7 @@ class HTML_metadata {
 	<th><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
 	<!-- <th><?php //echo JText::_('CORE_CREATED'); ?></th> -->
 	<!-- <th><?php //echo JText::_('CORE_UPDATED'); ?></th> -->
+	<th></th>
 	<th></th>
 	<th></th>
 	</tr>
@@ -221,11 +222,24 @@ class HTML_metadata {
 					$rowMetadata->load($row->metadata_guid);
 					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
 					{
-						if (($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
+						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publié et date du jour >= date de publication
 							)
 						{
 							?>
 								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_ARCHIVE_METADATA'); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
+							<?php
+						}
+						else
+						{
+							?>
+								<td></td>
+							<?php 
+						}
+						if ($rowMetadata->metadatastate_id == 3 or $rowMetadata->metadatastate_id == 2 or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archivé, Validé ou Publié
+							)
+						{
+							?>
+								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_INVALIDATE_METADATA'); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						}
 						else
@@ -288,7 +302,7 @@ class HTML_metadata {
 		
 		$language =& JFactory::getLanguage();
 		
-		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		else
 			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
@@ -318,13 +332,13 @@ class HTML_metadata {
 		
 		
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
 		
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shCore.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
@@ -378,7 +392,7 @@ class HTML_metadata {
 		
 		// Langues à gérer
 		$this->langList = array();
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.id" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -425,7 +439,8 @@ class HTML_metadata {
 								labelAlign: 'left',
 						        labelWidth: 200,
 						        border:false,
-						        collapsed:false,
+						        buttonAlign: 'right',
+						       	collapsed:false,
 						        renderTo: document.getElementById('formContainer'),
 						        isInvalid: false,
 						        buttons: [{
@@ -810,6 +825,16 @@ class HTML_metadata {
 																						         id:'xml', 
 																						         xtype: 'hidden',
 																						         value: xmlfile
+																						       },
+																						       { 
+																						         id:'option', 
+																						         xtype: 'hidden',
+																						         value:'".$option."' 
+																						       },
+																						       { 
+																						         id:'task', 
+																						         xtype: 'hidden',
+																						         value: 'publishMetadata'
 																						       }
 																						    ] 
 																						     ,buttonAlign:'right' 
@@ -826,10 +851,9 @@ class HTML_metadata {
 																											win.hide();
 																											myMask.hide();
 	
-																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
-	
-										  																	window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
-																
+																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', 
+																					                    						 '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."',
+																					                    						 function () {window.open ('./index.php?option=".$option."&task=listMetadata','_parent');});																
 																										},
 																										failure: function(form, action) 
 																										{
@@ -4554,8 +4578,19 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															     ,buttons: [{ 
 													                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 													                    handler: function(){
-													                    	myMask.show();
-													                    	winxml.items.get(0).getForm().submit();
+													                    	Ext.MessageBox.show({
+												                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TITLE'))."', 
+												                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TEXT'))."',
+												                    						buttons: Ext.MessageBox.OKCANCEL,
+												                    						icon: Ext.MessageBox.QUESTION, 
+												                    						fn: function (btn, text){
+										                    									  	if (btn == 'ok')
+										                    									  	{
+										                    									  		myMask.show();
+										                    											winxml.items.get(0).getForm().submit();
+										                    									  	}
+										                    									  } 
+												                    						});        	
 													                    }
 													                },
 													                {
@@ -4640,8 +4675,19 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															     ,buttons: [{
 													                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 													                    handler: function(){
-													                    	myMask.show();
-													                    	wincsw.items.get(0).getForm().submit();
+													                    	Ext.MessageBox.show({
+												                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTCSW_MSG_CONFIRM_TITLE'))."', 
+												                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTCSW_MSG_CONFIRM_TEXT'))."',
+												                    						buttons: Ext.MessageBox.OKCANCEL,
+												                    						icon: Ext.MessageBox.QUESTION, 
+												                    						fn: function (btn, text){
+										                    									  	if (btn == 'ok')
+										                    									  	{
+										                    									  		myMask.show();
+										                    											wincsw.items.get(0).getForm().submit();
+										                    									  	}
+										                    									  } 
+												                    						}); 
 													                    }},
 													                {
 													                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
@@ -4702,22 +4748,31 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				var replicateDataStore = new Ext.data.Store({
 								id: 'objectListStore',
 						        proxy: new Ext.data.HttpProxy({
-						            url: 'index.php?option=com_easysdi_catalog&task=getObject'
+						            url: 'index.php?option=com_easysdi_catalog&task=getObjectVersion'
 						        }),
 						        reader: new Ext.data.JsonReader({
 						            root: 'objects',
 						            totalProperty: 'total',
 						            remoteSort: true,
-						            id: 'object_id'
+						            id: 'version_id'
 						        }, [
-						            {name: 'object_id', mapping: 'object_id'},
-						            {name: 'object_name', mapping: 'object_name'},
-						            {name: 'metadata_guid', mapping: 'metadata_guid'}
+						            {name: 'version_id', mapping: 'version_id'},
+					            	{name: 'object_name', mapping: 'object_name'},
+						            {name: 'version_title', mapping: 'version_title'},
+					            	{name: 'metadata_guid', mapping: 'metadata_guid'}
 						        ]),
 						        // turn on remote sorting
 						        remoteSort: true,
 						        totalProperty: 'total',
-						        baseParams: {dir:'ASC', sort:'object_name'}
+						        baseParams: {dir:'ASC', sort:'object_name', start:0, limit:10, objecttype_id:''},
+					       	    listeners: {
+								            beforeload: {
+								            				fn:function(store, options) {
+								            					options.params.objecttype_id = Ext.getCmp('objecttype_id').getValue();
+																return true;		
+												            }
+												         }
+										}
 						    });";
 				$tbar[] ="
 					{
@@ -4728,7 +4783,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 							if (!winrct)
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
-								                width:500,
+								                width:600,
 								                height:430,
 								                closeAction:'hide',
 								                layout:'fit', 
@@ -4788,9 +4843,10 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 												       	 loadMask: true,
 												       	 frame:true,
 												       	 cm: new Ext.grid.ColumnModel([
-														        {id:'object_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTID_COLUMN'))."', hidden: true, dataIndex: 'object_id'},
-														        {id:'object_name', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTNAME_COLUMN'))."', sortable: true, editable:false, dataIndex: 'object_name', menuDisabled: true},
-														        {header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_METADATAGUID_COLUMN'))."', width: 150, sortable: true, editable:false, dataIndex: 'metadata_guid', menuDisabled: true}
+														        {id:'version_id', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_VERSIONID_COLUMN'))."', hidden: true, dataIndex: 'version_id'},
+													        	{id:'object_name', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_OBJECTNAME_COLUMN'))."', sortable: true, editable:false, dataIndex: 'object_name', menuDisabled: true},
+														        {id:'version_title', header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_VERSIONTITLE_COLUMN'))."', sortable: true, editable:false, dataIndex: 'version_title', menuDisabled: true},
+													        	{header: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_GRID_METADATAGUID_COLUMN'))."', width: 150, sortable: true, editable:false, dataIndex: 'metadata_guid', menuDisabled: true}
 														    ]),
 														 ds: replicateDataStore, 
 														 viewConfig: {
@@ -4836,12 +4892,21 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 										                    	var grid = winrct.items.get(0).findById('objectselector');
 										                    	if (grid.getSelectionModel().hasSelection())
 																{
-										                    		myMask.show();
-										                    		selectedObject=grid.getSelectionModel().getSelected();
-										                    		//console.log(selectedObject.get('metadata_guid'));
-										                    		//winrct.items.get(0).getForm().setValues({object_id: selectedObject.id});
-										                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
-										                    		winrct.items.get(0).getForm().submit();
+										                    		Ext.MessageBox.show({
+										                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_MSG_CONFIRM_TITLE'))."', 
+										                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_MSG_CONFIRM_TEXT'))."',
+										                    						buttons: Ext.MessageBox.OKCANCEL,
+										                    						icon: Ext.MessageBox.QUESTION, 
+										                    						fn: function (btn, text){
+								                    									  	if (btn == 'ok')
+								                    									  	{
+								                    									  		myMask.show();
+																	                    		selectedObject=grid.getSelectionModel().getSelected();
+																	                    		winrct.items.get(0).getForm().setValues({metadata_guid: selectedObject.get('metadata_guid')});
+																	                    		winrct.items.get(0).getForm().submit();
+								                    									  	}
+								                    									  } 
+										                    						});
 										                    	}
 										                    	else
 										                    	{
@@ -4928,7 +4993,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 																       { 
 																         id:'task', 
 																         xtype: 'hidden',
-																         value:'editMetadata' 
+																         value:'resetMetadata' 
 																       },
 																       { 
 																         id:'option', 

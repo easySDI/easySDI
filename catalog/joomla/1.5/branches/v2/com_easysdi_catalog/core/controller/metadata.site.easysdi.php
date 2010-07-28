@@ -384,10 +384,27 @@ class SITE_metadata {
 		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		if ($cswResults <> false)
+		/*if ($cswResults <> false)
 			$xpathResults = new DOMXPath($cswResults);
 		else
-			$xpathResults = new DOMXPath($doc);
+			$xpathResults = new DOMXPath($doc);*/
+		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
+			$xpathResults = new DOMXPath($cswResults);
+		else if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
+		{
+			$rowObject->checkin();
+			//$xpathResults = new DOMXPath($doc);
+			$msg = $cswResults->childNodes->item(0)->nodeValue;
+			$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
+		}
+		else
+		{
+			$rowObject->checkin();
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
+		}
+		
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
@@ -491,6 +508,29 @@ class SITE_metadata {
 		
 		if (!$metadata->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+	}
+	
+	function invalidateMetadata($metadata_id, $option)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+		$user = JFactory::getUser();
+		
+		$account = new accountByUserId($database);
+		$account->load($user->id);
+		
+		// Passer en statut en travail
+		$rowMetadata = new metadata($database);
+		$rowMetadata->load($metadata_id);
+		$rowMetadata->metadatastate_id=4;
+		$rowMetadata->updated = date('Y-m-d H:i:s');
+		$rowMetadata->updatedby = $account->user_id;
+		
+		if (!$rowMetadata->store()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			exit();
 		}
 	}
 }
