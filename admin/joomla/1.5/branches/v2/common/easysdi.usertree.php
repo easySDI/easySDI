@@ -35,7 +35,7 @@ class userTree
 			</td>
 			<td>
 			<script type="text/javascript">
-				d = new dTree('d', '<?php echo JURI::root().'templates/easysdi/';  ?>');
+				d = new dTree('d', '<?php echo JURI::root(true).'/templates/easysdi/';  ?>');
 				
 				d.add(0,-1,'<?php echo addslashes($rootUser->name);  ?>');
 				
