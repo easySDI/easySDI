@@ -552,7 +552,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="reload" value="<?php echo true;?>" />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
-			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="task" value="newRelation" />
 		</form>
 			<?php 	
 	}
