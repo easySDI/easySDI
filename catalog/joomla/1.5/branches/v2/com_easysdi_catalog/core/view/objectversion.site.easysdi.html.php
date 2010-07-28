@@ -217,17 +217,17 @@ else
 
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
 		
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shCore.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
 		$language =& JFactory::getLanguage();
 		
-		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		else
 			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
@@ -349,17 +349,17 @@ else
 		
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
 		
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shCore.css');
-		$document->addStyleSheet($uri->base() . 'administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
 		$language =& JFactory::getLanguage();
 		
-		if (file_exists($uri->base().'components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
+		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
 		else
 			JHTML::script('ext-lang-'.substr($language->_lang, 0 ,2).'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
