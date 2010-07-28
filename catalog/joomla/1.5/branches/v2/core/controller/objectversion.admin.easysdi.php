@@ -558,7 +558,7 @@ class ADMIN_objectversion {
 			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 			
 			$deleteResults = DOMDocument::loadXML($result);
-			
+			/*
 			$xpathDelete = new DOMXPath($deleteResults);
 			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
@@ -569,7 +569,7 @@ class ADMIN_objectversion {
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 				exit();
 			}
-			
+			*/
 			if (!$objectversion->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
@@ -897,6 +897,13 @@ class ADMIN_objectversion {
 			$fromDate = $_POST['fromDate'];
 		if (array_key_exists('toDate', $_POST))
 			$toDate = $_POST['toDate'];
+				
+		if ($fromDate <> "")
+			$fromDate = date('Y-m-d', strtotime($fromDate))." 00:00:00";
+		if ($toDate <> "")
+			$toDate = date('Y-m-d', strtotime($toDate))." 23:59:59";
+
+		
 		
 		// Récupérer tous les objets du type d'objet sélectionné,
 		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés
