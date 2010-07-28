@@ -27,9 +27,9 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 					
 JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-JHTML::script('uxvismode.js', 'administrator/components/com_easysdi_catalog/ext/');
-JHTML::script('multidom.js', 'administrator/components/com_easysdi_catalog/ext/');
-JHTML::script('mif.js', 'administrator/components/com_easysdi_catalog/ext/');
+//JHTML::script('uxvismode.js', 'administrator/components/com_easysdi_catalog/ext/');
+//JHTML::script('multidom.js', 'administrator/components/com_easysdi_catalog/ext/');
+//JHTML::script('mif.js', 'administrator/components/com_easysdi_catalog/ext/');
 //JHTML::script('miframe-debug.js', 'administrator/components/com_easysdi_catalog/ext/build/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -3648,10 +3648,26 @@ class HTML_metadata {
 				{
 					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
 					//echo "Trouve ".$guid."<br>";
+					// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
+					$total = 0;
+					$database->setQuery( "SELECT count(*) 
+										  FROM 	 #__sdi_object o, 
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND o.id IN (	SELECT ov.object_id 
+																FROM 	 #__sdi_objectversion ov,
+																  		 #__sdi_metadata m
+																WHERE  ov.metadata_id=m.id 
+																  	   AND m.guid ='".$guid."'
+										  		 			  )" );
+					$total = $database->loadResult();
+					
 					$results = array();
-					$database->setQuery( "SELECT o.id as id, 
+					if ($total > 1)
+					{
+						$database->setQuery( "SELECT o.id as id, 
 												 m.guid as guid, 
-												 CONCAT(o.name, ' ', ov.title) as name 
+												 CONCAT(o.name, ' [', ov.title, ']') as name 
 										  FROM 	 #__sdi_object o, 
 										  		 #__sdi_objecttype ot, 
 										  		 #__sdi_metadata m,
@@ -3661,7 +3677,24 @@ class HTML_metadata {
 										  		 AND o.objecttype_id=ot.id 
 										  		 AND ot.id=".$child->objecttype_id." 
 										  		 AND m.guid ='".$guid."'" );
+					}
+					else
+					{
+						$database->setQuery( "SELECT o.id as id, 
+												 m.guid as guid, 
+												 o.name as name 
+										  FROM 	 #__sdi_object o, 
+										  		 #__sdi_objecttype ot, 
+										  		 #__sdi_metadata m,
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND ov.metadata_id=m.id 
+										  		 AND o.objecttype_id=ot.id 
+										  		 AND ot.id=".$child->objecttype_id." 
+										  		 AND m.guid ='".$guid."'" );
+					}
 					$results= array_merge( $results, $database->loadObjectList() );
+					
 					//$results = HTML_metadata::array2json(array ("total"=>count($results), "contacts"=>$results));
 					$results = HTML_metadata::array2json($results);
 					//$results = $results[0]->guid;
