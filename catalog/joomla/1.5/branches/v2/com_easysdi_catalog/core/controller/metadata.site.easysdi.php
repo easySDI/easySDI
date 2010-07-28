@@ -520,17 +520,40 @@ class SITE_metadata {
 		$account = new accountByUserId($database);
 		$account->load($user->id);
 		
+		if (array_key_exists('metadata_id', $_POST))
+		{
+			$rowMetadata = new metadataByGuid($database);
+			$rowMetadata->load($_POST['metadata_id']);
+		}
+		else
+		{
+			$rowMetadata = new metadata($database);
+			$rowMetadata->load($metadata_id);
+		}
+			
 		// Passer en statut en travail
-		$rowMetadata = new metadata($database);
-		$rowMetadata->load($metadata_id);
 		$rowMetadata->metadatastate_id=4;
 		$rowMetadata->updated = date('Y-m-d H:i:s');
 		$rowMetadata->updatedby = $account->user_id;
+		$rowMetadata->editor_id = null;
+		$rowMetadata->published = null;
 		
-		if (!$rowMetadata->store()) 
+		if (!$rowMetadata->store(true)) 
 		{
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			exit();
+		}
+		
+		if (array_key_exists('metadata_id', $_POST))
+		{
+			$response = '{
+			 	   			success: true,
+						    errors: {
+						        xml: "Metadata invalidated"
+						    }
+						}';
+			print_r($response);
+			die();
 		}
 	}
 }

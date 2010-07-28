@@ -607,11 +607,10 @@ class HTML_metadata {
 												clientValidation: false,
 												success: function(form, action) 
 												{
-													//alert('Metadata saved successfully.');
-													
 													// Retour à la page précédente
-													//history.back();
-													window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
+													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -691,8 +690,10 @@ class HTML_metadata {
 												clientValidation: true,
 												success: function(form, action) 
 												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-							  						window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
+													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -913,8 +914,10 @@ class HTML_metadata {
 											clientValidation: false,
 											success: function(form, action) 
 											{
-												Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
-						  						window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
+												Ext.MessageBox.alert('".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+											
 													
 												myMask.hide();
 											},
@@ -962,8 +965,10 @@ class HTML_metadata {
 												clientValidation: true,
 												success: function(form, action) 
 												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."');
-								  					window.open ('./index.php?option=".$option."&task=listMetadata','_parent');
+													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+												
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -984,7 +989,9 @@ class HTML_metadata {
 					// Assignation de métadonnée
 					$editors = array();
 					$listEditors = array();
-					$database->setQuery( "SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") ORDER BY b.name" );
+					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") 
+													AND c.user_id <> ".$user_id."  
+											ORDER BY b.name" );
 					$editors = array_merge( $editors, $database->loadObjectList() );
 					foreach($editors as $e)
 					{
@@ -1078,6 +1085,10 @@ class HTML_metadata {
 																						{
 										                        							win.hide();
 																	                    	myMask.hide();
+																	                    	
+																	                    	Ext.MessageBox.alert('".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TITLE')."', 
+																				                    						 '".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TEXT')."',
+																				                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
 																						},
 																						failure: function(form, action) 
 																						{
