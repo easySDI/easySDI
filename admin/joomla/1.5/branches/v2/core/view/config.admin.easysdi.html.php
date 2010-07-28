@@ -710,7 +710,7 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
@@ -728,7 +728,7 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
@@ -746,7 +746,7 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<div style="font-weight: bold" >
-												<img src="<?php echo JURI::root();?>includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
+												<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_SHOP_PLUGIN_REQUIREMENTS' ); ?>
 											</div>
 										</td>
 										<td>
