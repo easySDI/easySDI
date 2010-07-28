@@ -74,7 +74,7 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOLABELS', true ); ?>" );
 		}
-		else if (getSelectedValue('adminForm','type') < 1) 
+		else if (form.type.value == 0) 
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
