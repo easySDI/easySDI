@@ -444,14 +444,14 @@ if ($rowObject->updated)
 							if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 							{
 								?>
-								<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+								<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 								<?php
 							} 
 							else 
 							{
 								?>
 								<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_MANAGEVERSION' ); ?>">
-									<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+									<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 								</a>
 								<?php
 							}
