@@ -243,31 +243,40 @@ echo $pane->endPane();
 			}
 		}
 	}
-	function editconfig($xml,$new = false){
-			
+	function editconfig($xml,$new = false)
+	{
 		$option = JRequest::getVar('option');
-		if (!$new){
+		if (!$new)
+		{
 			$configId = JRequest::getVar("configId");
-		}else{
+		}
+		else
+		{
 			$found = false;
 			$configId = "New Config";
 			$i=0;
-			foreach ($xml->config as $config) {
-				if (strcmp($config['id'],$configId)==0){
+			foreach ($xml->config as $config) 
+			{
+				if (strcmp($config['id'],$configId)==0)
+				{
 					$found = true;
 					break;
 				}
 			}
 
-			while($found){
-				foreach ($xml->config as $config) {
+			while($found)
+			{
+				foreach ($xml->config as $config) 
+				{
 					$found=false;
-					if (strcmp($config['id'],$configId.$i)==0){
+					if (strcmp($config['id'],$configId.$i)==0)
+					{
 						$found = true;
 						break;
 					}
 				}
-				if ($found == false){
+				if ($found == false)
+				{
 					$configId = $configId.$i;
 				}
 				$i++;
@@ -285,262 +294,380 @@ echo $pane->endPane();
 		}
 		JToolBarHelper::title( JText::_( 'EASYSDI_EDIT CONFIG' ).' : '.$configId, 'edit.png' );
 		?>
-<script>
-function changeValues(){
-if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet'){
-document.getElementById('specificGeonetowrk').style.display="block";
-}else{
-document.getElementById('specificGeonetowrk').style.display="none";
-}
-
-
-}
-
-
-function submitbutton(pressbutton)
-{
-	if (pressbutton=="addNewServer")
-	{	
-		addNewServer();
-	}
-	else if (pressbutton=="saveConfig")
-	{	
-		if(document.getElementById('logPath').value == "" || 
-		   document.getElementById('logPrefix').value == "" || 
-		   document.getElementById('logSuffix').value == "" )
+		<script>
+		function changeValues()
 		{
-			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_ERROR');?>');	
-			return;
+			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
+			{
+				document.getElementById('specificGeonetowrk').style.display="block";
+			}
+			else
+			{
+				document.getElementById('specificGeonetowrk').style.display="none";
+			}
+
+			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet'
+				|| document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+			{
+				applyDisplay ("none","block");
+			}
+			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
+			{
+				applyDisplay ("block","none");
+			}
+			else
+			{
+				document.getElementById('service_metadata').style.display="none";
+				
+			}
 		}
-		submitform(pressbutton);
-	}
-	else
-	{
-		submitform(pressbutton);
-	}
-}
-</script>
 
-<form name='adminForm' id='adminForm' action='index.php' method='POST'><input type='hidden' name="isNewConfig" value="<?php echo $new; ?>"> <input
-	type='hidden' name='option' value='<?php echo $option;?>'> <input type='hidden' name='task' value=''> <input type='hidden' name='configId'
-	value='<?php echo $configId;?>'> <?php
-	foreach ($xml->config as $config) {
-		if (strcmp($config['id'],$configId)==0){
-			$servletClass=$config->{'servlet-class'};
-			?>
+		function applyDisplay (value1,value2)
+		{
+			document.getElementById('service_metadata').style.display="block";
+			document.getElementById('service_name').style.display=value1;
+			document.getElementById('service_name_t').style.display=value1;
+			document.getElementById('service_type').style.display=value2;
+			document.getElementById('service_type_t').style.display=value2;
+			document.getElementById('service_typeversion').style.display=value2;
+			document.getElementById('service_typeversion_t').style.display=value2;
+			document.getElementById('service_contactadress').style.display=value1;
+			document.getElementById('service_contactadress_t').style.display=value1;
+			document.getElementById('service_contactlinkage').style.display=value2;
+			document.getElementById('service_contactlinkage_t').style.display=value2;
+			document.getElementById('service_contacthours').style.display=value2;
+			document.getElementById('service_contacthours_t').style.display=value2;
+			document.getElementById('service_contactinstructions').style.display=value2;
+			document.getElementById('service_contactinstructions_t').style.display=value2;
+		}
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-<table class="admintable">
-	<tr>
-		<td colspan="4"><input type='text' name='newConfigId' value='<?php echo $configId;?>'></td>
-	</tr>
-</table>
-</fieldset>
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
-
-<table class="admintable">
-
-	<tr>
-		<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
-<!--			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>-->
-<!--				value="org.easysdi.proxy.wfs.SimpleWFSProxyServlet">org.easysdi.proxy.wfs.SimpleWFSProxyServlet</option>-->
-			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.wfs.WFSProxyServlet">org.easysdi.proxy.wfs.WFSProxyServlet</option>
-			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.wms.WMSProxyServlet">org.easysdi.proxy.wms.WMSProxyServlet</option>
-			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.cgp.CGPProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.cgp.CGPProxyServlet">org.easysdi.proxy.cgp.CGPProxyServlet</option>
-			<option <?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.csw.CSWProxyServlet">org.easysdi.proxy.csw.CSWProxyServlet</option>
-		</select></td>
-	</tr>
-</table>
-</fieldset>
-
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
-<table class="admintable">
-	<tr>
-		<td><input size="100" type="text" name="hostTranslator" value="<?php  echo $config->{'host-translator'}; ?>"></td>
-	</tr>
-</table>
-</fieldset>
-
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-<table class="admintable">
-
-	<thead>
-		<tr>
-			<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-		</tr>
-	</thead>
-	<tbody id="remoteServerTable">
-	<?php
-	$remoteServerList = $config->{'remote-server-list'};
-	$iServer=0;
-	foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-		?>
-		<tr>
-			<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-			<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-			<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"> <input type="button"
-				onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-
-		</tr>
-		<tr>
-			<td colspan="3">
-			<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
-			<table>
-				<tr>
-					<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td>
-					<td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
-				</tr>
-				<tr>
-					<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td>
-					<td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
-				</tr>
-				<tr>
-					<td><?php echo JText::_( 'EASYSDI_SEARCH_SERVICE_URL');?></td>
-					<td><input type="text" name="search-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'search-service-url'}; ?>"
-						size=70></td>
-				</tr>
-				<tr>
-					<td><?php echo JText::_( 'EASYSDI_DELETE_SERVICE_URL');?></td>
-					<td><input type="text" name="delete-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'delete-service-url'}; ?>"
-						size=70></td>
-				</tr>
-				<tr>
-					<td><?php echo JText::_( 'EASYSDI_INSERT_SERVICE_URL');?></td>
-					<td><input type="text" name="insert-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'insert-service-url'}; ?>"
-						size=70></td>
-				</tr>
-			</table>
-			</div>
-			</td>
-		</tr>
-		<?php
-		$iServer=$iServer+1;
-	}
-	?>
-	</tbody>
-</table>
-</fieldset>
-<script>
-var nbServer = <?php echo $iServer?>;
-
-function removeServer(servNo){
-
-noeud = document.getElementById("remoteServerTable");
-var fils = noeud.childNodes;
-
-noeud.removeChild(fils[servNo]);
-
-noeud = document.getElementById("remoteServerTable");
-fils = noeud.childNodes;
-var nbFils = fils.length;
-
-for(var i = 0; i < nbFils; i++){
-		fils[i].childNodes[0].childNodes[0].name="URL_"+i;	
-		fils[i].childNodes[1].childNodes[0].name="USER_"+i;
-		fils[i].childNodes[2].childNodes[0].name="PASSWORD_"+i;						
-		fils[i].childNodes[2].childNodes[1].setAttribute("onClick","javascript:removeServer("+i+");");
-} 
-nbServer = nbServer - 1;
-}
-
-function addNewServer(){
-	
-	var tr = document.createElement('tr');	
-	var tdUrl = document.createElement('td');
-	tdUrl.className="key";
-	
-	var tdUser = document.createElement('td');
-	var tdPwd = document.createElement('td');				
-	var inputUrl = document.createElement('input');
-	inputUrl.size=70;
-	inputUrl.type="text";
-	inputUrl.name="URL_"+nbServer;
-	
-	var inputUser = document.createElement('input');
-	inputUser.type="text";
-	inputUser.name="USER_"+nbServer;
-	
-	var inputPassword = document.createElement('input');
-	inputPassword.type="password";
-	inputPassword.name="PASSWORD_"+nbServer;
-	
-	tdUrl.appendChild(inputUrl);
-	tr.appendChild(tdUrl);
-	tdUser.appendChild(inputUser);
-	tr.appendChild(tdUser);
-	
-	tdPwd.appendChild(inputPassword);
-	
-	var aButton = document.createElement('input');
-	aButton.type="button";
-	aButton.value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>";
-	aButton.setAttribute("onClick","javascript:removeServer("+nbServer+");");
+		function submitbutton(pressbutton)
+		{
+			if (pressbutton=="addNewServer")
+			{	
+				addNewServer();
+			}
+			else if (pressbutton=="saveConfig")
+			{	
+				if(document.getElementById('logPath').value == "" || 
+				   document.getElementById('logPrefix').value == "" || 
+				   document.getElementById('logSuffix').value == "" )
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_ERROR');?>');	
+					return;
+				}
+				submitform(pressbutton);
+			}
+			else
+			{
+				submitform(pressbutton);
+			}
+		}
 		
-	tdPwd.appendChild(aButton);
-	
-	
-	tr.appendChild(tdPwd);
-	
-	document.getElementById("remoteServerTable").appendChild(tr);
-	
-	
-	nbServer = nbServer + 1;
-}
-</script>
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
-<table class="admintable">
-	<tr>
-		<td><input name="policyFile" type="text" size=100 value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
-	</tr>
-</table>
-</fieldset>
+		</script>
 
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
-<table class="admintable">
-	<tr>
-		<td><select name="logPeriod">
-			<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?> value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-			<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?> value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-			<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?> value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-			<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?> value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-		</select></td>
-	</tr>
-
-	<tr>
-		<td>
-		<table class="admintable">
-			<tr>
-				<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
-			</tr>
-			<tr>
-				<td><input name="logPath" id="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-				<td><input name="logPrefix" id="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-				<td><input name="logSuffix" id="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-				<td><input name="logExt" id="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
-			</tr>
-		</table>
-		</td>
-
-	</tr>
-</table>
-</fieldset>
-
-	<?php
-	break;
+		<form name='adminForm' id='adminForm' action='index.php' method='POST'><input type='hidden' name="isNewConfig" value="<?php echo $new; ?>"> <input
+			type='hidden' name='option' value='<?php echo $option;?>'> <input type='hidden' name='task' value=''> <input type='hidden' name='configId'
+			value='<?php echo $configId;?>'> 
+		<?php
+		foreach ($xml->config as $config) 
+		{
+			if (strcmp($config['id'],$configId)==0)
+			{
+				$servletClass=$config->{'servlet-class'};
+				?>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
+					<table class="admintable">
+						<tr>
+							<td colspan="4"><input type='text' name='newConfigId' value='<?php echo $configId;?>'></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
+					<table class="admintable">
+						<tr>
+							<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
+								<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
+									value="org.easysdi.proxy.wfs.WFSProxyServlet">org.easysdi.proxy.wfs.WFSProxyServlet</option>
+								<option <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
+									value="org.easysdi.proxy.wms.WMSProxyServlet">org.easysdi.proxy.wms.WMSProxyServlet</option>
+								<option <?php if (strcmp($servletClass,"org.easysdi.proxy.cgp.CGPProxyServlet")==0 ){echo "selected";}?>
+									value="org.easysdi.proxy.cgp.CGPProxyServlet">org.easysdi.proxy.cgp.CGPProxyServlet</option>
+								<option <?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "selected";}?>
+									value="org.easysdi.proxy.csw.CSWProxyServlet">org.easysdi.proxy.csw.CSWProxyServlet</option>
+							</select></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><input size="100" type="text" name="hostTranslator" value="<?php  echo $config->{'host-translator'}; ?>"></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
+					<table class="admintable">
+						<thead>
+							<tr>
+								<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+								<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+								<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
+							</tr>
+						</thead>
+						<tbody id="remoteServerTable">
+						<?php
+						$remoteServerList = $config->{'remote-server-list'};
+						$iServer=0;
+						foreach ($remoteServerList->{'remote-server'} as $remoteServer)
+						{
+							?>
+							<tr>
+								<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+								<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+								<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"> <input type="button"
+									onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
+							</tr>
+							<tr>
+								<td colspan="3">
+								<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
+								<table>
+									<tr>
+										<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td>
+										<td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td>
+										<td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_( 'EASYSDI_SEARCH_SERVICE_URL');?></td>
+										<td><input type="text" name="search-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'search-service-url'}; ?>"
+											size=70></td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_( 'EASYSDI_DELETE_SERVICE_URL');?></td>
+										<td><input type="text" name="delete-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'delete-service-url'}; ?>"
+											size=70></td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_( 'EASYSDI_INSERT_SERVICE_URL');?></td>
+										<td><input type="text" name="insert-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'insert-service-url'}; ?>"
+											size=70></td>
+									</tr>
+								</table>
+								</div>
+								</td>
+							</tr>
+							<?php
+							$iServer=$iServer+1;
+						}
+						?>
+						</tbody>
+					</table>
+				</fieldset>
+				<script>
+				var nbServer = <?php echo $iServer?>;
+				function removeServer(servNo)
+				{
+					noeud = document.getElementById("remoteServerTable");
+					var fils = noeud.childNodes;
+					noeud.removeChild(fils[servNo]);
+					noeud = document.getElementById("remoteServerTable");
+					fils = noeud.childNodes;
+					var nbFils = fils.length;
+					for(var i = 0; i < nbFils; i++){
+							fils[i].childNodes[0].childNodes[0].name="URL_"+i;	
+							fils[i].childNodes[1].childNodes[0].name="USER_"+i;
+							fils[i].childNodes[2].childNodes[0].name="PASSWORD_"+i;						
+							fils[i].childNodes[2].childNodes[1].setAttribute("onClick","javascript:removeServer("+i+");");
+					} 
+					nbServer = nbServer - 1;
+				}
+				
+				function addNewServer()
+				{
+					var tr = document.createElement('tr');	
+					var tdUrl = document.createElement('td');
+					tdUrl.className="key";
+					var tdUser = document.createElement('td');
+					var tdPwd = document.createElement('td');				
+					var inputUrl = document.createElement('input');
+					inputUrl.size=70;
+					inputUrl.type="text";
+					inputUrl.name="URL_"+nbServer;
+					var inputUser = document.createElement('input');
+					inputUser.type="text";
+					inputUser.name="USER_"+nbServer;
+					var inputPassword = document.createElement('input');
+					inputPassword.type="password";
+					inputPassword.name="PASSWORD_"+nbServer;
+					tdUrl.appendChild(inputUrl);
+					tr.appendChild(tdUrl);
+					tdUser.appendChild(inputUser);
+					tr.appendChild(tdUser);
+					tdPwd.appendChild(inputPassword);
+					var aButton = document.createElement('input');
+					aButton.type="button";
+					aButton.value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>";
+					aButton.setAttribute("onClick","javascript:removeServer("+nbServer+");");
+					tdPwd.appendChild(aButton);
+					tr.appendChild(tdPwd);
+					document.getElementById("remoteServerTable").appendChild(tr);
+					nbServer = nbServer + 1;
+				}
+				</script>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><input name="policyFile" type="text" size=100 value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><select name="logPeriod">
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?> value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?> value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?> value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?> value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
+							</select></td>
+						</tr>
+						<tr>
+							<td>
+							<table class="admintable">
+								<tr>
+									<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
+								</tr>
+								<tr>
+									<td><input name="logPath" id="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
+									<td><input name="logPrefix" id="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
+									<td><input name="logSuffix" id="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
+									<td><input name="logExt" id="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+								</tr>
+							</table>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+				
+				<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+					<table class="admintable" >
+						<tr><!-- WMS -->
+							<td class="key" id="service_name_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_NAME"); ?> : </td>
+							<td ><input  name="service_name" id="service_name" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Name"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
+							<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
+							<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
+							<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Keyword"}; ?>"></td>
+						</tr>
+						<tr ><!-- WFS -->
+							<td class="key" id="service_type_t" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE"); ?> : </td>
+							<td ><input  name="service_type" id="service_type" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Type"}; ?>"></td>
+						</tr>
+						<tr ><!-- WFS -->
+							<td class="key" id="service_typeversion_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE_VERSION"); ?> : </td>
+							<td ><input  name="service_typeversion" id="service_typeversion" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"TypeVersion"}; ?>"></td>
+						</tr>
+						<tr>
+							<td colspan="2">
+							<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
+								<table>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
+										<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}{"ContactName"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
+										<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}{"ContactOrganization"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_POSITION"); ?> : </td>
+										<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
+										<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
+									</tr>
+									<tr><!-- WMS -->
+										<td class="key" id="service_contactadress_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
+										<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
+										<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size=5 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
+										<td><input name="service_contactcity" id="service_contactcity" type="text" size=68 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_STATE"); ?> : </td>
+										<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
+										<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>
+										<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
+										<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
+										<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
+									</tr>
+									<tr><!-- WFS -->
+										<td class="key" id="service_contactlinkage_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_LINKAGE"); ?> : </td>
+										<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
+									</tr>
+									<tr><!-- WFS -->
+										<td class="key" id="service_contacthours_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
+										<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
+									</tr>
+									<tr><!-- WFS -->
+										<td class="key" id="service_contactinstructions_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
+										<td colspan="2"><input name="service_contactinstructions" id="service_contactinstructions" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?>"></td>
+									</tr>
+								</table>
+							</fieldset>
+							 </td>
+						</tr>
+						
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
+							<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
+							<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
+						</tr>
+					</table>
+				</fieldset>
+			
+				<?php
+				break;
+			}
 		}
-	}
-	?></form>
-	<?php
-
+		?>
+		</form>
+		<script>
+		window.onload=changeValues ;
+		</script>
+		<?php
 	}
 
 	function showPoliciesList($xml){
