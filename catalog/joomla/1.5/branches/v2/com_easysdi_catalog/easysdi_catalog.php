@@ -279,6 +279,7 @@ else
 
 		case "listObject":			
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttype.easysdi.class.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'object.site.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
