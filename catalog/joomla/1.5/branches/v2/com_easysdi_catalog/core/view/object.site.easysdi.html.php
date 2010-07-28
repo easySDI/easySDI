@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_object {
 
-	function editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $editors, $selected_editors, $managers, $selected_managers, $hasVersioning, $pageReloaded, $option ){
+	function editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $visibilities, $projections, $fieldsLength, $languages, $labels, $editors, $selected_editors, $managers, $selected_managers, $hasVersioning, $pageReloaded, $option ){
 		
 		global  $mainframe;
 				
@@ -57,6 +57,15 @@ class HTML_object {
 		$geoMD = new geoMetadata($cswResults);				 
 		*/
 		$database =& JFactory::getDBO(); 
+		
+		$user =& JFactory::getUser();
+		$currentAccount = new accountByUserId($database);
+		$currentAccount->load($user->id);
+		$root_account = $currentAccount->id;
+		if ($currentAccount->root_id)
+			$root_account = $currentAccount->root_id;
+			
+		
 		
 		?>	
 		<div id="page">
@@ -115,6 +124,10 @@ if (!$hasVersioning)
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 								<td><?php echo JHTML::_('select.booleanlist', 'published', '', ($pageReloaded)? $_POST['published'] : $rowObject->published); ?> </td>																
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("CATALOG_OBJECT_VISIBILITY_LABEL"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$visibilities, 'visibility_id', 'size="1" class="inputbox"', 'value', 'text', ($pageReloaded)? $_POST['visibility_id'] : $rowObject->visibility_id  ); ?></td>								
 							</tr>
 							<tr>
 								<td colspan="2">
@@ -331,6 +344,7 @@ if ($rowObject->updated)
 		<input type="hidden" name="updated" value="<?php echo ($rowObject->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 		<input type="hidden" name="updatedby" value="<?php echo ($rowObject->createdby)? $user->id : ''; ?>" /> 
 		<input type="hidden" name="metadata_guid" value="<?php if ($pageReloaded) echo $_POST['metadata_guid']; else echo $rowMetadata->guid; ?>" />
+		<input type="hidden" name="account_id" value="<?php echo $root_account; ?>" />
 		
 		<input type="hidden" name="id" value="<?php echo $rowObject->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
@@ -474,21 +488,35 @@ if ($rowObject->updated)
 			} 
 			else 
 			{
+				$objecttype = new objecttype($database);
+				$objecttype->load($row->objecttype_id);
+				
+				if ($objecttype->hasVersioning)
+				{
+					?>
+					<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECT_MANAGEVERSION'); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>', '_self');"></div></td>
+					<?php
+				}
+				else
+				{
+					?>
+					<td></td>
+					<?php 
+				}
 				?>
-				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECT_MANAGEVERSION'); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>', '_self');"></div></td>
 				<td class="logo"><div title="<?php echo JText::_('CORE_EDIT_OBJECT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
-				if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
-				{
+				//if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
+				//{
 				?> 
 				<td class="logo"><div title="<?php echo JText::_('CORE_DELETE_OBJECT'); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div></td>
 				<?php 
-				}
+				/*}
 				else {
 				?>
 				<td></td>
 				<?php 
-				}
+				}*/
 				?>
 				<?php
 				//if ($row->metadatastate_id == 1) // Impossible d'archiver si le statut n'est pas "PUBLISHED"
