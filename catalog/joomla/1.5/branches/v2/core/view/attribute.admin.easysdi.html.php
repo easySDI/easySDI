@@ -134,14 +134,14 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 						if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 						{
 							?>
-							<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 							<?php
 						} 
 						else 
 						{
 							?>
 							<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'CATALOG_ATTRIBUTE_EDIT_LIST_ITEMS' ); ?>">
-								<img src="<?php echo JURI::root(); ?>includes/js/ThemeOffice/mainmenu.png" border="0" />
+								<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 							</a>
 							<?php
 						}
