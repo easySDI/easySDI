@@ -120,7 +120,18 @@ class ADMIN_object {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT o.*, b.name as account_name, ot.name as objecttype_name, ot.hasVersioning as hasVersioning FROM #__sdi_account a, #__users b, #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id WHERE a.root_id is null AND a.user_id = b.id AND a.id=o.account_id AND ot.predefined=false";
+		$query = "SELECT o.*, 
+						 b.name as account_name, 
+						 ot.name as objecttype_name, 
+						 ot.hasVersioning as hasVersioning 
+				  FROM 	#__sdi_account a, 
+				  		#__users b, 
+				  		#__sdi_object o 
+				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id 
+				  WHERE a.root_id is null 
+				  		AND a.user_id = b.id 
+				  		AND a.id=o.account_id 
+				  		AND ot.predefined=false";
 		if ($where)
 			$query .= ' AND '.$where;
 		$query .= $orderby;
@@ -769,7 +780,7 @@ class ADMIN_object {
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 				$catalogUrlBase = config_easysdi::getValue("catalog_url");
 				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-				
+				/*
 				$deleteResults = DOMDocument::loadXML($result);
 				
 				$xpathDelete = new DOMXPath($deleteResults);
@@ -781,7 +792,7 @@ class ADMIN_object {
 					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObject" );
 					exit();
-				}
+				}*/
 				
 				if (!$objectversion->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
