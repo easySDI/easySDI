@@ -3402,9 +3402,10 @@ class ADMIN_metadata {
 		
 		if (!$searchPattern)
 			$searchPattern = "";
+		
 		// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
-		$results = array();
-		$database->setQuery( "	SELECT DISTINCT o.id as id, m.guid as guid, CONCAT(o.name, ' ' , ov.title) as name 
+		$total = 0;
+		$database->setQuery( "	SELECT COUNT(*) 
 								FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov
 								WHERE 	o.id=ov.object_id
 										AND ov.metadata_id=m.id 
@@ -3414,6 +3415,35 @@ class ADMIN_metadata {
 										AND o.published=true 
 										"
 							);
+		$total = $database->loadResult();
+		
+		$results = array();
+		if ($total > 1)
+		{
+			$database->setQuery( "	SELECT DISTINCT o.id as id, m.guid as guid, CONCAT(o.name, ' [' , ov.title, ']') as name 
+									FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov
+									WHERE 	o.id=ov.object_id
+											AND ov.metadata_id=m.id 
+											AND o.objecttype_id=ot.id 
+											AND ot.id=".$objecttype_id."  
+											AND o.name LIKE '%".$searchPattern."%'
+											AND o.published=true 
+											"
+								);
+		}
+		else
+		{
+			$database->setQuery( "	SELECT DISTINCT o.id as id, m.guid as guid, o.name as name 
+									FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov
+									WHERE 	o.id=ov.object_id
+											AND ov.metadata_id=m.id 
+											AND o.objecttype_id=ot.id 
+											AND ot.id=".$objecttype_id."  
+											AND o.name LIKE '%".$searchPattern."%'
+											AND o.published=true 
+											"
+								);
+		}
 		$results= array_merge( $results, $database->loadObjectList() );
 		
 		// Construire le tableau de résultats
