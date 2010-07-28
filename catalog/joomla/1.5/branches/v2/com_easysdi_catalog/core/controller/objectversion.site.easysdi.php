@@ -17,37 +17,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-?>
-<script type="text/javascript">
-	function submitbutton(pressbutton) 
-	{
-		var form = document.adminForm;
-		if (pressbutton != 'saveObject' && pressbutton != 'applyObject') {
-			submitform( pressbutton );
-			return;
-		}
-		// do field validation
-		if (form.name.value == "") 
-		{
-			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
-		}
-		else if (getSelectedValue('adminForm','account_id') < 1) 
-		{
-			alert( "<?php echo JText::_( 'Please select an account.', true ); ?>" );
-		} 
-		else if (getSelectedValue('adminForm','objecttype_id') < 1) 
-		{
-			alert( "<?php echo JText::_( 'Please select an object type.', true ); ?>" );
-		}
-		else 
-		{
-			submitform( pressbutton );
-		}
-	}
-</script>
-
-<?php 
-
 class SITE_objectversion 
 {
 	function listObjectVersion($object_id, $option) {
