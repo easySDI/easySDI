@@ -575,11 +575,11 @@ echo $pane->endPane();
 						</tr>
 						<tr ><!-- WFS -->
 							<td class="key" id="service_type_t" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE"); ?> : </td>
-							<td ><input  name="service_type" id="service_type" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Type"}; ?>"></td>
+							<td ><input  name="service_type" id="service_type" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceType"}; ?>"></td>
 						</tr>
 						<tr ><!-- WFS -->
 							<td class="key" id="service_typeversion_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE_VERSION"); ?> : </td>
-							<td ><input  name="service_typeversion" id="service_typeversion" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"TypeVersion"}; ?>"></td>
+							<td ><input  name="service_typeversion" id="service_typeversion" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceTypeVersion"}; ?>"></td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -616,7 +616,7 @@ echo $pane->endPane();
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
-										<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
+										<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>

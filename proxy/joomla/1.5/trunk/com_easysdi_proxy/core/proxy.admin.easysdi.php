@@ -661,7 +661,8 @@ class ADMIN_proxy
 		$newConfigId = JRequest::getVar("newConfigId",$configId);
 		$new = JRequest::getBool("isNewConfig",false);
 
-		if ($new){
+		if ($new)
+		{
 			$found = false;
 
 			$i=0;
@@ -691,15 +692,23 @@ class ADMIN_proxy
 
 			$config->addChild("authorization")->addChild("policy-file");
 
+			
+			
 			$configId=$newConfigId;
 		}
 
 
 		foreach ($xml->config as $config) {
-			if (strcmp($config['id'],$configId)==0){
+			if (strcmp($config['id'],$configId)==0)
+			{
+				//Id
 				$config['id']=$newConfigId;
+				
+				//Servlet class
 				$servletClass = JRequest::getVar("servletClass");
 				$config->{'servlet-class'}=$servletClass;
+				
+				//Log file
 				$logPath= JRequest::getVar("logPath");
 				$logSuffix= JRequest::getVar("logSuffix");
 				$logPrefix= JRequest::getVar("logPrefix");
@@ -711,10 +720,13 @@ class ADMIN_proxy
 				$config->{'log-config'}->{'file-structure'}->{'extension'} = $logExt;
 				$config->{'log-config'}->{'file-structure'}->{'period'} = $logPeriod;
 				$config->{'log-config'}->{'date-format'} = "dd/MM/yyyy HH:mm:ss";
+				
+				//Host translator
 				$hostTranslator = JRequest::getVar("hostTranslator");
 				$config->{'host-translator'}=$hostTranslator;
+				
+				//Remote server
 				$config->{'remote-server-list'}="";
-
 				$i=0;
 				while(true){
 					$url = JRequest::getVar("URL_".$i,"");
@@ -742,8 +754,38 @@ class ADMIN_proxy
 
 					$i++;
 				}
+				
+				//Policy
 				$policyFile = JRequest::getVar("policyFile");
 				$config->{"authorization"}->{"policy-file"}=$policyFile;
+				
+				//Service metadata
+				$config->{"service-metadata"}->{"Name"}=JRequest::getVar("service_name" );
+				$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
+				$config->{"service-metadata"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
+				$config->{"service-metadata"}->{"Keyword"}=JRequest::getVar("service_keyword" );
+				$config->{"service-metadata"}->{"ServiceType"}=JRequest::getVar("service_type" );
+				$config->{"service-metadata"}->{"ServiceTypeVersion"}=JRequest::getVar("service_typeversion"); 
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization"); 
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}=JRequest::getVar("service_contactadress" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}=JRequest::getVar("service_contactpostcode");
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}=JRequest::getVar("service_contactcity" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}=JRequest::getVar("service_contactstate" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}=JRequest::getVar("service_contactcountry" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}=JRequest::getVar("service_contacttel" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}=JRequest::getVar("service_contactfax" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}=JRequest::getVar("service_contactmail");
+				$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage"); 
+				$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
+				$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions_t");
+				$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
+				$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+				
+				
+				//
 				$xml->asXML($configFilePath);
 			}
 		}
