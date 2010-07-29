@@ -760,16 +760,37 @@ class ADMIN_proxy
 				$config->{"authorization"}->{"policy-file"}=$policyFile;
 				
 				//Service metadata
-				$config->{"service-metadata"}->{"Name"}=JRequest::getVar("service_name" );
 				$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
 				$config->{"service-metadata"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
-				$config->{"service-metadata"}->{"Keyword"}=JRequest::getVar("service_keyword" );
-				$config->{"service-metadata"}->{"ServiceType"}=JRequest::getVar("service_type" );
-				$config->{"service-metadata"}->{"ServiceTypeVersion"}=JRequest::getVar("service_typeversion"); 
+				$config->{"service-metadata"}->{"KeywordList"}="";
+				$keywordsList = JRequest::getVar("service_keyword" );
+				$pos = strpos($keywordsList, ",");
+				if($pos)
+				{
+					$keywords = $keywordsList;
+					while ($pos)
+					{
+						$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  trim(substr ($keywords, 0,$pos ))) ;
+						$keywords = substr ($keywords, $pos +1 );
+						$pos = strpos($keywords,",");
+					}
+					$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  $keywords) ;
+				}
+				else
+				{
+					$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+				}
+				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
+					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}=JRequest::getVar("service_contactsite"); 
+				else
+					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}="";
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
-				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization"); 
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
-				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.WMSProxyServlet")==0 )
+					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
+				else
+					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}="";
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}=JRequest::getVar("service_contactadress" );
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}=JRequest::getVar("service_contactpostcode");
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}=JRequest::getVar("service_contactcity" );
@@ -778,14 +799,27 @@ class ADMIN_proxy
 				$config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}=JRequest::getVar("service_contacttel" );
 				$config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}=JRequest::getVar("service_contactfax" );
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}=JRequest::getVar("service_contactmail");
-				$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage"); 
-				$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
-				$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions_t");
-				$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
-				$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
+					$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage");
+				else
+					$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}="";
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0) 
+					$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
+				else
+					$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}="";
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
+					$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions");
+				else
+					$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}="";
+				if(JRequest::getVar("service_fees" ))
+					$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
+				else
+					$config->{"service-metadata"}->{"Fees"}="none";
+				if(JRequest::getVar("service_accessconstraints"))
+					$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+				else
+					$config->{"service-metadata"}->{"AccessConstraints"}="none";
 				
-				
-				//
 				$xml->asXML($configFilePath);
 			}
 		}

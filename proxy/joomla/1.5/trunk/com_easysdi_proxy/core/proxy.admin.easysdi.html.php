@@ -325,14 +325,10 @@ echo $pane->endPane();
 		function applyDisplay (value1,value2)
 		{
 			document.getElementById('service_metadata').style.display="block";
-			document.getElementById('service_name').style.display=value1;
-			document.getElementById('service_name_t').style.display=value1;
-			document.getElementById('service_type').style.display=value2;
-			document.getElementById('service_type_t').style.display=value2;
-			document.getElementById('service_typeversion').style.display=value2;
-			document.getElementById('service_typeversion_t').style.display=value2;
-			document.getElementById('service_contactadress').style.display=value1;
-			document.getElementById('service_contactadress_t').style.display=value1;
+			document.getElementById('service_contactsite').style.display=value2;
+			document.getElementById('service_contactsite_t').style.display=value2;
+			document.getElementById('service_contacttype').style.display=value1;
+			document.getElementById('service_contacttype_t').style.display=value1;
 			document.getElementById('service_contactlinkage').style.display=value2;
 			document.getElementById('service_contactlinkage_t').style.display=value2;
 			document.getElementById('service_contacthours').style.display=value2;
@@ -353,9 +349,15 @@ echo $pane->endPane();
 				   document.getElementById('logPrefix').value == "" || 
 				   document.getElementById('logSuffix').value == "" )
 				{
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 					return;
 				}
+//				if(document.getElementById('service_name').value == "" || 
+//				   document.getElementById('service_title').value == ""  )
+//				{
+//					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+//					return;
+//				}
 				submitform(pressbutton);
 			}
 			else
@@ -517,6 +519,16 @@ echo $pane->endPane();
 					nbServer = nbServer + 1;
 				}
 				</script>
+				<?php 
+				$keywordsList = $config->{"service-metadata"}->{"KeywordList"};
+				$keywordString="";
+				foreach ($keywordsList->{'Keyword'} as $keyword)
+				{ 
+					$keywordString .= $keyword . ",";		
+				}
+				$keywordString = substr($keywordString, 0 , strlen ($keywordString) -1);
+				
+				?>
 				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
 					<table class="admintable">
 						<tr>
@@ -557,10 +569,6 @@ echo $pane->endPane();
 				
 				<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >
-						<tr><!-- WMS -->
-							<td class="key" id="service_name_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_NAME"); ?> : </td>
-							<td ><input  name="service_name" id="service_name" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Name"}; ?>"></td>
-						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
 							<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
@@ -571,76 +579,72 @@ echo $pane->endPane();
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
-							<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Keyword"}; ?>"></td>
-						</tr>
-						<tr ><!-- WFS -->
-							<td class="key" id="service_type_t" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE"); ?> : </td>
-							<td ><input  name="service_type" id="service_type" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceType"}; ?>"></td>
-						</tr>
-						<tr ><!-- WFS -->
-							<td class="key" id="service_typeversion_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TYPE_VERSION"); ?> : </td>
-							<td ><input  name="service_typeversion" id="service_typeversion" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceTypeVersion"}; ?>"></td>
+							<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
 						</tr>
 						<tr>
 							<td colspan="2">
 							<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
 								<table>
 									<tr>
-										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
-										<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}{"ContactName"}; ?>"></td>
+										<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
+										<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}; ?>"></td>
+									</tr>
+									<tr><!-- WFS -->
+										<td class="key" id="service_contactsite_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_SITE"); ?> : </td>
+										<td colspan="2"><input name="service_contactsite" id="service_contactsite" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}; ?>"></td>
 									</tr>
 									<tr>
-										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
-										<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}{"ContactOrganization"}; ?>"></td>
+										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
+										<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_POSITION"); ?> : </td>
-										<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
-									</tr>
-									<tr>
-										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
-										<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
+										<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
 									</tr>
 									<tr><!-- WMS -->
-										<td class="key" id="service_contactadress_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
-										<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
+										<td class="key" id="service_contacttype_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
+										<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
+									</tr>
+									<tr>
+										<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
+										<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
-										<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size=5 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
-										<td><input name="service_contactcity" id="service_contactcity" type="text" size=68 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
+										<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size="5" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
+										<td><input name="service_contactcity" id="service_contactcity" type="text" size="68" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_STATE"); ?> : </td>
-										<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
+										<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
-										<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
+										<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>
-										<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
+										<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
-										<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
+										<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
-										<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
+										<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
 									</tr>
 									<tr><!-- WFS -->
 										<td class="key" id="service_contactlinkage_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_LINKAGE"); ?> : </td>
-										<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
+										<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
 									</tr>
 									<tr><!-- WFS -->
 										<td class="key" id="service_contacthours_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
-										<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
+										<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
 									</tr>
 									<tr><!-- WFS -->
 										<td class="key" id="service_contactinstructions_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
-										<td colspan="2"><input name="service_contactinstructions" id="service_contactinstructions" type="text" size=80 value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?>"></td>
+										<td colspan="2"><textarea name="service_contactinstructions" id="service_contactinstructions"  cols="45" rows="5"  ><?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?></textarea></td>
 									</tr>
 								</table>
 							</fieldset>
