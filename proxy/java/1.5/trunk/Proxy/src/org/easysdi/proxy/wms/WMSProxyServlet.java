@@ -309,6 +309,138 @@ public class WMSProxyServlet extends ProxyServlet {
 				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
+	protected StringBuffer buildServiceMetadataCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) 
+	{
+		StringBuffer serviceMetadataXSLT = new StringBuffer();
+		serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+		serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
+		serviceMetadataXSLT.append("<!-- Copy the current node -->");
+		serviceMetadataXSLT.append("<xsl:copy>");
+		serviceMetadataXSLT.append("<!-- Including any attributes it has and any child nodes -->");
+		serviceMetadataXSLT.append("<xsl:apply-templates select=\"@*|node()\"/>");
+		serviceMetadataXSLT.append("</xsl:copy>");
+		serviceMetadataXSLT.append("</xsl:template>");
+		
+		serviceMetadataXSLT.append("<xsl:template match=\"Service\">");
+		serviceMetadataXSLT.append("<xsl:copy>");
+		//Name
+		serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+		serviceMetadataXSLT.append("<xsl:text>WMS</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//Title
+		serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//Abstract
+		if(!getConfiguration().getAbst().equals(""))
+		{
+			serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
+			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+		}
+		//Keyword
+		if(getConfiguration().getKeywordList()!= null)
+		{
+			List<String> keywords = getConfiguration().getKeywordList();
+			serviceMetadataXSLT.append("<xsl:element name=\"KeywordList\"> ");
+			for (int n = 0; n < keywords.size(); n++) {
+				serviceMetadataXSLT.append("<xsl:element name=\"Keyword\"> ");
+				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
+				serviceMetadataXSLT.append("</xsl:element>");
+			}
+			serviceMetadataXSLT.append("</xsl:element>");
+		}
+		//contactInfo
+		if(!getConfiguration().getContactInfo().isEmpty())
+		{
+			serviceMetadataXSLT.append("<xsl:element name=\"ContactInformation\"> ");
+			if(!configuration.getContactInfo().isEmpty())
+			{
+				serviceMetadataXSLT.append("<xsl:element name=\"ContactPersonPrimary\"> ");
+				if(!configuration.getContactInfo().getName().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactPerson\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName() + "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if(!configuration.getContactInfo().getOrganization().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactOrganization\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				serviceMetadataXSLT.append("</xsl:element>");
+				if(!configuration.getContactInfo().getPosition().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactPosition\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if (!configuration.getContactInfo().getContactAddress().isEmpty())
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactAddress\"> ");
+					if(!configuration.getContactInfo().getContactAddress().getType().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"AddressType\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getType()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getAddress().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"Address\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"City\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getState().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"StateOrProvince\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getPostalCode().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"PostCode\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getCountry().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"Country\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if(!configuration.getContactInfo().getVoicePhone().equals(""))
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactVoiceTelephone\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if(!configuration.getContactInfo().getFacSimile().equals(""))
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactFacsimileTelephone\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+			}
+			serviceMetadataXSLT.append("</xsl:element>");
+		}
+		//Fees
+		serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//AccesConstraints
+		serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//OnlineResource
+		serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
+		
+		serviceMetadataXSLT.append("</xsl:copy>");
+		serviceMetadataXSLT.append("</xsl:template>");
+	
+		serviceMetadataXSLT.append("</xsl:stylesheet>");
+	
+		return serviceMetadataXSLT;
+	}
 	// ***************************************************************************************************************************************
 
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
@@ -412,6 +544,33 @@ public class WMSProxyServlet extends ProxyServlet {
 					// into a single file
 					dump("transform begin mergeCapabilities");
 					tempOut = mergeCapabilities(tempFileCapa, resp);
+					
+					//Application de la transformation XSLT pour la réécriture des métadonnées du service sur la base des informations du fichier de config xml
+					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
+					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
+					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(req, resp, 0, version);
+					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
+					InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
+
+					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
+
+					transformer = tFactory.newTransformer(new StreamSource(xslt));
+
+					// Write the result in a temporary file
+					transformer.transform(saxSource, new StreamResult(tempServiceMD));
+					tempServiceMD.flush();
+					tempServiceMD.close();
+					
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					FileInputStream reader = new FileInputStream(tempFileCapaWithMetadata);
+					byte[] data = new byte[reader.available()];
+					reader.read(data, 0, reader.available());
+					out.write(data);
+					reader.close();
+
+					tempOut = out;
+					
 					// tempFile = mergeCapabilities(tempFileCapa);
 					dump("transform end mergeCapabilities");
 

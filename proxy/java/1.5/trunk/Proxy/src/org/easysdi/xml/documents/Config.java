@@ -41,6 +41,12 @@ public class Config implements Serializable{
 	private String hostTranslator = "";
 	private String toleranceDistance = "0";
 	private boolean grouping = true;
+	private String title ="";
+	private String abst ="";
+	private List<String> keywordList ;
+	private ServiceContactInfo contactInfo;
+	private String fees ="";
+	private String accessConstraints ="";
 
 	public String getToleranceDistance() {
 		return toleranceDistance;
@@ -157,6 +163,86 @@ public class Config implements Serializable{
 
 	public boolean isGrouping() {
 		return grouping;
+	}
+
+	/**
+	 * @param accessConstraints the accessConstraints to set
+	 */
+	public void setAccessConstraints(String accessConstraints) {
+		this.accessConstraints = accessConstraints;
+	}
+
+	/**
+	 * @return the accessConstraints
+	 */
+	public String getAccessConstraints() {
+		return accessConstraints;
+	}
+
+	/**
+	 * @param fees the fees to set
+	 */
+	public void setFees(String fees) {
+		this.fees = fees;
+	}
+
+	/**
+	 * @return the fees
+	 */
+	public String getFees() {
+		return fees;
+	}
+
+	/**
+	 * @param keyword the keyword to set
+	 */
+	public void setKeywordList(List<String> keywordList) {
+		this.keywordList = keywordList;
+	}
+
+	/**
+	 * @return the keyword
+	 */
+	public List<String> getKeywordList() {
+		return keywordList;
+	}
+
+	/**
+	 * @param abst the abst to set
+	 */
+	public void setAbst(String abst) {
+		this.abst = abst;
+	}
+
+	/**
+	 * @return the abst
+	 */
+	public String getAbst() {
+		return abst;
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+
+
+	public void setContactInfo(ServiceContactInfo contactInfo) {
+		this.contactInfo = contactInfo;
+	}
+
+	public ServiceContactInfo getContactInfo() {
+		return contactInfo;
 	}
 
 }

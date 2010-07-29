@@ -24,9 +24,13 @@ import java.util.List;
 import java.util.Vector;
 
 import org.easysdi.xml.documents.RemoteServerInfo;
+import org.easysdi.xml.documents.ServiceContactAdressInfo;
+import org.easysdi.xml.documents.ServiceContactInfo;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.sun.java_cup.internal.runtime.virtual_parse_stack;
 
 public class ConfigFileHandler extends DefaultHandler {
 	private org.easysdi.xml.documents.Config config;
@@ -92,6 +96,34 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String searchServiceUrl = null;
 	private boolean isDouglasPeuckerSimplifier = false;
 	private boolean isToleranceDistance = false;
+
+	private boolean isServiceMetadata=false;
+	private boolean isContactInformation=false;
+	private boolean isContactAddress=false;
+	private String title ="";
+	private String abst ="";
+	private List<String> keywordList = null;
+	private String contactName ="";
+	private String contactSite ="";
+	private String contactOrganisation ="";
+	private String contactPosition ="";
+	private String adressType ="";
+	private String adress ="";
+	private String postalCode ="";
+	private String city ="";
+	private String state ="";
+	private String country ="";
+	private String voicePhone ="";
+	private String facsimile ="";
+	private String electronicMailAddress ="";
+	private String linkage ="";
+	private String hoursOfService ="";
+	private String instructions ="";
+	private String fees ="";
+	private String accessConstraints ="";
+	private ServiceContactInfo contactInfo ;
+	private ServiceContactAdressInfo contactAdress;
+	
 
 	public ConfigFileHandler(String id) {
 		super();
@@ -201,6 +233,23 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && isXsltPath && qName.equals("url")) {
 			isXsltPathUrl = true;
 		}
+		
+		//Service Metadata
+		if (isTheGoodId && isConfig && qName.equals("service-metadata")) {
+			isServiceMetadata = true;
+			return;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ContactInformation")) {
+			isContactInformation = true;
+			return;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactAddress")) {
+			isContactAddress = true;
+			return;
+		}
+	
 	}
 
 	public void endElement(String nameSpace, String localName, String qName) throws SAXException {
@@ -215,6 +264,14 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setHostTranslator(hostTranslator);
 				config.setToleranceDistance(toleranceDistance);
 				config.setGrouping(grouping);
+				config.setAbst(abst);
+				config.setAccessConstraints(accessConstraints);
+				config.setFees(fees);
+				config.setKeywordList(keywordList);
+				config.setTitle(title);
+				config.setContactInfo(contactInfo);
+				
+				
 			}
 			isTheGoodId = false;
 		}
@@ -413,11 +470,130 @@ public class ConfigFileHandler extends DefaultHandler {
 			isFileStructure = false;
 		}
 
+		//Service metadata
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("date-format")) {
 			logDateFormat = data;
 			isLogDateFormat = false;
 		}
-
+		
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Title")) {
+			title = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Abstract")) {
+			abst = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Keyword")) {
+			if(keywordList == null)
+			{
+				keywordList = new Vector <String>();
+			}
+			keywordList.add(data);
+		
+		}
+	
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Fees")) {
+			fees = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("AccessConstraints")) {
+			accessConstraints = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactName")) {
+			contactName = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactSite")) {
+			contactSite = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactOrganization")) {
+			contactOrganisation = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactPosition")) {
+			contactPosition = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("VoicePhone")) {
+			voicePhone = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Facsimile")) {
+			facsimile = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ElectronicMailAddress")) {
+			electronicMailAddress = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Linkage")) {
+			linkage =data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("HoursofSservice")) {
+			hoursOfService = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Instructions")) {
+			instructions = data;
+			
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("AddressType")) {
+			adressType = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("Address")) {
+			adress =data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("PostalCode")) {
+			postalCode = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("City")) {
+			city = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("State")) {
+			state = data;
+			
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("Country")) {
+			country = data;
+		
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactAddress")) {
+			contactAdress = new ServiceContactAdressInfo();
+			contactAdress.setAddress(adress);
+			contactAdress.setCity(city);
+			contactAdress.setCountry(country);
+			contactAdress.setPostalCode(postalCode);
+			contactAdress.setState(state);
+			contactAdress.setType(adressType);
+			
+			isContactAddress = false;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ContactInformation")) {
+			contactInfo = new ServiceContactInfo();
+			contactInfo.setContactAddress(contactAdress);
+			contactInfo.seteMail(electronicMailAddress);
+			contactInfo.setFacSimile(facsimile);
+			contactInfo.setHoursofSservice(hoursOfService);
+			contactInfo.setInstructions(instructions);
+			contactInfo.setLinkage(linkage);
+			contactInfo.setName(contactName);
+			contactInfo.setOrganization(contactOrganisation);
+			contactInfo.setSite(contactSite);
+			contactInfo.setPosition(contactPosition);
+			contactInfo.setVoicePhone(voicePhone);
+			
+			isContactInformation = false;
+		}
 		data = "";
 	}
 
