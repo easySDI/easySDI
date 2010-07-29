@@ -264,6 +264,146 @@ public class WFSProxyServlet extends ProxyServlet {
 				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
+	protected StringBuffer buildServiceMetadataCapabilitiesXSLT(String version) 
+	{
+		StringBuffer serviceMetadataXSLT = new StringBuffer();
+		serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+		serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
+		serviceMetadataXSLT.append("<!-- Copy the current node -->");
+		serviceMetadataXSLT.append("<xsl:copy>");
+		serviceMetadataXSLT.append("<!-- Including any attributes it has and any child nodes -->");
+		serviceMetadataXSLT.append("<xsl:apply-templates select=\"@*|node()\"/>");
+		serviceMetadataXSLT.append("</xsl:copy>");
+		serviceMetadataXSLT.append("</xsl:template>");
+		
+		serviceMetadataXSLT.append("<xsl:template match=\"ows:ServiceIdentification\">");
+		serviceMetadataXSLT.append("<xsl:copy>");
+//		//Name
+//		serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+//		serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
+//		serviceMetadataXSLT.append("</xsl:element>");
+		//Title
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:Title\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//Abstract
+		if(!getConfiguration().getAbst().equals(""))
+		{
+			serviceMetadataXSLT.append("<xsl:element name=\"ows:Abstract\"> ");
+			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+		}
+		//Keyword
+		if(getConfiguration().getKeywordList()!= null)
+		{
+			List<String> keywords = getConfiguration().getKeywordList();
+			serviceMetadataXSLT.append("<xsl:element name=\"ows:Keywords\"> ");
+			for (int n = 0; n < keywords.size(); n++) {
+				serviceMetadataXSLT.append("<xsl:element name=\"ows:Keyword\"> ");
+				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
+				serviceMetadataXSLT.append("</xsl:element>");
+			}
+			serviceMetadataXSLT.append("</xsl:element>");
+		}
+		//ServiceType
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceType\"> ");
+		serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//ServiceTypeVersion
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceTypeVersion\"> ");
+		serviceMetadataXSLT.append("<xsl:text>TODO</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//Fees
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:Fees\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		//AccesConstraints
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:AccessConstraints\"> ");
+		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		serviceMetadataXSLT.append("</xsl:copy>");
+		serviceMetadataXSLT.append("</xsl:template>");
+		
+		serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceProvider\"> ");
+		//contactInfo
+		if(!getConfiguration().getContactInfo().isEmpty())
+		{
+				if(!configuration.getContactInfo().getOrganization().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:ProviderName\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization() + "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				
+				serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceContact\"> ");
+				if(!configuration.getContactInfo().getName().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:IndividualName\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if(!configuration.getContactInfo().getPosition().equals("")){
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:PositionName\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				serviceMetadataXSLT.append("<xsl:element name=\"ows:ContactInfo\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"ows:Phone\"> ");
+				if(!configuration.getContactInfo().getVoicePhone().equals(""))
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:Voice\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				if(!configuration.getContactInfo().getFacSimile().equals(""))
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:Facsimile\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				serviceMetadataXSLT.append("</xsl:element>");
+				
+				if (!configuration.getContactInfo().getContactAddress().isEmpty())
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:Address\"> ");
+					if(!configuration.getContactInfo().getContactAddress().getAddress().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:delivryPoint\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:City\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getState().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:AdministrativeArea\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getPostalCode().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:PostalCode\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					if(!configuration.getContactInfo().getContactAddress().getCountry().equals("")){
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:Country\"> ");
+						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
+						serviceMetadataXSLT.append("</xsl:element>");
+					}
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+				serviceMetadataXSLT.append("</xsl:element>");
+				serviceMetadataXSLT.append("</xsl:element>");
+		}
+		
+		//OnlineResource
+		//serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
+		serviceMetadataXSLT.append("</xsl:element>");
+		
+	
+		serviceMetadataXSLT.append("</xsl:stylesheet>");
+	
+		return serviceMetadataXSLT;
+	}
 	// ***************************************************************************************************************************************
 	protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
 		try {
