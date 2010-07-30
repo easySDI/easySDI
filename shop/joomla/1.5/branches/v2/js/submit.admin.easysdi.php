@@ -291,13 +291,13 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_DIFFUSION");?>"; 
 					index = 1;	
 				}
-				if (form.elements['surfacemin'].value == '')
+				if ( form.elements['available'].value == '0' && form.elements['surfacemin'].value == '')
 				{
 					if(index != 0)text += ", ";
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMIN");?>"; 
 					index = 1;	
 				}
-				if (form.elements['surfacemax'].value == '')
+				if (form.elements['available'].value == '0' && form.elements['surfacemax'].value == '')
 				{
 					if(index != 0)text += ", ";
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";

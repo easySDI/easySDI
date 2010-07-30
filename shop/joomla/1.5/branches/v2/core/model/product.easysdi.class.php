@@ -21,8 +21,8 @@ class product extends sdiTable
 {
 	
 	var $objectversion_id=0;
-	var $surfacemin=null;
-	var $surfacemax=null;
+	var $surfacemin=0;
+	var $surfacemax=0;
 	var $published=0;
 	var $visibility_id=0;
 	var $available=0;

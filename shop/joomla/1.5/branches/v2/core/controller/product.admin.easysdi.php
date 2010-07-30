@@ -293,7 +293,10 @@ class ADMIN_product {
 		{
 			$product->viewbasemap_id = null;
 		}
-		
+		if($product->treatmenttype_id == null ||$product->treatmenttype_id == '')
+		{
+			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
+		}
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );

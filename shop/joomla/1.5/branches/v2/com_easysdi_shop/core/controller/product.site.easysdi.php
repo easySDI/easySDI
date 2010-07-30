@@ -46,7 +46,6 @@ class SITE_product {
 				$sendMail = true;
 			}
 		}
-	
 
 		if (!$product->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -59,6 +58,10 @@ class SITE_product {
 			$product->viewbasemap_id = null;
 		}
 		
+		if($product->treatmenttype_id == null ||$product->treatmenttype_id == '')
+		{
+			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
+		}
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -249,6 +252,7 @@ class SITE_product {
 		$database->setQuery("SELECT id AS value, name AS text 
 							   FROM #__sdi_object
 							   WHERE published = 1 
+							    AND objecttype_id = $objecttype_id
 							   AND id IN (SELECT object_id FROM #__sdi_manager_object WHERE account_id = $account->id)
 							   ORDER BY name");
 		if ($database->getErrorNum()) {

@@ -64,7 +64,7 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_OBJECT_TYPE"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$objecttype_list, 'objecttype_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'editProduct\');"', 'value', 'text', $objecttype_id ); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$objecttype_list, 'objecttype_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $objecttype_id ); ?></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_OBJECT"); ?> : </td>
@@ -132,57 +132,52 @@ class HTML_product{
 									document.getElementById('productfile').disabled = true;
 									document.getElementById('available').disabled = true;
 									document.getElementById('available').value = '0';
+									document.getElementById('surfacemin').disabled = false;
+									document.getElementById('surfacemax').disabled = false;
+									document.getElementById('notification').disabled = false;
+									document.getElementById('treatmenttype_id').disabled = false;
 								}
 								else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
 								{
 									document.getElementById('productfile').disabled = true;
 									document.getElementById('available').disabled = false;
+									document.getElementById('surfacemin').disabled = false;
+									document.getElementById('surfacemax').disabled = false;
+									document.getElementById('notification').disabled = false;
+									document.getElementById('treatmenttype_id').disabled = false;
 								}
 								else
 								{
 									document.getElementById('productfile').disabled = false;
 									document.getElementById('available').disabled = false;
+									document.getElementById('surfacemin').disabled = true;
+									document.getElementById('surfacemax').disabled = true;
+									document.getElementById('notification').disabled = true;
+									document.getElementById('treatmenttype_id').disabled = true;
 								}
 							}
 						</script>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>							
 								<td class="ptitle"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
+								<td colspan="2"><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
 							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin" value="<?php echo $product->surfacemin; ?>" /></td>							
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" value="<?php echo $product->surfacemax; ?>" /></td>							
-							</tr>
+							
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
+								<td colspan="2"><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
-								<td><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
+								<td colspan="2"><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
 									</td></td>								
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox"', 'value',  'text', $product->treatmenttype_id ); ?></td>															
-							</tr>
-							<tr>							
-								<td class="ptitle"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="500" name="notification" value="<?php echo $product->notification; ?>" /></td>								
-							</tr>
-							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
-								<td>
-									<table>
-									<tr>
+								
 									<td>
 									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
@@ -191,15 +186,29 @@ class HTML_product{
 									</td>
 									<td><a target="RAW" href="./index.php?option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>">
 									<?php echo $product->getFileName();?></a></td>
-									</tr>
-									</table>
 									
-								</td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td><input type="file" name="productfile" id="productfile" <?php if ($product->available == 0 || $product->free == 0 ) echo "disabled";  ?> ></td>
+								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ></td>
 							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
+								<td colspan="2"><?php $disabled=''; if( $product->available == 1 ) $disabled='disabled'; echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->treatmenttype_id ); ?></td>															
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin" id="surfacemin" <?php if( $product->available == 1 ) echo "disabled"; ?> value="<?php echo $product->surfacemin; ?>" /></td>							
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" id="surfacemax"  <?php if( $product->available == 1 ) echo "disabled"; ?> value="<?php echo $product->surfacemax; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td class="ptitle"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="500" name="notification"  id="notification" <?php if( $product->available == 1 ) echo "disabled"; ?> value="<?php echo $product->notification; ?>" /></td>								
+							</tr>
+							
 						</table>
 					</fieldset>
 				</td>
@@ -601,13 +610,13 @@ class HTML_product{
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_DIFFUSION");?>"; 
 				index = 1;	
 			}
-			if (form.elements['surfacemin'].value == '')
+			if (form.elements['available'].value == '0' && form.elements['surfacemin'].value == '')
 			{
 				if(index != 0)text += ", ";
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMIN");?>"; 
 				index = 1;	
 			}
-			if (form.elements['surfacemax'].value == '')
+			if (form.elements['available'].value == '0' && form.elements['surfacemax'].value == '')
 			{
 				if(index != 0)text += ", ";
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";
