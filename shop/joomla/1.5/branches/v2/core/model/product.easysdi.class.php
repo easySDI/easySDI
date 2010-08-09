@@ -95,6 +95,14 @@ class product extends sdiTable
 					}
 				}
 			}
+			else
+			{
+				$this->available = 0; 
+				if(! parent::store())
+				{
+					return false;
+				}
+			}
 		}
 		return true;
 	}

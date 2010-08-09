@@ -52,7 +52,7 @@ class HTML_shop
 					$('filter_visible').checked = false;
 					$('update_select').value = 'equal';
 					$('update_cal').value = '';
-					$('catalog_search_form').submit();
+					$('orderForm').submit();
 				});
 			});
 		</script>

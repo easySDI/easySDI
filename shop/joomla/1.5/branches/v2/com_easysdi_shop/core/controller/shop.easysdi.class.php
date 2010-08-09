@@ -764,6 +764,9 @@ class SITE_shop {
 			$curStep = '';
 			$fromStep = '';
 		}
+		
+		$productCount = SITE_shop::getProductListCount();
+		
 		?>
 <h2 class="contentheading"><?php echo JText::_("SHOP_SHOP_TITLE"); ?></h2>
 <script>
@@ -889,98 +892,105 @@ function validateForm(toStep, fromStep){
 	document.getElementById('step').value=toStep;
 	submitOrderForm();
 }
-</script>
-<table>
-	<tr>
-		<td>
-		<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }else {?>
-		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
-			<table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-			<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }else {?>
-		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }else {?>
-		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }else {?>
-		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
-		<div
-			onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
-			class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php }else {?>
-		<div
-			class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
-		</div>
-		<?php } ?></div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-		<div class="bodyShop">
-		<?php if ($step ==1) SITE_shop::searchProducts();?>
-		<?php if ($step ==2) SITE_shop::orderPerimeter($cid,$option);?> 
-		<?php if ($step ==3) SITE_shop::orderProperties($cid,$option);?>
-		<?php if ($step ==4) SITE_shop::orderDefinition($cid);?> 
-		<?php if ($step ==5) SITE_shop::orderSend($cid);?>
-		</div>
-		</td>
-	</tr>
-</table>
-
-	<?php
+	</script>
+		<table>
+		<?php 
+		if ($productCount<>0)
+		{
+		?>
+			<tr>
+				<td>
+				<div class="headerShop"><?php $curStep = 1; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }else {?>
+				<div
+					class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>">
+					<table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+					<?php } ?> <?php $curStep = 2; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }else {?>
+				<div
+					class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php } ?> <?php $curStep = 3; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }else {?>
+				<div
+					class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php } ?> <?php $curStep = 4; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }else {?>
+				<div
+					class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php } ?> <?php $curStep = 5; if(count($productList)>0&& ($curStep<$step-1 || $curStep==$step+1)) { ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="selectableStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }elseif(count($productList)>0 && ($curStep==$step-1)){ ?>
+				<div
+					onClick="return validateForm(<?php echo $curStep; ?>,<?php echo $step; ?>);"
+					class="previousStep"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php }else {?>
+				<div
+					class="<?php if($curStep==$step) {echo "currentStep";} else{echo "unselectableStep";}?>"><table><tr><td class="stepLabel"><?php echo $curStep;?></td><td class="stepCaption"><?php echo JText::_("SHOP_SHOP_STEP".$curStep); ?></td></tr></table>
+				</div>
+				<?php } ?></div>
+				</td>
+			</tr>
+			<?php 
+			}
+			?>
+			<tr>
+				<td>
+				<div class="bodyShop">
+				<?php if ($step ==1) SITE_shop::searchProducts();?>
+				<?php if ($step ==2) SITE_shop::orderPerimeter($cid,$option);?> 
+				<?php if ($step ==3) SITE_shop::orderProperties($cid,$option);?>
+				<?php if ($step ==4) SITE_shop::orderDefinition($cid);?> 
+				<?php if ($step ==5) SITE_shop::orderSend($cid);?>
+				</div>
+				</td>
+			</tr>
+		</table>
+		<?php
+		
 	}
 
 	function searchProducts($orderable = 1){
@@ -999,14 +1009,8 @@ function validateForm(toStep, fromStep){
 		$step = JRequest::getVar('step',"1");
 		$countMD = JRequest::getVar('countMD');
 		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','');
-		$freetextcriteria = JRequest::getVar('freetextcriteria','');
-		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
 		$account_id = JRequest::getVar('partner_id');
 		$account_id = $db->getEscaped( trim( strtolower( $account_id ) ) );		
-		$filter_visible=JRequest::getVar('filter_visible');
-		$filter_date = JRequest::getVar('update_cal');
-		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
-		$filter_date_comparator = JRequest::getVar('update_select');
 		
 		//Public
 		$queryVisibility = "select id from #__sdi_list_visibility where code ='public'";
@@ -1017,12 +1021,7 @@ function validateForm(toStep, fromStep){
 		$db->setQuery($queryVisibility);
 		$private = $db->loadResult();
 		
-		/* Todo, push the date format in EasySDI config and
-		set it here accordingly */
-		if($filter_date){
-			$temp = explode(".", $filter_date);
-			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
-		}
+		
 		
 		//partner select box
 		$suppliers = array();
@@ -1052,7 +1051,6 @@ function validateForm(toStep, fromStep){
 		$cid = JRequest::getVar ('cid', array() );
 
 		$filter = "";
-
 		$productList = $mainframe->getUserState('productList');
 		if (count($productList)>0){
 			$filter = " AND p.ID NOT IN (";
@@ -1060,8 +1058,104 @@ function validateForm(toStep, fromStep){
 				$filter = $filter.$id.",";
 			}
 			$filter = substr($filter , 0, -1);
-			$filter = $filter.")";
+			$filter = $filter.") ";
 		}
+
+		$query  = "SELECT COUNT(*)FROM #__sdi_product p 
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+							WHERE p.published=1 ";
+		$query  = $query .$filter;
+		$query  = $query .SITE_shop::buildProductListQueryFilter();
+		$db->setQuery( $query);
+		$total = $db->loadResult();
+
+		$query  = "SELECT p.*, 
+							v.metadata_id as metadata_id, 
+							o.account_id as supplier_id, 
+							a.name as supplier_name , 
+							a.logo as supplier_logo,
+							m.guid as metadata_guid
+							FROM #__sdi_product p 
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_account a ON a.id = o.account_id
+							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+							WHERE p.published=1 ";
+		$query  = $query .$filter;
+		$query  = $query .SITE_shop::buildProductListQueryFilter();
+		if ($simpleSearchCriteria == "lastAddedMD"){
+			$query  = $query." order by p.created";
+		}
+		else if ($simpleSearchCriteria == "lastUpdatedMD"){
+			$query  = $query." order by p.updated";
+		}
+		else
+		{
+			$query  = $query ." order by p.name";
+		}
+
+		$db->setQuery($query,$limitstart,$limit);
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 	$db->getErrorMsg();
+			echo "</div>";
+		}
+
+		HTML_shop::searchProducts ($suppliers, $account,$account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
+	}
+	
+	
+	function getProductListCount ()
+	{
+		global $mainframe;
+		$db =& JFactory::getDBO();
+		$query  = "SELECT COUNT(*)FROM #__sdi_product p 
+							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
+							INNER JOIN #__sdi_object o ON o.id = v.object_id
+							INNER JOIN #__sdi_account a ON a.id = o.account_id
+							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
+							WHERE p.published=1 
+							AND p.available=0 
+							";
+		$query  = $query .SITE_shop::buildProductListQueryFilter();
+		$db->setQuery( $query);
+		$total = $db->loadResult();		
+		return $total;
+	}
+	
+	function buildProductListQueryFilter()
+	{
+		global $mainframe;
+		$db =& JFactory::getDBO();
+		$freetextcriteria = JRequest::getVar('freetextcriteria','');
+		$freetextcriteria = $db->getEscaped( trim( strtolower( $freetextcriteria ) ) );
+		$account_id = JRequest::getVar('partner_id');
+		$account_id = $db->getEscaped( trim( strtolower( $account_id ) ) );		
+		$filter_visible=JRequest::getVar('filter_visible');
+		$filter_date = JRequest::getVar('update_cal');
+		$filter_date = $db->getEscaped( trim( strtolower( $filter_date ) ) );
+		$filter_date_comparator = JRequest::getVar('update_select');
+		
+		//Public
+		$queryVisibility = "select id from #__sdi_list_visibility where code ='public'";
+		$db->setQuery($queryVisibility);
+		$public = $db->loadResult();
+		//Private
+		$queryVisibility = "select id from #__sdi_list_visibility where code ='private'";
+		$db->setQuery($queryVisibility);
+		$private = $db->loadResult();
+		
+		/* Todo, push the date format in EasySDI config and
+		set it here accordingly */
+		if($filter_date){
+			$temp = explode(".", $filter_date);
+			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
+		}
+		
+		$filter = "";
 
 		if ($freetextcriteria){
 			//replace space with wildcard for one character
@@ -1152,49 +1246,7 @@ function validateForm(toStep, fromStep){
 				}
 			}
 		}
-
-		$query  = "SELECT COUNT(*)FROM #__sdi_product p 
-							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
-							INNER JOIN #__sdi_object o ON o.id = v.object_id
-							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
-							WHERE p.published=1 ";
-		$query  = $query .$filter;
-		$db->setQuery( $query);
-		$total = $db->loadResult();
-
-		$query  = "SELECT p.*, 
-							v.metadata_id as metadata_id, 
-							o.account_id as supplier_id, 
-							a.name as supplier_name , 
-							a.logo as supplier_logo,
-							m.guid as metadata_guid
-							FROM #__sdi_product p 
-							INNER JOIN #__sdi_objectversion v ON v.id = p.objectversion_id
-							INNER JOIN #__sdi_object o ON o.id = v.object_id
-							INNER JOIN #__sdi_account a ON a.id = o.account_id
-							INNER JOIN #__sdi_metadata m ON m.id = v.metadata_id
-							WHERE p.published=1 ";
-		$query  = $query .$filter;
-		if ($simpleSearchCriteria == "lastAddedMD"){
-			$query  = $query." order by p.created";
-		}
-		else if ($simpleSearchCriteria == "lastUpdatedMD"){
-			$query  = $query." order by p.updated";
-		}
-		else
-		{
-			$query  = $query ." order by p.name";
-		}
-	//	echo $query;
-		$db->setQuery($query,$limitstart,$limit);
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 	$db->getErrorMsg();
-			echo "</div>";
-		}
-
-		HTML_shop::searchProducts ($suppliers, $account,$account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
+		return $filter;
 	}
 	
 	function downloadAvailableProduct($id)
