@@ -309,7 +309,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
-	protected StringBuffer buildServiceMetadataCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) 
+	protected StringBuffer buildServiceMetadataCapabilitiesXSLT() 
 	{
 		StringBuffer serviceMetadataXSLT = new StringBuffer();
 		serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
@@ -350,12 +350,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
+		//OnlineResource
+		serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
 		//contactInfo
 		if(!getConfiguration().getContactInfo().isEmpty())
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ContactInformation\"> ");
-			if(!configuration.getContactInfo().isEmpty())
-			{
+			
 				serviceMetadataXSLT.append("<xsl:element name=\"ContactPersonPrimary\"> ");
 				if(!configuration.getContactInfo().getName().equals("")){
 					serviceMetadataXSLT.append("<xsl:element name=\"ContactPerson\"> ");
@@ -420,7 +421,13 @@ public class WMSProxyServlet extends ProxyServlet {
 					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-			}
+				if(!configuration.getContactInfo().geteMail().equals(""))
+				{
+					serviceMetadataXSLT.append("<xsl:element name=\"ContactElectronicMailAddress\"> ");
+					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().geteMail()+ "</xsl:text>");
+					serviceMetadataXSLT.append("</xsl:element>");
+				}
+			
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//Fees
@@ -431,8 +438,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
 		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
 		serviceMetadataXSLT.append("</xsl:element>");
-		//OnlineResource
-		serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
+		
 		
 		serviceMetadataXSLT.append("</xsl:copy>");
 		serviceMetadataXSLT.append("</xsl:template>");
@@ -544,11 +550,13 @@ public class WMSProxyServlet extends ProxyServlet {
 					// into a single file
 					dump("transform begin mergeCapabilities");
 					tempOut = mergeCapabilities(tempFileCapa, resp);
+					dump("transform end mergeCapabilities");
 					
 					//Application de la transformation XSLT pour la réécriture des métadonnées du service sur la base des informations du fichier de config xml
+					dump("transform begin apply XSLT on service metadata");
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
-					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(req, resp, 0, version);
+					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT();
 					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 					InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
 
@@ -570,9 +578,9 @@ public class WMSProxyServlet extends ProxyServlet {
 					reader.close();
 
 					tempOut = out;
-					
+					dump("transform end apply XSLT on service metadata");
 					// tempFile = mergeCapabilities(tempFileCapa);
-					dump("transform end mergeCapabilities");
+					
 
 					dump("transform end GetCapabilities operation");
 				}

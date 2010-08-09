@@ -177,12 +177,12 @@ public class ServiceContactInfo implements Serializable{
 	public String getInstructions() {
 		return instructions;
 	}
-	public void setSite(String site) {
-		this.site = site;
-	}
-	public String getSite() {
-		return site;
-	}
+//	public void setSite(String site) {
+//		this.site = site;
+//	}
+//	public String getSite() {
+//		return site;
+//	}
 
 }
 

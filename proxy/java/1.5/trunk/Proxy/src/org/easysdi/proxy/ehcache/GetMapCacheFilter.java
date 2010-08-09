@@ -53,7 +53,11 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 			String req = request.getParameter("REQUEST");
 			if (req == null)
 				req = request.getParameter("request");
-			if ("getfeature".equalsIgnoreCase(req) && "getfeatureinfo".equalsIgnoreCase(req))
+			if ("getfeature".equalsIgnoreCase(req) || 
+				"getfeatureinfo".equalsIgnoreCase(req) ||
+				"getRecords".equalsIgnoreCase(req) ||
+				"getRecordById".equalsIgnoreCase(req) 
+				)
 				cache = false;
 			if (cache)
 				super.doFilter(request, response, chain);

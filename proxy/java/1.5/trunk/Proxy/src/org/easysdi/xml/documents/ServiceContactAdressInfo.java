@@ -111,6 +111,4 @@ public class ServiceContactAdressInfo implements Serializable{
 	public String getCountry() {
 		return country;
 	}
-	
-
 }

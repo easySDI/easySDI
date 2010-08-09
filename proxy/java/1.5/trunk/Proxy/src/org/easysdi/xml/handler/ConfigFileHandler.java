@@ -104,7 +104,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String abst ="";
 	private List<String> keywordList = null;
 	private String contactName ="";
-	private String contactSite ="";
+	//private String contactSite ="";
 	private String contactOrganisation ="";
 	private String contactPosition ="";
 	private String adressType ="";
@@ -506,10 +506,10 @@ public class ConfigFileHandler extends DefaultHandler {
 			contactName = data;
 		
 		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactSite")) {
-			contactSite = data;
-			
-		}
+//		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactSite")) {
+//			contactSite = data;
+//			
+//		}
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactOrganization")) {
 			contactOrganisation = data;
 			
@@ -588,7 +588,7 @@ public class ConfigFileHandler extends DefaultHandler {
 			contactInfo.setLinkage(linkage);
 			contactInfo.setName(contactName);
 			contactInfo.setOrganization(contactOrganisation);
-			contactInfo.setSite(contactSite);
+		//	contactInfo.setSite(contactSite);
 			contactInfo.setPosition(contactPosition);
 			contactInfo.setVoicePhone(voicePhone);
 			
