@@ -781,10 +781,10 @@ class ADMIN_proxy
 					$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
 				}
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
-				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
-					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}=JRequest::getVar("service_contactsite"); 
-				else
-					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}="";
+//				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
+//					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}=JRequest::getVar("service_contactsite"); 
+//				else
+//					$config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}="";
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
 				if (strcmp($servletClass,"org.easysdi.proxy.csw.WMSProxyServlet")==0 )

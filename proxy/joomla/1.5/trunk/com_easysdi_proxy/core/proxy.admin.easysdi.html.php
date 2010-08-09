@@ -325,8 +325,8 @@ echo $pane->endPane();
 		function applyDisplay (value1,value2)
 		{
 			document.getElementById('service_metadata').style.display="block";
-			document.getElementById('service_contactsite').style.display=value2;
-			document.getElementById('service_contactsite_t').style.display=value2;
+//			document.getElementById('service_contactsite').style.display=value2;
+//			document.getElementById('service_contactsite_t').style.display=value2;
 			document.getElementById('service_contacttype').style.display=value1;
 			document.getElementById('service_contacttype_t').style.display=value1;
 			document.getElementById('service_contactlinkage').style.display=value2;
@@ -589,11 +589,11 @@ echo $pane->endPane();
 										<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
 										<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}; ?>"></td>
 									</tr>
-									<tr><!-- WFS -->
+									<!--<tr> WFS 
 										<td class="key" id="service_contactsite_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_SITE"); ?> : </td>
 										<td colspan="2"><input name="service_contactsite" id="service_contactsite" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}; ?>"></td>
 									</tr>
-									<tr>
+									--><tr>
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
 										<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}; ?>"></td>
 									</tr>
