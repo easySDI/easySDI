@@ -53,11 +53,6 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-if ($view == 'shop' && !$task )
-{
-	$task = $view;
-}
-
 switch($task){
 	case "shop":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
