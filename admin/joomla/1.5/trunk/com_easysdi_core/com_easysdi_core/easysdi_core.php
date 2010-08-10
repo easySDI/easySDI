@@ -46,15 +46,6 @@ $view = JRequest::getVar('view');
 $db =& JFactory::getDBO();
 $affiliate_id = JRequest::getVar('affiliate_id');
 
-
-if ($view)
-{
-	if($view == 'core')
-	{
-		$task="createUser";
-	}
-}
-
 switch($task){
 	case "createBlockUser":
 		require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');
