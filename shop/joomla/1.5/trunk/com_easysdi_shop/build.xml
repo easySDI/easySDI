@@ -54,7 +54,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Site\sdiv1\components\com_easysdi_core\views">
+			todir="C:\www\Site\sdiv1\components\com_easysdi_shop\views">
 			<fileset dir="./com_easysdi_shop/views">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />

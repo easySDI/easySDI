@@ -53,10 +53,7 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-/**
- * Handle view shop
- */
-if ($view == 'shop' && $task != 'deleteProduct')
+if ($view == 'shop' && !$task )
 {
 	$task = $view;
 }
