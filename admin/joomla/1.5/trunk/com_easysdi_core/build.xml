@@ -2,7 +2,7 @@
 <project default="sync" basedir=".">
 
 	<property name="projet.out.dir" value="out" />
-	<property name="project.deploy.dir" value="C:/www/Site/apem" />
+	<property name="project.deploy.dir" value="C:/www/Site/sdiv1" />
 
 
 	<target name="com_easysdi" depends="create-structure,compression" description="Main target">
