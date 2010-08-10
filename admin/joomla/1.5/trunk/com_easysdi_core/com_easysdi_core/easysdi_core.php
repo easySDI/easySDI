@@ -47,21 +47,13 @@ $db =& JFactory::getDBO();
 $affiliate_id = JRequest::getVar('affiliate_id');
 
 
-/* Handle Menu Item Manager entries */
 if ($view)
 {
-	switch($view){
-		//default:
-		case "core":
-			// require_once(JPATH_COMPONENT.DS.'js'.DS.'partner.site.easysdi.php');	
-			// SITE_partner::createUser(0);
-			// break;
-			$task="createUser";
+	if($view == 'core')
+	{
+		$task="createUser";
 	}
 }
-
-
-
 
 switch($task){
 	case "createBlockUser":
