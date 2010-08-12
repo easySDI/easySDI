@@ -12,7 +12,7 @@
 		<!-- Administration Menu Section -->
 		<menu>Easy SDI</menu>
 		<submenu>
-			<menu link="option=com_easysdi_monitor&amp;view=services">Monitor</menu>
+			<menu link="option=com_easysdi_monitor&amp;view=main">Monitor</menu>
 		</submenu>
 		<!-- Administration Main File Copy Section -->
 		<files>
@@ -20,12 +20,11 @@
 			<filename>easysdi_monitor.php</filename>
 			<filename>index.html</filename>
 			<filename>controller.php</filename>
-			<folder>models</folder>
-			<folder>tables</folder>
+			<folder>css</folder>
+			<folder>icons</folder>
 			<folder>views</folder>
-			<folder>controllers</folder>
+			<folder>lang</folder>
 			<folder>lib</folder>
-			<folder>ressources</folder>
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>

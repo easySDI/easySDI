@@ -72,7 +72,7 @@ function com_install(){
 	
 	//Entry in the EasySDI menu
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-	values($id,'Monitor','','option=com_easysdi_monitor&view=jobs','SHOP','com_easysdi_monitor','js/ThemeOffice/component.png','')";
+	values($id,'Monitor','','option=com_easysdi_monitor&view=main','SHOP','com_easysdi_monitor','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -90,8 +90,8 @@ function com_install(){
 	*/
 	
 	
-	$mainframe->enqueueMessage("Congratulation Monitor for EasySdi is installed and ready to be used.
-	Enjoy EasySdi Monitor!","INFO");
+	$mainframe->enqueueMessage("Congratulation Monitor for EasySdi is installed and ready to be used.	Enjoy EasySdi Monitor!
+	 Do not forget to setup the MONITOR_URL key into component->EasySDI->configuration. For example set it to http://localhost:8083/Monitor (depending on your servlet container location)","INFO");
 
 }
 
