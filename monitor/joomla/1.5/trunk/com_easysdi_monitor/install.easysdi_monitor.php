@@ -69,22 +69,26 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 			}
-		
+	
+	//Entry in the EasySDI menu
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-	values($id,'Monitor','','option=com_easysdi_monitor&view=services','SHOP','com_easysdi_monitor','js/ThemeOffice/component.png','')";
+	values($id,'Monitor','','option=com_easysdi_monitor&view=jobs','SHOP','com_easysdi_monitor','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
-/*
+
+	/*
+	//Entry in the extension manager
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('EasySDI - Shop','option=com_easysdi_shop','Easysdi Shop','com_easysdi_shop','js/ThemeOffice/component.png','')";
+		values('EasySDI - Monitor','option=com_easysdi_monitor','Easysdi Monitor','com_easysdi_monitor','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) 
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 	*/
+	
 	
 	$mainframe->enqueueMessage("Congratulation Monitor for EasySdi is installed and ready to be used.
 	Enjoy EasySdi Monitor!","INFO");

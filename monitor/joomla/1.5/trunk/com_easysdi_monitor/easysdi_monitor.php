@@ -2,9 +2,9 @@
 
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
-
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
+$view = JRequest::getVar( 'view' );
 
 // Require specific controller if requested
 if($controller = JRequest::getWord('controller')) {
@@ -16,8 +16,32 @@ if($controller = JRequest::getWord('controller')) {
 	}
 }
 
+//Add base sub menus
+if($view == "jobs"){
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_JOBS'), 'index.php?option=com_easysdi_monitor&view=jobs', true);
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_REPORTS'), 'index.php?option=com_easysdi_monitor&view=reports');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_ALERTS'), 'index.php?option=com_easysdi_monitor&view=alerts');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_MAINTENANCE'), 'index.php?option=com_easysdi_monitor&view=maintenance');
+}else if($view == "reports"){
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_JOBS'), 'index.php?option=com_easysdi_monitor&view=jobs');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_REPORTS'), 'index.php?option=com_easysdi_monitor&view=reports', true);
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_ALERTS'), 'index.php?option=com_easysdi_monitor&view=alerts');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_MAINTENANCE'), 'index.php?option=com_easysdi_monitor&view=maintenance');
+}else if($view == "alerts"){
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_JOBS'), 'index.php?option=com_easysdi_monitor&view=jobs');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_REPORTS'), 'index.php?option=com_easysdi_monitor&view=reports');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_ALERTS'), 'index.php?option=com_easysdi_monitor&view=alerts', true);
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_MAINTENANCE'), 'index.php?option=com_easysdi_monitor&view=maintenance');
+}else if($view == "maintenance"){
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_JOBS'), 'index.php?option=com_easysdi_monitor&view=jobs');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_REPORTS'), 'index.php?option=com_easysdi_monitor&view=reports');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_ALERTS'), 'index.php?option=com_easysdi_monitor&view=alerts');
+	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_MAINTENANCE'), 'index.php?option=com_easysdi_monitor&view=maintenance', true);
+}
+
+
 // Create the controller
-$classname	= 'MapsController'.$controller;
+$classname	= 'MonitorController'.$controller;
 $controller	= new $classname( );
 
 // Perform the Request task
@@ -25,5 +49,3 @@ $controller->execute( JRequest::getVar( 'task' ) );
 
 // Redirect if set by the controller
 $controller->redirect();
-
-?>

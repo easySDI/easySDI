@@ -9,7 +9,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
-class MapsController extends JController
+class MonitorController extends JController
 {
 	/**
 	 * Method to display the view
