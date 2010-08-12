@@ -39,22 +39,6 @@ $view = JRequest::getVar('view');
 $db =& JFactory::getDBO();
 $option = JRequest::getVar('option');
 
-/* Handle Menu Item Manager entries */
-if ($view)
-{
-	switch($view){
-		//default:
-		case "core":
-			// require_once(JPATH_COMPONENT.DS.'js'.DS.'account.site.easysdi.php');	
-			// SITE_account::createUser(0);
-			// break;
-			$task="createUser";
-	}
-}
-
-
-
-
 switch($task){	
 	case "createBlockUser":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
