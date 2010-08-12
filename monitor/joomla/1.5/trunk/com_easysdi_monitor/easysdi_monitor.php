@@ -4,6 +4,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 $view = JRequest::getVar( 'view' );
 
 // Require specific controller if requested
@@ -17,6 +18,7 @@ if($controller = JRequest::getWord('controller')) {
 }
 
 //Add base sub menus
+/*
 if($view == "jobs"){
 	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_JOBS'), 'index.php?option=com_easysdi_monitor&view=jobs', true);
 	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_REPORTS'), 'index.php?option=com_easysdi_monitor&view=reports');
@@ -38,7 +40,14 @@ if($view == "jobs"){
 	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_ALERTS'), 'index.php?option=com_easysdi_monitor&view=alerts');
 	JSubMenuHelper::addEntry(JText::_('EASYSDI_MONITOR_SUBMENU_MAINTENANCE'), 'index.php?option=com_easysdi_monitor&view=maintenance', true);
 }
+*/
 
+$monitorUrl = config_easysdi::getValue("MONITOR_URL");
+
+if($monitorUrl == ""){
+	$mainframe->enqueueMessage(JTEXT::_("EASYSDI_MONITOR_URL_UNDEFINED","ERROR"));
+	$mainframe->redirect("index.php?option=com_easysdi_core&task=listConfig");
+}
 
 // Create the controller
 $classname	= 'MonitorController'.$controller;

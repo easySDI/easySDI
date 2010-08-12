@@ -1,0 +1,103 @@
+no data 
+logger opened 
+GET values:Array
+(
+    [option] => com_easysdi_monitor
+    [view] => proxy
+    [proxy_url] => /jobs
+    [_dc] => 1281625703044
+    [start] => 0
+    [limit] => 15
+)
+
+POST values:Array
+(
+)
+
+SERVER values:Array
+(
+    [UNIQUE_ID] => vGphFsEiiBEAADwU@jcAAAAM
+    [SCRIPT_URL] => /administrator/index.php
+    [SCRIPT_URI] => http://www.valid.asitvd.ch/administrator/index.php
+    [HTTP_AUTHORIZATION] => Basic dGVzdDp0ZXN0MTIzNA==
+    [HTTP_HOST] => www.valid.asitvd.ch
+    [HTTP_USER_AGENT] => Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)
+    [HTTP_ACCEPT] => text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+    [HTTP_ACCEPT_LANGUAGE] => fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3
+    [HTTP_ACCEPT_ENCODING] => gzip,deflate
+    [HTTP_ACCEPT_CHARSET] => ISO-8859-1,utf-8;q=0.7,*;q=0.7
+    [HTTP_KEEP_ALIVE] => 115
+    [HTTP_X_REQUESTED_WITH] => XMLHttpRequest
+    [HTTP_REFERER] => http://www.valid.asitvd.ch/administrator/index.php?option=com_easysdi_monitor&view=main
+    [HTTP_COOKIE] => __utma=140329763.1742810449.1270797693.1281617335.1281619566.143; __utmz=140329763.1275293185.65.2.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=asitvd.ch; fontSize=75; 63d222910caebe0a93ebe6016b9e5852=98dd7c654c124d6667e3e3a200b62628; __utmc=140329763
+    [HTTP_VIA] => 1.0 proxy2.vd.ch:8080 (squid/2.5.STABLE3)
+    [HTTP_X_FORWARDED_FOR] => 10.245.113.56
+    [HTTP_CACHE_CONTROL] => max-age=259200
+    [HTTP_CONNECTION] => keep-alive
+    [PATH] => /sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin
+    [SERVER_SIGNATURE] => <address>Apache/2.0.52 (CentOS) Server at www.valid.asitvd.ch Port 80</address>
+
+    [SERVER_SOFTWARE] => Apache/2.0.52 (CentOS)
+    [SERVER_NAME] => www.valid.asitvd.ch
+    [SERVER_ADDR] => 193.34.136.17
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 145.232.254.21
+    [DOCUMENT_ROOT] => /home/sites/joomla.asitvd.ch/web
+    [SERVER_ADMIN] => asitvd@www.asitvd.ch
+    [SCRIPT_FILENAME] => /home/sites/joomla.asitvd.ch/web/administrator/index.php
+    [REMOTE_PORT] => 43265
+    [REMOTE_USER] => test
+    [AUTH_TYPE] => Basic
+    [GATEWAY_INTERFACE] => CGI/1.1
+    [SERVER_PROTOCOL] => HTTP/1.0
+    [REQUEST_METHOD] => GET
+    [QUERY_STRING] => option=com_easysdi_monitor&view=proxy&proxy_url=/jobs&_dc=1281625703044&start=0&limit=15
+    [REQUEST_URI] => /administrator/index.php?option=com_easysdi_monitor&view=proxy&proxy_url=/jobs&_dc=1281625703044&start=0&limit=15
+    [SCRIPT_NAME] => /administrator/index.php
+    [PHP_SELF] => /administrator/index.php
+    [PHP_AUTH_USER] => test
+    [PHP_AUTH_PW] => test1234
+    [REQUEST_TIME] => 1281625697
+    [argv] => Array
+        (
+            [0] => option=com_easysdi_monitor&view=proxy&proxy_url=/jobs&_dc=1281625703044&start=0&limit=15
+        )
+
+    [argc] => 1
+)
+
+Server request method:GET
+Auth header username :test
+Auth header password :test1234
+appening key :_dc value :1281625703044
+appening key :start value :0
+appening key :limit value :15
+xmlContent :
+post request 
+final url is :http://admin:adm@valid.asitvd.ch:8083/Monitor/jobs?_dc=1281625703044&start=0&limit=15&
+Auth with username:admin password:adm on:http://valid.asitvd.ch:8083/Monitor/jobs?_dc=1281625703044&start=0&limit=15&
+headers :Array
+log: New http() object instantiated.<br />
+--------------------------------<br />fetch() called<br />
+url: http://valid.asitvd.ch:8083/Monitor/jobs?_dc=1281625703044&start=0&limit=15&<br />
+getFromUrl() called with url:http://valid.asitvd.ch:8083/Monitor/jobs?_dc=1281625703044&start=0&limit=15&Authentication will be attempted<br />
+admin:admrequest is: 
+GET /Monitor/jobs?_dc=1281625703044&start=0&limit=15& HTTP/1.0
+Request header:User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729) 
+Request header:Referer: http://www.valid.asitvd.ch/administrator/index.php?option=com_easysdi_monitor&view=main 
+Request header:Authorization: Basic YWRtaW46YWRt 
+Request header:Host: valid.asitvd.ch:8083 
+Request header:Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 
+Request header:Accept-Language: fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3 
+Request header:Accept-Encoding: gzip,deflate 
+Request header:Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7 
+Request header:Keep-Alive: 115 
+Request header:X-Requested-With: XMLHttpRequest 
+Request header:Cookie: __utma=140329763.1742810449.1270797693.1281617335.1281619566.143; __utmz=140329763.1275293185.65.2.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=asitvd.ch; fontSize=75; 63d222910caebe0a93ebe6016b9e5852=98dd7c654c124d6667e3e3a200b62628; __utmc=140329763 
+Request header:Via: 1.0 proxy2.vd.ch:8080 (squid/2.5.STABLE3) 
+Request header:X-Forwarded-For: 10.245.113.56 
+Request header:Cache-Control: max-age=259200 
+Request header:Connection: keep-alive 
+getFromUrl() exited<br />
+Response is :[{"status":"Disponible","httpMethod":"GET","testInterval":300,"bizErrors":true,"isPublic":true,"allowsRealTime":true,"httpErrors":true,"serviceType":"WMS","password":"d0ubleVMS","url":"https://secure.vd.ch/asitvd/wms","slaStartTime":"08:00:00","id":4,"slaEndTime":"18:00:00","name":"vd-wms-fonds2","queries":[{"id":1,"serviceMethod":"GetCapabilities","status":"Disponible","name":"getCap","params":[]},{"id":8,"serviceMethod":"GetMap","status":"Disponible","name":"getMap","params":[{"name":"SRS","value":"EPSG:21781"},{"name":"BGCOLOR","value":"0xFFFFFF"},{"name":"LAYERS","value":"vd.pk1000_krel10_gris"},{"name":"WIDTH","value":"1020"},{"name":"TRANSPARENT","value":"TRUE"},{"name":"BBOX","value":"456055.513114337,94686.2745098039,619042.52610135,230029.411764706"},{"name":"STYLES","value":""},{"name":"FORMAT","value":"image/png"},{"name":"HEIGHT","value":"847"}]}],"login":"asitvd","triggersAlerts":true,"timeout":5,"isAutomatic":true},{"status":"Disponible","httpMethod":"GET","testInterval":300,"bizErrors":true,"isPublic":true,"allowsRealTime":false,"httpErrors":true,"serviceType":"WMS","password":"d0ubleVMS","url":"https://secure.vd.ch/asitvd/wms","slaStartTime":"08:00:00","id":15,"slaEndTime":"18:00:00","name":"myJob","queries":[{"id":9,"serviceMethod":"GetCapabilities","status":"Disponible","name":"getCap","params":[]},{"id":11,"serviceMethod":"GetMap","status":"Disponible","name":"getMap","params":[{"name":"STYLES","value":""},{"name":"BBOX","value":"457888.84644767,90696.0784313725,620875.859434683,226039.215686275"},{"name":"TRANSPARENT","value":"TRUE"},{"name":"WIDTH","value":"1020"},{"name":"FORMAT","value":"image/png"},{"name":"HEIGHT","value":"847"},{"name":"SRS","value":"EPSG:21781"},{"name":"BGCOLOR","value":"0xFFFFFF"},{"name":"LAYERS","value":"vd.pk1000_krel10_gris"}]},{"id":13,"serviceMethod":"GetMap","status":"Disponible","name":"getmap2","params":[{"name":"LAYERS","value":"vd.pk1000_krel10"},{"name":"HEIGHT","value":"847"},{"name":"BBOX","value":"457888.84644767,90696.0784313725,620875.859434683,226039.215686275"},{"name":"WIDTH","value":"1020"},{"name":"SRS","value":"EPSG:21781"},{"name":"BGCOLOR","value":"0xFFFFFF"},{"name":"FORMAT","value":"image/png"},{"name":"TRANSPARENT","value":"TRUE"}]}],"login":"asitvd","triggersAlerts":true,"timeout":1,"isAutomatic":true},{"status":"Disponible","httpMethod":"GET","testInterval":300,"bizErrors":true,"isPublic":true,"allowsRealTime":true,"httpErrors":true,"serviceType":"WMS","password":"d0ubleVMS","url":"https://secure.vd.ch/asitvd/wms","slaStartTime":"08:00:00","id":16,"slaEndTime":"18:00:00","name":"myJob2","queries":[{"id":10,"serviceMethod":"GetCapabilities","status":"Disponible","name":"getCap","params":[]},{"id":12,"serviceMethod":"GetMap","status":"Disponible","name":"getMap","params":[{"name":"WIDTH","value":"1020"},{"name":"TRANSPARENT","value":"TRUE"},{"name":"LAYERS","value":"vd.pk1000_krel10_gris"},{"name":"FORMAT","value":"image/png"},{"name":"BBOX","value":"457888.84644767,90696.0784313725,620875.859434683,226039.215686275"},{"name":"BGCOLOR","value":"0xFFFFFF"},{"name":"STYLES","value":""},{"name":"SRS","value":"EPSG:21781"},{"name":"HEIGHT","value":"847"}]}],"login":"asitvd","triggersAlerts":true,"timeout":5,"isAutomatic":true},{"status":"Disponible","httpMethod":"GET","testInterval":300,"bizErrors":true,"isPublic":true,"allowsRealTime":true,"httpErrors":true,"serviceType":"WMS","password":"d0ubleVMS","url":"https://secure.vd.ch/asitvd/wms","slaStartTime":"08:00:00","id":18,"slaEndTime":"18:00:00","name":"j2","queries":[{"id":15,"serviceMethod":"GetCapabilities","status":"Disponible","name":"getcap","params":[]}],"login":"asitvd","triggersAlerts":true,"timeout":5,"isAutomatic":true},{"status":"Non testé","httpMethod":"GET","testInterval":3000,"bizErrors":true,"isPublic":true,"allowsRealTime":true,"httpErrors":true,"serviceType":"WMS","password":"ogc_2010","url":"https://geoproxy.valid.asitvd.ch/ogc/vd-wms-fonds","slaStartTime":"08:00:00","id":13,"slaEndTime":"18:00:00","name":"test2","queries":[],"login":"ogc_test","triggersAlerts":false,"timeout":30,"isAutomatic":false},{"status":"Non testé","httpMethod":"GET","testInterval":3600,"bizErrors":true,"isPublic":true,"allowsRealTime":true,"httpErrors":true,"serviceType":"WMS","password":"ogc_2010","url":"https://geoproxy.valid.asitvd.ch/ogc/vd-wms-fonds","slaStartTime":"08:00:00","id":14,"slaEndTime":"18:00:00","name":"test3","queries":[],"login":"ogc_test","triggersAlerts":false,"timeout":30,"isAutomatic":false}]
+encoding isUTF-8
