@@ -73,7 +73,8 @@ function manageFavoriteProduct ()
 		*/
 		
 		//Load products count, only favorites
-		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
+		//$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
+		$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id)";
 		//wrong query
 		//$query = "SELECT COUNT(*) FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id ";
 		//old query -> all product lime in shop
@@ -99,8 +100,8 @@ function manageFavoriteProduct ()
 		if ($simpleSearchCriteria == ""){
 					$simpleSearchFilter  = $simpleSearchFilter ."p.data_title ASC";
 		}
-		
-		$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
+		//$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
+		$query  = "SELECT * FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id)";
 		//old query
 		//$query  = "SELECT * FROM #__easysdi_product p LEFT OUTER JOIN (SELECT partner_id, product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) f  ON p.id = f.product_id  where  p.published=1 and  p.orderable = ".$orderable;
 		$query  = $query .$filter ;
@@ -120,11 +121,12 @@ function manageFavoriteProduct ()
 		$partners[0]='';
 		//$query = "SELECT  #__easysdi_community_partner.partner_id as value, partner_acronym as text FROM `#__easysdi_community_partner` INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id GROUP BY #__easysdi_community_partner.partner_id";
 		//Do not display a furnisher without product	
+		//#__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1)
 		$query = "SELECT  #__easysdi_community_partner.partner_id as value, #__users.name as text 
 		          FROM #__users, `#__easysdi_community_partner` 
 			  INNER JOIN `#__easysdi_product` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
 			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
-			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product where #__easysdi_product.published=1) 
+			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product)
 			  GROUP BY #__easysdi_community_partner.partner_id 
 			  ORDER BY #__users.name";
 		$db->setQuery( $query);
@@ -231,6 +233,7 @@ function manageFavoriteProduct ()
 				<?php
 				$row->text = config_easysdi::getValue("FAVORITE_ARTICLE_TOP");
 				$args = array( 1,&$row,&$params);
+				
 				JPluginHelper::importPlugin( 'content' );
 				$dispatcher =& JDispatcher::getInstance();
 				//$params = & new JParameter('');
