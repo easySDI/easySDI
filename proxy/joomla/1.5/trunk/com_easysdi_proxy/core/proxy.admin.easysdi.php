@@ -754,6 +754,9 @@ class ADMIN_proxy
 
 					$i++;
 				}
+				//Exception
+				$exceptionMode = JRequest::getVar("exception_mode","permissive");
+				$config->{"exception"}->{"mode"}=$exceptionMode;
 				
 				//Policy
 				$policyFile = JRequest::getVar("policyFile");

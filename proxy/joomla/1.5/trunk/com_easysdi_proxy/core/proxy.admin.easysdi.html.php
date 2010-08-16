@@ -529,44 +529,6 @@ echo $pane->endPane();
 				$keywordString = substr($keywordString, 0 , strlen ($keywordString) -1);
 				
 				?>
-				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
-					<table class="admintable">
-						<tr>
-							<td><input name="policyFile" type="text" size=100 value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
-						</tr>
-					</table>
-				</fieldset>
-				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
-					<table class="admintable">
-						<tr>
-							<td><select name="logPeriod">
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?> value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?> value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?> value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?> value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-							</select></td>
-						</tr>
-						<tr>
-							<td>
-							<table class="admintable">
-								<tr>
-									<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-									<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
-									<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
-									<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
-								</tr>
-								<tr>
-									<td><input name="logPath" id="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-									<td><input name="logPrefix" id="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-									<td><input name="logSuffix" id="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-									<td><input name="logExt" id="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
-								</tr>
-							</table>
-							</td>
-						</tr>
-					</table>
-				</fieldset>
-				
 				<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >
 						<tr>
@@ -661,6 +623,55 @@ echo $pane->endPane();
 						</tr>
 					</table>
 				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
+						</tr>
+						<tr>
+							<td><input type="radio" name="exception_mode" value="restrictive" <?php if (strcmp($config->{"exception"}->{"mode"},"restrictive")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_RESTRICTIVE'); ?><br></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><input name="policyFile" type="text" size=100 value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
+					<table class="admintable">
+						<tr>
+							<td><select name="logPeriod">
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?> value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?> value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?> value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?> value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
+							</select></td>
+						</tr>
+						<tr>
+							<td>
+							<table class="admintable">
+								<tr>
+									<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
+									<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
+								</tr>
+								<tr>
+									<td><input name="logPath" id="logPath" size=70 type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
+									<td><input name="logPrefix" id="logPrefix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
+									<td><input name="logSuffix" id="logSuffix" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
+									<td><input name="logExt" id="logExt" type="text" value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+								</tr>
+							</table>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+				
+				
 			
 				<?php
 				break;
