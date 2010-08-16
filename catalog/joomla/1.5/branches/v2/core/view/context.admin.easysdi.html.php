@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 
 class HTML_context {
-function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
+function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -33,11 +33,10 @@ function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
-				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderImportRef' ); ?></th>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderContext' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JText::_("CATALOG_CONTEXT_SEARCHCRITERIA"); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_BOUNDARY_XSLFILE"), 'xslfile', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_BOUNDARY_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -57,38 +56,41 @@ function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
 						if ($disabled){
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderupImportRef', '', false ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownImportRef', '', false ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupContext', '', false ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownContext', '', false ); ?>
 		            <?php
 						}
 						else {
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderupImportRef', 'Move Up', isset($rows[$i-1]) ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownImportRef', 'Move Down', isset($rows[$i+1]) ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupContext', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownContext', 'Move Down', isset($rows[$i+1]) ); ?>
 					<?php
 						}		
 					}
 					else{ 
 						if ($disabled){
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownImportRef', '', false ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupImportRef', '', false ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderdownContext', '', false ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupContext', '', false ); ?>
 		            <?php
 						}
 						else {
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownImportRef', 'Move Down', isset($rows[$i-1]) ); ?>
-		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupImportRef', 'Move Up', isset($rows[$i+1]) ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderdownContext', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupContext', 'Move Up', isset($rows[$i+1]) ); ?>
 					<?php
 						}
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				 <?php $link =  "index.php?option=$option&amp;task=editImportRef&cid[]=$row->id";?>
+				 <?php $link =  "index.php?option=$option&amp;task=editContext&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
+				<td align="center">
+					<a href="<?php echo "index.php?option=$option&amp;task=listSearchCriteria&context_id=$row->id"; ?>" title="<?php echo JText::_( 'CATALOG_CONTEXT_LISTSEARCHCRITERIA' ); ?>">
+						<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
+					</a>
+				</td>
 				<td><?php echo $row->description; ?></td>
-				<td><?php echo $row->xslfile; ?></td>
-				<td><?php echo $row->url; ?></td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
 <?php
@@ -99,12 +101,12 @@ function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="9"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listImportRef" />
+	  	<input type="hidden" name="task" value="listContext" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
@@ -113,7 +115,7 @@ function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 <?php
 	}
 	
-	function editContext(&$row, $fieldsLength, $languages, $labels, $option)
+	function editContext(&$row, $listObjectTypes, $fieldsLength, $languages, $labels, $objecttypes, $selected_objecttypes, $option)
 	{
 		global  $mainframe;
 		
@@ -127,16 +129,37 @@ function listContext(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
+					<td width=150><?php echo JText::_("CORE_CODE"); ?></td>
+					<td><input size="50" type="text" name ="code" value="<?php echo $row->code?>" maxlength="<?php echo $fieldsLength['code'];?>"> </td>							
+				</tr>
+				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
+				<!-- <tr>
+					<td><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$listObjectTypes, 'objecttype_id', 'size="1" class="inputbox"', 'value', 'text', $row->objecttype_id ); ?></td>							
+				</tr>
+				 -->
 				<tr>
-					<td><?php echo JText::_("CATALOG_BOUNDARY_XSLFILE"); ?></td>
-					<td><input size="<?php echo $fieldsLength['xslfile'];?>" type="text" name ="xslfile" value="<?php echo $row->xslfile?>" maxlength="<?php echo $fieldsLength['xslfile'];?>"> </td>							
+					<td width=150 ><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
+					<td>
+						<?php
+						if (count($objecttypes) > 0)
+						{
+							foreach($objecttypes as $objecttype)
+							{
+								?>
+									<input size="50" type="checkbox" name ="objecttypes[]" value="<?php echo $objecttype->value?>" <?php echo in_array($objecttype->value, $selected_objecttypes)? 'checked="yes"':'';?>><?php echo $objecttype->text?></input>
+								<?php
+							} 
+						}
+						?>
+					</td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_BOUNDARY_URL"); ?></td>
-					<td><input size="<?php echo $fieldsLength['url'];?>" type="text" name ="url" value="<?php echo $row->url?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>							
+					<td width=150><?php echo JText::_("CATALOG_CONTEXT_XSLDIR"); ?></td>
+					<td><input size="100" type="text" name ="xsldirectory" value="<?php echo $row->xsldirectory?>" maxlength="<?php echo $fieldsLength['xsldirectory'];?>"> </td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">

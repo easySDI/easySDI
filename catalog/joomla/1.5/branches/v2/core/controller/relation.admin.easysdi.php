@@ -346,6 +346,17 @@ class ADMIN_relation {
 			$selected_profiles = array_merge( $selected_profiles, $database->loadResultArray() );
 		}
 		
+		$contexts = array();
+		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_context ORDER BY name" );
+		$contexts = array_merge( $contexts, $database->loadObjectList() );
+		
+		$selected_contexts = array();
+		/*if ($rowRelation->id <> 0)
+		{
+			$database->setQuery( "SELECT context_id FROM #__sdi_relation_context where relation_id=".$rowRelation->id);
+			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
+		}*/
+		
 		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
@@ -625,7 +636,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -715,6 +726,17 @@ class ADMIN_relation {
 		{
 			$database->setQuery( "SELECT profile_id FROM #__sdi_relation_profile WHERE relation_id=".$rowRelation->id);
 			$selected_profiles = array_merge( $selected_profiles, $database->loadResultArray() );
+		}
+		
+		$contexts = array();
+		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_context ORDER BY name" );
+		$contexts = array_merge( $contexts, $database->loadObjectList() );
+		
+		$selected_contexts = array();
+		if ($rowRelation->id <> 0)
+		{
+			$database->setQuery( "SELECT context_id FROM #__sdi_relation_context where relation_id=".$rowRelation->id);
+			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
 		// Récupération des types mysql pour les champs
@@ -881,7 +903,7 @@ class ADMIN_relation {
 			$informations[$lang->id] = $information;
 		}
 		
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option);
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)
@@ -908,6 +930,17 @@ class ADMIN_relation {
 		{
 			$database->setQuery( "SELECT profile_id FROM #__sdi_relation_profile WHERE relation_id=".$rowRelation->id);
 			$selected_profiles = array_merge( $selected_profiles, $database->loadResultArray() );
+		}
+		
+		$contexts = array();
+		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_context ORDER BY name" );
+		$contexts = array_merge( $contexts, $database->loadObjectList() );
+		
+		$selected_contexts = array();
+		if ($rowRelation->id <> 0)
+		{
+			$database->setQuery( "SELECT context_id FROM #__sdi_relation_context where relation_id=".$rowRelation->id);
+			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
 		// Récupération des types mysql pour les champs
@@ -966,7 +999,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $languages, $labels, $informations, $namespacelist, $option);
+		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option);
 	}
 	
 	function editObjectRelation($rowRelation, $option)
@@ -998,6 +1031,17 @@ class ADMIN_relation {
 		{
 			$database->setQuery( "SELECT profile_id FROM #__sdi_relation_profile WHERE relation_id=".$rowRelation->id);
 			$selected_profiles = array_merge( $selected_profiles, $database->loadResultArray() );
+		}
+		
+		$contexts = array();
+		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_context ORDER BY name" );
+		$contexts = array_merge( $contexts, $database->loadObjectList() );
+		
+		$selected_contexts = array();
+		if ($rowRelation->id <> 0)
+		{
+			$database->setQuery( "SELECT context_id FROM #__sdi_relation_context where relation_id=".$rowRelation->id);
+			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
 		// Récupération des types mysql pour les champs
@@ -1056,7 +1100,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $languages, $labels, $informations, $namespacelist, $option);
+		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option);
 	}
 	
 	function saveRelation($option)
@@ -1292,7 +1336,56 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listRelation" );
 				exit();
-			}	
+			}
+
+			// Sauvegarde des contextes liés à la relation
+			$contexts = array();
+			$contexts = $_POST['contexts'];
+			
+			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_relation_context where relation_id=".$rowRelation->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			// Ne recréer les liens que si la relation doit être un filtre de recherche
+			if ($rowRelation->issearchfilter)
+			{
+				foreach($contexts as $context)
+				{
+					$rowRelation_Context= new relationcontext( $database );
+					$rowRelation_Context->relation_id=$rowRelation->id;
+					$rowRelation_Context->context_id=$context;
+					
+					if (!$rowRelation_Context->store(false)) {	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						$mainframe->redirect("index.php?option=$option&task=listRelation" );
+						exit();
+					}
+				}
+			}
+			
+			// Créer un critère de recherche associé
+			$searchCriteria = null;
+			$database->setQuery("SELECT id FROM #__sdi_searchcriteria WHERE code=\"".$rowRelation->name."_".$rowAttribute->isocode."\" AND relation_id=".$rowRelation->id);
+			$searchCriteria = $database->loadResult();
+			
+			$rowSearchCriteria = new searchcriteria($database);
+			if (count($searchCriteria) == 1)
+				$rowSearchCriteria->load($searchCriteria);
+			else
+				$rowSearchCriteria->relation_id= $rowRelation->id; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			
+			$rowSearchCriteria->name= $rowRelation->name;
+			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
+			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			
+			if (!$rowSearchCriteria->store()) {	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listRelation" );
+				exit();
+			}
 		}
 				
 		$rowRelation->checkin();
@@ -1338,7 +1431,13 @@ class ADMIN_relation {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			
+			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_relation_context where relation_id=".$rowRelation->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		
 			if (!$rowRelation->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listRelation" );

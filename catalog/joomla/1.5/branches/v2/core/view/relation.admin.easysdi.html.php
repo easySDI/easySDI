@@ -165,7 +165,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -173,6 +173,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 		$database =& JFactory::getDBO(); 
 
 		//print_r($attributetypes);
+		
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<table border="0" cellpadding="3" cellspacing="0">	
@@ -428,6 +429,51 @@ foreach ($languages as $lang)
 				</tr>
 				</table>
 			</div>
+
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td width=150 ><?php echo JText::_("CATALOG_RELATION_ISSEARCHFITLER"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onchange="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="div_contexts" style="<?php echo ($row->issearchfilter)? "display:inline":"display:none"; ?>">
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td width=150 ><?php echo JText::_("CATALOG_RELATION_CONTEXT"); ?></td>
+									<td>
+										<?php
+										if (count($contexts) > 0)
+										{
+											foreach($contexts as $context)
+											{
+												?>
+													<input size="50" type="checkbox" name ="contexts[]" value="<?php echo $context->value?>" <?php echo in_array($context->value, $selected_contexts)? 'checked="yes"':'';?>><?php echo $context->text?></input>
+												<?php
+											} 
+										}
+										else
+										{
+											?>
+											<div>
+											<?php
+											echo JText::_( 'CATALOG_RELATION_NOCONTEXT' );
+											?>
+											</div>
+											<?php
+										}
+										?>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_LUCENESEARCHFILTER"); ?></td>
+					<td><input size="50" type="text" name ="lucenesearchfilter" value="<?php if ($pageReloaded and array_key_exists('lucenesearchfilter', $_POST)) echo $_POST['lucenesearchfilter']; else echo $row->lucenesearchfilter?>" maxlength="<?php echo $fieldsLength['lucenesearchfilter'];?>"></td>							
+				</tr>
+			</table>
 <?php 
 }
 else if ($type == 1)
@@ -537,7 +583,9 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 }
 ?>
 			</table> 
-			 
+		
+			
+		
 			 
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
@@ -557,7 +605,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 
-function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option)
+function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -565,8 +613,14 @@ function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $re
 		$database =& JFactory::getDBO(); 
 
 		//print_r($attributetypes);
+		$tabs =& JPANE::getInstance('Tabs');
+		
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<?php
+		echo $tabs->startPane("generalPane");
+		echo $tabs->startPanel(JText::_("CATALOG_RELATION_TAB_GENERAL_LABEL"),"generalPane");
+		?>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td width=150 ><?php echo JText::_("CORE_NAME"); ?></td>
@@ -852,7 +906,58 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 ?>
 			</table> 
 			 
-			 
+			<?php
+		echo $tabs->endPanel();
+		echo $tabs->startPanel(JText::_("CATALOG_RELATION_TAB_SEARCH_LABEL"),"generalPane");
+		?>
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td width=150 ><?php echo JText::_("CATALOG_RELATION_ISSEARCHFITLER"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onchange="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="div_contexts" style="<?php echo ($row->issearchfilter)? "display:inline":"display:none"; ?>">
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td width=150 ><?php echo JText::_("CATALOG_RELATION_CONTEXT"); ?></td>
+									<td>
+										<?php
+										if (count($contexts) > 0)
+										{
+											foreach($contexts as $context)
+											{
+												?>
+													<input size="50" type="checkbox" name ="contexts[]" value="<?php echo $context->value?>" <?php echo in_array($context->value, $selected_contexts)? 'checked="yes"':'';?>><?php echo $context->text?></input>
+												<?php
+											} 
+										}
+										else
+										{
+											?>
+											<div>
+											<?php
+											echo JText::_( 'CATALOG_RELATION_NOCONTEXT' );
+											?>
+											</div>
+											<?php
+										}
+										?>
+									</td>
+								</tr>
+								<tr>
+									<td><?php echo JText::_("CATALOG_RELATION_LUCENESEARCHFILTER"); ?></td>
+									<td><input size="50" type="text" name ="lucenesearchfilter" value="<?php if ($pageReloaded and array_key_exists('lucenesearchfilter', $_POST)) echo $_POST['lucenesearchfilter']; else echo $row->lucenesearchfilter?>" maxlength="<?php echo $fieldsLength['lucenesearchfilter'];?>"></td>							
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		<?php
+		echo $tabs->endPanel();
+		echo $tabs->endPane();
+		?> 
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
@@ -871,7 +976,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $languages, $labels, $informations, $namespacelist, $option)
+	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -1045,7 +1150,6 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 ?>
 			</table> 
 			 
-			 
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="guid" value="<?php echo $row->guid; ?>" />
 			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
@@ -1062,7 +1166,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $languages, $labels, $informations, $namespacelist, $option)
+	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -1235,8 +1339,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 }
 ?>
 			</table> 
-			 
-			 
+		
 			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 			<input type="hidden" name="guid" value="<?php echo $row->guid; ?>" />
 			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />

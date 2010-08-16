@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 
 class HTML_searchcriteria {
-	function listSearchCriteria(&$rows, $page, $filter_order_Dir, $filter_order, $option)
+	function listSearchCriteria(&$rows, $page, $filter_order_Dir, $filter_order, $context_id, $option)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -35,6 +35,8 @@ class HTML_searchcriteria {
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderSearchCriteria' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_SIMPLETAB"), 'simpletab', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_ADVANCEDTAB"), 'advancedtab', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -82,6 +84,34 @@ class HTML_searchcriteria {
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
 				<td><?php echo $row->name; ?></td>
+				<td width="100px" align="center">
+					<?php 
+						$imgY = 'tick.png';
+						$imgX = 'publish_x.png';
+						$img 	= $row->simpletab ? $imgY : $imgX;
+						$prefix = "searchcriteria_simpletab_";
+						$task 	= $row->simpletab ? 'unpublish' : 'publish';
+						$alt = $row->simpletab ? JText::_( 'Yes' ) : JText::_( 'No' );		
+					?>
+					
+					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
+						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
+					</a>
+				</td>
+				<td width="100px" align="center">
+					<?php 
+						$imgY = 'tick.png';
+						$imgX = 'publish_x.png';
+						$img 	= $row->advancedtab ? $imgY : $imgX;
+						$prefix = "searchcriteria_advancedtab_";
+						$task 	= $row->advancedtab ? 'unpublish' : 'publish';
+						$alt = $row->advancedtab ? JText::_( 'Yes' ) : JText::_( 'No' );		
+					?>
+					
+					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
+						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
+					</a>
+				</td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
 <?php
@@ -92,7 +122,7 @@ class HTML_searchcriteria {
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="10"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -100,6 +130,7 @@ class HTML_searchcriteria {
 	  	<input type="hidden" name="task" value="listSearchCriteria" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="context_id" value="<?php echo $context_id; ?>" />
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
 	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>

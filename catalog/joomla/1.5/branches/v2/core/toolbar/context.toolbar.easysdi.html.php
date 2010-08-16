@@ -23,7 +23,7 @@ class TOOLBAR_context {
 	function _DEFAULT() {
 		global $mainframe;
 		
-		JToolBarHelper::title(JText::_("CATALOG_CONTEXT_TITLE")); 
+		JToolBarHelper::title(JText::_("CATALOG_LIST_CONTEXT")); 
 		
 		JToolBarHelper::addNew('newContext');
 		JToolBarHelper::editList('editContext');

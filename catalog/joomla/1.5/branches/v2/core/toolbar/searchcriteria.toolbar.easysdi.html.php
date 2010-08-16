@@ -25,7 +25,8 @@ class TOOLBAR_searchcriteria {
 		
 		JToolBarHelper::title(JText::_("CATALOG_LIST_SEARCHCRITERIA")); 
 		
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		//JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'backSearchCriteria', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
 	}
 }
 ?>

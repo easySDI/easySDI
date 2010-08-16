@@ -21,11 +21,23 @@ defined('_JEXEC') or die('Restricted access');
 class context extends sdiTable
 {
 	var $objecttype_id=null;
+	var $xsldirectory=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_context', 'id', $db ) ;
+	}
+}
+class contextByCode extends sdiTable
+{
+	var $objecttype_id=null;
+	var $xsldirectory=null;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_context', 'code', $db ) ;
 	}
 }
 ?>

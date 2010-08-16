@@ -18,16 +18,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class searchcriteria extends sdiTable
+class relationcontext extends JTable
 {
-	var $issystem=null;
-	var $simpletab=null;
-	var $advancedtab=null;
+	var $id=null;
+	var $relation_id=null;
+	var $context_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_searchcriteria', 'id', $db ) ;
+		parent::__construct ( '#__sdi_relation_context', 'id', $db ) ;
 	}
 }
 ?>
