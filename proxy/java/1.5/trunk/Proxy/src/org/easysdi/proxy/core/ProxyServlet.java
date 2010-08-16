@@ -1059,6 +1059,34 @@ public abstract class ProxyServlet extends HttpServlet {
 		// in any other case the feature type is not allowed
 		return false;
 	}
+	
+	
+	/**
+	 * DRAFT
+	 * @param url
+	 * @param layer
+	 * @return
+	 */
+	protected String getLayerBbox(String url, String layer) {
+		if (policy == null)
+			return null;
+
+		List<Server> serverList = policy.getServers().getServer();
+
+		for (int i = 0; i < serverList.size(); i++) {
+			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+				List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+				for (int j = 0; j < layerList.size(); j++) {
+					if (layer.equals(layerList.get(j).getName())) {
+						if (layerList.get(j).getLatLonBoundingBox() == null)
+							return null;
+						return layerList.get(j).getLatLonBoundingBox();
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Detects if the layer is an allowed or not against the rule.

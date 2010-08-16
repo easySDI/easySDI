@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{}ScaleMin" minOccurs="0"/>
  *         &lt;element ref="{}ScaleMax" minOccurs="0"/>
  *         &lt;element ref="{}Filter" minOccurs="0"/>
+ *         &lt;element ref="{}LatLonBoundingBox" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "name", "scaleMin", "scaleMax", "filter" })
+@XmlType(name = "", propOrder = { "name", "scaleMin", "scaleMax", "filter","LatLonBoundingBox" })
 @XmlRootElement(name = "Layer")
 public class Layer implements Serializable {
 
@@ -53,6 +54,8 @@ public class Layer implements Serializable {
 	protected Double scaleMax;
 	@XmlElement(name = "Filter")
 	protected Filter filter;
+	@XmlElement(name = "LatLonBoundingBox")
+	protected String LatLonBoundingBox;
 
 	@Override
 	public int hashCode() {
@@ -65,6 +68,8 @@ public class Layer implements Serializable {
 			hashCode += scaleMax.hashCode();
 		if (filter != null)
 			hashCode += filter.hashCode();
+		if (LatLonBoundingBox != null)
+			hashCode += LatLonBoundingBox.hashCode();
 		return hashCode;
 	}
 
@@ -150,6 +155,27 @@ public class Layer implements Serializable {
 	 */
 	public void setFilter(Filter value) {
 		this.filter = value;
+	}
+	
+	/**
+	 * Gets the value of the filter property.
+	 * 
+	 * @return possible object is {@link Filter }
+	 * 
+	 */
+	public String getLatLonBoundingBox() {
+		return LatLonBoundingBox;
+	}
+
+	/**
+	 * Sets the value of the filter property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link Filter }
+	 * 
+	 */
+	public void setLatLonBoundingBox(String value) {
+		this.LatLonBoundingBox = value;
 	}
 
 }

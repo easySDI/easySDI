@@ -124,6 +124,9 @@ public class ConfigFileHandler extends DefaultHandler {
 	private ServiceContactInfo contactInfo ;
 	private ServiceContactAdressInfo contactAdress;
 	
+	private String exceptionMode ="Permissive";
+	private boolean isException=false;
+	
 
 	public ConfigFileHandler(String id) {
 		super();
@@ -249,6 +252,11 @@ public class ConfigFileHandler extends DefaultHandler {
 			isContactAddress = true;
 			return;
 		}
+		
+		//Exception
+		if (isTheGoodId && isConfig && qName.equals("exception")) {
+			isException = true;
+		}
 	
 	}
 
@@ -270,8 +278,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setKeywordList(keywordList);
 				config.setTitle(title);
 				config.setContactInfo(contactInfo);
-				
-				
+				config.setExceptionMode(exceptionMode);
 			}
 			isTheGoodId = false;
 		}
@@ -594,6 +601,13 @@ public class ConfigFileHandler extends DefaultHandler {
 			
 			isContactInformation = false;
 		}
+		
+		//Exception
+		if (isTheGoodId && isConfig && isException && qName.equals("mode")) {
+			exceptionMode = data;
+			isException = false;
+		}
+		
 		data = "";
 	}
 

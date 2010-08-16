@@ -47,6 +47,7 @@ public class Config implements Serializable{
 	private ServiceContactInfo contactInfo;
 	private String fees ="";
 	private String accessConstraints ="";
+	private String exceptionMode = "";
 
 	public String getToleranceDistance() {
 		return toleranceDistance;
@@ -243,6 +244,22 @@ public class Config implements Serializable{
 
 	public ServiceContactInfo getContactInfo() {
 		return contactInfo;
+	}
+
+	/**
+	 * 
+	 * @param exceptionMode
+	 */
+	public void setExceptionMode(String exceptionMode) {
+		this.exceptionMode = exceptionMode;
+	}
+
+	/**
+	 * 
+	 * @return the exception mode
+	 */
+	public String getExceptionMode() {
+		return exceptionMode;
 	}
 
 }

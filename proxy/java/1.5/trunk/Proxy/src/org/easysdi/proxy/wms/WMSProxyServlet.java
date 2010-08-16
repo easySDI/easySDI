@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -286,7 +287,6 @@ public class WMSProxyServlet extends ProxyServlet {
 
 				return WMSCapabilities111;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				resp.setHeader("easysdi-proxy-error-occured", "true");
 				e.printStackTrace();
 				dump("ERROR", e.getMessage());
@@ -297,7 +297,6 @@ public class WMSProxyServlet extends ProxyServlet {
 			return sb
 					.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
@@ -449,9 +448,133 @@ public class WMSProxyServlet extends ProxyServlet {
 	}
 	// ***************************************************************************************************************************************
 
+
+	protected ByteArrayOutputStream getResponseServiceException ()
+	{
+		ByteArrayOutputStream exceptionOutputStream = null;
+		
+		try {
+			for (int iFilePath = 0; iFilePath < wmsFilePathList.size(); iFilePath++) 
+			{
+				try 
+				{
+					for (String path : wmsFilePathList.values()) 
+					{
+						String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+						if (ext.equals("xml"))
+						{
+							DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+							db.setNamespaceAware(false);
+							File fMaster = new File(path);
+							Document documentMaster = db.newDocumentBuilder().parse(fMaster);
+							if (documentMaster != null) {
+								NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+								if (nl.item(0) != null)
+								{
+									DOMImplementationLS implLS = null;
+									if (documentMaster.getImplementation().hasFeature("LS", "3.0")) {
+										implLS = (DOMImplementationLS) documentMaster.getImplementation();
+									} else {
+										DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+										implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+									}
+									if (implLS == null) {
+										dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+										ByteArrayOutputStream out = new ByteArrayOutputStream();
+										FileInputStream reader = new FileInputStream(fMaster);
+										byte[] data = new byte[reader.available()];
+										reader.read(data, 0, reader.available());
+										out.write(data);
+										reader.close();
+										return out;
+									}
+									
+									//Loop on other file
+									for (String pathChild : wmsFilePathList.values()) 
+									{
+										Document documentChild = null;
+										try {
+											documentChild = db.newDocumentBuilder().parse(pathChild);
+										} catch (Exception e) {
+											e.printStackTrace();
+											dump("ERROR", e.getMessage());
+										}
+										if (documentChild != null) {
+											NodeList nlChild = documentChild.getElementsByTagName("ServiceException");
+											NodeList nlMaster = documentMaster.getElementsByTagName("ServiceException");
+											Node ItemMaster = nlMaster.item(0);
+											if (nlChild.item(0) != null)
+												ItemMaster.insertBefore(documentMaster.importNode(nlChild.item(0).cloneNode(true), true), null);
+										}
+									}
+
+									ByteArrayOutputStream out = new ByteArrayOutputStream();
+									LSSerializer serialiseur = implLS.createLSSerializer();
+									LSOutput sortie = implLS.createLSOutput();
+									sortie.setEncoding("UTF-8");
+									sortie.setByteStream(out);
+									serialiseur.write(documentMaster, sortie);
+									return out;
+								}	
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+					dump("ERROR", ex.getMessage());
+					return null;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+			dump("ERROR", ex.getMessage());
+			return null;
+		}
+		return null;
+	}
+	
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
 
 		try {
+			if(configuration.getExceptionMode().equals("restrictive"))
+			{
+				ByteArrayOutputStream exceptionOutputStream = getResponseServiceException();
+				BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+				resp.setContentType(responseContentType);
+				try {
+					dump("transform begin response writting");
+					if ("1".equals(req.getParameter("download"))) {
+						String format = req.getParameter("format");
+						if (format == null)
+							format = req.getParameter("FORMAT");
+						if (format != null) {
+							String parts[] = format.split("/");
+							String ext = "";
+							if (parts.length > 1)
+								ext = parts[1];
+							resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+						}
+					}
+					if (exceptionOutputStream != null)
+						os.write(exceptionOutputStream.toByteArray());
+
+					dump("transform end response writting");
+				} finally {
+					os.flush();
+					os.close();
+					// Log le résultat et supprime les fichiers temporaires
+					DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+					Date d = new Date();
+					dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+					if (exceptionOutputStream != null)
+						dump("SYSTEM", "ClientResponseLength", exceptionOutputStream.size());
+				}
+				return;
+			}
 			// Vérifie et prépare l'application d'un fichier xslt utilisateur
 			String userXsltPath = getConfiguration().getXsltPath();
 			if (req.getUserPrincipal() != null) {
@@ -476,29 +599,12 @@ public class WMSProxyServlet extends ProxyServlet {
 				isPostTreat = true;
 			}
 
-			// Transforms the results using a xslt before sending the response
-			// back
-			// InputStream xml = new FileInputStream(wmsFilePathList.get(0));
+			// Transforms the results using a xslt before sending the response back
 			Transformer transformer = null;
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
 			// Debug tb 21.12.2009
-			ByteArrayOutputStream tempOut = null; // Remplace l'utilisation de
-			// tempFile!!!
-			// File tempFile = null;
-			// if (isXML(responseContentType))
-			// {
-			// //tempFile = createTempFile(UUID.randomUUID().toString(),
-			// getExtension(responseContentType));
-			// }
-			// else
-			// {
-			// if (wmsFilePathList.size()>0)
-			// {
-			// if(wmsFilePathList.get(0)!=null) tempFile = new
-			// File(wmsFilePathList.get(0));
-			// }
-			// }
+			ByteArrayOutputStream tempOut = null; 
 
 			// ********************************************************************************************************************
 			// Postraitement des réponses à la requête contenue dans les
@@ -580,8 +686,6 @@ public class WMSProxyServlet extends ProxyServlet {
 					tempOut = out;
 					dump("transform end apply XSLT on service metadata");
 					// tempFile = mergeCapabilities(tempFileCapa);
-					
-
 					dump("transform end GetCapabilities operation");
 				}
 				// Pour une requête utilisateur de type: Map
@@ -1410,7 +1514,9 @@ public class WMSProxyServlet extends ProxyServlet {
 							}
 						} else if ("GetCapabilities".equalsIgnoreCase(operation) || "capabilities".equalsIgnoreCase(operation)) {
 							if (paramUrlBase.toUpperCase().indexOf("SERVICE=") == -1)
-								paramUrlBase += "&SERVICE=WMS";
+							{
+	//							paramUrlBase += "&SERVICE=WMS";
+							}
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
 
 							synchronized (wmsFilePathList) {
