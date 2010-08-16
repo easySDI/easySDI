@@ -385,4 +385,17 @@ function sortArray(arr)
 	 
 }
 
+function changeContextsVisibility(visible)
+{
+	var div_contexts = document.getElementById("div_contexts");
+	
+	if (visible == 1) // Afficher la liste des contextes
+	{
+		div_contexts.style.display = "";
+	}
+	else // Masquer la liste des contextes
+	{
+ 		div_contexts.style.display = "none";
+	}
+}
 </script>

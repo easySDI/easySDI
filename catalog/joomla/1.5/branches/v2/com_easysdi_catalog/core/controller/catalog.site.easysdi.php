@@ -23,6 +23,49 @@ class SITE_catalog {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		global $mainframe;
+		$database =& JFactory::getDBO();
+		
+		$language =& JFactory::getLanguage();
+		
+		$newTraductions = array();
+		$database->setQuery( "SELECT t.element_guid, t.label, t.defaultvalue, t.information, t.regexmsg, t.title, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang c WHERE t.language_id=l.id AND l.codelang_id=c.id AND c.code='".$language->_lang."'" );
+		$newTraductions = array_merge( $newTraductions, $database->loadObjectList() );
+		
+		$array = array();
+		foreach ($newTraductions as $newTraduction)
+		{
+			if ($newTraduction->label <> "" and $newTraduction->label <> null)
+				$array[strtoupper($newTraduction->element_guid."_LABEL")] = $newTraduction->label;
+			
+			if ($newTraduction->defaultvalue <> "" and $newTraduction->defaultvalue <> null)
+				$array[strtoupper($newTraduction->element_guid."_DEFAULTVALUE")] = $newTraduction->defaultvalue;
+			
+			if ($newTraduction->information <> "" and $newTraduction->information <> null)
+				$array[strtoupper($newTraduction->element_guid."_INFORMATION")] = $newTraduction->information;
+			
+			if ($newTraduction->regexmsg <> "" and $newTraduction->regexmsg <> null)
+				$array[strtoupper($newTraduction->element_guid."_REGEXMSG")] = $newTraduction->regexmsg;
+			
+			if ($newTraduction->title <> "" and $newTraduction->title <> null)
+				$array[strtoupper($newTraduction->element_guid."_TITLE")] = $newTraduction->title;
+			
+			if ($newTraduction->content <> "" and $newTraduction->content <> null)
+				$array[strtoupper($newTraduction->element_guid."_CONTENT")] = $newTraduction->content;
+		}
+		$language->_strings = array_merge( $language->_strings, $array);
+		
+		$context= JRequest::getVar('context');
+		$listSearchFilters = array();
+		$database->setQuery("SELECT r.*, a.id as attribute_id, at.code as attributetype_code
+					   FROM #__sdi_context c 
+								  INNER JOIN #__sdi_relation_context rc ON c.id=rc.context_id 
+								  INNER JOIN #__sdi_relation r ON r.id=rc.relation_id
+								  INNER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
+								  INNER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
+					   WHERE c.code='".$context."' 
+					   ORDER BY r.ordering");
+		$listSearchFilters = array_merge( $listSearchFilters, $database->loadObjectList() );		
+		//print_r($listSearchFilters);
 		$empty = true;
 		
 		$maxDescr = config_easysdi::getValue("description_length");
@@ -43,23 +86,77 @@ class SITE_catalog {
 		$minY = JRequest::getVar('bboxMinY', "-90" );
 		$maxX = JRequest::getVar('bboxMaxX', "180" );
 		$maxY = JRequest::getVar('bboxMaxY', "90" );
-		$account_id  = JRequest::getVar('account_id');
-		$objecttype_id = JRequest::getVar('objecttype_id');
+		//$account_id  = JRequest::getVar('account_id');
+		$objecttype_id = JRequest::getVar('objecttype_id[]');
 		
-		$filter_theme = JRequest::getVar('filter_theme');
-		$filter_visible = JRequest::getVar('filter_visible');
-		$filter_orderable = JRequest::getVar('filter_orderable');
-		$filter_createdate = JRequest::getVar('create_cal');
+		$cswAdvancedFilter="";
+		$cswAdvancedFilter .= "<ogc:Or>";
+		foreach($listSearchFilters as $searchFilter)
+		{
+			$filter = JRequest::getVar('filter_'.$searchFilter->name);
+			//echo "<br>".'filter_'.$searchFilter->name.": ".$filter ;
+			if ($filter <> "")
+			{
+				switch ($searchFilter->attributetype_code)
+				{
+					case "guid":
+					case "text":
+					case "locale":
+					case "number":
+					case "link":
+					case "textchoice":
+					case "localechoice":
+						/* Fonctionnement texte*/
+						//Break the space in the request and split it in many terms
+						$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+						<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+						<ogc:Literal>$filter</ogc:Literal>
+						</ogc:PropertyIsLike> ";
+						
+						$empty = false;
+						break;
+					case "list":
+						/* Fonctionnement liste*/
+						$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+						<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+						<ogc:Literal>$filter</ogc:Literal>
+						</ogc:PropertyIsLike> ";
+						
+						$empty = false; 
+						break;
+					case "date":
+					case "datetime":
+						/* Fonctionnement période*/
+						$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+						<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+						<ogc:Literal>$filter</ogc:Literal>
+						</ogc:PropertyIsLike> ";
+						
+						$empty = false; 
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		$cswAdvancedFilter .= "</ogc:Or>";
+		
+		//echo "<hr>".htmlspecialchars($cswAdvancedFilter);
+			
+		//$filter_theme = JRequest::getVar('filter_theme');
+		//$filter_visible = JRequest::getVar('filter_visible');
+		//$filter_orderable = JRequest::getVar('filter_orderable');
+		/*$filter_createdate = JRequest::getVar('create_cal');
 		$filter_createdate_comparator = JRequest::getVar('create_select');
 		$filter_date = JRequest::getVar('update_cal');
 		$filter_date_comparator = JRequest::getVar('update_select');
-		
+		*/
 		/* Todo, push the date format in EasySDI config and
 		set it here accordingly */
-		if($filter_date){
+		/*if($filter_date){
 			$temp = explode(".", $filter_date);
 			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
-		}
+		}*/
 		
 		// Conditions pour la visibilit? publique/priv?e de la m?tadonn?e
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
@@ -123,7 +220,7 @@ class SITE_catalog {
 				</BBOX>";
 			}
 			
-			$cswThemeFilter = null;
+			/*$cswThemeFilter = null;
 			// Filtre sur la th?matique (Crit?res de recherche avanc?s)
 			if($filter_theme)
 			{
@@ -135,7 +232,8 @@ class SITE_catalog {
 				
 				$empty = false;
 			}
-			
+			*/
+			/*
 			// Filtre sur l'id du fournisseur (Crit?res de recherche avanc?s)
 			$arrFilterMd =array();
 			$arrAccountMd=null;
@@ -164,7 +262,7 @@ class SITE_catalog {
 			}
 			if($arrAccountMd != null)
 				$arrFilterMd[] = $arrAccountMd;
-				
+			*/	
 			
 			// Filtre sur le type d'objet (Crit?res de recherche simple)
 			$arrObjecttypeMd=null;
@@ -172,7 +270,7 @@ class SITE_catalog {
 			{
 				//echo ", objecttype";
 				$db =& JFactory::getDBO();
-				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.objecttype_id = ".$objecttype_id.$filter;
+				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.objecttype_id IN (".implode(",", $objecttype_id).") ".$filter;
 				$db->setQuery( $query);
 				$list_id = $db->loadObjectList() ;
 				if ($db->getErrorNum())
@@ -195,7 +293,7 @@ class SITE_catalog {
 				$arrFilterMd[] = $arrObjecttypeMd;
 				
 			
-			$arrCswVisibleMd=null;
+			/*$arrCswVisibleMd=null;
 			// Filtre sur la visibilit? du produit (Crit?res de recherche avanc?s)
 			if($filter_visible )
 			{	
@@ -222,8 +320,8 @@ class SITE_catalog {
 			}
 			if($arrCswVisibleMd != null)
 				$arrFilterMd[] = $arrCswVisibleMd;
-			
-			$arrCswOrderableFilterMd = null;
+			*/
+			/*$arrCswOrderableFilterMd = null;
 			// Filtre sur la possibilit? de commander le produit (Crit?res de recherche avanc?s)
 			if($filter_orderable)
 			{
@@ -257,7 +355,8 @@ class SITE_catalog {
 			}
 			if($arrCswOrderableFilterMd != null)
 				$arrFilterMd[] = $arrCswOrderableFilterMd;
-			
+			*/
+			/*	
 			// Filtre sur la date de création
 			$arrCswCreateDateFilter=null;
 			if($filter_createdate)
@@ -294,8 +393,8 @@ class SITE_catalog {
 			}
 			if($arrCswCreateDateFilter != null)
 				$arrFilterMd[] = $arrCswCreateDateFilter;
-			
-			
+			*/
+			/*
 			// Filtre sur la date de mise à jour
 			$arrCswDateFilter=null;
 			if($filter_date)
@@ -332,7 +431,7 @@ class SITE_catalog {
 			}
 			if($arrCswDateFilter != null)
 				$arrFilterMd[] = $arrCswDateFilter;
-			
+			*/
 			
 			// Filtre minimum: Produits publi?s avec métadonnée publiée et date de publication >= aujourd'hui
 			// Si aucun filtre n'a renvoy? de r?sultat ou si aucun filtre n'a ?t? demand?.
@@ -373,7 +472,7 @@ class SITE_catalog {
 				//reinitialize the filters (this was a hack because php doesn't make any difference for:
 				//s=null <=> s=""
 				$cswAccountFilter = "";
-				$cswThemeFilter = "";
+				//$cswThemeFilter = "";
 				$cswOrderableFilter = "";
 				$cswVisibleFilter = "";
 				$cswDateFilter = "";
@@ -443,10 +542,11 @@ class SITE_catalog {
 			
 			$cswfilterCond = "";
 			//Don't put an <and> if no other condition is requested
-			if($cswSimpleTextFilter != "" || $cswThemeFilter != "" || $bboxfilter != "")
+			if($cswSimpleTextFilter != "" || $bboxfilter != "") // || $cswThemeFilter != "" )
 				$cswfilterCond .= "<ogc:And>\r\n";
 			$cswfilterCond .= $cswSimpleTextFilter;
-			$cswfilterCond .= $cswThemeFilter;
+			//$cswfilterCond .= $cswThemeFilter;
+			$cswfilterCond .= $cswAdvancedFilter;
 			$cswfilterCond .= $bboxfilter;
 			
 			if(count($arrSearchableMd) > 1)
@@ -460,14 +560,14 @@ class SITE_catalog {
 				$cswfilterCond .= "</ogc:Or>\r\n";
 			
 			//Don't put an <and> if no other condition is requested
-			if($cswSimpleTextFilter != "" || $cswThemeFilter != "" || $bboxfilter != "")
+			if($cswSimpleTextFilter != "" || $bboxfilter != "") // || $cswThemeFilter != "")
 			$cswfilterCond .= "</ogc:And>\r\n";
 			
 			$cswfilter = "<ogc:Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
 			$cswfilter .= $cswfilterCond;
 			$cswfilter .= "</ogc:Filter>\r\n";
 			
-			//echo "cswfilter:". $cswfilter;
+			echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			//$propertyTitle="gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:LocalisedCharacterString";
 			/*$sortBy='
@@ -552,7 +652,9 @@ class SITE_catalog {
 			$cswResults = null;
 		}
 		
-		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr);
+		$allVersions=true;
+		
+		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr, $allVersions);
 		
 	}
 
