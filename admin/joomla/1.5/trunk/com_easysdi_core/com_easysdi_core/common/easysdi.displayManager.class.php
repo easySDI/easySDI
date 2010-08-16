@@ -565,7 +565,9 @@ class displayManager{
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
 			if(!in_array($productId, $productListArray) && $enableFavorites == 1 && !$user->guest)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"addToFavorite\"/></td>";
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addToFavorite\"/></td>";
+			if(in_array($productId, $productListArray) && $enableFavorites == 1 && !$user->guest)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\"/></td>";
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
@@ -626,10 +628,35 @@ class displayManager{
 			window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=$shopitemId&firstload=1&fromStep=1&cid[]=$productId', '_main');
 		});";
 		}
-		if(!in_array($productId, $productListArray) && $enableFavorites == 1 && !$user->guest){
-			$myHtml .= "
-		$('addToFavorite').addEvent( 'click' , function() { 
-			window.open('./index.php?option=com_easysdi_shop&task=addFavorite&view=&productId=$productId', '_main');
+		if($enableFavorites == 1 && !$user->guest){
+		   //$action = !in_array($productId, $productListArray) ? "addFavorite" : "removeFavorite";
+		   //$className = !in_array($productId, $productListArray) ? "removeFavorite" : "addToFavorite";
+		   //$title = !in_array($productId, $productListArray) ? "EASYSDI_REMOVE_FAVORITE" : "EASYSDI_ADD_TO_FAVORITE";
+		   $myHtml .= "
+		   $('toggleFavorite').addEvent( 'click' , function() {
+		   var action = \"addFavorite\";
+		   var title = Array();
+		   title['EASYSDI_REMOVE_FAVORITE']='".JText::_("EASYSDI_REMOVE_FAVORITE")."';
+		   title['EASYSDI_ADD_TO_FAVORITE']='".JText::_("EASYSDI_ADD_TO_FAVORITE")."';
+		   
+		   if($('toggleFavorite').className == \"removeFavorite\")
+		      action = \"removeFavorite\";
+		   
+		   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&productId=$productId', {
+	           	method: 'get',
+	           	onSuccess: function(){
+			        if($('toggleFavorite').className == \"removeFavorite\"){
+	           		   document.getElementById(\"toggleFavorite\").className = 'addToFavorite';
+		   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
+				}else{
+				   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
+		   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
+				}
+	           	},
+	           	onFailure: function(){
+	           		
+	           	}
+	           }).request();		
 		});";
 		}
 		$myHtml .= "
@@ -784,6 +811,9 @@ class displayManager{
 		}
 
 		$file = $dom->saveXML();
+		
+		
+		
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
 		header('Content-type: application/xml');
@@ -792,6 +822,8 @@ class displayManager{
 		header('Pragma: public');
 		header("Expires: 0"); 
 		header("Content-Length: ".filesize($file));
+		
+		
 		
 		echo $file;
 		//Very important, if you don't call this, the content-type will have no effect
