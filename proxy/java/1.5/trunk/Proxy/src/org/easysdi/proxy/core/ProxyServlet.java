@@ -125,6 +125,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
 	protected int policyAttributeListNb = 0;
 	// Fin de debug
+	
+	//Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
+	protected Multimap<Integer, String> wmsExceptionFilePathList = HashMultimap.create();
 
 	private List<String> lLogs = new Vector<String>();
 	protected boolean hasPolicy = true;
