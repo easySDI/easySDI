@@ -266,16 +266,47 @@ echo $pane->endPanel();
 	{
 		?>
 <script>
-function changeValues(){
-if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet'){
-document.getElementById('specificGeonetowrk').style.display="block";
-}else{
-document.getElementById('specificGeonetowrk').style.display="none";
+function changeValues()
+{
+	if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
+	{
+		document.getElementById('specificGeonetowrk').style.display="block";
+		applyDisplay ("none","block");
+		document.getElementById('servicemetadata_contact').style.display="block";
+	}
+	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+	{
+		document.getElementById('specificGeonetowrk').style.display="none";
+		applyDisplay ("none","block");
+		document.getElementById('servicemetadata_contact').style.display="none";
+	}	
+	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
+	{
+		document.getElementById('specificGeonetowrk').style.display="none";
+		applyDisplay ("block","none");
+		document.getElementById('servicemetadata_contact').style.display="block";
+	}
+	else
+	{
+		document.getElementById('specificGeonetowrk').style.display="none";
+		document.getElementById('service_metadata').style.display="none";
+		
+	}
 }
 
-
+function applyDisplay (value1,value2)
+{
+	document.getElementById('service_metadata').style.display="block";
+	document.getElementById('service_contacttype').style.display=value1;
+	document.getElementById('service_contacttype_t').style.display=value1;
+	document.getElementById('service_contactlinkage').style.display=value2;
+	document.getElementById('service_contactlinkage_t').style.display=value2;
+	document.getElementById('service_contacthours').style.display=value2;
+	document.getElementById('service_contacthours_t').style.display=value2;
+	document.getElementById('service_contactinstructions').style.display=value2;
+	document.getElementById('service_contactinstructions_t').style.display=value2;
+	
 }
-
 
 function submitbutton(pressbutton){
 
@@ -288,8 +319,41 @@ else if (pressbutton=="saveConfig")
 	   document.getElementById('logPrefix').value == "" || 
 	   document.getElementById('logSuffix').value == "" )
 	{
-		alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_ERROR');?>');	
+		alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 		return;
+	}
+	if(document.getElementById('service_title').value == ""  )
+	{
+		alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+		return;
+	}
+	if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
+	{
+		document.getElementById('service_contacttype').value = "";
+	}
+	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+	{
+		document.getElementById('service_contactorganization').value=""; 
+		document.getElementById('service_contactperson').value=""; 
+		document.getElementById('service_contactposition').value="";
+		document.getElementById('service_contacttype').value="";
+		document.getElementById('service_contactadress').value="";
+		document.getElementById('service_contactpostcode').value="";
+		document.getElementById('service_contactcity').value="";
+		document.getElementById('service_contactstate').value="";
+		document.getElementById('service_contactcountry').value="";
+		document.getElementById('service_contacttel').value="";
+		document.getElementById('service_contactfax').value="";
+		document.getElementById('service_contactmail').value="";
+		document.getElementById('service_contactlinkage').value="";
+		document.getElementById('service_contacthours').value="";
+		document.getElementById('service_contactinstructions').value="";
+	}	
+	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
+	{
+		document.getElementById('service_contactlinkage').value="";
+		document.getElementById('service_contacthours').value="";
+		document.getElementById('service_contactinstructions').value="";
 	}
 	submitform(pressbutton);
 }
@@ -476,65 +540,173 @@ function addNewServer(){
 	nbServer = nbServer + 1;
 }
 </script>
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
-<table class="admintable">
-	<tr>
-		<td><input name="policyFile" type="text" size=100
-			value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
-	</tr>
-</table>
-</fieldset>
-
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
-<table class="admintable">
-	<tr>
-		<td><select name="logPeriod">
-			<option
-			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
-				value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-			<option
-			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
-				value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-			<option
-			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
-				value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-			<option
-			<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
-				value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-		</select></td>
-	</tr>
-
-	<tr>
-		<td>
+		<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+			<table class="admintable" >
+				<tr>
+					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
+					<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
+					<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
+					<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+					<fieldset class="adminform" id ="servicemetadata_contact"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
+						<table>
+							<tr>
+								<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
+								<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}; ?>"></td>
+							</tr>
+							<!--<tr> WFS 
+								<td class="key" id="service_contactsite_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_SITE"); ?> : </td>
+								<td colspan="2"><input name="service_contactsite" id="service_contactsite" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactSite"}; ?>"></td>
+							</tr>
+							--><tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
+								<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_POSITION"); ?> : </td>
+								<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
+							</tr>
+							<tr><!-- WMS -->
+								<td class="key" id="service_contacttype_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
+								<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
+								<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
+								<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size="5" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
+								<td><input name="service_contactcity" id="service_contactcity" type="text" size="68" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_STATE"); ?> : </td>
+								<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
+								<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>
+								<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
+								<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
+								<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
+							</tr>
+							<tr><!-- CSW -->
+								<td class="key" id="service_contactlinkage_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_LINKAGE"); ?> : </td>
+								<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
+							</tr>
+							<tr><!-- CSW -->
+								<td class="key" id="service_contacthours_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
+								<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
+							</tr>
+							<tr><!-- CSW -->
+								<td class="key" id="service_contactinstructions_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
+								<td colspan="2"><textarea name="service_contactinstructions" id="service_contactinstructions"  cols="45" rows="5"  ><?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?></textarea></td>
+							</tr>
+						</table>
+					</fieldset>
+					 </td>
+				</tr>
+				
+				<tr>
+					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
+					<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
+					<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="exception_mode" value="restrictive" <?php if (strcmp($config->{"exception"}->{"mode"},"restrictive")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_RESTRICTIVE'); ?><br></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
 		<table class="admintable">
 			<tr>
-				<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
-				<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
-			</tr>
-			<tr>
-				<td><input name="logPath"  id="logPath" size=70 type="text"
-					value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-				<td><input name="logPrefix" id="logPrefix" type="text"
-					value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-				<td><input name="logSuffix" id="logSuffix" type="text"
-					value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-				<td><input name="logExt" type="text"
-					value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+				<td><input name="policyFile" type="text" size=100
+					value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
 			</tr>
 		</table>
-		</td>
+		</fieldset>
 
-	</tr>
-</table>
-</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
+		<table class="admintable">
+			<tr>
+				<td><select name="logPeriod">
+					<option
+					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
+						value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
+					<option
+					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
+						value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
+					<option
+					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
+						value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
+					<option
+					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
+						value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
+				</select></td>
+			</tr>
+		
+			<tr>
+				<td>
+				<table class="admintable">
+					<tr>
+						<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
+					</tr>
+					<tr>
+						<td><input name="logPath"  id="logPath" size=70 type="text"
+							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
+						<td><input name="logPrefix" id="logPrefix" type="text"
+							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
+						<td><input name="logSuffix" id="logSuffix" type="text"
+							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
+						<td><input name="logExt" type="text"
+							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+					</tr>
+				</table>
+				</td>
+		
+			</tr>
+		</table>
+		</fieldset>
 
 			<?php
 			break;
 		}
 	}
-	?></form>
+	?>
+	</form>
+	<script>
+	window.onload=changeValues ;
+	</script>
 	<?php
 
 	}

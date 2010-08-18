@@ -786,12 +786,62 @@ function saveConfig($xml,$configFilePath){
 				$geonetworktransaction->{'insert-service-url'}=JRequest::getVar("insert-service-url_".$i,"");;
 
 				}
-				
-
 				$i++;
 			}
+			
+			//Exception
+			$exceptionMode = JRequest::getVar("exception_mode","permissive");
+			$config->{"exception"}->{"mode"}=$exceptionMode;
+
+			//Policy
 			$policyFile = JRequest::getVar("policyFile");
 			$config->{"authorization"}->{"policy-file"}=$policyFile;
+			
+			//Service metadata
+			$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
+			$config->{"service-metadata"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
+			$config->{"service-metadata"}->{"KeywordList"}="";
+			$keywordsList = JRequest::getVar("service_keyword" );
+			$pos = strpos($keywordsList, ",");
+			if($pos)
+			{
+				$keywords = $keywordsList;
+				while ($pos)
+				{
+					$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  trim(substr ($keywords, 0,$pos ))) ;
+					$keywords = substr ($keywords, $pos +1 );
+					$pos = strpos($keywords,",");
+				}
+				$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  $keywords) ;
+			}
+			else
+			{
+				$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+			}
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}=JRequest::getVar("service_contactadress" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}=JRequest::getVar("service_contactpostcode");
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}=JRequest::getVar("service_contactcity" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}=JRequest::getVar("service_contactstate" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}=JRequest::getVar("service_contactcountry" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}=JRequest::getVar("service_contacttel" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}=JRequest::getVar("service_contactfax" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}=JRequest::getVar("service_contactmail");
+			$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage");
+			$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
+			$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions");
+			if(JRequest::getVar("service_fees" ))
+				$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
+			else
+				$config->{"service-metadata"}->{"Fees"}="none";
+			if(JRequest::getVar("service_accessconstraints"))
+				$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+			else
+				$config->{"service-metadata"}->{"AccessConstraints"}="none";
+				
 			$xml->asXML($configFilePath);
 		}
 	}
