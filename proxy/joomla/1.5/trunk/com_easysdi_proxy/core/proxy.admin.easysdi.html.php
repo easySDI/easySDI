@@ -306,14 +306,20 @@ echo $pane->endPane();
 				document.getElementById('specificGeonetowrk').style.display="none";
 			}
 
-			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet'
-				|| document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
 			{
 				applyDisplay ("none","block");
+				document.getElementById('servicemetadata_contact').style.display="block";
 			}
+			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+			{
+				applyDisplay ("none","block");
+				document.getElementById('servicemetadata_contact').style.display="none";
+			}	
 			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
 			{
 				applyDisplay ("block","none");
+				document.getElementById('servicemetadata_contact').style.display="block";
 			}
 			else
 			{
@@ -335,6 +341,7 @@ echo $pane->endPane();
 			document.getElementById('service_contacthours_t').style.display=value2;
 			document.getElementById('service_contactinstructions').style.display=value2;
 			document.getElementById('service_contactinstructions_t').style.display=value2;
+			
 		}
 
 		function submitbutton(pressbutton)
@@ -352,12 +359,40 @@ echo $pane->endPane();
 					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 					return;
 				}
-//				if(document.getElementById('service_name').value == "" || 
-//				   document.getElementById('service_title').value == ""  )
-//				{
-//					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
-//					return;
-//				}
+				if(document.getElementById('service_title').value == ""  )
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+					return;
+				}
+				if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
+				{
+					document.getElementById('service_contacttype').value = "";
+				}
+				else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+				{
+					document.getElementById('service_contactorganization').value=""; 
+					document.getElementById('service_contactperson').value=""; 
+					document.getElementById('service_contactposition').value="";
+					document.getElementById('service_contacttype').value="";
+					document.getElementById('service_contactadress').value="";
+					document.getElementById('service_contactpostcode').value="";
+					document.getElementById('service_contactcity').value="";
+					document.getElementById('service_contactstate').value="";
+					document.getElementById('service_contactcountry').value="";
+					document.getElementById('service_contacttel').value="";
+					document.getElementById('service_contactfax').value="";
+					document.getElementById('service_contactmail').value="";
+					document.getElementById('service_contactlinkage').value="";
+					document.getElementById('service_contacthours').value="";
+					document.getElementById('service_contactinstructions').value="";
+				}	
+				else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
+				{
+					document.getElementById('service_contactlinkage').value="";
+					document.getElementById('service_contacthours').value="";
+					document.getElementById('service_contactinstructions').value="";
+				}
+				
 				submitform(pressbutton);
 			}
 			else
@@ -545,7 +580,7 @@ echo $pane->endPane();
 						</tr>
 						<tr>
 							<td colspan="2">
-							<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
+							<fieldset class="adminform" id ="servicemetadata_contact"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
 								<table>
 									<tr>
 										<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
@@ -596,15 +631,15 @@ echo $pane->endPane();
 										<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
 										<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
 									</tr>
-									<tr><!-- WFS -->
+									<tr><!-- CSW -->
 										<td class="key" id="service_contactlinkage_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_LINKAGE"); ?> : </td>
 										<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
 									</tr>
-									<tr><!-- WFS -->
+									<tr><!-- CSW -->
 										<td class="key" id="service_contacthours_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
 										<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
 									</tr>
-									<tr><!-- WFS -->
+									<tr><!-- CSW -->
 										<td class="key" id="service_contactinstructions_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
 										<td colspan="2"><textarea name="service_contactinstructions" id="service_contactinstructions"  cols="45" rows="5"  ><?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?></textarea></td>
 									</tr>
