@@ -19,6 +19,7 @@ package org.easysdi.proxy.core;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,6 +51,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -72,6 +74,12 @@ import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -127,7 +135,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	// Fin de debug
 	
 	//Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
-	protected Multimap<Integer, String> wmsExceptionFilePathList = HashMultimap.create();
+	protected Multimap<Integer, String> ogcExceptionFilePathList = HashMultimap.create();
 
 	private List<String> lLogs = new Vector<String>();
 	protected boolean hasPolicy = true;
@@ -225,6 +233,83 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * HttpServletRequest req, HttpServletResponse resp, String filePath) ;
 	 */
 
+	/**
+	 * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
+	 * WMS version 1.1, 1.3
+	 * WFS version 1.0
+	 * 
+	 *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
+	 */
+	protected ByteArrayOutputStream buildResponseOgcServiceException ()
+	{
+		try 
+		{
+			for (String path : ogcExceptionFilePathList.values()) 
+			{
+				DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+				db.setNamespaceAware(false);
+				File fMaster = new File(path);
+				org.w3c.dom.Document documentMaster = db.newDocumentBuilder().parse(fMaster);
+				if (documentMaster != null) 
+				{
+					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+					if (nl.item(0) != null)
+					{
+						dump("transform begin exception response writting");
+						DOMImplementationLS implLS = null;
+						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
+						{
+							implLS = (DOMImplementationLS) documentMaster.getImplementation();
+						} 
+						else 
+						{
+							DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+							implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+						}
+						
+						Node ItemMaster = nl.item(0);
+						//Loop on other file
+						for (String pathChild : ogcExceptionFilePathList.values()) 
+						{
+							org.w3c.dom.Document documentChild = null;
+							if(path.equals(pathChild))
+								continue;
+							
+							documentChild = db.newDocumentBuilder().parse(pathChild);
+							
+							if (documentChild != null) {
+								NodeList nlChild = documentChild.getElementsByTagName("ServiceException");
+								if (nlChild != null && nlChild.getLength() > 0) 
+								{
+									for (int i = 0; i < nlChild.getLength(); i++) 
+									{
+										Node nnode = nlChild.item(i);
+										nnode = documentMaster.importNode(nnode, true);
+										ItemMaster.appendChild(nnode);
+									}
+								}
+							}
+						}
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						LSSerializer serialiseur = implLS.createLSSerializer();
+						LSOutput sortie = implLS.createLSOutput();
+						sortie.setEncoding("UTF-8");
+						sortie.setByteStream(out);
+						serialiseur.write(documentMaster, sortie);
+						dump("transform end exception response writting");
+						return out;
+					}	
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+			dump("ERROR", ex.getMessage());
+			return null;
+		}
+		return null;
+	}
 	/**
 	 * Builds the url from the request
 	 * 
@@ -748,6 +833,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return new StringBuffer();
 	}
 
+	
 	protected boolean isAcceptingTransparency(String responseContentType) {
 		boolean isTransparent = false;
 		if (responseContentType == null)

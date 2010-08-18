@@ -321,34 +321,43 @@ public class WMSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("<xsl:apply-templates select=\"@*|node()\"/>");
 			serviceMetadataXSLT.append("</xsl:copy>");
 			serviceMetadataXSLT.append("</xsl:template>");
-			
-			if ("100".equalsIgnoreCase(version)) 
+			//Version 1.2 and 1.3 supported so apply xslt to rewrite service metadata
+			serviceMetadataXSLT.append("<xsl:template match=\"Service\">");
+			serviceMetadataXSLT.append("<xsl:copy>");
+			//Name
+			serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+			serviceMetadataXSLT.append("<xsl:text>WMS</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+			//Title
+			serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
+			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+			//Abstract
+			if(!getConfiguration().getAbst().equals(""))
 			{
-				//Version 1.0.0 not supported so copy service metadata from the first remote service
-				serviceMetadataXSLT.append("</xsl:stylesheet>");
+				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
+				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+				serviceMetadataXSLT.append("</xsl:element>");
 			}
-			else
+			//Keyword
+			if(getConfiguration().getKeywordList()!= null)
 			{
-				//Version 1.2 and 1.3 supported so apply xslt to rewrite service metadata
-				serviceMetadataXSLT.append("<xsl:template match=\"Service\">");
-				serviceMetadataXSLT.append("<xsl:copy>");
-				//Name
-				serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
-				serviceMetadataXSLT.append("<xsl:text>WMS</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
-				//Title
-				serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
-				//Abstract
-				if(!getConfiguration().getAbst().equals(""))
+				if("100".equals(version))
 				{
-					serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
-					serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
+					List<String> keywords = getConfiguration().getKeywordList();
+					serviceMetadataXSLT.append("<xsl:element name=\"Keywords\"> ");
+					String sKeyWords = new String() ;
+					for (int n = 0; n < keywords.size(); n++) {
+						sKeyWords+= keywords.get(n);
+						if(n != keywords.size()-1)
+						{
+							sKeyWords += ", ";
+						}
+					}
+					serviceMetadataXSLT.append("<xsl:text>" + sKeyWords + "</xsl:text>");
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-				//Keyword
-				if(getConfiguration().getKeywordList()!= null)
+				else
 				{
 					List<String> keywords = getConfiguration().getKeywordList();
 					serviceMetadataXSLT.append("<xsl:element name=\"KeywordList\"> ");
@@ -359,9 +368,12 @@ public class WMSProxyServlet extends ProxyServlet {
 					}
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-				//OnlineResource
-				serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
-				//contactInfo
+			}
+			//OnlineResource
+			serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
+			//contactInfo
+			if(!"100".equals(version))
+			{
 				if(!getConfiguration().getContactInfo().isEmpty())
 				{
 					serviceMetadataXSLT.append("<xsl:element name=\"ContactInformation\"> ");
@@ -439,22 +451,21 @@ public class WMSProxyServlet extends ProxyServlet {
 					
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-				//Fees
-				serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
-				//AccesConstraints
-				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
-				
-				
-				serviceMetadataXSLT.append("</xsl:copy>");
-				serviceMetadataXSLT.append("</xsl:template>");
-			
-				serviceMetadataXSLT.append("</xsl:stylesheet>");
-		
 			}
+			//Fees
+			serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
+			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+			//AccesConstraints
+			serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
+			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
+			serviceMetadataXSLT.append("</xsl:element>");
+			
+			
+			serviceMetadataXSLT.append("</xsl:copy>");
+			serviceMetadataXSLT.append("</xsl:template>");
+		
+			serviceMetadataXSLT.append("</xsl:stylesheet>");	
 			return serviceMetadataXSLT;
 		}
 		catch (Exception ex )
@@ -469,11 +480,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	// ***************************************************************************************************************************************
 
 	
-	protected ByteArrayOutputStream getResponseServiceException ()
+	protected ByteArrayOutputStream buildResponseServiceException ()
 	{
 		try 
 		{
-			for (String path : wmsExceptionFilePathList.values()) 
+			for (String path : ogcExceptionFilePathList.values()) 
 			{
 				DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
 				db.setNamespaceAware(false);
@@ -495,21 +506,10 @@ public class WMSProxyServlet extends ProxyServlet {
 							DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
 							implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
 						}
-						if (implLS == null) 
-						{
-							dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-							ByteArrayOutputStream out = new ByteArrayOutputStream();
-							FileInputStream reader = new FileInputStream(fMaster);
-							byte[] data = new byte[reader.available()];
-							reader.read(data, 0, reader.available());
-							out.write(data);
-							reader.close();
-							return out;
-						}
 						
 						Node ItemMaster = nl.item(0);
 						//Loop on other file
-						for (String pathChild : wmsExceptionFilePathList.values()) 
+						for (String pathChild : ogcExceptionFilePathList.values()) 
 						{
 							Document documentChild = null;
 							if(path.equals(pathChild))
@@ -551,7 +551,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		return null;
 	}
 	
-	protected boolean filterServerResponseFile ()
+	protected boolean filterServersResponseFiles ()
 	{
 		try
 		{
@@ -570,7 +570,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 						if (nl.item(0) != null)
 						{
-							wmsExceptionFilePathList.put(iFilePath, path);
+							ogcExceptionFilePathList.put(iFilePath, path);
 							wmsFilePathList.remove(iFilePath, path);
 						}
 					}
@@ -594,16 +594,20 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Filtre les fichiers réponses des serveurs :
 			//ajoute les fichiers d'exception dans wmsExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
-			filterServerResponseFile();
+			filterServersResponseFiles();
 			
 			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
-			//alors le proxy retourne l'exception, ou l'ensemble des exceptions des serveurs concaténées
-			if(configuration.getExceptionMode().equals("restrictive") && wmsExceptionFilePathList.size() > 0)
+			//Ou
+			//Si le mode de gestion des exceptions est "permissif" et que tous les serveurs retournent des exceptions
+			//alors le proxy retourne l'ensemble des exceptions concaténées
+			if((configuration.getExceptionMode().equals("restrictive") && ogcExceptionFilePathList.size() > 0) || 
+					(configuration.getExceptionMode().equals("permissive") && wmsFilePathList.size() == 0))
 			{
-				//Lecture des réponses des serveurs pour trouver les exceptions OGC
+				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
-				ByteArrayOutputStream exceptionOutputStream = getResponseServiceException();
+				responseContentType ="text/xml";
+				ByteArrayOutputStream exceptionOutputStream = buildResponseOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream);
 				return;
 			}
@@ -686,12 +690,10 @@ public class WMSProxyServlet extends ProxyServlet {
 					tempOut = mergeCapabilities(tempFileCapa, resp);
 					dump("transform end mergeCapabilities");
 					
-					//Application de la transformation XSLT pour la réécriture des métadonnées du service sur la base des informations du fichier de config xml
+					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 					dump("transform begin apply XSLT on service metadata");
 					if(tempOut != null)
 					{
-	//					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
-	//					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(version);
 						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
@@ -699,20 +701,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 						SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
-	
-						// Write the result in a temporary file
-	//					transformer.transform(saxSource, new StreamResult(tempServiceMD));
-	//					tempServiceMD.flush();
-	//					tempServiceMD.close();
 						transformer.transform(saxSource, new StreamResult(out));
-						
-	//					ByteArrayOutputStream out = new ByteArrayOutputStream();
-	//					FileInputStream reader = new FileInputStream(tempFileCapaWithMetadata);
-	//					byte[] data = new byte[reader.available()];
-	//					reader.read(data, 0, reader.available());
-	//					out.write(data);
-	//					reader.close();
-	
 						tempOut = out;
 					}
 					dump("transform end apply XSLT on service metadata");
@@ -1594,7 +1583,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						} else if ("GetCapabilities".equalsIgnoreCase(operation) || "capabilities".equalsIgnoreCase(operation)) {
 							if (paramUrlBase.toUpperCase().indexOf("SERVICE=") == -1)
 							{
-								paramUrlBase += "&SERVICE=WMS";
+//								paramUrlBase += "&SERVICE=WMS";
 							}
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
 
