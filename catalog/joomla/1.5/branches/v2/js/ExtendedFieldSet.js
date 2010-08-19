@@ -72,10 +72,14 @@ Ext.override(Ext.form.FieldSet, {
 				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
 				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
+				
 				//var partOfNameToModify = name.substring(name.lastIndexOf('-'));
 				//console.log("partOfNameToModify: " + partOfNameToModify);
 				//console.log("test: " + test);
-				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+				var aName = name.split('__');
+				var partOfNameToModify2 = name.substring(parentName.length,name.length-aName[aName.length - 1].length);*
+				
 				//var partOfNameToModify2 = name.substring(name.lastIndexOf('-'),name.length-String(master.clones_count).length);
 				//console.log("partOfNameToModify2: " + partOfNameToModify2 + " - " + name.length + " - " + String(master.clones_count).length );
 				//console.log("partOfNameToModify2: " + partOfNameToModify2);

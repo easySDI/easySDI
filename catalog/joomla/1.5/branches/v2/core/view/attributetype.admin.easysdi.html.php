@@ -129,7 +129,7 @@ function listAttributeType(&$rows, $page, $option,  $filter_order_Dir, $filter_o
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr> 
 <?php
-if ($row->name <> "list" and $row->name <> "locale" and $row->name <> "localechoice")
+if ($row->name <> "list" and $row->name <> "locale" and $row->name <> "localechoice" and $row->name <> "Thesaurus GEMET")
 { 
 ?>
 				<tr>

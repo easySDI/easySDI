@@ -52,7 +52,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 				<!-- <th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderAttribute' ); ?></th> -->
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_TYPE"), 'attributetype_id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_ATTRIBUTE_ATTRIBUTETYPE"), 'attributetype_id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_EDITLIST"), 'attributetype_id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'attribute_isocode', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISSYSTEM"), 'issystem', @$filter_order_Dir, @$filter_order); ?></th>
@@ -233,7 +233,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 					</td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_TYPE"); ?></td>
+					<td><?php echo JText::_("CATALOG_ATTRIBUTE_ATTRIBUTETYPE"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$attributetypelist, 'attributetype_id', 'size="1" class="inputbox" onchange="javascript:changeAttributeListVisibility(this.value);"', 'value', 'text', $row->attributetype_id ); ?></td>							
 				</tr>
 			</table>

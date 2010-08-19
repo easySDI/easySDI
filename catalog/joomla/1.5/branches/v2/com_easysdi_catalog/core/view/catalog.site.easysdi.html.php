@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_catalog{
 
 
-	function listCatalogContentWithPan ($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr, $selectedVersions)
+	function listCatalogContentWithPan ($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr, $selectedVersions, $listSimpleFilters, $listAdvancedFilters)
 	{
 		global  $mainframe;
 		$option= JRequest::getVar('option');
@@ -81,19 +81,19 @@ class HTML_catalog{
 
 		//print_r($rowContext);
 
-		$listSearchFilters = array();
-		$db->setQuery("SELECT r.*, a.id as attribute_id, at.code as attributetype_code
-					   FROM #__sdi_context c 
-								  INNER JOIN #__sdi_relation_context rc ON c.id=rc.context_id 
-								  INNER JOIN #__sdi_relation r ON r.id=rc.relation_id
-								  INNER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
-								  INNER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
-					   WHERE c.code='".$context."' 
-					   ORDER BY r.ordering");
-		$listSearchFilters = array_merge( $listSearchFilters, $db->loadObjectList() );
+		/*$listSearchFilters = array();
+		 $db->setQuery("SELECT r.*, a.id as attribute_id, at.code as attributetype_code
+		 FROM #__sdi_context c
+		 INNER JOIN #__sdi_relation_context rc ON c.id=rc.context_id
+		 INNER JOIN #__sdi_relation r ON r.id=rc.relation_id
+		 INNER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
+		 INNER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
+		 WHERE c.code='".$context."'
+		 ORDER BY r.ordering");
+		 $listSearchFilters = array_merge( $listSearchFilters, $db->loadObjectList() );
 
-		//echo "<hr>";print_r($listSearchFilters);
-
+		 //echo "<hr>";print_r($listSearchFilters);
+		 */
 		?>
 <div id="page">
 <h2 class="contentheading"><?php echo JText::_("CATALOG_SEARCH_TITLE"); ?></h2>
@@ -214,43 +214,9 @@ class HTML_catalog{
 <div>
 <table border="0" cellpadding="2" cellspacing="0" width="100%"
 	class="mdCatContent">
-	<tr>
-		<td><?php echo JText::_("CATALOG_SEARCH_FILTER_OBJECTTYPE");?></td>
-		<td><?php
-		echo HTML_catalog::checkboxlist($objecttypes, 'objecttype_id[]', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('objecttype_id'));
-		?></td>
-		<td></td>
-	</tr>
-	<!-- <tr>
-						<td><?php //echo JText::_("CATALOG_SEARCH_FILTER_ACCOUNT");?></td>
-						<td><?php //echo JHTML::_("select.genericlist", $accounts, 'account_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('account_id')); ?></td>		
-					</tr>
-					 -->
-	<tr>
-		<td><?php echo JText::_("CATALOG_SEARCH_VERSIONS"); ?></td>
-		<td><?php echo JHTML::_('select.radiolist', $versions, 'allVersions', 'class="radio"', 'value', 'text', $selectedVersions);?></td>
-	</tr>
-	<tr>
-		<td align="left"><?php echo JText::_("CATALOG_SEARCH_FILTER_TITLE");?></td>
-		<!-- this was the old advanced critera: filterfreetextcriteria -->
-		<td align="left"><input type="text" id="simple_filterfreetextcriteria"
-			name="simple_filterfreetextcriteria"
-			value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>"
-			class="inputbox" /></td>
-	</tr>
-</table>
-</div>
-
-<!--
-				This is the advanced search
-			-->
-<div id="divAdvancedSearch">
-<table border="0" cellpadding="2" cellspacing="0" width="100%"
-	class="mdCatContent">
-
 	<?php
 
-	foreach($listSearchFilters as $searchfilter)
+	foreach($listSimpleFilters as $searchfilter)
 	{
 
 		switch ($searchfilter->attributetype_code)
@@ -265,7 +231,7 @@ class HTML_catalog{
 				/* Fonctionnement texte*/
 				?>
 	<tr>
-		<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
 		<td align="left"><input type="text"
 			id="<?php echo 'filter_'.$searchfilter->name;?>"
 			name="<?php echo 'filter_'.$searchfilter->name;?>"
@@ -278,13 +244,13 @@ case "list":
 	/* Fonctionnement liste*/
 	$list = array();
 	$list[] = JHTML::_('select.option', '', '');
-	$query = "SELECT cv.id as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchfilter->attribute_id;
+	$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchfilter->attribute_id;
 	$db->setQuery( $query);
 	$list = array_merge( $list, $db->loadObjectList() );
 
 	?>
 	<tr>
-		<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
 		<td><?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchfilter->name, 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_'.$searchfilter->name)); ?></td>
 	</tr>
 	<?php
@@ -294,7 +260,7 @@ case "datetime":
 	/* Fonctionnement période*/
 	?>
 	<tr>
-		<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
@@ -312,6 +278,183 @@ case "datetime":
 	</tr>
 	<?php
 	break;
+case null: // Cas des attributs systèmes, car ils n'ont pas de relation liée
+	switch ($searchfilter->criteria_code)
+	{
+		case "objecttype":
+			?>
+	<tr>
+		<td><?php echo JText::_("CATALOG_SEARCH_FILTER_OBJECTTYPE");?></td>
+		<td><?php
+		echo HTML_catalog::checkboxlist($objecttypes, 'objecttype_id[]', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('objecttype_id'));
+		?></td>
+		<td></td>
+	</tr>
+	<?php
+	break;
+case "fulltext":
+	?>
+	<tr>
+		<td align="left"><?php echo JText::_("CATALOG_SEARCH_FILTER_TITLE");?></td>
+		<!-- this was the old advanced critera: filterfreetextcriteria -->
+		<td align="left"><input type="text" id="simple_filterfreetextcriteria"
+			name="simple_filterfreetextcriteria"
+			value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>"
+			class="inputbox" /></td>
+	</tr>
+	<?php
+	break;
+case "versions":
+	$selectedVersion = 0;
+	if (JRequest::getVar('versions'))
+		$selectedVersion = JRequest::getVar('versions');
+	?>	
+	<tr>
+		<td><?php echo JText::_("CATALOG_SEARCH_VERSIONS"); ?></td>
+		<td><?php echo JHTML::_('select.radiolist', $versions, 'versions', 'class="radio"', 'value', 'text', $selectedVersion);?></td>
+	</tr>
+	<?php
+	break;
+default:
+	?>
+	<!-- <tr>
+								<td><?php //echo JText::_("CATALOG_SEARCH_FILTER_ACCOUNT");?></td>
+								<td><?php //echo JHTML::_("select.genericlist", $accounts, 'account_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('account_id')); ?></td>		
+							</tr>
+							 -->
+							 <?php
+							 break;
+	}
+	break;
+default:
+	break;
+		}
+	}
+	?>
+</table>
+</div>
+
+<!--
+				This is the advanced search
+			-->
+<div id="divAdvancedSearch">
+<table border="0" cellpadding="2" cellspacing="0" width="100%"
+	class="mdCatContent">
+
+	<?php
+
+	foreach($listAdvancedFilters as $searchfilter)
+	{
+
+		switch ($searchfilter->attributetype_code)
+		{
+			case "guid":
+			case "text":
+			case "locale":
+			case "number":
+			case "link":
+			case "textchoice":
+			case "localechoice":
+				/* Fonctionnement texte*/
+				?>
+	<tr>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+		<td align="left"><input type="text"
+			id="<?php echo 'filter_'.$searchfilter->name;?>"
+			name="<?php echo 'filter_'.$searchfilter->name;?>"
+			value="<?php echo JRequest::getVar('filter_'.$searchfilter->name);?>"
+			class="inputbox" /></td>
+	</tr>
+	<?php
+	break;
+case "list":
+	/* Fonctionnement liste*/
+	$list = array();
+	$list[] = JHTML::_('select.option', '', '');
+	$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchfilter->attribute_id;
+	$db->setQuery( $query);
+	$list = array_merge( $list, $db->loadObjectList() );
+
+	?>
+	<tr>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+		<td><?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchfilter->name, 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_'.$searchfilter->name)); ?></td>
+	</tr>
+	<?php
+	break;
+case "date":
+case "datetime":
+	/* Fonctionnement période*/
+	?>
+	<tr>
+		<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td><?php echo JText::_("CORE_DATE_FROM");?></td>
+				<td><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->name), "create_cal_".$searchfilter->name,"create_cal_".$searchfilter->name,"%d.%m.%Y"); ?>
+				</td>
+			</tr>
+			<tr>
+				<td><?php echo JText::_("CORE_DATE_TO");?></td>
+				<td><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->name), "update_cal_".$searchfilter->name,"update_cal_".$searchfilter->name,"%d.%m.%Y"); ?>
+				</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	<?php
+	break;
+case null: // Cas des attributs systèmes, car ils n'ont pas de relation liée
+	switch ($searchfilter->criteria_code)
+	{
+		case "objecttype":
+			?>
+	<tr>
+		<td><?php echo JText::_("CATALOG_SEARCH_FILTER_OBJECTTYPE");?></td>
+		<td><?php
+		echo HTML_catalog::checkboxlist($objecttypes, 'objecttype_id[]', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('objecttype_id'));
+		?></td>
+		<td></td>
+	</tr>
+	<?php
+	break;
+case "fulltext":
+	?>
+	<tr>
+		<td align="left"><?php echo JText::_("CATALOG_SEARCH_FILTER_TITLE");?></td>
+		<!-- this was the old advanced critera: filterfreetextcriteria -->
+		<td align="left"><input type="text" id="simple_filterfreetextcriteria"
+			name="simple_filterfreetextcriteria"
+			value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>"
+			class="inputbox" /></td>
+	</tr>
+	<?php
+	break;
+case "versions":
+	$selectedVersion = 0;
+	if (JRequest::getVar('versions'))
+		$selectedVersion = JRequest::getVar('versions');
+		
+	?>
+	<tr>
+		<td><?php echo JText::_("CATALOG_SEARCH_VERSIONS"); ?></td>
+		<td><?php echo JHTML::_('select.radiolist', $versions, 'versions', 'class="radio"', 'value', 'text', $selectedVersion);?></td>
+	</tr>
+	<?php
+	break;
+default:
+	?>
+	<!-- <tr>
+								<td><?php //echo JText::_("CATALOG_SEARCH_FILTER_ACCOUNT");?></td>
+								<td><?php //echo JHTML::_("select.genericlist", $accounts, 'account_id', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('account_id')); ?></td>		
+							</tr>
+							 -->
+							 <?php
+							 break;
+	}
+	break;
+
 default:
 	break;
 		}
@@ -719,7 +862,7 @@ foreach($nodes  as $metadata){
 
 
 <?php
-	
+
 
 	}
 	/*
@@ -1319,7 +1462,7 @@ foreach($nodes  as $metadata){
 				foreach ($selected as $val)
 				{
 					$k2 = is_object( $val ) ? $val->$key : $val;
-					
+						
 					if ($k == $k2)
 					{
 						$extra .= " checked=\"checked\"";
