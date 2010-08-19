@@ -437,11 +437,11 @@ public class CSWProxyServlet extends ProxyServlet {
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
 
-						dump("transform begin apply XSLT on service metadata");
+						dump("DEBUG","transform begin apply XSLT on service metadata");
 						InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 						InputSource inputSource = new InputSource( in);
 						
-						//Application de la transformation XSLT pour la réécriture des métadonnées du service sur la base des informations du fichier de config xml
+						//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 						File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 						FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 						StringBuffer sb = buildServiceMetadataCapabilitiesXSLT();
@@ -455,7 +455,7 @@ public class CSWProxyServlet extends ProxyServlet {
 						tempServiceMD.close();
 						
 						tempFile = tempFileCapaWithMetadata;
-						dump("transform end apply XSLT on service metadata");
+						dump("DEBUG","transform end apply XSLT on service metadata");
 						
 						
 					} else {

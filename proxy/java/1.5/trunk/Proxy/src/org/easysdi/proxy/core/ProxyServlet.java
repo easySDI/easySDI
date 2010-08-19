@@ -255,7 +255,7 @@ public abstract class ProxyServlet extends HttpServlet {
 					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 					if (nl.item(0) != null)
 					{
-						dump("transform begin exception response writting");
+						dump("DEBUG","transform begin exception response writting");
 						DOMImplementationLS implLS = null;
 						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
 						{
@@ -296,7 +296,7 @@ public abstract class ProxyServlet extends HttpServlet {
 						sortie.setEncoding("UTF-8");
 						sortie.setByteStream(out);
 						serialiseur.write(documentMaster, sortie);
-						dump("transform end exception response writting");
+						dump("DEBUG","transform end exception response writting");
 						return out;
 					}	
 				}

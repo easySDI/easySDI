@@ -555,7 +555,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	{
 		try
 		{
-			dump("filterServerResponseFile begin");
+			dump("DEBUG","filterServerResponseFile begin");
 			int end = wmsFilePathList.size();
 			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
 			{
@@ -576,7 +576,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					}
 				}
 			}
-			dump("filterServerResponseFile end");
+			dump("DEBUG","filterServerResponseFile end");
 			return true;
 		}
 		catch (Exception ex)
@@ -691,7 +691,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					dump("transform end mergeCapabilities");
 					
 					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
-					dump("transform begin apply XSLT on service metadata");
+					dump("DEBUG","transform begin apply XSLT on service metadata");
 					if(tempOut != null)
 					{
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -704,7 +704,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						transformer.transform(saxSource, new StreamResult(out));
 						tempOut = out;
 					}
-					dump("transform end apply XSLT on service metadata");
+					dump("DEBUG","transform end apply XSLT on service metadata");
 					dump("transform end GetCapabilities operation");
 				}
 				// Pour une requête utilisateur de type: Map

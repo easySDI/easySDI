@@ -1994,7 +1994,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 					if (nl.item(0) != null)
 					{
-						dump("transform begin exception response writting");
+						dump("DEBUG","transform begin exception response writting");
 						DOMImplementationLS implLS = null;
 						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
 						{
@@ -2035,7 +2035,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						sortie.setEncoding("UTF-8");
 						sortie.setByteStream(out);
 						serialiseur.write(documentMaster, sortie);
-						dump("transform end exception response writting");
+						dump("DEBUG","transform end exception response writting");
 						return out;
 					}	
 				}
@@ -2054,7 +2054,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	{
 		try
 		{
-			dump("filterServersResponseFiles begin");
+			dump("DEBUG","filterServersResponseFiles begin");
 			int end = wfsFilePathList.size();
 			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
 			{
@@ -2075,7 +2075,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					}
 				}
 			}
-			dump("filterServersResponseFiles end");
+			dump("DEBUG","filterServersResponseFiles end");
 			return true;
 		}
 		catch (Exception ex)
@@ -2182,7 +2182,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					InputSource inputSource = new InputSource( in);
 					
 					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
-					dump("transform begin apply XSLT on service metadata");
+					dump("DEBUG","transform begin apply XSLT on service metadata");
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(null);
@@ -2195,7 +2195,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					tempServiceMD.close();
 					
 					tempFile = tempFileCapaWithMetadata;
-					dump("transform end apply XSLT on service metadata");
+					dump("DEBUG","transform end apply XSLT on service metadata");
 
 				} else if (currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
 					if (hasPolicy) {
