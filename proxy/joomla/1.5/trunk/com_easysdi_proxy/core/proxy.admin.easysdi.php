@@ -719,7 +719,7 @@ class ADMIN_proxy
 				$config->{'log-config'}->{'file-structure'}->{'prefix'} = $logPrefix;
 				$config->{'log-config'}->{'file-structure'}->{'extension'} = $logExt;
 				$config->{'log-config'}->{'file-structure'}->{'period'} = $logPeriod;
-				$config->{'log-config'}->{'date-format'} = "dd/MM/yyyy HH:mm:ss";
+				$config->{'log-config'}->{'date-format'} = JRequest::getVar("dateFormat","dd/MM/yyyy HH:mm:ss");
 				
 				//Host translator
 				$hostTranslator = JRequest::getVar("hostTranslator");
