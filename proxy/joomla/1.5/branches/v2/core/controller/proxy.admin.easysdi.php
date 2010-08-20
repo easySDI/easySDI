@@ -745,8 +745,14 @@ function saveConfig($xml,$configFilePath){
 
 	foreach ($xml->config as $config) {
 		if (strcmp($config['id'],$configId)==0){
+		
+			//Id
 			$config['id']=$newConfigId;
+
+			//Servlet class
 			$servletClass = JRequest::getVar("servletClass");
+			
+			//Log file
 			$config->{'servlet-class'}=$servletClass;
 			$logPath= JRequest::getVar("logPath");
 			$logSuffix= JRequest::getVar("logSuffix");
@@ -758,11 +764,14 @@ function saveConfig($xml,$configFilePath){
 			$config->{'log-config'}->{'file-structure'}->{'prefix'} = $logPrefix;
 			$config->{'log-config'}->{'file-structure'}->{'extension'} = $logExt;
 			$config->{'log-config'}->{'file-structure'}->{'period'} = $logPeriod;
-			$config->{'log-config'}->{'date-format'} = "dd/MM/yyyy HH:mm:ss";
+			$config->{'log-config'}->{'date-format'} = JRequest::getVar("dateFormat","dd/MM/yyyy HH:mm:ss");
+			
+			//Host translator
 			$hostTranslator = JRequest::getVar("hostTranslator");
 			$config->{'host-translator'}=$hostTranslator;
-			$config->{'remote-server-list'}="";
-				
+			
+			//Remote server
+			$config->{'remote-server-list'}="";				
 			$i=0;
 			while(true){
 				$url = JRequest::getVar("URL_".$i,"");

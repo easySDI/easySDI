@@ -656,23 +656,6 @@ function addNewServer(){
 		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
 		<table class="admintable">
 			<tr>
-				<td><select name="logPeriod">
-					<option
-					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
-						value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-					<option
-					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
-						value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-					<option
-					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
-						value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-					<option
-					<?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
-						value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-				</select></td>
-			</tr>
-		
-			<tr>
 				<td>
 				<table class="admintable">
 					<tr>
@@ -693,7 +676,46 @@ function addNewServer(){
 					</tr>
 				</table>
 				</td>
-		
+			</tr>
+			<tr>
+				<td>
+					<table class="admintable">
+						<tr>
+							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_PERIOD'); ?></td>
+							<td><select name="logPeriod">
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
+									value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
+									value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
+									value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
+								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
+									value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
+							</select></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table class="admintable">
+						<tr>
+							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_DATE_FORMAT'); ?></td>
+							<td>
+								<select name="dateFormat" id="dateFormat" ">
+								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss"){echo "selected";}?>
+									value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
+								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss:SSS"){echo "selected";}?>
+									value="dd/MM/yyyy HH:mm:ss:SSS">dd/MM/yyyy HH:mm:ss:SSS</option>
+<!--							<option <?php if ($config->{"log-config"}->{"date-format"} == "EEE d MMM yyyy, HH:mm:ss"){echo "selected";}?>-->
+<!--								value="EEE, d MMM yyyy, HH:mm:ss">EEE, d MMM yyyy, HH:mm:ss</option>-->
+<!--							<option <?php if ($config->{"log-config"}->{"date-format"} == "EEE d MMM yyyy, HH:mm:ss:SSS"){echo "selected";}?>-->
+<!--								value="EEE, d MMM yyyy, HH:mm:ss:SSS">EEE, d MMM yyyy, HH:mm:ss:SSS</option>-->
+							</select>
+							</td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
 		</fieldset>
