@@ -16,6 +16,8 @@
  */
 package org.easysdi.security;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +31,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -76,32 +80,78 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
+	
+	private String version;
+	
+	public void setVersion(String version) {
+		if (version != null)
+			version = version.replaceAll("\\.", "");
 
-	public UserDetails loadUserByUsername(String username) throws BadCredentialsException {
-		String sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix()
-				+ "users u on (p.user_id = u.id) where username = ? and block = 0";
-
-		JoomlaUser user = null;
-		try {
-			user = sjt.queryForObject(sql, new UserMapper(), username);
-		} catch (EmptyResultDataAccessException e) {
-		}
-		return user;
+		this.version = version;
 	}
 
-	private Collection<GrantedAuthority> getAuthorities(String username) {
-		String sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
-				+ getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
-				+ "easysdi_community_role.role_id Inner Join " + getPrefix() + "easysdi_community_profile ON " + getPrefix()
-				+ "easysdi_map_profile_role.id_prof = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
-				+ "easysdi_community_partner_profile ON " + getPrefix() + "easysdi_community_partner_profile.profile_id = " + getPrefix()
-				+ "easysdi_community_profile.profile_id Inner Join " + getPrefix() + "easysdi_community_partner ON " + getPrefix()
-				+ "easysdi_community_partner_profile.partner_id = " + getPrefix() + "easysdi_community_partner.partner_id Inner Join " + getPrefix()
-				+ "users ON " + getPrefix() + "easysdi_community_partner.user_id = " + getPrefix() + "users.id WHERE " + getPrefix() + "users.username =  ? "
-				+ "UNION SELECT profile_translation as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
-				+ "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
-				+ "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+	public String getVersion() {
+		return version;
+	}
 
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+		String sql="";
+		JoomlaUser user = null;
+		if(Integer.parseInt(getVersion())<200)
+		{
+			sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix()
+					+ "users u on (p.user_id = u.id) where username = ? and block = 0";
+		}
+		else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
+		{
+			sql = "select u.* from " + getPrefix() + "sdi_account a join " + getPrefix()
+			+ "users u on (a.user_id = u.id) where username = ? and block = 0";
+		}
+		else
+		{
+			throw new DataRetrievalFailureException ("Requested Proxy version is not supported");
+		}
+		
+		try {
+			user = sjt.queryForObject(sql, new UserMapper(), username);
+		}catch (DataAccessException e) {
+		} 
+		return user;
+	}
+	
+	private Collection<GrantedAuthority> getAuthorities(String username)  {
+		Method m;
+		String sql = "";
+		if(Integer.parseInt(getVersion())<200)
+		{
+			sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
+			+ getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
+			+ "easysdi_community_role.role_id Inner Join " + getPrefix() + "easysdi_community_profile ON " + getPrefix()
+			+ "easysdi_map_profile_role.id_prof = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
+			+ "easysdi_community_partner_profile ON " + getPrefix() + "easysdi_community_partner_profile.profile_id = " + getPrefix()
+			+ "easysdi_community_profile.profile_id Inner Join " + getPrefix() + "easysdi_community_partner ON " + getPrefix()
+			+ "easysdi_community_partner_profile.partner_id = " + getPrefix() + "easysdi_community_partner.partner_id Inner Join " + getPrefix()
+			+ "users ON " + getPrefix() + "easysdi_community_partner.user_id = " + getPrefix() + "users.id WHERE " + getPrefix() + "users.username =  ? "
+			+ "UNION SELECT profile_translation as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
+			+ "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
+			+ "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+		}
+		else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
+		{
+			sql = "SELECT " + getPrefix()+ "sdi_list_role.code as role FROM " + getPrefix() + "sdi_list_role"
+			+ " Inner Join "+ getPrefix()+ "sdi_actor ON " + getPrefix()+ "sdi_actor.role_id = " + getPrefix() + "sdi_list_role.id" 
+			+ " Inner Join " + getPrefix()+ "sdi_account ON " + getPrefix() + "sdi_account.id = " + getPrefix()+ "sdi_actor.account_id"
+			+ " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "sdi_account.user_id = " + getPrefix() + "users.id"
+			+ " WHERE " + getPrefix() + "users.username =  ? "
+			+ "UNION SELECT r.code as role from " + getPrefix() + "sdi_accountprofile r "
+			+ " join " + getPrefix() + "sdi_account_accountprofile pr on (pr.accountprofile_id = r.id) "
+			+ " join " + getPrefix() + "sdi_account p on (p.id = pr.account_id)"
+			+ " join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+		}
+		else
+		{
+			
+		}
 		List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
 			public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return new GrantedAuthorityImpl(rs.getString("role"));
@@ -110,7 +160,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 		authList.add(0, new GrantedAuthorityImpl("proxy_user"));
 		return authList;
 	}
-
+	
 	private class UserMapper implements ParameterizedRowMapper<JoomlaUser> {
 
 		public JoomlaUser mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -128,9 +178,13 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 		Element userElement = userCache.get(authentication.getPrincipal());
 		user = (JoomlaUser) ((userElement != null) ? (userElement.getValue()) : null);
 		if (user == null)
+		{
 			user = (JoomlaUser) loadUserByUsername(authentication.getPrincipal().toString());
+		}
 		if (user == null)
+		{
 			throw new UsernameNotFoundException("Username not found !");
+		}
 		else if (authentication.getPrincipal().equals(user.getUsername())) {
 			if (authentication.getCredentials().equals(user.getPassword())) {
 				token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
