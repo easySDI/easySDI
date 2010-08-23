@@ -273,18 +273,21 @@ function changeValues()
 		document.getElementById('specificGeonetowrk').style.display="block";
 		applyDisplay ("none","block");
 		document.getElementById('servicemetadata_contact').style.display="block";
+		document.getElementById('exceptionMode').style.display="none";
 	}
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
 	{
 		document.getElementById('specificGeonetowrk').style.display="none";
 		applyDisplay ("none","block");
 		document.getElementById('servicemetadata_contact').style.display="none";
+		document.getElementById('exceptionMode').style.display="block";
 	}	
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
 	{
 		document.getElementById('specificGeonetowrk').style.display="none";
 		applyDisplay ("block","none");
 		document.getElementById('servicemetadata_contact').style.display="block";
+		document.getElementById('exceptionMode').style.display="block";
 	}
 	else
 	{
@@ -540,6 +543,16 @@ function addNewServer(){
 	nbServer = nbServer + 1;
 }
 </script>
+		<fieldset class="adminform" id="objectVersionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($config->{"object-version"}->{"mode"},"last")==0 || !$config->{"object-version"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($config->{"object-version"}->{"mode"},"all")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+				</tr>
+			</table>
+		</fieldset>
 		<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 			<table class="admintable" >
 				<tr>
@@ -634,7 +647,7 @@ function addNewServer(){
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+		<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
