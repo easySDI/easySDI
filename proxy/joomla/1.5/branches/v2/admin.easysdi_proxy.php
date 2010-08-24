@@ -50,7 +50,7 @@ global $mainframe;
 
 
 $configFilePath = config_easysdi::getValue("PROXY_CONFIG");
-$xml = simplexml_load_file(config_easysdi::getValue("PROXY_CONFIG"));
+$xml = simplexml_load_file(config_easysdi::getValue("PROXY_CONFIG", null,LIBXML_COMPACT));
 
 if ($xml === false){
 	$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
