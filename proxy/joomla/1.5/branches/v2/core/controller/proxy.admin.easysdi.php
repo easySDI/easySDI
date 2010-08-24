@@ -798,6 +798,10 @@ function saveConfig($xml,$configFilePath){
 				$i++;
 			}
 			
+			//Version
+			$versionMode = JRequest::getVar("objectversion_mode","last");
+			$config->{"object-version"}->{"mode"}=$versionMode;
+			
 			//Exception
 			$exceptionMode = JRequest::getVar("exception_mode","permissive");
 			$config->{"exception"}->{"mode"}=$exceptionMode;
