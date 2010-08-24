@@ -543,16 +543,6 @@ function addNewServer(){
 	nbServer = nbServer + 1;
 }
 </script>
-		<fieldset class="adminform" id="objectVersionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE'); ?></legend>
-			<table class="admintable">
-				<tr>
-					<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($config->{"object-version"}->{"mode"},"last")==0 || !$config->{"object-version"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
-				</tr>
-				<tr>
-					<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($config->{"object-version"}->{"mode"},"all")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
-				</tr>
-			</table>
-		</fieldset>
 		<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 			<table class="admintable" >
 				<tr>
@@ -916,7 +906,7 @@ function addNewServer(){
 
 	}
 
-	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser){
+	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus){
 
 		$policyId = JRequest::getVar("policyId");
 		$configId = JRequest::getVar("configId");
@@ -1265,7 +1255,7 @@ function activateLayer(server,layerName){
 				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 				
 				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
-				HTML_proxy::generateCSWHTML($config,$thePolicy);  
+				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus);  
 				}
 				
 				break;
@@ -1277,81 +1267,259 @@ function activateLayer(server,layerName){
 		<?php
 	}
 
-function generateCSWHTML($config,$thePolicy){
-	
+	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus)
+	{
 	?>
-	<script>
-	function addNewMetadataToExclude(nbParam,nbServer){
-	
-	var tr = document.createElement('tr');	
-	var tdParam = document.createElement('td');	
-				
-	var inputParam = document.createElement('input');
-	inputParam.size=200;
-	inputParam.type="text";
-	inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
-		
-	
-	tdParam.appendChild(inputParam);
-	tr.appendChild(tdParam);
-	
-	document.getElementById("metadataParamTable").appendChild(tr);
-	document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
-		
-}
-</script>
-	
-	
-	<?php
-$remoteServerList = $config->{'remote-server-list'};
+		<script>
+		function addNewMetadataToExclude(nbParam,nbServer)
+		{
+			var tr = document.createElement('tr');	
+			var tdParam = document.createElement('td');	
+			var inputParam = document.createElement('input');
+			inputParam.size=200;
+			inputParam.type="text";
+			inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
+			tdParam.appendChild(inputParam);
+			tr.appendChild(tdParam);
+			document.getElementById("metadataParamTable").appendChild(tr);
+			document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
+		}
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oHarvest').disabled=check;
+			document.getElementById('oDescribeRecord').disabled=check;
+			document.getElementById('oTransaction').disabled=check;
+			document.getElementById('oGetRecords').disabled=check;
+			document.getElementById('oGetDomain').disabled=check;
+			document.getElementById('oGetRecordbyId').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oHarvest').checked=check;
+			document.getElementById('oDescribeRecord').checked=check;
+			document.getElementById('oTransaction').checked=check;
+			document.getElementById('oGetRecords').checked=check;
+			document.getElementById('oGetDomain').checked=check;
+			document.getElementById('oGetRecordbyId').checked=check;
+
+		}
+		function disableVisibilitiesCheckBoxes ()
+		{
+			var check = document.getElementById('AllVisibilities').checked;
+
+			var visibilityArray = new Array();
+			visibilityArray = document.getElementsByName('visibility[]');
+			for ( i = 0 ; i < visibilityArray.length ; i++)
+			{
+				visibilityArray[i].disabled = check;
+				visibilityArray[i].checked = check;
+			}
+		}
+		function disableStatusCheckBoxes ()
+		{
+			var check = document.getElementById('AllStatus').checked;
+
+			var statusArray = new Array();
+			statusArray = document.getElementsByName('status[]');
+			for ( i = 0 ; i < statusArray.length ; i++)
+			{
+				statusArray[i].disabled = check;
+				statusArray[i].checked = check;
+			}
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'Harvest')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oDescribeRecord" value="DescribeRecord" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'DescribeRecord')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBERECORD'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'Transaction')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetRecords" value="GetRecords" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'GetRecords')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDS'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain"<?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'GetDomain')==0) echo 'checked';			
+						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetRecordbyId" value="GetRecordbyId" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation,'GetRecordbyId')==0) echo 'checked';			
+						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDBYID'); ?></td>
+					<td></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+						<?php if (strcasecmp($thePolicy->ObjectVisibilities['All'],'True')==0 || !$thePolicy->ObjectVisibilities){$checkedV='checked';} ?>	
+						<input <?php echo $checkedV; ?>
+							   type="checkBox" 
+							   name="AllVisibilities[]" 
+							   id="AllVisibilities" 
+							   onclick="disableVisibilitiesCheckBoxes();">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY_ALL'); ?>
+					</td>
+					<?php 
+					foreach ($rowsVisibility as $visibility)
+					{
+						?>
+						<td>
+						<input type="checkBox" 
+							   name="visibility[]" 
+							   id="<?php echo $visibility->value;?>" 
+							   value="<?php echo $visibility->value;?>" 
+							   <?php if (strcasecmp($checkedV,'checked')==0){echo 'disabled checked';} ?>
+							   <?php foreach ($thePolicy->ObjectVisibilities->Visibility as $policyVisibility)
+							   {
+							   		if(strcasecmp($visibility->value,$policyVisibility)==0) echo 'checked';			
+							   }?>
+						><?php echo $visibility->text; ?>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						<?php 
+					}
+					?>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+						<?php if (strcasecmp($thePolicy->ObjectStatus['All'],'True')==0 || !$thePolicy->ObjectStatus ){$checkedS='checked';} ?>	
+						<input <?php echo $checkedS; ?>
+							   type="checkBox" 
+							   name="AllStatus[]" 
+							   id="AllStatus" 
+							   onclick="disableStatusCheckBoxes();">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS_ALL'); ?>
+					</td>
+					<?php 
+					foreach ($rowsStatus as $status)
+					{
+						?>
+						<td>
+						<input type="checkBox" 
+							   name="status[]" 
+							   id="<?php echo $status->value;?>" 
+							   value="<?php echo $status->value;?>" 
+							   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
+							   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
+							   {
+							   		if(strcasecmp($status->value,$policyStatus)==0) echo 'checked';			
+							   }?>
+						><?php echo JText::_($status->text); ?>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						<?php 
+					}
+					?>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform" id="objectVersionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($thePolicy->{"ObjectVersion"}->{"mode"},"last")==0 || !$config->{"objectVersion"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
+				</tr>
+				<tr>
+					<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($thePolicy->{"ObjectVersion"}->{"mode"},"all")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+				</tr>
+			</table>
+		</fieldset>
+		<?php
+		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
 
-
 		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-	?>			
-			<input type="hidden"
-	name="remoteServer<?php echo $iServer;?>"
-	value="<?php echo $remoteServer->url ?>">
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
-<table  class="admintable">
-<thead>
-	<tr>
-		<th><b><?php echo JText::_( 'EASYSDI_ATTRIBUTE TO EXCLUDE'); ?></b></th>		
-	</tr>
-	</thead>
-	<tbody id="metadataParamTable">
-	
-
-<?php 
-	
-			foreach ($thePolicy->Servers->Server as $policyServer){			
-				if (strcmp($policyServer->url,$remoteServer->url)==0){
-					$theServer  = $policyServer;
-					break;
-				}
-			}
-			$iparam  =0;
-			if ($theServer && $theServer !=null && $theServer->{'Metadata'} !=null && $theServer->{'Metadata'}->{'Attributes'}!=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'} !=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} !=null){
-		foreach ($theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} as $attributeToExclude){			
-?>
-	<tr>
-		<td><input name="param_<?php echo $iServer;?>_<?php echo $iparam;?>" type="text" class="text_area" size="200" value='<?php echo $attributeToExclude; ?>'></td>
-	</tr>
-	<?php 
-			$iparam  ++;
-		} 
-		}?>
-		
-		<input type ="hidden" id="nbParam<?php echo $iServer; ?>"  value="<?php echo $iparam;?>">
-	
-	</tbody>
-</table>
-</fieldset>	
+		?>			
+			<input type="hidden" name="remoteServer<?php echo $iServer;?>"	value="<?php echo $remoteServer->url ?>">
+			
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
+				<table  class="admintable">
+				<thead>
+					<tr>
+						<th><b><?php echo JText::_( 'EASYSDI_ATTRIBUTE TO EXCLUDE'); ?></b></th>		
+					</tr>
+					</thead>
+					<tbody id="metadataParamTable">
+					<?php 
+						foreach ($thePolicy->Servers->Server as $policyServer)
+						{			
+							if (strcmp($policyServer->url,$remoteServer->url)==0)
+							{
+								$theServer  = $policyServer;
+								break;
+							}
+						}
+						$iparam  =0;
+						if ($theServer && $theServer !=null && $theServer->{'Metadata'} !=null && $theServer->{'Metadata'}->{'Attributes'}!=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'} !=null && $theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} !=null)
+						{
+							foreach ($theServer->{'Metadata'}->{'Attributes'}->{'Exclude'}->{'Attribute'} as $attributeToExclude)
+							{			
+								?>
+								<tr>
+									<td><input name="param_<?php echo $iServer;?>_<?php echo $iparam;?>" type="text" class="text_area" size="200" value='<?php echo $attributeToExclude; ?>'></td>
+								</tr>
+								<?php 
+								$iparam  ++;
+							} 
+						}?>
+						<input type ="hidden" id="nbParam<?php echo $iServer; ?>"  value="<?php echo $iparam;?>">
+					</tbody>
+				</table>
+			</fieldset>	
 		<?php	
 		$iServer = $iServer +1;
 		}
-		
-}
+	}
 
 function generateWMSHTML($config,$thePolicy){
 ?>

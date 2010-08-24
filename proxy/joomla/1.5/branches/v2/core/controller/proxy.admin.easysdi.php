@@ -82,7 +82,24 @@ class ADMIN_proxy
 		$rowsUser = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
-		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser);
+		//Get visibility
+		$database->setQuery( "SELECT v.code as value, 
+									 v.label as text 
+							  FROM #__sdi_list_visibility v 
+							  ");
+		$rowsVisibility = $database->loadObjectList();
+		//echo $database->getErrorMsg();
+		
+		//Get metadata status
+		$database->setQuery( "SELECT s.code as value, 
+									 s.label as text 
+							  FROM #__sdi_list_metadatastate s 
+							  ");
+		$rowsStatus = $database->loadObjectList();
+		//echo $database->getErrorMsg();
+		
+		
+		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus);
 	}
 	
 	
@@ -506,6 +523,7 @@ function savePolicy($xml){
 		}
 	}
 
+	//AvailabilityPeriod
 	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
 	
@@ -522,20 +540,17 @@ function savePolicy($xml){
 		$thePolicy->ImageSize->Maximum->Height = $maxHeight;
 	}
 	
+	//Users and Roles
+	if (strlen($allUsers)>0)
 	{
-		if (strlen($allUsers)>0)
-		{
-			$thePolicy->Subjects="";
-			$thePolicy->Subjects['All']="true";
-		}
-		else
-		{
-			$thePolicy->Subjects="";
-			$thePolicy->Subjects['All']="false";
-		}
-		
+		$thePolicy->Subjects="";
+		$thePolicy->Subjects['All']="true";
+	}
+	else
+	{
+		$thePolicy->Subjects="";
+		$thePolicy->Subjects['All']="false";
 		$userNameList = JRequest::getVar("userNameList");
-
 		if (sizeof($userNameList )>0)
 		{
 			foreach ($userNameList as $user)
@@ -543,9 +558,7 @@ function savePolicy($xml){
 				$node = $thePolicy->Subjects->addChild(User,$user);
 			}
 		}
-
 		$roleNameList = JRequest::getVar("roleNameList");
-
 		if (sizeof($roleNameList)>0)
 		{
 			foreach ($roleNameList as $role)
@@ -554,7 +567,79 @@ function savePolicy($xml){
 			}
 		}
 	}
-
+	
+	
+	
+	if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+	{
+		//Operations
+		$AllOperations = JRequest::getVar("AllOperations","");
+		if (strlen($AllOperations)>0)
+		{
+			$thePolicy->Operations="";
+			$thePolicy->Operations['All']="true";
+		}
+		else
+		{
+			$thePolicy->Operations="";
+			$thePolicy->Operations['All']="false";
+			$operationsList = JRequest::getVar("operation");
+			if (sizeof($operationsList)>0)
+			{
+				foreach($operationsList as $operation)
+				{
+					$node = $thePolicy->Operations->addChild(Operation,$operation);
+				}
+			}
+		}
+		//Visibility
+		$AllVisibilities = JRequest::getVar("AllVisibilities","");
+		if (strlen($AllVisibilities)>0)
+		{
+			$thePolicy->ObjectVisibilities="";
+			$thePolicy->ObjectVisibilities['All']="true";
+		}
+		else
+		{
+			$thePolicy->ObjectVisibilities="";
+			$thePolicy->ObjectVisibilities['All']="false";
+			$visibilitiesList = JRequest::getVar("visibility");
+			if (sizeof($visibilitiesList)>0)
+			{
+				foreach($visibilitiesList as $visibility)
+				{
+					$node = $thePolicy->ObjectVisibilities->addChild(Visibility,$visibility);
+				}
+			}
+		}
+		
+		//Status
+		$AllStatus = JRequest::getVar("AllStatus","");
+		if (strlen($AllStatus)>0)
+		{
+			$thePolicy->ObjectStatus="";
+			$thePolicy->ObjectStatus['All']="true";
+		}
+		else
+		{
+			$thePolicy->ObjectStatus="";
+			$thePolicy->ObjectStatus['All']="false";
+			$statusList = JRequest::getVar("status");
+			if (sizeof($statusList)>0)
+			{
+				foreach($statusList as $status)
+				{
+					$node = $thePolicy->ObjectStatus->addChild(Status,$status);
+				}
+			}
+		}
+		
+		//Version
+		$versionMode = JRequest::getVar("objectversion_mode","last");
+		$thePolicy->{"ObjectVersion"}->{"mode"}=$versionMode;
+	}
+			
+	//Servers
 	$thePolicy->Servers['All']="false";
 	$thePolicy->Servers="";
 	
@@ -681,7 +766,6 @@ function savePolicy($xml){
 			break;
 		}
 	}
-
 	$xmlConfigFile->asXML($policyFile);
 }
 
@@ -797,10 +881,6 @@ function saveConfig($xml,$configFilePath){
 				}
 				$i++;
 			}
-			
-			//Version
-			$versionMode = JRequest::getVar("objectversion_mode","last");
-			$config->{"object-version"}->{"mode"}=$versionMode;
 			
 			//Exception
 			$exceptionMode = JRequest::getVar("exception_mode","permissive");
