@@ -2,7 +2,7 @@
 /*
 * Génération du sitemap des métadonnées visibles pour le public
 */
-	// CHarger la configuration de Joomla pour un accès à la base de données mysql
+	// Charger la configuration de Joomla pour un accès à la base de données mysql
 	require_once ( dirname(__FILE__).'\configuration.php' );
 	$jconfig = new JConfig(); 
 	
@@ -20,7 +20,15 @@
 	/* Début du code de génération du sitemap.xml */
 	
 	// URL d'accès à chaque métadonnée
-	$url = "http://localhost/Easysdi_1510/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&type=complete&amp;id=";
+	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
+		$https = 's://';
+	} else {
+		$https = '://';
+	}
+	
+	$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
+	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&type=complete&amp;id=";
+	
 	// Création d'un DOMDocument
 	$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 	$XMLDoc->formatOutput = true;
@@ -37,7 +45,9 @@
 				INNER JOIN #__sdi_objectversion ov ON ov.metadata_id=m.id
 				INNER JOIN #__sdi_object o ON o.id=ov.object_id
 				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-				WHERE v.code='public'";
+				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+				WHERE v.code='public'
+					  AND ms.code='published'";
 	$query = replacePrefix($query, $jconfig->dbprefix);
 	$mdList = loadObjectList($query);
 	
