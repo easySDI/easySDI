@@ -3,7 +3,7 @@
 * Génération du sitemap des métadonnées visibles pour le public
 */
 	// Charger la configuration de Joomla pour un accès à la base de données mysql
-	require_once ( dirname(__FILE__).'\configuration.php' );
+	require_once ( 'configuration.php' );
 	$jconfig = new JConfig(); 
 	
 	// Connection à la base de données
