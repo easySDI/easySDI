@@ -3,7 +3,7 @@
 * Génération du sitemap des métadonnées visibles pour le public
 */
 	// Charger la configuration de Joomla pour un accès à la base de données mysql
-	require_once ( 'configuration.php' );
+	require_once ('configuration.php');
 	$jconfig = new JConfig(); 
 	
 	// Connection à la base de données
@@ -47,7 +47,8 @@
 				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
 				WHERE v.code='public'
-					  AND ms.code='published'";
+					  AND ms.code='published'
+					  AND m.published <= '".date('Y-m-d')."'";
 	$query = replacePrefix($query, $jconfig->dbprefix);
 	$mdList = loadObjectList($query);
 	
