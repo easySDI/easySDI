@@ -42,7 +42,9 @@ class TOOLBAR_proxy{
 			$text = JText::_("CORE_EDIT");
 		JToolBarHelper::title(JText::_( 'EASYSDI_EDIT_CONFIG' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
-		JToolBarHelper::addNew('addNewServer',JText::_( 'EASYSDI_ADD NEW SERVER'));
+		$serviceType = JRequest::getVar('serviceType');
+		if($serviceType != 'CSW')
+			JToolBarHelper::addNew('addNewServer',JText::_( 'EASYSDI_ADD NEW SERVER'));
 		JToolBarHelper::save('saveConfig',JText::_( 'EASYSDI_SAVE' ));		
 		JToolBarHelper::cancel();					
 	}

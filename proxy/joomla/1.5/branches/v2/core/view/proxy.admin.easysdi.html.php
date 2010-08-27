@@ -368,6 +368,7 @@ else
 </script>
 
 <form name='adminForm' id='adminForm' action='index.php' method='POST'>
+<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 	<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 	<input
 	type='hidden' name='option' value='<?php echo $option;?>'> <input
@@ -392,10 +393,6 @@ else
 
 	<tr>
 		<td colspan="4"><select name="servletClass" id="servletClass" onChange="changeValues()">
-<!--			<option-->
-<!--			<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ){echo "selected";}?>-->
-<!--				value="org.easysdi.proxy.wfs.SimpleWFSProxyServlet">-->
-<!--			org.easysdi.proxy.wfs.SimpleWFSProxyServlet</option>-->
 			<option
 			<?php if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0 ){echo "selected";}?>
 				value="org.easysdi.proxy.wfs.WFSProxyServlet">
@@ -404,10 +401,6 @@ else
 			<?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){echo "selected";}?>
 				value="org.easysdi.proxy.wms.WMSProxyServlet">
 			org.easysdi.proxy.wms.WMSProxyServlet</option>
-			<option
-			<?php if (strcmp($servletClass,"org.easysdi.proxy.cgp.CGPProxyServlet")==0 ){echo "selected";}?>
-				value="org.easysdi.proxy.cgp.CGPProxyServlet">
-			org.easysdi.proxy.cgp.CGPProxyServlet</option>
 			<option
 			<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "selected";}?>
 				value="org.easysdi.proxy.csw.CSWProxyServlet">
@@ -900,6 +893,7 @@ function addNewServer(){
 	<input type='hidden' name='task' id='task' value='<?php echo $task; ?>'>
 	<input type='hidden' name='configId'id='configId' value='<?php echo $configId;?>'>
 	<input type="hidden" name="boxchecked" value="<?php echo ($_POST['policyId'] or $isChecked)?1:0;?>" />
+	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 </form>
 
 	<?php
@@ -959,6 +953,7 @@ function addNewServer(){
 	type='hidden' name='configId' value='<?php echo $configId; ?>'> <input
 	type='hidden' name='policyId' value='<?php echo $policyId; ?>'> <input
 	type='hidden' name='isNewPolicy' value='<?php echo $new; ?>'>
+	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 
 
 
@@ -1964,6 +1959,7 @@ function generateWMSHTML($config,$thePolicy){
 	value='<?php echo JRequest::getVar('option') ;?>'> <input type='hidden'
 	name='task' value='<?php echo JRequest::getVar('task') ;?>'> <input type='hidden' name='boxchecked'
 	value='<?php echo ($_POST['configId'])?1:0;?>'>
+	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 
 <table>
 	<tr>
@@ -2001,8 +1997,28 @@ function generateWMSHTML($config,$thePolicy){
 		<tr class="row<?php echo $i%2; ?>">
 			<td><?php echo $i+1;?></td>
 			<td><input
-			<?php if (strlen($id)>0){if (strcmp($id,$config['id'])==0){echo 'checked';}} ?>
-				type="radio" id="cb<?php echo$i ?>" name="configId" value="<?php echo $config['id'] ?>" onclick="isChecked(this.checked);"></td>
+			<?php if (strlen($id)>0)
+				  {
+				  	if (strcmp($id,$config['id'])==0)
+				  	{
+				  		echo 'checked';
+				  	}
+				  } 
+				 ?>
+				type="radio" id="cb<?php echo$i ?>" name="configId" value="<?php echo $config['id'] ?>" onclick="document.getElementById('serviceType').value='<?php 
+					if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
+					{
+						echo "WMS";
+					}
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
+					{
+						echo "CSW";
+					}
+
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
+					{
+						echo "WFS";
+					} ?>'; isChecked(this.checked);"></td>
 			<td><b><?php echo $config['id']?></b> </td>
 			<td><?php 
 			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
