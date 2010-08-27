@@ -300,29 +300,27 @@ echo $pane->endPane();
 			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
 			{
 				document.getElementById('specificGeonetowrk').style.display="block";
+				applyDisplay ("none","block");
+				document.getElementById('servicemetadata_contact').style.display="block";
+				document.getElementById('exceptionMode').style.display="none";
+			}
+			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
+			{
+				document.getElementById('specificGeonetowrk').style.display="none";
+				applyDisplay ("none","block");
+				document.getElementById('servicemetadata_contact').style.display="none";
+				document.getElementById('exceptionMode').style.display="block";
+			}	
+			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
+			{
+				document.getElementById('specificGeonetowrk').style.display="none";
+				applyDisplay ("block","none");
+				document.getElementById('servicemetadata_contact').style.display="block";
+				document.getElementById('exceptionMode').style.display="block";
 			}
 			else
 			{
 				document.getElementById('specificGeonetowrk').style.display="none";
-			}
-
-			if(document.getElementById('servletClass').value == 'org.easysdi.proxy.csw.CSWProxyServlet')
-			{
-				applyDisplay ("none","block");
-				document.getElementById('servicemetadata_contact').style.display="block";
-			}
-			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
-			{
-				applyDisplay ("none","block");
-				document.getElementById('servicemetadata_contact').style.display="none";
-			}	
-			else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
-			{
-				applyDisplay ("block","none");
-				document.getElementById('servicemetadata_contact').style.display="block";
-			}
-			else
-			{
 				document.getElementById('service_metadata').style.display="none";
 				
 			}
@@ -331,8 +329,6 @@ echo $pane->endPane();
 		function applyDisplay (value1,value2)
 		{
 			document.getElementById('service_metadata').style.display="block";
-//			document.getElementById('service_contactsite').style.display=value2;
-//			document.getElementById('service_contactsite_t').style.display=value2;
 			document.getElementById('service_contacttype').style.display=value1;
 			document.getElementById('service_contacttype_t').style.display=value1;
 			document.getElementById('service_contactlinkage').style.display=value2;
@@ -658,7 +654,7 @@ echo $pane->endPane();
 						</tr>
 					</table>
 				</fieldset>
-				<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+				<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
 					<table class="admintable">
 						<tr>
 							<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
@@ -1744,9 +1740,11 @@ function activateLayer(server,layerName){
 
 		?>
 
-<form name='adminForm' action='index.php' method='GET'><input type='hidden' name='option' value='<?php echo JRequest::getVar('option') ;?>'> <input
-	type='hidden' name='task' value='<?php echo JRequest::getVar('task') ;?>'> <input type='hidden' name='boxchecked' value='1'>
-
+<form name='adminForm' action='index.php' method='GET'>
+<input type='hidden' name='option' value='<?php echo JRequest::getVar('option') ;?>'> 
+<input type='hidden' name='task' value='<?php echo JRequest::getVar('task') ;?>'> 
+<input type='hidden' name='boxchecked' value='1'>
+<input type='hidden' name='serviceType' id='serviceType' value="" >
 <table>
 	<tr>
 
@@ -1781,7 +1779,20 @@ function activateLayer(server,layerName){
 		<tr class="row<?php echo $i%2; ?>">
 			<td><?php echo $i+1;?></td>
 			<td><input <?php if (strlen($id)>0){if (strcmp($id,$config['id'])==0){echo 'checked';}} ?> type="radio" name="configId"
-				value="<?php echo $config['id'] ?>"></td>
+				value="<?php echo $config['id'] ?>" onclick="document.getElementById('serviceType').value='<?php 
+					if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
+					{
+						echo "WMS";
+					}
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
+					{
+						echo "CSW";
+					}
+
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
+					{
+						echo "WFS";
+					} ?>'"></td>
 			<td><b><?php echo $config['id']?></b></td>
 			<td><?php 
 			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")

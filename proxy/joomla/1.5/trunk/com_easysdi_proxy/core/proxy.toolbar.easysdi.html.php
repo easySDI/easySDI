@@ -25,7 +25,9 @@ class TOOLBAR_proxy{
 	}
 	
 	function editConfig(){
-		JToolBarHelper::custom('addNewServer','new.png','new.png',JText::_( 'EASYSDI_ADD NEW SERVER'),false);
+		$serviceType = JRequest::getVar('serviceType');
+		if($serviceType != 'CSW')
+			JToolBarHelper::custom('addNewServer','new.png','new.png',JText::_( 'EASYSDI_ADD NEW SERVER'),false);
 		JToolBarHelper::custom('saveConfig','save.png','save.png',JText::_( 'EASYSDI_SAVE' ),false);		
 		JToolBarHelper::cancel();					
 	}
