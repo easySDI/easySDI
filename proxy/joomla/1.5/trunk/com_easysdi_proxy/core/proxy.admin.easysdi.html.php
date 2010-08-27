@@ -399,9 +399,12 @@ echo $pane->endPane();
 		
 		</script>
 
-		<form name='adminForm' id='adminForm' action='index.php' method='POST'><input type='hidden' name="isNewConfig" value="<?php echo $new; ?>"> <input
-			type='hidden' name='option' value='<?php echo $option;?>'> <input type='hidden' name='task' value=''> <input type='hidden' name='configId'
-			value='<?php echo $configId;?>'> 
+		<form name='adminForm' id='adminForm' action='index.php' method='POST'>
+			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>"> 
+			<input type='hidden' name='option' value='<?php echo $option;?>'> 
+			<input type='hidden' name='task' value=''> 
+			<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
+			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 		<?php
 		foreach ($xml->config as $config) 
 		{
@@ -760,9 +763,12 @@ echo $pane->endPane();
 		?>
 
 
-<form name='adminForm' action='index.php' method='GET'><input type='hidden' name='option' id='option' value='<?php echo $option;?>'><input
-	type='hidden' name='task' id='task' value='<?php echo $task; ?>'><input type='hidden' name='configId' id='configId' value='<?php echo $configId;?>'><input
-	type="hidden" name="boxchecked" value="0" />
+<form name='adminForm' action='index.php' method='GET'>
+	<input type='hidden' name='option' id='option' value='<?php echo $option;?>'>
+	<input type='hidden' name='task' id='task' value='<?php echo $task; ?>'>
+	<input type='hidden' name='configId' id='configId' value='<?php echo $configId;?>'>
+	<input type="hidden" name="boxchecked" value="0" />
+	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 <table>
 	<tr>
 
@@ -951,10 +957,14 @@ echo $pane->endPane();
 				}
 				?>
 
-<form name='adminForm' action='index.php' method='POST'><input type='hidden' name='option' value='<?php echo $option;?>'> <input type='hidden'
-	name='task' value=''> <input type='hidden' name='servletClass' value='<?php echo $servletClass; ?>'> <input type='hidden' name='configId'
-	value='<?php echo $configId; ?>'> <input type='hidden' name='policyId' value='<?php echo $policyId; ?>'> <input type='hidden' name='isNewPolicy'
-	value='<?php echo $new; ?>'>
+<form name='adminForm' action='index.php' method='POST'>
+	<input type='hidden' name='option' value='<?php echo $option;?>'> 
+	<input type='hidden' name='task' value=''> 
+	<input type='hidden' name='servletClass' value='<?php echo $servletClass; ?>'> 
+	<input type='hidden' name='configId' value='<?php echo $configId; ?>'> 
+	<input type='hidden' name='policyId' value='<?php echo $policyId; ?>'> 
+	<input type='hidden' name='isNewPolicy' 	value='<?php echo $new; ?>'>
+	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 
 
 
@@ -1744,7 +1754,7 @@ function activateLayer(server,layerName){
 <input type='hidden' name='option' value='<?php echo JRequest::getVar('option') ;?>'> 
 <input type='hidden' name='task' value='<?php echo JRequest::getVar('task') ;?>'> 
 <input type='hidden' name='boxchecked' value='1'>
-<input type='hidden' name='serviceType' id='serviceType' value="" >
+<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 <table>
 	<tr>
 
