@@ -588,7 +588,7 @@ function savePolicy($xml){
 			{
 				foreach($operationsList as $operation)
 				{
-					$node = $thePolicy->Operations->addChild(Operation,$operation);
+					$node = $thePolicy->Operations->addChild(Operation)->addChild(Name,$operation);
 				}
 			}
 		}

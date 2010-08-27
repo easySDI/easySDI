@@ -1340,13 +1340,13 @@ function activateLayer(server,layerName){
 					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 							{
-								if(strcasecmp($operation,'GetCapabilities')==0) echo 'checked';			
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
 							}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'Harvest')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'Harvest')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></td>
 				</tr>
@@ -1355,13 +1355,13 @@ function activateLayer(server,layerName){
 					<td><input type="checkBox" name="operation[]" id="oDescribeRecord" value="DescribeRecord" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'DescribeRecord')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'DescribeRecord')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBERECORD'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'Transaction')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
 				</tr>
@@ -1370,13 +1370,13 @@ function activateLayer(server,layerName){
 					<td><input type="checkBox" name="operation[]" id="oGetRecords" value="GetRecords" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'GetRecords')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'GetRecords')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDS'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain"<?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'GetDomain')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'GetDomain')==0) echo 'checked';			
 						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></td>
 				</tr>
 				<tr>
@@ -1384,7 +1384,7 @@ function activateLayer(server,layerName){
 					<td><input type="checkBox" name="operation[]" id="oGetRecordbyId" value="GetRecordbyId" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation,'GetRecordbyId')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'GetRecordbyId')==0) echo 'checked';			
 						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDBYID'); ?></td>
 					<td></td>
 				</tr>
