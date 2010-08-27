@@ -150,6 +150,20 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 
+	
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.3.0\">");
+		sb.append("<ServiceException code=\"");
+		sb.append(code);
+		sb.append("\" locator=\"");
+		sb.append(locator);
+		sb.append("\">");
+		sb.append(errorMessage);
+		sb.append("</ServiceException>");
+		sb.append("</ServiceExceptionReport>");
+		return sb;
+	}
 	// ***************************************************************************************************************************************
 
 	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) {
@@ -1313,11 +1327,16 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			// Debug tb 11.11.2009
-			if (hasPolicy) {
-				if (!isOperationAllowed(operation))
-					throw new NoPermissionException("operation is not allowed");
-			}
+//			if (hasPolicy) {
+//				if (!isOperationAllowed(operation))
+//					//TODO : send ogc exception
+//					throw new NoPermissionException("operation is not allowed");
+//			}
 			// Fin de Debug
+			
+			//Generate OGC exception if current operation is not allowed
+			if(operationAllowedFilter(operation,resp))
+				return;
 
 			// *********************************************************************
 

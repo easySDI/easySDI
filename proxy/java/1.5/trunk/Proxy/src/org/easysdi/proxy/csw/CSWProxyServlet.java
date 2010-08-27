@@ -79,7 +79,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet extends ProxyServlet {
 
 	private static final long serialVersionUID = 7288366261387138250L;
-	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction" };
+	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction","GetDomain" };
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -92,6 +92,22 @@ public class CSWProxyServlet extends ProxyServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		super.doGet(req, resp);
 
+	}
+	
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
+		sb.append("<ows:Exception exceptionCode=\"");
+		sb.append(code);
+		sb.append("\" locator=\"");
+		sb.append(locator);
+		sb.append("\">");
+		sb.append("<ows:ExceptionText>");
+		sb.append(errorMessage);
+		sb.append("</ows:ExceptionText>");
+		sb.append("</ows:Exception>");
+		sb.append("</ows:ExceptionReport> ");
+		return sb;
 	}
 
 	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req) {
@@ -535,7 +551,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				resp.setContentType("application/xml");
 				resp.setContentLength(Integer.MAX_VALUE);
 				OutputStream os = resp.getOutputStream();
-				os.write(generateOgcError("Operation not allowed").toString().getBytes());
+				os.write(generateOgcError("Operation not allowed","","").toString().getBytes());
 				os.flush();
 				os.close();
 			} catch (Exception e) {
@@ -578,6 +594,10 @@ public class CSWProxyServlet extends ProxyServlet {
 		}
 		version = version.replaceAll("\\.", "");
 
+		//Generate OGC exception if current operation is not allowed
+		if(operationAllowedFilter(currentOperation,resp))
+			return ;
+		
 		// Send the request to the remote server
 		List<String> filePathList = new Vector<String>();
 		String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
@@ -586,233 +606,10 @@ public class CSWProxyServlet extends ProxyServlet {
 
 	}
 
-	/*
-	 * (non-Javadoc)
+
+
+	/**
 	 * 
-	 * @see
-	 * ch.depth.proxy.core.ProxyServlet#requestPreTreatmentPOST(javax.servlet
-	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	protected void old_requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
-		try {
-			XMLReader xr = XMLReaderFactory.createXMLReader();
-			CswRequestHandler rh = new CswRequestHandler();
-			xr.setContentHandler(rh);
-
-			StringBuffer param = new StringBuffer();
-			String input;
-			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
-			while ((input = in.readLine()) != null) {
-				param.append(input);
-			}
-
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
-
-			String version = rh.getVersion();
-
-			String currentOperation = rh.getOperation();
-
-			/*
-			 * sdondainaz
-			 * 
-			 * Ajouter ici le filtre sur la visibilit� de la m�tadonn�e
-			 */
-
-			// In the case of transaction only one remote server is supported.
-			// We use the configuration of the first one.
-			// TODO :add a tag in the configuration file to set the default
-			// server.
-			RemoteServerInfo rsi = getRemoteServerInfo(0);
-			String transactionType = "ogc";
-			if (rsi != null) {
-				transactionType = rsi.getTransaction();
-			}
-
-			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) {
-
-				if (rh.isTransactionInsert()) {
-
-					String[] sourceName = new String[] { "info.xml", "metadata.xml" };
-					List<String> uuidList = rh.getUUIdListToInsert();
-					Iterator<String> it = uuidList.iterator();
-					int count = 0;
-					while (it.hasNext()) {
-						String uuid = it.next();
-
-						TransformerFactory tFactory = TransformerFactory.newInstance();
-						Transformer transformer = null;
-						StringBuffer xslt = new StringBuffer();
-						xslt
-								.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
-						xslt.append(" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\"");
-						xslt.append(" xmlns:csw=\"http://www.opengis.net/cat/csw\">");
-						xslt.append("<xsl:template match=\"csw:Insert\">");
-						xslt.append("<xsl:copy-of select=\"@* | node()\">");
-						xslt.append("<xsl:apply-templates  select=\"@* | node()\"/>");
-						xslt.append("</xsl:copy-of>");
-						xslt.append("</xsl:template>");
-						xslt.append("</xsl:stylesheet>");
-						ByteArrayInputStream baisXsl = new ByteArrayInputStream(xslt.toString().getBytes());
-						transformer = tFactory.newTransformer(new StreamSource(baisXsl));
-
-						ByteArrayInputStream bais = new ByteArrayInputStream(param.toString().getBytes());
-
-						// Write the result in a temporary file
-						StringBuffer metadata = new StringBuffer();
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-						transformer.transform(new StreamSource(bais), new StreamResult(baos));
-						metadata.append(baos.toString());
-
-						StringBuffer[] sourceContent = new StringBuffer[] { generateInfoFileForMef(uuid, req.getRemoteAddr()), metadata };
-						ByteArrayOutputStream mefFileOutputStream = new ByteArrayOutputStream();
-						ZipOutputStream out = new ZipOutputStream(mefFileOutputStream);
-						// Compress the files
-						for (int i = 0; i < sourceName.length; i++) {
-							CRC32 crc = new CRC32();
-							crc.update(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
-							ZipEntry entry = new ZipEntry(sourceName[i]);
-							entry.setMethod(ZipEntry.STORED);
-							entry.setSize(sourceContent[i].toString().getBytes().length);
-							entry.setCrc(crc.getValue());
-							out.putNextEntry(entry);
-							out.write(sourceContent[i].toString().getBytes(), 0, sourceContent[i].toString().getBytes().length);
-							out.closeEntry();
-						}
-						out.close();
-
-						// Search for the geonetwork id using the uuid
-						StringBuffer response = send(rsi.getSearchServiceUrl() + "?any=" + uuid, rsi.getLoginService());
-						dump(response);
-						InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-
-						XMLReader xrSearchResponse = XMLReaderFactory.createXMLReader();
-						GeonetworkSearchResultHandler gnSearchHandler = new GeonetworkSearchResultHandler();
-						xrSearchResponse.setContentHandler(gnSearchHandler);
-						xrSearchResponse.parse(new InputSource(is));
-						List<String> listId = gnSearchHandler.getGeonetworkInternalId(uuid);
-
-						// If a metadata already exists, remove it from
-						// Geonetwork
-						if (listId != null) {
-							Iterator<String> itId = listId.iterator();
-							while (itId.hasNext()) {
-								String s = itId.next();
-								response = send(rsi.getDeleteServiceUrl() + "?id=" + s, rsi.getLoginService());
-							}
-						}
-						// Send the generated mef dile
-						InputStream mefFileInputStream = new ByteArrayInputStream(mefFileOutputStream.toByteArray());
-
-						response = sendFile(rsi.getInsertServiceUrl(), mefFileInputStream, rsi.getLoginService(), "mefFile", uuid + ".mef");
-
-						sourceContent = null;
-						count++;
-					}
-					sourceName = null;
-					StringBuffer cswResponse = new StringBuffer();
-
-					cswResponse.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-					cswResponse
-							.append("<csw:TransactionResponse xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" xmlns:dct=\"http://www.purl.org/dc/terms/\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw http://localhost:8888/SpatialWS-SpatialWS-context-root/cswservlet?recordTypeId=1 \" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
-					cswResponse.append("<csw:TransactionSummary>");
-					cswResponse.append("<csw:totalInserted>" + count + "</csw:totalInserted>");
-					cswResponse.append("</csw:TransactionSummary>");
-					cswResponse.append("</csw:TransactionResponse>");
-
-					OutputStream os = resp.getOutputStream();
-
-					InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
-					int byteRead;
-					try {
-						while ((byteRead = is.read()) != -1) {
-							os.write(byteRead);
-						}
-					} finally {
-						os.flush();
-						os.close();
-					}
-					os = null;
-					is = null;
-				}
-
-				if (rh.isTransactionDelete()) {
-					List<String> uuidList = rh.getUUidListToDelete();
-					Iterator<String> it = uuidList.iterator();
-					int count = 0;
-					while (it.hasNext()) {
-						String uuid = it.next();
-						// Search for the geonetwork id using the uuid
-						StringBuffer response = send(rsi.getSearchServiceUrl() + "?any=" + uuid, rsi.getLoginService());
-						dump(response);
-						InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-
-						XMLReader xrSearchResponse = XMLReaderFactory.createXMLReader();
-						GeonetworkSearchResultHandler gnSearchHandler = new GeonetworkSearchResultHandler();
-						xrSearchResponse.setContentHandler(gnSearchHandler);
-						xrSearchResponse.parse(new InputSource(is));
-						List<String> listId = gnSearchHandler.getGeonetworkInternalId(uuid);
-
-						// If a metadata already exists, remove it from
-						// Geonetwork
-						if (listId != null) {
-							Iterator<String> itId = listId.iterator();
-							while (itId.hasNext()) {
-								String s = itId.next();
-								response = send(rsi.getDeleteServiceUrl() + "?id=" + s, rsi.getLoginService());
-							}
-						}
-
-						count++;
-					}
-
-					StringBuffer cswResponse = new StringBuffer();
-
-					cswResponse
-							.append("<csw:TransactionResponse xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:dc=\"http://www.purl.org/dc/elements/1.1/\" xmlns:dct=\"http://www.purl.org/dc/terms/\">");
-					cswResponse.append("<csw:TransactionSummary>");
-					cswResponse.append("<csw:totalDeleted>" + count + "</csw:totalDeleted>");
-					cswResponse.append("</csw:TransactionSummary>");
-					cswResponse.append("</csw:TransactionResponse>");
-					OutputStream os = resp.getOutputStream();
-
-					InputStream is = new ByteArrayInputStream(cswResponse.toString().getBytes());
-					int byteRead;
-					try {
-						while ((byteRead = is.read()) != -1) {
-							os.write(byteRead);
-						}
-					} finally {
-						os.flush();
-						os.close();
-					}
-					os = null;
-					is = null;
-
-				}
-
-			} else {
-				if (version != null)
-					version = version.replaceAll("\\.", "");
-
-				dump(param.toString());
-				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
-				filePathList.add(filePath);
-				transform(version, currentOperation, req, resp, filePathList);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			dump("ERROR", e.getMessage());
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * ch.depth.proxy.core.ProxyServlet#requestPreTreatmentPOST(javax.servlet
-	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
@@ -836,10 +633,27 @@ public class CSWProxyServlet extends ProxyServlet {
 
 			String currentOperation = rh.getOperation();
 
+			//Generate OGC exception if current operation is not allowed
+			if(operationAllowedFilter(currentOperation,resp))
+				return;
+			
+			//Get visibility policy
+			if(policy.getObjectVisibilities().isAll())
+			{
+				//No filter needed
+			}
+			else
+			{
+				List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+				//
+			}
+			
+			
 			// In the case of transaction only one remote server is supported.
 			// We use the configuration of the first one.
-			// TODO :add a tag in the configuration file to set the default
-			// server.
+			// add a tag in the configuration file to set the default
+			// server --> HVH-27.08.2010 : Only one server is supported in the config file fot the moment,
+			// default server tag will be implemented when several servers will be supported
 			RemoteServerInfo rsi = getRemoteServerInfo(0);
 			String transactionType = "ogc";
 			if (rsi != null) {

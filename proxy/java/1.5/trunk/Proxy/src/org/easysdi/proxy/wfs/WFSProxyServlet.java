@@ -136,6 +136,20 @@ public class WFSProxyServlet extends ProxyServlet {
 	// Server-Prefix-Namespace-AuthorizedFeature-ifExist(GeomAttribute)
 	// Fin de debug
 
+	
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+		sb.append("<ServiceException code=\"");
+		sb.append(code);
+		sb.append("\" locator=\"");
+		sb.append(locator);
+		sb.append("\">");
+		sb.append(errorMessage);
+		sb.append("</ServiceException>");
+		sb.append("</ServiceExceptionReport>");
+		return sb;
+	}
 	// ***************************************************************************************************************************************
 	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, int remoteServerIndex) {
 
@@ -463,10 +477,14 @@ public class WFSProxyServlet extends ProxyServlet {
 			if (principal != null) {
 				user = principal.getName();
 			}
-			if (hasPolicy) {
-				if (!isOperationAllowed(currentOperation))
-					throw new NoPermissionException("operation is not allowed");
-			}
+			
+			//Generate OGC exception if current operation is not allowed
+			if(operationAllowedFilter(currentOperation,resp))
+				return;
+//			if (hasPolicy) {
+//				if (!isOperationAllowed(currentOperation))
+//					throw new NoPermissionException("operation is not allowed");
+//			}
 
 			String paramOrig = param;
 
@@ -990,14 +1008,34 @@ public class WFSProxyServlet extends ProxyServlet {
 			requestParamUrl = paramUrl;
 			// Fin de debug
 
+			//Generate OGC exception if current operation is not allowed
+			if(operationAllowedFilter(currentOperation,resp))
+				return;
+			
 			String user = "";
 			if (req.getUserPrincipal() != null) {
 				user = req.getUserPrincipal().getName();
 			}
-			if (hasPolicy) {
-				if (!isOperationAllowed(currentOperation))
-					throw new NoPermissionException("operation is not allowed");
-			}
+			
+//			if (hasPolicy) {
+//				if (!isOperationAllowed(currentOperation))
+//				{
+//					try {
+//						resp.setContentType("application/xml");
+//						resp.setContentLength(Integer.MAX_VALUE);
+//						OutputStream os = resp.getOutputStream();
+//						os.write(generateOgcError("Operation not allowed").toString().getBytes());
+//						os.flush();
+//						os.close();
+//						return;
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//						dump("ERROR", e.getMessage());
+//						return;
+//					}
+//				}
+//					throw new NoPermissionException("operation is not allowed");
+//			}
 
 			// *****************************************************************************************************************************
 			// Construction des FeaturesTypes et Attributs associés authorisés

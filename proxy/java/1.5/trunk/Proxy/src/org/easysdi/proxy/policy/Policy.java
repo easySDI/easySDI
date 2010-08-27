@@ -46,10 +46,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects" })
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectVersion"})
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
+	@XmlElement(name = "ObjectVisibilities")
+	protected ObjectVisibilities objectVisibilities;
+	@XmlElement(name = "ObjectStatus")
+	protected ObjectStatus objectStatus;
+	@XmlElement(name = "ObjectVersion")
+	protected ObjectVersion objectVersion;
 	@XmlElement(name = "AvailabilityPeriod")
 	protected AvailabilityPeriod availabilityPeriod;
 	@XmlElement(name = "ImageSize")
@@ -70,6 +76,12 @@ public class Policy implements Serializable {
 	@Override
 	public int hashCode() {
 		int hashCode = 0;
+		if (getObjectVisibilities() != null)
+			hashCode += getObjectVisibilities().hashCode();
+		if (getObjectStatus() != null)
+			hashCode += getObjectStatus().hashCode();
+		if (getObjectVersion() != null)
+			hashCode += getObjectVersion().hashCode();
 		if (availabilityPeriod != null)
 			hashCode += availabilityPeriod.hashCode();
 		if (imageSize != null)
@@ -108,6 +120,48 @@ public class Policy implements Serializable {
 	 */
 	public void setAvailabilityPeriod(AvailabilityPeriod value) {
 		this.availabilityPeriod = value;
+	}
+
+	/**
+	 * @param objectVisibilities the objectVisibilities to set
+	 */
+	public void setObjectVisibilities(ObjectVisibilities value) {
+		this.objectVisibilities = value;
+	}
+
+	/**
+	 * @return the objectVisibilities
+	 */
+	public ObjectVisibilities getObjectVisibilities() {
+		return objectVisibilities;
+	}
+	
+	/**
+	 * @param objectStatus the objectStatus to set
+	 */
+	public void setObjectStatus(ObjectStatus value) {
+		this.objectStatus = value;
+	}
+
+	/**
+	 * @return the objectStatus
+	 */
+	public ObjectStatus getObjectStatus() {
+		return objectStatus;
+	}
+
+	/**
+	 * @param objectVersion the objectVersion to set
+	 */
+	public void setObjectVersion(ObjectVersion value) {
+		this.objectVersion = value;
+	}
+
+	/**
+	 * @return the objectVersion
+	 */
+	public ObjectVersion getObjectVersion() {
+		return objectVersion;
 	}
 
 	/**

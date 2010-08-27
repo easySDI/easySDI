@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -955,16 +956,8 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
-	protected StringBuffer generateOgcError(String errorMessage) {
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb
-				.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
-		sb.append("<ServiceException>");
-		sb.append(errorMessage);
-		sb.append("</ServiceException>");
-		sb.append("</ServiceExceptionReport>");
-		return sb;
-	}
+	protected abstract  StringBuffer generateOgcError(String errorMessage, String code, String locator) ;
+	
 
 	/**
 	 * @param urlstr
@@ -1023,6 +1016,54 @@ public abstract class ProxyServlet extends HttpServlet {
 		this.policy = p;
 	}
 
+	/**
+	 * If the current operation is not allowed, generate an ogc exception 
+	 * and send it to the client
+	 * @param currentOperation
+	 * @param resp
+	 */
+	protected boolean operationAllowedFilter (String currentOperation, HttpServletResponse resp)
+	{
+		if (hasPolicy) {
+			try
+			{
+				if (!isOperationAllowed(currentOperation))
+				{
+					try {
+						resp.setContentType("application/xml");
+						resp.setContentLength(Integer.MAX_VALUE);
+						OutputStream os = resp.getOutputStream();
+						os.write(generateOgcError("Operation not allowed","OperationNotSupported ","").toString().getBytes());
+						os.flush();
+						os.close();
+						return true;
+					} catch (Exception e) {
+						e.printStackTrace();
+						dump("ERROR", e.getMessage());
+						return true;
+					}
+				}
+			}
+			catch (AvailabilityPeriodException ex)
+			{
+				try {
+					resp.setContentType("application/xml");
+					resp.setContentLength(Integer.MAX_VALUE);
+					OutputStream os = resp.getOutputStream();
+					os.write(generateOgcError(ex.getMessage(),"OperationNotSupported ","").toString().getBytes());
+					os.flush();
+					os.close();
+					return true;
+				} catch (Exception e) {
+					e.printStackTrace();
+					dump("ERROR", e.getMessage());
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * If the operation is allowed in the policy then return true, in any other
 	 * case return false.

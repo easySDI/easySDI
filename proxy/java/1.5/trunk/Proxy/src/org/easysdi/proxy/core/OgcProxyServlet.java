@@ -36,6 +36,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.policy.Policy;
+import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.Config;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -57,6 +58,7 @@ public class OgcProxyServlet extends HttpServlet {
 	private Cache configCache;
 	private Config configuration;
 	public String configFile;
+	
 	public static HashMap<String, Double> executionCount = new HashMap<String, Double>();
 
 	public void init(ServletConfig config) throws ServletException {
@@ -66,6 +68,8 @@ public class OgcProxyServlet extends HttpServlet {
 		configFile = config.getInitParameter("configFile");
 		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		CacheManager cm = (CacheManager) context.getBean("cacheManager");
+		JoomlaProvider jP = (JoomlaProvider) context.getBean("joomlaProvider");
+		
 		if (cm != null) {
 			configCache = cm.getCache("configCache");
 		}
