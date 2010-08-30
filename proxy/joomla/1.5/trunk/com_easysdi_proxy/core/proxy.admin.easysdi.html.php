@@ -1244,21 +1244,21 @@ function activateLayer(server,layerName){
 </fieldset>
 
 <?php 
-if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
-	HTML_proxy::generateWFSHTML($config,$thePolicy);
-}
-	if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0)
+	if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0)
 	{
 		HTML_proxy::generateWFSHTML($config,$thePolicy);
 	}
-?> 
-<?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
-	HTML_proxy::generateWMSHTML($config,$thePolicy);  }
-
+//	if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0)
+//	{
+//		HTML_proxy::generateWFSHTML($config,$thePolicy);
+//	}
+	if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 )
+	{
+		HTML_proxy::generateWMSHTML($config,$thePolicy);  
+	}
 	if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){
 		HTML_proxy::generateCSWHTML($config,$thePolicy);
 	}
-
 	break;
 			}
 
