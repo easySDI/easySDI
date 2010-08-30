@@ -1519,52 +1519,90 @@ function activateLayer(server,layerName){
 function generateWMSHTML($config,$thePolicy){
 	?>
 	<script>
-	function disableOperationCheckBoxes()
-	{
-		var check = document.getElementById('AllOperations').checked;
-		
-		document.getElementById('oGetCapabilities').disabled=check;
-		document.getElementById('oGetMap').disabled=check;
-		document.getElementById('oGetFeatureInfo').disabled=check;
-		document.getElementById('oGetCapabilities').checked=check;
-		document.getElementById('oGetMap').checked=check;
-		document.getElementById('oGetFeatureInfo').checked=check;
-	}
-	</script>
-	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td >
-				<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
-					<input <?php echo $checkedO; ?>
-					type="checkBox" name="AllOperations[]" id="AllOperations" 
-					onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
-				<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-					<?php foreach ($thePolicy->Operations->Operation as $operation)
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oGetMap').disabled=check;
+			document.getElementById('oGetFeatureInfo').disabled=check;
+			document.getElementById('oDescribeLayer').disabled=check;
+			document.getElementById('oGetLegendGraphic').disabled=check;
+			document.getElementById('oGetStyles').disabled=check;
+			document.getElementById('oPutStyles').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oGetMap').checked=check;
+			document.getElementById('oGetFeatureInfo').checked=check;
+			document.getElementById('oDescribeLayer').checked=check;
+			document.getElementById('oGetLegendGraphic').checked=check;
+			document.getElementById('oGetStyles').checked=check;
+			document.getElementById('oPutStyles').checked=check;
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetLegendGraphic" value="GetLegendGraphic" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetLegendGraphic')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETLEGENDGRAPHIC'); ?></td>
+					
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetMap" value="GetMap" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetMap')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETMAP'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oPutStyles"  value="PutStyles" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'PutStyles')==0) echo 'checked';			
 						}?>
-					><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
-			<tr>
-				<td></td>
-				<td><input type="checkBox" name="operation[]" id="oGetMap" value="GetMap" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-					<?php foreach ($thePolicy->Operations->Operation as $operation)
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_PUTSTYLES'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo"  value="GetFeatureInfo" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation->Name,'GetMap')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'GetFeatureInfo')==0) echo 'checked';			
 						}?>
-					><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETMAP'); ?></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo"  value="GetFeatureInfo" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-					<?php foreach ($thePolicy->Operations->Operation as $operation)
-					{
-						if(strcasecmp($operation->Name,'GetFeatureInfo')==0) echo 'checked';			
-					}?>
-					><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?></td>
-			</tr>
-		</table>
-	</fieldset>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetStyles" value="GetStyles" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetStyles')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETSTYLES'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oDescribeLayer" value="DescribeLayer" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'DescribeLayer')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBELAYER'); ?></td>
+					
+					<td></td>
+				</tr>
+			</table>
+		</fieldset>
 	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?>
 	<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
 			<img class="helpTemplate" 
