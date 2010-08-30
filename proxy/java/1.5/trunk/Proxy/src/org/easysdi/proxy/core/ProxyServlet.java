@@ -241,7 +241,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * 
 	 *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
 	 */
-	protected ByteArrayOutputStream buildResponseOgcServiceException ()
+	protected ByteArrayOutputStream buildResponseForOgcServiceException ()
 	{
 		try 
 		{
@@ -525,6 +525,25 @@ public abstract class ProxyServlet extends HttpServlet {
 			dump(severity, "null");
 	}
 
+	/**
+	 * Send to the client the ogc Exception build by the proxy
+	 * @param resp
+	 * @param ogcException
+	 */
+	public void sendOgcExceptionResponse (HttpServletResponse resp,StringBuffer ogcException)
+	{
+		try {
+			resp.setContentType("application/xml");
+			resp.setContentLength(Integer.MAX_VALUE);
+			OutputStream os;
+			os = resp.getOutputStream();
+			os.write(ogcException.toString().getBytes());
+			os.flush();
+			os.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * Sends parameters to a remote server
 	 * 
@@ -1022,7 +1041,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param currentOperation
 	 * @param resp
 	 */
-	protected boolean operationAllowedFilter (String currentOperation, HttpServletResponse resp)
+	protected boolean handleNotAllowedOperation (String currentOperation, HttpServletResponse resp)
 	{
 		if (hasPolicy) {
 			try
@@ -1030,12 +1049,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				if (!isOperationAllowed(currentOperation))
 				{
 					try {
-						resp.setContentType("application/xml");
-						resp.setContentLength(Integer.MAX_VALUE);
-						OutputStream os = resp.getOutputStream();
-						os.write(generateOgcError("Operation not allowed","OperationNotSupported ","").toString().getBytes());
-						os.flush();
-						os.close();
+						sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request"));
 						return true;
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -1047,12 +1061,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			catch (AvailabilityPeriodException ex)
 			{
 				try {
-					resp.setContentType("application/xml");
-					resp.setContentLength(Integer.MAX_VALUE);
-					OutputStream os = resp.getOutputStream();
-					os.write(generateOgcError(ex.getMessage(),"OperationNotSupported ","").toString().getBytes());
-					os.flush();
-					os.close();
+					sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request"));
 					return true;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1075,6 +1084,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected boolean isOperationAllowed(String operation) {
 		if (policy == null)
 			return false;
+		
 		if (policy.getAvailabilityPeriod() != null) {
 			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
 				return false;

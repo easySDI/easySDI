@@ -97,11 +97,20 @@ public class CSWProxyServlet extends ProxyServlet {
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
-		sb.append("<ows:Exception exceptionCode=\"");
-		sb.append(code);
-		sb.append("\" locator=\"");
-		sb.append(locator);
-		sb.append("\">");
+		sb.append("<ows:Exception ");
+		if(code != null && code != "")
+		{
+			sb.append(" exceptionCode=\"");
+			sb.append(code);
+			sb.append("\"");
+		}
+		if(locator != null && locator != "")
+		{
+			sb.append(" locator=\"");
+			sb.append(locator);
+			sb.append("\"");
+		}
+		sb.append(">");
 		sb.append("<ows:ExceptionText>");
 		sb.append(errorMessage);
 		sb.append("</ows:ExceptionText>");
@@ -371,12 +380,9 @@ public class CSWProxyServlet extends ProxyServlet {
 			it = deniedOperations.iterator();
 			while (it.hasNext()) {
 				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-
 				CSWCapabilities200.append(it.next());
-
 				CSWCapabilities200.append("']\"></xsl:template>");
 			}
-
 			if (permitedOperations.size() == 0 && deniedOperations.size() == 0) {
 				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
 			}
@@ -595,7 +601,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		version = version.replaceAll("\\.", "");
 
 		//Generate OGC exception if current operation is not allowed
-		if(operationAllowedFilter(currentOperation,resp))
+		if(handleNotAllowedOperation(currentOperation,resp))
 			return ;
 		
 		// Send the request to the remote server
@@ -634,19 +640,19 @@ public class CSWProxyServlet extends ProxyServlet {
 			String currentOperation = rh.getOperation();
 
 			//Generate OGC exception if current operation is not allowed
-			if(operationAllowedFilter(currentOperation,resp))
+			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
 			
 			//Get visibility policy
-			if(policy.getObjectVisibilities().isAll())
-			{
-				//No filter needed
-			}
-			else
-			{
-				List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
-				//
-			}
+//			if(policy.getObjectVisibilities().isAll())
+//			{
+//				//No filter needed
+//			}
+//			else
+//			{
+//				List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+//				//
+//			}
 			
 			
 			// In the case of transaction only one remote server is supported.
@@ -715,12 +721,13 @@ public class CSWProxyServlet extends ProxyServlet {
 			}
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			resp.setStatus(401);
-			try {
-				resp.getWriter().println(e.getMessage());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+//			resp.setStatus(401);
+//			try {
+//				resp.getWriter().println(e.getMessage());
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());

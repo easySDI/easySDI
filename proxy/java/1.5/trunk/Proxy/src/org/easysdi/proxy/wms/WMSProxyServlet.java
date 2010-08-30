@@ -125,6 +125,10 @@ import com.vividsolutions.jts.io.WKTReader;
 public class WMSProxyServlet extends ProxyServlet {
 
 	// ***************************************************************************************************************************************
+	//Store all the possible operations for a WMS service
+	//Used in buildCapabilitiesXSLT()
+	private String[] WMSOperation = { "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" };
+	
 	// Debug tb 08.07.2009
 	private Map<Integer, String> serverUrlPerfilePathList = new TreeMap<Integer, String>(); // Url
 	// du
@@ -154,11 +158,20 @@ public class WMSProxyServlet extends ProxyServlet {
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.3.0\">");
-		sb.append("<ServiceException code=\"");
-		sb.append(code);
-		sb.append("\" locator=\"");
-		sb.append(locator);
-		sb.append("\">");
+		sb.append("<ServiceException ");
+		if(code != null && code != "")
+		{
+			sb.append(" code=\"");
+			sb.append(code);
+			sb.append("\"");
+		}
+		if(locator != null && locator != "")
+		{
+			sb.append(" locator=\"");
+			sb.append(locator);
+			sb.append("\"");
+		}
+		sb.append(">");
 		sb.append(errorMessage);
 		sb.append("</ServiceException>");
 		sb.append("</ServiceExceptionReport>");
@@ -175,7 +188,32 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 
 			String url = getServletUrl(req);
-
+			
+			//Retrieve allowed and denied operations from the policy
+			List<String> permitedOperations = new Vector<String>();
+			List<String> deniedOperations = new Vector<String>();
+			for (int i = 0; i < WMSOperation.length; i++) 
+			{
+				//Those 3 operations are not yet supported by the proxy
+				//Remove this test when it will be the case
+				if(WMSOperation[i].equalsIgnoreCase("DescribeLayer")|| WMSOperation[i].equalsIgnoreCase("PutStyles") || WMSOperation[i].equalsIgnoreCase("GetStyles"))
+				{
+					deniedOperations.add(WMSOperation[i]);
+				}
+				else
+				{
+					if (isOperationAllowed(WMSOperation[i])) 
+					{
+						permitedOperations.add(WMSOperation[i]);
+						dump(WMSOperation[i] + " is permitted");
+					} else 
+					{
+						deniedOperations.add(WMSOperation[i]);
+						dump(WMSOperation[i] + " is denied");
+					}
+				}
+			}
+			
 			try {
 				StringBuffer WMSCapabilities111 = new StringBuffer();
 
@@ -225,27 +263,34 @@ public class WMSProxyServlet extends ProxyServlet {
 				// Fin de Debug
 
 				// Filtrage xsl des opérations
+				//HVH-30.08.2010 : replace old version which did not work				
 				if (hasPolicy) {
-					if (!policy.getOperations().isAll()) {
-						List<Operation> operationList = policy.getOperations().getOperation();
-						for (int i = 0; i < operationList.size(); i++) {
-							if (operationList.get(i).getName() != null) {
+					if (!policy.getOperations().isAll() || deniedOperations.size() > 0 ) {
+						Iterator<String> it = permitedOperations.iterator();
+						while (it.hasNext()) {
+							String text = it.next();
+							if (text != null) {
 								WMSCapabilities111.append("<xsl:template match=\"Capability/Request/");
-
-								WMSCapabilities111.append(operationList.get(i).getName());
+								WMSCapabilities111.append(text);
 								WMSCapabilities111.append("\">");
 								WMSCapabilities111.append("<!-- Copy the current node -->");
 								WMSCapabilities111.append("<xsl:copy>");
 								WMSCapabilities111.append("<!-- Including any attributes it has and any child nodes -->");
 								WMSCapabilities111.append("<xsl:apply-templates select=\"@*|node()\"/>");
 								WMSCapabilities111.append("</xsl:copy>");
-
 								WMSCapabilities111.append("</xsl:template>");
 							}
 						}
+
+						it = deniedOperations.iterator();
+						while (it.hasNext()) {
+							WMSCapabilities111.append("<xsl:template match=\"Capability/Request/");
+							WMSCapabilities111.append(it.next());
+							WMSCapabilities111.append("\"></xsl:template>");
+						}
 					}
 				}
-
+				
 				Map hints = new HashMap();
 				// hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 				hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
@@ -494,7 +539,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	// ***************************************************************************************************************************************
 
 	
-	protected ByteArrayOutputStream buildResponseServiceException ()
+	protected ByteArrayOutputStream buildResponseForServiceException ()
 	{
 		try 
 		{
@@ -565,7 +610,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		return null;
 	}
 	
-	protected boolean filterServersResponseFiles ()
+	protected boolean filterServersResponsesForOgcServiceExceptionFiles ()
 	{
 		try
 		{
@@ -606,9 +651,9 @@ public class WMSProxyServlet extends ProxyServlet {
 		try 
 		{
 			//Filtre les fichiers réponses des serveurs :
-			//ajoute les fichiers d'exception dans wmsExceptionFilePathList
+			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
-			filterServersResponseFiles();
+			filterServersResponsesForOgcServiceExceptionFiles();
 			
 			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
 			//Ou
@@ -621,7 +666,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
 				responseContentType ="text/xml";
-				ByteArrayOutputStream exceptionOutputStream = buildResponseOgcServiceException();
+				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream);
 				return;
 			}
@@ -1272,6 +1317,11 @@ public class WMSProxyServlet extends ProxyServlet {
 				} else if (key.equalsIgnoreCase("version")) {
 					// Gets the requested version
 					version = value;
+					if (version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
+						dump("ERROR", "Bad WMS version request.");
+						sendOgcExceptionResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue ","version"));
+						return;
+					}
 				} else if (key.equalsIgnoreCase("wmtver")) {
 					// Gets the requested wmtver
 					version = value;
@@ -1312,6 +1362,25 @@ public class WMSProxyServlet extends ProxyServlet {
 					format = value;
 				}
 			}
+			
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(handleNotAllowedOperation(operation,resp))
+				return;
+			
+			//Those 3 operations are not yet supported by the proxy
+			//Remove this test when it will be the case
+			if(operation.equalsIgnoreCase("describeLayer") || operation.equalsIgnoreCase("PutStyles") || operation.equalsIgnoreCase("GetStyles"))
+			{
+				try {
+					sendOgcExceptionResponse(resp,generateOgcError("Operation not supported.","OperationNotSupported ","request"));
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					dump("ERROR", e.getMessage());
+					return;
+				}
+			}
+			
 
 			// Debug tb 18.01.2010
 			// Pour éviter le cas où "layers" est absent de la requête
@@ -1329,14 +1398,11 @@ public class WMSProxyServlet extends ProxyServlet {
 			// Debug tb 11.11.2009
 //			if (hasPolicy) {
 //				if (!isOperationAllowed(operation))
-//					//TODO : send ogc exception
 //					throw new NoPermissionException("operation is not allowed");
 //			}
 			// Fin de Debug
 			
-			//Generate OGC exception if current operation is not allowed
-			if(operationAllowedFilter(operation,resp))
-				return;
+			
 
 			// *********************************************************************
 
@@ -1682,10 +1748,16 @@ public class WMSProxyServlet extends ProxyServlet {
 			List<SendServerThread> serverThreadList = new Vector<SendServerThread>();
 
 			List<String> layerArray = null;
-			if (layer != null && layers == null)
+			if (layer != null && layer != "" && layers == null)
 				layers = layer;
 			if (layers != null)
+			{
 				layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(layers.split(","))));
+			}
+			else
+			{
+				layerArray = Collections.synchronizedList(new ArrayList<String>());
+			}
 			int layerOrder = 0;
 			String lastServerURL = null;
 			String newServerURL = null;
@@ -1717,14 +1789,18 @@ public class WMSProxyServlet extends ProxyServlet {
 							// si vrai:
 							// la requête n'est pas envoyée
 							sendRequest = true;
-							if (("GetMap".equalsIgnoreCase(operation) || "map".equalsIgnoreCase(operation)) || "getfeatureinfo".equalsIgnoreCase(operation)) {
-								if (!isSizeInTheRightRange(Integer.parseInt(width), Integer.parseInt(height))) {
+							if (("GetMap".equalsIgnoreCase(operation) || 
+								 "map".equalsIgnoreCase(operation)) || 
+								 "getfeatureinfo".equalsIgnoreCase(operation)) 
+							{
+								if (!isSizeInTheRightRange(Integer.parseInt(width), Integer.parseInt(height)))
+								{
 									dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
 									sendRequest = false;
 									layerArray.remove(0);
 								}
 
-								// Vérification de la présence du pramètre
+								// Vérification de la présence du pramètre 
 								// "LAYERS"
 								// dans la
 								// requête -> si vrai: recherche des layers
@@ -1734,8 +1810,8 @@ public class WMSProxyServlet extends ProxyServlet {
 								// et
 								// "STYLES"
 								// de la requête
-								if (sendRequest && layers != null && layers.length() > 0) {
-
+								if (sendRequest && layers != null && layers.length() > 0) 
+								{
 									// Debug tb 09.07.2009
 									String[] layerStyleArray;
 									if (styles != null) {
@@ -1867,7 +1943,9 @@ public class WMSProxyServlet extends ProxyServlet {
 								// la
 								// couche
 								// "LAYER" de l'opération GetLegendGraphic
-							} else if ("GetLegendGraphic".equalsIgnoreCase(operation)) {
+							} 
+							else if ("GetLegendGraphic".equalsIgnoreCase(operation) ) 
+							{
 								// Vérification que la couche de la req est
 								// autorisée
 								// par Policy
@@ -1892,6 +1970,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 								// Fin de Debug
 							}
+							
 
 							// Si pas de fichier Policy défini, envoi direct de
 							// la
@@ -2013,15 +2092,17 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
 			dump("ERROR", e.getMessage());
-			resp.setStatus(401);
-			try {
-				resp.getWriter().println(e.getMessage());
-			} catch (IOException e1) {
-				resp.setHeader("easysdi-proxy-error-occured", "true");
-				e1.printStackTrace();
-			}
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+//			resp.setHeader("easysdi-proxy-error-occured", "true");
+//			dump("ERROR", e.getMessage());
+//			resp.setStatus(401);
+//			try {
+//				resp.getWriter().println(e.getMessage());
+//			} catch (IOException e1) {
+//				resp.setHeader("easysdi-proxy-error-occured", "true");
+//				e1.printStackTrace();
+//			}
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();

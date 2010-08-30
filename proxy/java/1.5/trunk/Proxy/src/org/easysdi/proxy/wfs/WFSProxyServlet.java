@@ -136,15 +136,29 @@ public class WFSProxyServlet extends ProxyServlet {
 	// Server-Prefix-Namespace-AuthorizedFeature-ifExist(GeomAttribute)
 	// Fin de debug
 
+	//Store all the possible operations for a WFS service
+	//Used in buildCapabilitiesXSLT()
+	private String[] WFSOperation = { "GetCapabilities", "DescribeFeature", "GetFeature", "Transaction", "LockFeature", "GetGmlObject", "GetFeatureWithLock"};
+	
+	
 	
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
-		sb.append("<ServiceException code=\"");
-		sb.append(code);
-		sb.append("\" locator=\"");
-		sb.append(locator);
-		sb.append("\">");
+		sb.append("<ServiceException ");
+		if(code != null && code != "")
+		{
+			sb.append(" code=\"");
+			sb.append(code);
+			sb.append("\"");
+		}
+		if(locator != null && locator != "")
+		{
+			sb.append(" locator=\"");
+			sb.append(locator);
+			sb.append("\"");
+		}
+		sb.append(">");
 		sb.append(errorMessage);
 		sb.append("</ServiceException>");
 		sb.append("</ServiceExceptionReport>");
@@ -156,14 +170,36 @@ public class WFSProxyServlet extends ProxyServlet {
 		try {
 
 			String url = getServletUrl(req);
+			
+			//Retrieve allowed and denied operations from the policy
+			List<String> permitedOperations = new Vector<String>();
+			List<String> deniedOperations = new Vector<String>();
+			for (int i = 0; i < WFSOperation.length; i++) 
+			{
+				//Those 3 operations are not yet supported by the proxy
+				//Remove this test when it will be the case
+				if( WFSOperation[i].equalsIgnoreCase("LockFeature")|| WFSOperation[i].equalsIgnoreCase("GetGmlObject") || WFSOperation[i].equalsIgnoreCase("GetFeatureWithLock"))
+				{
+					deniedOperations.add(WFSOperation[i]);
+				}
+				else
+				{
+					if (isOperationAllowed(WFSOperation[i])) 
+					{
+						permitedOperations.add(WFSOperation[i]);
+						dump(WFSOperation[i] + " is permitted");
+					} else 
+					{
+						deniedOperations.add(WFSOperation[i]);
+						dump(WFSOperation[i] + " is denied");
+					}
+				}
+			}
 
 			StringBuffer WFSCapabilities100 = new StringBuffer();
 
-			WFSCapabilities100
-					.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-
+			WFSCapabilities100.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			WFSCapabilities100.append("<xsl:template match=\"wfs:OnlineResource\">");
-			// WFSCapabilities100.append("<OnlineResource>");
 			WFSCapabilities100.append("<xsl:element name=\"OnlineResource\" namespace=\"http://www.opengis.net/wfs\">" + url + "</xsl:element>");
 			// Changer seulement la partie racine de l'URL, pas les
 			// param après '?'
@@ -179,36 +215,60 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
 			WFSCapabilities100.append("</xsl:attribute>");
 			WFSCapabilities100.append("</xsl:template>");
-
+			
 			if (hasPolicy) {
-				if (!policy.getOperations().isAll()) {
-
-					Iterator<Operation> it = policy.getOperations().getOperation().iterator();
-
+				if (!policy.getOperations().isAll() || deniedOperations.size() > 0) {
+					Iterator<String> it = permitedOperations.iterator();
 					while (it.hasNext()) {
-
-						String text = it.next().getName();
+						String text = it.next();
 						if (text != null) {
 							WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
-
 							WFSCapabilities100.append(text);
-
 							WFSCapabilities100.append("\">");
-
 							WFSCapabilities100.append("<!-- Copy the current node -->");
 							WFSCapabilities100.append("<xsl:copy>");
 							WFSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
 							WFSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
 							WFSCapabilities100.append("</xsl:copy>");
-
 							WFSCapabilities100.append("</xsl:template>");
 						}
 					}
 
-					if (policy.getOperations().getOperation().size() == 0) {
-						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
+					it = deniedOperations.iterator();
+					while (it.hasNext()) {
+						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
+						WFSCapabilities100.append(it.next());
+						WFSCapabilities100.append("\"></xsl:template>");
 					}
 				}
+//				if (!policy.getOperations().isAll()) {
+//
+//					Iterator<Operation> it = policy.getOperations().getOperation().iterator();
+//
+//					while (it.hasNext()) {
+//
+//						String text = it.next().getName();
+//						if (text != null) {
+//							WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/wfs:");
+//
+//							WFSCapabilities100.append(text);
+//
+//							WFSCapabilities100.append("\">");
+//
+//							WFSCapabilities100.append("<!-- Copy the current node -->");
+//							WFSCapabilities100.append("<xsl:copy>");
+//							WFSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
+//							WFSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
+//							WFSCapabilities100.append("</xsl:copy>");
+//
+//							WFSCapabilities100.append("</xsl:template>");
+//						}
+//					}
+//
+//					if (policy.getOperations().getOperation().size() == 0) {
+//						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
+//					}
+//				}
 			}
 			WFSCapabilities100.append("  <!-- Whenever you match any node or any attribute -->");
 			WFSCapabilities100.append("<xsl:template match=\"node()|@*\">");
@@ -220,15 +280,12 @@ public class WFSProxyServlet extends ProxyServlet {
 			WFSCapabilities100.append("</xsl:template>");
 
 			if (hasPolicy) {
-
 				Map hints = new HashMap();
 				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-
 				org.geotools.data.ows.WFSCapabilities doc = (org.geotools.data.ows.WFSCapabilities) DocumentFactory.getInstance(new File(wfsFilePathList
 						.get(remoteServerIndex)).toURI(), hints, Level.WARNING);
 				if (doc != null) {
 					List<FeatureSetDescription> l = doc.getFeatureTypes();
-
 					for (int i = 0; i < l.size(); i++) {
 						String ftName = l.get(i).getName();
 						if (hasPolicy) {
@@ -238,44 +295,23 @@ public class WFSProxyServlet extends ProxyServlet {
 								//tmpFT = s[s.length - 1];
 							}
 							if (!isFeatureTypeAllowed(tmpFT, getRemoteServerUrl(remoteServerIndex))) {
-
 								WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType[starts-with(wfs:Name,'" + ftName + "')]\">");
 								WFSCapabilities100.append("</xsl:template>");
 							}
 						}
 					}
 				}
-				// Debug tb 03.07.2009
-				// Add the prefix before the feature type: devenu inutile,
-				// FeatureType>Name contient déjà le préfix du serveur concerné
-				// if(getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0){
-				// WFSCapabilities100.append("<xsl:template match=\"//wfs:FeatureType/wfs:Name\">");
-				// WFSCapabilities100.append("<Name>");
-				// WFSCapabilities100.append("<xsl:if test=\"contains(.,':')\">");
-				// WFSCapabilities100.append("<xsl:value-of select=\"substring-before(.,':')\"/>"+":"+getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\"substring-after(., ':')\"/>");
-				// WFSCapabilities100.append("</xsl:if>");
-				// WFSCapabilities100.append("<xsl:if test=\"not(contains(.,':'))\">");
-				// WFSCapabilities100.append(getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\".\"/>");
-				// WFSCapabilities100.append("</xsl:if>");
-				//
-				// WFSCapabilities100.append("</Name>");
-				// WFSCapabilities100.append("</xsl:template>");
-				// }
-				// Fin de Debug
 			}
 			WFSCapabilities100.append("</xsl:stylesheet>");
-
 			return WFSCapabilities100;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.
 		StringBuffer sb = new StringBuffer();
-		return sb
-				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
+		return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
 	protected StringBuffer buildServiceMetadataCapabilitiesXSLT(String version) 
@@ -467,8 +503,15 @@ public class WFSProxyServlet extends ProxyServlet {
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
 			String version = rh.getVersion();
+			
 			if (version != null)
 				version = version.replaceAll("\\.", "");
+			
+			if (!version.equalsIgnoreCase("100")) {
+				dump("ERROR", "Bad wfs version request: 1.0.0 only");
+				sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+				return;
+			}
 
 			String currentOperation = rh.getOperation();
 
@@ -479,8 +522,22 @@ public class WFSProxyServlet extends ProxyServlet {
 			}
 			
 			//Generate OGC exception if current operation is not allowed
-			if(operationAllowedFilter(currentOperation,resp))
+			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
+			
+			//Those 3 operations are not yet supported by the proxy
+			//Remove this test when it will be the case
+			if(currentOperation.equalsIgnoreCase("LockFeature") || currentOperation.equalsIgnoreCase("GetGmlObject") || currentOperation.equalsIgnoreCase("GetFeatureWithLock"))
+			{
+				try {
+					sendOgcExceptionResponse(resp,generateOgcError("Operation not supported.","OperationNotSupported ","request"));
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					dump("ERROR", e.getMessage());
+					return;
+				}
+			}
 //			if (hasPolicy) {
 //				if (!isOperationAllowed(currentOperation))
 //					throw new NoPermissionException("operation is not allowed");
@@ -782,15 +839,23 @@ public class WFSProxyServlet extends ProxyServlet {
 						String s = "<?xml version='1.0' encoding='utf-8' ?>"
 								+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 								+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-
-						FileOutputStream tempFos = new FileOutputStream(tempFile);
-						tempFos.write(s.getBytes());
-						tempFos.flush();
-						tempFos.close();
-						in.close();
-						filePath = tempFile.toString();
-						send = false;
+//						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
+//
+//						FileOutputStream tempFos = new FileOutputStream(tempFile);
+//						tempFos.write(s.getBytes());
+//						tempFos.flush();
+//						tempFos.close();
+//						in.close();
+//						filePath = tempFile.toString();
+////						wfsFilePathList.put(iServer, filePath);
+//						send = false;
+						
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						out.write(s.getBytes());
+						out.flush();
+						out.close();
+						sendHttpServletResponse(req,resp,out);
+						return;
 					}
 				}
 				// Fin de Debug
@@ -804,15 +869,23 @@ public class WFSProxyServlet extends ProxyServlet {
 						String s = "<?xml version='1.0' encoding='utf-8' ?>"
 								+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 								+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-
-						FileOutputStream tempFos = new FileOutputStream(tempFile);
-						tempFos.write(s.getBytes());
-						tempFos.flush();
-						tempFos.close();
-						in.close();
-						filePath = tempFile.toString();
-						send = false;
+//						File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
+//
+//						FileOutputStream tempFos = new FileOutputStream(tempFile);
+//						tempFos.write(s.getBytes());
+//						tempFos.flush();
+//						tempFos.close();
+//						in.close();
+//						filePath = tempFile.toString();
+////						wfsFilePathList.put(iServer, filePath);
+//						send = false;
+						
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						out.write(s.getBytes());
+						out.flush();
+						out.close();
+						sendHttpServletResponse(req,resp,out);
+						return;
 					}
 
 					// Ajouter le "remoteFilter" à la requête posée
@@ -914,6 +987,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				// plus d'une fois!!!
 				if (send) {
 					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
+					wfsFilePathList.put(iServer, filePath);
 				}
 			}
 			// Fin de la phase de reconstruction de la requête: wfsFilePathList
@@ -924,10 +998,12 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Lancement du post traitement
 			if (wfsFilePathList.size() > 0) {
 				version = version.replaceAll("\\.", "");
-				if (version.equalsIgnoreCase("100")) {
+				if (version.equalsIgnoreCase("100")||version.equalsIgnoreCase("000")) {
 					transform(version, currentOperation, req, resp);
 				} else {
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
+					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+					return ;
 				}
 			} else {
 				dump("ERROR", "This request has no authorized results!");
@@ -937,12 +1013,13 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			resp.setStatus(401);
-			try {
-				resp.getWriter().println(e.getMessage());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+//			resp.setStatus(401);
+//			try {
+//				resp.getWriter().println(e.getMessage());
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
@@ -996,6 +1073,12 @@ public class WFSProxyServlet extends ProxyServlet {
 				} else if (key.equalsIgnoreCase("version")) {
 					// Gets the requested version
 					version = value;
+					//If version is not 1.0.0, return an ogc exception
+					if (!version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
+						dump("ERROR", "Bad wfs version request: 1.0.0 only");
+						sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+						return;
+					}
 				} else if (key.equalsIgnoreCase("service")) {
 					// Gets the requested service
 					service = value;
@@ -1008,9 +1091,23 @@ public class WFSProxyServlet extends ProxyServlet {
 			requestParamUrl = paramUrl;
 			// Fin de debug
 
-			//Generate OGC exception if current operation is not allowed
-			if(operationAllowedFilter(currentOperation,resp))
+			//Generate OGC exception and send it to the client if current operation is not allowed
+			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
+			
+			//Those 3 operations are not yet supported by the proxy
+			//Remove this test when it will be the case
+			if(currentOperation.equalsIgnoreCase("LockFeature") || currentOperation.equalsIgnoreCase("GetGmlObject") || currentOperation.equalsIgnoreCase("GetFeatureWithLock"))
+			{
+				try {
+					sendOgcExceptionResponse(resp,generateOgcError("Operation not supported.","OperationNotSupported ","request"));
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+					dump("ERROR", e.getMessage());
+					return;
+				}
+			}
 			
 			String user = "";
 			if (req.getUserPrincipal() != null) {
@@ -1394,14 +1491,21 @@ public class WFSProxyServlet extends ProxyServlet {
 								String s = "<?xml version='1.0' encoding='utf-8' ?>"
 										+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 										+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
+//								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
 
-								FileOutputStream tempFos = new FileOutputStream(tempFile);
-								tempFos.write(s.getBytes());
-								tempFos.flush();
-								tempFos.close();
-								filePath = tempFile.toString();
-								send = false;
+								ByteArrayOutputStream out = new ByteArrayOutputStream();
+								out.write(s.getBytes());
+								out.flush();
+								out.close();
+								sendHttpServletResponse(req,resp,out);
+								return;
+//								FileOutputStream tempFos = new FileOutputStream(tempFile);
+//								tempFos.write(s.getBytes());
+//								tempFos.flush();
+//								tempFos.close();
+//								filePath = tempFile.toString();
+//								wfsFilePathList.put(iServer, filePath);
+//								send = false;
 							}
 						}
 						// Fin de Debug
@@ -1413,14 +1517,22 @@ public class WFSProxyServlet extends ProxyServlet {
 								String s = "<?xml version='1.0' encoding='utf-8' ?>"
 										+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
 										+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-
-								FileOutputStream tempFos = new FileOutputStream(tempFile);
-								tempFos.write(s.getBytes());
-								tempFos.flush();
-								tempFos.close();
-								filePath = tempFile.toString();
-								send = false;
+//								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
+//
+//								FileOutputStream tempFos = new FileOutputStream(tempFile);
+//								tempFos.write(s.getBytes());
+//								tempFos.flush();
+//								tempFos.close();
+//								filePath = tempFile.toString();
+////								wfsFilePathList.put(iServer, filePath);
+//								send = false;
+								
+								ByteArrayOutputStream out = new ByteArrayOutputStream();
+								out.write(s.getBytes());
+								out.flush();
+								out.close();
+								sendHttpServletResponse(req,resp,out);
+								return;
 							}
 						}
 						// Exécution de la requête utilisateur modifiée au
@@ -1463,10 +1575,12 @@ public class WFSProxyServlet extends ProxyServlet {
 			if (wfsFilePathList.size() > 0) {
 				// Fin de Debug
 				version = version.replaceAll("\\.", "");
-				if (version.equalsIgnoreCase("100")) {
+				if (version.equalsIgnoreCase("100")||version.equalsIgnoreCase("000")) {
 					transform(version, currentOperation, req, resp);
 				} else {
+					//Moved to the begining of the requestPreTreatmentGET method  
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
+					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
 				}
 				// Debug tb 24.06.2009
 			} else {
@@ -1480,12 +1594,13 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			resp.setStatus(401);
-			try {
-				resp.getWriter().println(e.getMessage());
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+//			resp.setStatus(401);
+//			try {
+//				resp.getWriter().println(e.getMessage());
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
@@ -2017,7 +2132,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
 
 	// ************************************************************************************************************************************************************************************************************
-	protected ByteArrayOutputStream buildResponseServiceException ()
+	protected ByteArrayOutputStream buildResponseForServiceException ()
 	{
 		try 
 		{
@@ -2088,7 +2203,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		return null;
 	}
 	
-	protected boolean filterServersResponseFiles ()
+	protected boolean filterServersResponsesForOgcServiceExceptionFiles ()
 	{
 		try
 		{
@@ -2128,9 +2243,9 @@ public class WFSProxyServlet extends ProxyServlet {
 		try {
 			
 			//Filtre les fichiers réponses des serveurs :
-			//ajoute les fichiers d'exception dans wmsExceptionFilePathList
+			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
-			filterServersResponseFiles();
+			filterServersResponsesForOgcServiceExceptionFiles();
 			
 			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
 			//Ou
@@ -2142,7 +2257,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
-				ByteArrayOutputStream exceptionOutputStream = buildResponseOgcServiceException();
+				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream);
 				return;
 			}

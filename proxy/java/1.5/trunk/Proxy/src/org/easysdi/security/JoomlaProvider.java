@@ -94,10 +94,10 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 		return version;
 	}
 
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
+	public UserDetails loadUserByUsername(String username) {
 		String sql="";
 		JoomlaUser user = null;
-		if(Integer.parseInt(getVersion())<200)
+		if(getVersion()== null || Integer.parseInt(getVersion())<200)
 		{
 			sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix()
 					+ "users u on (p.user_id = u.id) where username = ? and block = 0";
@@ -122,7 +122,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	private Collection<GrantedAuthority> getAuthorities(String username)  {
 		Method m;
 		String sql = "";
-		if(Integer.parseInt(getVersion())<200)
+		if(getVersion()== null || Integer.parseInt(getVersion())<200)
 		{
 			sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
 			+ getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
