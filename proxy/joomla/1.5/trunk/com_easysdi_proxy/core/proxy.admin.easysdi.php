@@ -763,7 +763,8 @@ class ADMIN_proxy
 				}
 				else
 				{
-					$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+					if($keywordsList)
+						$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
 				}
 				$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
 //				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.csw.WFProxyServlet")==0)
