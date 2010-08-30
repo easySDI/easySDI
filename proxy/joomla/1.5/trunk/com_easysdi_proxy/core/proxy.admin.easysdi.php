@@ -351,45 +351,6 @@ class ADMIN_proxy
 		$maxHeight= JRequest::getVar("maxHeight","");
 		$minHeight= JRequest::getVar("minHeight","");
 
-		//Check the geographic filters validity
-		/*	for ($i=0;;$i++)
-		 {
-		 $remoteServer = JRequest::getVar("remoteServer$i","");
-
-		 if (strlen($remoteServer)>0)
-		 {
-			while (list($key, $val) = each($params ))
-			{
-			if (!(strpos($key,"featuretype@$i")===false))
-			{
-			//remote filter
-			$remoteFilter = JRequest::getVar("RemoteFilter@$i@$val","");
-			//local filter
-			$localFilter = JRequest::getVar("LocalFilter@$i@$val","");
-
-			//Do not allowed an empty "geographic filter on query" associated with a filled "geographic filter on answer"
-			if(strlen($remoteFilter) == 0 && strlen($localFilter)>0)
-			{
-			$mainframe->redirect("index.php?option=com_easysdi_proxy&task=editPolicy&configId=$configId&policyId=$policyId&new=$isNewPolicy");
-			return;
-			}
-			}
-			}
-			}
-			else
-			{
-			break;
-			}
-			}
-
-			$remoteServer ="";
-			$remoteFilter = "";
-			$localFilter = "";
-			$i= 0;
-			$key = "";
-			$val ="";
-			$params = JRequest::get();*/
-
 		foreach ($xml->config as $config)
 		{
 			if (strcmp($config[id],$configId)==0)
@@ -503,6 +464,27 @@ class ADMIN_proxy
 				foreach ($roleNameList as $role)
 				{
 					$node = $thePolicy->Subjects->addChild(Role,$role);
+				}
+			}
+		}
+		
+		//Operations
+		$AllOperations = JRequest::getVar("AllOperations","");
+		if (strlen($AllOperations)>0)
+		{
+			$thePolicy->Operations="";
+			$thePolicy->Operations['All']="true";
+		}
+		else
+		{
+			$thePolicy->Operations="";
+			$thePolicy->Operations['All']="false";
+			$operationsList = JRequest::getVar("operation");
+			if (sizeof($operationsList)>0)
+			{
+				foreach($operationsList as $operation)
+				{
+					$node = $thePolicy->Operations->addChild(Operation)->addChild(Name,$operation);
 				}
 			}
 		}

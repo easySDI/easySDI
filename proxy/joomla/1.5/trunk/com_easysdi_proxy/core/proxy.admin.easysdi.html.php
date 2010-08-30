@@ -1266,36 +1266,108 @@ function activateLayer(server,layerName){
 		<?php
 	}
 
-	function generateCSWHTML($config,$thePolicy){
-
+	function generateCSWHTML($config,$thePolicy)
+	{
 		?>
-<script>
-	function addNewMetadataToExclude(nbParam,nbServer){
+		<script>
+		function addNewMetadataToExclude(nbParam,nbServer)
+		{
+			var tr = document.createElement('tr');	
+			var tdParam = document.createElement('td');	
+			var inputParam = document.createElement('input');
+			inputParam.size=200;
+			inputParam.type="text";
+			inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
+			tdParam.appendChild(inputParam);
+			tr.appendChild(tdParam);
+			document.getElementById("metadataParamTable").appendChild(tr);
+			document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
+		}
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oHarvest').disabled=check;
+			document.getElementById('oDescribeRecord').disabled=check;
+			document.getElementById('oTransaction').disabled=check;
+			document.getElementById('oGetRecords').disabled=check;
+			document.getElementById('oGetDomain').disabled=check;
+			document.getElementById('oGetRecordbyId').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oHarvest').checked=check;
+			document.getElementById('oDescribeRecord').checked=check;
+			document.getElementById('oTransaction').checked=check;
+			document.getElementById('oGetRecords').checked=check;
+			document.getElementById('oGetDomain').checked=check;
+			document.getElementById('oGetRecordbyId').checked=check;
 	
-	var tr = document.createElement('tr');	
-	var tdParam = document.createElement('td');	
-				
-	var inputParam = document.createElement('input');
-	inputParam.size=200;
-	inputParam.type="text";
-	inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
-		
-	
-	tdParam.appendChild(inputParam);
-	tr.appendChild(tdParam);
-	
-	document.getElementById("metadataParamTable").appendChild(tr);
-	document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
-		
-}
-</script>
-
-
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'Harvest')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oDescribeRecord" value="DescribeRecord" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'DescribeRecord')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBERECORD'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetRecords" value="GetRecords" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'GetRecords')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDS'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain"<?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'GetDomain')==0) echo 'checked';			
+						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetRecordbyId" value="GetRecordbyId" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'GetRecordbyId')==0) echo 'checked';			
+						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDBYID'); ?></td>
+					<td></td>
+				</tr>
+			</table>
+		</fieldset>
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
-
-
 		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 			?>
 <input type="hidden" name="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
@@ -1341,55 +1413,99 @@ function activateLayer(server,layerName){
 
 	}
 
-	function generateWMSHTML($config,$thePolicy){
+	function generateWMSHTML($config,$thePolicy)
+	{
 		?>
-<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?> <a class="modal"
-	href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> <img class="helpTemplate"
-	src="../templates/easysdi/icons/silk/help.png" alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" /> </a></legend>
-<table class="admintable">
-
-	<tr>
-		<td class="key"><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MIN'); ?></td>
-		<td>
-		<table>
+		<script>
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oGetMap').disabled=check;
+			document.getElementById('oGetFeatureInfo').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oGetMap').checked=check;
+			document.getElementById('oGetFeatureInfo').checked=check;
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetMap" value="GetMap" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetMap')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETMAP'); ?></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo"  value="GetFeatureInfo" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'GetFeatureInfo')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_IMAGE_SIZE'); ?> <a class="modal"
+			href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> <img class="helpTemplate"
+			src="../templates/easysdi/icons/silk/help.png" alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" /> </a></legend>
+		<table class="admintable">
 			<tr>
-				<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
-				<td><input id="minWidth" name="minWidth" type="text" size="10"
-					value="<?php if (strlen($thePolicy->ImageSize->Minimum->Width)>0)echo $thePolicy->ImageSize->Minimum->Width ; ?>" /></td>
+				<td class="key"><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MIN'); ?></td>
+				<td>
+				<table>
+					<tr>
+						<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
+						<td><input id="minWidth" name="minWidth" type="text" size="10"
+							value="<?php if (strlen($thePolicy->ImageSize->Minimum->Width)>0)echo $thePolicy->ImageSize->Minimum->Width ; ?>" /></td>
+					</tr>
+					<tr>
+						<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
+						<td><input type="text" id="minHeight" name="minHeight" size="10"
+							value="<?php if (strlen($thePolicy->ImageSize->Minimum->Height)> 0 ) echo $thePolicy->ImageSize->Minimum->Height ; ?>" /></td>
+					</tr>
+				</table>
+				</td>
 			</tr>
 			<tr>
-				<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
-				<td><input type="text" id="minHeight" name="minHeight" size="10"
-					value="<?php if (strlen($thePolicy->ImageSize->Minimum->Height)> 0 ) echo $thePolicy->ImageSize->Minimum->Height ; ?>" /></td>
+				<td class="key"><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MAX'); ?></td>
+				<td>
+				<table>
+					<tr>
+						<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
+						<td><input type="text" id="maxWidth" name="maxWidth" size="10"
+							value="<?php if (strlen($thePolicy->ImageSize->Maximum->Width)> 0 ) echo $thePolicy->ImageSize->Maximum->Width ; ?>" /></td>
+					</tr>
+					<tr>
+						<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
+						<td><input type="text" id="maxHeight" name="maxHeight" size="10"
+							value="<?php if (strlen($thePolicy->ImageSize->Maximum->Height)> 0 )  echo $thePolicy->ImageSize->Maximum->Height ; ?>" /></td>
+					</tr>
+				</table>
+				</td>
 			</tr>
 		</table>
-		</td>
-	</tr>
-	<tr>
-		<td class="key"><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_MAX'); ?></td>
-		<td>
-		<table>
-			<tr>
-				<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_WIDTH'); ?></b></td>
-				<td><input type="text" id="maxWidth" name="maxWidth" size="10"
-					value="<?php if (strlen($thePolicy->ImageSize->Maximum->Width)> 0 ) echo $thePolicy->ImageSize->Maximum->Width ; ?>" /></td>
-			</tr>
-			<tr>
-				<td><b><?php echo JText::_( 'EASYSDI_IMAGE_SIZE_HEIGHT'); ?></b></td>
-				<td><input type="text" id="maxHeight" name="maxHeight" size="10"
-					value="<?php if (strlen($thePolicy->ImageSize->Maximum->Height)> 0 )  echo $thePolicy->ImageSize->Maximum->Height ; ?>" /></td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
-</fieldset>
-
+		</fieldset>
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
-
-
 		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 
 			$urlWithPassword = $remoteServer->url;
@@ -1502,28 +1618,95 @@ function activateLayer(server,layerName){
 
 	//--------------------------------------------------
 
-	function generateWFSHTML($config,$thePolicy){
-
+	function generateWFSHTML($config,$thePolicy)
+	{
+		?>
+		<script>
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oTransaction').disabled=check;
+			document.getElementById('oDescribeFeatureType').disabled=check;
+			document.getElementById('oLockFeature').disabled=check;
+			document.getElementById('oGetFeature').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oTransaction').checked=check;
+			document.getElementById('oDescribeFeatureType').checked=check;
+			document.getElementById('oLockFeature').checked=check;
+			document.getElementById('oGetFeature').checked=check;
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+					
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oDescribeFeatureType" value="DescribeFeatureType" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'DescribeFeatureType')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBEFEATURETYPE'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oLockFeature" value="LockFeature" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'LockFeature')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_LOCKFEATURE'); ?></td>
+					
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeature"  value="GetFeature" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+						{
+							if(strcasecmp($operation->Name,'GetFeature')==0) echo 'checked';			
+						}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATURE'); ?></td>
+					<td></td>
+				</tr>
+			</table>
+		</fieldset>
+		<?php 
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
-
-
-		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-
+		foreach ($remoteServerList->{'remote-server'} as $remoteServer)
+		{
 			$urlWithPassword = $remoteServer->url;
-
-			if (strlen($remoteServer->user)!=null && strlen($remoteServer->password)!=null){
-				if (strlen($remoteServer->user)>0 && strlen($remoteServer->password)>0){
-
-					if (strpos($remoteServer->url,"http:")===False){
+			if (strlen($remoteServer->user)!=null && strlen($remoteServer->password)!=null)
+			{
+				if (strlen($remoteServer->user)>0 && strlen($remoteServer->password)>0)
+				{
+					if (strpos($remoteServer->url,"http:")===False)
+					{
 						$urlWithPassword =  "https://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,8);
-					}else{
+					}else
+					{
 						$urlWithPassword =  "http://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,7);
 					}
 				}
 			}
-
-
 
 			$pos1 = stripos($urlWithPassword, "?");
 			$separator = "&";
@@ -1547,6 +1730,7 @@ function activateLayer(server,layerName){
 				}
 					
 				?>
+				
 
 <input
 	type="hidden" id="remoteServer<?php echo $iServer; ?>" name="remoteServer<?php echo $iServer; ?>" value="<?php echo $remoteServer->url; ?>">
