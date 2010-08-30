@@ -1970,6 +1970,18 @@ public class WMSProxyServlet extends ProxyServlet {
 
 								// Fin de Debug
 							}
+							else
+							{
+								//Not supported operation
+								try {
+									sendOgcExceptionResponse(resp,generateOgcError("Operation not supported : "+operation,"OperationNotSupported ","request"));
+									return;
+								} catch (Exception e) {
+									e.printStackTrace();
+									dump("ERROR", e.getMessage());
+									return;
+								}
+							}
 							
 
 							// Si pas de fichier Policy défini, envoi direct de
