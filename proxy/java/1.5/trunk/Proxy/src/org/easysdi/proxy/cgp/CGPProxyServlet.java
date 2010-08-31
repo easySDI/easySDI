@@ -1633,7 +1633,7 @@ public class CGPProxyServlet extends ProxyServlet {
     }
 
 	@Override
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator,String version) {
 		// TODO Auto-generated method stub
 		return null;
 	}

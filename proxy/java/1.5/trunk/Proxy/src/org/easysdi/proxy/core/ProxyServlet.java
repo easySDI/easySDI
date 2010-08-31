@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -138,8 +139,15 @@ public abstract class ProxyServlet extends HttpServlet {
 	//Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
 	protected Multimap<Integer, String> ogcExceptionFilePathList = HashMultimap.create();
 
+	//Store operations supported by the current version of the proxy
+	//Update this list to reflect proxy's capabilities
+	protected static List<String> ServiceSupportedOperations = Arrays.asList();
+	
 	private List<String> lLogs = new Vector<String>();
 	protected boolean hasPolicy = true;
+	
+	//Value of the version parameter received in the request
+	protected String requestedVersion ;
 
 	// protected String prefix = "SRV";
 
@@ -975,7 +983,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
-	protected abstract  StringBuffer generateOgcError(String errorMessage, String code, String locator) ;
+	protected abstract  StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) ;
 	
 
 	/**
@@ -1043,34 +1051,31 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected boolean handleNotAllowedOperation (String currentOperation, HttpServletResponse resp)
 	{
+		//IF operation is not supported by the current version of the proxy
+		if(!ServiceSupportedOperations.contains(currentOperation))
+		{
+			sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
+			return true;
+		}
 		if (hasPolicy) {
 			try
 			{
 				if (!isOperationAllowed(currentOperation))
 				{
-					try {
-						sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request"));
-						return true;
-					} catch (Exception e) {
-						e.printStackTrace();
-						dump("ERROR", e.getMessage());
-						return true;
-					}
+					sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
+					return true;
+					
 				}
 			}
 			catch (AvailabilityPeriodException ex)
 			{
-				try {
-					sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request"));
-					return true;
-				} catch (Exception e) {
-					e.printStackTrace();
-					dump("ERROR", e.getMessage());
-					return true;
-				}
+				
+				sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
+				return true;
 			}
 		}
 		return false;
+		
 	}
 	
 	/**

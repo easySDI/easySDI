@@ -35,6 +35,7 @@ import java.io.StringWriter;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -139,12 +140,24 @@ public class WFSProxyServlet extends ProxyServlet {
 	//Store all the possible operations for a WFS service
 	//Used in buildCapabilitiesXSLT()
 	private String[] WFSOperation = { "GetCapabilities", "DescribeFeature", "GetFeature", "Transaction", "LockFeature", "GetGmlObject", "GetFeatureWithLock"};
+	//Store operations supported by the current version of the proxy
+	//Update this list to reflect proxy's capabilities
+	//private static final List<String> WFSSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
 	
 	
+	/**
+	 * Constructor
+	 */
+	public WFSProxyServlet ()
+	{
+		super();
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
+	}
 	
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+//		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+		sb.append("<ServiceExceptionReport version=\"1.2.0\"");
 		sb.append("<ServiceException ");
 		if(code != null && code != "")
 		{
@@ -176,23 +189,14 @@ public class WFSProxyServlet extends ProxyServlet {
 			List<String> deniedOperations = new Vector<String>();
 			for (int i = 0; i < WFSOperation.length; i++) 
 			{
-				//Those 3 operations are not yet supported by the proxy
-				//Remove this test when it will be the case
-				if( WFSOperation[i].equalsIgnoreCase("LockFeature")|| WFSOperation[i].equalsIgnoreCase("GetGmlObject") || WFSOperation[i].equalsIgnoreCase("GetFeatureWithLock"))
+				if (ServiceSupportedOperations.contains(WFSOperation[i]) && isOperationAllowed(WFSOperation[i])) 
+				{
+					permitedOperations.add(WFSOperation[i]);
+					dump(WFSOperation[i] + " is permitted");
+				} else 
 				{
 					deniedOperations.add(WFSOperation[i]);
-				}
-				else
-				{
-					if (isOperationAllowed(WFSOperation[i])) 
-					{
-						permitedOperations.add(WFSOperation[i]);
-						dump(WFSOperation[i] + " is permitted");
-					} else 
-					{
-						deniedOperations.add(WFSOperation[i]);
-						dump(WFSOperation[i] + " is denied");
-					}
+					dump(WFSOperation[i] + " is denied");
 				}
 			}
 
@@ -503,13 +507,14 @@ public class WFSProxyServlet extends ProxyServlet {
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
 			String version = rh.getVersion();
+			requestedVersion = version;
 			
 			if (version != null)
 				version = version.replaceAll("\\.", "");
 			
 			if (!version.equalsIgnoreCase("100")) {
 				dump("ERROR", "Bad wfs version request: 1.0.0 only");
-				sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+				sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				return;
 			}
 
@@ -525,19 +530,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
 			
-			//Those 3 operations are not yet supported by the proxy
-			//Remove this test when it will be the case
-			if(currentOperation.equalsIgnoreCase("LockFeature") || currentOperation.equalsIgnoreCase("GetGmlObject") || currentOperation.equalsIgnoreCase("GetFeatureWithLock"))
-			{
-				try {
-					sendOgcExceptionResponse(resp,generateOgcError("Operation not supported.","OperationNotSupported ","request"));
-					return;
-				} catch (Exception e) {
-					e.printStackTrace();
-					dump("ERROR", e.getMessage());
-					return;
-				}
-			}
+			
 //			if (hasPolicy) {
 //				if (!isOperationAllowed(currentOperation))
 //					throw new NoPermissionException("operation is not allowed");
@@ -1002,7 +995,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					transform(version, currentOperation, req, resp);
 				} else {
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 					return ;
 				}
 			} else {
@@ -1013,7 +1006,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1021,6 +1014,7 @@ public class WFSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
@@ -1072,11 +1066,12 @@ public class WFSProxyServlet extends ProxyServlet {
 					}
 				} else if (key.equalsIgnoreCase("version")) {
 					// Gets the requested version
+					requestedVersion= value;
 					version = value;
 					//If version is not 1.0.0, return an ogc exception
 					if (!version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad wfs version request: 1.0.0 only");
-						sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+						sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("service")) {
@@ -1095,19 +1090,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
 			
-			//Those 3 operations are not yet supported by the proxy
-			//Remove this test when it will be the case
-			if(currentOperation.equalsIgnoreCase("LockFeature") || currentOperation.equalsIgnoreCase("GetGmlObject") || currentOperation.equalsIgnoreCase("GetFeatureWithLock"))
-			{
-				try {
-					sendOgcExceptionResponse(resp,generateOgcError("Operation not supported.","OperationNotSupported ","request"));
-					return;
-				} catch (Exception e) {
-					e.printStackTrace();
-					dump("ERROR", e.getMessage());
-					return;
-				}
-			}
+			
 			
 			String user = "";
 			if (req.getUserPrincipal() != null) {
@@ -1580,7 +1563,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				} else {
 					//Moved to the begining of the requestPreTreatmentGET method  
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version"));
+					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				}
 				// Debug tb 24.06.2009
 			} else {
@@ -1594,7 +1577,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1602,6 +1585,7 @@ public class WFSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}

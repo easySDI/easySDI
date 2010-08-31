@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -81,6 +82,15 @@ public class CSWProxyServlet extends ProxyServlet {
 	private static final long serialVersionUID = 7288366261387138250L;
 	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction","GetDomain" };
 
+	/**
+	 * Constructor
+	 */
+	public CSWProxyServlet ()
+	{
+		super();
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord", "Harvest", "Transaction");
+	}
+	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 	}
@@ -94,9 +104,10 @@ public class CSWProxyServlet extends ProxyServlet {
 
 	}
 	
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator) {
+	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
+//		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
+		sb.append("<ows:ExceptionReport version=\"1.0.0\" >");
 		sb.append("<ows:Exception ");
 		if(code != null && code != "")
 		{
@@ -134,19 +145,14 @@ public class CSWProxyServlet extends ProxyServlet {
 			// Fill the vectors with the corresponding information
 			for (int i = 0; i < CSWOperation.length; i++) {
 
-				boolean isOperationPermited = false;
-
-				if (isOperationAllowed(CSWOperation[i])) {
-					isOperationPermited = true;
-				}
-
-				if (isOperationPermited) {
-					permitedOperations.add(CSWOperation[i]);
-					dump(CSWOperation[i] + " is permitted");
-				} else {
-					deniedOperations.add(CSWOperation[i]);
-					dump(CSWOperation[i] + " is denied");
-				}
+					if (ServiceSupportedOperations.contains(CSWOperation[i]) && isOperationAllowed(CSWOperation[i])) 
+					{
+						permitedOperations.add(CSWOperation[i]);
+						dump(CSWOperation[i] + " is permitted");
+					} else {
+						deniedOperations.add(CSWOperation[i]);
+						dump(CSWOperation[i] + " is denied");
+					}
 			}
 
 			return generateXSLTForCSWCapabilities200(url, deniedOperations, permitedOperations);
@@ -557,7 +563,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				resp.setContentType("application/xml");
 				resp.setContentLength(Integer.MAX_VALUE);
 				OutputStream os = resp.getOutputStream();
-				os.write(generateOgcError("Operation not allowed","","").toString().getBytes());
+				os.write(generateOgcError("Operation not allowed","","",requestedVersion).toString().getBytes());
 				os.flush();
 				os.close();
 			} catch (Exception e) {
@@ -598,6 +604,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				}
 			}
 		}
+		requestedVersion = version;
 		version = version.replaceAll("\\.", "");
 
 		//Generate OGC exception if current operation is not allowed
@@ -636,7 +643,8 @@ public class CSWProxyServlet extends ProxyServlet {
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
 			String version = rh.getVersion();
-
+			requestedVersion = version;
+			
 			String currentOperation = rh.getOperation();
 
 			//Generate OGC exception if current operation is not allowed
@@ -721,7 +729,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			}
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request"));
+			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
