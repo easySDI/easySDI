@@ -652,7 +652,7 @@ class SITE_cpanel {
 			 	{
 				 	$tmpName =  $_FILES['file'.$product_id]["tmp_name"];
 				 	$fp      = fopen($tmpName, 'r');
-				 	$content = fread($fp, filesize($tmpName));
+					$content = fread($fp, filesize($tmpName));
 				 	$content = addslashes($content);
 				 	fclose($fp);
 				 	$query .= ", filename = '$fileName' ";
@@ -1140,6 +1140,8 @@ class SITE_cpanel {
 				return;
 			}
 		}
+		
+		
 		$queryUser = "SELECT name FROM #__users WHERE id = $user";
 		$db->setQuery($queryUser );
 		$user_name =  $db->loadResult();

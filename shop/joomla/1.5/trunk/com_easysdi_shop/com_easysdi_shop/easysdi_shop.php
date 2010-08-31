@@ -53,6 +53,14 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
+/**
+ * Handle view shop
+ */
+if ($view == 'shop' && $task != 'deleteProduct')
+{
+	$task = $view;
+}
+
 switch($task){
 	case "shop":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -179,7 +187,7 @@ switch($task){
 			
 		SITE_favorite::metadataNotification(1);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid'));
 		break;
 
 	case "removeMetadataNotification":
@@ -222,7 +230,7 @@ switch($task){
 			
 		SITE_favorite::metadataNotification(0);
 		/*$mainframe->redirect("index.php?option=$option&task=listFavoriteProduct" );*/
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 			
 	case "addFavorite":
@@ -264,7 +272,7 @@ switch($task){
 			
 			
 		SITE_favorite::favoriteProduct(1);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "removeFavorite":
@@ -306,7 +314,7 @@ switch($task){
 			
 			
 		SITE_favorite::favoriteProduct(0);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "manageFavoriteProduct":
@@ -347,7 +355,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id" );
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "manageFavorite":
@@ -702,7 +710,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::sendOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "orderDraft":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -784,7 +792,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::archiveOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "copyOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -825,7 +833,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::copyOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "suppressOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -867,7 +875,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::suppressOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit&Itemid=".JRequest::getVar('Itemid') );
 		break;	
 		case "listProductsForPartnerId":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -951,7 +959,7 @@ switch($task){
 			
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'cpanel.site.easysdi.php');
 		SITE_cpanel::saveOrdersForProvider();
-		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "processOrder":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1118,7 +1126,7 @@ switch($task){
 			
 			
 		HTML_shop::saveOrder("SENT");
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "saveOrder":
@@ -1160,7 +1168,7 @@ switch($task){
 			
 			
 		HTML_shop::saveOrder("SAVED");
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 		/*
 		 * Properties
@@ -1203,7 +1211,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "saveProperties":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1244,7 +1252,7 @@ switch($task){
 			
 			
 		SITE_properties::saveProperties($option);
-		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProperties&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "editProperties":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1446,7 +1454,7 @@ switch($task){
 			
 			
 		$properties_id = JRequest::getVar('properties_id');
-		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id );
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id."&Itemid=".JRequest::getVar('Itemid') );
 
 	case "savePropertiesValues":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1489,7 +1497,7 @@ switch($task){
 		SITE_properties::savePropertiesValues($option);
 
 		$properties_id = JRequest::getVar('properties_id');
-		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id );
+		$mainframe->redirect("index.php?option=$option&task=listPropertiesValues&limitstart=$limitstart&limit=$limit&cid[]=".$properties_id."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "deletePropertiesValues":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1733,7 +1741,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProductMetadata&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProductMetadata&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "editMetadata":
 		require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.breadcrumbs.builder.class.php'); 		
@@ -1887,7 +1895,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "saveProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -1925,7 +1933,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 		
 		SITE_product::saveProduct(true, $option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "newProduct":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -2008,7 +2016,7 @@ switch($task){
 		if (JRequest::getVar('id',-1) !=-1 ){
 			SITE_product::editProduct();
 		}else{
-			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		}
 		break;
 	case "suppressProduct":
@@ -2415,7 +2423,7 @@ switch($task){
 			
 			
 		SITE_metadata::saveMDStandard($option);
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "cancelStandardClass":
 	case "cancelStandard":
@@ -2456,7 +2464,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 			
 			
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 	case "saveStandardClass":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
@@ -2497,7 +2505,7 @@ switch($task){
 			
 			
 		SITE_metadata::saveMDStandardClasses($option);
-		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listMetadataClasses&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 
 		break;
 

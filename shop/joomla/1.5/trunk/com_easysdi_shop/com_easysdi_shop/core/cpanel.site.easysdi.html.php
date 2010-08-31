@@ -308,7 +308,7 @@ class HTML_cpanel {
 	</table>
 			<input type="hidden" name="order_id" id="order_id" value="">
 			<input type="hidden" name="devis_to_order" id="devis_to_order" value="0">
-			<input type="hidden" name="Itemid" id="Itemid" value="">
+		        <input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>" />
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<!--
@@ -498,6 +498,7 @@ class HTML_cpanel {
 		<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
 		<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
 		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar("Itemid"); ?>">
 		<script>
 		function validateForm(){
 			var aSel = $('processOrderForm').getElementsByTagName("input");
@@ -533,7 +534,8 @@ class HTML_cpanel {
 					<button type="button" onClick="return validateForm();" ><?php echo JText::_("EASYSDI_SEND_RESULT"); ?></button>
 				</td>
 				<td>
-					<button type="button" onClick="document.getElementById('processOrderForm').task<?php echo $option; ?>.value='listOrdersForProvider';document.getElementById('processOrderForm').submit();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
+				<!-- document.getElementById('processOrderForm').task<?php echo $option; ?>.value='listOrdersForProvider';document.getElementById('processOrderForm').submit(); -->
+					<button type="button" onClick="window.history.back();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -715,6 +717,7 @@ class HTML_cpanel {
 			<input type="hidden" name="option" value="<?php echo $option; ?>"/>
 			<input type="hidden" id="task" name="task" value="listOrdersForProvider"/>
 			<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar("Itemid"); ?>">
 		</form>
 		</div>
 		</div>

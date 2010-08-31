@@ -656,9 +656,10 @@ class SITE_product {
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'metadata.site.easysdi.php');
-			echo "url:".$catalogUrlBase." query".$xmlstr;
+			//echo "url:".$catalogUrlBase." query".$xmlstr;
 			$result = SITE_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			echo "result:".$result;
+			//echo "result:".$result;
+			//exit;
 			//Look for and exception and clean response
 			$pos = strripos($result, "</ows:ExceptionReport>");
 			if ($pos === false) {
@@ -783,7 +784,7 @@ class SITE_product {
 				$mainframe->enqueueMessage(JText::_("EASYSDI_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$limitstart = JRequest::getVar("limitstart");
 			$limit = JRequest::getVar("limit");
-			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit&Itemid=".JRequest::getVar('Itemid') );
 		}	
 	}
 	
