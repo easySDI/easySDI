@@ -83,6 +83,27 @@ function modMainMenuXMLCallback(&$node, $args)
 	$node->removeAttribute('rel');
 	$node->removeAttribute('level');
 	$node->removeAttribute('access');
+	
+	if (strlen(strstr($node->_children[0]->_attributes['href'],"task=logout"))>0) {
+	   $data = $node->_children[0]->span[0]->_data;
+	   $href = $node->_children[0]->_attributes['href'];
+	   $children = $node->children();
+	   //remove "a" tag
+	   foreach ($node->children() as $child)
+	   {
+	   	if ($child->name() == 'a') {
+	   		$node->removeChild($child);
+	   	}
+	   }
+	   //add button
+	   $btn = $node->addChild('button');
+	  
+	   $btn->_data = $data;
+	   $btn->addAttribute('type','submit');
+	   $btn->addAttribute('class','easysdi_disconnect_button');
+	   $btn->addAttribute('onclick',"window.open('".$href."', '_self');");
+	}
+	
 }
 	define('modMainMenuXMLCallbackDefined', true);
 }
