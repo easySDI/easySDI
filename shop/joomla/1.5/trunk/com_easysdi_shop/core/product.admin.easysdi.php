@@ -228,7 +228,7 @@ class ADMIN_product {
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit();
 		}
 
@@ -244,7 +244,7 @@ class ADMIN_product {
 
 		if (!$rowProduct->bind( $_POST )) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit();
 		}
 		
@@ -287,7 +287,7 @@ class ADMIN_product {
 			if ($inserted <> 1)
 			{
 				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 		}
@@ -306,7 +306,7 @@ class ADMIN_product {
 		// Si la m�tadonn�e a pu �tre ajout�e, le produit peut �tre cr��
 		if (!$rowProduct->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit();
 		}
 
@@ -314,7 +314,7 @@ class ADMIN_product {
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit();
 		}
 
@@ -328,7 +328,7 @@ class ADMIN_product {
 			if (!$database->query()) {
 				//echo "<script> alert('".$database->getErrorMsg()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 		}
@@ -350,7 +350,7 @@ class ADMIN_product {
 		$database->setQuery( $query );
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit();
 		}
 
@@ -363,13 +363,13 @@ class ADMIN_product {
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 		}
 		
 		if ($returnList == true) {
-			$mainframe->redirect("index.php?option=$option&task=listProduct");
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid'));
 		}
 
 	}
@@ -381,7 +381,7 @@ class ADMIN_product {
 
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			exit;
 		}
 		foreach( $cid as $id )
@@ -423,7 +423,7 @@ class ADMIN_product {
 				if ($deleted <> 1)
 				{
 					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 					exit();
 				}
 			}
@@ -436,14 +436,14 @@ class ADMIN_product {
 				$xpathExcText->registerNamespace('ows','http://www.opengis.net/ows');
 				$excText = $xpathExcText->query("//ows:ExceptionText")->item(0)->nodeValue;
 				$mainframe->enqueueMessage('OGC error on metadata delete:'.$excText,"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 			
 			// Si la m�tadonn�e a pu �tre supprim�e, on essaie de supprimer le produit
 			if (!$product->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 			}
 
 			//ADMIN_product::deleteMetadata($product->metadata_id);
@@ -452,7 +452,7 @@ class ADMIN_product {
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 
@@ -460,7 +460,7 @@ class ADMIN_product {
 			$database->setQuery( $query );
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=listProduct"."&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 
@@ -469,7 +469,7 @@ class ADMIN_product {
 		}
 		$limitstart = JRequest::getVar("limitstart");
 		$limit = JRequest::getVar("limit");
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"."&Itemid=".JRequest::getVar('Itemid') );
 	}
 
 	function deleteMetadata($metadata_id){
