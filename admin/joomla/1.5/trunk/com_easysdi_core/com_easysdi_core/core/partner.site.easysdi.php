@@ -609,7 +609,7 @@ class SITE_partner {
 
 		if (!$affiliate_id) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&Itemid=".JRequest::getVar('Itemid') );
 			return;
 		}
 		
@@ -692,7 +692,7 @@ class SITE_partner {
 
 		if (!$affiliate_id) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+			$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&Itemid=".JRequest::getVar('Itemid') );
 			return;
 		}
 		
@@ -708,11 +708,11 @@ class SITE_partner {
 		{
 			if (!$partner->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&Itemid=".JRequest::getVar('Itemid') );
 			}
 			if (!$user->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner" );
+				$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&Itemid=".JRequest::getVar('Itemid') );
 			}
 	
 			SITE_partner::includePartnerExtension(0,'BOTTOM','removePartner',$partner->partner_id);
@@ -725,7 +725,7 @@ class SITE_partner {
 			
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&type=".JRequest::getVar("type")."&search=".JRequest::getVar("search")  );
+		$mainframe->redirect("index.php?option=$option&task=listAffiliatePartner&type=".JRequest::getVar("type")."&search=".JRequest::getVar("search")."&Itemid=".JRequest::getVar('Itemid')  );
 	}
 
 
@@ -917,7 +917,7 @@ class SITE_partner {
 			exit;
 		}
 			
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner') );
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showPartner')."&Itemid=".JRequest::getVar('Itemid'));
 	}
 
 	function createBlockUser(){
@@ -1264,7 +1264,7 @@ class SITE_partner {
 		$database->setQuery( "DELETE FROM #__easysdi_community_partner_profile WHERE partner_id IN (".$rowPartner->partner_id.")");
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listPartner" );
+			$mainframe->redirect("index.php?option=$option&task=listPartner&Itemid=".JRequest::getVar('Itemid'));
 			exit();
 		}
 		$profile_id_list ="";
@@ -1278,7 +1278,7 @@ class SITE_partner {
 					if (!$database->query()) 
 					{
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-						$mainframe->redirect("index.php?option=$option&task=listPartner" );
+						$mainframe->redirect("index.php?option=$option&task=listPartner&Itemid=".JRequest::getVar('Itemid') );
 						exit();
 					}
 					$profile_id_list .= $profile_id;
@@ -1296,7 +1296,7 @@ class SITE_partner {
 					   profile_id NOT IN (".$profile_id_list.")");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listPartner" );
+				$mainframe->redirect("index.php?option=$option&task=listPartner&Itemid=".JRequest::getVar('Itemid') );
 				exit();
 			}
 		}
@@ -1312,7 +1312,7 @@ class SITE_partner {
 		}
 		
 		SITE_partner::includePartnerExtension(0,'BOTTOM','savePartner',$rowPartner->partner_id);
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','listAffiliatePartner')."&type=".JRequest::getVar('type') );
+		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','listAffiliatePartner')."&type=".JRequest::getVar('type')."&Itemid=".JRequest::getVar('Itemid'));
 	}
 
 	function cancelPartner( $returnList, $option ) {
@@ -1325,7 +1325,7 @@ class SITE_partner {
 		ADMIN_partner::includePartnerExtension(0,'BOTTOM','cancelPartner',0);
 		if ($returnList == true) {
 			//mosRedirect( "index2.php?option=$option&task=listPartner" );
-			$mainframe->redirect("index.php?option=$option&task=listPartner" );
+			$mainframe->redirect("index.php?option=$option&task=listPartner&Itemid=".JRequest::getVar('Itemid') );
 		}
 
 

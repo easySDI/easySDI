@@ -74,7 +74,7 @@ class HTML_partner
 			conf = confirm(text.replace('%s',name));
 			if(!conf)
 				return false;
-			window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=deleteAffiliate&affiliate_id='+id+'&type='+type+'&search='+search, '_self');
+			window.open('./index.php?option=com_easysdi_core&return=listAffiliatePartner&task=deleteAffiliate&affiliate_id='+id+'&Itemid=<?php echo JRequest::getVar('Itemid'); ?>&type='+type+'&search='+search, '_self');
 		}
 		</script>
 		<table id="affiliateTable" class="box-table">
@@ -117,7 +117,7 @@ class HTML_partner
 				<td><?php echo $row->partner_name; ?></td>
 				<!-- <td align="center"><?php echo $row->partner_acronym; ?></td> -->				
 				<!-- <td align="center"><?php echo date('d.m.Y H:i:s',strtotime($row->partner_update)); ?></td> -->
-				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editAffiliate" onClick="window.open('./index.php?option=com_easysdi_core&task=editAffiliateById&affiliate_id=<?php echo $row->user_id;?>&type=<?php echo $type;?>&search=<?php echo addslashes($search);?>', '_self');"/></td>
+				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editAffiliate" onClick="window.open('./index.php?option=com_easysdi_core&task=editAffiliateById&affiliate_id=<?php echo $row->user_id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&type=<?php echo $type;?>&search=<?php echo addslashes($search);?>', '_self');"/></td>
 				<td align="center"><div title="<?php if(count($deleteErrors) == 0) echo JText::_('EASYSDI_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>." id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('$row->user_id','".addslashes($row->partner_name)."','$type','".addslashes($search)."');\"";?> class="<?php if(count($deleteErrors) == 0) echo "deletablePartner"; else echo "unDeletablePartner";?>" /></td>
 			</tr>
 <?php
@@ -516,6 +516,7 @@ class HTML_partner
 		<input type="hidden" id="task" name="task" value="" />
 		<input type="hidden" id="tabIndex" name="tabIndex" value="<?php echo JRequest::getVar('tabIndex'); ?>" />
 		<input type="hidden" id="tab" name="tab" value="" />
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>" />
 <?php 
 		if ($hasTheRightToEdit)
 		{ 
@@ -901,7 +902,8 @@ class HTML_partner
 		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->address_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowSubscription->address_id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowDelivery->address_id; ?>" />				
-				
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>" />
+
 		<!-- input type="hidden" name="option" value="<?php echo $option; ?>" / -->
 		<input type="hidden" name="task" value="" />
 		<table>
@@ -910,7 +912,8 @@ class HTML_partner
 					<button type="button" onCLick="var form = document.partnerForm;form.task.value='savePartner';submitbutton();" ><?php echo JText::_("EASYSDI_SAVE"); ?></button>
 				</td>
 				<td>
-					<button type="button" onCLick="var form = document.getElementById('partnerForm');form.task.value='showPartner';form.submit();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PARTNER"); ?></button>
+				        <!--//var form = document.getElementById('partnerForm');form.task.value='showPartner';form.submit();-->
+					<button type="button" onCLick="window.history.back();" ><?php echo JText::_("EASYSDI_CANCEL_EDIT_PARTNER"); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -1974,6 +1977,8 @@ class HTML_partner
 		<input type="hidden" name="type" value="<?php echo JRequest::getVar('type');?>"/>
 		<input type="hidden" name="search" value="<?php echo JRequest::getVar('search');?>"/>
 		<input type="hidden" name="root_id" value="<?php echo $rowPartner->root_id; ?>" />
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>" />
+
 		<!--<input type="hidden" id="tabIndex" name="tabIndex" value="<?php echo JRequest::getVar('tabIndex'); ?>" />-->
 		<table>
 			<tr>
@@ -1995,7 +2000,7 @@ class HTML_partner
 	}
 	
 				
-	function createUser( $option)
+	function createUser($option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -2022,7 +2027,7 @@ class HTML_partner
 		$activities = array();
 	
 ?>				
-	<form action="index.php?option=<?php echo $option ?>" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
+	<form action="index.php" method="post" name="partnerForm" id="partnerForm" class="partnerForm">
 <br>
 		<table width="100%">
 			<tr>
@@ -2124,12 +2129,14 @@ class HTML_partner
 		<input type="hidden" name="id" value="" />	
 		<input type="hidden" name="partner_id" value="" />
 		<input type="hidden" name="address_id" value="" />
-			
+		<input type="hidden" name="option" value="<?php echo $option; ?>">
+		<input type="hidden" name="task" id="task" value="" />						
 		
-		<!-- input type="hidden" name="option" value="<?php echo $option; ?>" / -->
-		<input type="hidden" name="task" value="" />						
-		<button type="button" onCLick="var form = document.partnerForm;form.task.value='createBlockUser';submitbutton();" ><?php echo JText::_("EASYSDI_VALIDATE"); ?></button>
-		
+		<!--
+		<button type="button" onCLick="var form = document.partnerForm; form.task.value='createBlockUser'; form.option.value='<?php echo $option; ?>'; submitbutton();" ><?php echo JText::_("EASYSDI_VALIDATE"); ?></button>
+		-->
+		<button type="button" onClick="document.getElementById('partnerForm').task.value='createBlockUser'; submitbutton();" ><?php echo JText::_("EASYSDI_VALIDATE"); ?></button>
+
 	</form>
 	
 	</div>	
