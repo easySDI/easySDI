@@ -154,6 +154,38 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="Visibility" type="xs:string" />
+	
+	<xs:element name="ObjectVisibilities">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Visibility" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Status" type="xs:string" />
+	
+	<xs:element name="ObjectStatus">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Status" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="All" type="xs:boolean" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="mode" type="xs:string" />
+		
+		<xs:element name="ObjectVersion">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="mode" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:element name="Policy">
 		<xs:complexType>
 			<xs:choice>
