@@ -600,130 +600,152 @@ function savePolicy($xml){
 	}
 			
 	//Servers
-	$thePolicy->Servers['All']="false";
-	$thePolicy->Servers="";
-	
-	for ($i=0;;$i++)
+	$AllServer = JRequest::getVar("AllServers","");
+	if (strlen($AllServer)>0)
 	{
-		$remoteServer = JRequest::getVar("remoteServer$i","");
-		$remoteServerPolicy="";
-
-		if (strlen($remoteServer)>0)
+		$thePolicy->Servers['All']="true";
+		$thePolicy->Servers="";
+	}
+	else
+	{
+		$thePolicy->Servers['All']="false";
+		$thePolicy->Servers="";
+		
+		for ($i=0;;$i++)
 		{
-			$theServer = $thePolicy->Servers->addChild('Server');
-			$theServer->url=$remoteServer;
-			$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
-			$theServer->Prefix =$serverPrefixe;
-			$serverNamespace = JRequest::getVar("serverNamespace$i","");
-			$theServer->Namespace = $serverNamespace;
-			
-			$theServer->Metadata ="";
-			$foundParamToExclude=false;
-			
-			while (list($key, $val) = each($params )) 
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+	
+			if (strlen($remoteServer)>0)
 			{
-				if (!(strpos($key,"param_$i")===false))
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+				$theServer->Metadata ="";
+				$theServer->Layers ="";
+				$foundParamToExclude=false;
+				
+				$theServer->Layers['All']='True';
+				
+				while (list($key, $val) = each($params )) 
 				{
-					//Parameter to exclude of the metadata
-					$theServer->Metadata->Attributes['All']='false';
-					if (count($theServer->Metadata->Attributes->Exclude)==0)
+					if (!(strpos($key,"param_$i")===false))
 					{
-						$theServer->Metadata->Attributes->Exclude= "";
-					}
-					if (strlen($val)>0)
-					{
-						$theServer->Metadata->Attributes->Exclude->addChild('Attribute',$val);
-					}
-				 	$foundParamToExclude=true;
-				}
-
-				if (!(strpos($key,"featuretype@$i")===false))
-				{
-					$theServer->FeatureTypes['All']='false';
-					$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
-					$theFeatureType->Name=$val;
-						$len =strlen("featuretype@$i")+1;
-						$lentot = strlen ($key);
-						$ftnum = substr($key,($lentot-$len ) *-1);
-
-					//Attribute to keep
-						$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
-					if(strlen($attributeList)>0)
-					{
-						$theFeatureType->Attributes['All']="false";
-						$attributeList = str_replace(" ","",$attributeList);
-						$attributesArray =  array();
-						ADMIN_proxy::getAttributesList($attributeList, $attributesArray);
-						foreach($attributesArray as $attribute)
+						//Parameter to exclude of the metadata
+						$theServer->Metadata->Attributes['All']='false';
+						if (count($theServer->Metadata->Attributes->Exclude)==0)
 						{
-							$theAttribute = $theFeatureType->Attributes->addChild('Attribute',$attribute);
+							$theServer->Metadata->Attributes->Exclude= "";
+						}
+						if (strlen($val)>0)
+						{
+							$theServer->Metadata->Attributes->Exclude->addChild('Attribute',$val);
+						}
+					 	$foundParamToExclude=true;
+					}
+	
+					if (!(strpos($key,"featuretype@$i")===false))
+					{
+						$theServer->FeatureTypes['All']='false';
+						$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
+						$theFeatureType->Name=$val;
+							$len =strlen("featuretype@$i")+1;
+							$lentot = strlen ($key);
+							$ftnum = substr($key,($lentot-$len ) *-1);
+	
+						//Attribute to keep
+							$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
+						if(strlen($attributeList)>0)
+						{
+							$theFeatureType->Attributes['All']="false";
+							$attributeList = str_replace(" ","",$attributeList);
+							$attributesArray =  array();
+							ADMIN_proxy::getAttributesList($attributeList, $attributesArray);
+							foreach($attributesArray as $attribute)
+							{
+								$theAttribute = $theFeatureType->Attributes->addChild('Attribute',$attribute);
+							}
+						}
+						else
+						{
+							$theFeatureType->Attributes['All']="true";
+						}
+						
+						//remote filter
+							$remoteFilter = JRequest::getVar("RemoteFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
+						if(strlen($remoteFilter)>0)
+						{
+							$theFeatureType->RemoteFilter =$remoteFilter ;
+						}
+						
+						//local filter
+							$localFilter = JRequest::getVar("LocalFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
+						if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
+						{
+							 
+							$theFeatureType->LocalFilter =$localFilter ;
+						}					
+						if(strlen($remoteFilter)<= 0 && strlen($localFilter)>0)
+						{
+							$mainframe->enqueueMessage(JText::sprintf("EASYSDI_GEOGRAPHIC_FILTER_REMOTE_EMPTY", $remoteServer,$val) ,'error');						
 						}
 					}
-					else
+	
+					if (!(strpos($key,"layer@$i")===false))
 					{
-						$theFeatureType->Attributes['All']="true";
+						$AllLayers = JRequest::getVar("AllLayers@$i","");
+						
+						if(strlen($AllLayers)>0)
+						{
+							
+						}	
+						else
+						{
+							$theServer->Layers['All']='False';
+							$theLayer = $theServer->Layers->addChild('Layer');
+							$len =strlen("layer@$i")+1;
+							$lentot = strlen ($key);
+							
+							$layernum = substr($key,($lentot-$len ) *-1);
+							$theLayer->Name =$val;
+							
+							$scaleMin = JRequest::getVar("scaleMin@$i@$layernum");
+							if (strlen($scaleMin)>0)
+							{
+								$theLayer->ScaleMin = $scaleMin;
+							}
+								$scaleMax = JRequest::getVar("scaleMax@$i@$layernum");
+							if (strlen($scaleMax)>0)
+							{
+								$theLayer->ScaleMax = $scaleMax;
+							}
+		
+								$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
+		
+							if (strlen($localFilter)>0)
+							{
+								$theLayer->Filter = $localFilter;
+							}
+						}
 					}
 					
-					//remote filter
-						$remoteFilter = JRequest::getVar("RemoteFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
-					if(strlen($remoteFilter)>0)
-					{
-						$theFeatureType->RemoteFilter =$remoteFilter ;
-					}
-					
-					//local filter
-						$localFilter = JRequest::getVar("LocalFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
-					if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
-					{
-						 
-						$theFeatureType->LocalFilter =$localFilter ;
-					}					
-					if(strlen($remoteFilter)<= 0 && strlen($localFilter)>0)
-					{
-						$mainframe->enqueueMessage(JText::sprintf("EASYSDI_GEOGRAPHIC_FILTER_REMOTE_EMPTY", $remoteServer,$val) ,'error');						
-					}
 				}
-
-				if (!(strpos($key,"layer@$i")===false))
-				{
-					$theServer->Layers['All']='False';
-					$theLayer = $theServer->Layers->addChild('Layer');
-						$len =strlen("layer@$i")+1;
-						$lentot = strlen ($key);
-						
-						$layernum = substr($key,($lentot-$len ) *-1);
-					$theLayer->Name =$val;
-						
-						$scaleMin = JRequest::getVar("scaleMin@$i@$layernum");
-					if (strlen($scaleMin)>0)
-					{
-						$theLayer->ScaleMin = $scaleMin;
-					}
-						$scaleMax = JRequest::getVar("scaleMax@$i@$layernum");
-					if (strlen($scaleMax)>0)
-					{
-						$theLayer->ScaleMax = $scaleMax;
-					}
-
-						$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
-
-					if (strlen($localFilter)>0)
-					{
-						$theLayer->Filter = $localFilter;
-					}
+				if ($foundParamToExclude==false)
+				{			  
+					$theServer->Metadata['All']='true';
+					$theServer->Metadata->Attributes['All']='true';								
 				}
+				
+				reset($params);
 			}
-			if ($foundParamToExclude==false)
-			{			  
-				$theServer->Metadata['All']='true';
-				$theServer->Metadata->Attributes['All']='true';								
+			else
+			{
+				break;
 			}
-			
-			reset($params);
-		}
-		else
-		{
-			break;
 		}
 	}
 	$xmlConfigFile->asXML($policyFile);

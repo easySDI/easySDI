@@ -36,6 +36,7 @@
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
 				<include name="**/*.css" />
+				<include name="**/*.js" />
 			</fileset>
 		</copy>
 		<copy

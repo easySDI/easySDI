@@ -46,6 +46,8 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
+$document = &JFactory::getDocument();
+
 global $mainframe;
 
 
@@ -120,6 +122,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		//$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/js/config.js' );
 		
 		TOOLBAR_proxy::editConfig();
 		ADMIN_proxy::editConfig($xml);
@@ -128,7 +131,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
-		
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/js/policy.js' );
+
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml);
 		break;
