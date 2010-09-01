@@ -628,8 +628,8 @@ function savePolicy($xml){
 				$theServer->Metadata ="";
 				$theServer->Layers ="";
 				$foundParamToExclude=false;
+				$foundLayer = false;
 				
-				$theServer->Layers['All']='True';
 				
 				while (list($key, $val) = each($params )) 
 				{
@@ -698,13 +698,13 @@ function savePolicy($xml){
 					if (!(strpos($key,"layer@$i")===false))
 					{
 						$AllLayers = JRequest::getVar("AllLayers@$i","");
-						
 						if(strlen($AllLayers)>0)
 						{
-							
+							$foundLayer == false;
 						}	
 						else
 						{
+							$foundLayer = true;
 							$theServer->Layers['All']='False';
 							$theLayer = $theServer->Layers->addChild('Layer');
 							$len =strlen("layer@$i")+1;
@@ -732,6 +732,11 @@ function savePolicy($xml){
 							}
 						}
 					}
+					
+				}
+				if($foundLayer == false)
+				{
+					$theServer->Layers['All']='True';
 					
 				}
 				if ($foundParamToExclude==false)

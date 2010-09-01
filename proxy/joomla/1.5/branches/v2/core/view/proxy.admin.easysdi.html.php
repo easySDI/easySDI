@@ -1578,7 +1578,7 @@ function generateWMSHTML($config,$thePolicy){
 				</a></th>
 			</tr>
 			<tr>
-				<td colspan="4"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($policyServer->Layers['All'],'True')==0 ) echo " checked "; ?> onclick="disableLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
+				<td colspan="4"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
 			</tr>
 			<?php
 			$layernum = 0;
@@ -1589,7 +1589,7 @@ function generateWMSHTML($config,$thePolicy){
 				<td class="key" >
 					<table width ="100%" height="100%" >
 						<tr valign="top" >
-						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($policyServer->Layers['All'],'True')==0) echo 'checked';?> type="checkbox"
+						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
 							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 							value="<?php echo $layer->Name;?>"></td>
