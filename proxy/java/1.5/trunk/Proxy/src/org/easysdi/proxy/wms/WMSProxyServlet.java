@@ -294,6 +294,14 @@ public class WMSProxyServlet extends ProxyServlet {
 							WMSCapabilities111.append("\"></xsl:template>");
 						}
 					}
+					if (permitedOperations.size() == 0 )
+					{
+						WMSCapabilities111.append("<xsl:template match=\"Capability/Request/\"></xsl:template>");
+					}
+				}
+				else
+				{
+					WMSCapabilities111.append("<xsl:template match=\"Capability/Request/\"></xsl:template>");
 				}
 				
 				Map hints = new HashMap();
@@ -1325,7 +1333,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					version = value;
 					if (version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad WMS version request.");
-						sendOgcExceptionResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue ","version", "1.1.1"));
+						sendOgcExceptionResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","version", "1.1.1"));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("wmtver")) {
@@ -1892,7 +1900,6 @@ public class WMSProxyServlet extends ProxyServlet {
 													dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
 													serverOK = false;
 													layerArray.remove(li);
-
 												}
 
 												// Ajout de la couche et de son

@@ -163,8 +163,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 		// If something goes wrong, an empty stylesheet is returned.
 		StringBuffer sb = new StringBuffer();
-		return sb
-				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
+		return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
 	protected StringBuffer buildServiceMetadataCapabilitiesXSLT() 
@@ -334,8 +333,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		try {
 
 			StringBuffer CSWCapabilities200 = new StringBuffer();
-			CSWCapabilities200
-					.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			CSWCapabilities200.append("<xsl:template match=\"ows:Get\">");
 			CSWCapabilities200.append("<ows:Get>");
 			CSWCapabilities200.append("<xsl:attribute name=\"xlink:href\">");
@@ -357,41 +355,72 @@ public class CSWProxyServlet extends ProxyServlet {
 			CSWCapabilities200.append("</ows:Post>");
 			CSWCapabilities200.append("</xsl:template>");
 
-			Iterator<String> it = permitedOperations.iterator();
+//			Iterator<String> it = permitedOperations.iterator();
+//
+//			boolean first = true;
+//			while (it.hasNext()) {
+//				if (first) {
+//					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
+//					first = false;
+//				}
+//				String text = it.next();
+//				if (text != null) {
+//					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
+//
+//					CSWCapabilities200.append(text);
+//
+//					CSWCapabilities200.append("']\">");
+//
+//					CSWCapabilities200.append("<!-- Copy the current node -->");
+//					CSWCapabilities200.append("<xsl:copy>");
+//					CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
+//					CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
+//					CSWCapabilities200.append("</xsl:copy>");
+//
+//					CSWCapabilities200.append("</xsl:template>");
+//				}
+//			}
 
-			boolean first = true;
-			while (it.hasNext()) {
-				if (first) {
+			if (hasPolicy) {
+				if (!policy.getOperations().isAll() || deniedOperations.size() > 0) {
+					Iterator<String> it = permitedOperations.iterator();
+					while (it.hasNext()) {
+						String text = it.next();
+						if (text != null) {
+							CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
+							CSWCapabilities200.append(text);
+							CSWCapabilities200.append("']\">");
+							CSWCapabilities200.append("<!-- Copy the current node -->");
+							CSWCapabilities200.append("<xsl:copy>");
+							CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
+							CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
+							CSWCapabilities200.append("</xsl:copy>");
+							CSWCapabilities200.append("</xsl:template>");
+						}
+					}
+
+					it = deniedOperations.iterator();
+					while (it.hasNext()) {
+						CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
+						CSWCapabilities200.append(it.next());
+						CSWCapabilities200.append("']\"></xsl:template>");
+					}
+				}
+				if (permitedOperations.size() == 0 ) {
 					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
-					first = false;
-				}
-				String text = it.next();
-				if (text != null) {
-					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-
-					CSWCapabilities200.append(text);
-
-					CSWCapabilities200.append("']\">");
-
-					CSWCapabilities200.append("<!-- Copy the current node -->");
-					CSWCapabilities200.append("<xsl:copy>");
-					CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
-					CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
-					CSWCapabilities200.append("</xsl:copy>");
-
-					CSWCapabilities200.append("</xsl:template>");
 				}
 			}
-
-			it = deniedOperations.iterator();
-			while (it.hasNext()) {
-				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-				CSWCapabilities200.append(it.next());
-				CSWCapabilities200.append("']\"></xsl:template>");
-			}
-			if (permitedOperations.size() == 0 && deniedOperations.size() == 0) {
+			else
+			{
 				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
 			}
+//			it = deniedOperations.iterator();
+//			while (it.hasNext()) {
+//				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
+//				CSWCapabilities200.append(it.next());
+//				CSWCapabilities200.append("']\"></xsl:template>");
+//			}
+			
 
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
 			CSWCapabilities200.append("<xsl:template match=\"node()|@*\">");

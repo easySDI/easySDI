@@ -245,6 +245,15 @@ public class WFSProxyServlet extends ProxyServlet {
 						WFSCapabilities100.append("\"></xsl:template>");
 					}
 				}
+				if (permitedOperations.size() == 0 )
+				{
+					WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
+				}
+			}
+			else
+			{
+				WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
+			}
 //				if (!policy.getOperations().isAll()) {
 //
 //					Iterator<Operation> it = policy.getOperations().getOperation().iterator();
@@ -273,7 +282,7 @@ public class WFSProxyServlet extends ProxyServlet {
 //						WFSCapabilities100.append("<xsl:template match=\"wfs:Capability/wfs:Request/\"></xsl:template>");
 //					}
 //				}
-			}
+			
 			WFSCapabilities100.append("  <!-- Whenever you match any node or any attribute -->");
 			WFSCapabilities100.append("<xsl:template match=\"node()|@*\">");
 			WFSCapabilities100.append("<!-- Copy the current node -->");

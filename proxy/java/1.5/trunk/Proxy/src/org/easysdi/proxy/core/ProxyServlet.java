@@ -1057,25 +1057,23 @@ public abstract class ProxyServlet extends HttpServlet {
 			sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
 			return true;
 		}
-		if (hasPolicy) {
-			try
+		try
+		{
+			if (!isOperationAllowed(currentOperation))
 			{
-				if (!isOperationAllowed(currentOperation))
-				{
-					sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
-					return true;
-					
-				}
-			}
-			catch (AvailabilityPeriodException ex)
-			{
-				
-				sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
+				sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
 				return true;
+				
 			}
 		}
-		return false;
+		catch (AvailabilityPeriodException ex)
+		{
+			
+			sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			return true;
+		}
 		
+		return false;
 	}
 	
 	/**
