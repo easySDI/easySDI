@@ -34,6 +34,9 @@ xmlns:ext="http://www.depth.ch/2008/ext"
  <tr>
  	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
  </tr>
+ <tr>
+ 	<td>Appel externe à Joomla: __ref_7$s</td>
+ </tr>
 </table>
 <!-- The buttons links -->
 __ref_5$s
