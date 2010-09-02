@@ -198,7 +198,7 @@ div#orderProduct{
 	width:110px;
 }
 
-.mdCatContent input, .mdCatContent select{
+.mdCatContent select{
 	width:240px;
 }
 
@@ -206,6 +206,23 @@ div#orderProduct{
 	width:239px;
 }
 
+.searchTabs_date{
+	vertical-align: top;
+}
+.searchTabs_date tr td:first-child{
+	width:20px;
+}
+
+.searchTabs_date_bounds{
+	width:20px;
+}
+.searchTabs_date_field{
+	width:110px;
+}
+.searchTabs_calendar{
+	width:80px;
+}
+	
 .olmdControlEditingToolbar  {
      float:left;
      right: 0px;
