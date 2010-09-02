@@ -56,6 +56,18 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
 		// Récupérer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
@@ -66,19 +78,19 @@ class displayManager{
 			$style = new DomDocument();
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract.xsl');
 			}
 			
 			
@@ -168,6 +180,18 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
 		// Récupérer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
@@ -177,21 +201,21 @@ class displayManager{
 			$style = new DomDocument();
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl');
 			}
 			else
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract.xsl');
 			}
 			
 			$xml = displayManager::getCSWresult();
@@ -203,19 +227,19 @@ class displayManager{
 			
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete.xsl');
 			}
 			
 			$xml = displayManager::getCSWresult();
@@ -287,21 +311,21 @@ class displayManager{
 			$style = new DomDocument();
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl');
 			}
 			else
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
 			}
 			
 			displayManager::DisplayMetadata($style,$document);
@@ -319,6 +343,19 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		
 		// Récupérer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
@@ -326,19 +363,19 @@ class displayManager{
 		$style = new DomDocument();
 		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 		// de la plus restrictive à la plus basique
-		if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl'))
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl')){
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl');
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl')){
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl');
 		}
 		else{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract.xsl');
 		}
 			
 		$xml = displayManager::getCSWresult();
@@ -354,6 +391,19 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		
 		// Récupérer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
 		$objecttype = $database->loadResult();
@@ -361,19 +411,19 @@ class displayManager{
 		$style = new DomDocument();
 		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 		// de la plus restrictive à la plus basique
-		if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
+		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl'))
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl')){
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl');
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl')){
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl');
 		}
 		else{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete.xsl');
 		}
 		
 		$xml = displayManager::getCSWresult();
@@ -389,6 +439,19 @@ class displayManager{
 		$language = $lg->_lang;
 		
 		$id = JRequest::getVar('id');
+		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
 		
 		// Récupérer le type d'objet
 		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
@@ -450,19 +513,19 @@ class displayManager{
 		$style = new DomDocument();
 		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 		// de la plus restrictive à la plus basique
-		if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
+		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl'))
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl'))
 		{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl');
 		}
-		else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl')){
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl');
+		else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl')){
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl');
 		}
 		else{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion.xsl');
+			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
 		}
 		
 		displayManager::DisplayMetadata($style,$document);
@@ -484,6 +547,29 @@ class displayManager{
 		$product_update_date;
 		$shopExist=0;
 		
+		// Si la page est appelée depuis un autre environnement que Joomla
+		//print_r($_SERVER);echo "<br>";
+		$notJoomlaCall = 'true';
+		if (array_key_exists('HTTP_REFERER', $_SERVER))
+		{
+			// Emplacement depuis lequel l'adresse a été appelée
+			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
+			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
+			//echo $caller."<br>";
+			
+			// Adresse appelée
+			$scheme = "http";
+			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
+				$scheme .= "s";
+			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+			//echo $current;
+			
+			// Si l'adresse courante ne fait pas partie du même site que l'adresse appelante, 
+			// on considère que c'est un appel direct
+			if ($caller == $current)
+				$notJoomlaCall = 'false';
+		}
+			
 		$db =& JFactory::getDBO();
 		$queryAccountID = "	SELECT a.id 
 							FROM #__sdi_account a, #__sdi_object o, #__sdi_metadata m 
@@ -677,7 +763,7 @@ class displayManager{
 			$myHtml .= "window.addEvent('domready', function() {
 			
 			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', 'w');
+				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
 			});
 			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
 				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
@@ -761,7 +847,7 @@ class displayManager{
 			//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
 			$product_update_date="";
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
-		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml);
+		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml, $notJoomlaCall);
 		
 			
 		/***Add consultation informations*/
@@ -794,6 +880,19 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
@@ -806,19 +905,19 @@ class displayManager{
 			$style = new DomDocument();
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_'.$objecttype.'_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XML_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_abstract.xsl');
 			}
 			
 			$processor = new xsltProcessor();
@@ -874,6 +973,19 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
@@ -892,57 +1004,57 @@ class displayManager{
 		{
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_abstract.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_abstract.xsl');
 			}
 		}
 		else if ($type == 'complete')
 		{
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_complete.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_complete.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_complete.xsl');
 			}
 		}
 		else if ($type == 'diffusion')
 		{
 			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive à la plus basique
-			if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
+			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl'))
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl'))
 			{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_'.$objecttype.'_diffusion.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion.xsl');
 			}
-			else if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl')){
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion_'.$language.'.xsl');
+			else if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl')){
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion_'.$language.'.xsl');
 			}
 			else{
-				$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_diffusion.xsl');
+				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
 			}
 		}
 		
@@ -964,6 +1076,19 @@ class displayManager{
 		$type =  JRequest::getVar('type', 'abstract');
 		
 		$id = JRequest::getVar('id');
+		
+		// Répertoire des fichiers xsl, s'il y en a un
+		$context = JRequest::getVar('context');
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
 		
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
@@ -1015,7 +1140,7 @@ class displayManager{
 			$myHtml = "<div/>";
 		
 		$document  = new DomDocument();	
-		$document ->load(dirname(__FILE__).'/../xsl/XHTML2FO.xsl');
+		$document ->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XHTML2FO.xsl');
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($document);
 		

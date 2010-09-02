@@ -617,6 +617,16 @@ if ($catalogItem > 0){
 											<?php echo JHTML::_("select.genericlist",$attributetypelist, 'catalog_boundary_type', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_BOUNDARY_TYPE']->value ); ?>
 										</td>
 									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_SEARCH_MULTILIST_LENGTH' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_SEARCH_MULTILIST_LENGTH' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="4" name="catalog_search_multilist_length" value="<?php echo $catalogList['CATALOG_SEARCH_MULTILIST_LENGTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
 									</tbody>
 								</table>
 							</fieldset>	

@@ -294,6 +294,10 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['catalog_search_multilist_length']."' WHERE code = 'CATALOG_SEARCH_MULTILIST_LENGTH'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
 		// Sauvegarde des clés SHOP
