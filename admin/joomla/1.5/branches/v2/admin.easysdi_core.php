@@ -670,6 +670,10 @@ switch($task){
 		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listObjectTypeLink" );
 		break;
 		
+	case "listContext":
+		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listContext" );
+		break;
+		
 	default:
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'ctrlpanel.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'ctrlpanel.admin.easysdi.php');
