@@ -398,4 +398,20 @@ function changeContextsVisibility(visible)
  		div_contexts.style.display = "none";
 	}
 }
+
+function toggle_multi_select(field, size) 
+{
+	select = document.getElementById(field);
+	
+	if (select.multiple == true) 
+	{
+		select.size = 1;
+		select.multiple = false;
+	} 
+	else 
+	{
+		select.size = size;
+		select.multiple = true;
+	}
+} 
 </script>

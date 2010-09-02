@@ -34,6 +34,7 @@
 	        });
 		//if (navigator.appName == "Netscape")
 		//	console.log(id+" - "+clone+" - "+clones_count);
+		
 		return f;
 	}
 	
@@ -604,4 +605,45 @@
 	    //Ext.util.Observable.capture(Ext.getCmp(id), console.info);
 		
 		return sf;
+	}
+	
+	function createThesaurusGEMET(id, label, clone, master, min, max)
+	{
+		if (clone) optional=true;
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
+		
+		// Valeur max = n
+		if (max == 999) max = Number.MAX_VALUE;
+		
+		var thes = new ThesaurusReader({
+			  id:id,
+			  name:id,
+              lang: 'en',
+		      outputLangs: ['en', 'cs', 'fr', 'de'], 
+		      //title: label,
+		      separator: ' > ',
+		      returnPath: true,
+		      returnInspire: true,
+		      width: 300, height:400,
+		      layout: 'fit',
+		      //proxy: "/proxy.php?url=",
+		      proxy: "http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/proxy.php?url=",
+		      handler: function(result){
+						    var s = '';
+						    for(l in result.terms) s += l+': '+result.terms[l]+'<br/><br/>';
+						    var target = document.getElementById('terms');
+						    target.innerHTML = s+'uri: '+result.uri + "<br>version: "+result.version;
+						},
+			dynamic:true,
+			minOccurs:min,
+            maxOccurs:max,
+            emptyText:'',
+          	disabled: false,
+          	clone: clone,
+			clones_count: clones_count,
+            template: master
+		  });
+		
+		return thes;
 	}
