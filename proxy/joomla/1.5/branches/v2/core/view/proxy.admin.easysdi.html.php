@@ -474,22 +474,22 @@ var nbServer = <?php echo $iServer?>;
 
 function removeServer(servNo){
 
-noeud = document.getElementById("remoteServerTable");
-var fils = noeud.childNodes;
-
-noeud.removeChild(fils[servNo]);
-
-noeud = document.getElementById("remoteServerTable");
-fils = noeud.childNodes;
-var nbFils = fils.length;
-
-for(var i = 0; i < nbFils; i++){
-		fils[i].childNodes[0].childNodes[0].name="URL_"+i;	
-		fils[i].childNodes[1].childNodes[0].name="USER_"+i;
-		fils[i].childNodes[2].childNodes[0].name="PASSWORD_"+i;						
-		fils[i].childNodes[2].childNodes[1].setAttribute("onClick","javascript:removeServer("+i+");");
-} 
-nbServer = nbServer - 1;
+	noeud = document.getElementById("remoteServerTable");
+	var fils = noeud.childNodes;
+	
+	noeud.removeChild(fils[servNo]);
+	
+	noeud = document.getElementById("remoteServerTable");
+	fils = noeud.childNodes;
+	var nbFils = fils.length;
+	
+	for(var i = 0; i < nbFils; i++){
+			fils[i].childNodes[0].childNodes[0].name="URL_"+i;	
+			fils[i].childNodes[1].childNodes[0].name="USER_"+i;
+			fils[i].childNodes[2].childNodes[0].name="PASSWORD_"+i;						
+			fils[i].childNodes[2].childNodes[1].setAttribute("onClick","javascript:removeServer("+i+");");
+	} 
+	nbServer = nbServer - 1;
 }
 
 function addNewServer(){
@@ -989,19 +989,18 @@ function submitbutton(pressbutton)
 	}
 	else
 	{
-		if(document.getElementById('AllServers').checked == false)
+		
+		var server = 0;
+		while (document.getElementById('serverPrefixe'+server) != null)
 		{
-			var server = 0;
-			while (document.getElementById('serverPrefixe'+server) != null)
+			if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
 			{
-				if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
-				{
-					alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
-					return;
-				}
-				server ++;
+				alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
+				return;
 			}
+			server ++;
 		}
+		
 		
 		if(document.getElementById('maxHeight') != null)//Just for WMS policy
 		{
@@ -1547,7 +1546,7 @@ function generateWMSHTML($config,$thePolicy){
 			?>
 
 	<input type="hidden" name="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
-	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
+	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
 		<legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 		<table class="admintable">
 			<tr>
@@ -1564,7 +1563,7 @@ function generateWMSHTML($config,$thePolicy){
 			</tr>
 		</table>
 		<br>
-		<table class="admintable">
+		<table class="admintable" id="adminTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
 				<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
 				<th><b><?php echo JText::_( 'EASYSDI_SCALE MIN'); ?></b></th>
@@ -1589,7 +1588,7 @@ function generateWMSHTML($config,$thePolicy){
 				<td class="key" >
 					<table width ="100%" height="100%" >
 						<tr valign="top" >
-						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="checkbox"
 							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 							value="<?php echo $layer->Name;?>"></td>
@@ -1601,15 +1600,15 @@ function generateWMSHTML($config,$thePolicy){
 						</tr>
 					</table>		
 				</td>
-				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> type="text" size="10"
+				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 					value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
-				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> type="text" size="10"
+				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum?>" 
 					name="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 					value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
-				<td><textarea <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> rows="3" cols="60"
+				<td><textarea <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> rows="3" cols="60"
 					id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
 					<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>

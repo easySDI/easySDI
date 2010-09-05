@@ -164,9 +164,9 @@ function disableServers ()
 	if (document.getElementById('AllServers').checked)
 		display="none";
 	
-	while (document.getElementById('fsServer'+nb) != null)
+	while (document.getElementById('adminTable@'+nb) != null)
 	{
-		document.getElementById('fsServer'+nb).style.display=display;
+		document.getElementById('adminTable@'+nb).style.display=display;
 		nb ++;
 	}	
 }
@@ -180,7 +180,12 @@ function disableLayers(iServ)
 	{
 		document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
 		document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
-//		activateLayer(iServ,iLay);
+		if(check)
+		{
+			document.getElementById('scaleMin@'+iServ+'@'+iLay).disabled=check;
+			document.getElementById('scaleMax@'+iServ+'@'+iLay).disabled=check;
+			document.getElementById('LocalFilter@'+iServ+'@'+iLay).disabled=check;
+		}
 		iLay ++;
 	}
 }

@@ -603,11 +603,33 @@ function savePolicy($xml){
 	$AllServer = JRequest::getVar("AllServers","");
 	if (strlen($AllServer)>0)
 	{
+		//All servers checked
 		$thePolicy->Servers['All']="true";
 		$thePolicy->Servers="";
+		for($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+			
+			if(strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
 	else
 	{
+		//All servers not checked
 		$thePolicy->Servers['All']="false";
 		$thePolicy->Servers="";
 		
@@ -700,10 +722,12 @@ function savePolicy($xml){
 						$AllLayers = JRequest::getVar("AllLayers@$i","");
 						if(strlen($AllLayers)>0)
 						{
-							$foundLayer == false;
+							//All layers checked
+							$foundLayer = false;
 						}	
 						else
 						{
+							//All layer not checked
 							$foundLayer = true;
 							$theServer->Layers['All']='False';
 							$theLayer = $theServer->Layers->addChild('Layer');
