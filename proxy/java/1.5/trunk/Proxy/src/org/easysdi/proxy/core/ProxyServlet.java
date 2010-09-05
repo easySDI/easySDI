@@ -69,6 +69,7 @@ import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
+import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.SchemaFactory;
@@ -149,8 +150,26 @@ public abstract class ProxyServlet extends HttpServlet {
 	//Value of the version parameter received in the request
 	protected String requestedVersion ;
 
+	//Use for accessing EasySDI Joomla data
+	private JoomlaProvider joomlaProvider;
+	
 	// protected String prefix = "SRV";
 
+	
+	/**
+	 * @param joomlaProvider the joomlaProvider to set
+	 */
+	protected void setJoomlaProvider(JoomlaProvider joomlaProvider) {
+		this.joomlaProvider = joomlaProvider;
+	}
+
+	/**
+	 * @return the joomlaProvider
+	 */
+	protected JoomlaProvider getJoomlaProvider() {
+		return joomlaProvider;
+	}
+	
 	protected List<RemoteServerInfo> getRemoteServerInfoList() {
 		if (configuration == null)
 			return null;

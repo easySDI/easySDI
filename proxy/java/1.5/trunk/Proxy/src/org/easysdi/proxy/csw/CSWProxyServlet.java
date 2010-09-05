@@ -64,6 +64,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.httpclient.HttpURL;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.ConfigFileHandler;
 import org.easysdi.xml.handler.CswRequestHandler;
@@ -679,18 +680,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
-			
-			//Get visibility policy
-//			if(policy.getObjectVisibilities().isAll())
-//			{
-//				//No filter needed
-//			}
-//			else
-//			{
-//				List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
-//				//
-//			}
-			
+
 			
 			// In the case of transaction only one remote server is supported.
 			// We use the configuration of the first one.
@@ -746,7 +736,48 @@ public class CSWProxyServlet extends ProxyServlet {
 					is = null;
 				}
 
-			} else {
+			}
+			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
+			{
+				if (version != null)
+					version = version.replaceAll("\\.", "");
+				
+				//Data accessibility is only supported since the EasySDI v2.0.0
+				if(getJoomlaProvider().getVersion()!= null && Integer.parseInt(getJoomlaProvider().getVersion()) >= 200)
+				{
+					if(hasPolicy)
+					{
+						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+						String dataId = rh.getRecordId();
+						if(!cswDataManager.isDataVersionAccessible(dataId))
+						{
+							dataId = cswDataManager.getDataIdVersionAccessible();
+						}
+						if(!cswDataManager.isDataAccessible(dataId))
+						{
+							sendOgcExceptionResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+							return;
+						}
+						if(dataId.compareTo(rh.getRecordId()) != 0)
+						{
+							//Change the data id in the request
+							int start = param.indexOf(rh.getRecordId());
+							int end = start + rh.getRecordId().length();
+							
+							param.replace(start, end, dataId);
+							
+							String result = param.toString();
+							
+						}
+					}
+				}
+				List<String> filePathList = new Vector<String>();
+				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				filePathList.add(filePath);
+				transform(version, currentOperation, req, resp, filePathList);
+				
+			}
+			else {
 				if (version != null)
 					version = version.replaceAll("\\.", "");
 

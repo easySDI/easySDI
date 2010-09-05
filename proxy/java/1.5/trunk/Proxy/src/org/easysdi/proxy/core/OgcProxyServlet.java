@@ -58,6 +58,7 @@ public class OgcProxyServlet extends HttpServlet {
 	private Cache configCache;
 	private Config configuration;
 	public String configFile;
+	private JoomlaProvider joomlaProvider;
 	
 	public static HashMap<String, Double> executionCount = new HashMap<String, Double>();
 
@@ -68,7 +69,7 @@ public class OgcProxyServlet extends HttpServlet {
 		configFile = config.getInitParameter("configFile");
 		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		CacheManager cm = (CacheManager) context.getBean("cacheManager");
-		JoomlaProvider jP = (JoomlaProvider) context.getBean("joomlaProvider");
+		joomlaProvider = (JoomlaProvider) context.getBean("joomlaProvider");
 		
 		if (cm != null) {
 			configCache = cm.getCache("configCache");
@@ -293,6 +294,11 @@ public class OgcProxyServlet extends HttpServlet {
 			Constructor<?> constructeur = classe.getConstructor();
 			ProxyServlet ps = (ProxyServlet) constructeur.newInstance();
 			ps.setConfiguration(configuration);
+			
+			//Use to access EasySDI Joomla data
+			ps.setJoomlaProvider(joomlaProvider);
+			
+			
 			// String filePath = new
 			// File(configuration.getPolicyFile()).getAbsolutePath();
 			// File policyF = new File(filePath).getAbsoluteFile();

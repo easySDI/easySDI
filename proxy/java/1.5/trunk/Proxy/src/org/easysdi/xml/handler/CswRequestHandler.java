@@ -44,6 +44,7 @@ public class CswRequestHandler extends DefaultHandler {
     private List<String> MdToInsertList =new Vector();
     private List<String> MdToDeleteList =new Vector();
     private boolean isInPropertyIsEqualTo=false; 
+    private String recordId ="";
 
     public List<String> getUUidListToDelete(){
 	return MdToDeleteList;
@@ -87,6 +88,21 @@ public class CswRequestHandler extends DefaultHandler {
     public void setService(String service) {
 	this.service = service;
     }
+    
+	/**
+	 * @param getRecordId the getRecordId to set
+	 */
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
+	}
+
+	/**
+	 * @return the getRecordId
+	 */
+	public String getRecordId() {
+		return recordId;
+	}
+
 
     public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException  {  			  
 
@@ -96,6 +112,9 @@ public class CswRequestHandler extends DefaultHandler {
 	    version=attr.getValue("version");
 	    isFirst= false;
 	}
+	
+	
+	
 	//Requested by the GetFeature operation	    
 	if (localName.equals("Query")){
 
@@ -150,6 +169,12 @@ public class CswRequestHandler extends DefaultHandler {
     public void endElement(String nameSpace, String localName, 
 	    String qName) throws SAXException {
 	
+	//Handle getRecordByID
+	if (localName.equals("Id")){
+	    if ("GetRecordById".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+	    	recordId = data;
+	    }
+	}
 	
 	if (isInDelete && localName.equals("PropertyIsEqualTo")){
 		   isInPropertyIsEqualTo = false; 
@@ -210,21 +235,21 @@ public class CswRequestHandler extends DefaultHandler {
     }
 
     /**
-     * Actions à réaliser au début du document.
+     * Actions ï¿½ rï¿½aliser au dï¿½but du document.
      */
     public void startDocument() {
 
     }
 
     /**
-     * Actions à réaliser lors de la fin du document XML.
+     * Actions ï¿½ rï¿½aliser lors de la fin du document XML.
      */
     public void endDocument() {
 
     }
 
     /**
-     * Actions à réaliser sur les données
+     * Actions ï¿½ rï¿½aliser sur les donnï¿½es
      */
     public void characters(char[] caracteres, int debut, 
 	    int longueur) throws SAXException {
@@ -243,6 +268,7 @@ public class CswRequestHandler extends DefaultHandler {
     public void setTypeName(List typeName) {
 	this.typeName = typeName;
     }
+
 }
 
 

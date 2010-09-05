@@ -56,7 +56,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 
 	private Cache userCache;
 
-	private JdbcTemplate sjt = null;
+	public JdbcTemplate sjt = null;
 
 	public JoomlaProvider() {
 		super();
