@@ -164,9 +164,9 @@ function disableServers ()
 	if (document.getElementById('AllServers').checked)
 		display="none";
 	
-	while (document.getElementById('adminTable@'+nb) != null)
+	while (document.getElementById('remoteServerTable@'+nb) != null)
 	{
-		document.getElementById('adminTable@'+nb).style.display=display;
+		document.getElementById('remoteServerTable@'+nb).style.display=display;
 		nb ++;
 	}	
 }
@@ -187,5 +187,25 @@ function disableLayers(iServ)
 			document.getElementById('LocalFilter@'+iServ+'@'+iLay).disabled=check;
 		}
 		iLay ++;
+	}
+}
+
+function disableFeatureTypes(iServ)
+{
+	var iFeat = 0;
+	var check = document.getElementById('AllFeatureTypes@'+iServ).checked;
+	
+	while (document.getElementById('featuretype@'+iServ+'@'+iFeat) != null)
+	{
+		document.getElementById('featuretype@'+iServ+'@'+iFeat).disabled = check;
+		document.getElementById('featuretype@'+iServ+'@'+iFeat).checked = check;
+		if(check)
+		{
+			document.getElementById('selectAttribute@'+iServ+'@'+iFeat).disabled=check;
+			document.getElementById('AttributeList@'+iServ+'@'+iFeat).disabled=check;
+			document.getElementById('RemoteFilter@'+iServ+'@'+iFeat).disabled=check;
+			document.getElementById('LocalFilter@'+iServ+'@'+iFeat).disabled=check;
+		}
+		iFeat ++;
 	}
 }

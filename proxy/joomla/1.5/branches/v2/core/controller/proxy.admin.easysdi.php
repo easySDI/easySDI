@@ -649,9 +649,10 @@ function savePolicy($xml){
 				
 				$theServer->Metadata ="";
 				$theServer->Layers ="";
-				$foundParamToExclude=false;
+				$theServer->FeatureTypes="";
+				$foundParamToExclude = false;
 				$foundLayer = false;
-				
+				$foundFeatureType = false;
 				
 				while (list($key, $val) = each($params )) 
 				{
@@ -672,48 +673,58 @@ function savePolicy($xml){
 	
 					if (!(strpos($key,"featuretype@$i")===false))
 					{
-						$theServer->FeatureTypes['All']='false';
-						$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
-						$theFeatureType->Name=$val;
-							$len =strlen("featuretype@$i")+1;
-							$lentot = strlen ($key);
-							$ftnum = substr($key,($lentot-$len ) *-1);
-	
-						//Attribute to keep
-							$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
-						if(strlen($attributeList)>0)
+						$AllFeatureTypes = JRequest::getVar("AllFeatureTypes@$i","");
+						if(strlen($AllFeatureTypes)>0)
 						{
-							$theFeatureType->Attributes['All']="false";
-							$attributeList = str_replace(" ","",$attributeList);
-							$attributesArray =  array();
-							ADMIN_proxy::getAttributesList($attributeList, $attributesArray);
-							foreach($attributesArray as $attribute)
-							{
-								$theAttribute = $theFeatureType->Attributes->addChild('Attribute',$attribute);
-							}
+							//All featuretypes checked
+							$foundFeatureType = false;
 						}
 						else
 						{
-							$theFeatureType->Attributes['All']="true";
-						}
-						
-						//remote filter
-							$remoteFilter = JRequest::getVar("RemoteFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
-						if(strlen($remoteFilter)>0)
-						{
-							$theFeatureType->RemoteFilter =$remoteFilter ;
-						}
-						
-						//local filter
-							$localFilter = JRequest::getVar("LocalFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
-						if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
-						{
-							 
-							$theFeatureType->LocalFilter =$localFilter ;
-						}					
-						if(strlen($remoteFilter)<= 0 && strlen($localFilter)>0)
-						{
-							$mainframe->enqueueMessage(JText::sprintf("EASYSDI_GEOGRAPHIC_FILTER_REMOTE_EMPTY", $remoteServer,$val) ,'error');						
+							$foundFeatureType = true;
+							$theServer->FeatureTypes['All']='false';
+							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
+							$theFeatureType->Name=$val;
+								$len =strlen("featuretype@$i")+1;
+								$lentot = strlen ($key);
+								$ftnum = substr($key,($lentot-$len ) *-1);
+		
+							//Attribute to keep
+								$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
+							if(strlen($attributeList)>0)
+							{
+								$theFeatureType->Attributes['All']="false";
+								$attributeList = str_replace(" ","",$attributeList);
+								$attributesArray =  array();
+								ADMIN_proxy::getAttributesList($attributeList, $attributesArray);
+								foreach($attributesArray as $attribute)
+								{
+									$theAttribute = $theFeatureType->Attributes->addChild('Attribute',$attribute);
+								}
+							}
+							else
+							{
+								$theFeatureType->Attributes['All']="true";
+							}
+							
+							//remote filter
+								$remoteFilter = JRequest::getVar("RemoteFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							if(strlen($remoteFilter)>0)
+							{
+								$theFeatureType->RemoteFilter =$remoteFilter ;
+							}
+							
+							//local filter
+								$localFilter = JRequest::getVar("LocalFilter@$i@$ftnum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							if(strlen($remoteFilter)>0 && strlen($localFilter)>0)
+							{
+								 
+								$theFeatureType->LocalFilter =$localFilter ;
+							}					
+							if(strlen($remoteFilter)<= 0 && strlen($localFilter)>0)
+							{
+								$mainframe->enqueueMessage(JText::sprintf("EASYSDI_GEOGRAPHIC_FILTER_REMOTE_EMPTY", $remoteServer,$val) ,'error');						
+							}
 						}
 					}
 	
@@ -729,7 +740,7 @@ function savePolicy($xml){
 						{
 							//All layer not checked
 							$foundLayer = true;
-							$theServer->Layers['All']='False';
+							$theServer->Layers['All']='false';
 							$theLayer = $theServer->Layers->addChild('Layer');
 							$len =strlen("layer@$i")+1;
 							$lentot = strlen ($key);
@@ -758,12 +769,15 @@ function savePolicy($xml){
 					}
 					
 				}
-				if($foundLayer == false)
+				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
 				{
-					$theServer->Layers['All']='True';
-					
+					$theServer->FeatureTypes['All']='true';
 				}
-				if ($foundParamToExclude==false)
+				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
+				{
+					$theServer->Layers['All']='true';
+				}
+				if ($foundParamToExclude==false && strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
 				{			  
 					$theServer->Metadata['All']='true';
 					$theServer->Metadata->Attributes['All']='true';								

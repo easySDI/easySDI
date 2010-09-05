@@ -1498,7 +1498,7 @@ function generateWMSHTML($config,$thePolicy){
 			</tr>
 		</table>
 	</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
 		<table class="admintable">
 			<tr>
 				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
@@ -1563,7 +1563,7 @@ function generateWMSHTML($config,$thePolicy){
 			</tr>
 		</table>
 		<br>
-		<table class="admintable" id="adminTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
+		<table class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
 				<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
 				<th><b><?php echo JText::_( 'EASYSDI_SCALE MIN'); ?></b></th>
@@ -1701,6 +1701,13 @@ function generateWMSHTML($config,$thePolicy){
 				</tr>
 			</table>
 		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+				</tr>
+			</table>
+		</fieldset>
 		<?php 
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
@@ -1762,7 +1769,7 @@ function generateWMSHTML($config,$thePolicy){
 				</tr>
 			</table>
 			<br>
-			<table class="admintable">
+			<table class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 				<tr>
 					<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
 					<th><b><?php echo JText::_( 'EASYSDI_FILTERED_ATTRIBUTES_LABEL'); ?></b>
@@ -1792,7 +1799,9 @@ function generateWMSHTML($config,$thePolicy){
 					</a>
 					</th>		
 				</tr>
-			
+				<tr>
+					<td colspan="4"><input type="checkBox" name="AllFeatureTypes@<?php echo $iServer; ?>" id="AllFeatureTypes@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' checked '; ?> onclick="disableFeatureTypes(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_FEATURES_ALL'); ?></td>
+				</tr>
 				<?php
 				$pos1 = stripos($urlWithPassword, "?");
 						$separator = "&";
@@ -1887,14 +1896,19 @@ function generateWMSHTML($config,$thePolicy){
 						<table width ="100%" height="100%" >
 							<tr valign="top" >
 								<td width="15">
-							<input align="left" onClick="activateFeatureType('<?php echo $iServer; ?>','<?php echo $ftnum;?>')" <?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?> type="checkbox"
-								id="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
-								name="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
-								value="<?php echo $featureType->{'Name'}; ?>"></td>
-							<td align="left"><?php echo $featureType->{'Name'}; ?></td>
+									<input align="left" 
+										   onClick="activateFeatureType('<?php echo $iServer; ?>','<?php echo $ftnum;?>')" 
+										   <?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?> 
+										   type="checkbox" 
+										   <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>
+										  id="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+								          name="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
+								          value="<?php echo $featureType->{'Name'}; ?>"></td>
+								<td align="left"><?php echo $featureType->{'Name'}; ?></td>
 							</tr>
 							<tr >
-							<td colspan="2" align="left">"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
+								<td colspan="2" align="left">
+									"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
 								</td>
 							</tr>
 						</table>		
@@ -1902,40 +1916,57 @@ function generateWMSHTML($config,$thePolicy){
 					<td  align="center">
 						<table>
 							<tr>
-							<td><?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?> 
-							<input align="left" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled ';?> <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>
-								onClick="activateAttributeList('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" type="checkbox"
-								id="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
-								name="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
-								value="" /></td>
+								<td><?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?> 
+									<input align="left" 
+										   <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled ';?> 
+										   <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>
+										   onClick="activateAttributeList('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" type="checkbox"
+										   id="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+										   name="selectAttribute@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
+										   value="" 
+								           <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>/>
+								</td>
 							</tr>
 							<tr>
-							<td><textarea rows="2" cols="22"
-							<?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){echo 'disabled';}?>
-								id="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
-								name="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>">
-								<?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?></textarea>
-						
-							</td>
+								<td>
+									<textarea rows="2" 
+											  cols="22" 
+											  <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>
+											  <?php  $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){echo 'disabled';}?>
+												id="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+												name="AttributeList@<?php echo $iServer; ?>@<?php echo $ftnum; ?>">
+												<?php $attributes =  HTML_proxy::getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo $attributes; }?>
+									</textarea>
+								</td>
 							</tr>
 						</table>
-								
 					</td> 
-					<td><textarea rows="4" cols="50" onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-						id="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
-						name="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>">
-						<?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType);
-						if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?></textarea></td>
-					<td><textarea rows="4" cols="50" onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $featureType->{'Name'}; ?>')" <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
-						id="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
-						name="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"><?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
-						if (strcmp($localFilter,"")==0)
-						{	
-						} 
-						else 
-						{
-							echo $localFilter;
-						} ?></textarea>		
+					<td>
+						<textarea rows="4" 
+								  cols="50" 
+								  onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $ftnum; ?>')" 
+								  <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+								 id="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+								 name="RemoteFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>>
+								 <?php $remoteFilter = HTML_proxy ::getFeatureTypeRemoteFilter($theServer,$featureType); if (strcmp($remoteFilter,"")!=0){echo $remoteFilter;}?>
+						</textarea>
+					</td>
+					<td>
+						<textarea rows="4" 
+								  cols="50" 
+								  onChange="CheckQuery('<?php echo $iServer; ?>','<?php echo $featureType->{'Name'}; ?>')" 
+								  <?php if( ! HTML_proxy ::isChecked($theServer,$featureType)) echo 'disabled';?>
+									<?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>
+										id="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
+										name="LocalFilter@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"><?php $localFilter = HTML_proxy ::getFeatureTypeLocalFilter($theServer,$featureType); 
+										if (strcmp($localFilter,"")==0)
+										{	
+										} 
+										else 
+										{
+											echo $localFilter;
+										} ?>
+						</textarea>		
 					</td>
 				</tr>
 				
