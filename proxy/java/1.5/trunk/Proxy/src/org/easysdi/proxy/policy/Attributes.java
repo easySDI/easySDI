@@ -122,6 +122,8 @@ public class Attributes implements Serializable {
 	 * 
 	 */
 	public Boolean isAll() {
+		if (all == null)
+			all = false;
 		return all;
 	}
 

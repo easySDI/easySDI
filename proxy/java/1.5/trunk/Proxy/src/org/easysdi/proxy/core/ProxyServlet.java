@@ -1120,13 +1120,17 @@ public abstract class ProxyServlet extends HttpServlet {
 				return false;
 		}
 
-		boolean isServerFound = false;
+		//5.09.2010 - HVH 
+		if (policy.getServers().isAll())
+			return true;
+		//--
+//		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
 
 		for (int i = 0; i < serverList.size(); i++) {
 			// Is the server overloaded?
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				isServerFound = true;
+//				isServerFound = true;
 				// Are all feature Types Allowed ?
 				FeatureTypes features = serverList.get(i).getFeatureTypes();
 				if (features != null) {
@@ -1143,12 +1147,14 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			}
 		}
+		
+		//5.09.2010 - HVH : moved before the loop on the servers
 		// if the server is not overloaded and if all the servers are allowed
 		// then
 		// We can consider that's ok
-		if (!isServerFound && policy.getServers().isAll())
-			return true;
-
+//		if (!isServerFound && policy.getServers().isAll())
+//			return true;
+		//--
 		// in any other case the feature type is not allowed
 		return false;
 	}
@@ -1173,13 +1179,17 @@ public abstract class ProxyServlet extends HttpServlet {
 		if (layer == null)
 			return false;
 
-		boolean isServerFound = false;
+		//5.09.2010 - HVH 
+		if (policy.getServers().isAll())
+			return true;
+		//--
+//		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
-
+			
 		for (int i = 0; i < serverList.size(); i++) {
 			// Is the server overloaded?
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				isServerFound = true;
+//				isServerFound = true;
 				// Are all layers Allowed ?
 				if (serverList.get(i).getLayers().isAll())
 					return true;
@@ -1193,12 +1203,14 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			}
 		}
-		// if the server is not overloaded and if all the servers are allowed
-		// then
-		// We can consider that's ok
-		if (!isServerFound && policy.getServers().isAll())
-			return true;
-
+		
+		//5.09.2010 - HVH : moved before the loop on the servers
+//		// if the server is not overloaded and if all the servers are allowed
+//		// then
+//		// We can consider that's ok
+//		if (!isServerFound && policy.getServers().isAll())
+//			return true;
+		//--
 		// in any other case the feature type is not allowed
 		return false;
 	}
@@ -1250,19 +1262,28 @@ public abstract class ProxyServlet extends HttpServlet {
 				return false;
 		}
 
-		boolean isServerFound = false;
+		//5.09.2010 - HVH 
+		if ( policy.getServers().isAll())
+			return true;
+		//--
+//		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
 
 		for (int i = 0; i < serverList.size(); i++) {
 			// Is the server overloaded?
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				isServerFound = true;
+//				isServerFound = true;
 				// Are all layers Allowed ?
 				// Debug tb 12.11.2009
 				// if (serverList.get(i).getLayers().isAll())
 				// return true;
 				// Fin de debug
-
+				
+				//5.09.2010 - HVH 
+				// Are all layers Allowed ?
+				if (serverList.get(i).getLayers().isAll())
+					return true;
+				//--
 				List<Layer> layerList = serverList.get(i).getLayers().getLayer();
 				for (int j = 0; j < layerList.size(); j++) {
 					// Is a specific layer allowed ?
@@ -1284,12 +1305,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 		}
 
+		//5.09.2010 - HVH : moved before the loop on the servers
 		// if the server is not overloaded and if all the servers are allowed
 		// then
 		// We can consider that's ok
-		if (!isServerFound && policy.getServers().isAll())
-			return true;
-
+//		if (!isServerFound && policy.getServers().isAll())
+//			return true;
+		//--
 		// in any other case the feature type is not allowed
 		return false;
 	}
@@ -1313,7 +1335,11 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
 				return false;
 		}
-
+		
+		//5.09.2010 - HVH 
+		if ( policy.getServers().isAll())
+			return true;
+		//--
 		boolean isServerFound = false;
 		boolean isFeatureTypeFound = false;
 		boolean FeatureTypeAllowed = false;
@@ -1325,6 +1351,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
 				isServerFound = true;
 				List<FeatureType> ftList = serverList.get(i).getFeatureTypes().getFeatureType();
+				//5.09.2010 - HVH --
+				if(serverList.get(i).getFeatureTypes().isAll())
+				{
+					policyAttributeListNb = 0;
+					return true;
+				}
+				//--
 				FeatureTypeAllowed = serverList.get(i).getFeatureTypes().isAll();
 				for (int j = 0; j < ftList.size(); j++) {
 					// Is a specific feature type allowed ?
@@ -1371,12 +1404,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 		}
 
-		// if the server is not overloaded and if all the servers are allowed
-		// then
-		// We can say that's ok
-		if (!isServerFound && policy.getServers().isAll())
-			return true;
-
+		//5.09.2010 - HVH : moved before the loop on the servers
+//		// if the server is not overloaded and if all the servers are allowed
+//		// then
+//		// We can say that's ok
+//		if (!isServerFound && policy.getServers().isAll())
+//			return true;
+		//--
 		// if the server is overloaded and if the specific featureType was not
 		// overloaded and All the featuetypes are allowed
 		// We can say that's ok

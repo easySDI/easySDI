@@ -97,6 +97,8 @@ public class Operations implements Serializable {
 	 * 
 	 */
 	public Boolean isAll() {
+		if (all == null)
+			all = false;
 		return all;
 	}
 

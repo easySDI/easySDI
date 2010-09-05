@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "FeatureTypes")
 public class FeatureTypes implements Serializable {
 
-	@XmlElement(name = "FeatureType", required = true)
+	@XmlElement(name = "FeatureType")
 	protected List<FeatureType> featureType;
 	@XmlAttribute(name = "All")
 	protected Boolean all;
@@ -97,6 +97,8 @@ public class FeatureTypes implements Serializable {
 	 * 
 	 */
 	public Boolean isAll() {
+		if (all == null)
+			all = false;
 		return all;
 	}
 

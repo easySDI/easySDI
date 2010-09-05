@@ -1543,7 +1543,21 @@ public class WFSProxyServlet extends ProxyServlet {
 						}
 						// Fin de Debug
 					}
-
+					else if (currentOperation.equalsIgnoreCase("GetCapabilities"))
+					{
+						//05.09.2010 - HVH
+						//si l'opération courante est un GetCapabilities sans version spécifiée
+						//car c'est un paramètre optionnel pour cette opération
+						//on ajoute la seule version supportée
+						if(version == null || version == "" || version == "000")
+						{
+							 paramUrl+= "version=1.0.0";
+						}
+						String filePath = sendData("GET", getRemoteServerUrl(iServer), paramUrl);
+						serversIndex.add(iServer);
+						wfsFilePathList.put(iServer, filePath);
+						//HVH
+					}
 					// Si l'opération courante est différente de DescribeFeature
 					// ou GetFeature
 					else {
