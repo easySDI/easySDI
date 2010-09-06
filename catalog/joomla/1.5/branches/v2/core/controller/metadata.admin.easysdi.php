@@ -444,7 +444,9 @@ class ADMIN_metadata {
 						 c.name as child_name,
 						 c.guid as class_guid, 
 						 CONCAT(child_namespace.prefix,':',c.isocode) as child_isocode, 
-						 accountrel_class.account_id as classaccount_id
+						 accountrel_class.account_id as classaccount_id,
+						 ot.fragment as fragment_isocode,
+						 objecttype_namespace.prefix as fragment_namespace
 				  FROM	 #__sdi_relation as rel 
 						 JOIN #__sdi_relation_profile as prof
 						 	 ON rel.id = prof.relation_id
@@ -454,7 +456,9 @@ class ADMIN_metadata {
 					  		 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
+					     LEFT OUTER JOIN #__sdi_objecttype as ot
+					  		 ON rel.objecttypechild_id=ot.id
+					  	 LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	 
 					     LEFT OUTER JOIN #__sdi_account_attribute as accountrel_attribute
 					  		 ON accountrel_attribute.attribute_id=attribute_id
@@ -470,6 +474,8 @@ class ADMIN_metadata {
 					  		 ON relation_namespace.id=rel.namespace_id
 					  	 LEFT OUTER JOIN #__sdi_namespace as attributetype_namespace
 					  		 ON attributetype_namespace.id=t.namespace_id
+					  	 LEFT OUTER JOIN #__sdi_namespace as objecttype_namespace
+					  		 ON objecttype_namespace.id=ot.fragmentnamespace_id
 				  WHERE  rel.parent_id=".$parent."
 				  		 AND 
 				  		 prof.profile_id=".$profile_id."
@@ -1505,7 +1511,10 @@ class ADMIN_metadata {
 							continue;
 						require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 						$catalogUrlBase = config_easysdi::getValue("catalog_url");
-						$url = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$nodeValue;
+						if ($child->fragment_isocode <> "" and $child->fragment_namespace <> "")
+							$url = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$nodeValue."&fragment=".$child->fragment_namespace."%3A".$child->fragment_isocode;
+						else
+							$url = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$nodeValue;
 			
 						$XMLNode = $XMLDoc->createElement($child->rel_isocode);
 						$XMLNode->setAttribute('xlink:show', "embed");
@@ -2319,32 +2328,170 @@ class ADMIN_metadata {
 		$account_id= $_POST['account_id'];
 		
 		// Est-ce que tous les enfants sont publiés?
+		$rowObject = new object($database);
+		$rowObject->load($object_id);
+		
 		$rowMetadata = new metadataByGuid($database);
 		$rowMetadata->load($metadata_id);
 		
 		$rowObjectVersion = new objectversionByMetadata_id($database);
 		$rowObjectVersion->load($rowMetadata->id);
 
+		// Contrôle que le nombre d'enfants est compris dans les bornes
+		// Sélection de toutes les versions enfant en les groupant par type d'objet
+		$childs=array();
+		$query = "SELECT count( * ) as child_count , o.objecttype_id
+				 FROM #__sdi_objectversionlink ovl
+				 INNER JOIN #__sdi_objectversion ov ON ov.id = ovl.child_id
+				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
+				 WHERE ovl.parent_id=".$rowObjectVersion->id."
+				 GROUP BY o.objecttype_id
+				";
+		$database->setQuery($query);
+		$childs = $database->loadObjectList();
+		//echo "Voici tous les types enfants avec leur count: ".$database->getQuery()."<br>";
+		//print_r($childs);
+		// Pour chaque type d'objet enfant trouvé, chercher un lien entre types d'objets correspondant
+		foreach ($childs as $child)
+		{
+			$child_objecttypelinks=array();
+			$query = 'SELECT l.*' .
+					' FROM #__sdi_objecttypelink l
+					  WHERE l.parent_id=' . $rowObject->objecttype_id.
+					' 		AND l.child_id='.$child->objecttype_id;
+			$database->setQuery($query);
+			$child_objecttypelinks = $database->loadObjectList();
+			//echo "<br>Relation entre les types: ".$database->getQuery()."<br>";
+			//print_r($child_objecttypelinks);
+			// Si on a trouvé une correspondance, contrôler que le nombre d'enfants de ce type est bien compris dans les bornes définies
+			if (count($child_objecttypelinks) > 0)
+			{
+				$boundMin = $child_objecttypelinks[0]->childbound_lower;
+				$boundMax = $child_objecttypelinks[0]->childbound_upper;
+				//echo "<br>Bornes a comparer: ".$boundMin." <= ".$child->child_count." >= ".$boundMax."<br>";
+				
+				if ($child->child_count < $boundMin)
+				{
+					// Message indiquant un nombre d'enfants invalide
+					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MINCHILDBOUNDSREACHED"));
+					
+					$response = '{
+						    		success: false,
+								    errors: {
+								        message: "'.$msg.'"
+								    }
+								}';
+					print_r($response);
+					die();
+				}
+				else if ($child->child_count > $boundMax)
+				{
+					// Message indiquant un nombre d'enfants invalide
+					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MAXCHILDBOUNDSREACHED"));
+					
+					$response = '{
+						    		success: false,
+								    errors: {
+								        message: "'.$msg.'"
+								    }
+								}';
+					print_r($response);
+					die();
+				}
+			}
+		}
+		
+		
+		
+		// Contrôle que le nombre de parents est compris dans les bornes
+		// Sélection de toutes les versions parent en les groupant par type d'objet
+		$parents=array();
+		$query = "SELECT count( * ) as parent_count , o.objecttype_id
+				 FROM #__sdi_objectversionlink ovl
+				 INNER JOIN #__sdi_objectversion ov ON ov.id = ovl.parent_id
+				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
+				 WHERE ovl.child_id=".$rowObjectVersion->id."
+				 GROUP BY o.objecttype_id
+				";
+		$database->setQuery($query);
+		$parents = $database->loadObjectList();
+		//echo "<hr>Voici tous les types parents avec leur count: ".$database->getQuery()."<br>";
+		//print_r($parents);
+		// Pour chaque type d'objet parent trouvé, chercher un lien entre types d'objets correspondant
+		foreach ($parents as $parent)
+		{
+			$parent_objecttypelinks=array();
+			$query = 'SELECT l.*' .
+					' FROM #__sdi_objecttypelink l
+					  WHERE l.parent_id=' . $parent->objecttype_id.
+					' 		AND l.child_id='.$rowObject->objecttype_id;
+			$database->setQuery($query);
+			$parent_objecttypelinks = $database->loadObjectList();
+			//echo "<br>Relation entre les types: ".$database->getQuery()."<br>";
+			//print_r($parent_objecttypelinks);
+			// Si on a trouvé une correspondance, contrôler que le nombre de parents de ce type est bien compris dans les bornes définies
+			if (count($parent_objecttypelinks) > 0)
+			{
+				$boundMin = $parent_objecttypelinks[0]->parentbound_lower;
+				$boundMax = $parent_objecttypelinks[0]->parentbound_upper;
+				//echo "<br>Bornes a comparer: ".$boundMin." <= ".$parent->parent_count." >= ".$boundMax."<br>";
+				if ($parent->parent_count < $boundMin)
+				{
+					// Message indiquant un nombre d'enfants invalide
+					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MINPARENTBOUNDSREACHED"));
+					
+					$response = '{
+						    		success: false,
+								    errors: {
+								        message: "'.$msg.'"
+								    }
+								}';
+					print_r($response);
+					die();
+				}
+				else if ($parent->parent_count > $boundMax)
+				{
+					// Message indiquant un nombre d'enfants invalide
+					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MAXPARENTBOUNDSREACHED"));
+					
+					$response = '{
+						    		success: false,
+								    errors: {
+								        message: "'.$msg.'"
+								    }
+								}';
+					print_r($response);
+					die();
+				}
+			}
+		}
+		
+		// Est-ce que tous les enfants sont publiés?
 		$child_objectlinks=array();
-		$query = 'SELECT count(*)' .
+		$query = 'SELECT child.*, child_metadatastate.code as state, child_object.name as object_name' .
 				' FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_object child_object ON child_object.id=child.object_id
 				  INNER JOIN #__sdi_metadata child_metadata ON child_metadata.id=child.metadata_id
 				  INNER JOIN #__sdi_list_metadatastate child_metadatastate ON child_metadatastate.id=child_metadata.metadatastate_id
 				  WHERE l.parent_id=' . $rowObjectVersion->id .
-				'       AND child_metadatastate.code <> "PUBLISHED"';
+				'       AND child_metadatastate.code <> "published"';
 		$database->setQuery($query);
-		$child_objectlinks = $database->loadResult();
+		$child_objectlinks = $database->loadObjectList();
 		//	echo $database->getQuery()."<br>".$child_objectlinks."<br>";
 		
-		if ($child_objectlinks > 0)
+		if (count($child_objectlinks) > 0)
 		{
-			$errorMsg = "CATALOG_METADATA_PUBLISH_CHILDSNOTPUBLISHED";
+			$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_CHILDSNOTPUBLISHED"));
+			foreach ($child_objectlinks as $child)
+			{
+				$msg .= "<br>".$child->object_name." ".$child->title." [".$child->state."]";
+			}
 			
 			$response = '{
 				    		success: false,
 						    errors: {
-						        xml: "'.html_Metadata::cleanText(JText::_($errorMsg)).'"
+						        message: "'.$msg.'"
 						    }
 						}';
 			print_r($response);
@@ -2353,31 +2500,72 @@ class ADMIN_metadata {
 		
 		// Est-ce que tous les enfants sont publiés à la date indiquée?
 		$child_published=array();
-		$query = 'SELECT count(*)' .
+		$query = 'SELECT child.*, child_metadata.published as published, child_object.name as object_name' .
 				' FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_object child_object ON child_object.id=child.object_id
 				  INNER JOIN #__sdi_metadata child_metadata ON child_metadata.id=child.metadata_id
 				  INNER JOIN #__sdi_list_metadatastate child_metadatastate ON child_metadatastate.id=child_metadata.metadatastate_id
 				  WHERE l.parent_id=' . $rowObjectVersion->id .
-				'       AND child_metadata.published <= "'.$publishdate.'"';
+				'       AND child_metadatastate.code = "published"
+						AND child_metadata.published > "'.date('Y-m-d', strtotime($publishdate)).'"';
 		$database->setQuery($query);
-		$child_published = $database->loadResult();
+		$child_published = $database->loadObjectList();
 		//echo $database->getQuery()."<br>".$child_published."<br>";
 		
-		if ($child_published > 0)
+		if (count($child_published) > 0)
 		{
-			$errorMsg = "CATALOG_METADATA_PUBLISH_CHILDSDATE";
+			$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_CHILDSDATE"));
+			foreach ($child_published as $child)
+			{
+				$msg .= "<br>".$child->object_name." ".$child->title." [".$child->published."]";
+			}
 			
 			$response = '{
 				    		success: false,
 						    errors: {
-						        xml: "'.html_Metadata::cleanText(JText::_($errorMsg)).'"
+						        message: "'.$msg.'"
 						    }
 						}';
 			print_r($response);
 			die();
 		}
-		//break;
+		
+		// Est-ce que tous les enfants ont le même metadatastate que le parent ?
+		$child_metadatastates=array();
+		$query = 'SELECT child.*, child_object.name as object_name, child_visibility.code as child_state, parent_visibility.code as parent_state' .
+				' FROM #__sdi_objectversionlink l
+				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+				  INNER JOIN #__sdi_object child_object ON child_object.id=child.object_id
+				  INNER JOIN #__sdi_list_visibility child_visibility ON child_visibility.id=child_object.visibility_id
+				  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
+				  INNER JOIN #__sdi_object parent_object ON parent_object.id=parent.object_id
+				  INNER JOIN #__sdi_list_visibility parent_visibility ON parent_visibility.id=parent_object.visibility_id
+				  WHERE l.parent_id=' . $rowObjectVersion->id .
+				'       AND child_object.visibility_id <> parent_object.visibility_id';
+		$database->setQuery($query);
+		$child_metadatastates = $database->loadObjectList();
+		//echo $database->getQuery()."<br>";
+		//print_r($child_metadatastates); 
+		//echo "<br>";
+		
+		if (count($child_metadatastates) > 0)
+		{
+			$msg = html_Metadata::cleanText(JText::sprintf("CATALOG_METADATA_PUBLISH_DIFFMETADATASTATE", $child_metadatastates[0]->parent_state));
+			foreach ($child_metadatastates as $child)
+			{
+				$msg .= "<br>".$child->object_name." ".$child->title." [".$child->child_state."]";
+			}
+			
+			$response = '{
+				    		success: false,
+						    errors: {
+						        message: "'.$msg.'"
+						    }
+						}';
+			print_r($response);
+			die();
+		}
 		
 		$xml= $_POST['xml'];
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
@@ -2409,7 +2597,7 @@ class ADMIN_metadata {
 		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		
+		/* Peu importe si la suppression a échoué
 		if ($deleted <> 1)
 		{
 			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
@@ -2423,7 +2611,7 @@ class ADMIN_metadata {
 			print_r($response);
 			die();
 		}
-	
+		*/
 		// Insérer dans Geonetwork la nouvelle version de la métadonnée
 		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 		<csw:Transaction service=\"CSW\"
@@ -3498,48 +3686,21 @@ class ADMIN_metadata {
 		die();
 	}
 	
-	function PostXMLRequest($url,$xmlBody){
-		$url = parse_url($url);
-		//$url=parse_url("http://demo.easysdi.org:8080/proxy/ogc/geonetwork");
-		
-		if(isset($url['port'])){
-			$port = $url['port'];
-		}else{
-			$port = 80;
-		}
-		//could not open socket
-		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			//$out = false;
-		}
-		//socket ok
-		else{
-			$size = strlen($xmlBody);
-			$request = "POST ".$url['path']." HTTP/1.1\n";
-			$request .= "Host: ".$url['host']."\n";
-			//add auth header if necessary
-			if(isset($url['user']) && isset($url['pass'])){
-				$user = $url['user'];
-				$pass = $url['pass'];
-				$request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
-			}
-			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/xml\n";
-			$request .= "Content-length: ".$size."\n\n";
-			$request .= $xmlBody."\n";
-			//send req
-			$fput = fputs($fp, $request);
-
-			//read response, do only send back the xml part, not the headers
-			$strResponse = "";
-			while (!feof($fp)) {
-				$strResponse .= fgets($fp, 128);
-			}
-			$out = strstr($strResponse, '<?xml');
-			fclose ($fp);
-		}
-		
-		return $out;
-	}
+	function PostXMLRequest($url,$xmlBody)
+	{
+                 $ch = curl_init($url);
+                 curl_setopt($ch, CURLOPT_MUTE, 1);
+                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                 curl_setopt($ch, CURLOPT_POST, 1);
+                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+                 curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
+                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                 $output = curl_exec($ch);
+                 curl_close($ch);
+ 
+                 return $output;
+    }
 	
 	function sendMailByEmail($email,$subject,$body)
 	{
