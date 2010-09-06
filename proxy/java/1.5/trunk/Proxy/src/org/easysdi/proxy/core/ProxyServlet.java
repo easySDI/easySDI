@@ -557,7 +557,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param resp
 	 * @param ogcException
 	 */
-	public void sendOgcExceptionResponse (HttpServletResponse resp,StringBuffer ogcException)
+	public void sendOgcExceptionBuiltInResponse (HttpServletResponse resp,StringBuffer ogcException)
 	{
 		try {
 			resp.setContentType("application/xml");
@@ -567,8 +567,40 @@ public abstract class ProxyServlet extends HttpServlet {
 			os.write(ogcException.toString().getBytes());
 			os.flush();
 			os.close();
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+			dump("SYSTEM", "ClientResponseLength", ogcException.length());
+		}
+	}
+	
+	public void sendProxyBuiltInResponse (HttpServletResponse resp,StringBuffer xmlResponse)
+	{
+		try {
+			resp.setContentType("application/xml");
+			resp.setContentLength(Integer.MAX_VALUE);
+			OutputStream os;
+			os = resp.getOutputStream();
+			os.write(xmlResponse.toString().getBytes());
+			os.flush();
+			os.close();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+			dump("SYSTEM", "ClientResponseLength", xmlResponse.length());
 		}
 	}
 	/**
@@ -1073,14 +1105,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		//IF operation is not supported by the current version of the proxy
 		if(!ServiceSupportedOperations.contains(currentOperation))
 		{
-			sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
 			return true;
 		}
 		try
 		{
 			if (!isOperationAllowed(currentOperation))
 			{
-				sendOgcExceptionResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
 				return true;
 				
 			}
@@ -1088,7 +1120,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		catch (AvailabilityPeriodException ex)
 		{
 			
-			sendOgcExceptionResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
 			return true;
 		}
 		

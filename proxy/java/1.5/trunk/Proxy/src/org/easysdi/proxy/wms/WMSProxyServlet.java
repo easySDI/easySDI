@@ -1333,7 +1333,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					version = value;
 					if (version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad WMS version request.");
-						sendOgcExceptionResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","version", "1.1.1"));
+						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","version", "1.1.1"));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("wmtver")) {
@@ -1886,7 +1886,7 @@ public class WMSProxyServlet extends ProxyServlet {
 												}
 												catch (Exception ex)
 												{
-													sendOgcExceptionResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS ","SRS",requestedVersion));
+													sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS ","SRS",requestedVersion));
 													return;
 												}
 
@@ -1981,7 +1981,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							{
 								//Not supported operation
 								try {
-									sendOgcExceptionResponse(resp,generateOgcError("Operation not supported : "+operation,"OperationNotSupported ","request",requestedVersion));
+									sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not supported : "+operation,"OperationNotSupported ","request",requestedVersion));
 									return;
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -2112,7 +2112,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setHeader("easysdi-proxy-error-occured", "true");
 //			dump("ERROR", e.getMessage());
 //			resp.setStatus(401);

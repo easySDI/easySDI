@@ -523,7 +523,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			
 			if (!version.equalsIgnoreCase("100")) {
 				dump("ERROR", "Bad wfs version request: 1.0.0 only");
-				sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				return;
 			}
 
@@ -1004,7 +1004,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					transform(version, currentOperation, req, resp);
 				} else {
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 					return ;
 				}
 			} else {
@@ -1015,7 +1015,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1080,7 +1080,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					//If version is not 1.0.0, return an ogc exception
 					if (!version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad wfs version request: 1.0.0 only");
-						sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("service")) {
@@ -1586,7 +1586,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				} else {
 					//Moved to the begining of the requestPreTreatmentGET method  
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				}
 				// Debug tb 24.06.2009
 			} else {
@@ -1600,7 +1600,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());

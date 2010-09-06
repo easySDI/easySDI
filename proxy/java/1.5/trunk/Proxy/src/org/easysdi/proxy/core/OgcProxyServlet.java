@@ -290,7 +290,14 @@ public class OgcProxyServlet extends HttpServlet {
 
 			configuration = (Config) configE.getValue();
 
-			Class<?> classe = Class.forName(configuration.getServletClass());
+			String className = configuration.getServletClass();
+			if(className.equalsIgnoreCase("org.easysdi.proxy.csw.CSWProxyServlet") && joomlaProvider.getVersion() != null && Integer.parseInt(joomlaProvider.getVersion()) >= 200)
+			{
+				className += "2";
+			}
+				
+			//Class<?> classe = Class.forName(configuration.getServletClass());
+			Class<?> classe = Class.forName(className);
 			Constructor<?> constructeur = classe.getConstructor();
 			ProxyServlet ps = (ProxyServlet) constructeur.newInstance();
 			ps.setConfiguration(configuration);

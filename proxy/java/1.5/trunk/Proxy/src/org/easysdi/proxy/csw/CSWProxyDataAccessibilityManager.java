@@ -1,11 +1,18 @@
 package org.easysdi.proxy.csw;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
+import org.w3c.dom.*;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 
 public class CSWProxyDataAccessibilityManager {
 	
@@ -150,6 +157,31 @@ public class CSWProxyDataAccessibilityManager {
 		return sb;
 	}
 
+	public List <String> extractRecordIDFromGetRecordsResponse (File response)
+	{
+		List <String> recordIds = new ArrayList<String>();
+		
+		try
+		{
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(response);
+			doc.getDocumentElement().normalize();
+			NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
+						
+			for (int s = 0; s < nodeLst.getLength(); s++) {
+				Node fstNode = nodeLst.item(s);
+				String id = fstNode.getFirstChild().getNodeValue();
+				recordIds.add(id);
+			}
+			return recordIds;
+		}
+		catch (Exception ex)
+		{
+			return null;
+		}
+	}
+	
 	
 
 }

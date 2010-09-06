@@ -611,42 +611,75 @@ public class CSWProxyServlet extends ProxyServlet {
 	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp) {
-
-		String currentOperation = null;
-		String version = "000";
-		String service = "";
-		boolean sendRequest = true;
-		Enumeration<String> parameterNames = req.getParameterNames();
-		String paramUrl = "";
-
-		// Build the request to dispatch
-		while (parameterNames.hasMoreElements()) {
-			String key = (String) parameterNames.nextElement();
-			String value = URLEncoder.encode(req.getParameter(key));
-			paramUrl = paramUrl + key + "=" + value + "&";
-			if (key.equalsIgnoreCase("Request")) {
-				// Gets the requested Operation
-				if (value.equalsIgnoreCase("capabilities")) {
-					currentOperation = "GetCapabilities";
-				} else {
-					currentOperation = value;
+	protected void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp) 
+	{
+		try
+		{
+			String currentOperation = null;
+			String version = "000";
+			
+			Enumeration<String> parameterNames = req.getParameterNames();
+			String paramUrl = "";
+	
+			while (parameterNames.hasMoreElements()) 
+			{
+				String key = (String) parameterNames.nextElement();
+				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
+				
+				if(key.equalsIgnoreCase("Request"))
+				{
+					// Gets the requested Operation
+					if (value.equalsIgnoreCase("capabilities")) 
+					{
+						currentOperation = "GetCapabilities";
+					} 
+					else 
+					{
+						currentOperation = value;
+					}
+				}
+				if (key.equalsIgnoreCase("version")) 
+				{
+					requestedVersion = value;
 				}
 			}
+			
+			//Generate OGC exception if current operation is not allowed
+			if(handleNotAllowedOperation(currentOperation,resp))
+				return ;
+					
+			
+			// Build the request to dispatch
+			parameterNames = req.getParameterNames();
+			while (parameterNames.hasMoreElements()) 
+			{
+				String key = (String) parameterNames.nextElement();
+				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
+				
+				paramUrl = paramUrl + key + "=" + value + "&";
+			}
+			
+			version = requestedVersion;
+			version = version.replaceAll("\\.", "");
+	
+			
+			// Send the request to the remote server
+			List<String> filePathList = new Vector<String>();
+			String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
+			filePathList.add(filePath);
+			transform(version, currentOperation, req, resp, filePathList);
+			
+		} 
+		catch (AvailabilityPeriodException e) 
+		{
+			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
 		}
-		requestedVersion = version;
-		version = version.replaceAll("\\.", "");
-
-		//Generate OGC exception if current operation is not allowed
-		if(handleNotAllowedOperation(currentOperation,resp))
-			return ;
-		
-		// Send the request to the remote server
-		List<String> filePathList = new Vector<String>();
-		String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
-		filePathList.add(filePath);
-		transform(version, currentOperation, req, resp, filePathList);
-
 	}
 
 
@@ -737,46 +770,6 @@ public class CSWProxyServlet extends ProxyServlet {
 				}
 
 			}
-			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
-			{
-				if (version != null)
-					version = version.replaceAll("\\.", "");
-				
-				//Data accessibility is only supported since the EasySDI v2.0.0
-				if(getJoomlaProvider().getVersion()!= null && Integer.parseInt(getJoomlaProvider().getVersion()) >= 200)
-				{
-					if(hasPolicy)
-					{
-						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-						String dataId = rh.getRecordId();
-						if(!cswDataManager.isDataVersionAccessible(dataId))
-						{
-							dataId = cswDataManager.getDataIdVersionAccessible();
-						}
-						if(!cswDataManager.isDataAccessible(dataId))
-						{
-							sendOgcExceptionResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
-							return;
-						}
-						if(dataId.compareTo(rh.getRecordId()) != 0)
-						{
-							//Change the data id in the request
-							int start = param.indexOf(rh.getRecordId());
-							int end = start + rh.getRecordId().length();
-							
-							param.replace(start, end, dataId);
-							
-							String result = param.toString();
-							
-						}
-					}
-				}
-				List<String> filePathList = new Vector<String>();
-				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
-				filePathList.add(filePath);
-				transform(version, currentOperation, req, resp, filePathList);
-				
-			}
 			else {
 				if (version != null)
 					version = version.replaceAll("\\.", "");
@@ -787,9 +780,10 @@ public class CSWProxyServlet extends ProxyServlet {
 				filePathList.add(filePath);
 				transform(version, currentOperation, req, resp, filePathList);
 			}
-		} catch (AvailabilityPeriodException e) {
+		} catch (AvailabilityPeriodException e) 
+		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -802,32 +796,33 @@ public class CSWProxyServlet extends ProxyServlet {
 		}
 	}
 
-	protected StringBuffer generateXSLTForMetadata() {
-
-		try {
-
+	protected StringBuffer generateXSLTForMetadata()  
+	{
+		try 
+		{
 			StringBuffer CSWCapabilities200 = new StringBuffer();
 
-			CSWCapabilities200
-					.append("<xsl:stylesheet version=\"1.00\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\"    xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:ows=\"http://www.opengis.net/ows\">");
+			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\"    xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:ows=\"http://www.opengis.net/ows\">");
 
 			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getRemoteServerUrl(0));
 			int nsI = 0;
-			for (int i = 0; i < notAllowedAttributeList.size(); i++) {
+			for (int i = 0; i < notAllowedAttributeList.size(); i++) 
+			{
 				String text = notAllowedAttributeList.get(i);
-				if (text != null) {
-					if (text.indexOf("\":") < 0) {
+				if (text != null) 
+				{
+					if (text.indexOf("\":") < 0) 
+					{
 						// Pas de namespace.
 						CSWCapabilities200.append("<xsl:template match=\"//gmd:MD_Metadata/" + text + "\">");
-
-					} else {
+					} 
+					else 
+					{
 						CSWCapabilities200.append("<xsl:template xmlns:" + "au" + nsI + "=\"" + text.substring(1, text.indexOf("\":"))
 								+ "\" match=\"//gmd:MD_Metadata/au" + nsI + text.substring(text.indexOf("\":") + 1) + "\">");
 						nsI++;
 					}
-
 					CSWCapabilities200.append("</xsl:template>");
-
 				}
 			}
 
@@ -842,19 +837,20 @@ public class CSWProxyServlet extends ProxyServlet {
 
 			CSWCapabilities200.append("</xsl:stylesheet>");
 			return CSWCapabilities200;
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.
 		StringBuffer sb = new StringBuffer();
-		return sb
-				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
+		return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 
-	StringBuffer generateInfoFileForMef(String uuid, String siteId) {
-
+	StringBuffer generateInfoFileForMef(String uuid, String siteId) 
+	{
 		StringBuffer info = new StringBuffer();
 		info.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		info.append("<info version=\"1.0\">");
