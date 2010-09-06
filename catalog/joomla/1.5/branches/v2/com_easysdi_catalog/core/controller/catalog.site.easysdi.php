@@ -69,7 +69,7 @@ class SITE_catalog {
 		// Liste des critères de recherche simple
 		$context= JRequest::getVar('context');
 		$listSimpleFilters = array();
-		$database->setQuery("SELECT sc.*, r.guid as relation_guid, r.lucenesearchfilter, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code
+		$database->setQuery("SELECT sc.*, r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -96,7 +96,7 @@ class SITE_catalog {
 					   WHERE c.code='".$context."'
 					         AND sc.advancedtab = 1 
 					   ORDER BY r.ordering");*/
-		$database->setQuery("SELECT sc.*, r.guid as relation_guid, r.lucenesearchfilter, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code
+		$database->setQuery("SELECT sc.*, r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -150,6 +150,8 @@ class SITE_catalog {
 			$filter_date = $temp[2]."-".$temp[1]."-".$temp[0];
 		}*/
 		
+		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
+							
 		// Selon que l'utilisateur est loggé ou pas, on ne fera pas la recherche sur le même set de métadonnées
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
@@ -228,6 +230,13 @@ class SITE_catalog {
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
 			
+			// Listes qui vont potentiellement contenir des guid de métadonnées
+			$arrFreetextMd = array();
+			$arrObjectNameMd = array();
+			$arrAccountsMd = array();
+			$arrManagersMd = array();
+			$arrCreatedMd = array();
+			$arrPublishedMd = array();
 				
 			// Construction des filtres basés sur l'onglet simple
 			$cswSimpleFilter="";
@@ -254,18 +263,27 @@ class SITE_catalog {
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
 							$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
-							<ogc:Literal>$filter</ogc:Literal>
+							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+							<ogc:Literal>%$filter%</ogc:Literal>
 							</ogc:PropertyIsLike> ";
 							
 							$empty = false;
 							break;
 						case "list":
 							/* Fonctionnement liste*/
-							$cswSimpleFilter .= "<ogc:PropertyIsEqualTo>
-							<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
-							<ogc:Literal>$filter</ogc:Literal>
-							</ogc:PropertyIsEqualTo> ";
+							if (count($filter) > 0 and $filter[0] <> "")
+							{
+								foreach($filter as $f)
+								{
+									$cswSimpleFilter .= "<ogc:PropertyIsEqualTo>
+									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:Literal>$f</ogc:Literal>
+									</ogc:PropertyIsEqualTo> ";
+								}
+							}
+							
+							if (count($filter) > 1)
+								$cswSimpleFilter = "<ogc:Or>".$cswSimpleFilter."</ogc:Or>";
 							
 							$empty = false;
 							break;
@@ -280,7 +298,7 @@ class SITE_catalog {
 							{
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswSimpleFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$upperFilter</ogc:Literal>
 								</ogc:PropertyIsLessThanOrEqualTo> ";
 							}
@@ -288,7 +306,7 @@ class SITE_catalog {
 							{
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$cswSimpleFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:PropertyIsGreaterThanOrEqualTo> ";
 							}
@@ -297,7 +315,7 @@ class SITE_catalog {
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswSimpleFilter .= "<ogc:PropertyIsBetween>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:LowerBoundary>
 									<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:LowerBoundary>
@@ -313,124 +331,93 @@ class SITE_catalog {
 							break;
 					}
 				}
-				else // Traiter les filtres systèmes, si ils existent
+				else // Traiter les filtres qui ne sont pas liés à des relations, si ils existent
 				{
-					// Récupération des filtres standards
-					$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
-					//$account_id  = JRequest::getVar('account_id');
-					$objecttype_id = JRequest::getVar('objecttype_id');
-					$versions = JRequest::getVar('allVersions');
-					
-					switch ($searchFilter->code)
+					if ($searchFilter->criteriatype_id == 1) // Filtres systèmes
 					{
-						case "fulltext":
-							if ($simple_filterfreetextcriteria <> "")
-							{
-								$countSimpleFilters++;
-								// Filtre sur le texte (Critères de recherche simple)
-								//$cswFreeTextFilter="";
-								//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
-								
-								$kwords = explode(" ", $simple_filterfreetextcriteria);
-								//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
-								
-								//Break the space in the request and split it in many terms
-								foreach ($kwords as $word) 
+						// Récupération des filtres standards
+						//$account_id  = JRequest::getVar('account_id');
+						
+						switch ($searchFilter->code)
+						{
+							case "fulltext":
+								$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
+								if ($simple_filterfreetextcriteria <> "")
 								{
-									/*$cswFreeTextFilter .= "
-									 <ogc:Or>
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-											<ogc:PropertyName>title</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>\r\n
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-											<ogc:PropertyName>metadata_title</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>\r\n
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-									     	<ogc:PropertyName>abstract</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>
-									  </ogc:Or>\r\n";*/
-									$cswSimpleFilter .= "
-									 	 <ogc:Or>
-									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												<ogc:PropertyName>title</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>\r\n
-											 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												<ogc:PropertyName>metadata_title</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>\r\n
-											 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-										     	<ogc:PropertyName>abstract</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>
-										</ogc:Or>\r\n";
-								}
-								/*if(count($kwords > 1))
-									$cswFreeTextFilter = "<ogc:And>".$cswFreeTextFilter."</ogc:And>";*/
-							}
-							break;
-						case "objecttype":
-							if (count($objecttype_id) > 0)
-							{
-								$countSimpleFilters++;
-								$arrObjecttypeMd=null;
-							
-								//echo ", objecttype";
-								$query = "SELECT m.guid as metadata_id 
-										  FROM #__sdi_objectversion ov 
-										  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-										  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-										  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-										  WHERE o.published=1 
-										  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
-										.$filter;
-								$database->setQuery( $query);
-								//echo "list_id:".$database->getQuery()."<hr>";
-								$list_id = $database->loadObjectList() ;
-								//echo "list_id:". htmlspecialchars($list_id)."<hr>";
-					
-								if ($database->getErrorNum())
-								{
-									echo "<div class='alert'>";
-									echo 	$database->getErrorMsg();
-									echo "</div>";
-								}
-								$arrObjecttypeMd = array();
-								//If no result, give an unexisting id back
-								if(count($list_id == 0))
-									$arrObjecttypeMd[] = -1;
-								foreach ($list_id as $md_id)
-								{
-									$arrObjecttypeMd[] = $md_id->metadata_id;
-								}
-								
-								if(count($list_id > 0))
-									$empty = false;
-							
-								if($arrObjecttypeMd != null)
-									$arrFilterMd[] = $arrObjecttypeMd;
-							}
-							break;
-						case "versions":
-							if ($versions <> "")
-							{
-								$countSimpleFilters++;
-								// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
-								// ajouter un filtre. Sinon ne rien faire
-								if ($versions == 0)
-								{
-									// Sélectionner tous les objets
+									$countSimpleFilters++;
+									// Filtre sur le texte (Critères de recherche simple)
+									//$cswFreeTextFilter="";
+									//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
+									
+									$kwords = explode(" ", trim($simple_filterfreetextcriteria));
+									//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
+									
+									// Filtres OGC directs pour les champs titre(title), description(abstract) et GEMET (keyword)
+									//Break the space in the request and split it in many terms
+									$title=0;
+									$keyword=0;
+									$abstract=0;
+									foreach ($kwords as $word) 
+									{
+										if ($word <> "")
+										{
+											$cswTitle .= "
+											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+														<ogc:PropertyName>title</ogc:PropertyName>
+														<ogc:Literal>%$word%</ogc:Literal>
+													</ogc:PropertyIsLike>\r\n
+												";
+											$title++;
+											$cswKeyword .= "
+											 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+														<ogc:PropertyName>keyword</ogc:PropertyName>
+														<ogc:Literal>%$word%</ogc:Literal>
+													</ogc:PropertyIsLike>\r\n
+												";
+											$keyword++;
+											$cswAbstract .= "
+											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+												     	<ogc:PropertyName>abstract</ogc:PropertyName>
+														<ogc:Literal>%$word%</ogc:Literal>
+													</ogc:PropertyIsLike>
+												";
+											$abstract++;
+										}
+									}
+									
+									// Réunir chaque critère
+									$cswFreeFilters = 0;
+									if ($title > 1)
+									{
+										$cswTitle = "<ogc:And>".$cswTitle."</ogc:And>";
+										$cswFreeFilters++;
+									}
+									if ($keyword > 1)
+									{
+										$cswKeyword = "<ogc:And>".$cswKeyword."</ogc:And>";
+										$cswFreeFilters++;
+									}
+									if ($abstract > 1)
+									{
+										$cswAbstract = "<ogc:And>".$cswAbstract."</ogc:And>";
+										$cswFreeFilters++;
+									}
+									
+									// Réunir les trois critères
+									if($cswFreeFilters > 1)
+										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract."</ogc:Or>";
+									
+									// Filtres sur les guid de métadonnées pour le code et le fournisseur
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 "
-											.$filter;
+											  WHERE o.name LIKE '%".$simple_filterfreetextcriteria."%' ";
 									$database->setQuery( $query);
+									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
+									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
@@ -445,20 +432,583 @@ class SITE_catalog {
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
+										$objectnamelist = $database->loadObjectList() ;
+										
+										foreach ($objectnamelist as $on)
+										{
+											$arrFreetextMd[] = $on->metadata_id;
+										
+											$empty = false;
+										}
+									}
+									
+									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_account a ON a.id=o.account_id
+											  WHERE a.name LIKE '%".$simple_filterfreetextcriteria."%' ";
+									$database->setQuery( $query);
+									//echo "<br>".$database->getQuery()."<br>";
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$accountlist = $database->loadObjectList() ;
+										
+										foreach ($accountlist as $a)
+										{
+											$arrFreetextMd[] = $a->metadata_id;
+										
+											$empty = false;
+										}
+									}
+									
+									//If no result, give an unexisting id back
+									if(count($objectnamelist) == 0 and count($accountlist) == 0)
+										$arrFreetextMd[] = -1;
+								}
+								break;
+							case "objecttype":
+								$objecttype_id = JRequest::getVar('objecttype_id');
+								//echo "objecttype_id: ".count($objecttype_id);
+								if (count($objecttype_id) > 0)
+								{
+									$countSimpleFilters++;
+									$arrObjecttypeMd=null;
+								
+									//echo ", objecttype";
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 
+											  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
+											.$filter;
+									$database->setQuery( $query);
+									//echo "list_id:".$database->getQuery()."<hr>";
+									$list_id = $database->loadObjectList() ;
+									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
+						
+									if ($database->getErrorNum())
+									{
+										echo "<div class='alert'>";
+										echo 	$database->getErrorMsg();
+										echo "</div>";
+									}
+									$arrObjecttypeMd = array();
+									//If no result, give an unexisting id back
+									if(count($list_id) == 0)
+										$arrObjecttypeMd[] = -1;
+									foreach ($list_id as $md_id)
+									{
+										$arrObjecttypeMd[] = $md_id->metadata_id;
+									}
+									
+									if(count($list_id > 0))
+										$empty = false;
+								}
+								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
+								{
+									$countSimpleFilters++;
+									
+									$objecttypes = array();
+									if ($context <> "")
+									{
+										// Récupérer tous les types d'objets du contexte
+										$database->setQuery("SELECT id FROM #__sdi_objecttype WHERE id IN
+															(SELECT co.objecttype_id 
+															FROM #__sdi_context_objecttype co
+															INNER JOIN #__sdi_context c ON c.id=co.context_id 
+															WHERE c.code = '".$context."')
+													   ORDER BY name");
+									}
+									else
+									{
+										// Récupérer tous les types d'objets définis
+										$database->setQuery("SELECT id FROM #__sdi_objecttype ORDER BY name");
+									}
+									//echo "objecttypes:".$database->getQuery()."<hr>";
+									$objecttypes = $database->loadResultArray();
+									
+									// Récupérer toutes les métadonnées de ces types d'objets
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 
+											  AND o.objecttype_id IN (".implode(",", $objecttypes).") "
+											.$filter;
+									$database->setQuery( $query);
+									//echo "list_id:".$database->getQuery()."<hr>";
+									$list_id = $database->loadObjectList() ;
+									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
+									if ($database->getErrorNum())
+									{
+										echo "<div class='alert'>";
+										echo 	$database->getErrorMsg();
+										echo "</div>";
+									}
+									
+									// Construire la liste des guid à filtrer
+									$arrObjecttypeMd = array();
+									//If no result, give an unexisting id back
+									if(count($list_id) == 0)
+										$arrObjecttypeMd[] = -1;
+									foreach ($list_id as $md_id)
+									{
+										$arrObjecttypeMd[] = $md_id->metadata_id;
+									}
+									
+									if(count($list_id > 0))
+										$empty = false;
+								}
+								break;
+							case "versions":
+								$versions = JRequest::getVar('versions');
+								if ($versions <> "")
+								{
+									$countSimpleFilters++;
+									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
+									// ajouter un filtre. Sinon ne rien faire
+									if ($versions == 0)
+									{
+										// Sélectionner tous les objets
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 "
+												.$filter;
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+										
+										// Construire la liste des guid à filtrer
+										$arrVersionMd = array();
+										
+										// Pour chaque objet, sélectionner toutes ses versions
+										foreach ($objectlist as $object)
+										{
+											$query = "SELECT m.guid as metadata_id 
+													  FROM #__sdi_objectversion ov 
+													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+													  WHERE o.published=1 
+													  		AND o.id=".$object->id
+													.$filter.
+													 " ORDER BY ov.created DESC";
+											$database->setQuery( $query);
+											//echo "<br>".$database->getQuery()."<br>";
+											$versionlist = $database->loadObjectList() ;
+											
+											//If no result, give an unexisting id back
+											if(count($versionlist)== 0)
+												$arrVersionMd[] = -1;
+												
+											if (count($versionlist))
+											{
+												//print_r($versionlist[0]);
+												//echo "<br>";
+											
+												$arrVersionMd[] = $versionlist[0]->metadata_id;
+											
+												$empty = false;
+											}
+										}
+									}
+								}
+								else if (!array_key_exists('versions', $_GET)) // Cas du premier appel. Rechercher sur toutes les versions actuelles publiées à la date courante
+								{
+									// Sélectionner tous les objets
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 "
+											.$filter;
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									$arrVersionMd = array();
+									
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+												  WHERE o.published=1
+												  		AND ms.code='published'
+												  		AND m.published <= '".date('Y-m-d')."' 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
 										$versionlist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($versionlist)== 0)
+											$arrVersionMd[] = -1;
+											
 										if (count($versionlist))
 										{
 											//print_r($versionlist[0]);
 											//echo "<br>";
-										
-											$list_id = $versionlist[0] ;
+											$arrVersionMd[] = $versionlist[0]->metadata_id;
+											
+											$empty = false;
 										}
 									}
 								}
-							}
-							break;
-						default:
-							break;
+								break;
+							case "object_name":
+								$object_name = JRequest::getVar('object_name');
+								if ($object_name <> "")
+								{
+									$countSimpleFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.name LIKE '%".$object_name."%' ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$objectnamelist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($objectnamelist)== 0)
+											$arrObjectNameMd[] = -1;
+										
+										foreach ($objectnamelist as $on)
+										{
+											$arrObjectNameMd[] = $on->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							case "metadata_created":
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
+								if ($lower == "" and $upper <> "") // Seulement la borne sup
+								{
+									$countSimpleFilters++;
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper == "" and $lower <> "") // Seulement la borne inf
+								{
+									$countSimpleFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created>='".$lower."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper <> "" and $lower <> "") // Les deux bornes
+								{
+									$countSimpleFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created>='".$lower."'".
+										 " 			AND m.created<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								break;
+							case "metadata_published":
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
+								if ($lower == "" and $upper <> "") // Seulement la borne sup
+								{
+									$countSimpleFilters++;
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper == "" and $lower <> "") // Seulement la borne inf
+								{
+									$countSimpleFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published>='".$lower."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if($upper <> "" and $lower <> "") // Les deux bornes
+								{
+									$countSimpleFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published>='".$lower."'".
+										 " 			AND m.published<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+									
+									
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								break;
+							case "managers":
+								$managers = JRequest::getVar('managers');
+								if (count($managers) > 0 and $managers[0] <> "")
+								{
+									$countSimpleFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
+											  WHERE mo.account_id IN (".implode(", ", $managers).") ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$managerlist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($managerlist)== 0)
+											$arrManagersMd[] = -1;
+										
+										
+										foreach ($managerlist as $m)
+										{
+											$arrManagersMd[] = $m->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							case "title":
+								$metadata_title = JRequest::getVar('title');
+								if ($metadata_title <> "")
+								{
+									$countSimpleFilters++;
+									$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:Literal>%$metadata_title%</ogc:Literal>
+									</ogc:PropertyIsLike> ";
+									
+									$empty = false;
+								}
+								break;
+							case "account_id":
+								$accounts = JRequest::getVar('account_id');
+								if (count($accounts) > 0 and $accounts[0] <> "")
+								{
+									$countSimpleFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$accountlist = $database->loadObjectList() ;
+										
+										
+										//If no result, give an unexisting id back
+										if(count($accountlist)== 0)
+											$arrAccountsMd[] = -1;
+										
+										
+										foreach ($accountlist as $a)
+										{
+											$arrAccountsMd[] = $a->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							default:
+								break;
+						}
+					}
+					else // Cas des attributs OGC qui ne sont pas liés à une relation
+					{
+						$filter = JRequest::getVar('filter_'.$searchFilter->code);
+						
+						$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+							<ogc:Literal>%$filter%</ogc:Literal>
+							</ogc:PropertyIsLike> ";
+							
+						$empty = false;
 					}
 				}
 			}
@@ -496,19 +1046,27 @@ class SITE_catalog {
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
 							$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
-							<ogc:Literal>$filter</ogc:Literal>
+							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+							<ogc:Literal>%$filter%</ogc:Literal>
 							</ogc:PropertyIsLike> ";
 							
 							$empty = false;
 							break;
 						case "list":
 							/* Fonctionnement liste*/
-							$cswAdvancedFilter .= "<ogc:PropertyIsEqualTo>
-							<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
-							<ogc:Literal>$filter</ogc:Literal>
-							</ogc:PropertyIsEqualTo> ";
+							if (count($filter) > 0 and $filter[0] <> "")
+							{
+								foreach($filter as $f)
+								{
+									$cswAdvancedFilter .= "<ogc:PropertyIsEqualTo>
+									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:Literal>$f</ogc:Literal>
+									</ogc:PropertyIsEqualTo> ";
+								}
+							}
 							
+							if (count($filter) > 1)
+								$cswAdvancedFilter = "<ogc:Or>".$cswAdvancedFilter."</ogc:Or>";
 							$empty = false; 
 							break;
 						case "date":
@@ -522,7 +1080,7 @@ class SITE_catalog {
 							{
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswAdvancedFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$upperFilter</ogc:Literal>
 								</ogc:PropertyIsLessThanOrEqualTo> ";
 							}
@@ -530,7 +1088,7 @@ class SITE_catalog {
 							{
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$cswAdvancedFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:PropertyIsGreaterThanOrEqualTo> ";
 							}
@@ -539,7 +1097,7 @@ class SITE_catalog {
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswAdvancedFilter .= "<ogc:PropertyIsBetween>
-								<ogc:PropertyName>$searchFilter->lucenesearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
 								<ogc:LowerBoundary>
 									<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:LowerBoundary>
@@ -555,124 +1113,59 @@ class SITE_catalog {
 							break;
 					}
 				}
-				else // Traiter les filtres systèmes, si ils existent
+				else // Traiter les filtres qui ne sont pas liés à une relation, si ils existent
 				{
-					// Récupération des filtres standards
-					$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
-					//$account_id  = JRequest::getVar('account_id');
-					$objecttype_id = JRequest::getVar('objecttype_id');
-					$versions = JRequest::getVar('allVersions');
-					
-					switch ($searchFilter->code)
+					if ($searchFilter->criteriatype_id == 1) // Filtres systèmes
 					{
-						case "fulltext":
-							if ($simple_filterfreetextcriteria <> "")
-							{
-								$countAdvancedFilters++;
-								// Filtre sur le texte (Critères de recherche simple)
-								//$cswFreeTextFilter="";
-								//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
-								
-								$kwords = explode(" ", $simple_filterfreetextcriteria);
-								//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
-								
-								//Break the space in the request and split it in many terms
-								foreach ($kwords as $word) 
+						// Récupération des filtres standards
+						//$account_id  = JRequest::getVar('account_id');
+						
+						switch ($searchFilter->code)
+						{
+							case "fulltext":
+								$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
+								if ($simple_filterfreetextcriteria <> "")
 								{
-									/*$cswFreeTextFilter .= "
-									 <ogc:Or>
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-											<ogc:PropertyName>title</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>\r\n
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-											<ogc:PropertyName>metadata_title</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>\r\n
-										 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-									     	<ogc:PropertyName>abstract</ogc:PropertyName>
-											<ogc:Literal>$word%</ogc:Literal>
-										 </ogc:PropertyIsLike>
-									  </ogc:Or>\r\n";*/
+									$countAdvancedFilters++;
+									// Filtre sur le texte (Critères de recherche avancé)
+									//$cswFreeTextFilter="";
+									//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
+									
+									//$kwords = explode(" ", $simple_filterfreetextcriteria);
+									//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
+									
+									// Filtres OGC directs pour les champs titre(title), description(abstract) et GEMET (keyword)
+									//Break the space in the request and split it in many terms
+									//foreach ($kwords as $word) 
+									//{
 									$cswSimpleFilter .= "
 									 	 <ogc:Or>
 									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
 												<ogc:PropertyName>title</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>\r\n
-											 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												<ogc:PropertyName>metadata_title</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>\r\n
-											 <ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+												<ogc:Literal>%$simple_filterfreetextcriteria%</ogc:Literal>
+											</ogc:PropertyIsLike>\r\n
+											<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+												<ogc:PropertyName>keyword</ogc:PropertyName>
+												<ogc:Literal>%$simple_filterfreetextcriteria%</ogc:Literal>
+											</ogc:PropertyIsLike>\r\n
+											<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
 										     	<ogc:PropertyName>abstract</ogc:PropertyName>
-												<ogc:Literal>$word%</ogc:Literal>
-											 </ogc:PropertyIsLike>
+												<ogc:Literal>%$simple_filterfreetextcriteria%</ogc:Literal>
+											</ogc:PropertyIsLike>
 										</ogc:Or>\r\n";
-								}
-								/*if(count($kwords > 1))
-									$cswFreeTextFilter = "<ogc:And>".$cswFreeTextFilter."</ogc:And>";*/
-							}
-							break;
-						case "objecttype":
-							if (count($objecttype_id) > 0)
-							{
-								$countAdvancedFilters++;
-								$arrObjecttypeMd=null;
-							
-								//echo ", objecttype";
-								$query = "SELECT m.guid as metadata_id 
-										  FROM #__sdi_objectversion ov 
-										  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-										  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-										  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-										  WHERE o.published=1 
-										  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
-										.$filter;
-								$database->setQuery( $query);
-								//echo "list_id:".$database->getQuery()."<hr>";
-								$list_id = $database->loadObjectList() ;
-								//echo "list_id:". htmlspecialchars($list_id)."<hr>";
-					
-								if ($database->getErrorNum())
-								{
-									echo "<div class='alert'>";
-									echo 	$database->getErrorMsg();
-									echo "</div>";
-								}
-								$arrObjecttypeMd = array();
-								//If no result, give an unexisting id back
-								if(count($list_id == 0))
-									$arrObjecttypeMd[] = -1;
-								foreach ($list_id as $md_id)
-								{
-									$arrObjecttypeMd[] = $md_id->metadata_id;
-								}
-								
-								if(count($list_id > 0))
-									$empty = false;
-							
-								if($arrObjecttypeMd != null)
-									$arrFilterMd[] = $arrObjecttypeMd;
-							}
-							break;
-						case "versions":
-							if ($versions <> "")
-							{
-								$countAdvancedFilters++;
-								// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
-								// ajouter un filtre. Sinon ne rien faire
-								if ($versions == 0)
-								{
-									// Sélectionner tous les objets
+									//}
+									
+									// Filtres sur les guid de métadonnées pour le code et le fournisseur
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 "
-											.$filter;
+											  WHERE o.name LIKE '%".$simple_filterfreetextcriteria."%' ";
 									$database->setQuery( $query);
+									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
+									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
@@ -687,20 +1180,581 @@ class SITE_catalog {
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
+										$objectnamelist = $database->loadObjectList() ;
+										
+										foreach ($objectnamelist as $on)
+										{
+											$arrFreetextMd[] = $on->metadata_id;
+										
+											$empty = false;
+										}
+									}
+									
+									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_account a ON a.id=o.account_id
+											  WHERE a.name LIKE '%".$simple_filterfreetextcriteria."%' ";
+									$database->setQuery( $query);
+									//echo "<br>".$database->getQuery()."<br>";
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$accountlist = $database->loadObjectList() ;
+										
+										foreach ($accountlist as $a)
+										{
+											$arrFreetextMd[] = $a->metadata_id;
+										
+											$empty = false;
+										}
+									}
+									
+									//If no result, give an unexisting id back
+									if(count($objectnamelist) == 0 and count($accountlist) == 0)
+										$arrFreetextMd[] = -1;
+										
+									/*if(count($kwords > 1))
+										$cswFreeTextFilter = "<ogc:And>".$cswFreeTextFilter."</ogc:And>";*/
+								}
+								break;
+							case "objecttype":
+								$objecttype_id = JRequest::getVar('objecttype_id');
+								//echo "objecttype_id: ".count($objecttype_id);
+								if (count($objecttype_id) > 0)
+								{
+									$countAdvancedFilters++;
+									$arrObjecttypeMd=null;
+								
+									//echo ", objecttype";
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 
+											  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
+											.$filter;
+									$database->setQuery( $query);
+									//echo "list_id:".$database->getQuery()."<hr>";
+									$list_id = $database->loadObjectList() ;
+									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
+						
+									if ($database->getErrorNum())
+									{
+										echo "<div class='alert'>";
+										echo 	$database->getErrorMsg();
+										echo "</div>";
+									}
+									$arrObjecttypeMd = array();
+									//If no result, give an unexisting id back
+									if(count($list_id) == 0)
+										$arrObjecttypeMd[] = -1;
+									foreach ($list_id as $md_id)
+									{
+										$arrObjecttypeMd[] = $md_id->metadata_id;
+									}
+									
+									if(count($list_id > 0))
+										$empty = false;
+								}
+								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
+								{
+									$countAdvancedFilters++;
+									
+									$objecttypes = array();
+									if ($context <> "")
+									{
+										// Récupérer tous les types d'objets du contexte
+										$database->setQuery("SELECT id AS value FROM #__sdi_objecttype WHERE id IN
+															(SELECT co.objecttype_id 
+															FROM #__sdi_context_objecttype co
+															INNER JOIN #__sdi_context c ON c.id=co.context_id 
+															WHERE c.code = '".$context."')
+													   ORDER BY name");
+									}
+									else
+									{
+										// Récupérer tous les types d'objets définis
+										$database->setQuery("SELECT id FROM #__sdi_objecttype ORDER BY name");
+									}
+									//echo "objecttypes:".$database->getQuery()."<hr>";
+									$objecttypes = $database->loadResultArray();
+									
+									
+									// Récupérer toutes les métadonnées de ces types d'objets
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 
+											  AND o.objecttype_id IN (".implode(",", $objecttypes).") "
+											.$filter;
+									$database->setQuery( $query);
+									//echo "list_id:".$database->getQuery()."<hr>";
+									$list_id = $database->loadObjectList() ;
+									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
+									if ($database->getErrorNum())
+									{
+										echo "<div class='alert'>";
+										echo 	$database->getErrorMsg();
+										echo "</div>";
+									}
+									
+									// COnstruire la liste des guid à filtrer
+									$arrObjecttypeMd = array();
+									//If no result, give an unexisting id back
+									if(count($list_id) == 0)
+										$arrObjecttypeMd[] = -1;
+									foreach ($list_id as $md_id)
+									{
+										$arrObjecttypeMd[] = $md_id->metadata_id;
+									}
+									
+									if(count($list_id > 0))
+										$empty = false;
+								}
+								break;
+							case "versions":
+								$versions = JRequest::getVar('versions');
+								if ($versions <> "")
+								{
+									$countAdvancedFilters++;
+									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
+									// ajouter un filtre. Sinon ne rien faire
+									if ($versions == 0)
+									{
+										// Sélectionner tous les objets
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 "
+												.$filter;
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+										
+										// Construire la liste des guid à filtrer
+										$arrVersionMd = array();
+										
+										// Pour chaque objet, sélectionner toutes ses versions
+										foreach ($objectlist as $object)
+										{
+											$query = "SELECT m.guid as metadata_id 
+													  FROM #__sdi_objectversion ov 
+													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+													  WHERE o.published=1 
+													  		AND o.id=".$object->id
+													.$filter.
+													 " ORDER BY ov.created DESC";
+											$database->setQuery( $query);
+											//echo "<br>".$database->getQuery()."<br>";
+											$versionlist = $database->loadObjectList() ;
+											
+											//If no result, give an unexisting id back
+											if(count($versionlist)== 0)
+												$arrVersionMd[] = -1;
+											
+											
+											
+											if (count($versionlist))
+											{
+												//print_r($versionlist[0]);
+												//echo "<br>";
+											
+												$arrVersionMd[] = $versionlist[0]->metadata_id;
+											
+												$empty = false;
+											}
+										}
+									}
+								}
+								else if (!array_key_exists('versions', $_GET)) // Cas du premier appel. Rechercher sur toutes les versions actuelles publiées à la date courante
+								{
+									// Sélectionner tous les objets
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.published=1 "
+											.$filter;
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									$arrVersionMd = array();
+									
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+												  WHERE o.published=1
+												  		AND ms.code='published'
+												  		AND m.published <= '".date('Y-m-d')."' 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
 										$versionlist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($versionlist)== 0)
+											$arrVersionMd[] = -1;
+											
+											
 										if (count($versionlist))
 										{
 											//print_r($versionlist[0]);
 											//echo "<br>";
-										
-											$list_id = $versionlist[0] ;
+											$arrVersionMd[] = $versionlist[0]->metadata_id;
+											
+											$empty = false;
 										}
 									}
 								}
-							}
-							break;
-						default:
-							break;
+								break;
+							case "object_name":
+								$object_name = JRequest::getVar('object_name');
+								if ($object_name <> "")
+								{
+									$countAdvancedFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE o.name LIKE '%".$object_name."%' ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$objectnamelist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($objectnamelist)== 0)
+											$arrObjectNameMd[] = -1;
+										
+										foreach ($objectnamelist as $on)
+										{
+											$arrObjectNameMd[] = $on->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							case "metadata_created":
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
+								if ($lower == "" and $upper <> "") // Seulement la borne sup
+								{
+									$countAdvancedFilters++;
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper == "" and $lower <> "") // Seulement la borne inf
+								{
+									$countAdvancedFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created>='".$lower."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($lower <>"" and $upper <> "") // Les deux bornes
+								{
+									$countAdvancedFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.created>='".$lower."'".
+										 " 			AND m.created<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrCreatedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrCreatedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								break;
+							case "metadata_published":
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
+								if ($lower == "" and $upper <> "") // Seulement la borne sup
+								{
+									$countAdvancedFilters++;
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper == "" and $lower <> "") // Seulement la borne inf
+								{
+									$countAdvancedFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published>='".$lower."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								else if ($upper <> "" and $lower <> "") // Les deux bornes
+								{
+									$countAdvancedFilters++;
+									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
+									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
+									
+									$query = "SELECT m.guid as metadata_id 
+											  FROM #__sdi_objectversion ov 
+											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+											  WHERE m.published>='".$lower."'".
+										 " 			AND m.published<='".$upper."'"
+											.$filter;
+									$database->setQuery( $query);
+									$mdlist = $database->loadObjectList() ;
+									
+									//If no result, give an unexisting id back
+									if(count($mdlist)== 0)
+										$arrPublishedMd[] = -1;
+										
+									foreach ($mdlist as $md)
+									{
+										$arrPublishedMd[] = $md->metadata_id;
+										$empty = false;
+									}
+								}
+								break;
+							case "managers":
+								$managers = JRequest::getVar('managers');
+								if (count($managers) > 0 and $managers[0] <> "")
+								{
+									$countAdvancedFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
+											  WHERE mo.account_id IN (".implode(", ", $managers).") ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$managerlist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($managerlist)== 0)
+											$arrManagersMd[] = -1;
+											
+										foreach ($managerlist as $m)
+										{
+											$arrManagersMd[] = $m->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							case "title":
+								$metadata_title = JRequest::getVar('title');
+								if ($metadata_title <> "")
+								{
+									$countAdvancedFilters++;
+									$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:Literal>%$metadata_title%</ogc:Literal>
+									</ogc:PropertyIsLike> ";
+									
+									$empty = false;
+								}
+								break;
+							case "account_id":
+								$accounts = JRequest::getVar('account_id');
+								if (count($accounts) > 0 and $accounts[0] <> "")
+								{
+									$countAdvancedFilters++;
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
+									$query = "SELECT o.id 
+											  FROM #__sdi_object o 
+											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
+									$database->setQuery( $query);
+									$objectlist = $database->loadObjectList() ;
+									
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
+									foreach ($objectlist as $object)
+									{
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.published=1 
+												  		AND o.id=".$object->id
+												.$filter.
+												 " ORDER BY ov.created DESC";
+										$database->setQuery( $query);
+										//echo "<br>".$database->getQuery()."<br>";
+										$accountlist = $database->loadObjectList() ;
+										
+										//If no result, give an unexisting id back
+										if(count($accountlist)== 0)
+											$arrAccountsMd[] = -1;
+											
+										foreach ($accountlist as $a)
+										{
+											$arrAccountsMd[] = $a->metadata_id;
+										
+											$empty = false;
+										}
+									}
+								}
+								break;
+							default:
+								break;
+						}
+					}
+					else // Cas des attributs OGC qui ne sont pas liés à une relation
+					{
+						$filter = JRequest::getVar('filter_'.$searchFilter->code);
+						
+						$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
+							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+							<ogc:Literal>%$filter%</ogc:Literal>
+							</ogc:PropertyIsLike> ";
+							
+						$empty = false;
 					}
 				}
 			}
@@ -714,16 +1768,89 @@ class SITE_catalog {
 			//echo "Criteres avances: ".htmlspecialchars($cswAdvancedFilter)."<hr>";
 			//echo "filterMd:".htmlspecialchars($arrFilterMd)."<hr>";
 				
-			$arrSearchableMd=array();
+			// Prendre l'intersection de tous les guid listés
+			$arrSearchableMd=array(); // Scope de recherche
+			$arrFilteredMd=array(); // Filtres
+			 
 			//Build the filter
-			for ($i=0; $i < count($arrFilterMd); $i++)
+			/*for ($i=0; $i < count($arrFilterMd); $i++)
 			{
 				if($i == 0){
 					$arrSearchableMd = $arrFilterMd[$i];
 					continue;
 				}
-				$arrSearchableMd = array_intersect($arrSearchableMd, $arrFilterMd[$i]);
-			}
+				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
+			}*/
+			if (count($arrObjecttypeMd) == 0) // Pas de types d'objet
+				$arrSearchableMd = $arrVersionMd;
+			else if (count($arrVersionMd) == 0) // Pas de versions
+				$arrSearchableMd = $arrObjecttypeMd;
+			else // Faire l'intersection
+				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
+			
+			//print_r($arrObjecttypeMd);echo "<hr>";
+			//print_r($arrVersionMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+				
+			// Freetext
+			if (count($arrFreetextMd) <> 0) 
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrFreetextMd;
+				else // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrFreetextMd, $arrSearchableMd);
+		
+			//print_r($arrFreetextMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+			
+			// Objectname
+			if (count($arrObjectNameMd) <> 0) 
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrObjectNameMd;
+				else // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrObjectNameMd, $arrSearchableMd);
+		
+			//print_r($arrObjectNameMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+			
+			// Accounts
+			if (count($arrAccountsMd) <> 0)
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrAccountsMd;
+				else  // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrAccountsMd, $arrSearchableMd);
+			
+			//print_r($arrAccountsMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+			
+			// Managers
+			if (count($arrManagersMd) <> 0)
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrManagersMd;
+				else  // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrManagersMd, $arrSearchableMd);
+			
+			//print_r($arrManagersMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+			
+			// Created
+			if (count($arrCreatedMd) <> 0) 
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrCreatedMd;
+				else // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrCreatedMd, $arrSearchableMd);
+			
+			//print_r($arrCreatedMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
+			
+			// Published
+			if (count($arrPublishedMd) <> 0) 
+				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+					$arrFilteredMd = $arrPublishedMd;
+				else // Faire l'intersection
+					$arrFilteredMd = array_intersect($arrPublishedMd, $arrSearchableMd);
+			
+			//print_r($arrPublishedMd);echo "<hr>";
+			//print_r($arrSearchableMd);echo "<hr>";
 			
 			$cswMdCond = "";
 			foreach ($arrSearchableMd as $md_id)
@@ -735,6 +1862,18 @@ class SITE_catalog {
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			
 			if(count($arrSearchableMd) > 0)
+				$condList[] = $cswMdCond;
+				
+			$cswMdCond = "";
+			foreach ($arrFilteredMd as $md_id)
+			{
+				//keep it so to keep the request "small"
+				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+			}
+			if(count($arrFilteredMd) > 1)
+				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
+			
+			if(count($arrFilteredMd) > 0)
 				$condList[] = $cswMdCond;
 			
 			$cswfilterCond = "";
@@ -752,11 +1891,11 @@ class SITE_catalog {
 			if (count($condList) > 1) 
 				$cswfilterCond = "<ogc:And>\r\n".$cswfilterCond."</ogc:And>\r\n";
 			
-			$cswfilter = "<ogc:Filter xmlns=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
+			$cswfilter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
 			$cswfilter .= $cswfilterCond;
 			$cswfilter .= "</ogc:Filter>\r\n";
 			
-			echo "cswfilter:". htmlspecialchars($cswfilter);
+			//echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
@@ -777,10 +1916,10 @@ class SITE_catalog {
 			//echo var_dump($cswResults->saveXML())."<br>";
 			$myDoc = new DomDocument();
 			$myDoc->loadXML($xmlBody);
-			$myDoc->save("C:\\RecorderWebGIS\\searchRequest.xml");
+			//$myDoc->save("C:\\RecorderWebGIS\\searchRequest.xml");
 			$myDoc = new DomDocument();
 			$myDoc->loadXML($cswResults->asXML());
-			$myDoc->save("C:\\RecorderWebGIS\\searchResult.xml");
+			//$myDoc->save("C:\\RecorderWebGIS\\searchResult.xml");
 			//echo "dump the file: <br/><br/><br/>";
 			//echo $cswResults->asXML();
 			//echo "<br/> end dump the file";
@@ -820,7 +1959,7 @@ class SITE_catalog {
 				// Fin du tri
 			}
 		}
-		else // Si la recherche n'a aps été lancée, afficher une liste de résultats vide
+		else // Si la recherche n'a pas été lancée, afficher une liste de résultats vide
 		{
 			$total=0;
 			$pageNav=new JPagination($total,$limitstart,$limit);
@@ -828,7 +1967,6 @@ class SITE_catalog {
 		}
 		
 		$allVersions=true;
-		
 		
 		/*
 		// Conditions pour la visibilité publique/privée de la métadonnée
@@ -1448,50 +2586,6 @@ class SITE_catalog {
 		$req .= "</csw:GetRecords>\r\n";
 		
 		return utf8_encode($req);
-	}
-	
-	function PostXMLRequest($url,$xmlBody){
-		$url = parse_url($url);
-		//$url=parse_url("http://demo.easysdi.org:8080/proxy/ogc/geonetwork");
-		
-		if(isset($url['port'])){
-			$port = $url['port'];
-		}else{
-			$port = 80;
-		}
-		//could not open socket
-		if (!$fp = fsockopen ($url['host'], $port, $errno, $errstr)){
-			//$out = false;
-		}
-		//socket ok
-		else{
-			$size = strlen($xmlBody);
-			$request = "POST ".$url['path']." HTTP/1.1\n";
-			$request .= "Host: ".$url['host']."\n";
-			//add auth header if necessary
-			if(isset($url['user']) && isset($url['pass'])){
-				$user = $url['user'];
-				$pass = $url['pass'];
-				$request .= "Authorization: Basic ".base64_encode("$user:$pass")."\n";
-			}
-			$request .= "Connection: Close\r\n";
-			$request .= "Content-type: application/xml\n";
-			$request .= "Content-length: ".$size."\n\n";
-			$request .= $xmlBody."\n";
-			//send req
-			$fput = fputs($fp, $request);
-
-			//read response, do only send back the xml part, not the headers
-			$strResponse = "";
-			while (!feof($fp)) {
-				$strResponse .= fgets($fp, 128);
-			}
-			$out = strstr($strResponse, '<?xml');
-			fclose ($fp);
-		}
-		
-		return $out;
-	}
-	
+	}	
 }
 ?>
