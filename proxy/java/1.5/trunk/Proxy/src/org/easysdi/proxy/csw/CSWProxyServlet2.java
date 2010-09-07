@@ -91,70 +91,74 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			StringBuffer CSWCapabilities200 = new StringBuffer();
 
-			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xmlns:gco=\"http://www.isotc211.org/2005/gco\" xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:gts=\"http://www.isotc211.org/2005/gts\"    xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:csw=\"http://www.opengis.net/cat/csw\" xmlns:ows=\"http://www.opengis.net/ows\">");
+			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" " +
+					"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" " +
+					"xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" " +
+					"xmlns:gco=\"http://www.isotc211.org/2005/gco\" " +
+					"xmlns:ns3=\"http://www.isotc211.org/2005/gmx\" " +
+					"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
+					"xmlns:gml=\"http://www.opengis.net/gml\" " +
+					"xmlns:gts=\"http://www.isotc211.org/2005/gts\"   " +
+					"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+					"xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" " +
+					"xmlns:ows=\"http://www.opengis.net/ows\"> ");
 
 			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getRemoteServerUrl(0));
 			if(notAllowedAttributeList.size()!=0)
 			{
-//				int nsI = 0;
-//				for (int i = 0; i < notAllowedAttributeList.size(); i++) 
-//				{
-//					String text = notAllowedAttributeList.get(i);
-//					if (text != null) 
-//					{
-//						if (text.indexOf("\":") < 0) 
-//						{
-//							// Pas de namespace.
-//							CSWCapabilities200.append("<xsl:template match=\"//gmd:MD_Metadata/" + text + "\">");
-//						} 
-//						else 
-//						{
-//							CSWCapabilities200.append("<xsl:template xmlns:" + "au" + nsI + "=\"" + text.substring(1, text.indexOf("\":"))
-//									+ "\" match=\"//gmd:MD_Metadata/au" + nsI + text.substring(text.indexOf("\":") + 1) + "\">");
-//							nsI++;
-//						}
-//						CSWCapabilities200.append("</xsl:template>");
-//					}
-//				}
-			}
-			
-			if(recordsToKeep.size() != 0)
-			{
-				for (int i = 0; i < recordsToKeep.size() ; i++)
+				int nsI = 0;
+				for (int i = 0; i < notAllowedAttributeList.size(); i++) 
 				{
-					
-//					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:Record\">");
-//					CSWCapabilities200.append("<xsl:if test=\"dc:identifier='");
-//					CSWCapabilities200.append(recordsToKeep.get(i));
-//					CSWCapabilities200.append("'\">");
-//					CSWCapabilities200.append("<xsl:value-of select=\"dc:identifier\"/>");
-//					
-////					CSWCapabilities200.append("<xsl:copy>");
-////					CSWCapabilities200.append("<xsl:apply-templates select=\"dc:identifier\"/>");
-////					CSWCapabilities200.append("</xsl:copy>");
-//					CSWCapabilities200.append("</xsl:if>");
-//					CSWCapabilities200.append("</xsl:template>");
-
+					String text = notAllowedAttributeList.get(i);
+					if (text != null) 
+					{
+						if (text.indexOf("\":") < 0) 
+						{
+							// Pas de namespace.
+							CSWCapabilities200.append("<xsl:template match=\"//gmd:MD_Metadata/" + text + "\">");
+						} 
+						else 
+						{
+							CSWCapabilities200.append("<xsl:template xmlns:" + "au" + nsI + "=\"" + text.substring(1, text.indexOf("\":"))
+									+ "\" match=\"//gmd:MD_Metadata/au" + nsI + text.substring(text.indexOf("\":") + 1) + "\">");
+							nsI++;
+						}
+						CSWCapabilities200.append("</xsl:template>");
+					}
 				}
 			}
+			
+			CSWCapabilities200.append("<xsl:template match=\"@numberOfRecordsReturned[parent::csw:GetRecordsResponse/csw:SearchResults]\">");
+			CSWCapabilities200.append("<xsl:attribute name=\"numberOfRecordsReturned\">");
+			CSWCapabilities200.append("<xsl:value-of select=\"'your value here'\"/>");
+			CSWCapabilities200.append("</xsl:attribute>");
+			CSWCapabilities200.append("</xsl:template>");
+			
+			//csw:Record
+			//csw:BriefRecord
+			//csw:SummaryRecord
 			
 			if(recordsToRemove.size() != 0)
 			{
 				for (int i = 0; i < recordsToRemove.size() ; i++)
 				{
-//					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:Record\">");
-//					CSWCapabilities200.append("<xsl:if test=\"dc:identifier='");
-//					CSWCapabilities200.append(recordsToRemove.get(i));
-//					CSWCapabilities200.append("'\">");
-//					CSWCapabilities200.append("</xsl:if>");
-//					CSWCapabilities200.append("</xsl:template>");
+					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:Record[dc:identifier='");
+					CSWCapabilities200.append(recordsToRemove.get(i));
+					CSWCapabilities200.append("']\">");
+					CSWCapabilities200.append("</xsl:template>");
+					
+					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord[dc:identifier='");
+					CSWCapabilities200.append(recordsToRemove.get(i));
+					CSWCapabilities200.append("']\">");
+					CSWCapabilities200.append("</xsl:template>");
+					
+					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord[dc:identifier='");
+					CSWCapabilities200.append(recordsToRemove.get(i));
+					CSWCapabilities200.append("']\">");
+					CSWCapabilities200.append("</xsl:template>");
 				}
 			}
-
-			CSWCapabilities200.append("<xsl:template match=\"csw:SearchResults\">");
-			CSWCapabilities200.append("</xsl:template>");
-			
-			
+		
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
 			CSWCapabilities200.append("<xsl:template match=\"node()|@*\">");
 			CSWCapabilities200.append("<!-- Copy the current node -->");
@@ -175,7 +179,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 		// If something goes wrong, an empty stylesheet is returned.
 		StringBuffer sb = new StringBuffer();
-		return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
+		return sb.append("<xsl:stylesheet version=\"1.00\" " +
+				"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+				"xmlns:ows=\"http://www.opengis.net/ows\" " +
+				"xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 	
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp, List<String> filePathList) 
@@ -250,23 +257,25 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if("GetRecords".equals(currentOperation))
 				{
-					
 					//Filter according to data accessibility
 					if(hasPolicy)
 					{
 						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-						List<String> toFilter = cswDataManager.extractRecordIDFromGetRecordsResponse(new File(filePathList.get(0)));
-						if(toFilter != null)
+						if(!cswDataManager.isAllDataAccessible())
 						{
-							for (int i = 0; i< toFilter.size();i++)
+							List<String> toFilter = cswDataManager.extractRecordIDFromGetRecordsResponse(new File(filePathList.get(0)));
+							if(toFilter != null)
 							{
-								if(cswDataManager.isDataVersionAccessible(toFilter.get(i)) && cswDataManager.isDataAccessible(toFilter.get(i)))
+								for (int i = 0; i< toFilter.size();i++)
 								{
-									recordsToKeep.add(toFilter.get(i));
-								}
-								else
-								{
-									recordsToRemove.add(toFilter.get(i));
+									if(cswDataManager.isDataVersionAccessible(toFilter.get(i)) && cswDataManager.isDataAccessible(toFilter.get(i)))
+									{
+										recordsToKeep.add(toFilter.get(i));
+									}
+									else
+									{
+										recordsToRemove.add(toFilter.get(i));
+									}
 								}
 							}
 						}
@@ -278,14 +287,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
-
 						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 	
 						InputStream xslt = null;
 						xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
-						// xslt = new FileInputStream(new
-						// File("d:\\xslt\\test.xsl"));
 
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
 						// Write the result in a temporary file
@@ -300,13 +306,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0))) {
 							// Keep the metadata as it is
 							tempFile = new File(filePathList.get(0));
-						} else {
-
+						} 
+						else 
+						{
 							tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 							tempFos = new FileOutputStream(tempFile);
 							
-					
-
 							InputStream xslt = null;
 							xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
 							// xslt = new FileInputStream(new
@@ -351,6 +356,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					os.write(byteRead);
 				}
 			} finally {
+				recordsToKeep.clear();
+				recordsToRemove.clear();
 				os.close();
 				is.close();
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
@@ -364,7 +371,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 			}
 
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}

@@ -77,6 +77,15 @@ public class CSWProxyDataAccessibilityManager {
 		return true;
 	}
 	
+	public boolean isAllDataAccessible ()
+	{
+		if(policy.getObjectStatus().isAll() && policy.getObjectVisibilities().isAll() && policy.getObjectVersion().getVersionModes().contains("all"))
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean isDataAccessible(String dataId)
 	{
 		if(policy.getObjectStatus().isAll() && policy.getObjectVisibilities().isAll() && policy.getObjectVersion().getVersionModes().contains("all"))
