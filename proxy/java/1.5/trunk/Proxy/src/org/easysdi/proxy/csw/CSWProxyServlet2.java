@@ -467,32 +467,29 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						tempFos.close();
 					}
 				} 
-				else 
+				else if("GetRecordById".equals(currentOperation))
 				{
-					if ("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation)) {
-
-						if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0))) {
-							// Keep the metadata as it is
-							tempFile = new File(filePathList.get(0));
-						} 
-						else 
-						{
-							tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-							tempFos = new FileOutputStream(tempFile);
-							
-							InputStream xslt = null;
-							xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
-							// xslt = new FileInputStream(new
-							// File("d:\\xslt\\test.xsl"));
-
-							transformer = tFactory.newTransformer(new StreamSource(xslt));
-							// Write the result in a temporary file
-							transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
-							tempFos.close();
-						}
-
-					} else
+					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0))) {
+						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
+					} 
+					else 
+					{
+						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
+						tempFos = new FileOutputStream(tempFile);
+						
+						InputStream xslt = null;
+						xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
+
+						transformer = tFactory.newTransformer(new StreamSource(xslt));
+						// Write the result in a temporary file
+						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+						tempFos.close();
+					}
+				}
+				else
+				{
+					tempFile = new File(filePathList.get(0));
 				}
 
 				/*
