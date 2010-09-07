@@ -166,24 +166,57 @@ public class CSWProxyDataAccessibilityManager {
 		return sb;
 	}
 
-	public List <String> extractRecordIDFromGetRecordsResponse (File response)
+	public List <String> extractRecordIDFromGetRecordsResponse (File response, String outputSchema)
 	{
 		List <String> recordIds = new ArrayList<String>();
-		
 		try
 		{
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(response);
 			doc.getDocumentElement().normalize();
-			NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
-						
-			for (int s = 0; s < nodeLst.getLength(); s++) {
-				Node fstNode = nodeLst.item(s);
-				String id = fstNode.getFirstChild().getNodeValue();
-				recordIds.add(id);
+			
+			if(outputSchema == null || outputSchema =="" || CSWProxyServlet2.cswOutputSchemas.contains(outputSchema))
+			{
+				NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
+							
+				for (int s = 0; s < nodeLst.getLength(); s++) {
+					Node fstNode = nodeLst.item(s);
+					String id = fstNode.getFirstChild().getNodeValue();
+					recordIds.add(id);
+				}
+				return recordIds;
 			}
-			return recordIds;
+			else if (CSWProxyServlet2.gmdOutputSchemas.contains(outputSchema))
+			{
+				NodeList nodeLst = doc.getElementsByTagName("gmd:fileIdentifier");
+				
+				for (int s = 0; s < nodeLst.getLength(); s++) {
+					Node fstNode = nodeLst.item(s);
+					NodeList chldNodes = fstNode.getChildNodes();
+					Node idNode = null;
+					for(int c = 0 ;c<chldNodes.getLength();c++)
+					{
+						Node pcNode = chldNodes.item(c);
+						if(pcNode.getNodeName() != "gco:CharacterString")
+						{
+							continue;
+						}
+						else
+						{
+							idNode = pcNode;
+							break;
+						}
+					}
+					if(idNode != null)
+					{
+						String id =idNode.getFirstChild().getNodeValue();
+						recordIds.add(id);
+					}
+				}
+				return recordIds;
+			}
+			return null;
 		}
 		catch (Exception ex)
 		{

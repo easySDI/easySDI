@@ -46,7 +46,70 @@ public class CswRequestHandler extends DefaultHandler {
     private boolean isInPropertyIsEqualTo=false; 
     private String recordId ="";
 
-    public List<String> getUUidListToDelete(){
+    private String nameSpace ="";
+    private String resultType ="";
+    private String outputSchema ="";
+    private String elementSetName ="";
+    
+    
+    
+    /**
+	 * @param elementSetName the elementSetName to set
+	 */
+	public void setElementSetName(String elementSetName) {
+		this.elementSetName = elementSetName;
+	}
+
+	/**
+	 * @return the elementSetName
+	 */
+	public String getElementSetName() {
+		return elementSetName;
+	}
+
+	/**
+	 * @param outputSchema the outputSchema to set
+	 */
+	public void setOutputSchema(String outputSchema) {
+		this.outputSchema = outputSchema;
+	}
+
+	/**
+	 * @return the outputSchema
+	 */
+	public String getOutputSchema() {
+		return outputSchema;
+	}
+
+	/**
+	 * @param resultType the resultType to set
+	 */
+	public void setResultType(String resultType) {
+		this.resultType = resultType;
+	}
+
+	/**
+	 * @return the resultType
+	 */
+	public String getResultType() {
+		return resultType;
+	}
+
+	/**
+	 * @param nameSpace the nameSpace to set
+	 */
+	public void setNameSpace(String nameSpace) {
+		this.nameSpace = nameSpace;
+	}
+
+	/**
+	 * @return the nameSpace
+	 */
+	public String getNameSpace() {
+		return nameSpace;
+	}
+
+	public List<String> getUUidListToDelete(){
 	return MdToDeleteList;
     }
     
@@ -110,10 +173,12 @@ public class CswRequestHandler extends DefaultHandler {
 	    operation=localName;
 	    service=attr.getValue("service");
 	    version=attr.getValue("version");
+	    setOutputSchema(attr.getValue("outputSchema"));
+	    setResultType(attr.getValue("resultType"));
 	    isFirst= false;
 	}
 	
-	
+
 	
 	//Requested by the GetFeature operation	    
 	if (localName.equals("Query")){
@@ -176,10 +241,19 @@ public class CswRequestHandler extends DefaultHandler {
 	    }
 	}
 	
+	if (localName.equals("ElementSetName"))
+	{
+	    if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service))
+	    {
+	    	setElementSetName(data);
+	    }			
+	}
+	
 	if (isInDelete && localName.equals("PropertyIsEqualTo")){
 		   isInPropertyIsEqualTo = false; 
 		}
 	
+
 	
 	//Requested by the DescribeFeatureType
 	if (localName.equals("TypeName")){		
