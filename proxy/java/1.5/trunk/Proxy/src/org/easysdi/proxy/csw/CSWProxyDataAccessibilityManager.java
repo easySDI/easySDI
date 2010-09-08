@@ -2,6 +2,7 @@ package org.easysdi.proxy.csw;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ public class CSWProxyDataAccessibilityManager {
 			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
 			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
 			queryVersion +=" ";
+			
 			
 			try
 			{
@@ -222,6 +224,135 @@ public class CSWProxyDataAccessibilityManager {
 		{
 			return null;
 		}
+	}
+	
+	public List<Map<String,Object>> getAccessibleDataIds ()
+	{
+		//TODO : change prefix table 
+		List<String> listDataIDs = Arrays.asList();
+		List<Map<String,Object>> object_ids = null;
+		List<Map<String,Object>> metadata_ids = null;
+		List<Map<String,Object>> metadata_guids = null;
+		String query;
+		
+		if(!policy.getObjectVersion().getVersionModes().contains("all"))
+		{
+			//Not all the versions are allowed, just the last one
+			
+			//Get object's id 
+			query= "SELECT object_id FROM jos_sdi_objectversion  GROUP BY object_id ";
+			object_ids = joomlaProvider.sjt.queryForList(query);	
+
+			for(int i = 0 ; i <object_ids.size() ; i++)
+			{
+				query= "SELECT metadata_id  FROM jos_sdi_objectversion " +
+						"WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+								"AND title=(SELECT MAX(title) FROM jos_sdi_objectversion WHERE object_id="+object_ids.get(i).get("object_id")+")";
+				if(metadata_ids == null)
+					metadata_ids = joomlaProvider.sjt.queryForList(query);
+				else
+					metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
+			}
+					
+			//Get metadata's id for last version
+			String idString ="";
+			for (int i = 0 ; i<metadata_ids.size() ; i++)
+			{
+				idString += metadata_ids.get(i).get("metadata_id");
+				if(i != metadata_ids.size()-1)
+				{
+					idString += ",";
+				}
+			}
+			query= "SELECT m.guid FROM jos_sdi_metadata m " +
+					"WHERE m.id IN ("+idString+")";
+			metadata_guids = joomlaProvider.sjt.queryForList(query);	
+		} 		
+		
+		if(!policy.getObjectVisibilities().isAll())
+		{
+			List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+			String visibilityString ="";
+			for (int i = 0 ; i<allowedVisibility.size() ; i++)
+			{
+				visibilityString += "'"+ allowedVisibility.get(i) +"'";
+				if(i != allowedVisibility.size()-1)
+				{
+					visibilityString += ",";
+				}
+			}
+			if(metadata_guids != null)
+			{
+				String idString ="";
+				for (int i = 0 ; i<metadata_guids.size() ; i++)
+				{
+					idString += "'"+ metadata_guids.get(i).get("guid") +"'";
+					if(i != metadata_guids.size()-1)
+					{
+						idString += ",";
+					}
+				}
+				
+				query = " SELECT m.guid FROM jos_sdi_metadata m " +
+						" INNER JOIN jos_sdi_objectversion ov ON ov.metadata_id = m.id" +
+						" INNER JOIN jos_sdi_object o ON o.id = ov.object_id  " +
+						" WHERE o.visibility_id IN " +
+						"(SELECT id FROM jos_sdi_list_visibility WHERE code IN ("+visibilityString+"))" +
+								"AND m.guid IN ("+idString+")";
+			}
+			else
+			{
+				query = " SELECT m.guid FROM jos_sdi_metadata m " +
+						" INNER JOIN jos_sdi_objectversion ov ON ov.metadata_id = m.id" +
+						" INNER JOIN jos_sdi_object o ON o.id = ov.object_id  " +
+						" WHERE o.visibility_id IN " +
+						"(SELECT id FROM jos_sdi_list_visibility WHERE code IN ("+visibilityString+"))" ;
+				
+			}
+			metadata_guids = joomlaProvider.sjt.queryForList(query);
+		}
+		
+		if (!policy.getObjectStatus().isAll())
+		{
+			List<String> allowedStatus = policy.getObjectStatus().getStatus();
+			String statusString ="";
+			for (int i = 0 ; i<allowedStatus.size() ; i++)
+			{
+				statusString += "'"+ allowedStatus.get(i)+"'";
+				if(i != allowedStatus.size()-1)
+				{
+					statusString += ",";
+				}
+			}
+			if(metadata_guids != null)
+			{
+				String idString ="";
+				for (int i = 0 ; i<metadata_guids.size() ; i++)
+				{
+					idString += "'"+ metadata_guids.get(i).get("guid") +"'";
+					if(i != metadata_guids.size()-1)
+					{
+						idString += ",";
+					}
+				}
+				query = " SELECT m.guid FROM jos_sdi_metadata m " +
+						" WHERE m.metadatastate_id IN " +
+						"(SELECT id FROM jos_sdi_list_metadatastate WHERE code IN ("+statusString+"))" +
+								"AND m.guid IN ("+idString+")";
+			}
+			else
+			{
+				query = " SELECT m.guid FROM jos_sdi_metadata m " +
+						" WHERE m.metadatastate_id IN " +
+						"(SELECT id FROM jos_sdi_list_metadatastate WHERE code IN ("+statusString+"))" ;
+				
+			}
+			metadata_guids = joomlaProvider.sjt.queryForList(query);
+		}
+		
+		
+		
+		return metadata_guids;
 	}
 	
 	

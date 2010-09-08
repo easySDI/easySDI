@@ -134,11 +134,6 @@ public class CSWProxyServlet extends ProxyServlet {
 	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req) {
 
 		try {
-			String user = "";
-			if (req.getUserPrincipal() != null) {
-				user = req.getUserPrincipal().getName();
-			}
-
 			String url = getServletUrl(req);
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
@@ -659,7 +654,8 @@ public class CSWProxyServlet extends ProxyServlet {
 				paramUrl = paramUrl + key + "=" + value + "&";
 			}
 			
-			version = requestedVersion;
+			if(requestedVersion != null)
+				version = requestedVersion;
 			version = version.replaceAll("\\.", "");
 	
 			

@@ -56,6 +56,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -75,6 +77,7 @@ import org.easysdi.xml.handler.RequestHandler;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -90,7 +93,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	private String requestedResutlType;
 	private String requestedElementSetName;
 	
-	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record");
+	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record","csw:IsoRecord");
 	public static final List<String> gmdOutputSchemas = Arrays.asList("http://www.isotc211.org/2005/gmd");
 	
 	/** The outputSchema specified in the request is 'http://www.opengis.net/cat/csw/2.0.2'
@@ -358,24 +361,31 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		try 
 		{
 			String userXsltPath = getConfiguration().getXsltPath();
-			if (req.getUserPrincipal() != null) {
+			if (req.getUserPrincipal() != null) 
+			{
 				userXsltPath = userXsltPath + "/" + req.getUserPrincipal().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
 			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + currentOperation + ".xsl";
-			;
+			
 			File xsltFile = new File(userXsltPath);
 			boolean isPostTreat = false;
-			if (!xsltFile.exists()) {
+			if (!xsltFile.exists()) 
+			{
 				dump("Postreatment file " + xsltFile.toString() + "does not exist");
 				xsltFile = new File(globalXsltPath);
-				if (xsltFile.exists()) {
+				if (xsltFile.exists()) 
+				{
 					isPostTreat = true;
-				} else {
+				} 
+				else 
+				{
 					dump("Postreatment file " + xsltFile.toString() + "does not exist");
 				}
-			} else {
+			} 
+			else 
+			{
 				isPostTreat = true;
 			}
 
@@ -390,9 +400,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 			Transformer transformer = null;
 
-			if (currentOperation != null) {
+			if (currentOperation != null) 
+			{
 
-				if (currentOperation.equals("GetCapabilities")) {
+				if (currentOperation.equals("GetCapabilities")) 
+				{
 					tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 					tempFos = new FileOutputStream(tempFile);
 					ByteArrayInputStream xslt = null;
@@ -426,28 +438,30 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				else if("GetRecords".equals(currentOperation))
 				{
 					//Filter according to data accessibility
-					if(hasPolicy)
-					{
-						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-						if(!cswDataManager.isAllDataAccessible())
-						{
-							recordsReturned = cswDataManager.extractRecordIDFromGetRecordsResponse(new File(filePathList.get(0)), requestedOutputSchema);
-							if(recordsReturned != null)
-							{
-								for (int i = 0; i< recordsReturned.size();i++)
-								{
-									if(cswDataManager.isDataVersionAccessible(recordsReturned.get(i)) && cswDataManager.isDataAccessible(recordsReturned.get(i)))
-									{
-										recordsToKeep.add(recordsReturned.get(i));
-									}
-									else
-									{
-										recordsToRemove.add(recordsReturned.get(i));
-									}
-								}
-							}
-						}
-					}
+//					if(hasPolicy)
+//					{
+//						dump("DEBUG","GetRecords - Start Check for data accessibility.");
+//						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+//						if(!cswDataManager.isAllDataAccessible())
+//						{
+//							recordsReturned = cswDataManager.extractRecordIDFromGetRecordsResponse(new File(filePathList.get(0)), requestedOutputSchema);
+//							if(recordsReturned != null)
+//							{
+//								for (int i = 0; i< recordsReturned.size();i++)
+//								{
+//									if(cswDataManager.isDataVersionAccessible(recordsReturned.get(i)) && cswDataManager.isDataAccessible(recordsReturned.get(i)))
+//									{
+//										recordsToKeep.add(recordsReturned.get(i));
+//									}
+//									else
+//									{
+//										recordsToRemove.add(recordsReturned.get(i));
+//									}
+//								}
+//							}
+//						}
+//					}
+					dump("DEBUG","GetRecords - End Check for data accessibility.");
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) && recordsToRemove.size()==0) 
 					{
 						// Keep the metadata as it is
@@ -455,6 +469,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
+						dump("DEBUG","GetRecords - Start apply XSLT on response.");
 						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 	
@@ -465,6 +480,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						// Write the result in a temporary file
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
+						dump("DEBUG","GetRecords - End apply XSLT on response.");
 					}
 				} 
 				else if("GetRecordById".equals(currentOperation))
@@ -475,6 +491,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
+						dump("DEBUG","GetRecordById - Start apply XSLT on response.");
 						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 						
@@ -485,6 +502,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						// Write the result in a temporary file
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
+						dump("DEBUG","GetRecordById - End apply XSLT on response.");
 					}
 				}
 				else
@@ -516,11 +534,15 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			InputStream is = new FileInputStream(tempFile);
 
 			int byteRead;
-			try {
-				while ((byteRead = is.read()) != -1) {
+			try 
+			{
+				while ((byteRead = is.read()) != -1) 
+				{
 					os.write(byteRead);
 				}
-			} finally {
+			} 
+			finally 
+			{
 				recordsToKeep.clear();
 				recordsToRemove.clear();
 				recordsReturned.clear();
@@ -529,14 +551,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
 				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-
-				if (tempFile != null) {
+				if (tempFile != null) 
+				{
 					dump("SYSTEM", "ClientResponseLength", tempFile.length());
 					tempFile.delete();
 				}
-
 			}
-
 		} 
 		catch (Exception e) 
 		{
@@ -571,6 +591,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if(key.equalsIgnoreCase("id"))
 				{
 					requestedId = value;
+					continue;
 				}
 				if(key.equalsIgnoreCase("Request"))
 				{
@@ -583,19 +604,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					{
 						currentOperation = value;
 					}
+					continue;
 				}
 				if (key.equalsIgnoreCase("version")) 
 				{
 					requestedVersion = value;
+					continue;
 				}
 				//TODO : verify the syntax for those 2 attributes
 				if (key.equalsIgnoreCase("OutputSchema")) 
 				{
 					requestedOutputSchema = value;
+					continue;
 				}
 				if (key.equalsIgnoreCase("ResultType")) 
 				{
 					requestedResutlType = value;
+					continue;
 				}
 			}
 			
@@ -607,25 +632,27 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				if(hasPolicy)
 				{
-					String dataIDaccessible="";
 					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					if(!cswDataManager.isDataVersionAccessible(requestedId))
+					if(!cswDataManager.isAllDataAccessible())
 					{
-						dataIDaccessible = cswDataManager.getDataIdVersionAccessible();
+						String dataIDaccessible="";
+						if(!cswDataManager.isDataVersionAccessible(requestedId))
+						{
+							dataIDaccessible = cswDataManager.getDataIdVersionAccessible();
+						}
+						else
+						{
+							dataIDaccessible = requestedId;
+						}
+							
+						if(!cswDataManager.isDataAccessible(dataIDaccessible))
+						{
+							sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+							return;
+						}
+						requestedId = dataIDaccessible;
 					}
-					else
-					{
-						dataIDaccessible = requestedId;
-					}
-						
-					if(!cswDataManager.isDataAccessible(dataIDaccessible))
-					{
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
-						return;
-					}
-					requestedId = dataIDaccessible;
 				}
-				
 			}
 			
 			// Build the request to dispatch
@@ -694,9 +721,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 			String version = rh.getVersion();
 			requestedVersion = version;
+			if (version != null)
+				version = version.replaceAll("\\.", "");
 			
 			String currentOperation = rh.getOperation();
 			
+			//Use for the GetRecords request
 			requestedOutputSchema = rh.getOutputSchema();
 			requestedResutlType = rh.getResultType();
 
@@ -712,12 +742,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			// default server tag will be implemented when several servers will be supported
 			RemoteServerInfo rsi = getRemoteServerInfo(0);
 			String transactionType = "ogc";
-			if (rsi != null) {
+			if (rsi != null) 
+			{
 				transactionType = rsi.getTransaction();
 			}
 
-			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) {
-
+			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) 
+			{
 				if (rh.isTransactionInsert()) {
 					// Send the xml
 					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
@@ -732,6 +763,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 							// dump(byteRead);
 						}
 					} finally {
+						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+						Date d = new Date();
+						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+						if (os != null) 
+						{
+							dump("SYSTEM", "ClientResponseLength", os.toString().length());
+						}
 						os.flush();
 						os.close();
 					}
@@ -752,6 +790,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 							os.write(byteRead);
 						}
 					} finally {
+						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+						Date d = new Date();
+						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+						if (os != null) 
+						{
+							dump("SYSTEM", "ClientResponseLength", os.toString().length());
+						}
 						os.flush();
 						os.close();
 					}
@@ -762,32 +807,32 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if (version != null)
-					version = version.replaceAll("\\.", "");
-				
 				if(hasPolicy)
 				{
 					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 					String dataId = rh.getRecordId();
-					if(!cswDataManager.isDataVersionAccessible(dataId))
+					if(!cswDataManager.isAllDataAccessible())
 					{
-						dataId = cswDataManager.getDataIdVersionAccessible();
-					}
-					if(!cswDataManager.isDataAccessible(dataId))
-					{
-						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
-						return;
-					}
-					if(dataId.compareTo(rh.getRecordId()) != 0)
-					{
-						//Change the metadata's id in the request
-						int start = param.indexOf(rh.getRecordId());
-						int end = start + rh.getRecordId().length();
-						
-						param.replace(start, end, dataId);
-						
-						String result = param.toString();
-						
+						if(!cswDataManager.isDataVersionAccessible(dataId))
+						{
+							dataId = cswDataManager.getDataIdVersionAccessible();
+						}
+						if(!cswDataManager.isDataAccessible(dataId))
+						{
+							sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+							return;
+						}
+						if(dataId.compareTo(rh.getRecordId()) != 0)
+						{
+							//Change the metadata's id in the request
+							int start = param.indexOf(rh.getRecordId());
+							int end = start + rh.getRecordId().length();
+							
+							param.replace(start, end, dataId);
+							
+							String result = param.toString();
+							
+						}
 					}
 				}
 				
@@ -797,27 +842,46 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				transform(version, currentOperation, req, resp, filePathList);
 				
 			}
-			else {
-				if (version != null)
-					version = version.replaceAll("\\.", "");
-
-				// dump (param.toString());
+			else if(currentOperation.equalsIgnoreCase("GetRecords"))
+			{
+				if(hasPolicy)
+				{
+					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					if(!cswDataManager.isAllDataAccessible())
+					{
+						cswDataManager.getAccessibleDataIds();
+						//Ajouter un filtre dans la requete (DOM)
+						DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+						DocumentBuilder db = dbf.newDocumentBuilder();
+						InputStream xml = new StringBufferInputStream(param.toString());
+						Document doc = db.parse(xml);
+						doc.getDocumentElement().normalize();
+						
+						String temp = doc.getDocumentElement().getNamespaceURI();
+						
+						dump(temp);
+					}
+				}
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				transform(version, currentOperation, req, resp, filePathList);
 			}
-		} catch (AvailabilityPeriodException e) 
+			else 
+			{
+				List<String> filePathList = new Vector<String>();
+				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
+				filePathList.add(filePath);
+				transform(version, currentOperation, req, resp, filePathList);
+			}
+		} 
+		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
-//			resp.setStatus(401);
-//			try {
-//				resp.getWriter().println(e.getMessage());
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 		}
