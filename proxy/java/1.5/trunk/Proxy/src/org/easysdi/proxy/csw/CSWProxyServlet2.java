@@ -131,22 +131,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				int nsI = 0;
 				for (int i = 0; i < notAllowedAttributeList.size(); i++) 
 				{
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:Record/");
-					CSWCapabilities200.append(notAllowedAttributeList.get(i));
-					CSWCapabilities200.append("\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord/");
-					CSWCapabilities200.append(notAllowedAttributeList.get(i));
-					CSWCapabilities200.append("\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord/");
-					CSWCapabilities200.append(notAllowedAttributeList.get(i));
-					CSWCapabilities200.append("\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
 					String text = notAllowedAttributeList.get(i);
+					CSWCapabilities200.append("<xsl:template match=\"//csw:SearchResults/" + text + "\">");
+					CSWCapabilities200.append("</xsl:template>");
+					
 					if (text != null) 
 					{
 						if (text.indexOf("\":") < 0) 
@@ -166,52 +154,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				
 			}
 			
-			//Rewrite the number of returned values
-			CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/@numberOfRecordsReturned\">");
-			CSWCapabilities200.append("<xsl:attribute name=\"numberOfRecordsReturned\">");
-			CSWCapabilities200.append("<xsl:value-of select=\"'");
-			CSWCapabilities200.append(recordsReturned.size()- recordsToRemove.size());
-			CSWCapabilities200.append("'\"/>");
-			CSWCapabilities200.append("</xsl:attribute>");
-			CSWCapabilities200.append("</xsl:template>");
-//			
-			//TODO : rewrite the number of matched values
-			//Need an additional call the the service and a huge filtering on all the records...
-//			CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/@numberOfRecordsMatched\">");
-//			CSWCapabilities200.append("<xsl:attribute name=\"numberOfRecordsMatched\">");
-//			CSWCapabilities200.append("<xsl:value-of select=\"'your value here'\"/>");
-//			CSWCapabilities200.append("</xsl:attribute>");
-//			CSWCapabilities200.append("</xsl:template>");
+		
 			
 
-			//Remove the records which are not accessible according to the policy
-			if(recordsToRemove.size() != 0)
-			{
-				
-				for (int i = 0; i < recordsToRemove.size() ; i++)
-				{
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:Record[dc:identifier='");
-					CSWCapabilities200.append(recordsToRemove.get(i));
-					CSWCapabilities200.append("']\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:BriefRecord[dc:identifier='");
-					CSWCapabilities200.append(recordsToRemove.get(i));
-					CSWCapabilities200.append("']\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/csw:SummaryRecord[dc:identifier='");
-					CSWCapabilities200.append(recordsToRemove.get(i));
-					CSWCapabilities200.append("']\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-					CSWCapabilities200.append("<xsl:template match=\"csw:GetRecordsResponse/csw:SearchResults/gmd:MD_Metadata[gmd:fileIdentifier/gco:CharacterString='");
-					CSWCapabilities200.append(recordsToRemove.get(i));
-					CSWCapabilities200.append("']\">");
-					CSWCapabilities200.append("</xsl:template>");
-					
-				}
-			}
 		
 			//Copy all other nodes
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
@@ -461,7 +406,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //							}
 //						}
 //					}
-					dump("DEBUG","GetRecords - End Check for data accessibility.");
+//					dump("DEBUG","GetRecords - End Check for data accessibility.");
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) && recordsToRemove.size()==0) 
 					{
 						// Keep the metadata as it is
