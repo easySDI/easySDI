@@ -127,6 +127,8 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String exceptionMode ="Permissive";
 	private boolean isException=false;
 	
+	private String ogcSearchFilter="";
+	
 
 	public ConfigFileHandler(String id) {
 		super();
@@ -279,6 +281,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setTitle(title);
 				config.setContactInfo(contactInfo);
 				config.setExceptionMode(exceptionMode);
+				config.setOgcSearchFilter(ogcSearchFilter);
 			}
 			isTheGoodId = false;
 		}
@@ -606,6 +609,10 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && isException && qName.equals("mode")) {
 			exceptionMode = data;
 			isException = false;
+		}
+		
+		if (isTheGoodId && isConfig && qName.equals("ogc-search-filter")) {
+			ogcSearchFilter = data;
 		}
 		
 		data = "";

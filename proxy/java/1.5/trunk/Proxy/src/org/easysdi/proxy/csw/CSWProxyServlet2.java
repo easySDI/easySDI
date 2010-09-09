@@ -865,7 +865,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					{
 						cswDataManager.getAccessibleDataIds();
 						//Add a filter on the data id in the request
-						param = cswDataManager.addFilterOnDataAccessible(param, cswDataManager.getAccessibleDataIds());
+						param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param, cswDataManager.getAccessibleDataIds());
 						dump("INFO", "GetRecords request send : "+param);
 					}
 				}

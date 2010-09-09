@@ -363,7 +363,7 @@ public class CSWProxyDataAccessibilityManager {
 		return metadata_guids;
 	}
 	
-	public StringBuffer addFilterOnDataAccessible (StringBuffer param, List<Map<String,Object>> ids)
+	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
 	{
 		try 
 		{
@@ -442,7 +442,7 @@ public class CSWProxyDataAccessibilityManager {
 			}
 			
 			//Add the "Or" node
-			and.appendChild(buildOrNodeToFilterOnDataId(doc, uri,prefix, ids));
+			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
 			
 			DOMSource domSource = new DOMSource(doc);
 			StringWriter writer = new StringWriter();
@@ -460,14 +460,14 @@ public class CSWProxyDataAccessibilityManager {
 		return param;
 	}
 
-	private Node buildOrNodeToFilterOnDataId (Document doc, String namespace, String prefix,List<Map<String,Object>> ids)
+	private Node buildOrNodeToFilterOnDataId (String ogcSearchFilter, Document doc, String namespace, String prefix,List<Map<String,Object>> ids)
 	{
 		Element or = doc.createElementNS(namespace,prefix+"Or");
 		for (int m = 0; m<ids.size() ; m++)
 		{
 			Element property = doc.createElementNS(namespace,prefix+"PropertyIsEqualTo");
 			Element name = doc.createElementNS(namespace,prefix+"PropertyName");
-			name.setTextContent("fileId");
+			name.setTextContent(ogcSearchFilter);
 			property.appendChild(name);
 			Element literal = doc.createElementNS(namespace,prefix+"Literal");
 			literal.setTextContent(ids.get(m).get("guid").toString());

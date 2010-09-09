@@ -48,6 +48,21 @@ public class Config implements Serializable{
 	private String fees ="";
 	private String accessConstraints ="";
 	private String exceptionMode = "permissive";
+	private String ogcSearchFilter="";
+
+	/**
+	 * @param ogcSearchFilter the ogcSearchFilter to set
+	 */
+	public void setOgcSearchFilter(String ogcSearchFilter) {
+		this.ogcSearchFilter = ogcSearchFilter;
+	}
+
+	/**
+	 * @return the ogcSearchFilter
+	 */
+	public String getOgcSearchFilter() {
+		return ogcSearchFilter;
+	}
 
 	public String getToleranceDistance() {
 		return toleranceDistance;
