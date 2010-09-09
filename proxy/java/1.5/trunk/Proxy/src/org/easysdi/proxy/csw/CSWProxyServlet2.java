@@ -654,6 +654,20 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					}
 				}
 			}
+			else if(currentOperation.equalsIgnoreCase("GetRecords"))
+			{
+				if(hasPolicy)
+				{
+					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					if(!cswDataManager.isAllDataAccessible())
+					{
+						cswDataManager.getAccessibleDataIds();
+						//Add a filter on the data id in the request
+//						param = cswDataManager.addFilterOnDataAccessible(param, cswDataManager.getAccessibleDataIds());
+//						dump("INFO", "GetRecords request send : "+param);
+					}
+				}
+			}
 			
 			// Build the request to dispatch
 			parameterNames = req.getParameterNames();
