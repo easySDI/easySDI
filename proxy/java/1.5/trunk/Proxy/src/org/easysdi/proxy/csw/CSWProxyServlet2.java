@@ -850,16 +850,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					if(!cswDataManager.isAllDataAccessible())
 					{
 						cswDataManager.getAccessibleDataIds();
-						//Ajouter un filtre dans la requete (DOM)
-						DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-						DocumentBuilder db = dbf.newDocumentBuilder();
-						InputStream xml = new StringBufferInputStream(param.toString());
-						Document doc = db.parse(xml);
-						doc.getDocumentElement().normalize();
-						
-						String temp = doc.getDocumentElement().getNamespaceURI();
-						
-						dump(temp);
+						//Add a filter on the data id in the request
+						param = cswDataManager.addFilterOnDataAccessible(param, cswDataManager.getAccessibleDataIds());
+						dump("INFO", "GetRecords request send : "+param);
 					}
 				}
 				List<String> filePathList = new Vector<String>();

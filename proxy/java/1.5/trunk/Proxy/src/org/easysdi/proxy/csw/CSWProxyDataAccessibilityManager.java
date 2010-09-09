@@ -1,6 +1,9 @@
 package org.easysdi.proxy.csw;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +11,11 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
@@ -355,6 +363,117 @@ public class CSWProxyDataAccessibilityManager {
 		return metadata_guids;
 	}
 	
-	
+	public StringBuffer addFilterOnDataAccessible (StringBuffer param, List<Map<String,Object>> ids)
+	{
+		try 
+		{
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db;
+			db = dbf.newDocumentBuilder();
+			//		InputStream in = new ByteArrayInputStream(param.toString().getBytes(encoding) );
+			InputStream xml = new StringBufferInputStream(param.toString());
+			Document doc = db.parse(xml);
+			doc.getDocumentElement().normalize();
+			
+			String docPrefix = doc.getDocumentElement().getPrefix();
+			String docUri = doc.getDocumentElement().getNamespaceURI();
+			if(docPrefix != null)
+				docPrefix = docPrefix+":";
+			else
+				docPrefix ="";
+			
+			NodeList constraintNodes = doc.getElementsByTagNameNS("*","Constraint");
+			Node constraint = null;
+			Node filterNode = null;
+			
+			if (constraintNodes.getLength() == 0)
+			{
+				//No constraint defined
+				Node query = doc.getElementsByTagNameNS("*","Query").item(0);
+				Element eConstraint = doc.createElementNS(docUri, docPrefix+"Constraint"); 
+				eConstraint.setAttribute("version", "1.1.0");
+				constraint = eConstraint;
+				query.appendChild(constraint);
+				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+				constraint.appendChild(filterNode);
+			}
+			else
+			{
+				//Constraint already exists
+				constraint = constraintNodes.item(0);
+				//Get the Filter Node
+				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+			}
+			
+			String uri =  filterNode.getNamespaceURI();
+			String prefix = filterNode.getPrefix();
+			
+			if(prefix == null)
+				prefix = "";
+			else
+				prefix = prefix+":";
+			
+			//Get the "And" Node
+			NodeList filterChildNodes =  filterNode.getChildNodes();
+			Boolean isAndExists = false;
+			Node and = null;
+			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
+			{
+				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
+				{
+					isAndExists = true;
+					and = filterChildNodes.item(i);
+					break;
+				}
+			}
+			
+			//Create the and node if not already exists
+			if(!isAndExists)
+			{
+				and = doc.createElementNS(uri, prefix+"And");
+				for (int i = filterChildNodes.getLength() -1 ; i>=0 ; i--)
+				{
+					Node child = filterChildNodes.item(i);
+					filterNode.removeChild(child);
+					and.appendChild(child);
+				}
+				filterNode.appendChild(and);
+			}
+			
+			//Add the "Or" node
+			and.appendChild(buildOrNodeToFilterOnDataId(doc, uri,prefix, ids));
+			
+			DOMSource domSource = new DOMSource(doc);
+			StringWriter writer = new StringWriter();
+			StreamResult result = new StreamResult(writer);
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.transform(domSource, result);
+			return new StringBuffer(writer.toString());
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return param;
+	}
 
+	private Node buildOrNodeToFilterOnDataId (Document doc, String namespace, String prefix,List<Map<String,Object>> ids)
+	{
+		Element or = doc.createElementNS(namespace,prefix+"Or");
+		for (int m = 0; m<ids.size() ; m++)
+		{
+			Element property = doc.createElementNS(namespace,prefix+"PropertyIsEqualTo");
+			Element name = doc.createElementNS(namespace,prefix+"PropertyName");
+			name.setTextContent("fileId");
+			property.appendChild(name);
+			Element literal = doc.createElementNS(namespace,prefix+"Literal");
+			literal.setTextContent(ids.get(m).get("guid").toString());
+			property.appendChild(literal);
+			or.appendChild(property);
+		}
+		return or;
+	}
 }
