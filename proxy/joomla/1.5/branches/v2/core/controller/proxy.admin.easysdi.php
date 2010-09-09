@@ -907,6 +907,10 @@ function saveConfig($xml,$configFilePath){
 				$i++;
 			}
 			
+			//Ogc search filter
+			$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
+			$config->{"ogc-search-filter"}=$ogcSearchFilter;
+			
 			//Exception
 			$exceptionMode = JRequest::getVar("exception_mode","permissive");
 			$config->{"exception"}->{"mode"}=$exceptionMode;

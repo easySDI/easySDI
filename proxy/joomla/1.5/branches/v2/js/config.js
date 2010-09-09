@@ -6,6 +6,7 @@ function changeValues()
 		applyDisplay ("none","block");
 		document.getElementById('servicemetadata_contact').style.display="block";
 		document.getElementById('exceptionMode').style.display="none";
+		document.getElementById('ogcSearchFilterFS').style.display="block";
 	}
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
 	{
@@ -13,6 +14,7 @@ function changeValues()
 		applyDisplay ("none","block");
 		document.getElementById('servicemetadata_contact').style.display="none";
 		document.getElementById('exceptionMode').style.display="block";
+		document.getElementById('ogcSearchFilterFS').style.display="none";
 	}	
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
 	{
@@ -20,11 +22,13 @@ function changeValues()
 		applyDisplay ("block","none");
 		document.getElementById('servicemetadata_contact').style.display="block";
 		document.getElementById('exceptionMode').style.display="block";
+		document.getElementById('ogcSearchFilterFS').style.display="none";
 	}
 	else
 	{
 		document.getElementById('specificGeonetowrk').style.display="none";
 		document.getElementById('service_metadata').style.display="none";
+		document.getElementById('ogcSearchFilterFS').style.display="none";
 		
 	}
 }
