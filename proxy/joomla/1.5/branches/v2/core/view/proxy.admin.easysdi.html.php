@@ -1164,18 +1164,14 @@ function submitbutton(pressbutton)
 			var check = document.getElementById('AllOperations').checked;
 			
 			document.getElementById('oGetCapabilities').disabled=check;
-			document.getElementById('oHarvest').disabled=check;
 			document.getElementById('oDescribeRecord').disabled=check;
 			document.getElementById('oTransaction').disabled=check;
 			document.getElementById('oGetRecords').disabled=check;
-			document.getElementById('oGetDomain').disabled=check;
 			document.getElementById('oGetRecordbyId').disabled=check;
 			document.getElementById('oGetCapabilities').checked=check;
-			document.getElementById('oHarvest').checked=check;
 			document.getElementById('oDescribeRecord').checked=check;
 			document.getElementById('oTransaction').checked=check;
 			document.getElementById('oGetRecords').checked=check;
-			document.getElementById('oGetDomain').checked=check;
 			document.getElementById('oGetRecordbyId').checked=check;
 
 		}
@@ -1218,12 +1214,13 @@ function submitbutton(pressbutton)
 								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
 							}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
-					<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
-							if(strcasecmp($operation->Name,'Harvest')==0) echo 'checked';			
+							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></td>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+					
 				</tr>
 				<tr>
 					<td></td>
@@ -1233,12 +1230,8 @@ function submitbutton(pressbutton)
 							if(strcasecmp($operation->Name,'DescribeRecord')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBERECORD'); ?></td>
-					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-						<?php foreach ($thePolicy->Operations->Operation as $operation)
-						{
-							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
-						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+						<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" disabled >
+						<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></i></td>
 				</tr>
 				<tr>
 					<td></td>
@@ -1248,11 +1241,8 @@ function submitbutton(pressbutton)
 							if(strcasecmp($operation->Name,'GetRecords')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDS'); ?></td>
-					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain"<?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-						<?php foreach ($thePolicy->Operations->Operation as $operation)
-						{
-							if(strcasecmp($operation->Name,'GetDomain')==0) echo 'checked';			
-						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain" disabled >
+					<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></i></td>
 				</tr>
 				<tr>
 					<td></td>
