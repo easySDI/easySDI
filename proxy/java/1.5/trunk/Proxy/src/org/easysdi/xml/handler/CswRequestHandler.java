@@ -35,8 +35,10 @@ public class CswRequestHandler extends DefaultHandler {
     private boolean hasFilter= false;
     private boolean isInInsert = false;
     private boolean isInDelete = false;
+    private boolean isInUpdate = false;
     private boolean hasInsert = false;
     private boolean hasDelete = false;
+    private boolean hasUpdate = false;
     private boolean isInFileIdentifier=false;
     private boolean isInMetadata=false;
     private boolean isInCharacterString=false;
@@ -122,6 +124,9 @@ public class CswRequestHandler extends DefaultHandler {
     public boolean isTransactionDelete(){
 	return hasDelete;
     }
+    public boolean isTransactionUpdate(){
+    	return hasUpdate;
+    }
     
     public boolean hasRequestFilter(){
 
@@ -167,67 +172,66 @@ public class CswRequestHandler extends DefaultHandler {
 	}
 
 
-    public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException  {  			  
-
-	if (isFirst){
-	    operation=localName;
-	    service=attr.getValue("service");
-	    version=attr.getValue("version");
-	    setOutputSchema(attr.getValue("outputSchema"));
-	    setResultType(attr.getValue("resultType"));
-	    isFirst= false;
-	}
-	
-
-	
-	//Requested by the GetFeature operation	    
-	if (localName.equals("Query")){
-
-	    if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		String typeNameTemp =attr.getValue("typeNames");
-		String a[]=typeNameTemp.split(" ");
-		for (int i = 0 ;i<a.length;i++){		   
-		    typeName.add(a[i]);
+    public void startElement(String nameSpace, String localName,  String qName, Attributes attr) throws SAXException  
+    {  			  
+		if (isFirst){
+		    operation=localName;
+		    service=attr.getValue("service");
+		    version=attr.getValue("version");
+		    setOutputSchema(attr.getValue("outputSchema"));
+		    setResultType(attr.getValue("resultType"));
+		    isFirst= false;
 		}
-	    }			
-	}
-
-	if (localName.equals("Insert")){
-	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		hasInsert=true;
-		isInInsert = true;
-	    }
-	}
-
-	if (isInFileIdentifier && isInMetadata && localName.equals("CharacterString")){
-	    isInCharacterString =true;
-	}
-	if (isInMetadata&&localName.equals("fileIdentifier")){
-	    isInFileIdentifier = true;
-	}
+		
+		//Requested by the GetFeature operation	    
+		if (localName.equals("Query")){
 	
-	if (isInInsert && localName.equals("MD_Metadata")){
-	    isInMetadata=true;
-
+		    if ("GetRecords".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+			String typeNameTemp =attr.getValue("typeNames");
+			String a[]=typeNameTemp.split(" ");
+			for (int i = 0 ;i<a.length;i++){		   
+			    typeName.add(a[i]);
+			}
+		    }			
+		}
+	
+		if (localName.equals("Insert")){
+		    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+			hasInsert=true;
+			isInInsert = true;
+		    }
+		}
+	
+		if (isInFileIdentifier && isInMetadata && localName.equals("CharacterString")){
+		    isInCharacterString =true;
+		}
+		if (isInMetadata&&localName.equals("fileIdentifier")){
+		    isInFileIdentifier = true;
+		}
+		if (isInInsert && localName.equals("MD_Metadata")){
+		    isInMetadata=true;
+		}
+		  
+		if (localName.equals("Delete")){
+		    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+			hasDelete=true;
+			isInDelete = true;
+		    }
+		}
+		/***
+		 * Supports only the Filter PropertyIsEqualTo on the File Identifier.
+		 */	
+		if (isInDelete && localName.equals("PropertyIsEqualTo")){
+		   isInPropertyIsEqualTo = true; 
+		}
+		
+		if (localName.equals("Update")){
+		    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+			hasUpdate=true;
+			isInUpdate= true;
+		    }
+		}
 	}
-	  
-	if (localName.equals("Delete")){
-	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		hasDelete=true;
-		isInDelete = true;
-	    }
-	}
-	
-	
-	
-	/***
-	 * Supports only the Filter PropertyIsEqualTo on the File Identifier.
-	 */	
-	if (isInDelete && localName.equals("PropertyIsEqualTo")){
-	   isInPropertyIsEqualTo = true; 
-	}	           
-
-    }
 
 
 
@@ -272,6 +276,11 @@ public class CswRequestHandler extends DefaultHandler {
 	if (localName.equals("Insert")){
 	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
 		isInInsert = false;
+	    }	    	    
+	}
+	if (localName.equals("Update")){
+	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
+		isInUpdate = false;
 	    }	    	    
 	}
 

@@ -22,7 +22,12 @@ import org.easysdi.security.JoomlaProvider;
 import org.w3c.dom.*;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-
+/**
+ * Access the database to retreive accessible metadatas
+ * and rewrite request to send to the CSW service
+ * @author HVH
+ *
+ */
 public class CSWProxyDataAccessibilityManager {
 	
 	private Policy policy;
@@ -53,12 +58,12 @@ public class CSWProxyDataAccessibilityManager {
 	{
 		if(!policy.getObjectVersion().getVersionModes().contains("all"))
 		{
-			String queryVersion= "SELECT m.guid as guid, MAX(v.title) as title FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+			String queryVersion= "SELECT m.guid as guid, MAX(v.title) as title " ;
+			queryVersion +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
 			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
 			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
 			queryVersion +=" ";
-			
-			
+						
 			try
 			{
 				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
@@ -236,7 +241,6 @@ public class CSWProxyDataAccessibilityManager {
 	
 	public List<Map<String,Object>> getAccessibleDataIds ()
 	{
-		//TODO : change prefix table 
 		List<String> listDataIDs = Arrays.asList();
 		List<Map<String,Object>> object_ids = null;
 		List<Map<String,Object>> metadata_ids = null;
@@ -357,21 +361,26 @@ public class CSWProxyDataAccessibilityManager {
 			}
 			metadata_guids = joomlaProvider.sjt.queryForList(query);
 		}
-		
-		
-		
 		return metadata_guids;
 	}
 	
+	/**
+	 * Add a <and> block in a GetRecords <Filter> block containing the accessible metadata's Id
+	 * to restrain the result send back by the csw service to those allowed by the current policy
+	 * @param ogcSearchFilter
+	 * @param param
+	 * @param ids
+	 * @return
+	 */
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
 	{
 		try 
 		{
+			//Document builder
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 			DocumentBuilder db;
 			db = dbf.newDocumentBuilder();
-			//		InputStream in = new ByteArrayInputStream(param.toString().getBytes(encoding) );
 			InputStream xml = new StringBufferInputStream(param.toString());
 			Document doc = db.parse(xml);
 			doc.getDocumentElement().normalize();
@@ -387,6 +396,7 @@ public class CSWProxyDataAccessibilityManager {
 			Node constraint = null;
 			Node filterNode = null;
 			
+			//<Constraint>
 			if (constraintNodes.getLength() == 0)
 			{
 				//No constraint defined
@@ -403,9 +413,20 @@ public class CSWProxyDataAccessibilityManager {
 				//Constraint already exists
 				constraint = constraintNodes.item(0);
 				//Get the Filter Node
-				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+				NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
+				if(filterNodes.getLength() == 0)
+				{
+					//Create filter node
+					filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+					constraint.appendChild(filterNode);
+				}
+				else
+				{
+					filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+				}
 			}
 			
+			//<Filter>
 			String uri =  filterNode.getNamespaceURI();
 			String prefix = filterNode.getPrefix();
 			
@@ -414,6 +435,7 @@ public class CSWProxyDataAccessibilityManager {
 			else
 				prefix = prefix+":";
 			
+			//<And>
 			//Get the "And" Node
 			NodeList filterChildNodes =  filterNode.getChildNodes();
 			Boolean isAndExists = false;
@@ -426,24 +448,18 @@ public class CSWProxyDataAccessibilityManager {
 					and = filterChildNodes.item(i);
 					break;
 				}
-			}
-			
+			}			
 			//Create the and node if not already exists
 			if(!isAndExists)
 			{
-				and = doc.createElementNS(uri, prefix+"And");
-				for (int i = filterChildNodes.getLength() -1 ; i>=0 ; i--)
-				{
-					Node child = filterChildNodes.item(i);
-					filterNode.removeChild(child);
-					and.appendChild(child);
-				}
-				filterNode.appendChild(and);
+				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
 			}
 			
+			//<Or>
 			//Add the "Or" node
 			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
 			
+			//Return
 			DOMSource domSource = new DOMSource(doc);
 			StringWriter writer = new StringWriter();
 			StreamResult result = new StreamResult(writer);
@@ -460,6 +476,37 @@ public class CSWProxyDataAccessibilityManager {
 		return param;
 	}
 
+	/**
+	 * Build the <And> node and add to it the existing filter blocks
+	 * @param doc
+	 * @param namespace
+	 * @param prefix
+	 * @param filterChildNodes
+	 * @param filterNode
+	 * @return
+	 */
+	private Node buildAndNodeTofilterOnDataID (Document doc,String namespace, String prefix,NodeList filterChildNodes,Node filterNode)
+	{
+		Node and = doc.createElementNS(namespace, prefix+"And");
+		for (int i = filterChildNodes.getLength() -1 ; i>=0 ; i--)
+		{
+			Node child = filterChildNodes.item(i);
+			filterNode.removeChild(child);
+			and.appendChild(child);
+		}
+		filterNode.appendChild(and);
+		return and;
+	}
+	
+	/**
+	 * Build the <Or> node and add to it the accessible metadata's Id
+	 * @param ogcSearchFilter
+	 * @param doc
+	 * @param namespace
+	 * @param prefix
+	 * @param ids
+	 * @return
+	 */
 	private Node buildOrNodeToFilterOnDataId (String ogcSearchFilter, Document doc, String namespace, String prefix,List<Map<String,Object>> ids)
 	{
 		Element or = doc.createElementNS(namespace,prefix+"Or");
@@ -475,5 +522,96 @@ public class CSWProxyDataAccessibilityManager {
 			or.appendChild(property);
 		}
 		return or;
+	}
+	
+	public String addFilterOnDataAccessible (String ogcSearchFilter, String param,  List<Map<String,Object>> ids)
+	{
+		
+		try 
+		{
+			//Document builder
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db;
+			db = dbf.newDocumentBuilder();
+			InputStream xml = new StringBufferInputStream(param);
+			Document doc = db.parse(xml);
+			doc.getDocumentElement().normalize();
+			
+			
+			String docPrefix = doc.getDocumentElement().getPrefix();
+			String docUri = doc.getDocumentElement().getNamespaceURI();
+			if(docPrefix != null)
+				docPrefix = docPrefix+":";
+			else
+				docPrefix ="";
+			
+			
+			
+			Node filterNode = null;
+			
+			
+				
+			NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
+			if(filterNodes.getLength() == 0)
+			{
+				//Create filter node
+				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+			}
+			else
+			{
+				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+			}
+			
+			
+			//<Filter>
+			String uri =  filterNode.getNamespaceURI();
+			String prefix = filterNode.getPrefix();
+			
+			if(prefix == null)
+				prefix = "";
+			else
+				prefix = prefix+":";
+			
+			//<And>
+			//Get the "And" Node
+			NodeList filterChildNodes =  filterNode.getChildNodes();
+			Boolean isAndExists = false;
+			Node and = null;
+			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
+			{
+				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
+				{
+					isAndExists = true;
+					and = filterChildNodes.item(i);
+					break;
+				}
+			}			
+			//Create the and node if not already exists
+			if(!isAndExists)
+			{
+				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
+			}
+			
+			//<Or>
+			//Add the "Or" node
+			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
+			
+			//Return
+			DOMSource domSource = new DOMSource(doc);
+			StringWriter writer = new StringWriter();
+			StreamResult result = new StreamResult(writer);
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = tf.newTransformer();
+			transformer.transform(domSource, result);
+			String constraint = writer.toString().substring(38);
+			return constraint;
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return param;
 	}
 }

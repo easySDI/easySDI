@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -468,6 +469,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String currentOperation = null;
 			String version = "000";
 			String requestedId = "";
+			String constraint = "";
 
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String paramUrl = "";
@@ -508,6 +510,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if (key.equalsIgnoreCase("ResultType")) 
 				{
 					requestedResutlType = value;
+					continue;
+				}
+				if (key.equalsIgnoreCase("Constraint")) 
+				{
+					constraint = value;
 					continue;
 				}
 			}
@@ -551,8 +558,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					{
 						cswDataManager.getAccessibleDataIds();
 						//Add a filter on the data id in the request
-//						param = cswDataManager.addFilterOnDataAccessible(param, cswDataManager.getAccessibleDataIds());
-//						dump("INFO", "GetRecords request send : "+param);
+						
+						constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint), cswDataManager.getAccessibleDataIds());
+						dump("INFO", "GetRecords request send : "+constraint);
 					}
 				}
 			}
@@ -567,6 +575,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if(key.equalsIgnoreCase("id"))
 				{
 					paramUrl = paramUrl + key + "=" + requestedId + "&";
+				}
+				else if (key.equalsIgnoreCase("constraint"))
+				{
+					paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint) + "&";
 				}
 				else
 				{
