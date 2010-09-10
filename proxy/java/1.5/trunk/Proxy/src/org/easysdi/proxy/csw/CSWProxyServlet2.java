@@ -607,6 +607,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode ","request",requestedVersion));
 		}
 	}
 
