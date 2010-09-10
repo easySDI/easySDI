@@ -179,7 +179,13 @@ class ADMIN_objecttype {
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_profile ORDER BY name" );
 		$profiles = array_merge( $profiles, $database->loadObjectList() );
 		
-		HTML_objecttype::editObjectType($rowObjecttype, $fieldsLength, $languages, $labels, $unselected_accounts, $selected_accounts, $profiles, $option );
+		$namespacelist = array();
+		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
+		$namespacelist[] = JHTML::_('select.option','0', " - " );
+		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
+		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
+		
+		HTML_objecttype::editObjectType($rowObjecttype, $fieldsLength, $languages, $labels, $unselected_accounts, $selected_accounts, $profiles, $namespacelist, $option );
 	}
 	
 	function saveObjectType( $option ) 
@@ -204,8 +210,12 @@ class ADMIN_objecttype {
 		if ($rowObjecttype->guid == null)
 			$rowObjecttype->guid = helper_easysdi::getUniqueId();
 		
+		if ($_POST['fragmentnamespace_id'] == 0)
+		{
+			$rowObjecttype->fragmentnamespace_id = null;
+		}
 		
-		if (!$rowObjecttype->store(false)) {			
+		if (!$rowObjecttype->store(true)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listObjectType" );
 			exit();

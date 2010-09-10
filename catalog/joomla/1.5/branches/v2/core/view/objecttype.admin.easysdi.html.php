@@ -145,7 +145,7 @@ class HTML_objecttype {
 	}
 	
 	
-	function editObjectType(&$row, $fieldsLength, $languages, $labels, $accounts, $selected_accounts, $profiles, $option )
+	function editObjectType(&$row, $fieldsLength, $languages, $labels, $accounts, $selected_accounts, $profiles, $namespacelist, $option )
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -181,7 +181,14 @@ class HTML_objecttype {
 				<tr>
 					<td><?php echo JText::_("CATALOG_PROFILE"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$profiles, 'profile_id', 'size="1" class="inputbox"', 'value', 'text', $row->profile_id); ?></td>
-				</tr>	
+				</tr>
+				<tr>
+					<td WIDTH=150><?php echo JText::_("CATALOG_OBJECTTYPE_FRAGMENT"); ?></td>
+					<td>
+						<?php echo JHTML::_("select.genericlist",$namespacelist, 'fragmentnamespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->fragmentnamespace_id ); ?>
+						<input size="50" type="text" name ="fragment" value="<?php if ($pageReloaded and array_key_exists('fragment', $_POST)) echo $_POST['fragment']; else echo $row->fragment;?>" maxlength="<?php echo $fieldsLength['fragment'];?>"> 
+					</td>							
+				</tr>
 				<tr>
 					<td colspan="2">
 						<fieldset id="labels">

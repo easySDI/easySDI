@@ -35,6 +35,8 @@ class objecttype extends JTable
  	var $predefined=0;
  	var $hasVersioning=0;
  	var $logo=null;
+ 	var $fragment=null;
+ 	var $fragmentnamespace_id=null;
  	
 	// Class constructor
 	function __construct( &$db )
