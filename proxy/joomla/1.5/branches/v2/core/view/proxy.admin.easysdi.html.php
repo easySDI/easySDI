@@ -275,6 +275,7 @@ function changeValues()
 		document.getElementById('servicemetadata_contact').style.display="block";
 		document.getElementById('exceptionMode').style.display="none";
 		document.getElementById('ogcSearchFilterFS').style.display="block";
+		document.getElementById('removeServerButton').style.display="none";
 	}
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wfs.WFSProxyServlet')
 	{
@@ -283,6 +284,7 @@ function changeValues()
 		document.getElementById('servicemetadata_contact').style.display="none";
 		document.getElementById('exceptionMode').style.display="block";
 		document.getElementById('ogcSearchFilterFS').style.display="none";
+		document.getElementById('removeServerButton').style.display="block";
 	}	
 	else if (document.getElementById('servletClass').value == 'org.easysdi.proxy.wms.WMSProxyServlet')
 	{
@@ -291,12 +293,14 @@ function changeValues()
 		document.getElementById('servicemetadata_contact').style.display="block";
 		document.getElementById('exceptionMode').style.display="block";
 		document.getElementById('ogcSearchFilterFS').style.display="none";
+		document.getElementById('removeServerButton').style.display="block";
 	}
 	else
 	{
 		document.getElementById('specificGeonetowrk').style.display="none";
 		document.getElementById('service_metadata').style.display="none";
 		document.getElementById('ogcSearchFilterFS').style.display="none";
+		document.getElementById('removeServerButton').style.display="block";
 		
 	}
 }
@@ -440,12 +444,12 @@ else
 		?><tr>
 				<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
 				<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-				<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">				
-				<input type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
+				<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
+				<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
 								
 			</tr>
 			<tr>						
-			<td colspan="3">
+			<td colspan="4">
 			<div id="specificGeonetowrk" style="display:<?php if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){echo "block";}else{echo"none";} ?>">
 			<table>	
 			<tr>									
