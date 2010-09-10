@@ -89,7 +89,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	public CSWProxyServlet ()
 	{
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord", "Harvest", "Transaction");
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord", "Transaction");
 	}
 	
 	public void init(ServletConfig config) throws ServletException {

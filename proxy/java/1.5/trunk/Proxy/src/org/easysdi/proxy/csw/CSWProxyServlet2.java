@@ -118,12 +118,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					"xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" " +
 					"xmlns:ows=\"http://www.opengis.net/ows\"> ");
 
-			//According to the value of ElementSetName, the researched element's name can be : 
-			//- csw:Record
-			//- csw:BriefRecord
-			//- csw:SummaryRecord
-			//We include the 3 cases in the stylesheet
-			
+
 			//Remove the not allowed attributes
 			List<String> notAllowedAttributeList = getAttributesNotAllowedInMetadata(getRemoteServerUrl(0));
 			if(notAllowedAttributeList.size()!=0)
@@ -153,11 +148,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				
 			}
-			
-		
-			
-
-		
+				
 			//Copy all other nodes
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
 			CSWCapabilities200.append("<xsl:template match=\"node()|@*\">");
@@ -175,14 +166,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			// If something goes wrong, an empty stylesheet is returned.
+			StringBuffer sb = new StringBuffer();
+			return sb.append("<xsl:stylesheet version=\"1.00\" " +
+					"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+					"xmlns:ows=\"http://www.opengis.net/ows\" " +
+					"xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 		}
-
-		// If something goes wrong, an empty stylesheet is returned.
-		StringBuffer sb = new StringBuffer();
-		return sb.append("<xsl:stylesheet version=\"1.00\" " +
-				"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
-				"xmlns:ows=\"http://www.opengis.net/ows\" " +
-				"xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
 	}
 	
 	/** The outputSchema specified in the request is 'http://www.isotc211.org/2005/gmd'
@@ -380,33 +370,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					dump("DEBUG","transform end apply XSLT on service metadata");
 					
 				}
-				else if("GetRecords".equals(currentOperation))
+				else if("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation) || "DescribeRecord".equals(currentOperation))
 				{
-					//Filter according to data accessibility
-//					if(hasPolicy)
-//					{
-//						dump("DEBUG","GetRecords - Start Check for data accessibility.");
-//						CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-//						if(!cswDataManager.isAllDataAccessible())
-//						{
-//							recordsReturned = cswDataManager.extractRecordIDFromGetRecordsResponse(new File(filePathList.get(0)), requestedOutputSchema);
-//							if(recordsReturned != null)
-//							{
-//								for (int i = 0; i< recordsReturned.size();i++)
-//								{
-//									if(cswDataManager.isDataVersionAccessible(recordsReturned.get(i)) && cswDataManager.isDataAccessible(recordsReturned.get(i)))
-//									{
-//										recordsToKeep.add(recordsReturned.get(i));
-//									}
-//									else
-//									{
-//										recordsToRemove.add(recordsReturned.get(i));
-//									}
-//								}
-//							}
-//						}
-//					}
-//					dump("DEBUG","GetRecords - End Check for data accessibility.");
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) && recordsToRemove.size()==0) 
 					{
 						// Keep the metadata as it is
@@ -414,7 +379,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
-						dump("DEBUG","GetRecords - Start apply XSLT on response.");
+						dump("DEBUG",currentOperation+" - Start apply XSLT on response.");
 						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 	
@@ -425,29 +390,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						// Write the result in a temporary file
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
-						dump("DEBUG","GetRecords - End apply XSLT on response.");
-					}
-				} 
-				else if("GetRecordById".equals(currentOperation))
-				{
-					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0))) {
-						// Keep the metadata as it is
-						tempFile = new File(filePathList.get(0));
-					} 
-					else 
-					{
-						dump("DEBUG","GetRecordById - Start apply XSLT on response.");
-						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-						tempFos = new FileOutputStream(tempFile);
-						
-						InputStream xslt = null;
-						xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
-
-						transformer = tFactory.newTransformer(new StreamSource(xslt));
-						// Write the result in a temporary file
-						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
-						tempFos.close();
-						dump("DEBUG","GetRecordById - End apply XSLT on response.");
+						dump("DEBUG",currentOperation+" - End apply XSLT on response.");
 					}
 				}
 				else
@@ -708,60 +651,85 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) 
 			{
-				if (rh.isTransactionInsert()) {
-					// Send the xml
-					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+				// Send the xml
+				StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
 
-					// Get the response
-					OutputStream os = resp.getOutputStream();
-					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-					int byteRead;
-					try {
-						while ((byteRead = is.read()) != -1) {
-							os.write(byteRead);
-							// dump(byteRead);
-						}
-					} finally {
-						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-						Date d = new Date();
-						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-						if (os != null) 
-						{
-							dump("SYSTEM", "ClientResponseLength", os.toString().length());
-						}
-						os.flush();
-						os.close();
+				// Get the response
+				OutputStream os = resp.getOutputStream();
+				InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+				int byteRead;
+				try {
+					while ((byteRead = is.read()) != -1) {
+						os.write(byteRead);
+						// dump(byteRead);
 					}
-					os = null;
-					is = null;
-				}
-
-				if (rh.isTransactionDelete()) {
-					// Send the xml
-					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
-
-					// Get the response
-					OutputStream os = resp.getOutputStream();
-					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-					int byteRead;
-					try {
-						while ((byteRead = is.read()) != -1) {
-							os.write(byteRead);
-						}
-					} finally {
-						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-						Date d = new Date();
-						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-						if (os != null) 
-						{
-							dump("SYSTEM", "ClientResponseLength", os.toString().length());
-						}
-						os.flush();
-						os.close();
+				} finally {
+					DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+					Date d = new Date();
+					dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+					if (os != null) 
+					{
+						dump("SYSTEM", "ClientResponseLength", os.toString().length());
 					}
-					os = null;
-					is = null;
+					os.flush();
+					os.close();
 				}
+				os = null;
+				is = null;
+//				if (rh.isTransactionInsert()) {
+//					// Send the xml
+//					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+//
+//					// Get the response
+//					OutputStream os = resp.getOutputStream();
+//					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+//					int byteRead;
+//					try {
+//						while ((byteRead = is.read()) != -1) {
+//							os.write(byteRead);
+//							// dump(byteRead);
+//						}
+//					} finally {
+//						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+//						Date d = new Date();
+//						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+//						if (os != null) 
+//						{
+//							dump("SYSTEM", "ClientResponseLength", os.toString().length());
+//						}
+//						os.flush();
+//						os.close();
+//					}
+//					os = null;
+//					is = null;
+//				}
+//
+//				if (rh.isTransactionDelete()) {
+//					// Send the xml
+//					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
+//
+//					// Get the response
+//					OutputStream os = resp.getOutputStream();
+//					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
+//					int byteRead;
+//					try {
+//						while ((byteRead = is.read()) != -1) {
+//							os.write(byteRead);
+//						}
+//					} finally {
+//						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+//						Date d = new Date();
+//						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+//						if (os != null) 
+//						{
+//							dump("SYSTEM", "ClientResponseLength", os.toString().length());
+//						}
+//						os.flush();
+//						os.close();
+//					}
+//					os = null;
+//					is = null;
+//				}
 
 			}
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
