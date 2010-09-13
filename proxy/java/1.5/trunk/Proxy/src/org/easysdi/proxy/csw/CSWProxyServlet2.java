@@ -689,61 +689,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				os = null;
 				is = null;
-//				if (rh.isTransactionInsert()) {
-//					// Send the xml
-//					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
-//
-//					// Get the response
-//					OutputStream os = resp.getOutputStream();
-//					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-//					int byteRead;
-//					try {
-//						while ((byteRead = is.read()) != -1) {
-//							os.write(byteRead);
-//							// dump(byteRead);
-//						}
-//					} finally {
-//						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-//						Date d = new Date();
-//						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-//						if (os != null) 
-//						{
-//							dump("SYSTEM", "ClientResponseLength", os.toString().length());
-//						}
-//						os.flush();
-//						os.close();
-//					}
-//					os = null;
-//					is = null;
-//				}
-//
-//				if (rh.isTransactionDelete()) {
-//					// Send the xml
-//					StringBuffer response = sendFile(rsi.getUrl(), param, rsi.getLoginService());
-//
-//					// Get the response
-//					OutputStream os = resp.getOutputStream();
-//					InputStream is = new ByteArrayInputStream(response.toString().getBytes());
-//					int byteRead;
-//					try {
-//						while ((byteRead = is.read()) != -1) {
-//							os.write(byteRead);
-//						}
-//					} finally {
-//						DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-//						Date d = new Date();
-//						dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-//						if (os != null) 
-//						{
-//							dump("SYSTEM", "ClientResponseLength", os.toString().length());
-//						}
-//						os.flush();
-//						os.close();
-//					}
-//					os = null;
-//					is = null;
-//				}
-
 			}
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
@@ -779,8 +724,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
+				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
+				{
+					//Build complete metadata
+					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager();
+					cswManager.buildCompleteMetadata(filePathList);
+					
+				}
 				transform(version, currentOperation, req, resp, filePathList);
-				
 			}
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{

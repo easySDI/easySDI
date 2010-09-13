@@ -25,7 +25,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 /**
  * Access the database to retreive accessible metadatas
  * and rewrite request to send to the CSW service
- * @author HVH
+ * @author DEPTH SA
  *
  */
 public class CSWProxyDataAccessibilityManager {
