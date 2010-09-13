@@ -727,7 +727,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					//Build complete metadata
-					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager();
+					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					cswManager.buildCompleteMetadata(filePathList);
 					
 				}
@@ -749,7 +749,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
-				transform(version, currentOperation, req, resp, filePathList);
+				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
+				{
+					//Build complete metadata
+					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
+					cswManager.buildCompleteMetadata(filePathList);
+					
+				}transform(version, currentOperation, req, resp, filePathList);
 			}
 			else 
 			{

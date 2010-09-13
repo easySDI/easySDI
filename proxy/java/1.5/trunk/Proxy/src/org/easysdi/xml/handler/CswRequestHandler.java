@@ -53,9 +53,25 @@ public class CswRequestHandler extends DefaultHandler {
     private String outputSchema ="";
     private String elementSetName ="";
     
+    private String content = "";
+    
     
     
     /**
+	 * @param content the content to set
+	 */
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	/**
+	 * @return the content
+	 */
+	public String getContent() {
+		return content;
+	}
+
+	/**
 	 * @param elementSetName the elementSetName to set
 	 */
 	public void setElementSetName(String elementSetName) {
@@ -181,6 +197,7 @@ public class CswRequestHandler extends DefaultHandler {
 		    setOutputSchema(attr.getValue("outputSchema"));
 		    setResultType(attr.getValue("resultType"));
 		    isFirst= false;
+		    setContent(attr.getValue("content"));
 		}
 		
 		//Requested by the GetFeature operation	    
