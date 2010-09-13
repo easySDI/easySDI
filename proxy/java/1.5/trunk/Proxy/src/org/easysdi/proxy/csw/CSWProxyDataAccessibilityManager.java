@@ -278,7 +278,10 @@ public class CSWProxyDataAccessibilityManager {
 			}
 			query= "SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
 					"WHERE m.id IN ("+idString+")";
-			metadata_guids = joomlaProvider.sjt.queryForList(query);	
+			metadata_guids = joomlaProvider.sjt.queryForList(query);
+			
+			if(metadata_guids.size()==0)
+				return metadata_guids;
 		} 		
 		
 		if(!policy.getObjectVisibilities().isAll())
@@ -293,7 +296,7 @@ public class CSWProxyDataAccessibilityManager {
 					visibilityString += ",";
 				}
 			}
-			if(metadata_guids != null)
+			if(metadata_guids != null && metadata_guids.size() > 0)
 			{
 				String idString ="";
 				for (int i = 0 ; i<metadata_guids.size() ; i++)
@@ -322,6 +325,9 @@ public class CSWProxyDataAccessibilityManager {
 				
 			}
 			metadata_guids = joomlaProvider.sjt.queryForList(query);
+			
+			if(metadata_guids.size()==0)
+				return metadata_guids;
 		}
 		
 		if (!policy.getObjectStatus().isAll())
@@ -336,7 +342,7 @@ public class CSWProxyDataAccessibilityManager {
 					statusString += ",";
 				}
 			}
-			if(metadata_guids != null)
+			if(metadata_guids != null && metadata_guids.size() > 0)
 			{
 				String idString ="";
 				for (int i = 0 ; i<metadata_guids.size() ; i++)
@@ -360,6 +366,9 @@ public class CSWProxyDataAccessibilityManager {
 				
 			}
 			metadata_guids = joomlaProvider.sjt.queryForList(query);
+			
+			if(metadata_guids.size()==0)
+				return metadata_guids;
 		}
 		return metadata_guids;
 	}
