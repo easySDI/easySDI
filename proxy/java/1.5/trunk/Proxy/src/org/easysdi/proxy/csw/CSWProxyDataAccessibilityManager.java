@@ -58,11 +58,11 @@ public class CSWProxyDataAccessibilityManager {
 	{
 		if(!policy.getObjectVersion().getVersionModes().contains("all"))
 		{
-			String queryVersion= "SELECT m.guid as guid, MAX(v.title) as title " ;
+			String queryVersion= "SELECT m.guid as guid, v.created as title " ;
 			queryVersion +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
 			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
 			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
-			queryVersion +=" ";
+			queryVersion +=" AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))) ";
 						
 			try
 			{
@@ -259,7 +259,7 @@ public class CSWProxyDataAccessibilityManager {
 			{
 				query= "SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
 						"WHERE object_id="+object_ids.get(i).get("object_id")+" " +
-								"AND title=(SELECT MAX(title) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id="+object_ids.get(i).get("object_id")+")";
+								"AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id="+object_ids.get(i).get("object_id")+")";
 				if(metadata_ids == null)
 					metadata_ids = joomlaProvider.sjt.queryForList(query);
 				else
@@ -546,11 +546,7 @@ public class CSWProxyDataAccessibilityManager {
 			else
 				docPrefix ="";
 			
-			
-			
 			Node filterNode = null;
-			
-			
 				
 			NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
 			if(filterNodes.getLength() == 0)
