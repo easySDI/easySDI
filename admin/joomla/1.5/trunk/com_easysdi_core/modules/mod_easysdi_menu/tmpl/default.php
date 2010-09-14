@@ -2,6 +2,7 @@
 
 require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+require_once(JPATH_BASE.DS.'modules'.DS.'mod_mainmenu'.DS.'helper.php');
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
