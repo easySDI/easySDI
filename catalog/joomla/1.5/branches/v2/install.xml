@@ -23,6 +23,7 @@
 			<folder>templates</folder>
 			<folder>ext</folder>			
 			<folder>js</folder>
+			<folder>robot</folder>
 		</files>	
 
 		<languages folder="./language/admin">
