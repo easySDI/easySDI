@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -171,25 +172,30 @@ public class CSWProxyMetadataContentManagerJDOM
 
 	    	      }
 	    	   };//Fin du filtre
+	    	  List<Element> elList = new ArrayList<Element>();
 	    	  
 	    	   Iterator i= racine.getDescendants(filtre);
 	    	   
 	    	   while(i.hasNext())
 	    	   {
 	    	      Element courant = (Element)i.next();
-	    	      
-	    	      GetRequestHandler requestHandler = new GetRequestHandler(courant.getAttribute("href", ns).getValue());
+	    	      elList.add(courant);
+				
+				}
+	    	   
+	    	   for (int j = 0 ; j < elList.size(); j++)
+	    	   {
+		    	    GetRequestHandler requestHandler = new GetRequestHandler(elList.get(j).getAttribute("href", ns).getValue());
 					String serverUrl = requestHandler.getServer();
 					String params = requestHandler.getParameters();
 					String fragment = requestHandler.getFragment();
 					fragment = "bee:contact";
 					serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 					
-					
 					InputStream xmlChild = sendData(serverUrl,params);
-					
-					includeFragment(docParent, courant, xmlChild, fragment);
-				}
+					includeFragment(docParent, elList.get(j), xmlChild, fragment);
+	
+	    	   }
 	    	  
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePathList.get(0)));
