@@ -113,6 +113,8 @@ class ADMIN_objecttypelink {
 	
 	function editObjectTypeLink($id, $option)
 	{
+		global  $mainframe;
+				
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
 		
@@ -125,8 +127,9 @@ class ADMIN_objecttypelink {
 		 */
 		if ( JTable::isCheckedOut($user->get('id'), $rowObjectTypeLink->checked_out ))
 		{
-			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObjectTypeLink->name);
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObjectTypeLink->id);
 			$mainframe->redirect("index.php?option=$option&task=listObjectTypeLink", $msg );
+			exit;
 		}
 
 		$rowObjectTypeLink->checkout($user->get('id'));

@@ -35,6 +35,8 @@ class HTML_searchcriteria {
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderSearchCriteria' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"), 'ogcsearchfilter', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_CRITERIATYPE"), 'criteriatype_label', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_SIMPLETAB"), 'simpletab', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_ADVANCEDTAB"), 'advancedtab', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
@@ -44,7 +46,12 @@ class HTML_searchcriteria {
 <?php
 		$i=0;
 		foreach ($rows as $row)
-		{		
+		{	
+			// Gestion du nom
+			if ($row->criteriatype_name=="system")
+				$name = JText::_($row->label);
+			else	
+				$name = $row->name;
 ?>
 			<tr>
 				<td align="center" width="10px"><?php echo $page->getRowOffset( $i );//echo $i+$page->limitstart+1;?></td>
@@ -83,7 +90,22 @@ class HTML_searchcriteria {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				<td><?php echo $row->name; ?></td>
+<?php
+if ($row->criteriatype_name <> "relation")
+{ 
+?>
+				<?php $link =  "index.php?option=$option&amp;task=editSearchCriteria&context_id=$context_id&cid[]=$row->id";?>
+				<td><a href="<?php echo $link;?>"><?php echo $name; ?></a></td>
+<?php 
+}
+else
+{
+?>
+				<td><?php echo $name; ?></td>
+<?php 
+}?>
+				<td><?php echo $row->ogcsearchfilter; ?></td>
+				<td align="center"><?php echo JText::_($row->criteriatype_label);?></td>
 				<td width="100px" align="center">
 					<?php 
 						$imgY = 'tick.png';
@@ -135,6 +157,233 @@ class HTML_searchcriteria {
 	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  </form>
 <?php
+	}
+	
+	function editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option)
+	{
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
+
+		?>
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<table border="0" cellpadding="3" cellspacing="0">	
+				<tr>
+					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+					<td width=150><?php echo $row->name; ?></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
+					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.radiolist', $tab, 'tab', 'class="radio"', 'value', 'text', $selectedTab);?></td>							
+				</tr>
+			</table>
+			<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+					<td colspan="2">
+						<fieldset id="labels">
+							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>			
+			<br></br>
+			<table border="0" cellpadding="3" cellspacing="0">
+<?php
+$user =& JFactory::getUser();
+if ($row->created)
+{ 
+?>
+				<tr>
+					<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+					<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->createdby and $row->createdby<> 0)
+						{
+							$query = "SELECT name FROM #__users WHERE id=".$row->createdby ;
+							$database->setQuery($query);
+							$createUser = $database->loadResult();
+						}
+						else
+							$createUser = "";
+					?>
+					<td><?php echo $createUser; ?></td>
+				</tr>
+<?php
+}
+if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
+{ 
+?>
+				<tr>
+					<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+					<td><?php if ($row->updated and $row->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->updatedby and $row->updatedby<> 0)
+						{
+							$query = "SELECT name FROM #__users WHERE id=".$row->updatedby ;
+							$database->setQuery($query);
+							$updateUser = $database->loadResult();
+						}
+						else
+							$updateUser = "";
+					?>
+					<td><?php echo $updateUser; ?></td>
+				</tr>
+<?php
+}
+?>
+			</table> 
+			 
+			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
+			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
+			<input type="hidden" name="context_id" value="<?php echo $context_id?>" />
+			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
+			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
+			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+			<input type="hidden" name="name" value="<?php echo $row->name?>" />
+			<input type="hidden" name="code" value="<?php echo $row->code?>" />
+			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="id" value="<?php echo $row->id?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+			<?php 	
+	}		
+
+	
+	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option)
+	{
+		global  $mainframe;
+		
+		$database =& JFactory::getDBO(); 
+
+		?>
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<table border="0" cellpadding="3" cellspacing="0">	
+				<tr>
+					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"); ?></td>
+					<td><input size="<?php echo $fieldsLength['ogcsearchfilter'];?>" type="text" name ="ogcsearchfilter" value="<?php echo $row->ogcsearchfilter?>" maxlength="<?php echo $fieldsLength['ogcsearchfilter'];?>"> </td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
+					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.radiolist', $tab, 'tab', 'class="radio"', 'value', 'text', $selectedTab);?></td>							
+				</tr>
+			</table>
+			<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+					<td colspan="2">
+						<fieldset id="labels">
+							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>			
+			<br></br>
+			<table border="0" cellpadding="3" cellspacing="0">
+<?php
+$user =& JFactory::getUser();
+if ($row->created)
+{ 
+?>
+				<tr>
+					<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+					<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->createdby and $row->createdby<> 0)
+						{
+							$query = "SELECT name FROM #__users WHERE id=".$row->createdby ;
+							$database->setQuery($query);
+							$createUser = $database->loadResult();
+						}
+						else
+							$createUser = "";
+					?>
+					<td><?php echo $createUser; ?></td>
+				</tr>
+<?php
+}
+if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
+{ 
+?>
+				<tr>
+					<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+					<td><?php if ($row->updated and $row->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
+					<td>, </td>
+					<?php
+						if ($row->updatedby and $row->updatedby<> 0)
+						{
+							$query = "SELECT name FROM #__users WHERE id=".$row->updatedby ;
+							$database->setQuery($query);
+							$updateUser = $database->loadResult();
+						}
+						else
+							$updateUser = "";
+					?>
+					<td><?php echo $updateUser; ?></td>
+				</tr>
+<?php
+}
+?>
+			</table> 
+			 
+			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
+			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
+			<input type="hidden" name="context_id" value="<?php echo $context_id?>" />
+			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
+			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
+			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="id" value="<?php echo $row->id?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+			<?php 	
 	}
 }
 ?>

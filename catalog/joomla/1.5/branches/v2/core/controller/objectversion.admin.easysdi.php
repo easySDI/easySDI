@@ -789,9 +789,12 @@ class ADMIN_objectversion {
 		
 		$object_id = JRequest::getVar('object_id',0);
 		
+		$rowObject = new object($database);
+		$rowObject->load($object_id);
+		
 		// get list of childs for this object
 		$selected_objectlinks=array();
-		$query = 'SELECT child.id as value, CONCAT(o.name, " ", child.title) as name' .
+		$query = 'SELECT child.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", child.title) as name' .
 				' FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
 				  INNER JOIN #__sdi_object o ON o.id=child.object_id' .
@@ -804,7 +807,7 @@ class ADMIN_objectversion {
 		$unselected_objectlinks=array();
 		$temp_objectlinks=array();
 		$objectlinks=array();
-		$query = 'SELECT ov.id as value, CONCAT(o.name, " ", ov.title) as name' .
+		$query = 'SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", ov.title) as name' .
 				' FROM #__sdi_objectversion ov
 				  INNER JOIN #__sdi_object o ON o.id=ov.object_id' .
 				' WHERE ov.id<>' . $objectversion_id.
@@ -858,10 +861,39 @@ class ADMIN_objectversion {
 			$listEditors[$e->value] = $e->text;
 		}
 		$listEditors = HTML_metadata::array2extjs($listEditors, true);
+
+		$objecttypelink = array();
+		$query = 'SELECT child_ot.id as objecttype_id, otl.childbound_upper as childbound_upper' .
+				' FROM #__sdi_objecttypelink otl
+				  INNER JOIN #__sdi_objecttype child_ot ON child_ot.id=otl.child_id
+				  WHERE otl.parent_id =' . $rowObject->objecttype_id;
+		$database->setQuery($query);
+		//echo $database->getQuery()."<br>";
+		$objecttypelink = array_merge( $objecttypelink, $database->loadObjectList() );
+		//print_r($objecttypelink);
 		
-		HTML_objectversion::manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $option);
+		HTML_objectversion::manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option);
 	}
-	
+	/*
+	function getLinkBounds($parent_id, $child_id)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO(); 
+		
+		// $rowObject->objecttype_id
+		$objecttypelink = array();
+		$query = 'SELECT otl.*' .
+				' FROM #__sdi_objecttypelink otl' .
+				' WHERE otl.parent_id =' . $parent_id.
+				' 		AND otl.child_id =' . $child_id;
+		$database->setQuery($query);
+		echo $database->getQuery();
+		$objecttypelink = array_merge( $objecttypes, $database->loadObjectList() );
+		
+		print_r(HTML_metadata::array2json($objecttypelink));
+		die();
+	}
+	*/
 	function getObjectVersionForLink($option)
 	{
 		global  $mainframe;
@@ -904,14 +936,18 @@ class ADMIN_objectversion {
 			$toDate = date('Y-m-d', strtotime($toDate))." 23:59:59";
 
 		
+		$rowParentObject = new object($database);
+		$rowParentObject->load($object_id);
 		
 		// Récupérer tous les objets du type d'objet sélectionné,
-		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés
-		$query = "SELECT DISTINCT ov.id as value, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name 
+		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés,
+		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
+		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name 
 				  FROM #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov, #__sdi_object o
 				  LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
 				  LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
-				  WHERE ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ov.object_id=o.id AND ov.id<>".$objectversion_id;
+				  INNER JOIN #__sdi_objecttypelink otl ON otl.child_id = o.objecttype_id
+				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." AND ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ov.object_id=o.id AND ov.id<>".$objectversion_id;
 	
 		// Ajout des filtres
 		if ($objecttype_id)
@@ -963,6 +999,7 @@ class ADMIN_objectversion {
 		{	
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
+		
 		/* Insérer les nouveaux liens*/
 		foreach ($objectversionlinks as $link)
 		{

@@ -131,6 +131,10 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
+					<td><?php echo JText::_("CATALOG_BOUNDARY_PRETREATMENTXSLFILE"); ?></td>
+					<td><input size="<?php echo $fieldsLength['pretreatmentxslfile'];?>" type="text" name ="pretreatmentxslfile" value="<?php echo $row->pretreatmentxslfile?>" maxlength="<?php echo $fieldsLength['pretreatmentxslfile'];?>"> </td>							
+				</tr>
+				<tr>
 					<td><?php echo JText::_("CATALOG_BOUNDARY_XSLFILE"); ?></td>
 					<td><input size="<?php echo $fieldsLength['xslfile'];?>" type="text" name ="xslfile" value="<?php echo $row->xslfile?>" maxlength="<?php echo $fieldsLength['xslfile'];?>"> </td>							
 				</tr>

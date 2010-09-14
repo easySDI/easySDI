@@ -31,6 +31,7 @@ class importref extends JTable
 	var $updatedby=null;
 	var $ordering=0;
 	var $xslfile=null;
+	var $pretreatmentxslfile=null;
 	var $url=null;
 	var $checked_out=null;
 	var $checked_out_time=null;

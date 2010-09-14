@@ -306,7 +306,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name'}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:400}
 			];
 			
 			var parentGridStore = new Ext.data.JsonStore({
@@ -318,10 +318,15 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			// declare the source Grid
 		    var parentGrid = new Ext.grid.GridPanel({
 				store            : parentGridStore,
+		        width			 : 400,
 		        columns          : cols,
 				stripeRows       : true,
 		        autoExpandColumn : 'name',
-		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_PARENTGRID_TITLE"))."'
+		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_PARENTGRID_TITLE"))."',
+		        viewConfig: {
+							 	forceFit: true,
+								scrollOffset:0
+							 }
 		    });
 		
 		    var childGridStore = new Ext.data.JsonStore({
@@ -333,10 +338,15 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    // create the destination Grid
 		    var childGrid = new Ext.grid.GridPanel({
 				store            : childGridStore,
+		        width			 : 400,
 		        columns          : cols,
 				stripeRows       : true,
 		        autoExpandColumn : 'name',
-		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_CHILDGRID_TITLE"))."'
+		        title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_CHILDGRID_TITLE"))."',
+		        viewConfig: {
+							 	forceFit: true,
+								scrollOffset:0
+							 }
 		    });
 		    
 			// Créer le formulaire qui va contenir la structure
@@ -350,7 +360,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			        items        : [
 			        	{
 			        		xtype		 : 'panel',
-							width        : 650,
+							width        : 800,
 							height       : 300,
 							layout       : 'hbox',
 							defaults     : { flex : 1 }, //auto stretch
@@ -371,7 +381,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$javascript."});</script>");
 	}
 	
-	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $option)
+	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option)
 	{
 		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
@@ -380,7 +390,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
-		
+
 		$javascript = "";
 	
 		?>
@@ -399,11 +409,12 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true}
+				{ id : 'objecttype_id', hidden: true, dataIndex: 'objecttype_id', menuDisabled: true},
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:400}
 			];
 			
 			var unselectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
 				root   : 'links'
 		    });
@@ -413,6 +424,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    	id				 : 'unselected',
 				ddGroup          : 'selectedGridDDGroup',
 		        ds				 : getObjectList(),
+		        width			 : 400,
 				columns          : cols,
 				enableDragDrop   : true,
 		        stripeRows       : true,
@@ -428,7 +440,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		    });
 			    
 		    var selectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
 				root   : 'links'
 		    });
@@ -438,6 +450,7 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 				id				 : 'selected',
 				ddGroup          : 'unselectedGridDDGroup',
 		        store            : selectedGridStore,
+		        width			 : 400,
 		        columns          : cols,
 				enableDragDrop   : true,
 		        stripeRows       : true,
@@ -445,7 +458,11 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 		        flex			 : 5,
 		        loadMask		 : true,
 		        frame			 : false,
-				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_SELECTEDGRID_TITLE"))."'
+				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_SELECTEDGRID_TITLE"))."',
+		        viewConfig: {
+							 	forceFit: true,
+								scrollOffset:0
+							 }
 		    });
 		    
 		    var htmlButtons = new Ext.Panel({
@@ -459,7 +476,8 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
                 items			 : [
 									{
 										xtype: 'button',
-										text: '<<',
+										text: ' << ',
+										width:30,
 										handler: function()
 						                {
 						                	var unselected = Ext.getCmp('unselected');
@@ -484,7 +502,8 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 									},
 									{
 										xtype: 'button',
-										text: '<',
+										text: ' < ',
+										width:30,
 										handler: function()
 						                {
 						                	var unselected = Ext.getCmp('unselected');
@@ -518,27 +537,45 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 									},
 									{
 										xtype: 'button',
-										text: '>',
+										text: ' > ',
+										width:30,
 										handler: function()
 						                {
 						                	var unselected = Ext.getCmp('unselected');
 						                	var selected = Ext.getCmp('selected');                
 			 								var records = unselected.selModel.getSelections();
-			 								Ext.each(records, unselected.store.remove, unselected.store);
-	                        				selected.store.add(records);
+			 								
+                        					// Traiter chaque objet à ajouter
+											for (i=0;i<records.length;i++)
+											{
+												if (!childbound_upper_reached(records[i]))
+												{
+													Ext.each(records[i], unselected.store.remove, unselected.store);
+			                        				selected.store.add(records[i]);
+		                        				}
+											}
                         					selected.store.sort('name', 'ASC');
 						                }
 									},
 									{
 										xtype: 'button',
-										text: '>>',
+										text: ' >> ',
+										width:30,
 										handler: function()
 						                {
 						                	var unselected = Ext.getCmp('unselected');
-						                	var selected = Ext.getCmp('selected');                
-			 								var records = unselected.store.getRange();
-			 								Ext.each(records, unselected.store.remove, unselected.store);
-	                        				selected.store.add(records);
+							                	var selected = Ext.getCmp('selected');                
+				 								var records = unselected.store.getRange();
+				 								
+                        					// Traiter chaque objet à ajouter
+											for (i=0;i<records.length;i++)
+											{
+												if (!childbound_upper_reached(records[i]))
+												{
+													Ext.each(records[i], unselected.store.remove, unselected.store);
+			                        				selected.store.add(records[i]);
+		                        				}
+											}
                         					selected.store.sort('name', 'ASC');
 						                }
 									}
@@ -587,9 +624,9 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 			        items        : [
 			        	manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate),
 			        	{
-			        		id			: 'gridPanel',
+			        		id			 : 'gridPanel',
 			        		xtype		 : 'panel',
-							width        : 650,
+							width		 : 900,
 							height       : 300,
 							layout       : 'hbox',
 							border		 : false,
@@ -714,13 +751,72 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					            id: 'value'
 					        }, [
 					            {name: 'value', mapping: 'value'},
-					            {name: 'name', mapping: 'name'}
+					            {name: 'objecttype_id', mapping: 'objecttype_id'},
+					           	{name: 'name', mapping: 'name'}
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
 					        baseParams: {limit:100, dir:'ASC', sort:'name', objectversion_id:'".$objectversion_id."', object_id:'".$object_id."'}
 					    });
 				return ds;
+			}
+			
+			function childbound_upper_reached(toAddChild)
+			{
+				// Nombre max d'objets autorisés par type
+				var objecttypelink;
+				objecttypelink = ".HTML_metadata::array2json($objecttypelink).";
+				//console.log(objecttypelink);
+				
+				// Traiter chaque objet à ajouter
+				//var toAddChilds;
+				//toAddChilds = Ext.getCmp('unselected').selModel.getSelections();
+				//console.log(toAddChilds);
+				
+				//for (i=0;i<toAddChilds.length;i++)
+				//{
+					//var toAddChild = toAddChilds[i];
+					//console.log(toAddChild.get('objecttype_id'));
+					
+					// Parcours des objets déjà sélectionnés et récupérer tous ceux qui sont du même type que 
+					// l'objet qui va être ajouté
+					var countSameType = 0;
+					var selectedChilds;
+					selectedChilds = Ext.getCmp('selected').store.data.items;
+					for(j=0;j<selectedChilds.length;j++)
+					{
+						var selectedChild = selectedChilds[j];
+						//console.log(selectedChild.get('objecttype_id'));
+						if (selectedChild.get('objecttype_id') == toAddChild.get('objecttype_id'))
+							countSameType++;	
+					}
+					//console.log(countSameType);
+					
+					// Récupérer le nombre max d'enfants de ce type autorisé
+					var maxBound=0;
+					for(j=0;j<objecttypelink.length;j++)
+					{
+						var link = objecttypelink[j];
+						//console.log(link['objecttype_id']);	
+						//console.log(link['childbound_upper']);
+						//console.log(link['objecttype_id'] + ' - ' + toAddChild.get('objecttype_id'));	
+					
+						if (link['objecttype_id'] == toAddChild.get('objecttype_id'))
+							maxBound = link['childbound_upper'];
+					}
+					
+					// Si le nombre d'objets du même type est supérieur ou égal au nombre d'objets autorisés pour ce type,
+					// empêcher l'ajout
+					//console.log(countSameType + ' - ' + maxBound);	
+					if (countSameType >= maxBound)
+					{
+						//console.log('Borne max pour les enfants de ce type atteinte');
+						Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_MANAGEOBJECTVERSION_MSG_MAXCHILDREACHED_TITLE'))."', 
+                    						 toAddChild.get('name') + '".html_Metadata::cleanText(JText::_('CATALOG_MANAGEOBJECTVERSION_MSG_MAXCHILDREACHED_TEXT'))."');
+						return true;
+					}		
+				//}
+				return false;
 			}
     	";
 					

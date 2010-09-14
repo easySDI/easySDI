@@ -378,6 +378,25 @@ class ADMIN_relation {
 			} 
 		}
 		
+		// Récupération des types mysql pour les champs
+		$searchCriteriaTableFields = array();
+		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
+		
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caractères
+		$searchCriteriaFieldsLength = array();
+		foreach($searchCriteriaTableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$searchCriteriaFieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			} 
+		}
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
@@ -427,7 +446,8 @@ class ADMIN_relation {
 		$localeDefaults = array();
 		$relationtypes = array();
 		$boundsStyle = "display:inline";
-
+		$searchCriteria= new searchCriteriaByRelationId($database);
+		
 		/* Début de la partie spécifique à une relation vers un attribut */
 		if ($type == 2)
 		{
@@ -598,6 +618,19 @@ class ADMIN_relation {
 					$localeDefaults[$lang->id] = $localeDefault_value;
 				}
 			}
+			
+			$searchCriteria->load($rowRelation->id);
+			
+			if ($rowAttribute->attributetype_id == 11) // Thesaurus GEMET
+			{
+				$boundsStyle = "display:none";
+				$defaultStyle_textbox = "display:none";
+				$defaultStyle_textarea = "display:none";
+				$defaultStyle_Choicelist = "display:none";
+				$defaults['style_choicelist'] = "display:none";
+				$defaultStyle_Locale_Textbox = "display:none";
+				$defaultStyle_Locale_Textarea = "display:none";
+			}
 		}
 		/* Fin de la préparation consacrée à une relation vers un attribut */
 		/* Préparation consacrée à une relation vers une classe */
@@ -636,7 +669,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -780,6 +813,26 @@ class ADMIN_relation {
 			} 
 		}
 		
+		// Récupération des types mysql pour les champs
+		$searchCriteriaTableFields = array();
+		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
+		
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caractères
+		$searchCriteriaFieldsLength = array();
+		foreach($searchCriteriaTableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$searchCriteriaFieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			} 
+		}
+		
 		$defaultStyle_Date = "display:none";
 		// Liste déroulante pour la saisie de la valeur par défaut
 		// + Champ de saisie de codeValueList
@@ -903,7 +956,21 @@ class ADMIN_relation {
 			$informations[$lang->id] = $information;
 		}
 		
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option);
+		$searchCriteria= new searchCriteriaByRelationId($database);
+		$searchCriteria->load($rowAttributeRelation->id);
+		
+		$boundsStyle = "display:inline";
+			if ($rowAttribute->attributetype_id == 11) // Thesaurus GEMET
+		{
+			$boundsStyle = "display:none";
+			$defaultStyle_textbox = "display:none";
+			$defaultStyle_textarea = "display:none";
+			$defaultStyle_Choicelist = "display:none";
+			$defaultStyle_Locale_Textbox = "display:none";
+			$defaultStyle_Locale_Textarea = "display:none";
+		}
+			
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)
@@ -1380,6 +1447,9 @@ class ADMIN_relation {
 			$rowSearchCriteria->name= $rowRelation->name;
 			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
 			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter']; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->criteriatype_id= 2; // Le critère de recherche sera du type "relation"
+			
 			
 			if (!$rowSearchCriteria->store()) {	
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

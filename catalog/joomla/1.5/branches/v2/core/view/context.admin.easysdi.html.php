@@ -126,16 +126,16 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
-					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+					<td colspan="2"><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
 					<td width=150><?php echo JText::_("CORE_CODE"); ?></td>
-					<td><input size="50" type="text" name ="code" value="<?php echo $row->code?>" maxlength="<?php echo $fieldsLength['code'];?>"> </td>							
+					<td colspan="2"><input size="50" type="text" name ="code" value="<?php echo $row->code?>" maxlength="<?php echo $fieldsLength['code'];?>"> </td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
-					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
-				</tr>
+					<td colspan="2"><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
+				</tr> 
 				<!-- <tr>
 					<td><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$listObjectTypes, 'objecttype_id', 'size="1" class="inputbox"', 'value', 'text', $row->objecttype_id ); ?></td>							
@@ -143,7 +143,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 				 -->
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
-					<td>
+					<td colspan="2">
 						<?php
 						if (count($objecttypes) > 0)
 						{
@@ -159,7 +159,12 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 				</tr>
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_CONTEXT_XSLDIR"); ?></td>
-					<td><input size="100" type="text" name ="xsldirectory" value="<?php echo $row->xsldirectory?>" maxlength="<?php echo $fieldsLength['xsldirectory'];?>"> </td>							
+					<td><input size="100" type="text" name ="xsldirectory" value="<?php echo $row->xsldirectory?>" maxlength="<?php echo $fieldsLength['xsldirectory'];?>"> </td>
+					<td>
+						<div style="font-weight: bold" >
+							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CATALOG_CONTEXT_XSLDIR_TIP' ); ?>
+						</div>
+					</td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">

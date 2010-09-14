@@ -207,7 +207,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 	}
 	
 	//function editAttribute(&$row, $attributetypelist, $fieldsLength, $languages, $style, $defaultStyle, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale, $codevalues ,$option)
-	function editAttribute(&$row, $attributetypelist, $fieldsLength, $style, $languages, $informations, $regexmsgs, $namespacelist, $option)
+	function editAttribute(&$row, $attributetypelist, $fieldsLength, $style, $styleAttributes, $languages, $informations, $regexmsgs, $namespacelist, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -252,7 +252,8 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 				</tr>		
 			</table>
 			</div>
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<div id = "div_attributes" style="<?php echo $styleAttributes; ?>">
+			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td WIDTH=150><?php echo JText::_("CATALOG_LENGTH"); ?></td>
 					<td><input size="50" type="text" name ="length" value="<?php echo $row->length?>" > </td>							
@@ -261,6 +262,29 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 					<td><?php echo JText::_("CATALOG_PATTERN"); ?></td>
 					<td><textarea cols="50" rows="5" name ="pattern" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['pattern'];?>);"><?php echo $row->pattern?></textarea></td>							
 				</tr>
+				<tr>
+					<td colspan="2">
+						<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_REGEX_MSG"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="regexmsg<?php echo "_".$lang->code;?>" value="<?php echo $regexmsgs[$lang->id]?>" maxlength="<?php echo $fieldsLength['regexmsg'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>		
+			</table>
+			</div>
+			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'issystem', '', $row->issystem);?> </td>							
@@ -289,26 +313,7 @@ foreach ($languages as $lang)
 						</fieldset>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="2">
-						<fieldset>
-							<legend align="top"><?php echo JText::_("CATALOG_REGEX_MSG"); ?></legend>
-							<table>
-<?php
-foreach ($languages as $lang)
-{ 
-?>
-					<tr>
-					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="regexmsg<?php echo "_".$lang->code;?>" value="<?php echo $regexmsgs[$lang->id]?>" maxlength="<?php echo $fieldsLength['regexmsg'];?>"></td>							
-					</tr>
-<?php
-}
-?>
-							</table>
-						</fieldset>
-					</td>
-				</tr>
+				
 			</table>
 			<br></br>
 			<table border="0" cellpadding="3" cellspacing="0">

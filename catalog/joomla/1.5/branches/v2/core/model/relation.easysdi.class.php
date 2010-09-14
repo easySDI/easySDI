@@ -44,7 +44,6 @@ class relation extends JTable
 	var $checked_out_time=null;
 	var $namespace_id=null;
 	var $issearchfilter=0;
-	var $lucenesearchfilter=null;
 	
 	// Class constructor
 	function __construct( &$db )

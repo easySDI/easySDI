@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,32 @@ class TOOLBAR_metadata{
 
 	function _EDIT() {
 		global $mainframe;
+		$database =& JFactory::getDBO();
+
+		$object_id = JRequest::getVar( 'object_id', 0);
 		
-		JToolBarHelper::title(JText::_("CATALOG_EDIT_METADATA"));
+		if ($object_id == 0) // Appel de l'édition depuis l'écran de gestion des objets
+		{
+			$cid = JRequest::getVar( 'cid');
+			$object_id = $cid[0];
+		}
+		$version_id = JRequest::getVar('version_id', 0);
+		
+		$rowObject = new object( $database );
+		$rowObject->load( $object_id );
+		
+		if (!$version_id)
+		{
+			$database->setQuery( "SELECT id FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY name" );
+			$version_id= $database->loadResult();
+		}
+		
+		$rowObjectVersion = new objectversion( $database );
+		$rowObjectVersion->load( $version_id );
+		
+		//echo $cid[0]."<br>".$object_id."<br>".$version_id;
+		
+		JToolBarHelper::title(JText::sprintf("CATALOG_EDIT_METADATA", $rowObject->name, $rowObjectVersion->title));
 		
 		//JToolBarHelper::save('saveMetadata');
 		//JToolBarHelper::custom( 'saveMetadata', 'tool_f2.png', 'tool_f2.png', 'SAVE', false );

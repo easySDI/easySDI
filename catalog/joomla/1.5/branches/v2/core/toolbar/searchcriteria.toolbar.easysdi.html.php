@@ -25,8 +25,28 @@ class TOOLBAR_searchcriteria {
 		
 		JToolBarHelper::title(JText::_("CATALOG_LIST_SEARCHCRITERIA")); 
 		
+		JToolBarHelper::addNew('newSearchCriteria');
+		JToolBarHelper::editList('editSearchCriteria');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_SEARCHCRITERIA_DELETE_CONFIRM_MSG'), 'removeSearchCriteria', JText::_( 'DELETE'));		
+		//JToolBarHelper::addNew('newSearchCriteria');
 		//JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'backSearchCriteria', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+	}
+	
+	function _EDIT() {
+		global $mainframe;
+		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+		
+		if (intval($cid[0]) == 0) // New
+			$text = JText::_("CORE_NEW");
+		else // Edit
+			$text = JText::_("CORE_EDIT");
+		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_SEARCHCRITERIA' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
+		
+		JToolBarHelper::save('saveSearchCriteria');
+		JToolBarHelper::apply('applySearchCriteria');
+		JToolBarHelper::cancel('cancelSearchCriteria');
 	}
 }
 ?>

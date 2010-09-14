@@ -33,6 +33,10 @@ class objecttypelink extends JTable
 	var $escalate_versioning_update=null;
 	var $checked_out=null;
 	var $checked_out_time=null;
+	var $parentbound_lower=0;
+	var $parentbound_upper=999;
+	var $childbound_lower=0;
+	var $childbound_upper=999;
 	
 	// Class constructor
 	function __construct( &$db )

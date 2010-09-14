@@ -165,7 +165,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -433,7 +433,7 @@ foreach ($languages as $lang)
 			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_RELATION_ISSEARCHFITLER"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onchange="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
+					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onclick="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
 				</tr>
 				<tr>
 					<td colspan="2">
@@ -470,8 +470,8 @@ foreach ($languages as $lang)
 					</td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_RELATION_LUCENESEARCHFILTER"); ?></td>
-					<td><input size="50" type="text" name ="lucenesearchfilter" value="<?php if ($pageReloaded and array_key_exists('lucenesearchfilter', $_POST)) echo $_POST['lucenesearchfilter']; else echo $row->lucenesearchfilter?>" maxlength="<?php echo $fieldsLength['lucenesearchfilter'];?>"></td>							
+					<td><?php echo JText::_("CATALOG_RELATION_OGCSEARCHFILTER"); ?></td>
+					<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
 				</tr>
 			</table>
 <?php 
@@ -605,7 +605,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 
-function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $option)
+function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -643,8 +643,11 @@ function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $re
 					<td><?php echo JText::_("CATALOG_ATTRIBUTECHILD"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$attributes, 'attributechild_id', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'editRelation\');"', 'value', 'text', $attributeid ); // javascript:changeVisibility(this.value); javascript:updatelist(this.value)?></td>							
 				</tr>
+				</table>
+				<div id="div_bounds" style="<?php echo $boundsStyle; ?>">
+				<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
-					<td><?php echo JText::_("CATALOG_LOWERBOUND"); ?></td>
+					<td width=150 ><?php echo JText::_("CATALOG_LOWERBOUND"); ?></td>
 					<?php
 						if ($row->id == 0)
 							$lower=0;
@@ -663,8 +666,11 @@ function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $re
 					?>
 					<td><input size="50" type="text" name ="upperbound" value="<?php if ($pageReloaded) echo $_POST['upperbound']; else echo $upper;?>" onchange="javascript:submitbutton('editRelation');"> </td>							
 				</tr>
+				</table>
+				</div>
+				<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
-					<td><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
+					<td width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
 					<?php 
 					//$selectedRendertype = 0;
 					//if (!$pageReloaded) 
@@ -913,7 +919,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_RELATION_ISSEARCHFITLER"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onchange="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
+					<td><?php echo JHTML::_('select.booleanlist', 'issearchfilter', 'onclick="javascript:changeContextsVisibility(this.value);"', $row->issearchfilter);?> </td>																
 				</tr>
 				<tr>
 					<td colspan="2">
@@ -946,8 +952,8 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 									</td>
 								</tr>
 								<tr>
-									<td><?php echo JText::_("CATALOG_RELATION_LUCENESEARCHFILTER"); ?></td>
-									<td><input size="50" type="text" name ="lucenesearchfilter" value="<?php if ($pageReloaded and array_key_exists('lucenesearchfilter', $_POST)) echo $_POST['lucenesearchfilter']; else echo $row->lucenesearchfilter?>" maxlength="<?php echo $fieldsLength['lucenesearchfilter'];?>"></td>							
+									<td><?php echo JText::_("CATALOG_RELATION_OGCSEARCHFILTER"); ?></td>
+									<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
 								</tr>
 							</table>
 						</div>

@@ -408,7 +408,7 @@ class ADMIN_metadata {
 	 */
 	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
-		//echo "Name: ".$parentName." \r\n ";
+		echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
 		$database =& JFactory::getDBO();
 		$rowChilds = array();
@@ -1327,6 +1327,103 @@ class ADMIN_metadata {
 							$xmlParent = $XMLValueNode;*/
 						}
 						
+						break;
+					// Thesaurus GEMET
+					case 11:
+						echo $parentName."-".str_replace(":", "_", $child->attribute_isocode);
+						// Récupération des valeurs postées correspondantes
+						$keys = array_keys($_POST);
+						$usefullVals=array();
+						//$usefullKeys=array();
+						$count=0;
+						foreach($keys as $key)
+						{
+							//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
+							$partToCompare_temp1 = substr($key, strlen($parentName."-"));
+							if (strpos($partToCompare_temp1, "-"))
+								$partToCompare_temp2 = substr($partToCompare_temp1, 0, strpos($partToCompare_temp1, "-"));
+							else
+								$partToCompare_temp2 = substr($partToCompare_temp1, 0, strpos($partToCompare_temp1, "__"));
+							
+							$partToCompare_temp3 = substr($key, 0, strlen($parentName."-"));
+							$partToCompare  = $partToCompare_temp3.$partToCompare_temp2;
+								
+							if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
+							{
+								if (substr($key, -6) <> "_index")
+								{
+									$count = $count+1;
+									$usefullVals[] = $_POST[$key];
+								}
+							}
+						}
+						
+						print_r($usefullVals);
+
+						/*
+						// Ajouter chacune des copies du champ dans le XML résultat
+						for ($pos=1; $pos<=$count; $pos++)
+						{
+							$nodeValue = $usefullVals[$pos-1];
+							//$nodeValue = stripslashes($nodeValue);
+
+							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
+							$xmlAttributeParent->appendChild($XMLNode);
+							$xmlLocParent = $XMLNode;
+							
+							foreach($locValues as $loc)
+							{
+								$isdefault = false;
+								$codeToSave = "";
+								foreach($this->langList as $lang)
+								{
+									if ($loc->code==$lang->code_easysdi)
+									{
+										//$nodeValue=$usefullVals[$loc->code];
+										$nodeValue=$loc->content;
+										$codeToSave = $lang->code;
+										if ($lang->defaultlang== true)
+										{
+											$isdefault = true;
+										}
+										break;
+									}
+								}
+								
+								//if (mb_detect_encoding($nodeValue) <> "UTF-8")
+								//	$nodeValue = utf8_encode($nodeValue);
+								
+								//$nodeValue = stripslashes($loc->content);
+								//$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
+								
+								// Ajout des balises inhérantes aux locales
+								if ($isdefault) // La langue par défaut
+								{
+									$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
+									$xmlLocParent->appendChild($XMLNode);
+								}
+								else // Les autres langues
+								{
+									$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
+									$xmlLocParent->appendChild($XMLNode);
+									$xmlLocParent_temp = $XMLNode;
+									$XMLNode = $XMLDoc->createElement("gmd:textGroup");
+									$xmlLocParent_temp->appendChild($XMLNode);
+									$xmlLocParent_temp = $XMLNode;
+									// Ajout de la valeur
+									$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
+									$xmlLocParent_temp->appendChild($XMLNode);
+									// Indication de la langue concernée
+									$XMLNode->setAttribute('locale', "#".$codeToSave);
+									//$xmlParent = $XMLNode;
+								}
+							}
+							
+							//$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
+							//$XMLNode->appendChild($XMLValueNode);
+							//$xmlParent = $XMLValueNode;
+						}
+						*/
 						break;
 					default:
 						// Récupération des valeurs postées correspondantes
@@ -3599,9 +3696,9 @@ class ADMIN_metadata {
 										AND ov.metadata_id=m.id 
 										AND o.objecttype_id=ot.id 
 										AND ot.id=".$objecttype_id."  
-										AND o.name LIKE '%".$searchPattern."%'
-										AND o.published=true 
+										AND o.name LIKE '%".$searchPattern."%' 
 										"
+										//AND o.published=true
 							);
 		$total = $database->loadResult();
 		
@@ -3615,8 +3712,8 @@ class ADMIN_metadata {
 											AND o.objecttype_id=ot.id 
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
-											AND o.published=true 
 											"
+										//AND o.published=true
 								);
 		}
 		else
@@ -3628,8 +3725,8 @@ class ADMIN_metadata {
 											AND o.objecttype_id=ot.id 
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
-											AND o.published=true 
 											"
+										//AND o.published=true
 								);
 		}
 		$results= array_merge( $results, $database->loadObjectList() );

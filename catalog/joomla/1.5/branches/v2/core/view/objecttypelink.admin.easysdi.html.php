@@ -159,6 +159,41 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING_LABEL"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'flowdown_versioning', '', $row->flowdown_versioning); ?> </td>							
 				</tr>
+				<tr>
+					<td colspan="2">
+						<fieldset id="parent_bounds">
+							<legend align="top"><?php echo JText::_("CATALOG_OBJECTTYPELINK_PARENTBOUNDS"); ?></legend>
+							<table>
+								<tr>
+									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_LOWER"); ?> : </td>
+									<td><input size="5" type="text" name ="parentbound_lower" value="<?php echo $row->parentbound_lower?>"></td>							
+								</tr>
+								<tr>
+									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_UPPER"); ?> : </td>
+									<td><input size="5" type="text" name ="parentbound_upper" value="<?php echo $row->parentbound_upper?>"></td>							
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<fieldset id="child_bounds">
+							<legend align="top"><?php echo JText::_("CATALOG_OBJECTTYPELINK_CHILDBOUNDS"); ?></legend>
+							<table>
+								<tr>
+									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_LOWER"); ?> : </td>
+									<td><input size="5" type="text" name ="childbound_lower" value="<?php echo $row->childbound_lower?>"></td>							
+								</tr>
+								<tr>
+									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_UPPER"); ?> : </td>
+									<td><input size="5" type="text" name ="childbound_upper" value="<?php echo $row->childbound_upper?>"></td>							
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>	
+				
 				<!-- <tr>
 					<td><?php //echo JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE_LABEL"); ?></td>
 					<td><?php //echo JHTML::_('select.booleanlist', 'escalate_versioning_update', '', $row->escalate_versioning_update); ?> </td>							

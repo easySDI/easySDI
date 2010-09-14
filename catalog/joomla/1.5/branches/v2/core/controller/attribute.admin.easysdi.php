@@ -203,6 +203,13 @@ class ADMIN_attribute {
 			$style = "display:none";
 		else
 			$style = "display:inline";
+
+		// Masquer les champs qui ne sont pas saisis lorsqu'on est du type Thesaurus Gemet 
+		if ($rowAttribute->attributetype_id == 11)
+			$styleAttributes = "display:none";
+		else
+			$styleAttributes = "display:inline";
+		
 		
 		// Langues à gérer
 		$languages = array();
@@ -235,7 +242,7 @@ class ADMIN_attribute {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_attribute::editAttribute($rowAttribute, $attributetypelist, $fieldsLength, $style, $languages, $informations, $regexmsgs, $namespacelist, $option);
+		HTML_attribute::editAttribute($rowAttribute, $attributetypelist, $fieldsLength, $style, $styleAttributes, $languages, $informations, $regexmsgs, $namespacelist, $option);
 	}
 	
 	function saveAttribute($option)
