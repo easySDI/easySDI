@@ -728,7 +728,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				{
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
-					cswManager.buildCompleteMetadata(filePathList);
+					cswManager.buildCompleteMetadata(currentOperation,filePathList);
 					
 				}
 				transform(version, currentOperation, req, resp, filePathList);
@@ -753,7 +753,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				{
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
-					cswManager.buildCompleteMetadata(filePathList);
+					cswManager.buildCompleteMetadata(currentOperation,filePathList);
 					
 				}transform(version, currentOperation, req, resp, filePathList);
 			}

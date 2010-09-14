@@ -43,7 +43,19 @@ public class CSWProxyMetadataContentManager
 		proxy = cswProxy;
 	}
 	
-	public void buildCompleteMetadata(List<String> filePathList )
+	public void buildCompleteMetadata(String method, List<String> filePathList )
+	{
+		if("GetRecords".equalsIgnoreCase(method))
+		{
+			buildCompleteMetadataForGetRecords(filePathList);
+		}
+		else if ("GetRecordById".equalsIgnoreCase(method))
+		{
+			buildCompleteMetadataForGetRecordById(filePathList);
+		}
+	}
+	
+	private void buildCompleteMetadataForGetRecords(List<String> filePathList )
 	{
 		try 
 		{
@@ -75,30 +87,27 @@ public class CSWProxyMetadataContentManager
 					
 					if (link != null) {
 						if (link.contains("?")) {
-							String serverUrl = "";
-							String request = "";
-							String fragment = "";
-							serverUrl = link.substring(0, link.indexOf("?"));
-//							System.out.println(serverUrl);
-							request = link.substring(link.indexOf("?")+1);
-							fragment = link.substring(link.indexOf("fragment")+ 9);
-//							System.out.println(request);
-//							System.out.println(proxy.sendData("GET", serverUrl, request));
-							String resultFile = proxy.sendData("GET", serverUrl, request);
-							InputStream xmlResult = new FileInputStream(resultFile);
+							GetRequestHandler requestHandler = new GetRequestHandler(link);
+							String serverUrl = requestHandler.getServer();
+							String params = requestHandler.getParameters();
+							String fragment = requestHandler.getFragment();
+							serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
+							
+							InputStream xmlResult = sendData(serverUrl,params);
 							Document docResult = db.parse(xmlResult);
 							docResult.getDocumentElement().normalize();
 							
-							
+//							System.out.println(proxy.sendData("GET", serverUrl, params));
+//							String resultFile = proxy.sendData("GET", serverUrl, request);
+//							InputStream xmlResult = new FileInputStream(resultFile);
+//							Document docResult = db.parse(xmlResult);
+//							docResult.getDocumentElement().normalize();
 							
 						}
 					}
 				}
 			}
 			
-			
-			
-		    
 			
 			
 		} 
@@ -108,86 +117,114 @@ public class CSWProxyMetadataContentManager
 		}
 	}
 	
-//	public String sendData(String method, String urlstr, String parameters) 
-//	{
-//		String responseContentType = null;
-//		try {
-//			if (urlstr != null) {
-//				if (urlstr.endsWith("?")) {
-//					urlstr = urlstr.substring(0, urlstr.length() - 1);
-//				}
-//			}
-////			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-////			Date d = new Date();
-////			dump("SYSTEM", "RemoteRequestUrl", urlstr);
-////			dump("SYSTEM", "RemoteRequest", parameters);
-////			dump("SYSTEM", "RemoteRequestLength", parameters.length());
-////			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
-//			String cookie = null;
-//
-//			if (proxy.getLoginService(urlstr) != null) {
-//				cookie = geonetworkLogIn(getLoginService(urlstr));
-//			}
-//
-//			String encoding = null;
-//
+	private void buildCompleteMetadataForGetRecordById(List<String> filePathList )
+	{
+		try 
+		{
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db;
+			db = dbf.newDocumentBuilder();
+			InputStream xml = new FileInputStream(filePathList.get(0));
+			Document doc = db.parse(xml);
+			doc.getDocumentElement().normalize();
+			
+
+			Node searchResults = doc.getElementsByTagNameNS("*", "GetRecordByIdResponse").item(0);
+			String local_name = searchResults.getFirstChild().getNextSibling().getLocalName();
+			String xpath = "//*[@xlink:href]";    
+			
+			NodeList metadataNodes = doc.getElementsByTagNameNS("*", local_name);
+			
+			int l = metadataNodes.getLength();
+			for (int i=0; i<metadataNodes.getLength(); i++) 
+			{
+				NodeList xlinkNodes = org.apache.xpath.XPathAPI.selectNodeList(metadataNodes.item(i), xpath,metadataNodes.item(i));
+				
+				for (int j=0; j<xlinkNodes.getLength(); j++) 
+				{
+					Element elem = (Element)xlinkNodes.item(j);
+					System.out.println(elem.getAttribute("xlink:href"));
+					String link = elem.getAttribute("xlink:href");
+					
+					if (link != null) {
+						if (link.contains("?")) {
+							GetRequestHandler requestHandler = new GetRequestHandler(link);
+							String serverUrl = requestHandler.getServer();
+							String params = requestHandler.getParameters();
+							String fragment = requestHandler.getFragment();
+							serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
+							
+							InputStream xmlResult = sendData(serverUrl,params);
+							Document docResult = db.parse(xmlResult);
+							docResult.getDocumentElement().normalize();
+							
+//							System.out.println(proxy.sendData("GET", serverUrl, params));
+//							String resultFile = proxy.sendData("GET", serverUrl, request);
+//							InputStream xmlResult = new FileInputStream(resultFile);
+//							Document docResult = db.parse(xmlResult);
+//							docResult.getDocumentElement().normalize();
+							
+						}
+					}
+				}
+			}
+			
+			
+			
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private InputStream sendData(String urlstr, String parameters) 
+	{
+		String responseContentType = null;
+		try 
+		{
+			String cookie = null;
+
+			String encoding = null;
 //			if (getUsername(urlstr) != null && getPassword(urlstr) != null) {
 //				String userPassword = getUsername(urlstr) + ":" + getPassword(urlstr);
 //				encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-//
 //			}
-//
-//			if (method.equalsIgnoreCase("GET")) {
-//
-//				urlstr = urlstr + "?" + parameters;
-//
-//			}
-//			URL url = new URL(urlstr);
-//			HttpURLConnection hpcon = null;
-//
-//			hpcon = (HttpURLConnection) url.openConnection();
-//			hpcon.setRequestMethod(method);
-//			if (cookie != null) {
-//				hpcon.addRequestProperty("Cookie", cookie);
-//			}
-//			if (encoding != null) {
-//				hpcon.setRequestProperty("Authorization", "Basic " + encoding);
-//			}
-//			hpcon.setUseCaches(false);
-//			hpcon.setDoInput(true);
-//
-//			if (method.equalsIgnoreCase("POST")) {
-//				hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
-//				// hpcon.setRequestProperty("Content-Type", contentType);
-//				hpcon.setRequestProperty("Content-Type", "text/xml");
-//
-//				hpcon.setDoOutput(true);
-//				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
-//				printout.writeBytes(parameters);
-//				printout.flush();
-//				printout.close();
-//			} else {
-//				hpcon.setDoOutput(false);
-//			}
-//
-//			// getting the response is required to force the request, otherwise
-//			// it might not even be sent at all
-//			InputStream in = null;
-//
-//			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
-//				in = new GZIPInputStream(hpcon.getInputStream());
-////				dump("DEBUG", "return of the remote server is zipped");
-//			} else {
-//				in = hpcon.getInputStream();
-//			}
-//
+			urlstr = urlstr + "?" + parameters;
+			URL url = new URL(urlstr);
+			HttpURLConnection hpcon = null;
+
+			hpcon = (HttpURLConnection) url.openConnection();
+			hpcon.setRequestMethod("GET");
+			if (cookie != null) {
+				hpcon.addRequestProperty("Cookie", cookie);
+			}
+			if (encoding != null) {
+				hpcon.setRequestProperty("Authorization", "Basic " + encoding);
+			}
+			hpcon.setUseCaches(false);
+			hpcon.setDoInput(true);
+			hpcon.setDoOutput(false);
+			
+			// getting the response is required to force the request, otherwise
+			// it might not even be sent at all
+			InputStream in = null;
+
+			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
+				in = new GZIPInputStream(hpcon.getInputStream());
+			} 
+			else 
+			{
+				in = hpcon.getInputStream();
+			}
+
 //			int input;
-//
+
 //			responseContentType = hpcon.getContentType().split(";")[0];
 //			String tmpDir = System.getProperty("java.io.tmpdir");
-////			dump(" tmpDir :  " + tmpDir);
 //
-//			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseContentType));
+//			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), proxy.getExtension(responseContentType));
 //
 //			FileOutputStream tempFos = new FileOutputStream(tempFile);
 //
@@ -201,19 +238,14 @@ public class CSWProxyMetadataContentManager
 //			tempFos.flush();
 //			tempFos.close();
 //			in.close();
-////			dump("SYSTEM", "RemoteResponseToRequestUrl", urlstr);
-////			dump("SYSTEM", "RemoteResponseLength", tempFile.length());
-////
-////			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-////			d = new Date();
-////			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
-//			return tempFile.toString();
-//
-//		} 
-//		catch (Exception e) 
-//		{
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
+
+			return in;
+
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
