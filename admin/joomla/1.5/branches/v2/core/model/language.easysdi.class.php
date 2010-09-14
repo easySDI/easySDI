@@ -34,7 +34,7 @@ class language extends JTable
 	var $ordering=null;
 	var $published=null;
 	var $default=null;
-	
+	var $gemetlang=null;
  	
 	// Class constructor
 	function __construct( &$db )

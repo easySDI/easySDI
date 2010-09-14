@@ -539,6 +539,24 @@ if ($catalogItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_QTIPDELAY' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_QTIPDELAY' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="catalog_metadata_qtipdelay" value="<?php echo $catalogList['CATALOG_METADATA_QTIPDELAY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+										<td>
+											<div style="font-weight: bold" >
+												<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_QTIPDELAY_FORMAT' ); ?>
+											</div>
+										</td>
+										<td>
+											<div  ><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_QTIPDELAY_NOTE' ); ?></div>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_ENCODING_CODE' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_ENCODING_CODE' ); ?>
 											</span>
@@ -713,7 +731,6 @@ if ($shopItem > 0){
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARTICLE_STEP4' ); ?>
 											</span>
-										</td>
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="shop_article_step4" value="<?php echo $shopList['SHOP_CONFIGURATION_ARTICLE_STEP4']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />

@@ -1418,6 +1418,12 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
+		$query="ALTER TABLE #__sdi_language ADD COLUMN gemetlang varchar(2)";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
 		// Update component version
 		$version="0.6";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 

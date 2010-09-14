@@ -41,6 +41,7 @@ class HTML_language {
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_CODE"), 'code', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_LANGUAGE_ISOCODE"), 'isocode', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_CODEEASYSDI"), 'codelang', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_LANGUAGE_GEMETLANG"), 'gemetlang', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_LANGUAGE_DEFAULT"), 'defaultlang', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
@@ -95,6 +96,7 @@ class HTML_language {
 	            <td><?php echo $row->code; ?></td>
 	            <td><?php echo $row->isocode; ?></td>
 	            <td><?php echo $row->codelang; ?></td>
+	            <td><?php echo $row->gemetlang; ?></td>
 	            <td align="center">
 		            <?php
 					if ($row->defaultlang == 1) {
@@ -120,7 +122,7 @@ class HTML_language {
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="12"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="13"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -154,19 +156,43 @@ class HTML_language {
 				</tr>					
 				<tr>
 					<td><?php echo JText::_("CORE_CODE"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['code'];?>" name="code" value="<?php echo $row->code; ?>" /></td>								
+					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['code'];?>" name="code" value="<?php echo $row->code; ?>" /></td>
+					<td>
+						<div>
+							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_LANGUAGE_CODE_TIP' ); ?>
+						</div>
+					</td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_LANGUAGE_ISOCODE"); ?> : </td>
-					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['isocode'];?>" name="isocode" value="<?php echo $row->isocode; ?>" /></td>								
+					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['isocode'];?>" name="isocode" value="<?php echo $row->isocode; ?>" /></td>
+					<td>
+						<div>
+							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_LANGUAGE_ISOCODE_TIP' ); ?>
+						</div>
+					</td>								
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CORE_LANGUAGE_GEMETLANG"); ?> : </td>
+					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['gemetlang'];?>" name="gemetlang" value="<?php echo $row->gemetlang; ?>" /></td>
+					<td>
+						<div>
+							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_LANGUAGE_GEMETLANG_TIP' ); ?>
+						</div>
+					</td>								
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_CODEEASYSDI"); ?> : </td>
-					<td><?php echo JHTML::_("select.genericlist",$codes, 'codelang_id', 'size="1" class="inputbox"', 'value', 'text', $row->codelang_id); ?></td>								
+					<td><?php echo JHTML::_("select.genericlist",$codes, 'codelang_id', 'size="1" class="inputbox"', 'value', 'text', $row->codelang_id); ?></td>
+					<td>
+						<div>
+							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CORE_LANGUAGE_CODELANG_TIP' ); ?>
+						</div>
+					</td>								
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
+					<td colspan="2"><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
