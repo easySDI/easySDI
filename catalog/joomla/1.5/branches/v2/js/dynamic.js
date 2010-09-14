@@ -1,4 +1,4 @@
-	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, isLanguageFieldset)
+	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset)
 	{	
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
@@ -24,12 +24,13 @@
 					clone: clone,
 					clones_count: clones_count,
 					hidden: hidden,
-			        collapsible: collapsible,
+			        collapsible: true,
 			        collapsed: collapsed,
 				    relation: relation,
 					dynamic: dynamic,
 					template: master,
 		            qTip: tip,
+		            qTipDelay: dismissDelay,
 		            isLanguageFieldset: isLanguageFieldset
 	        });
 		//if (navigator.appName == "Netscape")
@@ -38,7 +39,7 @@
 		return f;
 	}
 	
-	function createTextArea(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, regex, mandatoryMsg, regexMsg)
+	function createTextArea(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
 		
@@ -80,13 +81,14 @@
 	            maxOccurs:max,
 	            multiline:true,
 	            maxLength: maxL,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 
 		return ta;
 	}
 	
-	function createComboBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, mandatoryMsg)
+	function createComboBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg)
 	{
 		var store = new Ext.data.ArrayStore({
 						    //fields: ['id', 'key', 'translation'],
@@ -127,13 +129,14 @@
           	emptyText:'',
           	disabled: dis,
 	        selectOnFocus:true,
-            qTip: tip
+            qTip: tip,
+            qTipDelay: dismissDelay
          });
 		 
 		 return c;
 	}
 	
-	function createMultiSelector(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, mandatoryMsg)
+	function createMultiSelector(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg)
 	{
 		//console.log(data);
 		//console.log(min + " - " + max);
@@ -162,12 +165,13 @@
 	            editable:false,
 	            minOccurs:min,
 	            maxOccurs:max,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 		 return ta;
 	}
 	
-	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, mandatoryMsg, master, clone)
+	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg, master, clone)
 	{
 		//console.log(data);
 		optional = !mandatory;
@@ -232,6 +236,7 @@
 	        tpl: resultTpl,
 	        itemSelector: 'div.search-item',
 	        qTip: tip,
+            qTipDelay: dismissDelay,
             clone: clone,
 			clones_count: clones_count,
             template: master
@@ -240,7 +245,7 @@
 		 return c;
 	}
 	
-	function createCheckboxGroup(id, label, mandatory, min, max, data, dis, tip, mandatoryMsg)
+	function createCheckboxGroup(id, label, mandatory, min, max, data, dis, tip, dismissDelay, mandatoryMsg)
 	{
 		optional = !mandatory;
 		
@@ -257,13 +262,14 @@
 	            minOccurs:min,
 	            maxOccurs:max,
 	            qTip: tip,
+	            qTipDelay: dismissDelay,
 	            items: data
 	        });
 		
 		 return g;
 	}
 	
-	function createRadioGroup(id, label, mandatory, min, max, data, dis, tip)
+	function createRadioGroup(id, label, mandatory, min, max, data, dis, tip, dismissDelay)
 	{
 		optional = !mandatory;
 		
@@ -281,16 +287,16 @@
 	            maxOccurs:max,
 	            inputType: 'radio',
 	            qTip: tip,
+	            qTipDelay: dismissDelay,
 	            items: data
 	        });
 		
 		 return g;
 	}
 	
-	function createTextField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, regex, mandatoryMsg, regexMsg)
+	function createTextField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
-		
 		//if (!clone) optional=true;
 		if (clone) optional=true;
 		if (master) master.clones_count=master.clones_count+1;
@@ -320,12 +326,13 @@
 	            template: master,
 	            disabled: dis,
 	            maxLength: maxL,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 		 return tf;
 	}
 	
-	function createNumberField(id, label, mandatory, clone, master, min, max, value, defaultVal, allowdec, dec, dis, maxL, tip, regex, mandatoryMsg, regexMsg)
+	function createNumberField(id, label, mandatory, clone, master, min, max, value, defaultVal, allowdec, dec, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
 		
@@ -359,7 +366,8 @@
 	            template: master,
 	            disabled: dis,
 	            maxLength: maxL,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 		 
 		 return tf;
@@ -377,7 +385,7 @@
 		 return h;
 	}
 	
-	function createDateTimeField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, tip, regex, mandatoryMsg, regexMsg)
+	function createDateTimeField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{	
 		optional = !mandatory;
 		
@@ -411,13 +419,14 @@
 	            disabled: dis,
 	            format: 'd.m.Y',
 	            maxLength: maxL,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 		 
 		 return df;
 	}
 	
-	function createDateField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, regex, mandatoryMsg, regexMsg)
+	function createDateField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{	
 		optional = !mandatory;
 		
@@ -451,13 +460,14 @@
 	            disabled: dis,
 	            format: 'd.m.Y',
 	            maxLength: maxL,
-	            qTip: tip
+	            qTip: tip,
+	            qTipDelay: dismissDelay
 	        });
 		 
 		 return df;
 	}
 	
-	function createComboBox_Boundaries(id, label, mandatory, min, max, data, value, dis, tip, mandatoryMsg, boundaries, paths)
+	function createComboBox_Boundaries(id, label, mandatory, min, max, data, value, dis, tip, dismissDelay, mandatoryMsg, boundaries, paths)
 	{
 		//console.log(boundaries);
 		//console.log(paths);
@@ -497,6 +507,7 @@
           	disabled: dis,
 	        selectOnFocus:true,
             qTip: tip,
+            qTipDelay: dismissDelay,
             boundaries:boundaries,
             paths:paths,
             listeners: {
@@ -524,7 +535,7 @@
 		 return c;
 	}
 	
-	function createSearchField(id, objecttype_id, label, mandatory, clone, master, min, max, value, dis, maxL, tip, regex, mandatoryMsg, regexMsg)
+	function createSearchField(id, objecttype_id, label, mandatory, clone, master, min, max, value, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
 		
@@ -600,7 +611,9 @@
             template: master,
             minChars: 4,
             forceSelection: true,
-            selectOnFocus: true
+            selectOnFocus: true,
+            qTip: tip,
+            qTipDelay: dismissDelay
 	    });
 	    //Ext.util.Observable.capture(Ext.getCmp(id), console.info);
 		
@@ -616,7 +629,7 @@
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
 		
-		var thes = new ThesaurusReader({
+		/*var thes = new ThesaurusReader({
 			  id:id,
 			  name:id,
               lang: 'en',
@@ -643,7 +656,62 @@
           	clone: clone,
 			clones_count: clones_count,
             template: master
-		  });
+		  });*/
 		
-		return thes;
+		var states = new Ext.data.SimpleStore({
+			id:id + '_STORE',
+            fields: ['lang', 'keyword', 'reliableRecord'],
+            /*data: [
+       	        ['en', 'Australia'],
+    	        ['en', 'Austria'],
+    	        ['en', 'Canada'],
+    	        ['en', 'France'],
+    	        ['en', 'Italy'],
+    	        ['en', 'Japan'],
+    	        ['en', 'New Zealand'],
+    	        ['en', 'USA']
+    	    ],*/
+            sortInfo: {field: 'keyword', direction: 'ASC'}
+        });
+
+		var sbs = new Ext.ux.form.SuperBoxSelect({
+				id:id,
+				name:id,
+	            hiddenName:id + '_hidden',
+	            xtype:'superboxselect',
+		        fieldLabel: label,
+	            allowBlank: optional,
+	            //blankText: mandatoryMsg,
+	            //store: ds,
+	            //displayField:'name',
+	            //valueField:'guid',
+	            //value:name,
+	            emptyText:'',
+	          	//disabled: dis,
+	          	 minChars: 1,
+		        editable: false,
+	            //hiddenValue:guid,
+	            forceSelection: false,
+	            selectOnFocus: true,
+	            typeAhead: false,
+		        hideTrigger:true,
+		        //tpl: resultTpl,
+		        //itemSelector: 'div.search-item',
+		        resizable: true,
+		        anchor:'100%',
+		        store: states,
+		        mode: 'local',
+		        displayField: 'keyword',
+		        displayFieldTpl: '{keyword}',//'{keyword} ({lang})',
+		        valueField: 'keyword',
+		        // Champs spécifiques au clonage
+		        dynamic:true,
+		        minOccurs:min,
+	            maxOccurs:max,
+	            clone: clone,
+				clones_count: clones_count,
+	            template: master
+		    });
+			
+		return sbs;
 	}

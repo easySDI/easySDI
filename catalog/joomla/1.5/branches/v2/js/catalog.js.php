@@ -215,6 +215,7 @@ function changeVisibility(attribute)
      }
 }
 
+// Fonction pour changer la visibilité des champs lors de l'édition d'un attribut
 function changeAttributeListVisibility(attributeType)
 {
 	// Isocode du type
@@ -224,6 +225,14 @@ function changeAttributeListVisibility(attributeType)
 	    isocodeType.style.display = "";  
     else 
    		isocodeType.style.display = "none";
+
+	// Champs à masquer pour le Thesaurus GEMET
+	var attributesType = document.getElementById("div_attributes");
+	
+	if(attributeType != 11) 
+		attributesType.style.display = "";  
+    else 
+    	attributesType.style.display = "none";
 
 }
 
@@ -414,4 +423,13 @@ function toggle_multi_select(field, size)
 		select.multiple = true;
 	}
 } 
+
+function tableOrdering( order, dir, view )
+{
+	var form = document.getElementById("productListForm");
+
+	form.filter_order.value 	= order;
+	form.filter_order_Dir.value	= dir;
+	form.submit( view );
+}
 </script>

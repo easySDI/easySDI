@@ -342,7 +342,9 @@ Ext.override(Ext.form.Field, {
 		
 		// Tooltips
 		//console.log(this.name + " - " + this.xtype + " - " + this.qTip);
-		var qt = this.qTip;        
+		var qt = this.qTip;   
+		var dismissDelay = this.qTipDelay;
+		
 		if(qt){
 			/*Ext.QuickTips.register({
 				target:  this,
@@ -359,6 +361,7 @@ Ext.override(Ext.form.Field, {
 					target:  label,
 					title: '',
 					text: qt,
+					dismissDelay: dismissDelay,
 					enabled: true
 					});
 			}

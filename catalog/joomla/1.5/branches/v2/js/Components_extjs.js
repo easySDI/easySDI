@@ -282,7 +282,7 @@ function fromtoDateFilter(from, to)
         border: false,
 		items        : [
         				 {
-        				 columnWidth:.3,
+        				 width:310,
 						 layout: 'form',
 						 border: false,
 						 items: [
@@ -355,12 +355,13 @@ function fromtoDateFilter(from, to)
 					       {
         				 layout: 'form',
 						 border: false,
-						 labelWidth: 50,
 						 items: [
 				           { 
 					       	 id: 'toDate',
 				             xtype: 'datefield',
 							 fieldLabel: to['label'],
+							 itemCls: 'date_label_to_style',
+							 labelStyle: 'width:20px;',
 							 format: 'd.m.Y',
 		            		 editable: true,
 		            		 listeners: {        
