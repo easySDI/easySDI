@@ -727,7 +727,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					//Build complete metadata
-					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
+					CSWProxyMetadataContentManagerJDOM cswManager = new CSWProxyMetadataContentManagerJDOM(this);
 					cswManager.buildCompleteMetadata(currentOperation,filePathList);
 					
 				}

@@ -1,11 +1,17 @@
 package org.easysdi.proxy.csw;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringBufferInputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
@@ -17,14 +23,23 @@ import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
@@ -96,13 +111,19 @@ public class CSWProxyMetadataContentManager
 							InputStream xmlResult = sendData(serverUrl,params);
 							Document docResult = db.parse(xmlResult);
 							docResult.getDocumentElement().normalize();
-							
-//							System.out.println(proxy.sendData("GET", serverUrl, params));
-//							String resultFile = proxy.sendData("GET", serverUrl, request);
-//							InputStream xmlResult = new FileInputStream(resultFile);
-//							Document docResult = db.parse(xmlResult);
-//							docResult.getDocumentElement().normalize();
-							
+														
+							FileOutputStream tempFos = new FileOutputStream(filePathList.get(0));
+
+							byte[] buf = new byte[32768];
+							int nread;
+
+							while ((nread = xml.read(buf, 0, buf.length)) >= 0) {
+								tempFos.write(buf, 0, nread);
+							}
+
+							tempFos.flush();
+							tempFos.close();
+							xml.close();
 						}
 					}
 				}
@@ -125,16 +146,18 @@ public class CSWProxyMetadataContentManager
 			dbf.setNamespaceAware(true);
 			DocumentBuilder db;
 			db = dbf.newDocumentBuilder();
-			InputStream xml = new FileInputStream(filePathList.get(0));
-			Document doc = db.parse(xml);
-			doc.getDocumentElement().normalize();
+			InputStream xmlParent = new FileInputStream(filePathList.get(0));
+			Document docParent = db.parse(xmlParent);
+			docParent.getDocumentElement().normalize();
 			
-
-			Node searchResults = doc.getElementsByTagNameNS("*", "GetRecordByIdResponse").item(0);
+//			SAXBuilder sxb = new SAXBuilder();
+//		      document = sxb.build(new File(fichier));
+			
+			Node searchResults = docParent.getElementsByTagNameNS("*", "GetRecordByIdResponse").item(0);
 			String local_name = searchResults.getFirstChild().getNextSibling().getLocalName();
 			String xpath = "//*[@xlink:href]";    
 			
-			NodeList metadataNodes = doc.getElementsByTagNameNS("*", local_name);
+			NodeList metadataNodes = docParent.getElementsByTagNameNS("*", local_name);
 			
 			int l = metadataNodes.getLength();
 			for (int i=0; i<metadataNodes.getLength(); i++) 
@@ -143,9 +166,9 @@ public class CSWProxyMetadataContentManager
 				
 				for (int j=0; j<xlinkNodes.getLength(); j++) 
 				{
-					Element elem = (Element)xlinkNodes.item(j);
-					System.out.println(elem.getAttribute("xlink:href"));
-					String link = elem.getAttribute("xlink:href");
+					Element elementParent = (Element)xlinkNodes.item(j);
+					System.out.println(elementParent.getAttribute("xlink:href"));
+					String link = elementParent.getAttribute("xlink:href");
 					
 					if (link != null) {
 						if (link.contains("?")) {
@@ -153,18 +176,40 @@ public class CSWProxyMetadataContentManager
 							String serverUrl = requestHandler.getServer();
 							String params = requestHandler.getParameters();
 							String fragment = requestHandler.getFragment();
+							fragment = "bee:contact";
 							serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 							
-							InputStream xmlResult = sendData(serverUrl,params);
-							Document docResult = db.parse(xmlResult);
-							docResult.getDocumentElement().normalize();
+							InputStream xmlChild = sendData(serverUrl,params);
+							includeFragment(docParent, elementParent, xmlChild, fragment);
 							
-//							System.out.println(proxy.sendData("GET", serverUrl, params));
-//							String resultFile = proxy.sendData("GET", serverUrl, request);
-//							InputStream xmlResult = new FileInputStream(resultFile);
-//							Document docResult = db.parse(xmlResult);
-//							docResult.getDocumentElement().normalize();
+							// Création de la source DOM
+							DOMSource domSource = new DOMSource(docParent);
 							
+							// Création du fichier de sortie
+							Result resultat = new StreamResult(filePathList.get(0));
+							
+							// Configuration du transformer
+							TransformerFactory fabrique = TransformerFactory.newInstance();
+							Transformer transformer = fabrique.newTransformer();
+							transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//							transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+							
+							// Transformation
+							transformer.transform(domSource, resultat);
+							
+//							DOMSource domSource = new DOMSource(docParent);
+//							StringWriter writer = new StringWriter();
+//							StreamResult result = new StreamResult(writer);
+//							TransformerFactory tf = TransformerFactory.newInstance();
+//							Transformer transformer = tf.newTransformer();
+//							transformer.transform(domSource, result);
+//							String resultS = writer.getBuffer().toString();
+//							FileOutputStream tempFos = new FileOutputStream(filePathList.get(0));
+//							tempFos.write(resultS.getBytes());
+//							tempFos.flush();
+//							tempFos.close();
+							xmlParent.close();
+							xmlChild.close();
 						}
 					}
 				}
@@ -177,6 +222,39 @@ public class CSWProxyMetadataContentManager
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	private void includeFragment (Document docParent,  Element elementParent, InputStream xmlChild, String fragment)
+	{
+		try
+		{
+			//Remove parent node attribute
+			elementParent.removeAttribute("xlink:show");
+			elementParent.removeAttribute("xlink:actuate");
+			elementParent.removeAttribute("xlink:href");
+			elementParent.removeAttribute("xlink:type");
+			
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setNamespaceAware(true);
+			DocumentBuilder db;
+			db = dbf.newDocumentBuilder();
+			Document docChild = db.parse(xmlChild);
+			docChild.getDocumentElement().normalize();
+			
+			NodeList fragmentNodes = docChild.getElementsByTagName(fragment);
+			for(int i = 0 ; i < fragmentNodes.getLength() ; i++)
+			{
+				Node oldChild = fragmentNodes.item(i);
+				Node newChild = docParent.importNode(oldChild,true);
+				elementParent.appendChild( newChild);
+			}
+			
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		
 	}
 	
 	private InputStream sendData(String urlstr, String parameters) 
@@ -207,8 +285,6 @@ public class CSWProxyMetadataContentManager
 			hpcon.setDoInput(true);
 			hpcon.setDoOutput(false);
 			
-			// getting the response is required to force the request, otherwise
-			// it might not even be sent at all
 			InputStream in = null;
 
 			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
