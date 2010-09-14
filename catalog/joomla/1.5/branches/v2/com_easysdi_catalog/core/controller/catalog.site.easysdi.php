@@ -426,8 +426,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -460,8 +459,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -495,8 +493,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 
-											  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
+											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
 											.$filter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
@@ -550,8 +547,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 
-											  AND o.objecttype_id IN (".implode(",", $objecttypes).") "
+											  WHERE o.objecttype_id IN (".implode(",", $objecttypes).") "
 											.$filter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
@@ -591,7 +587,7 @@ class SITE_catalog {
 										$query = "SELECT o.id 
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 "
+												  WHERE o.published=1 or o.published=0 "
 												.$filter;
 										$database->setQuery( $query);
 										$objectlist = $database->loadObjectList() ;
@@ -607,8 +603,7 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-													  WHERE o.published=1 
-													  		AND o.id=".$object->id
+													  WHERE o.id=".$object->id
 													.$filter.
 													 " ORDER BY ov.created DESC";
 											$database->setQuery( $query);
@@ -637,7 +632,7 @@ class SITE_catalog {
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 "
+											  WHERE o.published=1 or o.published=0 "
 											.$filter;
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
@@ -654,8 +649,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
-												  WHERE o.published=1
-												  		AND ms.code='published'
+												  WHERE ms.code='published'
 												  		AND m.published <= '".date('Y-m-d')."' 
 												  		AND o.id=".$object->id
 												.$filter.
@@ -701,8 +695,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -916,8 +909,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -972,8 +964,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -1174,8 +1165,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -1208,8 +1198,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -1246,8 +1235,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 
-											  AND o.objecttype_id IN (".implode(",", $objecttype_id).") "
+											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
 											.$filter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
@@ -1302,8 +1290,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 
-											  AND o.objecttype_id IN (".implode(",", $objecttypes).") "
+											  WHERE o.objecttype_id IN (".implode(",", $objecttypes).") "
 											.$filter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
@@ -1343,7 +1330,7 @@ class SITE_catalog {
 										$query = "SELECT o.id 
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 "
+												  WHERE o.published=1 or o.published=0 "
 												.$filter;
 										$database->setQuery( $query);
 										$objectlist = $database->loadObjectList() ;
@@ -1359,8 +1346,7 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-													  WHERE o.published=1 
-													  		AND o.id=".$object->id
+													  WHERE o.id=".$object->id
 													.$filter.
 													 " ORDER BY ov.created DESC";
 											$database->setQuery( $query);
@@ -1391,7 +1377,7 @@ class SITE_catalog {
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.published=1 "
+											  WHERE o.published=1 or o.published=0 "
 											.$filter;
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
@@ -1408,8 +1394,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
-												  WHERE o.published=1
-												  		AND ms.code='published'
+												  WHERE ms.code='published'
 												  		AND m.published <= '".date('Y-m-d')."' 
 												  		AND o.id=".$object->id
 												.$filter.
@@ -1456,8 +1441,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -1665,8 +1649,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
@@ -1720,8 +1703,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  WHERE o.published=1 
-												  		AND o.id=".$object->id
+												  WHERE o.id=".$object->id
 												.$filter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);

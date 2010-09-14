@@ -78,12 +78,24 @@ class SITE_object {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
-		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.$context.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
 		
 		//Check user's rights
 		if(!userManager::isUserAllowed($user,"PRODUCT"))
 		{
 			return;
+		}
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "name" 
+			and $filter_order <> "objecttype")
+		{
+			$filter_order		= "name";
+			$filter_order_Dir	= "ASC";
 		}
 		
 		$rootAccount = new accountByUserId($db);
@@ -105,6 +117,8 @@ class SITE_object {
 			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
 		}
 		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+			
 		//$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
 		$query = "	SELECT count(*)
 						FROM 	jos_sdi_manager_object e, 
@@ -140,10 +154,10 @@ class SITE_object {
 						AND e.account_id = ".$account->id;
 		$query .= $filter;
 		//$query .= $filter;
-		$query .= " ORDER BY o.name ASC";
+		$query .= $orderby;
 		
 		$db->setQuery($query, $pagination->limitstart, $pagination->limit);
-		//echo "<br>".$db->getQuery()."<br>";
+		
 		$rows = $db->loadObjectList();
 		//print_r($rows);
 		if ($db->getErrorNum()) {
@@ -160,7 +174,10 @@ class SITE_object {
 		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
 		$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
 		
-		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$search);
+		$lists['order_Dir'] 	= $filter_order_Dir;
+		$lists['order'] 		= $filter_order;
+		
+		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$search,$lists);
 
 	}
 

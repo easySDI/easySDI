@@ -31,6 +31,20 @@ class SITE_objectversion
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'title',	'word' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "title" 
+			and $filter_order <> "description")
+		{
+			$filter_order		= "title";
+			$filter_order_Dir	= "ASC";
+		}
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		
 		$query = "	SELECT COUNT(*) 
 					FROM #__sdi_objectversion ov 
 					INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
@@ -52,7 +66,8 @@ class SITE_objectversion
 					INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
 					INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
 					WHERE ov.object_id=".$object_id;
-		$query .= " ORDER BY created DESC";
+		$query .= $orderby;
+		
 		
 		$db->setQuery($query, $pagination->limitstart, $pagination->limit);
 		$rows = $db->loadObjectList();
@@ -63,7 +78,11 @@ class SITE_objectversion
 		
 		$rowObject = new object($db);
 		$rowObject->load($object_id);
-		HTML_objectversion::listObjectVersion($pagination, $rows, $object_id, $rowObject->name, $option);
+		
+		$lists['order_Dir'] 	= $filter_order_Dir;
+		$lists['order'] 		= $filter_order;
+		
+		HTML_objectversion::listObjectVersion($pagination, $rows, $object_id, $rowObject->name, $option, $lists);
 	}
 
 	function editObjectVersion( $id, $option ) {

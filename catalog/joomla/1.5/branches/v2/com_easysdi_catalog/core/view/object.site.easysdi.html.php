@@ -355,11 +355,12 @@ if ($rowObject->updated)
 	<?php
 	}
 	
-	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $search)
+	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $search, $lists)
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
-		?>	
+		
+		?>
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h2>
 		<div class="contentin">
@@ -429,8 +430,8 @@ if ($rowObject->updated)
 	<table id="myProducts" class="box-table" width="100%">
 	<thead>
 	<tr>
-	<th><?php echo JText::_('CORE_NAME'); ?></th>
-	<th><?php echo JText::_('CATALOG_OBJECT_OBJECTTYPE'); ?></th>
+	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
+	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECT_OBJECTTYPE"), 'objecttype', $lists['order_Dir'], $lists['order']); ?></th>
 	<!-- <th><?php //echo JText::_('CORE_METADATA_STATE'); ?></th> -->
 	<!--<th><?php //echo JText::_('CATALOG_OBJECT_VERSION_COL'); ?></th>-->
 	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
@@ -557,6 +558,8 @@ if ($rowObject->updated)
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listObject">
 			<input type="hidden" id="backpage" name="backpage" value="object">
+			<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
+			<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
 			<?php if (userManager::hasRight($rootAccount->id,"INTERNAL")){?> 
 			<?php }  ?>
 		</form>

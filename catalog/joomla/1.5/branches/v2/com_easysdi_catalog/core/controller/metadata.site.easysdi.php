@@ -47,6 +47,10 @@ class SITE_metadata {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
@@ -54,6 +58,16 @@ class SITE_metadata {
 		if ( $search ) {
 			$filter .= " AND (o.name LIKE '%$search%')";			
 		}
+		
+		// Test si le filtre est valide
+		if ($filter_order <> "name" 
+			and $filter_order <> "version_title"
+			and $filter_order <> "state")
+		{
+			$filter_order		= "name";
+			$filter_order_Dir	= "ASC";
+		}
+		
 		$account = new accountByUserId($database);
 		$account->load($user->id);
 
@@ -86,6 +100,9 @@ class SITE_metadata {
 								OR (ma.account_id=".$account->id."
 									AND s.id=1)
 								)";*/
+		
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+			
 		$queryCount = "	SELECT DISTINCT o.*, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
@@ -158,7 +175,8 @@ class SITE_metadata {
 								)";
 		$query .= $filter;
 		//$query .= " ORDER BY o.name, ov.name ASC";
-		$query .= " ORDER BY o.name ASC";
+		$query .= $orderby;
+		
 		
 		$database->setQuery($query,$limitstart,$limit);
 		//echo $database->getQuery();		
@@ -177,7 +195,10 @@ class SITE_metadata {
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
 		$editors = implode(", ", $database->loadResultArray());
 		
-		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $search);	
+		$lists['order_Dir'] 	= $filter_order_Dir;
+		$lists['order'] 		= $filter_order;
+		
+		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $search, $lists);	
 		
 	}
 	
@@ -426,7 +447,7 @@ class SITE_metadata {
         	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
         
-        HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+        HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}
