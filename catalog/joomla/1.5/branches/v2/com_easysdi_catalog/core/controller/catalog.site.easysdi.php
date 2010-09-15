@@ -117,9 +117,9 @@ class SITE_catalog {
 		
 		// Construction de la requête pour récupérer les résultats
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
+		//$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
+		//$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 
 		// Récupération des filtres standards
 		//$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
