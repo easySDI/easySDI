@@ -35,6 +35,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
+import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.Config;
@@ -81,12 +82,15 @@ public class OgcProxyServlet extends HttpServlet {
 		ProxyServlet obj = null;
 
 		try {
-			obj = createProxy(req.getPathInfo().substring(1), req);
+			obj = createProxy(req.getPathInfo().substring(1), req, resp);
 			waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
 
 			if (obj != null) {
 				obj.doGet(req, resp);
 			}
+		}catch (PolicyNotFoundException e)
+		{
+			e.printStackTrace();
 		} catch (Exception e) {
 			StringBuffer sb = generateOgcError(e.getMessage());
 			e.printStackTrace();
@@ -106,13 +110,17 @@ public class OgcProxyServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ProxyServlet obj = null;
 		try {
-			obj = createProxy(req.getPathInfo().substring(1), req);
+			obj = createProxy(req.getPathInfo().substring(1), req, resp);
 			waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
 
 			if (obj != null) {
 				obj.doPost(req, resp);
 
 			}
+		}catch (PolicyNotFoundException e)
+		{
+			e.printStackTrace();
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			StringBuffer sb = generateOgcError(e.getMessage());
@@ -134,8 +142,7 @@ public class OgcProxyServlet extends HttpServlet {
 
 	private StringBuffer generateOgcError(String errorMessage) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb
-				.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
 		sb.append("<ServiceException>");
 		sb.append(errorMessage);
 		sb.append("</ServiceException>");
@@ -232,7 +239,6 @@ public class OgcProxyServlet extends HttpServlet {
 					executionCount.wait();
 
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				Double d2 = null;
@@ -257,7 +263,7 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @return
 	 * @throws JAXBException
 	 */
-	private ProxyServlet createProxy(String servletName, HttpServletRequest req) throws JAXBException {
+	private ProxyServlet createProxy(String servletName, HttpServletRequest req, HttpServletResponse resp) throws JAXBException, PolicyNotFoundException {
 		// L'existance de la config et des policies dans le cache est assuré par
 		// un servlet filter déclaré dans spring.
 		// Voir org.easysdi.proxy.core.EasySdiConfigFilter.java
@@ -335,7 +341,16 @@ public class OgcProxyServlet extends HttpServlet {
 			// policyE.setVersion(plastmodified);
 			// configCache.put(policyE);
 			// } else
-			if(policyE != null) ps.setPolicy((Policy) policyE.getValue());
+			if(policyE != null) 
+			{
+				ps.setPolicy((Policy) policyE.getValue());
+			}
+			else
+			{
+				//If no policy found, return an OGC Exception and quit.
+				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcError("Proxy error", "NoApplicableCode", null,""));
+				throw new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND);
+			}
 			return ps;
 
 		} catch (ClassNotFoundException e) {

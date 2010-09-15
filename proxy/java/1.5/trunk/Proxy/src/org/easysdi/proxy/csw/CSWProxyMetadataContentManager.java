@@ -36,6 +36,8 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 /**
@@ -109,7 +111,7 @@ public class CSWProxyMetadataContentManager
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();
-//				fragment = "bee:contact";
+				fragment = "bee:contact";
 				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 				
 				InputStream xmlChild = sendData(serverUrl,params);
@@ -148,25 +150,29 @@ public class CSWProxyMetadataContentManager
 	
 	private InputStream sendData(String urlstr, String parameters) 
 	{
-		String responseContentType = null;
 		try 
 		{
-			String cookie = null;
-
 			String encoding = null;
-//			if (getUsername(urlstr) != null && getPassword(urlstr) != null) {
-//				String userPassword = getUsername(urlstr) + ":" + getPassword(urlstr);
-//				encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
-//			}
+			
+			Authentication token = SecurityContextHolder.getContext().getAuthentication();
+			
+			if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
+				String user = token.getPrincipal().toString() ;
+				String password = token.getCredentials().toString();
+				if(password != null && !password.equals(""))
+				{
+					password = password.split(":")[0];
+					String userPassword = user + ":" + password;
+					encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+				}
+			}
+
 			urlstr = urlstr + "?" + parameters;
 			URL url = new URL(urlstr);
 			HttpURLConnection hpcon = null;
 
 			hpcon = (HttpURLConnection) url.openConnection();
 			hpcon.setRequestMethod("GET");
-			if (cookie != null) {
-				hpcon.addRequestProperty("Cookie", cookie);
-			}
 			if (encoding != null) {
 				hpcon.setRequestProperty("Authorization", "Basic " + encoding);
 			}
@@ -183,26 +189,6 @@ public class CSWProxyMetadataContentManager
 			{
 				in = hpcon.getInputStream();
 			}
-
-//			int input;
-
-//			responseContentType = hpcon.getContentType().split(";")[0];
-//			String tmpDir = System.getProperty("java.io.tmpdir");
-//
-//			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), proxy.getExtension(responseContentType));
-//
-//			FileOutputStream tempFos = new FileOutputStream(tempFile);
-//
-//			byte[] buf = new byte[32768];
-//			int nread;
-//
-//			while ((nread = in.read(buf, 0, buf.length)) >= 0) {
-//				tempFos.write(buf, 0, nread);
-//			}
-//
-//			tempFos.flush();
-//			tempFos.close();
-//			in.close();
 
 			return in;
 

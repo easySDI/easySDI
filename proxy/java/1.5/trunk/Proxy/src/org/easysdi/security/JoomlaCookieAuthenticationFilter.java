@@ -66,8 +66,10 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 		Cookie[] cookies = request.getCookies();
-		if (request.getHeader("Authorization") == null
-				&& (request.getHeader("Referer") != null && request.getHeader("Referer").contains("com_easysdi_map") || cookies != null)) {
+		if ( request.getHeader("Authorization") == null 
+				&& (request.getHeader("Referer") != null 
+				&& request.getHeader("Referer").contains("com_easysdi_map") 
+				|| cookies != null)) {
 			final boolean debug = logger.isDebugEnabled();
 			userCache = cacheManager.getCache("userCache");
 			String sessionKey = null;
@@ -96,6 +98,7 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 				}
 			}
 
+			//Case : 
 			if (authenticationPair != null && authenticationPair.get("username") == null && authenticationPair.size() == 2) {
 				e = userCache.get("com_easysdi_map");
 				if (e != null)
@@ -116,7 +119,6 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 					} catch (EmptyResultDataAccessException er) {
 					}
 				}
-
 			}
 
 			if (authenticationPair != null && authenticationPair.size() > 0) {
