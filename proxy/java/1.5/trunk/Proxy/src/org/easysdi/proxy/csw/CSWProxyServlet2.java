@@ -369,7 +369,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					tempFile = tempFileCapaWithMetadata;
 					dump("DEBUG","transform end apply XSLT on service metadata");
-					
 				}
 				else if("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation) || "DescribeRecord".equals(currentOperation))
 				{
@@ -470,6 +469,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String version = "000";
 			String requestedId = "";
 			String constraint = "";
+			String content = "";
 
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String paramUrl = "";
@@ -501,7 +501,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					requestedVersion = value;
 					continue;
 				}
-				//TODO : verify the syntax for those 2 attributes
+				//TODO : verify the syntax for those 3 attributes
 				if (key.equalsIgnoreCase("OutputSchema")) 
 				{
 					requestedOutputSchema = value;
@@ -517,12 +517,20 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					constraint = value;
 					continue;
 				}
+				
+				//Content specific vendor parameter
+				if(key.equalsIgnoreCase("content"))
+				{
+					content = value;
+					continue;
+				}
 			}
 			
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return ;
 			
+			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
 				if(hasPolicy)
@@ -549,6 +557,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					}
 				}
 			}
+			//GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
 				if(hasPolicy)
@@ -558,7 +567,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					{
 						cswDataManager.getAccessibleDataIds();
 						//Add a filter on the data id in the request
-						
 						constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint), cswDataManager.getAccessibleDataIds());
 						dump("INFO", "GetRecords request send : "+constraint);
 					}
@@ -595,6 +603,22 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			List<String> filePathList = new Vector<String>();
 			String filePath = sendData("GET", getRemoteServerUrl(0), paramUrl);
 			filePathList.add(filePath);
+			
+			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
+			{
+				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
+				{
+					//Build complete metadata
+					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
+					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
+					{
+						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
+						return;
+					}
+				}
+			}
+			
+			//Transform the request response
 			transform(version, currentOperation, req, resp, filePathList);
 			
 		} 
@@ -662,6 +686,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				transactionType = rsi.getTransaction();
 			}
 
+			//Transaction
 			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) 
 			{
 				// Send the xml
@@ -690,6 +715,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				os = null;
 				is = null;
 			}
+			//GetRecordById
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
 				if(hasPolicy)
@@ -720,19 +746,24 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						}
 					}
 				}
-				
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					//Build complete metadata
-					CSWProxyMetadataContentManagerJDOM cswManager = new CSWProxyMetadataContentManagerJDOM(this);
-					cswManager.buildCompleteMetadata(currentOperation,filePathList);
+					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
+					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
+					{
+						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
+						return;
+					}
 					
 				}
+				//Transform the request response
 				transform(version, currentOperation, req, resp, filePathList);
 			}
+			//GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
 				if(hasPolicy)
@@ -753,15 +784,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				{
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
-					cswManager.buildCompleteMetadata(currentOperation,filePathList);
+					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
+					{
+						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
+						return;
+					}
 					
-				}transform(version, currentOperation, req, resp, filePathList);
+				}
+				//Transform the request response
+				transform(version, currentOperation, req, resp, filePathList);
 			}
+			//Others operations
 			else 
 			{
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
+				//Transform the request response
 				transform(version, currentOperation, req, resp, filePathList);
 			}
 		} 
@@ -776,7 +815,4 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			dump("ERROR", e.getMessage());
 		}
 	}
-
-	
-
 }
