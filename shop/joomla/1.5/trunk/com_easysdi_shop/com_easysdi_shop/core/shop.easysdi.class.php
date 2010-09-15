@@ -1904,32 +1904,10 @@ if (count($rows)>0){
 								break;
 							}
 						}
-						/*
-						if($countProduct == 1 )
-						{
-							if($hasInternal == false)
-							{
-								//The product belongs to the current user's group and the user does not have the internal right
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						else
-						{
-							if($hasExternal == false)
-							{
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						*/
 					}
 				}
 				else
 				{
-					//$row->internal == '0'
 					if($row->external = '1')
 					{
 						if($hasExternal == false)
@@ -1939,25 +1917,6 @@ if (count($rows)>0){
 							$isProductAllowed = false;
 							break;
 						}
-						/*
-						if($countProduct == 1)
-						{
-							//This product is not visible for the user of the partner's group
-							HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-							$isProductAllowed = false;
-							break;
-						}
-						else
-						{
-							if($hasExternal == false)
-							{
-								//User does not have the right to order external product
-								HTML_shop::displayErrorMessage("EASYSDI_ORDER_PROBLEM_USER_RIGHT", $row->data_title );
-								$isProductAllowed = false;
-								break;
-							}
-						}
-						*/
 					}
 					else
 					{
@@ -3027,6 +2986,11 @@ function validateForm(toStep, fromStep){
 		$db->setQuery( $query);
 		$total = $db->loadResult();
 
+		//reinits pagenav if we don't have enough results for this position
+		if($limitstart >= $total)
+			$limitstart = 0;
+		//echo "total:".$total." limistart:".$limitstart." limit:".$limit."<br>";
+		
 		$query  = "SELECT * FROM #__easysdi_product p where published=1 and  orderable = ".$orderable;
 		$query  = $query .$filter;
 
