@@ -268,7 +268,28 @@ class displayManager{
 				$doc.= "</Property>";
 			}
 			if(count($rows) == 0){
-				$message = JText::_("EASYSDI_TEXT_NO_DIFFUSION_PROPERTY");
+				
+				$md_orderable=0;
+			        $pOrderableExt = 0;
+			        $pOrderableInt = 0;
+			        
+			        $query = "select external from #__easysdi_product where metadata_id = '".$id."'";
+			        $database->setQuery( $query);
+			        $pOrderableExt = $database->loadResult();
+			        
+			        $query = "select internal from #__easysdi_product where metadata_id = '".$id."'";
+			        $database->setQuery( $query);
+			        $pOrderableInt = $database->loadResult();
+			        			
+			        if($pOrderableExt == 1 || $pOrderableInt == 1)
+			        {
+			        	$md_orderable=1;
+			        }
+				
+				if($md_orderable == 1)
+				   $message = JText::_("EASYSDI_TEXT_NO_DIFFUSION_PROPERTY");
+			        else
+				   $message = JText::_("EASYSDI_TEXT_PRODUCT_NOT_DIFFUSED");
 			}
 			
 			$doc .= '</Diffusion></Metadata>';
