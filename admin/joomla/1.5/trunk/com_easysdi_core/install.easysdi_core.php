@@ -1000,7 +1000,9 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
-
+  }
+  if ( $version == "0.991")
+	{ 
 		//Update the value of the unique right type used in this version of easysdi
 		$query="INSERT INTO `#__easysdi_community_role`
 		(`publish_id`, `type_id`, `role_code`, `role_name`, `role_description`, `role_update`) 
