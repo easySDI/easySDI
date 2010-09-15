@@ -317,6 +317,8 @@ class HTML_catalog{
 			$md_orderable=0;
 			$pOrderableExt = 0;
 			$pOrderableInt = 0;
+			$rOrderableExt = 0;
+			$rOrderableInt = 0;
 			
 			$query = "select external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
 			$db->setQuery( $query);
@@ -326,12 +328,92 @@ class HTML_catalog{
 			$db->setQuery( $query);
 			$pOrderableInt = $db->loadResult();
 			
-			if($pOrderableExt == 1 || $pOrderableInt == 1)
+			//check user permissions
+			$user = JFactory::getUser();
+			$partner = new partnerByUserId($db);
+			if (!$user->guest){
+				$partner->load($user->id);
+			}else{
+				$partner->partner_id = 0;
+			}
+                	
+			if($partner->partner_id == 0)
+			{
+				//No user logged, display only external products
+				$rOrderableExt = 1;
+				$rOrderableInt = 0;
+			}
+			else
+			{
+				//User logged, display products according to users's rights
+				if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+				{
+					if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+					{
+						$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = 1";
+						$query .= " AND p.metadata_id=".$md->getFileIdentifier();
+						$query .= " AND (p.EXTERNAL=1
+						OR
+						(p.INTERNAL =1 AND
+						(p.partner_id =  $partner->partner_id
+						OR
+						p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						OR 
+						p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						OR
+						p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						
+						))) ";
+						$db->setQuery( $query);
+		                                $tot = $db->loadResult();
+						if($tot > 0){
+						   $rOrderableInt = 1;
+						}
+							
+					}
+					else
+					{
+						$rOrderableExt = 1;
+					}
+				}
+				else
+				{
+					if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+					{
+						$query  = "SELECT COUNT(*) FROM #__easysdi_product p where published=1 and orderable = 1";
+						$query .= " AND p.metadata_id=".$md->getFileIdentifier();
+						$query .= " AND (p.INTERNAL =1 AND
+						(p.partner_id =  $partner->partner_id
+						OR
+						p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
+						OR 
+						p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
+						OR
+						p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+						)) ";
+						$db->setQuery( $query);
+		                                $tot = $db->loadResult();
+						if($tot > 0){
+						   $rOrderableInt = 1;
+						}
+										
+					}
+					else
+					{
+						//no command right
+						$rOrderableExt = 0;
+				                $rOrderableInt = 0;
+					}
+				}
+			}
+			//echo "<br>".$pOrderableExt."-".$rOrderableExt."-".$pOrderableInt."-".$rOrderableInt;
+			if(($pOrderableExt == 1 && $rOrderableExt == 1) || ($pOrderableInt == 1 && $rOrderableInt == 1))
 			{
 				$md_orderable=1;
+				//echo "->orderable";
 			}
-			//echo $md->getFileIdentifier()." Ext:".$pOrderableExt." Int:".$pOrderableInt."__".$query ."<br>";
 
+			//echo $md->getFileIdentifier()." Ext:".$pOrderableExt." Int:".$pOrderableInt."__".$query ."<br>";
 			$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$md->getFileIdentifier()."'";
 			
 			$db->setQuery( $query);
