@@ -171,8 +171,8 @@ public class WMSProxyServlet extends ProxyServlet {
 //		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"");
 		sb.append("<ServiceExceptionReport version=\"");
 		sb.append(version);
-		sb.append("\">");
-		sb.append("<ServiceException ");
+		sb.append("\">\n");
+		sb.append("\t<ServiceException ");
 		if(code != null && code != "")
 		{
 			sb.append(" code=\"");
@@ -187,7 +187,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		sb.append(">");
 		sb.append(errorMessage);
-		sb.append("</ServiceException>");
+		sb.append("</ServiceException>\n");
 		sb.append("</ServiceExceptionReport>");
 		return sb;
 	}

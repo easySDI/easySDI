@@ -155,10 +155,10 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
 	
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
 //		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
-		sb.append("<ServiceExceptionReport version=\"1.2.0\"");
-		sb.append("<ServiceException ");
+		sb.append("<ServiceExceptionReport version=\"1.2.0\">\n");
+		sb.append("\t<ServiceException ");
 		if(code != null && code != "")
 		{
 			sb.append(" code=\"");
@@ -173,7 +173,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		}
 		sb.append(">");
 		sb.append(errorMessage);
-		sb.append("</ServiceException>");
+		sb.append("</ServiceException>\n");
 		sb.append("</ServiceExceptionReport>");
 		return sb;
 	}

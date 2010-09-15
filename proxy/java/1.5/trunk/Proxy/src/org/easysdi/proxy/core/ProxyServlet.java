@@ -474,7 +474,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 	}
 
-	protected void dump(String s, String s2) {
+	public void dump(String s, String s2) {
 		if (s2 != null)
 			dump(s, null, s2);
 		else

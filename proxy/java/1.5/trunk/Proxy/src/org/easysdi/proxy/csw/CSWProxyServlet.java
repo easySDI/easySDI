@@ -106,10 +106,10 @@ public class CSWProxyServlet extends ProxyServlet {
 	}
 	
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
 //		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
-		sb.append("<ows:ExceptionReport version=\"1.0.0\" >");
-		sb.append("<ows:Exception ");
+		sb.append("<ows:ExceptionReport version=\"1.0.0\" >\n");
+		sb.append("\t<ows:Exception ");
 		if(code != null && code != "")
 		{
 			sb.append(" exceptionCode=\"");
@@ -122,11 +122,11 @@ public class CSWProxyServlet extends ProxyServlet {
 			sb.append(locator);
 			sb.append("\"");
 		}
-		sb.append(">");
-		sb.append("<ows:ExceptionText>");
+		sb.append(">\n");
+		sb.append("\t\t<ows:ExceptionText>");
 		sb.append(errorMessage);
-		sb.append("</ows:ExceptionText>");
-		sb.append("</ows:Exception>");
+		sb.append("</ows:ExceptionText>\n");
+		sb.append("\t</ows:Exception>\n");
 		sb.append("</ows:ExceptionReport> ");
 		return sb;
 	}

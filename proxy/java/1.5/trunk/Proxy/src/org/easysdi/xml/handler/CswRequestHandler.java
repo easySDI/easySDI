@@ -68,6 +68,8 @@ public class CswRequestHandler extends DefaultHandler {
 	 * @return the content
 	 */
 	public String getContent() {
+		if (content == null)
+			return "";
 		return content;
 	}
 

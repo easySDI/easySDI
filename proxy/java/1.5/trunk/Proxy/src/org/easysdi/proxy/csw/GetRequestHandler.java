@@ -42,7 +42,10 @@ public class GetRequestHandler
 		_request = request;
 		_server = _request.substring(0, _request.indexOf("?"));
 		_parameters = _request.substring(_request.indexOf("?")+1);
-		_fragment = URLDecoder.decode(_request.substring(_request.indexOf("fragment")+ 9));
+		if(_request.indexOf("fragment") != -1)
+		{
+			_fragment = URLDecoder.decode(_request.substring(_request.indexOf("fragment")+ 9));
+		}
 	}
 
 

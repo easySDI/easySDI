@@ -64,6 +64,12 @@ public class CSWProxyMetadataContentManager
 		Document documentChild = sxb.build(xmlChild);
 		Element elementChild = documentChild.getRootElement();
 		
+		if(fragment == null || fragment.equalsIgnoreCase(""))
+		{
+			elementParent.addContent(elementChild.cloneContent());
+			return;
+		}
+		
 		Filter filtre = new CSWProxyMetadataFragmentFilter(fragment);
 		Iterator it= elementChild.getDescendants(filtre);
 		  
@@ -103,10 +109,14 @@ public class CSWProxyMetadataContentManager
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();
-				fragment = "bee:contact";
+//				fragment = "bee:contact";
 				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 				
 				InputStream xmlChild = sendData(serverUrl,params);
+				if(xmlChild == null)
+				{
+					return false;
+				}
 				try
 				{
 					includeFragment(docParent, elList.get(j), xmlChild, fragment);
@@ -116,7 +126,7 @@ public class CSWProxyMetadataContentManager
 					//Fragment can not be include
 					//The all request is aborted
 					//An OGC exception will be send
-					ex.printStackTrace();
+					proxy.dump("ERROR",ex.getMessage());
 					return false;
 				}
     	   }
@@ -130,7 +140,7 @@ public class CSWProxyMetadataContentManager
 			//Complete metadata can not be build
 			//The request is aborted
 			//An OGC exception will be send
-			ex.printStackTrace();
+			proxy.dump("ERROR",ex.getMessage());
 			return false;
 		}
 	}
@@ -197,9 +207,9 @@ public class CSWProxyMetadataContentManager
 			return in;
 
 		} 
-		catch (Exception e) 
+		catch (Exception ex) 
 		{
-			e.printStackTrace();
+			proxy.dump("ERROR",ex.getMessage());
 			return null;
 		}
 	}
