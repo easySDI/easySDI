@@ -536,6 +536,10 @@ public class CSWProxyDataAccessibilityManager {
 				elementFilter = elementConstraint.getChild("Filter", nsOGC);
 				if (elementFilter == null)
 				{
+					elementFilter = elementConstraint.getChild("Filter");
+				}
+				if (elementFilter == null)
+				{
 					elementFilter = new Element("Filter",nsOGC);
 						elementConstraint.addContent(elementFilter);
 				}
