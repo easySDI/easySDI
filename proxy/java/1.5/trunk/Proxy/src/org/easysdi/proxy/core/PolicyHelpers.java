@@ -63,22 +63,22 @@ public class PolicyHelpers {
     public Policy getPolicy (String user, HttpServletRequest req)
     {
 
-		/*
-		 * Find the first policy where the user or the role is matching
-		 */	
-		for (int i=0 ; i<policyList.size();i++)
-		{
-		    Policy p = policyList.get(i);
-		    
-		    if(p.getSubjects()==null)
-		    {
-		    	continue;
-		    }
-		    	    
-		    /*If one user is matching, then we can returns the operations*/
-		    if (user !=null)
-		    {
-		    	List<String> userList = p.getSubjects().getUser();
+    	if (user !=null)
+	    {
+			/*
+			 * Find the first policy where the user or the role is matching
+			 */	
+			for (int i=0 ; i<policyList.size();i++)
+			{
+			    Policy p = policyList.get(i);
+			    
+			    if(p.getSubjects()==null)
+			    {
+			    	continue;
+			    }
+			    	    
+			    /*If one user is matching, then we can return the operations*/
+			    List<String> userList = p.getSubjects().getUser();
 		    	for (int j =0;j<userList.size();j++)
 		    	{
 		    		if (userList.get(j).equals(user))
@@ -86,12 +86,19 @@ public class PolicyHelpers {
 		    			return p;
 		    		}
 		    	}
-		    }
-		    
-		    /*If the user is not matching , then try if  a role is matching then returns the operations*/
-		    if (user !=null)
-		    {
-		    	if (req !=null)
+			}
+			  
+			for (int i=0 ; i<policyList.size();i++)
+			{
+			    Policy p = policyList.get(i);
+			    
+			    if(p.getSubjects()==null)
+			    {
+			    	continue;
+			    }
+			    
+			    /*If the user is not matching , then try if  a role is matching then returns the operations*/
+			    if (req !=null)
 		    	{
 		    		List<String> roleList = p.getSubjects().getRole();
 		    		for (int j =0;j<roleList.size();j++)
@@ -102,6 +109,7 @@ public class PolicyHelpers {
 		    			}
 		    		}
 		    	}	    
+			    
 		    }
 	    }
 	

@@ -66,10 +66,14 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
 		Cookie[] cookies = request.getCookies();
+		String h = request.getHeader("Referer");
+		
+		//case : request from joomla component 
 		if ( request.getHeader("Authorization") == null 
 				&& (request.getHeader("Referer") != null 
 				&& request.getHeader("Referer").contains("com_easysdi_map") 
-				|| cookies != null)) {
+				|| cookies != null)) 
+		{
 			final boolean debug = logger.isDebugEnabled();
 			userCache = cacheManager.getCache("userCache");
 			String sessionKey = null;
@@ -77,20 +81,30 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 			String username = null, password = null;
 			Element e = userCache.get(cookies);
 			if (e != null)
+			{
 				authenticationPair = (Map<String, Object>) e.getValue();
-			else if (cookies != null) {
-				for (Cookie cookie : cookies) {
+			}
+			else if (cookies != null) 
+			{
+				for (Cookie cookie : cookies) 
+				{
 					sessionKey = cookie.getValue();
-					if (sessionKey != null) {
+					if (sessionKey != null) 
+					{
 						String sql1 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "session s left join " + joomlaProvider.getPrefix()
 								+ "users u " + "on (u.username = s.username) where session_id = ? limit 1";
-						try {
+						try 
+						{
 							authenticationPair = sjt.queryForMap(sql1, sessionKey);
-						} catch (EmptyResultDataAccessException er) {
+						} 
+						catch (EmptyResultDataAccessException er) 
+						{
 						}
 					}
-					if (authenticationPair != null && authenticationPair.size() > 0) {
-						if (authenticationPair.get("username") != null) {
+					if (authenticationPair != null && authenticationPair.size() > 0) 
+					{
+						if (authenticationPair.get("username") != null) 
+						{
 							userCache.put(new Element(cookies, authenticationPair));
 							break;
 						}
@@ -98,25 +112,53 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 				}
 			}
 
-			//Case : 
-			if (authenticationPair != null && authenticationPair.get("username") == null && authenticationPair.size() == 2) {
-				e = userCache.get("com_easysdi_map");
-				if (e != null)
-					authenticationPair = (Map<String, Object>) e.getValue();
-				if (authenticationPair.get("username") == null && authenticationPair.size() == 2) {
-					String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
-							+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join "
-							+ joomlaProvider.getPrefix() + "users u on (u.id = p.user_id) limit 1";
+			//Case : request from a front-end component with no logged user, use a service account
+			if (authenticationPair != null && authenticationPair.get("username") == null && authenticationPair.size() == 2) 
+			{
+				//Version before v2
+				if(joomlaProvider.getVersion()== null || Integer.parseInt(joomlaProvider.getVersion())<200)
+				{
+					e = userCache.get("com_easysdi_map");
+					if (e != null)
+						authenticationPair = (Map<String, Object>) e.getValue();
+					if (authenticationPair.get("username") == null && authenticationPair.size() == 2) {
+						String sql2 = "select u.username, u.password from " + joomlaProvider.getPrefix() + "easysdi_map_service_account s left join "
+								+ joomlaProvider.getPrefix() + "easysdi_community_partner p on (p.partner_id = s.partner_id) left join "
+								+ joomlaProvider.getPrefix() + "users u on (u.id = p.user_id) limit 1";
+						try {
+							authenticationPair = sjt.queryForMap(sql2);
+							if (authenticationPair != null && authenticationPair.size() > 0) {
+								if (authenticationPair.get("username") != null) {
+									Object k = (cookies != null && cookies.length > 0) ? cookies : "com_easysdi_map";
+									userCache.put(new Element(k, authenticationPair));
+									userCache.put(new Element("com_easysdi_map", authenticationPair));
+								}
+							}
+						} catch (EmptyResultDataAccessException er) {
+						}
+					}
+				}
+				//Since EasySDI v2
+				else
+				{
+					e = userCache.get("com_easysdi_core");
+					if (e != null)
+						authenticationPair = (Map<String, Object>) e.getValue();
+					String sql = "select u.username, u.password from " + joomlaProvider.getPrefix() + "sdi_serviceaccount s left join "
+					+ joomlaProvider.getPrefix() + "sdi_account a on (a.id = s.account_id) left join "
+					+ joomlaProvider.getPrefix() + "users u on (u.id = a.user_id) limit 1";
 					try {
-						authenticationPair = sjt.queryForMap(sql2);
+						authenticationPair = sjt.queryForMap(sql);
 						if (authenticationPair != null && authenticationPair.size() > 0) {
 							if (authenticationPair.get("username") != null) {
 								Object k = (cookies != null && cookies.length > 0) ? cookies : "com_easysdi_map";
 								userCache.put(new Element(k, authenticationPair));
-								userCache.put(new Element("com_easysdi_map", authenticationPair));
+								userCache.put(new Element("com_easysdi_core", authenticationPair));
 							}
 						}
-					} catch (EmptyResultDataAccessException er) {
+					} 
+					catch (EmptyResultDataAccessException er) 
+					{
 					}
 				}
 			}

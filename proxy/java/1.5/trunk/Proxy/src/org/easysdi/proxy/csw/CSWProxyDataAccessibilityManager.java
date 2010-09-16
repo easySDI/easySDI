@@ -1,14 +1,19 @@
 package org.easysdi.proxy.csw;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.lang.model.util.ElementFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -19,8 +24,13 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
-import org.w3c.dom.*;
+import org.jdom.*;
+import org.jdom.filter.Filter;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.xml.sax.InputSource;
 
 /**
  * Access the database to retreive accessible metadatas
@@ -181,63 +191,63 @@ public class CSWProxyDataAccessibilityManager {
 		return sb;
 	}
 
-	public List <String> extractRecordIDFromGetRecordsResponse (File response, String outputSchema)
-	{
-		List <String> recordIds = new ArrayList<String>();
-		try
-		{
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(response);
-			doc.getDocumentElement().normalize();
-			
-			if(outputSchema == null || outputSchema =="" || CSWProxyServlet2.cswOutputSchemas.contains(outputSchema))
-			{
-				NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
-							
-				for (int s = 0; s < nodeLst.getLength(); s++) {
-					Node fstNode = nodeLst.item(s);
-					String id = fstNode.getFirstChild().getNodeValue();
-					recordIds.add(id);
-				}
-				return recordIds;
-			}
-			else if (CSWProxyServlet2.gmdOutputSchemas.contains(outputSchema))
-			{
-				NodeList nodeLst = doc.getElementsByTagName("gmd:fileIdentifier");
-				
-				for (int s = 0; s < nodeLst.getLength(); s++) {
-					Node fstNode = nodeLst.item(s);
-					NodeList chldNodes = fstNode.getChildNodes();
-					Node idNode = null;
-					for(int c = 0 ;c<chldNodes.getLength();c++)
-					{
-						Node pcNode = chldNodes.item(c);
-						if(pcNode.getNodeName() != "gco:CharacterString")
-						{
-							continue;
-						}
-						else
-						{
-							idNode = pcNode;
-							break;
-						}
-					}
-					if(idNode != null)
-					{
-						String id =idNode.getFirstChild().getNodeValue();
-						recordIds.add(id);
-					}
-				}
-				return recordIds;
-			}
-			return null;
-		}
-		catch (Exception ex)
-		{
-			return null;
-		}
-	}
+//	public List <String> extractRecordIDFromGetRecordsResponse (File response, String outputSchema)
+//	{
+//		List <String> recordIds = new ArrayList<String>();
+//		try
+//		{
+//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder db = dbf.newDocumentBuilder();
+//			Document doc = db.parse(response);
+//			doc.getDocumentElement().normalize();
+//			
+//			if(outputSchema == null || outputSchema =="" || CSWProxyServlet2.cswOutputSchemas.contains(outputSchema))
+//			{
+//				NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
+//							
+//				for (int s = 0; s < nodeLst.getLength(); s++) {
+//					Node fstNode = nodeLst.item(s);
+//					String id = fstNode.getFirstChild().getNodeValue();
+//					recordIds.add(id);
+//				}
+//				return recordIds;
+//			}
+//			else if (CSWProxyServlet2.gmdOutputSchemas.contains(outputSchema))
+//			{
+//				NodeList nodeLst = doc.getElementsByTagName("gmd:fileIdentifier");
+//				
+//				for (int s = 0; s < nodeLst.getLength(); s++) {
+//					Node fstNode = nodeLst.item(s);
+//					NodeList chldNodes = fstNode.getChildNodes();
+//					Node idNode = null;
+//					for(int c = 0 ;c<chldNodes.getLength();c++)
+//					{
+//						Node pcNode = chldNodes.item(c);
+//						if(pcNode.getNodeName() != "gco:CharacterString")
+//						{
+//							continue;
+//						}
+//						else
+//						{
+//							idNode = pcNode;
+//							break;
+//						}
+//					}
+//					if(idNode != null)
+//					{
+//						String id =idNode.getFirstChild().getNodeValue();
+//						recordIds.add(id);
+//					}
+//				}
+//				return recordIds;
+//			}
+//			return null;
+//		}
+//		catch (Exception ex)
+//		{
+//			return null;
+//		}
+//	}
 	
 	public List<Map<String,Object>> getAccessibleDataIds ()
 	{
@@ -381,241 +391,294 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param ids
 	 * @return
 	 */
+//	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
+//	{
+////		try 
+////		{
+////			//Document builder
+////			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+////			dbf.setNamespaceAware(true);
+////			DocumentBuilder db;
+////			db = dbf.newDocumentBuilder();
+////			InputStream xml = new StringBufferInputStream(param.toString());
+////			Document doc = db.parse(xml);
+////			doc.getDocumentElement().normalize();
+////			
+////			String docPrefix = doc.getDocumentElement().getPrefix();
+////			String docUri = doc.getDocumentElement().getNamespaceURI();
+////			if(docPrefix != null)
+////				docPrefix = docPrefix+":";
+////			else
+////				docPrefix ="";
+////			
+////			NodeList constraintNodes = doc.getElementsByTagNameNS("*","Constraint");
+////			Node constraint = null;
+////			Node filterNode = null;
+////			
+////			//<Constraint>
+////			if (constraintNodes.getLength() == 0)
+////			{
+////				//No constraint defined
+////				Node query = doc.getElementsByTagNameNS("*","Query").item(0);
+////				Element eConstraint = doc.createElementNS(docUri, docPrefix+"Constraint"); 
+////				eConstraint.setAttribute("version", "1.1.0");
+////				constraint = eConstraint;
+////				query.appendChild(constraint);
+////				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+////				constraint.appendChild(filterNode);
+////			}
+////			else
+////			{
+////				//Constraint already exists
+////				constraint = constraintNodes.item(0);
+////				//Get the Filter Node
+////				NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
+////				if(filterNodes.getLength() == 0)
+////				{
+////					//Create filter node
+////					filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+////					constraint.appendChild(filterNode);
+////				}
+////				else
+////				{
+////					filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+////				}
+////			}
+////			
+////			//<Filter>
+////			String uri =  filterNode.getNamespaceURI();
+////			String prefix = filterNode.getPrefix();
+////			
+////			if(prefix == null)
+////				prefix = "";
+////			else
+////				prefix = prefix+":";
+////			
+////			//<And>
+////			//Get the "And" Node
+////			NodeList filterChildNodes =  filterNode.getChildNodes();
+////			Boolean isAndExists = false;
+////			Node and = null;
+////			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
+////			{
+////				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
+////				{
+////					isAndExists = true;
+////					and = filterChildNodes.item(i);
+////					break;
+////				}
+////			}			
+////			//Create the and node if not already exists
+////			if(!isAndExists)
+////			{
+////				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
+////			}
+////			
+////			//<Or>
+////			//Add the "Or" node
+////			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
+////			
+////			//Return
+////			DOMSource domSource = new DOMSource(doc);
+////			StringWriter writer = new StringWriter();
+////			StreamResult result = new StreamResult(writer);
+////			TransformerFactory tf = TransformerFactory.newInstance();
+////			Transformer transformer = tf.newTransformer();
+////			transformer.transform(domSource, result);
+////			return new StringBuffer(writer.toString());
+////		} 
+////		catch (Exception e) 
+////		{
+////			e.printStackTrace();
+////		}
+////		
+//		return param;
+//	}
+	
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
 	{
+		Namespace ns =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
+		Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
+		
+		SAXBuilder sxb = new SAXBuilder();
 		try 
 		{
-			//Document builder
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setNamespaceAware(true);
-			DocumentBuilder db;
-			db = dbf.newDocumentBuilder();
 			InputStream xml = new StringBufferInputStream(param.toString());
-			Document doc = db.parse(xml);
-			doc.getDocumentElement().normalize();
+	    	Document  docParent = sxb.build(xml);
+	    	Element racine = docParent.getRootElement();
+	    	Element elementQuery = racine.getChild("Query", ns);
+	    	Element elementConstraint = null;
+	    	Element elementFilter = null;
+	    	Element elementAnd = null;
+	    	Element elementOr = null;
+	    	
+	    	Filter filtre = new CSWProxyMetadataConstraintFilter();
+	    	Iterator it= docParent.getDescendants(filtre);
+			  
+	    	
+			while(it.hasNext())
+			{
+				elementConstraint = (Element)it.next();
+			}
 			
-			String docPrefix = doc.getDocumentElement().getPrefix();
-			String docUri = doc.getDocumentElement().getNamespaceURI();
-			if(docPrefix != null)
-				docPrefix = docPrefix+":";
-			else
-				docPrefix ="";
-			
-			NodeList constraintNodes = doc.getElementsByTagNameNS("*","Constraint");
-			Node constraint = null;
-			Node filterNode = null;
-			
-			//<Constraint>
-			if (constraintNodes.getLength() == 0)
+			if (elementConstraint == null)
 			{
 				//No constraint defined
-				Node query = doc.getElementsByTagNameNS("*","Query").item(0);
-				Element eConstraint = doc.createElementNS(docUri, docPrefix+"Constraint"); 
-				eConstraint.setAttribute("version", "1.1.0");
-				constraint = eConstraint;
-				query.appendChild(constraint);
-				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-				constraint.appendChild(filterNode);
+				elementConstraint = new Element("Constraint",ns);
+					elementQuery.addContent(elementConstraint);
+				elementConstraint.setAttribute("version", "1.1.0");
+				elementFilter = new Element("Filter",nsOGC);
+					elementConstraint.addContent(elementFilter);
 			}
 			else
 			{
 				//Constraint already exists
-				constraint = constraintNodes.item(0);
-				//Get the Filter Node
-				NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
-				if(filterNodes.getLength() == 0)
+				elementFilter = elementConstraint.getChild("Filter", nsOGC);
+				if (elementFilter == null)
 				{
-					//Create filter node
-					filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-					constraint.appendChild(filterNode);
-				}
-				else
-				{
-					filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+					elementFilter = new Element("Filter",nsOGC);
+						elementConstraint.addContent(elementFilter);
 				}
 			}
 			
-			//<Filter>
-			String uri =  filterNode.getNamespaceURI();
-			String prefix = filterNode.getPrefix();
 			
-			if(prefix == null)
-				prefix = "";
-			else
-				prefix = prefix+":";
-			
-			//<And>
-			//Get the "And" Node
-			NodeList filterChildNodes =  filterNode.getChildNodes();
-			Boolean isAndExists = false;
-			Node and = null;
-			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
+			List<Element> filterChildren = elementFilter.getChildren();
+			for(int i = 0 ; i<filterChildren.size() ; i++)
 			{
-				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
+				if("And".equalsIgnoreCase(filterChildren.get(i).getName()))
 				{
-					isAndExists = true;
-					and = filterChildNodes.item(i);
+					elementAnd = filterChildren.get(i);
 					break;
 				}
-			}			
-			//Create the and node if not already exists
-			if(!isAndExists)
-			{
-				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
 			}
+			
+			
+			//Create the and node if not already exists
+			if(elementAnd==null)
+			{
+				elementAnd = new Element("And",nsOGC);
+				for(int i = filterChildren.size()-1  ; i>=0 ; i--)
+				{
+					elementAnd.addContent(filterChildren.get(i).detach());
+				}
+				elementFilter.addContent(elementAnd);
+			}
+			
 			
 			//<Or>
 			//Add the "Or" node
-			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
+			elementOr = new Element("Or", nsOGC);
+				elementAnd.addContent(elementOr);
+			for (int m = 0; m<ids.size() ; m++)
+			{
+				Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
+					elementOr.addContent(elementProperty);
+				Element elementName = new Element("PropertyName", nsOGC);
+					elementProperty.addContent(elementName);
+				elementName.setText(ogcSearchFilter);
+				Element elementLiteral = new Element("Literal", nsOGC);
+					elementProperty.addContent(elementLiteral);
+				elementLiteral.setText(ids.get(m).get("guid").toString());
+			}
+
 			
 			//Return
-			DOMSource domSource = new DOMSource(doc);
-			StringWriter writer = new StringWriter();
-			StreamResult result = new StreamResult(writer);
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.transform(domSource, result);
-			return new StringBuffer(writer.toString());
+			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+			ByteArrayOutputStream result =new ByteArrayOutputStream ();
+	        sortie.output(docParent,result );
+
+			return new StringBuffer(result.toString());
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
+			return null;
 		}
-		
-		return param;
-	}
-
-	/**
-	 * Build the <And> node and add to it the existing filter blocks
-	 * @param doc
-	 * @param namespace
-	 * @param prefix
-	 * @param filterChildNodes
-	 * @param filterNode
-	 * @return
-	 */
-	private Node buildAndNodeTofilterOnDataID (Document doc,String namespace, String prefix,NodeList filterChildNodes,Node filterNode)
-	{
-		Node and = doc.createElementNS(namespace, prefix+"And");
-		for (int i = filterChildNodes.getLength() -1 ; i>=0 ; i--)
-		{
-			Node child = filterChildNodes.item(i);
-			filterNode.removeChild(child);
-			and.appendChild(child);
-		}
-		filterNode.appendChild(and);
-		return and;
-	}
-	
-	/**
-	 * Build the <Or> node and add to it the accessible metadata's Id
-	 * @param ogcSearchFilter
-	 * @param doc
-	 * @param namespace
-	 * @param prefix
-	 * @param ids
-	 * @return
-	 */
-	private Node buildOrNodeToFilterOnDataId (String ogcSearchFilter, Document doc, String namespace, String prefix,List<Map<String,Object>> ids)
-	{
-		Element or = doc.createElementNS(namespace,prefix+"Or");
-		for (int m = 0; m<ids.size() ; m++)
-		{
-			Element property = doc.createElementNS(namespace,prefix+"PropertyIsEqualTo");
-			Element name = doc.createElementNS(namespace,prefix+"PropertyName");
-			name.setTextContent(ogcSearchFilter);
-			property.appendChild(name);
-			Element literal = doc.createElementNS(namespace,prefix+"Literal");
-			literal.setTextContent(ids.get(m).get("guid").toString());
-			property.appendChild(literal);
-			or.appendChild(property);
-		}
-		return or;
 	}
 	
 	public String addFilterOnDataAccessible (String ogcSearchFilter, String param,  List<Map<String,Object>> ids)
 	{
 		
-		try 
-		{
-			//Document builder
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setNamespaceAware(true);
-			DocumentBuilder db;
-			db = dbf.newDocumentBuilder();
-			InputStream xml = new StringBufferInputStream(param);
-			Document doc = db.parse(xml);
-			doc.getDocumentElement().normalize();
-			
-			
-			String docPrefix = doc.getDocumentElement().getPrefix();
-			String docUri = doc.getDocumentElement().getNamespaceURI();
-			if(docPrefix != null)
-				docPrefix = docPrefix+":";
-			else
-				docPrefix ="";
-			
-			Node filterNode = null;
-				
-			NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
-			if(filterNodes.getLength() == 0)
-			{
-				//Create filter node
-				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-			}
-			else
-			{
-				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
-			}
-			
-			
-			//<Filter>
-			String uri =  filterNode.getNamespaceURI();
-			String prefix = filterNode.getPrefix();
-			
-			if(prefix == null)
-				prefix = "";
-			else
-				prefix = prefix+":";
-			
-			//<And>
-			//Get the "And" Node
-			NodeList filterChildNodes =  filterNode.getChildNodes();
-			Boolean isAndExists = false;
-			Node and = null;
-			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
-			{
-				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
-				{
-					isAndExists = true;
-					and = filterChildNodes.item(i);
-					break;
-				}
-			}			
-			//Create the and node if not already exists
-			if(!isAndExists)
-			{
-				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
-			}
-			
-			//<Or>
-			//Add the "Or" node
-			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
-			
-			//Return
-			DOMSource domSource = new DOMSource(doc);
-			StringWriter writer = new StringWriter();
-			StreamResult result = new StreamResult(writer);
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.transform(domSource, result);
-			String constraint = writer.toString().substring(38);
-			return constraint;
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
+//		try 
+//		{
+//			//Document builder
+//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//			dbf.setNamespaceAware(true);
+//			DocumentBuilder db;
+//			db = dbf.newDocumentBuilder();
+//			InputStream xml = new StringBufferInputStream(param);
+//			Document doc = db.parse(xml);
+//			doc.getDocumentElement().normalize();
+//			
+//			
+//			String docPrefix = doc.getDocumentElement().getPrefix();
+//			String docUri = doc.getDocumentElement().getNamespaceURI();
+//			if(docPrefix != null)
+//				docPrefix = docPrefix+":";
+//			else
+//				docPrefix ="";
+//			
+//			Node filterNode = null;
+//				
+//			NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
+//			if(filterNodes.getLength() == 0)
+//			{
+//				//Create filter node
+//				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
+//			}
+//			else
+//			{
+//				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
+//			}
+//			
+//			
+//			//<Filter>
+//			String uri =  filterNode.getNamespaceURI();
+//			String prefix = filterNode.getPrefix();
+//			
+//			if(prefix == null)
+//				prefix = "";
+//			else
+//				prefix = prefix+":";
+//			
+//			//<And>
+//			//Get the "And" Node
+//			NodeList filterChildNodes =  filterNode.getChildNodes();
+//			Boolean isAndExists = false;
+//			Node and = null;
+//			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
+//			{
+//				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
+//				{
+//					isAndExists = true;
+//					and = filterChildNodes.item(i);
+//					break;
+//				}
+//			}			
+//			//Create the and node if not already exists
+//			if(!isAndExists)
+//			{
+//				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
+//			}
+//			
+//			//<Or>
+//			//Add the "Or" node
+//			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
+//			
+//			//Return
+//			DOMSource domSource = new DOMSource(doc);
+//			StringWriter writer = new StringWriter();
+//			StreamResult result = new StreamResult(writer);
+//			TransformerFactory tf = TransformerFactory.newInstance();
+//			Transformer transformer = tf.newTransformer();
+//			transformer.transform(domSource, result);
+//			String constraint = writer.toString().substring(38);
+//			return constraint;
+//		} 
+//		catch (Exception e) 
+//		{
+//			e.printStackTrace();
+//		}
 		
 		return param;
 	}

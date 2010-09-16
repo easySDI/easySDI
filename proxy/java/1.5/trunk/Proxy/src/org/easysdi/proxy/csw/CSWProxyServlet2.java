@@ -417,46 +417,47 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return ;
 			
+			if(currentOperation.equalsIgnoreCase("GetRecords"))
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
+			
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if(hasPolicy)
+				dump("INFO","Start - Data Accessibility");
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				if(!cswDataManager.isAllDataAccessible())
 				{
-					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					if(!cswDataManager.isAllDataAccessible())
+					String dataIDaccessible="";
+					if(!cswDataManager.isDataVersionAccessible(requestedId))
 					{
-						String dataIDaccessible="";
-						if(!cswDataManager.isDataVersionAccessible(requestedId))
-						{
-							dataIDaccessible = cswDataManager.getDataIdVersionAccessible();
-						}
-						else
-						{
-							dataIDaccessible = requestedId;
-						}
-							
-						if(!cswDataManager.isDataAccessible(dataIDaccessible))
-						{
-							sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
-							return;
-						}
-						requestedId = dataIDaccessible;
+						dataIDaccessible = cswDataManager.getDataIdVersionAccessible();
 					}
+					else
+					{
+						dataIDaccessible = requestedId;
+					}
+						
+					if(!cswDataManager.isDataAccessible(dataIDaccessible))
+					{
+						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						return;
+					}
+					requestedId = dataIDaccessible;
 				}
+				
 			}
 			//GetRecords
+			//TODO : check the validity of this code for the support of the GET GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
-				if(hasPolicy)
+				dump("INFO","Start - Data Accessibility");
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				if(!cswDataManager.isAllDataAccessible())
 				{
-					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					if(!cswDataManager.isAllDataAccessible())
-					{
-						cswDataManager.getAccessibleDataIds();
-						//Add a filter on the data id in the request
-						constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"), cswDataManager.getAccessibleDataIds());
-						dump("INFO", "GetRecords request send : "+constraint);
-					}
+					cswDataManager.getAccessibleDataIds();
+					//Add a filter on the data id in the request
+					constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"), cswDataManager.getAccessibleDataIds());
+					dump("INFO", "GetRecords request send : "+constraint);
 				}
 			}
 			
@@ -611,36 +612,37 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecordById
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if(hasPolicy)
+				dump("INFO","Start - Data Accessibility");
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				String dataId = rh.getRecordId();
+				if(!cswDataManager.isAllDataAccessible())
 				{
-					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					String dataId = rh.getRecordId();
-					if(!cswDataManager.isAllDataAccessible())
+					if(!cswDataManager.isDataVersionAccessible(dataId))
 					{
-						if(!cswDataManager.isDataVersionAccessible(dataId))
-						{
-							dataId = cswDataManager.getDataIdVersionAccessible();
-						}
-						if(!cswDataManager.isDataAccessible(dataId))
-						{
-							sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
-							return;
-						}
-						if(dataId.compareTo(rh.getRecordId()) != 0)
-						{
-							//Change the metadata's id in the request
-							int start = param.indexOf(rh.getRecordId());
-							int end = start + rh.getRecordId().length();
-							
-							param.replace(start, end, dataId);
-						}
+						dataId = cswDataManager.getDataIdVersionAccessible();
+					}
+					if(!cswDataManager.isDataAccessible(dataId))
+					{
+						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						return;
+					}
+					if(dataId.compareTo(rh.getRecordId()) != 0)
+					{
+						//Change the metadata's id in the request
+						int start = param.indexOf(rh.getRecordId());
+						int end = start + rh.getRecordId().length();
+						
+						param.replace(start, end, dataId);
 					}
 				}
+				dump("INFO","End - Data Accessibility");
+				
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
+					dump("INFO","Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -648,6 +650,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
 						return;
 					}
+					dump("INFO","End - Complete metadata");
 					
 				}
 				//Transform the request response
@@ -656,22 +659,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
-				if(hasPolicy)
+				dump("INFO","Start - Data Accessibility");
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				if(!cswDataManager.isAllDataAccessible())
 				{
-					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					if(!cswDataManager.isAllDataAccessible())
-					{
-						cswDataManager.getAccessibleDataIds();
-						//Add a filter on the data id in the request
-						param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param, cswDataManager.getAccessibleDataIds());
-						dump("INFO", "GetRecords request send : "+param);
-					}
+					cswDataManager.getAccessibleDataIds();
+					//Add a filter on the data id in the request
+					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param, cswDataManager.getAccessibleDataIds());
+					dump("INFO", "GetRecords request send : "+param);
 				}
+				dump("INFO","End - Data Accessibility");
+				
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
+					dump("INFO","Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -679,6 +683,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
 						return;
 					}
+					dump("INFO","End - Complete metadata");
 					
 				}
 				//Transform the request response
