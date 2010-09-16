@@ -341,6 +341,7 @@ public class OgcProxyServlet extends HttpServlet {
 			// policyE.setVersion(plastmodified);
 			// configCache.put(policyE);
 			// } else
+			
 			if(policyE != null) 
 			{
 				ps.setPolicy((Policy) policyE.getValue());

@@ -60,52 +60,72 @@ public class PolicyHelpers {
      * @return the policy
      */
 
-    public Policy getPolicy (String user, HttpServletRequest req){
+    public Policy getPolicy (String user, HttpServletRequest req)
+    {
 
-	/*
-	 * Find the first policy where the user or the role is matching
-	 */	
-	for (int i=0 ; i<policyList.size();i++){
-	    Policy p = policyList.get(i);
-
-	    
-	    if(p.getSubjects()==null){
-		return null;
+		/*
+		 * Find the first policy where the user or the role is matching
+		 */	
+		for (int i=0 ; i<policyList.size();i++)
+		{
+		    Policy p = policyList.get(i);
+		    
+		    if(p.getSubjects()==null)
+		    {
+		    	continue;
+		    }
+		    	    
+		    /*If one user is matching, then we can returns the operations*/
+		    if (user !=null)
+		    {
+		    	List<String> userList = p.getSubjects().getUser();
+		    	for (int j =0;j<userList.size();j++)
+		    	{
+		    		if (userList.get(j).equals(user))
+		    		{
+		    			return p;
+		    		}
+		    	}
+		    }
+		    
+		    /*If the user is not matching , then try if  a role is matching then returns the operations*/
+		    if (user !=null)
+		    {
+		    	if (req !=null)
+		    	{
+		    		List<String> roleList = p.getSubjects().getRole();
+		    		for (int j =0;j<roleList.size();j++)
+		    		{		    
+		    			if (req.isUserInRole(roleList.get(j)))
+		    			{
+		    				return p;
+		    			}
+		    		}
+		    	}	    
+		    }
 	    }
-	    /*If attribute All is true, then we can returns the operations*/ 
-	    if (p.getSubjects().isAll()) {					
-		return p;
-	    }
-	    
-	    /*If one user is matching, then we can returns the operations*/
-	    if (user !=null){
-		List<String> userList = p.getSubjects().getUser();
-		for (int j =0;j<userList.size();j++){
-		    if (userList.get(j).equals(user)){
-			return p;
+	
+		/*If the user is not matching and the role is not matching either, we try to return the first policy with a 'subjects' attribute 'all' set*/
+		for (int i=0 ; i<policyList.size();i++)
+		{
+			Policy p = policyList.get(i);
+		    
+		    if(p.getSubjects()==null)
+		    {
+		    	continue;
+		    }
+			 
+		    if (p.getSubjects().isAll()) 
+		    {					
+		    	return p;
 		    }
 		}
-	    }
-	    /*If the user is not matching , then try if  a role is matching then returns the operations*/
-	    if (user !=null){
-		if (req !=null){
-		    List<String> roleList = p.getSubjects().getRole();
-		    for (int j =0;j<roleList.size();j++){		    
-			if (req.isUserInRole(roleList.get(j))){
-			    return p;
-			}
-		    }
-		}	    
-	    }
-	}
+
+		/*We found neither user nor role matching the rule 
+		 * Then it returns null 
+		 */ 
 	
-	 
-
-	/*We found neither user nor role matching the rule 
-	 * Then it returns null 
-	 */ 
-
-	return null;
+		return null;
     }
 
 
