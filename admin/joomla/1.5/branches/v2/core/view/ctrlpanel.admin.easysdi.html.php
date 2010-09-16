@@ -110,7 +110,20 @@ class HTML_ctrlpanel {
 										</div>
 									</div>
 									
+							<?php	
+									$link = "index.php?option=$option&amp;task=serviceAccount";
 							
+							
+							?>
+									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+										<div class="icon">
+											<a href="<?php echo $link; ?>">
+												<?php 
+													$text = JText::_( 'CORE_SERVICEACCOUNT_PANEL' );					
+													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+												<span><?php echo $text; ?></span></a>
+										</div>
+									</div>
 								</div>
 							</td>
 						</tr>
