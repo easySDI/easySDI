@@ -334,7 +334,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			//Warning : only for version=1.0.0
 			StringBuffer serviceMetadataXSLT = new StringBuffer();
 			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-								
+			
 			serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
 			serviceMetadataXSLT.append("<!-- Copy the current node -->");
 			serviceMetadataXSLT.append("<xsl:copy>");
@@ -346,17 +346,17 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("<xsl:template match=\"wfs:Service\">");
 			serviceMetadataXSLT.append("<xsl:copy>");
 			//Name
-			serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Name\"> ");
 			serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Title
-			serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
+			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Title\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Abstract
 			if(!getConfiguration().getAbst().equals(""))
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Abstract\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
@@ -364,7 +364,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			if(getConfiguration().getKeywordList()!= null)
 			{
 				List<String> keywords = getConfiguration().getKeywordList();
-				serviceMetadataXSLT.append("<xsl:element name=\"Keywords\"> ");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Keywords\"> ");
 				String sKeyWords = new String() ;
 				for (int n = 0; n < keywords.size(); n++) {
 					sKeyWords+= keywords.get(n);
@@ -376,23 +376,23 @@ public class WFSProxyServlet extends ProxyServlet {
 	//				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
 	//				serviceMetadataXSLT.append("</xsl:element>");
 				}
-				serviceMetadataXSLT.append("<xsl:text>" + sKeyWords + "</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>" + sKeyWords + "</xsl:text>");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:element>");
 			}
 			//OnlineResource
-			serviceMetadataXSLT.append("<xsl:copy-of select=\"wfs:OnlineResource\"/>");
+			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:copy-of select=\"wfs:OnlineResource\"/>");
 			
 			//Fees
 			if(!getConfiguration().getFees().equals(""))
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Fees\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//AccesConstraints
 			if(!getConfiguration().getAccessConstraints().equals(""))
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
+				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"AccessConstraints\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
