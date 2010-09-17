@@ -48,6 +48,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class CSWProxyMetadataContentManager 
 {
 	private ProxyServlet proxy;
+	private String _lastError ="";
 	private static final Namespace ns = Namespace.getNamespace("http://www.w3.org/1999/xlink");
 	
 	public CSWProxyMetadataContentManager (ProxyServlet cswProxy)
@@ -113,10 +114,11 @@ public class CSWProxyMetadataContentManager
 				String fragment = requestHandler.getFragment();
 				fragment = "bee:contact";
 				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
-				
+
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)
 				{
+					_lastError = ("Error on : "+elList.get(j).getAttribute("href", ns).getValue());
 					return false;
 				}
 				try
@@ -129,6 +131,7 @@ public class CSWProxyMetadataContentManager
 					//The all request is aborted
 					//An OGC exception will be send
 					proxy.dump("ERROR",ex.getMessage());
+					_lastError = ("Error on : "+elList.get(j).getAttribute("href", ns).getValue());
 					return false;
 				}
     	   }
@@ -147,6 +150,12 @@ public class CSWProxyMetadataContentManager
 		}
 	}
 
+	public String GetLastError()
+	{
+		String temp = _lastError;
+		_lastError = "";
+		return temp;
+	}
 	
 	private InputStream sendData(String urlstr, String parameters) 
 	{

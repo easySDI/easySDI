@@ -107,6 +107,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -1066,11 +1067,18 @@ public class WMSProxyServlet extends ProxyServlet {
 //
 //			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
 
-		} catch (Exception e) {
+		} 
+		catch (SAXParseException e)
+		{
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+		}
+		catch (Exception e) {
 //			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode ","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -2125,9 +2133,10 @@ public class WMSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
+//			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 

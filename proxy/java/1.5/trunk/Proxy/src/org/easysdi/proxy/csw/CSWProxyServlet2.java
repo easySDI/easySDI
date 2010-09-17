@@ -334,10 +334,17 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 			}
 		} 
+		catch (SAXParseException e)
+		{
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -514,13 +521,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
 
@@ -648,7 +655,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
 					dump("INFO","End - Complete metadata");
@@ -681,7 +688,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed", "NoApplicableCode", "", requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
 					dump("INFO","End - Complete metadata");
@@ -703,17 +710,18 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		}
 		catch (SAXParseException e)
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode ","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 }

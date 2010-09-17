@@ -98,6 +98,7 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -1015,7 +1016,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1023,9 +1024,10 @@ public class WFSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
+//			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -1608,9 +1610,10 @@ public class WFSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
+//			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -2938,10 +2941,17 @@ public class WFSProxyServlet extends ProxyServlet {
 					tempFile.delete();
 				}
 			}
-		} catch (Exception e) {
+			
+		}catch (SAXParseException e)
+		{
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			dump("Transform ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode ","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
