@@ -80,6 +80,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -703,6 +704,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			dump("ERROR", e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+		}
+		catch (SAXParseException e)
+		{
+			dump("ERROR", e.getMessage());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode ","",requestedVersion));
 		}
 		catch (Exception e) 
 		{

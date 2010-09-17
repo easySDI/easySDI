@@ -100,27 +100,27 @@ public class ConfigFileHandler extends DefaultHandler {
 	private boolean isServiceMetadata=false;
 	private boolean isContactInformation=false;
 	private boolean isContactAddress=false;
-	private String title ="";
-	private String abst ="";
+	private String title =null;
+	private String abst =null;
 	private List<String> keywordList = null;
-	private String contactName ="";
+	private String contactName =null;
 	//private String contactSite ="";
-	private String contactOrganisation ="";
-	private String contactPosition ="";
-	private String adressType ="";
-	private String adress ="";
-	private String postalCode ="";
-	private String city ="";
-	private String state ="";
-	private String country ="";
-	private String voicePhone ="";
-	private String facsimile ="";
-	private String electronicMailAddress ="";
-	private String linkage ="";
-	private String hoursOfService ="";
-	private String instructions ="";
-	private String fees ="";
-	private String accessConstraints ="";
+	private String contactOrganisation =null;
+	private String contactPosition =null;
+	private String adressType =null;
+	private String adress =null;
+	private String postalCode =null;
+	private String city =null;
+	private String state =null;
+	private String country =null;
+	private String voicePhone =null;
+	private String facsimile =null;
+	private String electronicMailAddress =null;
+	private String linkage =null;
+	private String hoursOfService =null;
+	private String instructions =null;
+	private String fees =null;
+	private String accessConstraints =null;
 	private ServiceContactInfo contactInfo ;
 	private ServiceContactAdressInfo contactAdress;
 	
@@ -496,12 +496,14 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		}
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Keyword")) {
-			if(keywordList == null)
+			if(data != null && !data.isEmpty())
 			{
-				keywordList = new Vector <String>();
+				if(keywordList == null)
+				{
+					keywordList = new Vector <String>();
+				}
+				keywordList.add(data);
 			}
-			keywordList.add(data);
-		
 		}
 	
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Fees")) {

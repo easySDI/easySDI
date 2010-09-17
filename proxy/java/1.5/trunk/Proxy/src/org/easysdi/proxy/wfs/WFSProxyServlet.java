@@ -139,7 +139,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 	//Store all the possible operations for a WFS service
 	//Used in buildCapabilitiesXSLT()
-	private String[] WFSOperation = { "GetCapabilities", "DescribeFeature", "GetFeature", "Transaction", "LockFeature", "GetGmlObject", "GetFeatureWithLock"};
+	private String[] WFSOperation = { "GetCapabilities", "DescribeFeatureType", "GetFeature", "Transaction", "LockFeature", "GetGmlObject", "GetFeatureWithLock"};
 	//Store operations supported by the current version of the proxy
 	//Update this list to reflect proxy's capabilities
 	//private static final List<String> WFSSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
@@ -151,13 +151,13 @@ public class WFSProxyServlet extends ProxyServlet {
 	public WFSProxyServlet ()
 	{
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeature", "GetFeature","Transaction");
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeatureType", "GetFeature","Transaction");
 	}
 	
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
-//		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
-		sb.append("<ServiceExceptionReport version=\"1.2.0\">\n");
+		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">\n");
+//		sb.append("<ServiceExceptionReport version=\"1.2.0\">\n");
 		sb.append("\t<ServiceException ");
 		if(code != null && code != "")
 		{
@@ -346,17 +346,17 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("<xsl:template match=\"wfs:Service\">");
 			serviceMetadataXSLT.append("<xsl:copy>");
 			//Name
-			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Name\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
 			serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Title
-			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Title\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Abstract
-			if(!getConfiguration().getAbst().equals(""))
+			if(getConfiguration().getAbst()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Abstract\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
@@ -364,7 +364,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			if(getConfiguration().getKeywordList()!= null)
 			{
 				List<String> keywords = getConfiguration().getKeywordList();
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Keywords\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Keywords\"> ");
 				String sKeyWords = new String() ;
 				for (int n = 0; n < keywords.size(); n++) {
 					sKeyWords+= keywords.get(n);
@@ -376,23 +376,23 @@ public class WFSProxyServlet extends ProxyServlet {
 	//				serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
 	//				serviceMetadataXSLT.append("</xsl:element>");
 				}
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>" + sKeyWords + "</xsl:text>");
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:element>");
+				serviceMetadataXSLT.append("<xsl:text>" + sKeyWords + "</xsl:text>");
+				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//OnlineResource
-			serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:copy-of select=\"wfs:OnlineResource\"/>");
+			serviceMetadataXSLT.append("<xsl:copy-of select=\"wfs:OnlineResource\"/>");
 			
 			//Fees
-			if(!getConfiguration().getFees().equals(""))
+			if(getConfiguration().getFees()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"Fees\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//AccesConstraints
-			if(!getConfiguration().getAccessConstraints().equals(""))
+			if(getConfiguration().getAccessConstraints()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:text>&#10;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:element name=\"AccessConstraints\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
@@ -1600,7 +1600,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -2941,6 +2941,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			dump("Transform ERROR", e.toString());
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode ","",requestedVersion));
 		}
 	}
 

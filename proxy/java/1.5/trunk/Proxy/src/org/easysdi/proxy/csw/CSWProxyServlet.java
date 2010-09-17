@@ -81,7 +81,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet extends ProxyServlet {
 
 	private static final long serialVersionUID = 7288366261387138250L;
-	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetRecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction","GetDomain" };
+	private String[] CSWOperation = { "GetCapabilities", "GetRecords", "GetrecordById", "Harvest", "DescribeRecord", "GetExtrinsicContent", "Transaction","GetDomain" };
 
 	/**
 	 * Constructor
@@ -89,7 +89,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	public CSWProxyServlet ()
 	{
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetRecordById","DescribeRecord", "Transaction");
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetRecords", "GetrecordById","DescribeRecord","Transaction");
 	}
 	
 	public void init(ServletConfig config) throws ServletException {
@@ -107,8 +107,8 @@ public class CSWProxyServlet extends ProxyServlet {
 	
 	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
-//		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
-		sb.append("<ows:ExceptionReport version=\"1.0.0\" >\n");
+		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">");
+//		sb.append("<ows:ExceptionReport version=\"1.0.0\" >\n");
 		sb.append("\t<ows:Exception ");
 		if(code != null && code != "")
 		{
@@ -189,7 +189,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 		serviceMetadataXSLT.append("</xsl:element>");
 		//Abstract
-		if(!getConfiguration().getAbst().equals(""))
+		if(getConfiguration().getAbst()!=null)
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:Abstract\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
@@ -208,14 +208,14 @@ public class CSWProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//Fees
-		if(!getConfiguration().getFees().equals(""))
+		if(getConfiguration().getFees() !=null)
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:Fees\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 		}
 		//AccesConstraints
-		if(!getConfiguration().getAccessConstraints().equals(""))
+		if(getConfiguration().getAccessConstraints()!=null)
 		{
 			serviceMetadataXSLT.append("<xsl:element name=\"ows:AccessConstraints\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
@@ -230,83 +230,91 @@ public class CSWProxyServlet extends ProxyServlet {
 		//contactInfo
 		if(getConfiguration().getContactInfo() != null && !getConfiguration().getContactInfo().isEmpty())
 		{
-				if(!configuration.getContactInfo().getOrganization().equals("")){
+				if(configuration.getContactInfo().getOrganization()!=null){
 					serviceMetadataXSLT.append("<xsl:element name=\"ows:ProviderName\"> ");
 					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization() + "</xsl:text>");
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
 				serviceMetadataXSLT.append("<xsl:element name=\"ows:ServiceContact\"> ");//ows:ServiceContact
-				if(!configuration.getContactInfo().getName().equals("")){
+				if(configuration.getContactInfo().getName()!=null){
 					serviceMetadataXSLT.append("<xsl:element name=\"ows:IndividualName\"> ");
 					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName()+ "</xsl:text>");
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-				if(!configuration.getContactInfo().getPosition().equals("")){
+				if(configuration.getContactInfo().getPosition()!=null){
 					serviceMetadataXSLT.append("<xsl:element name=\"ows:PositionName\"> ");
 					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
 					serviceMetadataXSLT.append("</xsl:element>");
 				}
-				serviceMetadataXSLT.append("<xsl:element name=\"ows:ContactInfo\"> ");//ows:ContactInfo
-				serviceMetadataXSLT.append("<xsl:element name=\"ows:Phone\"> ");//ows:Phone
-				if(!configuration.getContactInfo().getVoicePhone().equals(""))
-				{
-					serviceMetadataXSLT.append("<xsl:element name=\"ows:Voice\"> ");
-					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-				if(!configuration.getContactInfo().getFacSimile().equals(""))
-				{
-					serviceMetadataXSLT.append("<xsl:element name=\"ows:Facsimile\"> ");
-					serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-				serviceMetadataXSLT.append("</xsl:element>");//ows:Phone
 				
-				if (configuration.getContactInfo().getContactAddress() != null && !configuration.getContactInfo().getContactAddress().isEmpty())
+				if(configuration.getContactInfo()!=null && !configuration.getContactInfo().isEmpty())
 				{
-					serviceMetadataXSLT.append("<xsl:element name=\"ows:Address\"> ");//ows:Address
-					if(!configuration.getContactInfo().getContactAddress().getAddress().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:DelivryPoint\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
+					serviceMetadataXSLT.append("<xsl:element name=\"ows:ContactInfo\"> ");//ows:ContactInfo
+					
+					if(configuration.getContactInfo().getVoicePhone()!=null || configuration.getContactInfo().getFacSimile()!=null)
+					{
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:Phone\"> ");//ows:Phone
+						if(configuration.getContactInfo().getVoicePhone()!=null)
+						{
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:Voice\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().getFacSimile()!=null)
+						{
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:Facsimile\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						serviceMetadataXSLT.append("</xsl:element>");//ows:Phone
+					}
+					
+					if (configuration.getContactInfo().getContactAddress() != null && !configuration.getContactInfo().getContactAddress().isEmpty())
+					{
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:Address\"> ");//ows:Address
+						if(configuration.getContactInfo().getContactAddress().getAddress()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:DelivryPoint\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().getContactAddress().getCity()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:City\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().getContactAddress().getState()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:AdministrativeArea\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().getContactAddress().getPostalCode()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:PostalCode\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().getContactAddress().getCountry()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:Country\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						if(configuration.getContactInfo().geteMail()!=null){
+							serviceMetadataXSLT.append("<xsl:element name=\"ows:ElectronicMailAddress\"> ");
+							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().geteMail()+ "</xsl:text>");
+							serviceMetadataXSLT.append("</xsl:element>");
+						}
+						serviceMetadataXSLT.append("</xsl:element>");//ows:Address
+					}
+					if(configuration.getContactInfo().getLinkage()!=null)
+					{
+						serviceMetadataXSLT.append("<xsl:element name=\"ows:OnlineResource\"> ");
+						serviceMetadataXSLT.append("<xsl:attribute name=\"xlink:href\">");
+						serviceMetadataXSLT.append(configuration.getContactInfo().getLinkage());
+						serviceMetadataXSLT.append("</xsl:attribute>");
 						serviceMetadataXSLT.append("</xsl:element>");
 					}
-					if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:City\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					if(!configuration.getContactInfo().getContactAddress().getState().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:AdministrativeArea\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					if(!configuration.getContactInfo().getContactAddress().getPostalCode().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:PostalCode\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					if(!configuration.getContactInfo().getContactAddress().getCountry().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:Country\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					if(!configuration.getContactInfo().geteMail().equals("")){
-						serviceMetadataXSLT.append("<xsl:element name=\"ows:ElectronicMailAddress\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().geteMail()+ "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					serviceMetadataXSLT.append("</xsl:element>");//ows:Address
+					serviceMetadataXSLT.append("</xsl:element>");//ows:ContactInfo
+					serviceMetadataXSLT.append("</xsl:element>");//ows:ServiceContact
 				}
-				if(!configuration.getContactInfo().getLinkage().equals(""))
-				{
-					serviceMetadataXSLT.append("<xsl:element name=\"ows:OnlineResource\"> ");
-					serviceMetadataXSLT.append("<xsl:attribute name=\"xlink:href\">");
-					serviceMetadataXSLT.append(configuration.getContactInfo().getLinkage());
-					serviceMetadataXSLT.append("</xsl:attribute>");
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-				serviceMetadataXSLT.append("</xsl:element>");//ows:ContactInfo
-				serviceMetadataXSLT.append("</xsl:element>");//ows:ServiceContact
 		}
 		serviceMetadataXSLT.append("</xsl:copy>");
 		serviceMetadataXSLT.append("</xsl:template>");
@@ -582,6 +590,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			} catch (Exception e) {
 				e.printStackTrace();
 				dump("ERROR", e.getMessage());
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode ","",requestedVersion));
 			}
 		} else {
 			try {

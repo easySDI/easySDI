@@ -1105,14 +1105,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		//IF operation is not supported by the current version of the proxy
 		if(!ServiceSupportedOperations.contains(currentOperation))
 		{
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported","request", requestedVersion));
 			return true;
 		}
 		try
 		{
 			if (!isOperationAllowed(currentOperation))
 			{
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported","request",requestedVersion));
 				return true;
 				
 			}
@@ -1120,7 +1120,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		catch (AvailabilityPeriodException ex)
 		{
 			
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported","request",requestedVersion));
 			return true;
 		}
 		

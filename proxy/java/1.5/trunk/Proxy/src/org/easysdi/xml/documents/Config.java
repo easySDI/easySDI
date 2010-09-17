@@ -41,20 +41,21 @@ public class Config implements Serializable{
 	private String hostTranslator = "";
 	private String toleranceDistance = "0";
 	private boolean grouping = true;
-	private String title ="";
-	private String abst ="";
-	private List<String> keywordList ;
+	private String title =null;
+	private String abst =null;
+	private List<String> keywordList = null;
 	private ServiceContactInfo contactInfo;
-	private String fees ="";
-	private String accessConstraints ="";
+	private String fees =null;
+	private String accessConstraints =null;
 	private String exceptionMode = "permissive";
-	private String ogcSearchFilter="";
+	private String ogcSearchFilter=null;
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
 	 */
 	public void setOgcSearchFilter(String ogcSearchFilter) {
-		this.ogcSearchFilter = ogcSearchFilter;
+		if(ogcSearchFilter != null && !ogcSearchFilter.isEmpty())
+			this.ogcSearchFilter = ogcSearchFilter;
 	}
 
 	/**
@@ -185,7 +186,8 @@ public class Config implements Serializable{
 	 * @param accessConstraints the accessConstraints to set
 	 */
 	public void setAccessConstraints(String accessConstraints) {
-		this.accessConstraints = accessConstraints;
+		if(accessConstraints != null && !accessConstraints.isEmpty())
+			this.accessConstraints = accessConstraints;
 	}
 
 	/**
@@ -199,7 +201,8 @@ public class Config implements Serializable{
 	 * @param fees the fees to set
 	 */
 	public void setFees(String fees) {
-		this.fees = fees;
+		if(fees != null && !fees.isEmpty())
+			this.fees = fees;
 	}
 
 	/**
@@ -213,7 +216,8 @@ public class Config implements Serializable{
 	 * @param keyword the keyword to set
 	 */
 	public void setKeywordList(List<String> keywordList) {
-		this.keywordList = keywordList;
+		if(keywordList != null && keywordList.size() != 0)
+			this.keywordList = keywordList;
 	}
 
 	/**
@@ -227,7 +231,8 @@ public class Config implements Serializable{
 	 * @param abst the abst to set
 	 */
 	public void setAbst(String abst) {
-		this.abst = abst;
+		if(abst != null && !abst.isEmpty())
+			this.abst = abst;
 	}
 
 	/**
@@ -241,7 +246,8 @@ public class Config implements Serializable{
 	 * @param title the title to set
 	 */
 	public void setTitle(String title) {
-		this.title = title;
+		if(title != null && !title.isEmpty())
+			this.title = title;
 	}
 
 	/**
@@ -254,7 +260,8 @@ public class Config implements Serializable{
 
 
 	public void setContactInfo(ServiceContactInfo contactInfo) {
-		this.contactInfo = contactInfo;
+		if(contactInfo != null && !contactInfo.isEmpty())
+			this.contactInfo = contactInfo;
 	}
 
 	public ServiceContactInfo getContactInfo() {
@@ -266,7 +273,8 @@ public class Config implements Serializable{
 	 * @param exceptionMode
 	 */
 	public void setExceptionMode(String exceptionMode) {
-		this.exceptionMode = exceptionMode;
+		if(exceptionMode != null && !exceptionMode.isEmpty())
+			this.exceptionMode = exceptionMode;
 	}
 
 	/**

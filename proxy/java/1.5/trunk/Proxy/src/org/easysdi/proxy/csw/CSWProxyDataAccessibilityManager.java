@@ -391,113 +391,9 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param ids
 	 * @return
 	 */
-//	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
-//	{
-////		try 
-////		{
-////			//Document builder
-////			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-////			dbf.setNamespaceAware(true);
-////			DocumentBuilder db;
-////			db = dbf.newDocumentBuilder();
-////			InputStream xml = new StringBufferInputStream(param.toString());
-////			Document doc = db.parse(xml);
-////			doc.getDocumentElement().normalize();
-////			
-////			String docPrefix = doc.getDocumentElement().getPrefix();
-////			String docUri = doc.getDocumentElement().getNamespaceURI();
-////			if(docPrefix != null)
-////				docPrefix = docPrefix+":";
-////			else
-////				docPrefix ="";
-////			
-////			NodeList constraintNodes = doc.getElementsByTagNameNS("*","Constraint");
-////			Node constraint = null;
-////			Node filterNode = null;
-////			
-////			//<Constraint>
-////			if (constraintNodes.getLength() == 0)
-////			{
-////				//No constraint defined
-////				Node query = doc.getElementsByTagNameNS("*","Query").item(0);
-////				Element eConstraint = doc.createElementNS(docUri, docPrefix+"Constraint"); 
-////				eConstraint.setAttribute("version", "1.1.0");
-////				constraint = eConstraint;
-////				query.appendChild(constraint);
-////				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-////				constraint.appendChild(filterNode);
-////			}
-////			else
-////			{
-////				//Constraint already exists
-////				constraint = constraintNodes.item(0);
-////				//Get the Filter Node
-////				NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
-////				if(filterNodes.getLength() == 0)
-////				{
-////					//Create filter node
-////					filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-////					constraint.appendChild(filterNode);
-////				}
-////				else
-////				{
-////					filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
-////				}
-////			}
-////			
-////			//<Filter>
-////			String uri =  filterNode.getNamespaceURI();
-////			String prefix = filterNode.getPrefix();
-////			
-////			if(prefix == null)
-////				prefix = "";
-////			else
-////				prefix = prefix+":";
-////			
-////			//<And>
-////			//Get the "And" Node
-////			NodeList filterChildNodes =  filterNode.getChildNodes();
-////			Boolean isAndExists = false;
-////			Node and = null;
-////			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
-////			{
-////				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
-////				{
-////					isAndExists = true;
-////					and = filterChildNodes.item(i);
-////					break;
-////				}
-////			}			
-////			//Create the and node if not already exists
-////			if(!isAndExists)
-////			{
-////				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
-////			}
-////			
-////			//<Or>
-////			//Add the "Or" node
-////			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
-////			
-////			//Return
-////			DOMSource domSource = new DOMSource(doc);
-////			StringWriter writer = new StringWriter();
-////			StreamResult result = new StreamResult(writer);
-////			TransformerFactory tf = TransformerFactory.newInstance();
-////			Transformer transformer = tf.newTransformer();
-////			transformer.transform(domSource, result);
-////			return new StringBuffer(writer.toString());
-////		} 
-////		catch (Exception e) 
-////		{
-////			e.printStackTrace();
-////		}
-////		
-//		return param;
-//	}
-	
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
 	{
-		Namespace ns =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
+		Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
 		Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
 		
 		SAXBuilder sxb = new SAXBuilder();
@@ -506,7 +402,7 @@ public class CSWProxyDataAccessibilityManager {
 			InputStream xml = new StringBufferInputStream(param.toString());
 	    	Document  docParent = sxb.build(xml);
 	    	Element racine = docParent.getRootElement();
-	    	Element elementQuery = racine.getChild("Query", ns);
+	    	Element elementQuery = racine.getChild("Query", nsCSW);
 	    	Element elementConstraint = null;
 	    	Element elementFilter = null;
 	    	Element elementAnd = null;
@@ -524,7 +420,7 @@ public class CSWProxyDataAccessibilityManager {
 			if (elementConstraint == null)
 			{
 				//No constraint defined
-				elementConstraint = new Element("Constraint",ns);
+				elementConstraint = new Element("Constraint",nsCSW);
 					elementQuery.addContent(elementConstraint);
 				elementConstraint.setAttribute("version", "1.1.0");
 				elementFilter = new Element("Filter",nsOGC);
