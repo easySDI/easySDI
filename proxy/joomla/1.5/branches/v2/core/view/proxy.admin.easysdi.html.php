@@ -1430,6 +1430,8 @@ function generateWMSHTML($config,$thePolicy){
 							if(strcasecmp($operation->Name,'PutStyles')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_PUTSTYLES'); ?></td>-->
+						<td><input type="checkBox" name="operation[]" id="oDescribeLayer" value="DescribeLayer" disabled>
+						<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBELAYER'); ?></i></td>
 				</tr>
 				<tr>
 					<td></td>
@@ -1687,13 +1689,9 @@ function generateWMSHTML($config,$thePolicy){
 								if(strcasecmp($operation->Name,'DescribeFeatureType')==0) echo 'checked';			
 							}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBEFEATURETYPE'); ?></td>
-					<!--<td><input type="checkBox" name="operation[]" id="oLockFeature" value="LockFeature" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
-						<?php foreach ($thePolicy->Operations->Operation as $operation)
-						{
-							if(strcasecmp($operation->Name,'LockFeature')==0) echo 'checked';			
-						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_LOCKFEATURE'); ?></td>-->
-					<td></td>
+						<td><input type="checkBox" name="operation[]" id="oLockFeature" value="LockFeature" disabled>
+							<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_LOCKFEATURE'); ?></i></td>
+					
 				</tr>
 				<tr>
 					<td></td>
@@ -1703,7 +1701,8 @@ function generateWMSHTML($config,$thePolicy){
 							if(strcasecmp($operation->Name,'GetFeature')==0) echo 'checked';			
 						}?>
 						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATURE'); ?></td>
-					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeatureWithLock" value="GetFeatureWithLock" disabled >
+						<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREWITHLOCK'); ?></i></td>
 				</tr>
 			</table>
 		</fieldset>
