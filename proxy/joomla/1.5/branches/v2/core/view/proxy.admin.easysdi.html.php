@@ -1059,7 +1059,7 @@ function submitbutton(pressbutton)
 		<?php if (strcasecmp($thePolicy->Subjects['All'],'True')==0){echo 'checked';} ?>
 			type="checkBox" name="AllUsers[]" id="AllUsers" 
 			onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');">
-		All</td>
+		<?php echo JText::_( 'EASYSDI_ANONYMOUS'); ?></td>
 		<td></td>
 		<td></td>
 	</tr>

@@ -963,7 +963,7 @@ function saveConfig($xml,$configFilePath){
 				$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
 			else
 				$config->{"service-metadata"}->{"AccessConstraints"}="none";
-				
+
 			$xml->asXML($configFilePath);
 		}
 	}
