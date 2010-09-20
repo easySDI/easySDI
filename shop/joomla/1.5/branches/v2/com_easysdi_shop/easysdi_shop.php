@@ -41,6 +41,7 @@ $limitstart= JRequest::getVar('limitstart');
 $limit= JRequest::getVar('limit');
 $furnisher_id= JRequest::getVar('furnisher_id');
 $freetextcriteria = JRequest::getVar('freetextcriteria');
+
 $cid = JRequest::getVar ('cid', array(0) );
 if (!is_array( $cid )) {
 	$cid = array(0);
@@ -319,6 +320,76 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');	
 		
 		SITE_product::downloadFinalProduct();
+		break;
+		
+	/*****************************************************************************************************************************
+	 * Favorite
+	 *****************************************************************************************************************************/
+	case "addMetadataNotification":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+
+		SITE_favorite::metadataNotification(1);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid'));
+		break;
+
+	case "removeMetadataNotification":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+			
+		SITE_favorite::metadataNotification(0);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		break;
+			
+	case "addFavorite":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+			
+		SITE_favorite::favoriteProduct(1);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		break;
+
+	case "removeFavorite":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+			
+		SITE_favorite::favoriteProduct(0);
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		break;
+
+	case "manageFavoriteProduct":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+			
+		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		break;
+
+	case "manageFavorite":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+						
+		SITE_favorite::manageFavoriteProduct();
+		break;
+
+	case "listAllProductExceptFavorite":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'favorite.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'favorite.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');			
+			
+		SITE_favorite::searchProducts();
 		break;
 		
 	/*****************************************************************************************************************************
