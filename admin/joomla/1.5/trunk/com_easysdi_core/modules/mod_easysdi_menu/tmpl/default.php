@@ -200,7 +200,7 @@ class userManagerRightESDY
 					}
 					
 				else {
-					return false;
+					return true;
 				}
 				} else {
 				//Not a ESDY URL
