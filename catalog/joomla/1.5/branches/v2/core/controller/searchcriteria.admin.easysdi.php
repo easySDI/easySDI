@@ -51,7 +51,8 @@ class ADMIN_searchcriteria {
 		
 		$orderby 	= ' ORDER BY '. $filter_order .' '. $filter_order_Dir;
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_searchcriteria sc LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id WHERE rc.context_id IS NULL OR rc.context_id=".$context_id;
+		// Récupérer les critères système ou ceux associés à ce contexte
+		$query = "SELECT COUNT(*) FROM #__sdi_searchcriteria sc LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id WHERE sc.criteriatype_id=1 OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id.") OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id.")";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		
@@ -60,7 +61,13 @@ class ADMIN_searchcriteria {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT sc.*, c.name as criteriatype_name, c.label as criteriatype_label FROM #__sdi_searchcriteria sc LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id WHERE rc.context_id IS NULL OR rc.context_id=".$context_id;
+		$query = "SELECT sc.*, c.name as criteriatype_name, c.label as criteriatype_label 
+				  FROM #__sdi_searchcriteria sc 
+				  LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id 
+				  INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id 
+				  WHERE sc.criteriatype_id=1 
+				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id.") 
+				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id.")";
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		
@@ -240,6 +247,11 @@ class ADMIN_searchcriteria {
 			$rowSearchCriteria->advancedtab = 1;
 		}
 			
+		// Si le critère de recherche est de type CSW, indiquer le contexte associé
+		if ($rowSearchCriteria->criteriatype_id == 3)
+		{
+			$rowSearchCriteria->context_id = $context_id;
+		}
 		
 		if (!$rowSearchCriteria->store(false)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

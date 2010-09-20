@@ -262,11 +262,30 @@ class SITE_catalog {
 						case "localechoice":
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
-							$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
-							<ogc:Literal>%$filter%</ogc:Literal>
-							</ogc:PropertyIsLike> ";
+							$kwords = explode(" ", trim($filter));
+							//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
 							
+							$terms=0;
+							$cswTerm="";
+							foreach ($kwords as $word) 
+							{
+								if ($word <> "")
+								{
+									$cswTerm .= "
+									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:Literal>%$word%</ogc:Literal>
+											</ogc:PropertyIsLike>\r\n
+										";
+									$terms++;
+								}
+							}
+							
+							// Réunir les critères
+							if ($terms > 1)
+								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
+							
+							$cswSimpleFilter.=$cswTerm;
 							$empty = false;
 							break;
 						case "list":
@@ -1036,11 +1055,30 @@ class SITE_catalog {
 						case "localechoice":
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
-							$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
-							<ogc:Literal>%$filter%</ogc:Literal>
-							</ogc:PropertyIsLike> ";
+							$kwords = explode(" ", trim($filter));
+							//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
 							
+							$terms=0;
+							$cswTerm="";
+							foreach ($kwords as $word) 
+							{
+								if ($word <> "")
+								{
+									$cswTerm .= "
+									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:Literal>%$word%</ogc:Literal>
+											</ogc:PropertyIsLike>\r\n
+										";
+									$terms++;
+								}
+							}
+							
+							// Réunir les critères
+							if ($terms > 1)
+								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
+							
+							$cswAdvancedFilter.=$cswTerm;
 							$empty = false;
 							break;
 						case "list":
@@ -1777,62 +1815,62 @@ class SITE_catalog {
 			// Freetext
 			if (count($arrFreetextMd) <> 0) 
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrFreetextMd;
+					$arrFilteredMd[] = $arrFreetextMd;
 				else // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrFreetextMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrFreetextMd, $arrSearchableMd);
 		
 			//print_r($arrFreetextMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			// Objectname
 			if (count($arrObjectNameMd) <> 0) 
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrObjectNameMd;
+					$arrFilteredMd[] = $arrObjectNameMd;
 				else // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrObjectNameMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrObjectNameMd, $arrFilteredMd);
 		
 			//print_r($arrObjectNameMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			// Accounts
 			if (count($arrAccountsMd) <> 0)
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrAccountsMd;
+					$arrFilteredMd[] = $arrAccountsMd;
 				else  // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrAccountsMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrAccountsMd, $arrFilteredMd);
 			
 			//print_r($arrAccountsMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			// Managers
 			if (count($arrManagersMd) <> 0)
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrManagersMd;
+					$arrFilteredMd[] = $arrManagersMd;
 				else  // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrManagersMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrManagersMd, $arrFilteredMd);
 			
 			//print_r($arrManagersMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			// Created
 			if (count($arrCreatedMd) <> 0) 
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrCreatedMd;
+					$arrFilteredMd[] = $arrCreatedMd;
 				else // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrCreatedMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrCreatedMd, $arrFilteredMd);
 			
 			//print_r($arrCreatedMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			// Published
 			if (count($arrPublishedMd) <> 0) 
 				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
-					$arrFilteredMd = $arrPublishedMd;
+					$arrFilteredMd[] = $arrPublishedMd;
 				else // Faire l'intersection
-					$arrFilteredMd = array_intersect($arrPublishedMd, $arrSearchableMd);
+					$arrFilteredMd[] = array_intersect($arrPublishedMd, $arrFilteredMd);
 			
 			//print_r($arrPublishedMd);echo "<hr>";
-			//print_r($arrSearchableMd);echo "<hr>";
+			//print_r($arrFilteredMd);echo "<hr>";
 			
 			$cswMdCond = "";
 			foreach ($arrSearchableMd as $md_id)
@@ -1847,13 +1885,28 @@ class SITE_catalog {
 				$condList[] = $cswMdCond;
 				
 			$cswMdCond = "";
-			foreach ($arrFilteredMd as $md_id)
+			/*foreach ($arrFilteredMd as $md_id)
 			{
 				//keep it so to keep the request "small"
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 			}
 			if(count($arrFilteredMd) > 1)
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
+			*/
+			foreach ($arrFilteredMd as $filteredMd)
+			{
+				if (count($filteredMd) > 1)
+					$cswMdCond.= "<ogc:Or>";
+				foreach ($filteredMd as $md_id)
+				{
+					//keep it so to keep the request "small"
+					$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				}
+				if (count($filteredMd) > 1)
+					$cswMdCond.= "</ogc:Or>";
+			}
+			if(count($arrFilteredMd) > 1)
+				$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
 			
 			if(count($arrFilteredMd) > 0)
 				$condList[] = $cswMdCond;
@@ -1893,7 +1946,7 @@ class SITE_catalog {
 			
 			fclose($fh);
 			*/
-			$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase,$xmlBody);
+			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			$cswResults= simplexml_load_string($xmlResponse);
 			//echo var_dump($cswResults->saveXML())."<br>";
 			$myDoc = new DomDocument();
@@ -1924,7 +1977,7 @@ class SITE_catalog {
 				//Get the result from the server
 				//echo $xmlBody;
 				
-				$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase,$xmlBody);
+				$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 
 				//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
 				$cswResults = DOMDocument::loadXML($xmlResponse);

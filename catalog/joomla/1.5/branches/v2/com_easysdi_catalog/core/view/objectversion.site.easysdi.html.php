@@ -50,8 +50,11 @@ class HTML_objectversion {
 			</tr>
 		</table>
 	<script>
-		function suppressObjectVersion_click(id, object_id){
-			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_DELETE"); ?>');
+		function suppressObjectVersion_click(id, object_id, hasLinks){
+			if (hasLinks == false)
+				conf = confirm('<?php echo html_Metadata::cleanText(JText::_("CATALOG_CONFIRM_OBJECTVERSION_DELETE")); ?>');
+			else
+				conf = confirm('<?php echo html_Metadata::cleanText(JText::_("CATALOG_CONFIRM_OBJECTVERSION_WITHLINK_DELETE")); ?>');
 			if(!conf)
 				return false;
 			window.open('./index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id='+ object_id + '&cid[]='+id, '_self');
@@ -95,11 +98,34 @@ class HTML_objectversion {
 				?>
 				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_EDIT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
-				if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
+				if (count($rows)>1 and ($row->metadatastate_id == 2 or $row->metadatastate_id == 4)) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
-				?> 
-				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>');" ></div></td>
-				<?php 
+					$links = 0;
+					$query = 'SELECT count(*)' .
+							' FROM #__sdi_objectversionlink l
+							  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+							  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
+							  INNER JOIN #__sdi_object o_parent ON o_parent.id=parent.object_id
+							  INNER JOIN #__sdi_object o_child ON o_child.id=child.object_id' .
+							' WHERE l.parent_id=' . $row->id.
+							'		OR l.child_id=' . $row->id;
+					$database->setQuery($query);
+					//echo $database->getQuery();
+					$links = $database->loadResult();
+					//echo $links;
+					
+					if ($links > 0)
+					{
+						?> 
+						<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div></td>
+						<?php 
+					}
+					else
+					{
+						?> 
+						<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div></td>
+						<?php
+					}
 				}
 				else {
 				?>

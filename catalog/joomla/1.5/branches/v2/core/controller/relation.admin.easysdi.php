@@ -1410,6 +1410,12 @@ class ADMIN_relation {
 			$contexts = $_POST['contexts'];
 			
 			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 			$query = "delete from #__sdi_relation_context where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {

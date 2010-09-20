@@ -118,6 +118,13 @@ class ADMIN_objecttypelink {
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
 		
+		// Gestion de la page rechargée sur modification de la classe root du parentIdentifier
+		$pageReloaded=false;
+		if (array_key_exists('class_id', $_POST))
+		{
+			$pageReloaded=true;
+		}
+		
 		$rowObjectTypeLink = new objecttypelink( $database );
 		$rowObjectTypeLink->load( $id );
 		
@@ -163,7 +170,40 @@ class ADMIN_objecttypelink {
 		$database->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $database->loadObjectList());
 		
-		HTML_objecttypelink::editObjectTypeLink($rowObjectTypeLink, $fieldsLength, $objecttypes, $option);
+		$style="display:none";
+		if ($pageReloaded)
+		{
+			if ($_POST['parentbound_upper'] == 1)
+				$style="display:inline";
+		}
+		else
+		{
+			if ($rowObjectTypeLink->parentbound_upper == 1)
+				$style="display:inline";
+		}	
+		
+		$classes=array();
+		$classes[] = JHTML::_('select.option','0', JText::_("CATALOG_OBJECTTYPELINK_CLASS_LIST") );
+		$database->setQuery( "SELECT id AS value, name AS text FROM #__sdi_class WHERE isrootclass=true ORDER BY name" );
+		$classes = array_merge( $classes, $database->loadObjectList() );
+		
+		$attributes= array();
+		$attributes[] = JHTML::_('select.option','0', JText::_("CATALOG_OBJECTTYPELINK_ATTRIBUTE_LIST") );
+		if ($_POST['class_id'] or $rowObjectTypeLink->class_id)
+		{
+			if ($pageReloaded)
+			{
+				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$_POST['class_id']." ORDER BY a.name" );
+				$attributes = array_merge( $attributes, $database->loadObjectList() );
+			}
+			else if ($rowProfile->id <> 0)
+			{
+				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$rowObjectTypeLink->class_id." ORDER BY a.name" );
+				$attributes = array_merge( $attributes, $database->loadObjectList() );
+			}
+		}
+		
+		HTML_objecttypelink::editObjectTypeLink($rowObjectTypeLink, $fieldsLength, $objecttypes, $classes, $attributes, $style, $pageReloaded, $option);
 	}
 	
 	function saveObjectTypeLink($option)
@@ -182,12 +222,18 @@ class ADMIN_objecttypelink {
 			exit();
 		}		
 		
+		if ($_POST['class_id'] == 0)
+			$rowObjectTypeLink->class_id=null;
+		
+		if ($_POST['attribute_id'] == 0) 
+			$rowObjectTypeLink->attribute_id=null;
+		
 		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObjectTypeLink->guid == null)
 			$rowObjectTypeLink->guid = helper_easysdi::getUniqueId();
 		
-		if (!$rowObjectTypeLink->store(false)) {			
+		if (!$rowObjectTypeLink->store(true)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listObjectTypeLink" );
 			exit();

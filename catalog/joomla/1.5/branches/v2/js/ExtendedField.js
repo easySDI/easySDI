@@ -117,7 +117,7 @@ Ext.override(Ext.form.Field, {
 				
 				//hiddenName:id + '_hidden',
 				//console.log(master.xtype);
-				if (master.xtype == "choicetext" || master.xtype == "combo")
+				if (master.xtype == "choicetext" || master.xtype == "combo" || master.xtype == "superboxselect")
 				{
 					var clone = master.cloneConfig({
 						id : newName,
@@ -151,7 +151,7 @@ Ext.override(Ext.form.Field, {
 					panel.add(clone);
 				}
 				
-				
+				//console.log(clone);
 				//console.log(newName + " - " + clone.xtype);
 				if (clone.xtype!='multiselect' && clone.xtype!='checkboxgroup' && clone.xtype!='radiogroup') 
 				{

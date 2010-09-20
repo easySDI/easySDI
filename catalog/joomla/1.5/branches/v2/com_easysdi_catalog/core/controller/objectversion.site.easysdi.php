@@ -373,7 +373,8 @@ class SITE_objectversion
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$insertResults = DOMDocument::loadXML($result);
 			
@@ -606,11 +607,12 @@ function deleteObjectVersion($cid, $option)
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$deleteResults = DOMDocument::loadXML($result);
 			
-			$xpathDelete = new DOMXPath($deleteResults);
+			/*$xpathDelete = new DOMXPath($deleteResults);
 			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 			
@@ -619,6 +621,23 @@ function deleteObjectVersion($cid, $option)
 				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 				exit();
+			}*/
+			
+			// Si une version suit, corriger son parent_id avec celui de la version qui va être supprimée
+			$query = 'SELECT *' .
+					' FROM #__sdi_objectversion
+					  WHERE parent_id=' . $objectversion->id;
+			$database->setQuery($query);
+			$child_version = $database->loadObject();
+			if (count($child_version)>0)
+			{
+				$childobjectversion = new objectversion($database);
+				$childobjectversion->load($child_version->id);
+				$childobjectversion->parent_id=$objectversion->parent_id;
+				if (!$childobjectversion->store(true)) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				}
 			}
 			
 			if (!$objectversion->delete()) {
@@ -629,6 +648,26 @@ function deleteObjectVersion($cid, $option)
 			if (!$metadata->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+			
+			// Supprimer tous les liens vers la version, parents ou enfants
+			$links = array();
+			$query = 'SELECT l.id' .
+					' FROM #__sdi_objectversionlink l
+					  WHERE l.parent_id=' . $objectversion->id.
+					'		OR l.child_id=' . $objectversion->id;
+			$database->setQuery($query);
+			$links = $database->loadObjectList();
+			
+			foreach($links as $link)
+			{
+				$objectversionlink = new objectversionlink($database);
+				$objectversionlink->load($link->id);
+				
+				if (!$objectversionlink->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				}
 			}
 		}
 	}

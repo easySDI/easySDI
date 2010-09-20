@@ -432,4 +432,15 @@ function tableOrdering( order, dir, view )
 	form.filter_order_Dir.value	= dir;
 	form.submit( view );
 }
+
+function changexpathParentIdVisibility(value)
+{
+	// Div du xpath ParentId
+	var isocodeType = document.getElementById("div_xpathParentId");
+	
+	if(value == 1) 
+	    isocodeType.style.display = "";  
+    else 
+   		isocodeType.style.display = "none";
+}
 </script>

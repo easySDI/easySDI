@@ -469,7 +469,8 @@ class SITE_object {
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$insertResults = DOMDocument::loadXML($result);
 			
@@ -724,7 +725,8 @@ class SITE_object {
 				
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 				$catalogUrlBase = config_easysdi::getValue("catalog_url");
-				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 				
 				$deleteResults = DOMDocument::loadXML($result);
 				

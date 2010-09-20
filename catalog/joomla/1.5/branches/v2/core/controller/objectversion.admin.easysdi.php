@@ -262,7 +262,8 @@ class ADMIN_objectversion {
 					</csw:Insert>
 				</csw:Transaction>";
 				
-				$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+				$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 				
 				$insertResults = DOMDocument::loadXML($result);
 				
@@ -555,7 +556,8 @@ class ADMIN_objectversion {
 			
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$deleteResults = DOMDocument::loadXML($result);
 			/*
@@ -570,6 +572,24 @@ class ADMIN_objectversion {
 				exit();
 			}
 			*/
+			
+			// Si une version suit, corriger son parent_id avec celui de la version qui va être supprimée
+			$query = 'SELECT *' .
+					' FROM #__sdi_objectversion
+					  WHERE parent_id=' . $objectversion->id;
+			$database->setQuery($query);
+			$child_version = $database->loadObject();
+			if (count($child_version)>0)
+			{
+				$childobjectversion = new objectversion($database);
+				$childobjectversion->load($child_version->id);
+				$childobjectversion->parent_id=$objectversion->parent_id;
+				if (!$childobjectversion->store(true)) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				}
+			}
+			
 			if (!$objectversion->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
@@ -578,6 +598,26 @@ class ADMIN_objectversion {
 			if (!$metadata->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+			
+			// Supprimer tous les liens vers la version, parents ou enfants
+			$links = array();
+			$query = 'SELECT l.id' .
+					' FROM #__sdi_objectversionlink l
+					  WHERE l.parent_id=' . $objectversion->id.
+					'		OR l.child_id=' . $objectversion->id;
+			$database->setQuery($query);
+			$links = $database->loadObjectList();
+			
+			foreach($links as $link)
+			{
+				$objectversionlink = new objectversionlink($database);
+				$objectversionlink->load($link->id);
+				
+				if (!$objectversionlink->delete()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				}
 			}
 		}
 
@@ -641,7 +681,8 @@ class ADMIN_objectversion {
 		
 		//$doc->save("C:\\RecorderWebGIS\\".$new_metadata_guid.".xml");
 		
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 		
 		$insertResults = DOMDocument::loadXML($result);
 		$xpathInsert = new DOMXPath($insertResults);
@@ -942,12 +983,16 @@ class ADMIN_objectversion {
 		// Récupérer tous les objets du type d'objet sélectionné,
 		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés,
 		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
-		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name 
-				  FROM #__sdi_objecttype ot, #__sdi_metadata m, #__sdi_objectversion ov, #__sdi_object o
+		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper 
+				  FROM #__sdi_objecttype ot
+				  INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id 
+				  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 				  LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
 				  LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
 				  INNER JOIN #__sdi_objecttypelink otl ON otl.child_id = o.objecttype_id
-				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." AND ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ov.object_id=o.id AND ov.id<>".$objectversion_id;
+				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." 
+				        AND ov.id<>".$objectversion_id;
 	
 		// Ajout des filtres
 		if ($objecttype_id)
@@ -977,8 +1022,28 @@ class ADMIN_objectversion {
 		//echo $database->getQuery()."\r\n";
 		$results= $database->loadObjectList();
 		
+		// Pour chaque enfant retourné, vérifier que le nombre de parents max n'est pas atteint
+		$resultsToSend= array();
+		foreach ($results as $result)
+		{
+			$total_parent=0;
+			// Compter le nombre de parents de l'enfant potentiel
+			$query = "SELECT count(*) 
+					  FROM #__sdi_objectversionlink ovl
+					  INNER JOIN #__sdi_objectversion parent_ov on ovl.parent_id = parent_ov.id 
+					  INNER JOIN #__sdi_object parent_object on parent_ov.object_id=parent_object.id 
+					  WHERE parent_object.objecttype_id=".$rowParentObject->objecttype_id." AND child_id = ".$result->value;
+			$database->setQuery($query);
+			//echo $database->getQuery()."\r\n";
+			$total_parent= $database->loadresult();
+		
+			if ($total_parent < $result->parentbound_upper)
+				$resultsToSend[] = $result;
+		}
+		//echo "<hr>";
+		//print_r($resultsToSend);
 		// Construire le tableau de résultats
-		$return = array ("total"=>count($results), "links"=>$results);
+		$return = array ("total"=>count($resultsToSend), "links"=>$resultsToSend);
 		
 		print_r(HTML_metadata::array2json($return));
 		die();

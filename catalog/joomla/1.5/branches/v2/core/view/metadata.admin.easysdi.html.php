@@ -60,8 +60,11 @@ class HTML_metadata {
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
 	var $qTipDismissDelay = "5000"; // Durée par défaut de l'affichage du tooltip
+	var $parentId_class="";
+	var $parentId_attribute="";
+	var $parentGuid="";
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -99,6 +102,32 @@ class HTML_metadata {
 								'eastbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_east")."-".str_replace(":", "_", $type_isocode)."__1"));
 		
 		
+		// Récupérer les infos pour la métadonnée parente pour le lien entre les types d'objet où cet objet est l'enfant et la borne parent max est égale à 1
+		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
+							  FROM #__sdi_objecttypelink otl
+							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
+							  INNER JOIN #__sdi_objectversion child_ov ON child_ov.object_id=child_o.id
+							  INNER JOIN #__sdi_object parent_o ON otl.parent_id=parent_o.objecttype_id
+							  INNER JOIN #__sdi_objectversion parent_ov ON parent_ov.object_id=parent_o.id
+							  INNER JOIN #__sdi_metadata parent_m ON parent_ov.metadata_id=parent_m.id
+							  INNER JOIN #__sdi_objectversionlink ovl ON (ovl.parent_id=parent_ov.id and ovl.child_id=child_ov.id)
+							  WHERE otl.parentbound_upper=1
+							  		AND child_o.id=".$object_id);
+		$parentInfos = $database->loadObject();
+		
+		if (count($parentInfos) > 0)
+		{
+			$this->parentId_class = $parentInfos->class_id;
+			$this->parentId_attribute = $parentInfos->attribute_id;
+		}
+		else
+		{
+			$this->parentId_class = "";
+			$this->parentId_attribute = "";
+		}
+		
+		if ($this->parentId_class <> "" and $this->parentId_attribute <> "")
+			$this->parentGuid = $parentInfos->parent_guid;
 		
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
@@ -163,7 +192,7 @@ class HTML_metadata {
 		
 		// Langues à gérer
 		$this->langList = array();
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -219,10 +248,13 @@ class HTML_metadata {
 							        			var fieldsets = fields.join(' | ');
 							        			
 							        			// Dans les superboxselect, sélectionner tous les enregistrements du store
-							        			form.cascade(function(cmp)
+							        			/*form.cascade(function(cmp)
 												{
 													if (cmp.xtype=='superboxselect')
 													{
+														var dest = Ext.ComponentMgr.get(cmp.getId() + '_HIDDEN');
+														dest.setValue(cmp.getStore().data);
+														
 														//console.log('Superboxselect: ');
 														//console.log(cmp);
 														//console.log(cmp.store.data);
@@ -233,15 +265,17 @@ class HTML_metadata {
 									                            //console.log(rec);
 																if (rec.get('reliableRecord') == urec.get('keyword'))
 																{
-																	cmp.addRecord(rec);
+																	toStore.push(rec);
+																	//cmp.addRecord(rec);
 																}
 									                        }, cmp);
 								                        }, cmp);
-														 
 														//console.log(cmp.usedRecords);
 														
+														console.log(dest); 
+														
 													}
-												});			
+												});	*/		
 							        			
 												form.getForm().setValues({fieldsets: fieldsets});
 							              		form.getForm().setValues({task: 'previewXMLMetadata'});
@@ -829,7 +863,6 @@ class HTML_metadata {
 								    ";
 		}
 		
-		
 		$rowChilds = array();
 		$query = "SELECT rel.id as rel_id, 
 						 rel.guid as rel_guid,
@@ -1025,26 +1058,31 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
+								// Si le xpathParentId est défini, regarder si on est au xpath souhaité.	
+								if ($this->parentId_attribute <> "")
+								{
+									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
+									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
+									if ($this->parentId_attribute == $child->attribute_id)
+									{
+										// Stocker le guid du parent
+										$nodeValue = $this->parentGuid;
+									}
+								}
+								
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
-									// Textarea
-									case 1:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', ".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-										break;
 									// Textbox
 									case 5:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
 									default:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
@@ -1968,8 +2006,8 @@ class HTML_metadata {
 								foreach($this->langList as $row)
 								{
 									if ($row->defaultlang)
-										$defaultLang = $row->code;
-									$langArray[] = $row->code;
+										$defaultLang = $row->gemetlang;
+									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
 								echo "<hr>";
@@ -1986,22 +2024,22 @@ class HTML_metadata {
 								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
-																  id:'PANEL_THESAURUS',
+																  id:'".$currentName."_PANEL_THESAURUS',
 																  lang: '".$defaultLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
-															      //title: 'Thesaurus GEMET',
 															      separator: ' > ',
-															      appPath: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/',
+															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
 															      layout: 'fit',
-															      proxy: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
+															      targetField: '".$currentName."',
+															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
 															      				//var target = document.getElementById('terms');
 															      				
-																			    var target = form.findById('".$currentName."');
+																			    var target = form.findById(this.targetField);
 																			    var store = target.store;
 																			    //console.log(target);
 																			    //console.log(store);
@@ -2012,25 +2050,43 @@ class HTML_metadata {
 																      		    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																			    for(l in result.terms) 
-																			    {
-																			    	s += l+': '+result.terms[l]+'<br/><br/>';
-																			    	record = new Ext.data.Record({
-																					  lang : l,
-																					  keyword  : result.terms[l],
-																					  reliableRecord: reliableRecord
-																					});
-																					store.add(record);
-																					
-																					if (l == thes.lang)
-																						target.addRecord(record);
-																			    }
+																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    if (!target.usedRecords.containsKey(reliableRecord))
+																				{
+																					var ret = Array();//target.getValuesAsArray();
+																		            
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																				    for(l in result.terms) 
+																				    {
+																				    	//s += l+': '+result.terms[l]+'<br/><br/>';
+																				    	record = new Ext.data.Record({
+																						  lang : l,
+																						  keyword  : result.terms[l],
+																						  reliableRecord: reliableRecord
+																						});
+																						store.add(record);
+																						
+																						// Affichage du terme dans la langue EasySDI par défaut de l'utilisateur
+																						/*if (l == thes.lang)
+																							target.addRecord(record);
+																						target.push(result.terms[l]);
+																						target.addItem(result.terms[l]);
+																						var dest = Ext.ComponentMgr.get(cmp.getId() + '_HIDDEN');
+																						dest.push(record);*/
+																						
+																						ret.push(record);
+																		                target.setValue(ret.join(','));
+																		                
+																		                
+																				    }
+																				}
+																				else
+																				{
+																					Ext.MessageBox.alert('".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TITLE')."', 
+															                    						 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
 																				
-																			    //console.log(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //alert(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //target.innerHTML = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    //target.value = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    
+																				}
+																				
 																			    //winthge.hide();
 																			}
 															  });
@@ -2045,7 +2101,8 @@ class HTML_metadata {
 								                	// Créer une iframe pour demander à l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
-														                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
+														                id:'".$currentName."_WIN',
+																  		title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 														                width:500,
 														                height:500,
 														                closeAction:'hide',
@@ -2061,8 +2118,8 @@ class HTML_metadata {
 															//winthge.items.get(0).findById('xmlfile').setValue('');
 															thes.cascade((function(cmp)
 											        			{
-											        				console.log(cmp);
-											        				console.log(cmp.xtype);
+											        				//console.log(cmp);
+											        				//console.log(cmp.xtype);
 											        				//cmp.setValue('');
 												        			/*if (cmp.xtype=='combobox')
 											         				{
@@ -2188,23 +2245,16 @@ class HTML_metadata {
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
-									// Textarea
-									case 1:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-										break;
 									// Textbox
 									case 5:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
 									default:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
@@ -2657,8 +2707,8 @@ class HTML_metadata {
 								foreach($this->langList as $row)
 								{
 									if ($row->defaultlang)
-										$defaultLang = $row->code;
-									$langArray[] = $row->code;
+										$defaultLang = $row->gemetlang;
+									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
 								echo "<hr>";
@@ -2675,22 +2725,22 @@ class HTML_metadata {
 								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
-																  id:'PANEL_THESAURUS',
+																  id:'".$currentName."_PANEL_THESAURUS',
 																  lang: '".$defaultLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
-															      //title: 'Thesaurus GEMET',
 															      separator: ' > ',
-															      appPath: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/',
+															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
 															      layout: 'fit',
-															      proxy: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
+															      targetField: '".$currentName."',
+															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
 															      				//var target = document.getElementById('terms');
 															      				
-																			    var target = form.findById('".$currentName."');
+																			    var target = form.findById(this.targetField);
 																			    var store = target.store;
 																			    //console.log(target);
 																			    //console.log(store);
@@ -2701,25 +2751,41 @@ class HTML_metadata {
 																      		    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																			    for(l in result.terms) 
-																			    {
-																			    	s += l+': '+result.terms[l]+'<br/><br/>';
-																			    	record = new Ext.data.Record({
-																					  lang : l,
-																					  keyword  : result.terms[l],
-																					  reliableRecord: reliableRecord
-																					});
-																					store.add(record);
-																					
-																					if (l == thes.lang)
-																						target.addRecord(record);
-																			    }
+																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    if (!target.usedRecords.containsKey(reliableRecord))
+																				{
+																					var ret = Array();//target.getValuesAsArray();
+																		            
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																				    for(l in result.terms) 
+																				    {
+																				    	//s += l+': '+result.terms[l]+'<br/><br/>';
+																				    	record = new Ext.data.Record({
+																						  lang : l,
+																						  keyword  : result.terms[l],
+																						  reliableRecord: reliableRecord
+																						});
+																						store.add(record);
+																						
+																						// Affichage du terme dans la langue EasySDI par défaut de l'utilisateur
+																						/*if (l == thes.lang)
+																							target.addRecord(record);
+																						target.push(result.terms[l]);
+																						target.addItem(result.terms[l]);
+																						var dest = Ext.ComponentMgr.get(cmp.getId() + '_HIDDEN');
+																						dest.push(record);*/
+																						
+																						ret.push(record);
+																		                target.setValue(ret.join(','));
+																				    }
+																				}
+																				else
+																				{
+																					Ext.MessageBox.alert('".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TITLE')."', 
+															                    						 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
 																				
-																			    //console.log(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //alert(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //target.innerHTML = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    //target.value = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    
+																				}
+																				
 																			    //winthge.hide();
 																			}
 															  });
@@ -2734,7 +2800,8 @@ class HTML_metadata {
 								                	// Créer une iframe pour demander à l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
-														                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
+														                id:'".$currentName."_WIN',
+																  		title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 														                width:500,
 														                height:500,
 														                closeAction:'hide',
@@ -2750,8 +2817,8 @@ class HTML_metadata {
 															//winthge.items.get(0).findById('xmlfile').setValue('');
 															thes.cascade((function(cmp)
 											        			{
-											        				console.log(cmp);
-											        				console.log(cmp.xtype);
+											        				//console.log(cmp);
+											        				//console.log(cmp.xtype);
 											        				//cmp.setValue('');
 												        			/*if (cmp.xtype=='combobox')
 											         				{
@@ -2841,23 +2908,16 @@ class HTML_metadata {
 							// Selon le rendu de l'attribut, on fait des traitements différents
 							switch ($child->rendertype_id)
 							{
-								// Textarea
-								case 1:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-									break;
 								// Textbox
 								case 5:
 									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 									break;
 								default:
 									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 									break;
@@ -3509,7 +3569,7 @@ class HTML_metadata {
 								break;
 							// Thesaurus GEMET
 							case 11:
-								echo "3) ".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
+								//echo "3) ".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
 								
 								$uri =& JUri::getInstance();
 		
@@ -3518,8 +3578,8 @@ class HTML_metadata {
 								foreach($this->langList as $row)
 								{
 									if ($row->defaultlang)
-										$defaultLang = $row->code;
-									$langArray[] = $row->code;
+										$defaultLang = $row->gemetlang;
+									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
 								echo "<hr>";
@@ -3536,22 +3596,22 @@ class HTML_metadata {
 								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
-																  id:'PANEL_THESAURUS',
+																  id:'".$currentName."_PANEL_THESAURUS',
 																  lang: '".$defaultLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
-															      //title: 'Thesaurus GEMET',
 															      separator: ' > ',
-															      appPath: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/',
+															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
 															      layout: 'fit',
-															      proxy: 'http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
+															      targetField: '".$currentName."',
+															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
 															      				//var target = document.getElementById('terms');
 															      				
-																			    var target = form.findById('".$currentName."');
+																			    var target = form.findById(this.targetField);
 																			    var store = target.store;
 																			    //console.log(target);
 																			    //console.log(store);
@@ -3562,25 +3622,43 @@ class HTML_metadata {
 																      		    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																			    for(l in result.terms) 
-																			    {
-																			    	s += l+': '+result.terms[l]+'<br/><br/>';
-																			    	record = new Ext.data.Record({
-																					  lang : l,
-																					  keyword  : result.terms[l],
-																					  reliableRecord: reliableRecord
-																					});
-																					store.add(record);
-																					
-																					if (l == thes.lang)
-																						target.addRecord(record);
-																			    }
+																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    if (!target.usedRecords.containsKey(reliableRecord))
+																				{
+																					var ret = Array();//target.getValuesAsArray();
+																		            
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																				    for(l in result.terms) 
+																				    {
+																				    	//s += l+': '+result.terms[l]+'<br/><br/>';
+																				    	record = new Ext.data.Record({
+																						  lang : l,
+																						  keyword  : result.terms[l],
+																						  reliableRecord: reliableRecord
+																						});
+																						store.add(record);
+																						
+																						// Affichage du terme dans la langue EasySDI par défaut de l'utilisateur
+																						/*if (l == thes.lang)
+																							target.addRecord(record);
+																						target.push(result.terms[l]);
+																						target.addItem(result.terms[l]);
+																						var dest = Ext.ComponentMgr.get(cmp.getId() + '_HIDDEN');
+																						dest.push(record);*/
+																						
+																						ret.push(record);
+																		                target.setValue(ret.join(','));
+																		                
+																		                
+																				    }
+																				}
+																				else
+																				{
+																					Ext.MessageBox.alert('".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TITLE')."', 
+															                    						 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
 																				
-																			    //console.log(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //alert(s+'uri: '+result.uri + '<br>version: '+result.version);
-																			    //target.innerHTML = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    //target.value = s+'uri: '+result.uri + '<br>version: '+result.version;
-																			    
+																				}
+																				
 																			    //winthge.hide();
 																			}
 															  });
@@ -3595,7 +3673,9 @@ class HTML_metadata {
 								                	// Créer une iframe pour demander à l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
-														                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
+														                id:'".$currentName."_WIN',
+																  		itemId:'".$currentName."_WIN',
+																  		title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 														                width:500,
 														                height:500,
 														                closeAction:'hide',
@@ -3611,8 +3691,8 @@ class HTML_metadata {
 															//winthge.items.get(0).findById('xmlfile').setValue('');
 															thes.cascade((function(cmp)
 											        			{
-											        				console.log(cmp);
-											        				console.log(cmp.xtype);
+											        				//console.log(cmp);
+											        				//console.log(cmp.xtype);
 											        				//cmp.setValue('');
 												        			/*if (cmp.xtype=='combobox')
 											         				{
@@ -3645,7 +3725,9 @@ class HTML_metadata {
 								//thes.render(winthge.items.get(0).findById('selectedWord'));
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createThesaurusGEMET('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));";
+								".$parentFieldsetName.".add(createThesaurusGEMET('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								";
+								
 								break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements différents
@@ -4098,7 +4180,8 @@ class HTML_metadata {
 				}
 				else
 				{
-					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
+					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
+					
 					//echo "Trouve ".$guid."<br>";
 					// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 					$total = 0;

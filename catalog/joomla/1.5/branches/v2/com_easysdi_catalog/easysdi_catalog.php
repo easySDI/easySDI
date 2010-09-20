@@ -148,14 +148,16 @@ else
 		
 		case "invalidateMetadata":
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
+			
+			SITE_metadata::invalidateMetadata($cid[0], $option);
+			
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
 			
-			SITE_metadata::invalidateMetadata($cid[0], $option);
 			SITE_metadata::listMetadata($option);
 			break;
 			
@@ -430,6 +432,7 @@ else
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
@@ -448,6 +451,7 @@ else
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
 			break;
@@ -494,12 +498,14 @@ else
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			ADMIN_objectversion::saveObjectVersion($option);
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
 			break;
 			
 		case "deleteObjectVersion":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversionlink.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
@@ -507,6 +513,8 @@ else
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'objectversion.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 			SITE_objectversion::deleteObjectVersion($cid, $option);
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
@@ -535,6 +543,7 @@ else
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'objectversion.site.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'object.admin.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			ADMIN_objectversion::backObjectVersion($option);
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);

@@ -48,6 +48,10 @@ class HTML_metadata {
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
 	var $qTipDismissDelay = "5000"; // Durée par défaut de l'affichage du tooltip
+	var $parentId_class="";
+	var $parentId_attribute="";
+	var $parentGuid="";
+	
 	
 	function listMetadata($pageNav, $rows, $option, $rootAccount, $search, $lists)
 	{
@@ -114,6 +118,9 @@ class HTML_metadata {
 		foreach ($rows as $row)
 		{	$i++;
 			
+			$rowMetadata = new metadataByGuid($database);
+			$rowMetadata->load($row->metadata_guid);
+			
 			?>		
 			<tr>
 				<td >
@@ -122,8 +129,20 @@ class HTML_metadata {
 				<td >
 					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
+<?php
+if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
+{ 
+?>
+				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?></td>
+<?php
+}
+else
+{ 
+?>
 				<td ><?php echo JText::_($row->state); ?></td>
-				<?php 		
+<?php
+}
+?>				<?php 		
 				$managers = "";
 				$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 				$managers = implode(", ", $database->loadResultArray());
@@ -161,8 +180,6 @@ class HTML_metadata {
 					else
 						$isEditor = false;
 					
-					$rowMetadata = new metadataByGuid($database);
-					$rowMetadata->load($row->metadata_guid);
 					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
 					{
 						if ($rowMetadata->metadatastate_id == 4 // En travail
@@ -334,6 +351,33 @@ class HTML_metadata {
 								'eastbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_east")."-".str_replace(":", "_", $type_isocode)."__1"));
 		
 		
+		
+		// Récupérer les infos pour la métadonnée parente pour le lien entre les types d'objet où cet objet est l'enfant et la borne parent max est égale à 1
+		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
+							  FROM #__sdi_objecttypelink otl
+							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
+							  INNER JOIN #__sdi_objectversion child_ov ON child_ov.object_id=child_o.id
+							  INNER JOIN #__sdi_object parent_o ON otl.parent_id=parent_o.objecttype_id
+							  INNER JOIN #__sdi_objectversion parent_ov ON parent_ov.object_id=parent_o.id
+							  INNER JOIN #__sdi_metadata parent_m ON parent_ov.metadata_id=parent_m.id
+							  INNER JOIN #__sdi_objectversionlink ovl ON (ovl.parent_id=parent_ov.id and ovl.child_id=child_ov.id)
+							  WHERE otl.parentbound_upper=1
+							  		AND child_o.id=".$object_id);
+		$parentInfos = $database->loadObject();
+		
+		if (count($parentInfos) > 0)
+		{
+			$this->parentId_class = $parentInfos->class_id;
+			$this->parentId_attribute = $parentInfos->attribute_id;
+		}
+		else
+		{
+			$this->parentId_class = "";
+			$this->parentId_attribute = "";
+		}
+		
+		if ($this->parentId_class <> "" and $this->parentId_attribute <> "")
+			$this->parentGuid = $parentInfos->parent_guid;
 		
 		$document =& JFactory::getDocument();
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
@@ -1426,26 +1470,31 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
+								// Si le xpathParentId est défini, regarder si on est au xpath souhaité.	
+								if ($this->parentId_attribute <> "")
+								{
+									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
+									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
+									if ($this->parentId_attribute == $child->attribute_id)
+									{
+										// Stocker le guid du parent
+										$nodeValue = $this->parentGuid;
+									}
+								}
+								
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
-									// Textarea
-									case 1:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-										break;
 									// Textbox
 									case 5:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
 									default:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
@@ -2444,23 +2493,16 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
-									// Textarea
-									case 1:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-										break;
 									// Textbox
 									case 5:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
 									default:
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 										break;
@@ -2949,23 +2991,16 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 							// Selon le rendu de l'attribut, on fait des traitements différents
 							switch ($child->rendertype_id)
 							{
-								// Textarea
-								case 1:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-									break;
 								// Textbox
 								case 5:
 									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 									break;
 								default:
 									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 									break;
@@ -4063,7 +4098,8 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 				}
 				else
 				{
-					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
+					// Récupérer les 36 caractères qui suivent "&id=" dans l'url
+					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
 					//echo "Trouve ".$guid."<br>";
 					$results = array();
 					$database->setQuery( "SELECT o.id as id, 
@@ -4083,6 +4119,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$results = HTML_metadata::array2json($results);
 					//$results = $results[0]->guid;
 					//print_r($results);
+					//echo $database->getQuery();
 						
 			
 					// Construction du nom du fieldset qui va correspondre à la classe

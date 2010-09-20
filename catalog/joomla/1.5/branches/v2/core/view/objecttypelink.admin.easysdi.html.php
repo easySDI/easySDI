@@ -138,7 +138,7 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 <?php
 	}
 	
-	function editObjectTypeLink(&$row, $fieldsLength, $objecttypes, $option)
+	function editObjectTypeLink(&$row, $fieldsLength, $objecttypes, $classes, $attributes, $style, $pageReloaded, $option)
 	{
 		global  $mainframe;
 		
@@ -149,15 +149,33 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_PARENT"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$objecttypes, 'parent_id', 'size="1" class="inputbox"', 'value', 'text', $row->parent_id); ?></td>							
+					<?php if ($pageReloaded) $parent_objecttype = $_POST['parent_id']; else $parent_objecttype = $row->parent_id; ?>
+					<td><?php echo JHTML::_("select.genericlist",$objecttypes, 'parent_id', 'size="1" class="inputbox"', 'value', 'text', $parent_objecttype); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_CHILD"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$objecttypes, 'child_id', 'size="1" class="inputbox"', 'value', 'text', $row->child_id); ?></td>							
+					<?php if ($pageReloaded) $child_objecttype = $_POST['child_id']; else $child_objecttype = $row->child_id; ?>
+					<td><?php echo JHTML::_("select.genericlist",$objecttypes, 'child_id', 'size="1" class="inputbox"', 'value', 'text', $child_objecttype); ?></td>							
+				</tr>
+			</table>
+			<div id = "div_xpathParentId" style="<?php echo $style; ?>">
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_PARENTMETADATA_ROOTCLASS"); ?></td>
+					<?php if ($pageReloaded) $classid = $_POST['class_id']; else $classid = $row->class_id; ?>
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'class_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editObjectTypeLink\');"', 'value', 'text', $classid ); ?></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING_LABEL"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'flowdown_versioning', '', $row->flowdown_versioning); ?> </td>							
+					<td><?php echo JText::_("CATALOG_OBJECTTYPELINK_PARENTMETADATA_GUID"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$attributes, 'attribute_id', 'size="1" class="inputbox"', 'value', 'text', $row->attribute_id ); ?></td>							
+				</tr>
+			</table>
+			</div>
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING_LABEL"); ?></td>
+					<?php if ($pageReloaded) $flowdown_versioning = $_POST['flowdown_versioning']; else $flowdown_versioning = $row->flowdown_versioning; ?>
+					<td><?php echo JHTML::_('select.booleanlist', 'flowdown_versioning', '', $flowdown_versioning); ?> </td>							
 				</tr>
 				<tr>
 					<td colspan="2">
@@ -166,11 +184,11 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 							<table>
 								<tr>
 									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_LOWER"); ?> : </td>
-									<td><input size="5" type="text" name ="parentbound_lower" value="<?php echo $row->parentbound_lower?>"></td>							
+									<td><input size="5" type="text" name ="parentbound_lower" value="<?php if ($pageReloaded) echo $_POST['parentbound_lower']; else echo $row->parentbound_lower;?>"></td>							
 								</tr>
 								<tr>
 									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_UPPER"); ?> : </td>
-									<td><input size="5" type="text" name ="parentbound_upper" value="<?php echo $row->parentbound_upper?>"></td>							
+									<td><input size="5" type="text" name ="parentbound_upper" value="<?php if ($pageReloaded) echo $_POST['parentbound_upper']; else echo $row->parentbound_upper;?>" onChange="javascript:changexpathParentIdVisibility(this.value);"></td>							
 								</tr>
 							</table>
 						</fieldset>
@@ -183,11 +201,11 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 							<table>
 								<tr>
 									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_LOWER"); ?> : </td>
-									<td><input size="5" type="text" name ="childbound_lower" value="<?php echo $row->childbound_lower?>"></td>							
+									<td><input size="5" type="text" name ="childbound_lower" value="<?php if ($pageReloaded) echo $_POST['childbound_lower']; else echo $row->childbound_lower;?>"></td>							
 								</tr>
 								<tr>
 									<td width=140><?php echo JText::_("CATALOG_OBJECTTYPELINK_UPPER"); ?> : </td>
-									<td><input size="5" type="text" name ="childbound_upper" value="<?php echo $row->childbound_upper?>"></td>							
+									<td><input size="5" type="text" name ="childbound_upper" value="<?php if ($pageReloaded) echo $_POST['childbound_upper']; else echo $row->childbound_upper;?>"></td>							
 								</tr>
 							</table>
 						</fieldset>

@@ -24,7 +24,7 @@
 					clone: clone,
 					clones_count: clones_count,
 					hidden: hidden,
-			        collapsible: true,
+			        collapsible: collapsible,
 			        collapsed: collapsed,
 				    relation: relation,
 					dynamic: dynamic,
@@ -330,6 +330,44 @@
 	            qTipDelay: dismissDelay
 	        });
 		 return tf;
+	}
+	
+	function createDisplayField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
+	{
+		optional = !mandatory;
+		//if (!clone) optional=true;
+		if (clone) optional=true;
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
+		var dynamic = !dis;
+		
+		// Valeur max = n
+		if (max == 999) max = Number.MAX_VALUE;
+		
+		var df = new Ext.form.DisplayField({
+	            id:id,
+	            xtype: 'displayfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            fieldLabel: label,
+	            name: id,
+	            //allowBlank: optional,
+	            //blankText: mandatoryMsg,
+	            //regex: eval("/"+regex+"/"),
+	            //regexText: regexMsg,
+	            value: value,
+	            defaultVal:defaultVal,
+	            dynamic:dynamic,
+	            minOccurs:min,
+	            maxOccurs:max,
+	            clone: clone,
+				clones_count: clones_count,
+	            template: master,
+	            //disabled: dis,
+	            //maxLength: maxL,
+	            qTip: tip,
+	            qTipDelay: dismissDelay
+	        });
+		 return df;
 	}
 	
 	function createNumberField(id, label, mandatory, clone, master, min, max, value, defaultVal, allowdec, dec, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)

@@ -37,7 +37,9 @@ class objecttypelink extends JTable
 	var $parentbound_upper=999;
 	var $childbound_lower=0;
 	var $childbound_upper=999;
-	
+ 	var $class_id=null;
+ 	var $attribute_id=null;
+ 	
 	// Class constructor
 	function __construct( &$db )
 	{

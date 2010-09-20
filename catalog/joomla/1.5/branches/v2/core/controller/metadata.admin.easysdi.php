@@ -331,7 +331,8 @@ class ADMIN_metadata {
 		//$cswResults = DOMDocument::loadXML($xmlResponse);
 
 		// En GET
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
 		/*
 		$cswResults = new DOMDocument();
@@ -397,7 +398,7 @@ class ADMIN_metadata {
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		//ADMIN_metadata::buildTree($root[0]->id, $xpathResults, $option);
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	
@@ -408,7 +409,7 @@ class ADMIN_metadata {
 	 */
 	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
-		echo "Name: ".$parentName." \r\n ";
+		//echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
 		$database =& JFactory::getDBO();
 		$rowChilds = array();
@@ -1330,7 +1331,7 @@ class ADMIN_metadata {
 						break;
 					// Thesaurus GEMET
 					case 11:
-						echo $parentName."-".str_replace(":", "_", $child->attribute_isocode);
+						echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
@@ -1353,13 +1354,14 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
+									print_r($_POST[$key]);
 									$usefullVals[] = $_POST[$key];
 								}
 							}
 						}
 						
 						print_r($usefullVals);
-
+						
 						/*
 						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
@@ -1840,7 +1842,8 @@ class ADMIN_metadata {
 				    </csw:Delete>
 				</csw:Transaction>'; 
 			
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$deleteResults = DOMDocument::loadXML($result);
 			$xpathDelete = new DOMXPath($deleteResults);
@@ -1873,7 +1876,8 @@ class ADMIN_metadata {
 			</csw:Transaction>";
 			//echo $XMLDoc->saveXML()." \r\n ";
 				
-			$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
 			$insertResults = DOMDocument::loadXML($result);
 			
@@ -2224,8 +2228,10 @@ class ADMIN_metadata {
 		$rowMetadata->editor_id = null;
 		$rowMetadata->published = null;
 		
+		print_r($rowMetadata);echo "<hr>";
 		if (!$rowMetadata->store(true)) 
 		{
+			echo $database->getErrorMsg()."<br>";
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			exit();
 		}
@@ -2687,7 +2693,8 @@ class ADMIN_metadata {
 			    </csw:Delete>
 			</csw:Transaction>'; 
 		
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 		
 		$deleteResults = DOMDocument::loadXML($result);
 		$xpathDelete = new DOMXPath($deleteResults);
@@ -2720,7 +2727,8 @@ class ADMIN_metadata {
 		</csw:Transaction>";
 		//echo $XMLDoc->saveXML()." \r\n ";
 			
-		$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 		
 		$insertResults = DOMDocument::loadXML($result);
 		
@@ -3052,7 +3060,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 	}
 
 	function importCSWMetadata($option)
@@ -3191,7 +3199,8 @@ class ADMIN_metadata {
 		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$importid;
 		
 		// En GET
-		$xml = DOMDocument::load($catalogUrlGetRecordById);
+		//$xml = DOMDocument::load($catalogUrlGetRecordById);
+		$xml = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
 		// Appliquer le XSL
 		$style = new DomDocument();
@@ -3255,7 +3264,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 	}
 
 	function replicateMetadata($option)
@@ -3392,7 +3401,8 @@ class ADMIN_metadata {
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$metadata_guid;
 		
 		// En GET
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
 		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
         $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
@@ -3442,7 +3452,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 		
 	}
 	
@@ -3513,7 +3523,8 @@ class ADMIN_metadata {
 			$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowLastMetadata->guid;
-			$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+			//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+			$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
 			// Récupérer la classe racine du profile du type d'objet
 			$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
@@ -3673,7 +3684,7 @@ class ADMIN_metadata {
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $option);
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
 			
 	}
 	
@@ -3785,18 +3796,89 @@ class ADMIN_metadata {
 	
 	function PostXMLRequest($url,$xmlBody)
 	{
-                 $ch = curl_init($url);
-                 curl_setopt($ch, CURLOPT_MUTE, 1);
-                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                 curl_setopt($ch, CURLOPT_POST, 1);
-                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-                 curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
-                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                 $output = curl_exec($ch);
-                 curl_close($ch);
+		// Récupération du cookie sous la forme clé=valeur;clé=valeur
+		$cookiesList=array();
+		foreach($_COOKIE as $key => $val)
+		{
+			$cookiesList[]=$key."=".$val;
+		}
+		$cookies= implode(";", $cookiesList);
+		
+		$ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_MUTE, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+        curl_setopt($ch, CURLOPT_COOKIE, $cookies);
+            
+ 		curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
  
-                 return $output;
+        return $output;
+    }
+    
+	function GetXMLRequest($url)
+	{
+		// Récupération du cookie sous la forme clé=valeur;clé=valeur
+		$cookiesList=array();
+		foreach($_COOKIE as $key => $val)
+		{
+			$cookiesList[]=$key."=".$val;
+		}
+		$cookies= implode(";", $cookiesList);
+		
+		$ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+        curl_setopt($ch, CURLOPT_COOKIE, $cookies);
+            
+ 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($ch);
+        curl_close($ch);
+ 
+        return $output;
+    }
+    
+	function CURLRequest($type, $url, $xmlBody="")
+	{
+		// Récupération du cookie sous la forme clé=valeur;clé=valeur
+		$cookiesList=array();
+		foreach($_COOKIE as $key => $val)
+		{
+			$cookiesList[]=$key."=".$val;
+		}
+		$cookies= implode(";", $cookiesList);
+		
+		$ch = curl_init($url);
+		// Configuration commune
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+        curl_setopt($ch, CURLOPT_COOKIE, $cookies);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        // Spécifique POST
+        if ($type=="POST")
+        {
+        	curl_setopt($ch, CURLOPT_POST, 1);
+        	//curl_setopt($ch, CURLOPT_MUTE, 1);
+        	curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
+        }
+        // Spécifique GET
+        else if ($type=="GET")
+        {
+        	curl_setopt($ch, CURLOPT_POST, 0);
+        }
+        
+        $output = curl_exec($ch);
+        curl_close($ch);
+ 
+        return $output;
     }
 	
 	function sendMailByEmail($email,$subject,$body)
