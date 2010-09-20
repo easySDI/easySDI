@@ -56,16 +56,16 @@ public class CSWProxyMetadataContentManager
 		proxy = cswProxy;
 	}
 		
-	private void includeFragment (Document docParent,  Element elementParent, InputStream xmlChild, String fragment)  throws IOException, JDOMException
+	private void includeFragment (Document docParent,  Element elementParent, Element elementChild, String fragment)  throws IOException, JDOMException
 	{
 		elementParent.removeAttribute("show", ns);
 		elementParent.removeAttribute("actuate", ns);
 		elementParent.removeAttribute("type", ns);
 		elementParent.removeAttribute("href", ns);
 		
-		SAXBuilder sxb = new SAXBuilder();
-		Document documentChild = sxb.build(xmlChild);
-		Element elementChild = documentChild.getRootElement();
+//		SAXBuilder sxb = new SAXBuilder();
+//		Document documentChild = sxb.build(xmlChild);
+//		Element elementChild = documentChild.getRootElement();
 		
 		if(fragment == null || fragment.equalsIgnoreCase(""))
 		{
@@ -108,6 +108,7 @@ public class CSWProxyMetadataContentManager
 	    	//Modification of the selected Elements
 	    	for (int j = 0 ; j < elList.size(); j++)
 	    	{
+	    		String target = elList.get(j).getAttribute("href", ns).getValue();
 	    		GetRequestHandler requestHandler = new GetRequestHandler(elList.get(j).getAttribute("href", ns).getValue());
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
@@ -118,12 +119,25 @@ public class CSWProxyMetadataContentManager
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)
 				{
-					_lastError = ("Error on : "+elList.get(j).getAttribute("href", ns).getValue());
+					_lastError = ("Error on : "+target);
 					return false;
 				}
+				
+				//Check if the response is an Ogc Exception
+				Document documentChild = sxb.build(xmlChild);
+				Element elementChild = documentChild.getRootElement();
+				Filter exceptionFilter = new CSWProxyMetadataExceptionFilter();
+				List  l = elementChild.getContent(exceptionFilter);
+				if(l.size() > 0)
+				{
+					//Exception returned 
+					_lastError = ("OGC Exception returned by : "+target);
+					return false;
+				}
+				
 				try
 				{
-					includeFragment(docParent, elList.get(j), xmlChild, fragment);
+					includeFragment(docParent, elList.get(j), elementChild, fragment);
 				}
 				catch (Exception ex)
 				{
@@ -131,7 +145,7 @@ public class CSWProxyMetadataContentManager
 					//The all request is aborted
 					//An OGC exception will be send
 					proxy.dump("ERROR",ex.getMessage());
-					_lastError = ("Error on : "+elList.get(j).getAttribute("href", ns).getValue());
+					_lastError = ("Error on : "+target);
 					return false;
 				}
     	   }

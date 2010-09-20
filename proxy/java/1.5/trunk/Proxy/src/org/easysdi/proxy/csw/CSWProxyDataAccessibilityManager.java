@@ -187,7 +187,8 @@ public class CSWProxyDataAccessibilityManager {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<csw:GetRecordByIdResponse xmlns:csw=\"http://www.opengis.net/cat/csw/");
 		sb.append(version);
-		sb.append("\"/>");
+		sb.append("\">");
+		sb.append("</csw:GetRecordByIdResponse>");
 		return sb;
 	}
 
