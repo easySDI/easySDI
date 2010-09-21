@@ -83,7 +83,7 @@ class SITE_catalog {
 					OR 
 					partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 					OR
-					partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					
 					))) ";
 				}
@@ -96,7 +96,7 @@ class SITE_catalog {
 					AND 
 					partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 					AND
-					partner_id NOT IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					partner_id NOT IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					)
 					) ";
 				}
@@ -112,7 +112,7 @@ class SITE_catalog {
 					OR 
 					partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
 					OR
-					partner_id  IN (SELECT partner_id FROM jos_easysdi_community_partner WHERE root_id = $partner->partner_id ) 
+					partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
 					)) ";
 									
 				}

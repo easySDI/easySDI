@@ -1135,7 +1135,7 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_translation`
-  				ADD CONSTRAINT `jos_sdi_translation_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `jos_sdi_language` (`id`);";
+  				ADD CONSTRAINT `#__sdi_translation_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`);";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	

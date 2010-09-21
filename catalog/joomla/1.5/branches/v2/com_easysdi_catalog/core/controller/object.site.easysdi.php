@@ -121,10 +121,10 @@ class SITE_object {
 			
 		//$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
 		$query = "	SELECT count(*)
-						FROM 	jos_sdi_manager_object e, 
-								jos_sdi_account a, 
-								jos_users u,
-								jos_sdi_object o
+						FROM 	#__sdi_manager_object e, 
+								#__sdi_account a, 
+								#__users u,
+								#__sdi_object o
 						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
 					WHERE e.object_id=o.id  
 						AND e.account_id=a.id 
@@ -142,10 +142,10 @@ class SITE_object {
 		
 		// Recherche des enregistrements selon les limites
 		$query = "	SELECT o.*, ot.name as objecttype 
-						FROM 	jos_sdi_manager_object e,  
-								jos_sdi_account a, 
-								jos_users u,
-								jos_sdi_object o
+						FROM 	#__sdi_manager_object e,  
+								#__sdi_account a, 
+								#__users u,
+								#__sdi_object o
 						INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id  
 					WHERE e.object_id=o.id  
 						AND e.account_id=a.id 
