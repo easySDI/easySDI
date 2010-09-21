@@ -1041,7 +1041,7 @@ function com_install(){
 					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
-					  `ordering` bigint(20),
+					  `ordering` bigint(20) NOT NULL DEFAULT 0,
 					  `objecttype_id` bigint(20) NOT NULL,
 					  `published` tinyint(1) NOT NULL,
 					  `projection_id` bigint(20),
@@ -1086,7 +1086,7 @@ function com_install(){
 				  `createdby` bigint(20),
 				  `updatedby` bigint(20),
 				  `label` varchar(50),
-				  `ordering` bigint(20),
+				  `ordering` bigint(20) NOT NULL DEFAULT 0,
 				  `isoscopecode` varchar(50) DEFAULT 'dataset',
 				  `profile_id` bigint(20),
 				  `predefined` tinyint(1),
@@ -1113,7 +1113,7 @@ function com_install(){
 					  `updated` datetime NULL,
 					  `createdby` bigint(20),
 					  `updatedby` bigint(20) NULL,
-					  `ordering` bigint(20) DEFAULT 0,
+					  `ordering` bigint(20) NOT NULL DEFAULT 0,
 					  PRIMARY KEY (`id`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);	
@@ -1190,7 +1190,7 @@ function com_install(){
 					  `updated` datetime,
 					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
-					  `ordering` bigint(20) DEFAULT 0,
+					  `ordering` bigint(20) NOT NULL DEFAULT 0,
 					  `published` tinyint(1) DEFAULT 0,
 					  `code` varchar(3),
 					  `isocode` varchar(3),
@@ -1400,13 +1400,21 @@ function com_install(){
 			}
 			
 			$query="ALTER TABLE `#__sdi_list_role`
-	  						ADD CONSTRAINT `#__sdi_list_role_ibfk_1` FOREIGN KEY (`roletype_id`) REFERENCES `#__sdi_list_roletype` (`id`);
-						";
-				$db->setQuery( $query);	
-				if (!$db->query()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-				}
+  						ADD CONSTRAINT `#__sdi_list_role_ibfk_1` FOREIGN KEY (`roletype_id`) REFERENCES `#__sdi_list_roletype` (`id`);
+					";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
 				
+			$query="ALTER TABLE `#__sdi_object`
+					  ADD CONSTRAINT `#__sdi_object_ibfk_6` FOREIGN KEY (`visibility_id`) REFERENCES `#__sdi_list_visibility` (`id`)
+					";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
 			// Update component version
 			$version="1.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
