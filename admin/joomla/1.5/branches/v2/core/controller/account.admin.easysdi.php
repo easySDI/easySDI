@@ -123,21 +123,21 @@ class ADMIN_account {
 	
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=1" );
 		$contact_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		//echo $database->getErrorMsg();
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
 		//print_r($rowContact); echo "<br>";
 		
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		//echo $database->getErrorMsg();
 		$rowSubscription = new address( $database );
 		$rowSubscription->load( $subscription_id );
 		//print_r($rowSubscription); echo "<br>";
 		
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		//echo $database->getErrorMsg();
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
 		//print_r($rowDelivery); echo "<br>";
@@ -193,7 +193,7 @@ class ADMIN_account {
 	
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=1" );		
 		$contact_id = $database->loadResult();
-		echo $database->getErrorMsg();		
+		//echo $database->getErrorMsg();		
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
 
@@ -398,18 +398,20 @@ class ADMIN_account {
 			//$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			//exit();
 		}
+		//echo JRequest::getVar('password','')."<br>".JRequest::getVar('old_password','')."<br>".$rowUser->password."<br>";
 		
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
-			//$rowUser->password = md5( JRequest::getVar('password','') );
-			$salt = JUserHelper::genRandomPassword(32);
+			$rowUser->password = md5( JRequest::getVar('password','') );
+			/*$salt = JUserHelper::genRandomPassword(32);
 			$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
-			$rowUser->password = $crypt . ':' . $salt;
+			$rowUser->password = $crypt . ':' . $salt;*/
 		}
 		$rowUser->email = $_POST['user_email'];
+		//print_r($rowUser); 
+		//break;
 		
-		
-		if (!$rowUser->store()) {
+		if (!$rowUser->store(true)) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			exit();

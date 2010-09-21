@@ -32,8 +32,8 @@ class account extends JTable
 	var $ordering=null;
 	var $publish_id=null;
 	var $user_id=null;
-	var $root_id=0;
-	var $parent_id=0;
+	var $root_id=null;
+	var $parent_id=null;
 	var $state_id=null;
 	var $acronym=null;
 	var $url=null;
