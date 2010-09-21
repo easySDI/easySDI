@@ -39,7 +39,7 @@ function com_install(){
 			  `description` varchar(100),
 			  `created` datetime NOT NULL,
 			  `updated` datetime,
-			  `createdby` bigint(20) NOT NULL,
+			  `createdby` bigint(20),
 			  `updatedby` bigint(20),
 			  `label` varchar(50),
 			  `ordering` bigint(20),
@@ -62,7 +62,7 @@ function com_install(){
 	/**
 	 * Gets the component versions
 	 */	
-	$version = '0';
+	$version = '0.0';
 	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'CORE'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
@@ -107,7 +107,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -125,49 +125,15 @@ function com_install(){
 			}
 			
 			// Configuration keys for CORE
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'JAVA_BRIDGE_URL', 'JAVA_BRIDGE_URL', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost:8081/JavaBridge/java/Java.inc', '".$id."')";
+			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES 
+					  ('".helper_easysdi::getUniqueId()."', 'DESCRIPTION_LENGTH', 'DESCRIPTION_LENGTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '100', '".$id."'),
+					  ('".helper_easysdi::getUniqueId()."', 'LOGO_WIDTH', 'LOGO_WIDTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '30', '".$id."'),
+					  ('".helper_easysdi::getUniqueId()."', 'LOGO_HEIGHT', 'LOGO_HEIGHT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '30', '".$id."'),
+					  ('".helper_easysdi::getUniqueId()."', 'PAGINATION_METADATA', 'PAGINATION_METADATA', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."'),
+					  ('".helper_easysdi::getUniqueId()."', 'WELCOME_REDIRECT_URL', 'WELCOME_REDIRECT_URL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'index.php?option=com_content&view=article&id=46&Itemid=104', '".$id."')
+					 ";
 			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'DESCRIPTION_LENGTH', 'DESCRIPTION_LENGTH', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '150', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'LOGO_WIDTH', 'LOGO_WIDTH', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '50', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'LOGO_HEIGHT', 'LOGO_HEIGHT', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'PAGINATION_METADATA', 'PAGINATION_METADATA', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-			$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'WELCOME_REDIRECT_URL', 'WELCOME_REDIRECT_URL', 'CORE', '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'index.php?option=com_content&view=article&id=46&Itemid=104', '".$id."')";
-			$db->setQuery( $query);
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-	
+			
 			/*
 			 * Create and complete system tables 
 			 */
@@ -179,7 +145,7 @@ function com_install(){
 					  `description` varchar(100) DEFAULT NULL,
 					  `created` datetime NOT NULL,
 					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20) DEFAULT NULL,
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
@@ -213,7 +179,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -239,7 +205,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -510,7 +476,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -548,15 +514,15 @@ function com_install(){
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_catalogtype` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20) DEFAULT NULL,
+				  `code` varchar(20),
 				  `name` varchar(50) NOT NULL,
-				  `description` varchar(100) DEFAULT NULL,
+				  `description` varchar(100),
 				  `created` datetime NOT NULL,
-				  `updated` datetime DEFAULT NULL,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20) DEFAULT NULL,
-				  `label` varchar(50) DEFAULT NULL,
-				  `ordering` bigint(20) DEFAULT NULL,
+				  `updated` datetime,
+				  `createdby` bigint(20),
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20),
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`),
 				  UNIQUE KEY `code` (`code`)
@@ -579,15 +545,15 @@ function com_install(){
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_metadatastate` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
-					  `code` varchar(20) DEFAULT NULL,
+					  `code` varchar(20),
 					  `name` varchar(50) NOT NULL,
-					  `description` varchar(100) DEFAULT NULL,
+					  `description` varchar(100),
 					  `created` datetime NOT NULL,
-					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
-					  `updatedby` bigint(20) DEFAULT NULL,
-					  `label` varchar(50) DEFAULT NULL,
-					  `ordering` bigint(20) DEFAULT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20),
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  UNIQUE KEY `code` (`code`)
@@ -611,17 +577,17 @@ function com_install(){
 			
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_projection` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-					  `guid` varchar(36) DEFAULT NULL,
-					  `code` varchar(20) DEFAULT NULL,
+					  `guid` varchar(36),
+					  `code` varchar(20),
 					  `name` varchar(50) NOT NULL,
-					  `description` varchar(100) DEFAULT NULL,
+					  `description` varchar(100),
 					  `label` varchar(50) NOT NULL,
 					  `created` datetime NOT NULL,
-					  `createdby` bigint(20) NOT NULL,
-					  `updated` datetime DEFAULT NULL,
-					  `updatedby` bigint(20) DEFAULT NULL,
-					  `ordering` bigint(20) DEFAULT NULL,
-					  `unit` varchar(50) DEFAULT NULL,
+					  `createdby` bigint(20),
+					  `updated` datetime,
+					  `updatedby` bigint(20),
+					  `ordering` bigint(20),
+					  `unit` varchar(50),
 					  PRIMARY KEY (`id`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);	
@@ -642,15 +608,15 @@ function com_install(){
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_tablocation` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
-					  `code` varchar(20) DEFAULT NULL,
+					  `code` varchar(20),
 					  `name` varchar(50) NOT NULL,
-					  `description` varchar(100) DEFAULT NULL,
+					  `description` varchar(100),
 					  `created` datetime NOT NULL,
-					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
-					  `updatedby` bigint(20) DEFAULT NULL,
-					  `label` varchar(50) DEFAULT NULL,
-					  `ordering` bigint(20) DEFAULT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20),
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  UNIQUE KEY `code` (`code`)
@@ -673,15 +639,15 @@ function com_install(){
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_visibility` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
-					  `code` varchar(20) DEFAULT NULL,
+					  `code` varchar(20),
 					  `name` varchar(50) NOT NULL,
-					  `description` varchar(100) DEFAULT NULL,
+					  `description` varchar(100),
 					  `created` datetime NOT NULL,
-					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
-					  `updatedby` bigint(20) DEFAULT NULL,
-					  `label` varchar(50) DEFAULT NULL,
-					  `ordering` bigint(20) DEFAULT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20),
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  UNIQUE KEY `code` (`code`)
@@ -718,7 +684,7 @@ function com_install(){
 					  `description` varchar(100) DEFAULT NULL,
 					  `created` datetime NOT NULL,
 					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20) DEFAULT NULL,
 					  `updatedby` bigint(20) DEFAULT NULL,
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
@@ -843,6 +809,21 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
+			// Link between account and objecttype tables
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_account_objecttype` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `account_id` bigint(20) NOT NULL,
+					  `objecttype_id` bigint(20) NOT NULL,
+					  PRIMARY KEY (`id`),
+					  KEY `account_id` (`account_id`),
+					  KEY `objecttype_id` (`objecttype_id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			/*
 			 *  
 			 */
@@ -854,7 +835,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -883,7 +864,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -925,7 +906,7 @@ function com_install(){
 					  `description` varchar(100) DEFAULT NULL,
 					  `created` datetime NOT NULL,
 					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20) DEFAULT NULL,
 					  `updatedby` bigint(20) DEFAULT NULL,
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
@@ -961,16 +942,17 @@ function com_install(){
 					  `description` varchar(100) DEFAULT NULL,
 					  `created` datetime NOT NULL,
 					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20) DEFAULT NULL,
 					  `updatedby` bigint(20) DEFAULT NULL,
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
-					  `published` datetime DEFAULT NULL,
+					  `published` date DEFAULT NULL,
 					  `metadatastate_id` bigint(20) NOT NULL,
+					  `editor_id` bigint(20) DEFAULT NULL,
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
-					  UNIQUE KEY `code` (`code`),
-					  KEY `metadatastate_id` (`metadatastate_id`)
+					  KEY `metadatastate_id` (`metadatastate_id`),
+					  KEY `editor_id` (`editor_id`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);	
 			if (!$db->query()) {
@@ -985,7 +967,7 @@ function com_install(){
 					  `description` varchar(100) DEFAULT NULL,
 					  `created` datetime NOT NULL,
 					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20) DEFAULT NULL,
 					  `updatedby` bigint(20) DEFAULT NULL,
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
@@ -1013,7 +995,7 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
@@ -1029,15 +1011,15 @@ function com_install(){
 			}
 
 			$query="INSERT INTO `#__sdi_title` (`guid`, `label`, `name`, `description`, `created`, `createdby`, `code`, `publish_id`) VALUES
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM', 'EASYSDI_MADAM', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MADAM', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER', 'EASYSDI_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISTER', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS', 'EASYSDI_MISS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISS', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MASTER', 'EASYSDI_MAITRE', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MAITRE', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PRESIDENT', 'EASYSDI_MISS_PRESIDENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISS_PRESIDENT', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PRESIDENT', 'EASYSDI_MISTER_PRESIDENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISTER_PRESIDENT', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PROPERTY_AGENT', 'EASYSDI_MISS_PROPERTY_AGENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISS_PROPERTY_AGENT', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PROPERTY_AGENT', 'EASYSDI_MISTER_PROPERTY_AGENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISTER_PROPERTY_AGENT', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTER', 'EASYSDI_MISS_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'EASYSDI_MISS_MISTER', NULL)";
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM', 'CORE_ACCOUNT_CONTACT_LIST_MADAM', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MADAM', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISTER', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS', 'CORE_ACCOUNT_CONTACT_LIST_MISS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MASTER', 'CORE_ACCOUNT_CONTACT_LIST_MASTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MASTER', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PRESIDENT', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PRESIDENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS_PRESIDENT', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PRESIDENT', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PRESIDENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PRESIDENT', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PROPERTY_AGENT', 'CORE_ACCOUNT_CONTACT_LIST_MISS_PROPERTY_AGENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS_PROPERTY_AGENT', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PROPERTY_AGENT', 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PROPERTY_AGENT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISTER_PROPERTY_AGENT', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTER', NULL)";
 			$db->setQuery( $query);	
 			if (!$db->query()) 
 			{
@@ -1052,12 +1034,11 @@ function com_install(){
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
-					  `createdby` bigint(20) NOT NULL,
+					  `createdby` bigint(20),
 					  `updatedby` bigint(20),
 					  `label` varchar(50),
 					  `ordering` bigint(20),
 					  `objecttype_id` bigint(20) NOT NULL,
-					  `metadata_id` varchar(50),
 					  `published` tinyint(1) NOT NULL,
 					  `projection_id` bigint(20),
 					  `view_minResolution` bigint(20),
@@ -1072,12 +1053,18 @@ function com_install(){
 					  `view_user` varchar(50),
 					  `view_password` varchar(50),
 					  `account_id` bigint(20) NOT NULL,
+					  `checked_out` bigint(20) NOT NULL,
+					  `checked_out_time` datetime,
+					  `previewWmsUrl` varchar(400),
+					  `is_free` tinyint(1) NOT NULL,
+					  `orderable` tinyint(1) NOT NULL,
+					  `visibility_id` bigint(20) NOT NULL,
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  KEY `objecttype_id` (`objecttype_id`),
-					  KEY `metadata_id` (`metadata_id`),
 					  KEY `projection_id` (`projection_id`),
-					  KEY `account_id` (`account_id`)
+					  KEY `account_id` (`account_id`),
+					  KEY `visibility_id` (`visibility_id`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);	
 			if (!$db->query()) {
@@ -1092,18 +1079,239 @@ function com_install(){
 				  `description` varchar(100),
 				  `created` datetime NOT NULL,
 				  `updated` datetime,
-				  `createdby` bigint(20) NOT NULL,
+				  `createdby` bigint(20),
 				  `updatedby` bigint(20),
 				  `label` varchar(50),
 				  `ordering` bigint(20),
 				  `isoscopecode` varchar(50) DEFAULT 'dataset',
 				  `profile_id` bigint(20),
+				  `predefined` tinyint(1),
+				  `hasVersioning` tinyint(4) NOT NULL,
+				  `logo` varchar(400),
+				  `fragment` varchar(50),
+				  `fragmentnamespace_id` bigint(20),
 				  PRIMARY KEY (`id`),
-				  KEY `profile_id` (`profile_id`)
+				  KEY `profile_id` (`profile_id`),
+				  KEY `fragmentnamespace_id` (`fragmentnamespace_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);	
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_codelang` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20) NOT NULL,
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100) NULL,
+					  `created` datetime NOT NULL,
+					  `updated` datetime NULL,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20) NULL,
+					  `ordering` bigint(20) DEFAULT 0,
+					  PRIMARY KEY (`id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			$query="INSERT INTO `#__sdi_list_codelang` (`guid`, `code`, `name`, `description`, `created`, `createdby`) VALUES
+					('".helper_easysdi::getUniqueId()."', 'ar-DZ', 'ar-DZ - Arabic - Algeria', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'be-BY', 'be-BY - Belarusian (Belarus)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'bg-BG', 'bg-BG - Bulgarian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'bn-BD', 'bn-BD - Bengali (Bangladesh)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ca-ES', 'ca-ES - Catalan', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'cs-CZ', 'cs-CZ - Czech (Czech)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'da-DK', 'da-DK - Danish(DK)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'de-DE', 'de-DE - Deutsch (DE)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'el-GR', 'el-GR - Greek', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'en-GB', 'en-GB - English (United Kingdom)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'en-US', 'en-US - English (US)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'eo-XX', 'eo-XX - Esperanto', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'es-ES', 'es-ES - Spanish (Español internacional)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'et-EE', 'et-EE - Estonian - (Estonia)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'eu-ES', 'eu-ES - Basque (Euskara estandarra)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'fa-IR', 'fa-IR - Persian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'fi-FI', 'fi-FI - Finnish (Suomi)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'fr-FR', 'fr-FR - French (Fr)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'gu-IN', 'gu-IN - Gujarati (India)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'hr-HR', 'hr-HR - Croatian (HR)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'hu-HU', 'hu-HU - Hungarian (Magyar)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'is-IS', 'is-IS - Íslenska (Iceland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'it-IT', 'it-IT - Italian (Italy)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ja-JP', 'ja-JP - Japanese(JP)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'lo-LA', 'lo-LA - Lao', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'lt-LT', 'lt-LT - Lithuanian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'lv-LV', 'lv-LV - Latvian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'mn-MN', 'mn-MN - Mongolian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'nb-BO', 'nb-NO - Norsk bokmål (Norway)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'nl-NL', 'nl-NL - Nederlands (nl-NL)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'pl-PL', 'pl-PL - Polish (Poland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'pt-BR', 'pt-BR - Português (Brasil)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'pt-PT', 'pt-PT - Português (pt-PT)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ro-RO', 'ro-RO - Româna (România)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ru-RU', 'ru-RU - Russian (Russian Federation)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sd-PK', 'sd-PK - Sindhi', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'si-LK', 'si-LK - Sinhala (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sk-SK', 'sk-SK - Slovencina (Slovenská Republika)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sr-ME', 'sr-ME - Ijekavski (ME)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sr-RS', 'sr-RS - Serbian (RS)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sv-SE', 'sv-SE - Svenska (Sverige)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sy-IQ', 'sy-IQ - Syriac(Iraq)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ta-LK', 'ta-LK - Tamil (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'th-TH', 'th-TH - Thai', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'tr-TR', 'tr-TR - Türkçe (Türkiye)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'uk-UA', 'uk-UA - Ukrainian (Ukraine)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ur-PK', 'ur-PK - Urdu Pakistan', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'vi-VN', 'vi-VN - Vietnamese', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'zh-CN', 'zh-CN - Simplified Chinese', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'zh-TW', 'zh-TW - Traditional Chinese (Taiwan)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.")";
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			
+			$query="CREATE TABLE IF NOT EXISTS #__sdi_language (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `codelang_id` bigint(20),
+					  `name` varchar(50) NOT NULL,
+					  `label` varchar(50),
+					  `description` varchar(100),
+					  `created` datetime NOT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `ordering` bigint(20) DEFAULT 0,
+					  `published` tinyint(1) DEFAULT 0,
+					  `code` varchar(3),
+					  `isocode` varchar(3),
+					  `defaultlang` tinyint(1) NOT NULL,
+					  `gemetlang` varchar(2),
+					  PRIMARY KEY (`id`),
+					  KEY `codelang_id` (`codelang_id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_accountprofile` (
+						  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+						  `guid` varchar(36) NOT NULL,
+						  `code` varchar(20) DEFAULT NULL,
+						  `name` varchar(50) NOT NULL,
+						  `description` varchar(100) DEFAULT NULL,
+						  `created` datetime NOT NULL,
+						  `updated` datetime DEFAULT NULL,
+						  `createdby` bigint(20) DEFAULT NULL,
+						  `updatedby` bigint(20) DEFAULT NULL,
+						  `translation` varchar(50) DEFAULT NULL,
+						  `ordering` bigint(20) DEFAULT NULL,
+						  PRIMARY KEY (`id`),
+						  UNIQUE KEY `guid` (`guid`)
+						) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			// Link between account and accountprofile tables
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_account_accountprofile` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `account_id` bigint(20) NOT NULL,
+					  `accountprofile_id` bigint(20) NOT NULL,
+					  PRIMARY KEY (`id`),
+					  KEY `account_id` (`account_id`),
+					  KEY `accountprofile_id` (`accountprofile_id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_roletype` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20) DEFAULT NULL,
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100) DEFAULT NULL,
+					  `created` datetime NOT NULL,
+					  `updated` datetime DEFAULT NULL,
+					  `createdby` bigint(20) DEFAULT NULL,
+					  `updatedby` bigint(20) DEFAULT NULL,
+					  `ordering` bigint(20) DEFAULT NULL,
+					  `publish_id` tinyint(1) NOT NULL DEFAULT 0,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  KEY `publish_id` (`publish_id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			$query="INSERT INTO `#__sdi_list_roletype` (`guid`, `code`, `name`, `description`, `created`, `createdby`) VALUES  
+					('".helper_easysdi::getUniqueId()."', NULL, 'CORE_CATALOG_ROLE_TYPE_FCT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.");
+					";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}		
+			
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_module_panel` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20),
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100),
+					  `created` datetime NOT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20) ,
+					  `module_id` bigint(20) NOT NULL,
+					  `view_path` varchar(250) NOT NULL,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  UNIQUE KEY `code` (`code`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";	 		
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_serviceaccount` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20),
+					  `name` varchar(50),
+					  `description` varchar(100),
+					  `created` datetime NOT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20) NOT NULL,
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20) ,
+					  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+					  `checked_out_time`  datetime NULL DEFAULT NULL ,
+					  `account_id` bigint(20) NOT NULL,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  UNIQUE KEY `code` (`code`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";	 		
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
 			}
 			
 			/*
@@ -1170,8 +1378,33 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 			}
 			
+			$query="ALTER TABLE `#__sdi_language`
+	  				ADD CONSTRAINT `#__sdi_language_ibfk_1` FOREIGN KEY (`codelang_id`) REFERENCES `#__sdi_list_codelang` (`id`);";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			
+			$query="ALTER TABLE `#__sdi_account_accountprofile`
+					  ADD CONSTRAINT `#__sdi_account_accountprofile_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
+					  ADD CONSTRAINT `#__sdi_account_accountprofile_ibfk_2` FOREIGN KEY (`accountprofile_id`) REFERENCES `#__sdi_accountprofile` (`id`);
+					";
+			$db->setQuery( $query);	
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+			}
+			
+			$query="ALTER TABLE `#__sdi_list_role`
+	  						ADD CONSTRAINT `#__sdi_list_role_ibfk_1` FOREIGN KEY (`roletype_id`) REFERENCES `#__sdi_list_roletype` (`id`);
+						";
+				$db->setQuery( $query);	
+				if (!$db->query()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				}
+				
 			// Update component version
-			$version="0.2";
+			$version="1.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
 			$db->setQuery( $query);	
 			if (!$db->query()) 
@@ -1181,335 +1414,6 @@ function com_install(){
 		}
 		
 	}
-	if ($version == "0.2")
-	{
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_codelang` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20) NOT NULL,
-				  `name` varchar(50) NOT NULL,
-				  `description` varchar(100) NULL,
-				  `created` datetime NOT NULL,
-				  `updated` datetime NULL,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20) NULL,
-				  `ordering` bigint(20) DEFAULT 0,
-				  PRIMARY KEY (`id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="INSERT INTO `#__sdi_list_codelang` (`guid`, `code`, `name`, `description`, `created`, `createdby`) VALUES
-				('".helper_easysdi::getUniqueId()."', 'ar-DZ', 'ar-DZ - Arabic - Algeria', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'be-BY', 'be-BY - Belarusian (Belarus)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'bg-BG', 'bg-BG - Bulgarian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'bn-BD', 'bn-BD - Bengali (Bangladesh)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ca-ES', 'ca-ES - Catalan', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'cs-CZ', 'cs-CZ - Czech (Czech)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'da-DK', 'da-DK - Danish(DK)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'de-DE', 'de-DE - Deutsch (DE)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'el-GR', 'el-GR - Greek', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'en-GB', 'en-GB - English (United Kingdom)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'en-US', 'en-US - English (US)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'eo-XX', 'eo-XX - Esperanto', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'es-ES', 'es-ES - Spanish (Español internacional)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'et-EE', 'et-EE - Estonian - (Estonia)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'eu-ES', 'eu-ES - Basque (Euskara estandarra)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'fa-IR', 'fa-IR - Persian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'fi-FI', 'fi-FI - Finnish (Suomi)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'fr-FR', 'fr-FR - French (Fr)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'gu-IN', 'gu-IN - Gujarati (India)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'hr-HR', 'hr-HR - Croatian (HR)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'hu-HU', 'hu-HU - Hungarian (Magyar)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'is-IS', 'is-IS - Íslenska (Iceland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'it-IT', 'it-IT - Italian (Italy)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ja-JP', 'ja-JP - Japanese(JP)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'lo-LA', 'lo-LA - Lao', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'lt-LT', 'lt-LT - Lithuanian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'lv-LV', 'lv-LV - Latvian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'mn-MN', 'mn-MN - Mongolian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'nb-BO', 'nb-NO - Norsk bokmål (Norway)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'nl-NL', 'nl-NL - Nederlands (nl-NL)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'pl-PL', 'pl-PL - Polish (Poland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'pt-BR', 'pt-BR - Português (Brasil)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'pt-PT', 'pt-PT - Português (pt-PT)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ro-RO', 'ro-RO - Româna (România)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ru-RU', 'ru-RU - Russian (Russian Federation)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sd-PK', 'sd-PK - Sindhi', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'si-LK', 'si-LK - Sinhala (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sk-SK', 'sk-SK - Slovencina (Slovenská Republika)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sr-ME', 'sr-ME - Ijekavski (ME)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sr-RS', 'sr-RS - Serbian (RS)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sv-SE', 'sv-SE - Svenska (Sverige)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'sy-IQ', 'sy-IQ - Syriac(Iraq)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ta-LK', 'ta-LK - Tamil (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'th-TH', 'th-TH - Thai', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'tr-TR', 'tr-TR - Türkçe (Türkiye)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'uk-UA', 'uk-UA - Ukrainian (Ukraine)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'ur-PK', 'ur-PK - Urdu Pakistan', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'vi-VN', 'vi-VN - Vietnamese', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'zh-CN', 'zh-CN - Simplified Chinese', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-				('".helper_easysdi::getUniqueId()."', 'zh-TW', 'zh-TW - Traditional Chinese (Taiwan)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.")";
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		
-		$query="CREATE TABLE IF NOT EXISTS #__sdi_language (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `codelang_id` bigint(20),
-				  `name` varchar(50) NOT NULL,
-				  `label` varchar(50),
-				  `description` varchar(100) NULL,
-				  `created` datetime NOT NULL,
-				  `updated` datetime NULL,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20) NULL,
-				  `ordering` bigint(20) DEFAULT 0,
-				  `published` tinyint(1) DEFAULT 0,
-				  PRIMARY KEY (`id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE `#__sdi_language`
-  				ADD CONSTRAINT `#__sdi_language_ibfk_1` FOREIGN KEY (`codelang_id`) REFERENCES `#__sdi_list_codelang` (`id`);";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		// Update component version
-		$version="0.3";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-	if ($version == "0.3")
-	{
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_accountprofile` (
-					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-					  `guid` varchar(36) NOT NULL,
-					  `code` varchar(20) DEFAULT NULL,
-					  `name` varchar(50) NOT NULL,
-					  `description` varchar(100) DEFAULT NULL,
-					  `created` datetime NOT NULL,
-					  `updated` datetime DEFAULT NULL,
-					  `createdby` bigint(20) NOT NULL,
-					  `updatedby` bigint(20) DEFAULT NULL,
-					  `translation` varchar(50) DEFAULT NULL,
-					  `ordering` bigint(20) DEFAULT NULL,
-					  PRIMARY KEY (`id`),
-					  UNIQUE KEY `guid` (`guid`)
-					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		// Link between account and accountprofile tables
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_account_accountprofile` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `account_id` bigint(20) NOT NULL,
-				  `accountprofile_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  KEY `account_id` (`account_id`),
-				  KEY `accountprofile_id` (`accountprofile_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
-		$db->setQuery( $query);
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-		$query="ALTER TABLE `#__sdi_account_accountprofile`
-				  ADD CONSTRAINT `#__sdi_account_accountprofile_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
-				  ADD CONSTRAINT `#__sdi_account_accountprofile_ibfk_2` FOREIGN KEY (`accountprofile_id`) REFERENCES `#__sdi_accountprofile` (`id`);
-				";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		// Update component version
-		$version="0.4";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-	if ($version == "0.4")
-	{
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_roletype` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20) DEFAULT NULL,
-				  `name` varchar(50) NOT NULL,
-				  `description` varchar(100) DEFAULT NULL,
-				  `created` datetime NOT NULL,
-				  `updated` datetime DEFAULT NULL,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20) DEFAULT NULL,
-				  `ordering` bigint(20) DEFAULT NULL,
-				  `publish_id` tinyint(1) NOT NULL DEFAULT 0,
-				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`),
-				  KEY `publish_id` (`publish_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="INSERT INTO `#__sdi_list_roletype` (`guid`, `code`, `name`, `description`, `created`, `createdby`) VALUES  
-				('".helper_easysdi::getUniqueId()."', NULL, 'EASYSDI_ROLE_TYPE_FCT', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.");
-				";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}		
-		
-		$query="ALTER TABLE `#__sdi_list_role`
-  						ADD CONSTRAINT `#__sdi_list_role_ibfk_1` FOREIGN KEY (`roletype_id`) REFERENCES `#__sdi_list_roletype` (`id`);
-					";
-			$db->setQuery( $query);	
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-			}
-			
-		// Update component version
-		$version="0.5";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-	if ($version == "0.5")
-	{
-		$query="ALTER TABLE #__sdi_language ADD COLUMN code varchar(3)";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-
-		$query="ALTER TABLE #__sdi_language ADD COLUMN isocode varchar(3)";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE #__sdi_language ADD COLUMN defaultlang tinyint(1) NOT NULL DEFAULT 0";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE #__sdi_language ADD COLUMN gemetlang varchar(2)";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		// Update component version
-		$version="0.6";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-	}
-	if ($version == "0.6")
-	{
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_module_panel` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20),
-				  `name` varchar(50) NOT NULL,
-				  `description` varchar(100),
-				  `created` datetime NOT NULL,
-				  `updated` datetime,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20),
-				  `label` varchar(50),
-				  `ordering` bigint(20) ,
-				  `module_id` bigint(20) NOT NULL,
-				  `view_path` varchar(250) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`),
-				  UNIQUE KEY `code` (`code`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";	 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		
-		// Update component version
-		$version="0.7";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-	}
-	
-	if ($version == "0.7")
-	{
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_serviceaccount` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20),
-				  `name` varchar(50),
-				  `description` varchar(100),
-				  `created` datetime NOT NULL,
-				  `updated` datetime,
-				  `createdby` bigint(20) NOT NULL,
-				  `updatedby` bigint(20),
-				  `label` varchar(50),
-				  `ordering` bigint(20) ,
-				  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
-				  `checked_out_time`  datetime NULL DEFAULT NULL ,
-				  `account_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`),
-				  UNIQUE KEY `code` (`code`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";	 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		
-		// Update component version
-		$version="0.8";
-		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
-		$db->setQuery( $query);	
-		if (!$db->query()) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		
-	}
-	
 	
 	/**
 	 * Menu creation
