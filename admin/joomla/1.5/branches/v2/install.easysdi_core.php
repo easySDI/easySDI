@@ -990,7 +990,7 @@ function com_install(){
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_title` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
-					  `code` varchar(20),
+					  `code` varchar(50),
 					  `name` varchar(50) NOT NULL,
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
