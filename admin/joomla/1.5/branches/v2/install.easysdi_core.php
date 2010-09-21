@@ -90,7 +90,7 @@ function com_install(){
 	if ($version == "0.1")
 	{
 		// Get the current component ID
-		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'CORE'";
+		$query = "SELECT id FROM `#__sdi_list_module` where code = 'CORE'";
 		$db->setQuery( $query);
 		$id = $db->loadResult();
 		
@@ -133,6 +133,10 @@ function com_install(){
 					  ('".helper_easysdi::getUniqueId()."', 'WELCOME_REDIRECT_URL', 'WELCOME_REDIRECT_URL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'index.php?option=com_content&view=article&id=46&Itemid=104', '".$id."')
 					 ";
 			$db->setQuery( $query);
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
 			
 			/*
 			 * Create and complete system tables 
