@@ -32,9 +32,22 @@ class SITE_favorite
 			return;
 		}
 		
+		//Public
+		$public = sdilist::getIdByCode('#__sdi_list_visibility','public' );
+		
+		//Private
+		$private = sdilist::getIdByCode('#__sdi_list_visibility','private' );
+		
+		//Published
+		$published = sdilist::getIdByCode('#__sdi_list_metadatastate','published' );
+		
 		//Get Var
 		$account = new accountByUserId($database);
 		$account->load($user->id);
+		if ($user->guest)
+		{
+			$account->id = 0;
+		}
 		
 		$language=&JFactory::getLanguage();
 		$language->load('com_easysdi');
@@ -63,7 +76,6 @@ class SITE_favorite
 		$display_internal_orderable = false;
 		
 		//Load products count, only favorites
-		//$query  = "SELECT COUNT(*) FROM #__easysdi_product p where p.id IN (SELECT product_id FROM #__easysdi_user_product_favorite WHERE partner_id = $partner->partner_id) and p.published=1";
 		$query  = "SELECT COUNT(*) FROM #__sdi_objectversion ov where ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
 		$query  = $query .$filter ;
 		$db->setQuery( $query);
@@ -86,7 +98,10 @@ class SITE_favorite
 		if ($simpleSearchCriteria == ""){
 					$simpleSearchFilter  = $simpleSearchFilter ."ov.title ASC";
 		}
-		$query  = "SELECT * FROM #__sdi_objectversion ov where ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
+		$query  = "SELECT ov.*, o.account_id FROM #__sdi_objectversion ov 
+							   INNER JOIN #__sdi_object o ON o.id = ov.object_id
+							   INNE JOIN #__sdi_account a ON a.id = o.account_id
+							   WHERE ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
 		$query  = $query .$filter ;
 		$query = $query .$simpleSearchFilter;		
 		$db->setQuery( $query,$limitstart,$limit);
@@ -103,14 +118,13 @@ class SITE_favorite
 		$accounts = array();
 		$accounts[0]='';
 		$query = "SELECT  #__sdi_account.id as value, #__users.name as text 
-		          FROM #__users, `#__sdi_account` 
-			  INNER JOIN `#__sdi_objectversion` ON #__easysdi_community_partner.partner_id = #__easysdi_product.partner_id 
-			  WHERE #__users.id = #__easysdi_community_partner.user_id AND 
-			     #__easysdi_community_partner.partner_id IN (Select #__easysdi_product.partner_id from #__easysdi_product)
-			  GROUP BY #__easysdi_community_partner.partner_id 
-			  ORDER BY #__users.name";
+		          	FROM #__users, `#__sdi_account` 
+			  		INNER JOIN `#__sdi_manager_object` mo ON #__sdi_account.id = mo.account_id
+			  		WHERE #__users.id = #__sdi_account.user_id
+			  		GROUP BY #__sdi_account.id 
+			  		ORDER BY #__users.name";
 		$db->setQuery( $query);
-		$partners = array_merge( $partners, $db->loadObjectList() );
+		$accounts = array_merge( $accounts, $db->loadObjectList() );
 		if ($db->getErrorNum()) 
 		{
 			echo "<div class='alert'>";
@@ -129,67 +143,70 @@ class SITE_favorite
 		//define an array of orderable associated product for the current user
 		$orderableProductsMd = null;
 		$filter = "";
-		$user = JFactory::getUser();
-		$partner = new partnerByUserId($db);
-		if (!$user->guest){
-			$partner->load($user->id);
-		}else{
-			$partner->partner_id = 0;
-		}
-        	
-		if($partner->partner_id == 0)
+		$query = "";
+		if($account->id == 0)
 		{
 			//No user logged, display only external products
-			$filter .= " AND (EXTERNAL=1) ";
+			$filter .= " AND (p.visibility_id = $public) ";
 		}
 		else
 		{
 			//User logged, display products according to users's rights
-			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
+			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.EXTERNAL=1
-					OR
-					(p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
-					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					
-					))) ";
+					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published 
+									  AND (o.visibility_id = $public 
+									  		OR (o.visibility_id = $private AND o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
+									  										OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
+									  										OR o.account_id =  $account->id
+									  										OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										)";
+
 				}
 				else
 				{
-					$filter .= " AND (p.EXTERNAL=1) ";
+					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published AND o.visibility_id = $public";
 				}
 			}
 			else
 			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
+				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
-					$filter .= " AND (p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
-					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					)) ";
+					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published 
+									  AND (o.visibility_id = $private 
+									  		AND (
+									  				o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
+									  				OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  				OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  				OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id )
+									  				OR o.account_id =  $account->id
+									  				OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  			)
+									  	  )";
 									
 				}
 				else
 				{
-					//no command right
-					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
+					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published AND o.visibility_id = 150";
 				}
 			}
 		}
-		$query  = "SELECT metadata_id FROM #__easysdi_product p where published=1 and orderable = 1 ".$filter;
 		$db->setQuery($query);
 		$orderableProductsMd = $db->loadResultArray();
 		if ($db->getErrorNum()) {						
@@ -277,34 +294,33 @@ class SITE_favorite
 					foreach ($rows  as $row)
 					{
 					
-					$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$row->admin_partner_id;
+					$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->account_id;
 					$db->setQuery($queryPartnerLogo);
 					$partner_logo = $db->loadResult();
 					
-					$query = "select count(*) from #__easysdi_product where previewWmsUrl != '' AND metadata_id = '".$row->metadata_id."'";
-					//$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$row->metadata_id."'";
+					$query = "select count(*) from #__sdi_product where viewurlwms != '' AND objectversion_id = '".$row->id."'";
 					$db->setQuery( $query);
 					$hasPreview = $db->loadResult();
 					
 					$hasOrderableProduct = false;
-					if (in_array($row->metadata_id, $orderableProductsMd))
+					if (in_array($row->id, $orderableProductsMd))
 						$hasOrderableProduct = true;
 					
 					?>
 	
 							<tr>		
 								<td>
-								   <img height="18px" width="18px" src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>
+								   <img height="18px" width="18px" src="<?php echo $partner_logo;?>" title="<?php echo $row->account_id;?>"></img>
 								</td>
 								<td width="100%">
 									<span class="mdtitle" >
 									<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" 
-									href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->data_title; ?></a>
+									href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title; ?></a>
 									</span>
 								</td>
 								<!--
 								<td width="30%">
-									<span class="mdsupplier" ><?php echo $row->supplier_name;?></span>
+									<span class="mdsupplier" ><?php echo $row->account_id;?></span>
 								</td>
 								-->
 								<td class="logo"><div title="<?php echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); ?>" class="pdFavorite" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='removeFavorite'; submitOrderForm();"/></td>

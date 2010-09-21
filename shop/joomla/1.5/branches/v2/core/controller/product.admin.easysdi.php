@@ -206,7 +206,7 @@ class ADMIN_product {
 			$database->setQuery("SELECT  a.id AS value, b.name AS text 
 								   FROM #__sdi_account a, #__users b 
 								   WHERE a.user_id = b.id 
-								   AND  (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id )
+								   AND  ( a.root_id = $supplier->id OR a.id = $supplier->id )
 								   AND a.id IN (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code ='DIFFUSION'))
 								   ORDER BY b.name");	
 			if ($database->getErrorNum()) {

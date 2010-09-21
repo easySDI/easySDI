@@ -280,7 +280,7 @@ class SITE_product {
 			//Build queries
 			$select_query = "SELECT a.id AS value, b.name AS text 
 										 FROM #__sdi_account a, #__users b 
-										 WHERE (a.root_id = $supplier->root_id OR a.root_id = $supplier->id OR a.id = $supplier->id OR a.id = $supplier->root_id)  
+										 WHERE ( a.root_id = $supplier->id OR a.id = $supplier->id )  
 										 AND a.user_id = b.id 
 										 AND a.id IN  (SELECT account_id FROM #__sdi_actor WHERE role_id = (SELECT id FROM #__sdi_list_role WHERE code =";
 			$order_query = ")) ORDER BY b.name";
@@ -348,7 +348,7 @@ class SITE_product {
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$database->setQuery( "SELECT a.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account a ON u.id = a.user_id 
-							WHERE (a.root_id = $account->root_id OR a.root_id = $account->id OR a.id = $account->id OR a.id = $account->root_id)  " );
+							WHERE ( a.root_id = $account->id OR a.id = $account->id )  " );
 		$rowsAccount = array_merge($rowsAccount,$database->loadObjectList());
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
