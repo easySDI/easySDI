@@ -188,17 +188,6 @@ class ADMIN_object {
 					return;
 				}
 
-				// Récuperer tous les labels et contrôler qu'ils soient saisis
-				var labelEmpty = 0;
-				labels = document.getElementById('labels');
-				fields = labels.getElementsByTagName('input');
-				
-				for (var i = 0; i < fields.length; i++)
-				{
-					if (fields.item(i).value == "")
-						labelEmpty=1;
-				}
-				
 				// do field validation
 				if (form.name.value == "") 
 				{
@@ -212,10 +201,6 @@ class ADMIN_object {
 				{
 					alert( "<?php echo JText::_( 'CATALOG_OBJECT_SUBMIT_NOACCOUNT', true ); ?>" );
 				} 
-				else if (labelEmpty > 0 && labelEmpty != fields.length) 
-				{
-					alert( "<?php echo JText::_( 'CATALOG_OBJECT_SUBMIT_NOLABELS', true ); ?>" );
-				}
 				else 
 				{
 					submitform( pressbutton );

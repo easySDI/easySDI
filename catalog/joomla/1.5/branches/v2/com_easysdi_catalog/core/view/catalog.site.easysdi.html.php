@@ -1074,7 +1074,11 @@ foreach($nodes  as $metadata){
 	}
 	//echo $md->getFileIdentifier()." Ext:".$pOrderableExt." Int:".$pOrderableInt."__".$query ."<br>";
 
-	$query = "SELECT count(*) FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.previewWmsUrl != '' AND m.guid = '".$md->getFileIdentifier()."'";
+	$query = "SELECT count(*) 
+			  FROM #__sdi_metadata m
+			  INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+			  INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+			  WHERE o.previewWmsUrl != '' AND m.guid = '".$md->getFileIdentifier()."'";
 
 	$db->setQuery( $query);
 

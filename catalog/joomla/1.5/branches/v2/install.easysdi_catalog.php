@@ -732,9 +732,9 @@ function com_install(){
 		}
 		
 		$query="INSERT INTO `#__sdi_namespace` (`guid`, `name`, `description`, `created`, `createdby`, `ordering`, `prefix`, `uri`, `issystem`) VALUES
-					('".helper_easysdi::getUniqueId()."', 'gml', '', '".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'gml', 'http://www.opengis.net/gml', 1),
 					('".helper_easysdi::getUniqueId()."', 'gmd', '', '".date('Y-m-d H:i:s')."', ".$user_id.", 1, 'gmd', 'http://www.isotc211.org/2005/gmd', 1),
-					('".helper_easysdi::getUniqueId()."', 'gco', '', '".date('Y-m-d H:i:s')."', ".$user_id.", 2, 'gco', 'http://www.isotc211.org/2005/gco', 1)
+					('".helper_easysdi::getUniqueId()."', 'gco', '', '".date('Y-m-d H:i:s')."', ".$user_id.", 2, 'gco', 'http://www.isotc211.org/2005/gco', 1),
+					('".helper_easysdi::getUniqueId()."', 'gml', '', '".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'gml', 'http://www.opengis.net/gml', 1)
 					;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
