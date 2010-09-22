@@ -113,8 +113,8 @@ public class CSWProxyMetadataContentManager
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();
-				fragment = "bee:contact";
-				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
+//				fragment = "bee:contact";
+//				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)

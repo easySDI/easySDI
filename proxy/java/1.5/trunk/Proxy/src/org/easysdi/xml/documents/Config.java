@@ -54,7 +54,7 @@ public class Config implements Serializable{
 	 * @param ogcSearchFilter the ogcSearchFilter to set
 	 */
 	public void setOgcSearchFilter(String ogcSearchFilter) {
-		if(ogcSearchFilter != null && !ogcSearchFilter.isEmpty())
+		if(ogcSearchFilter != null && !"".equals(ogcSearchFilter))
 			this.ogcSearchFilter = ogcSearchFilter;
 	}
 
@@ -186,7 +186,7 @@ public class Config implements Serializable{
 	 * @param accessConstraints the accessConstraints to set
 	 */
 	public void setAccessConstraints(String accessConstraints) {
-		if(accessConstraints != null && !accessConstraints.isEmpty())
+		if(accessConstraints != null && accessConstraints != "")
 			this.accessConstraints = accessConstraints;
 	}
 
@@ -201,7 +201,7 @@ public class Config implements Serializable{
 	 * @param fees the fees to set
 	 */
 	public void setFees(String fees) {
-		if(fees != null && !fees.isEmpty())
+		if(fees != null && !"".equals(fees))
 			this.fees = fees;
 	}
 
@@ -231,7 +231,7 @@ public class Config implements Serializable{
 	 * @param abst the abst to set
 	 */
 	public void setAbst(String abst) {
-		if(abst != null && !abst.isEmpty())
+		if(abst != null && !"".equals(abst))
 			this.abst = abst;
 	}
 
@@ -246,7 +246,7 @@ public class Config implements Serializable{
 	 * @param title the title to set
 	 */
 	public void setTitle(String title) {
-		if(title != null && !title.isEmpty())
+		if(title != null && !"".equals(title))
 			this.title = title;
 	}
 
@@ -260,7 +260,7 @@ public class Config implements Serializable{
 
 
 	public void setContactInfo(ServiceContactInfo contactInfo) {
-		if(contactInfo != null && !contactInfo.isEmpty())
+		if(contactInfo != null && !"".equals(contactInfo))
 			this.contactInfo = contactInfo;
 	}
 
@@ -273,7 +273,7 @@ public class Config implements Serializable{
 	 * @param exceptionMode
 	 */
 	public void setExceptionMode(String exceptionMode) {
-		if(exceptionMode != null && !exceptionMode.isEmpty())
+		if(exceptionMode != null && !"".equals(exceptionMode))
 			this.exceptionMode = exceptionMode;
 	}
 

@@ -37,7 +37,7 @@ public class ServiceContactAdressInfo implements Serializable{
 	 * @param type the type to set
 	 */
 	public void setType(String type) {
-		if(type != null && !type.isEmpty())
+		if(type != null && !"".equals(type))
 		{
 			isEmpty = false;
 			this.type = type;
@@ -53,7 +53,7 @@ public class ServiceContactAdressInfo implements Serializable{
 	 * @param address the address to set
 	 */
 	public void setAddress(String address) {
-		if(address !=null && !address.isEmpty())
+		if(address !=null && !"".equals(address))
 		{
 			isEmpty = false;
 			this.address = address;
@@ -69,7 +69,7 @@ public class ServiceContactAdressInfo implements Serializable{
 	 * @param postalCode the postalCode to set
 	 */
 	public void setPostalCode(String postalCode) {
-		if(postalCode != null && !postalCode.isEmpty())
+		if(postalCode != null && !"".equals(postalCode))
 		{
 			isEmpty = false;
 			this.postalCode = postalCode;
@@ -85,7 +85,7 @@ public class ServiceContactAdressInfo implements Serializable{
 	 * @param city the city to set
 	 */
 	public void setCity(String city) {
-		if(city != null && !city.isEmpty())
+		if(city != null && !"".equals(city))
 		{
 			isEmpty = false;
 			this.city = city;
@@ -101,7 +101,7 @@ public class ServiceContactAdressInfo implements Serializable{
 	 * @param state the state to set
 	 */
 	public void setState(String state) {
-		if(state!= null && !state.isEmpty())
+		if(state!= null && !"".equals(state))
 		{
 			isEmpty = false;
 			this.state = state;
@@ -114,7 +114,7 @@ public class ServiceContactAdressInfo implements Serializable{
 		return state;
 	}
 	public void setCountry(String country) {
-		if(country != null && !country.isEmpty())
+		if(country != null && !"".equals(country))
 		{
 			isEmpty = false;
 			this.country = country;

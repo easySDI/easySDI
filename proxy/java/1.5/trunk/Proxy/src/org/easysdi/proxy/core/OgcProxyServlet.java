@@ -39,6 +39,8 @@ import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.xml.sax.SAXException;
@@ -60,7 +62,8 @@ public class OgcProxyServlet extends HttpServlet {
 	private Config configuration;
 	public String configFile;
 	private JoomlaProvider joomlaProvider;
-	
+	private Logger logger = LoggerFactory.getLogger("OgcProxyServlet");
+
 	public static HashMap<String, Double> executionCount = new HashMap<String, Double>();
 
 	public void init(ServletConfig config) throws ServletException {
@@ -71,7 +74,7 @@ public class OgcProxyServlet extends HttpServlet {
 		ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		CacheManager cm = (CacheManager) context.getBean("cacheManager");
 		joomlaProvider = (JoomlaProvider) context.getBean("joomlaProvider");
-		
+
 		if (cm != null) {
 			configCache = cm.getCache("configCache");
 		}
@@ -88,9 +91,8 @@ public class OgcProxyServlet extends HttpServlet {
 			if (obj != null) {
 				obj.doGet(req, resp);
 			}
-		}catch (PolicyNotFoundException e)
-		{
-			
+		} catch (PolicyNotFoundException e) {
+
 		} catch (Exception e) {
 			StringBuffer sb = generateOgcError(e.getMessage());
 			e.printStackTrace();
@@ -117,10 +119,9 @@ public class OgcProxyServlet extends HttpServlet {
 				obj.doPost(req, resp);
 
 			}
-		}catch (PolicyNotFoundException e)
-		{
+		} catch (PolicyNotFoundException e) {
 			e.printStackTrace();
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			StringBuffer sb = generateOgcError(e.getMessage());
@@ -142,7 +143,8 @@ public class OgcProxyServlet extends HttpServlet {
 
 	private StringBuffer generateOgcError(String errorMessage) {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+		sb
+				.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
 		sb.append("<ServiceException>");
 		sb.append(errorMessage);
 		sb.append("</ServiceException>");
@@ -270,7 +272,10 @@ public class OgcProxyServlet extends HttpServlet {
 		try {
 			// File configF = new File(configFile).getAbsoluteFile();
 			// long lastmodified = configF.lastModified();
+			logger.info("Looking for " + servletName + " config");
 			Element configE = configCache.get(servletName + "configFile");
+			if (configE == null)
+				logger.error(servletName + " config not found !");
 			// if (configE != null && configE.getVersion() != lastmodified)
 			// configE = null;
 			// if (configE == null) {
@@ -297,21 +302,21 @@ public class OgcProxyServlet extends HttpServlet {
 			configuration = (Config) configE.getValue();
 
 			String className = configuration.getServletClass();
-			if(className.equalsIgnoreCase("org.easysdi.proxy.csw.CSWProxyServlet") && joomlaProvider.getVersion() != null && Integer.parseInt(joomlaProvider.getVersion()) >= 200)
-			{
+			logger.info("Servlet " + className + " found for config " + servletName);
+			if (className.equalsIgnoreCase("org.easysdi.proxy.csw.CSWProxyServlet") && joomlaProvider.getVersion() != null
+					&& Integer.parseInt(joomlaProvider.getVersion()) >= 200) {
 				className += "2";
 			}
-				
-			//Class<?> classe = Class.forName(configuration.getServletClass());
+
+			// Class<?> classe = Class.forName(configuration.getServletClass());
 			Class<?> classe = Class.forName(className);
 			Constructor<?> constructeur = classe.getConstructor();
 			ProxyServlet ps = (ProxyServlet) constructeur.newInstance();
 			ps.setConfiguration(configuration);
-			
-			//Use to access EasySDI Joomla data
+
+			// Use to access EasySDI Joomla data
 			ps.setJoomlaProvider(joomlaProvider);
-			
-			
+
 			// String filePath = new
 			// File(configuration.getPolicyFile()).getAbsolutePath();
 			// File policyF = new File(filePath).getAbsoluteFile();
@@ -341,15 +346,12 @@ public class OgcProxyServlet extends HttpServlet {
 			// policyE.setVersion(plastmodified);
 			// configCache.put(policyE);
 			// } else
-			
-			if(policyE != null) 
-			{
+
+			if (policyE != null) {
 				ps.setPolicy((Policy) policyE.getValue());
-			}
-			else
-			{
-				//If no policy found, return an OGC Exception and quit.
-				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcError("No policy found.", "NoApplicableCode", null,""));
+			} else {
+				// If no policy found, return an OGC Exception and quit.
+				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcError("No policy found.", "NoApplicableCode", null, ""));
 				throw new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND);
 			}
 			return ps;

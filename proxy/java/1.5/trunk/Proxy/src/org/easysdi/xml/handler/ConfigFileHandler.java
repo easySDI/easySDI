@@ -496,7 +496,7 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		}
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Keyword")) {
-			if(data != null && !data.isEmpty())
+			if(data != null && !"".equals(data))
 			{
 				if(keywordList == null)
 				{

@@ -41,7 +41,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
-		if(name != null && !name.isEmpty())
+		if(name != null && !"".equals(name))
 		{
 			isEmpty = false;
 			this.name = name;
@@ -57,7 +57,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param organization the organization to set
 	 */
 	public void setOrganization(String organization) {
-		if(organization!= null && !organization.isEmpty())
+		if(organization!= null && !"".equals(organization))
 		{
 			isEmpty = false;
 			this.organization = organization;
@@ -74,7 +74,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param position the position to set
 	 */
 	public void setPosition(String position) {
-		if(position != null && !position.isEmpty())
+		if(position != null && !"".equals(position))
 		{
 			isEmpty = false;
 			this.position = position;
@@ -90,7 +90,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param adress the adress to set
 	 */
 	public void setContactAddress(ServiceContactAdressInfo adress) {
-		if(adress != null && !adress.isEmpty())
+		if(adress != null && !"".equals(adress))
 		{
 			isEmpty = false;
 			this.adress = adress;
@@ -107,7 +107,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param voicePhone the voicePhone to set
 	 */
 	public void setVoicePhone(String voicePhone) {
-		if(voicePhone != null && !voicePhone.isEmpty())
+		if(voicePhone != null && !"".equals(voicePhone))
 		{
 			isEmpty = false;
 			this.voicePhone = voicePhone;
@@ -123,7 +123,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param facSimile the facSimile to set
 	 */
 	public void setFacSimile(String facSimile) {
-		if(facSimile!= null && !facSimile.isEmpty())
+		if(facSimile!= null && !"".equals(facSimile))
 		{
 			isEmpty = false;
 			this.facSimile = facSimile;
@@ -139,7 +139,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param eMail the eMail to set
 	 */
 	public void seteMail(String eMail) {
-		if(eMail!= null && !eMail.isEmpty())
+		if(eMail!= null && !"".equals(eMail))
 		{
 			isEmpty = false;
 			this.eMail = eMail;
@@ -155,7 +155,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param linkage the linkage to set
 	 */
 	public void setLinkage(String linkage) {
-		if(linkage!=null && !linkage.isEmpty())
+		if(linkage!=null && !"".equals(linkage))
 		{
 			isEmpty = false;
 			this.linkage = linkage;
@@ -171,7 +171,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param hoursofSservice the hoursofSservice to set
 	 */
 	public void setHoursofSservice(String hoursofSservice) {
-		if(hoursofSservice!= null &&!hoursofSservice.isEmpty())
+		if(hoursofSservice!= null &&!"".equals(hoursofSservice))
 		{
 			isEmpty = false;
 			this.hoursofSservice = hoursofSservice;
@@ -187,7 +187,7 @@ public class ServiceContactInfo implements Serializable{
 	 * @param instructions the instructions to set
 	 */
 	public void setInstructions(String instructions) {
-		if(instructions!= null && !instructions.isEmpty())
+		if(instructions!= null && !"".equals(instructions))
 		{
 			isEmpty = false;
 			this.instructions = instructions;

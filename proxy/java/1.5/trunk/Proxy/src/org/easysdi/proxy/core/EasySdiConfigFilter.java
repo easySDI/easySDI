@@ -25,6 +25,8 @@ import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -34,6 +36,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class EasySdiConfigFilter extends GenericFilterBean {
 
 	private Cache configCache;
+	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
 
 	public EasySdiConfigFilter(CacheManager cm) {
 		configCache = cm.getCache("configCache");
@@ -53,8 +56,10 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				configuration = setConfig(servletName);
 				setPolicySet(configuration, request, servletName);
 			} catch (SAXException e) {
+				logger.error("Error occurred during " + servletName + " config initialization", e);
 				e.printStackTrace();
 			} catch (JAXBException e) {
+				logger.error("Error occurred during " + servletName + " config initialization", e);
 				e.printStackTrace();
 			}
 		}
@@ -64,12 +69,14 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	private Config setConfig(String servletName) throws SAXException, IOException {
 		Config configuration = null;
 		String configFile = getServletContext().getInitParameter("configFile");
+		logger.debug("Config file " + configFile);
 		File configF = new File(configFile).getAbsoluteFile();
 		long lastmodified = configF.lastModified();
 		Element configE = configCache.get(servletName + "configFile");
 		if (configE != null && configE.getVersion() != lastmodified)
 			configE = null;
 		if (configE == null) {
+			logger.info("Loading " + servletName + " config");
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
 			InputStream is = new java.io.FileInputStream(configFile);
@@ -79,6 +86,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			configE = new Element(servletName + "configFile", configuration);
 			configE.setVersion(lastmodified);
 			configCache.put(configE);
+			logger.info("Config for " + servletName + " is loaded into cache");
 		} else
 			configuration = (Config) configE.getValue();
 		return configuration;

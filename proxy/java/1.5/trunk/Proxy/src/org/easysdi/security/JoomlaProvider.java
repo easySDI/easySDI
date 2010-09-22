@@ -154,6 +154,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 		}
 		List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
 			public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+//				return (rs.getString("role") != null) ? new GrantedAuthorityImpl(rs.getString("role")) : null;
 				return new GrantedAuthorityImpl(rs.getString("role"));
 			}
 		}, username, username);
