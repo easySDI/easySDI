@@ -118,7 +118,7 @@ class userManagerRightESDY
 				  FROM #__sdi_actor a ,
 				  	   #__sdi_list_role b  
 				  WHERE a.role_id = b.id 
-				  and account_id = $account_id 
+				  and a.account_id = $account_id 
 				  and b.code = '$right'";
 
 		$database->setQuery($query );
@@ -134,29 +134,39 @@ class userManagerRightESDY
 		if(userManagerRightESDY::isEasySDIUser($user))
 		{
 			$db =& JFactory::getDBO();
-			$account = new accountByUserId($database);
+			$account = new accountByUserId($db);
 			$account->load($user->id);	
 			
 			//Is the URL from ESDY
-			if (preg_match("/(com_easysdi_core|com_easysdi_shop)/i", $url)) {
-
+			if (preg_match("/(com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
+			{
 				preg_match('/task=([a-z]+)&/i', $url, $tasks);
 				$task = $tasks[1];
 				
-				if ($task=="listOrders") {
+				if ($task=="listOrders") 
+				{
 					return (userManagerRightESDY::hasRight($account->id,"REQUEST_INTERNAL") 
-				|| userManagerRightESDY::hasRight($account->id,"REQUEST_EXTERNAL") );
+							|| userManagerRightESDY::hasRight($account->id,"REQUEST_EXTERNAL") );
 				}
-				elseif ($task=="showPartner") {
+				elseif ($task=="showPartner") 
+				{
 					return userManagerRightESDY::hasRight($account->id,"MYACCOUNT");
 				}
-				
-				elseif ($task=="listAffiliatePartner") {
+				elseif ($task=="listAffiliatePartner") 
+				{
 					return userManagerRightESDY::hasRight($account->id,"ACCOUNT");
 				}
-				
-				elseif ($task=="listProductMetadata") {
-				//the partner must at least have a metadata assigned to him
+				elseif($task=="listMetadata")
+				{
+					return userManagerRightESDY::hasRight($account->id,"METADATA");
+				}
+				elseif($task=="listObject")
+				{
+					return userManagerRightESDY::hasRight($account->id,"METADATA");
+				}
+				elseif ($task=="listProduct") 
+				{
+					//the partner must at least have a product assigned to him
 					$db->setQuery("SELECT count(p.*)
 									FROM #__sdi_product p 
 									INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
@@ -165,31 +175,29 @@ class userManagerRightESDY
 									INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
 									WHERE m.account_id = ".$account->id);
 					$res = $db->loadResult();
-					return (userManagerRightESDY::hasRight($account->id,"METADATA") && $res > 0);
+					return (userManagerRightESDY::hasRight($account->id,"PRODUCT") && $res > 0);
 				}
-				
-				elseif ($task=="listProduct") {
-					return userManagerRightESDY::hasRight($account->id,"PRODUCT");
-					}
-					
-				elseif ($task=="listOrdersForProvider") {
+				elseif ($task=="listOrdersForProvider") 
+				{
 					$db->setQuery("SELECT count(*) FROM #__sdi_product where diffusion_id=".$account->id);
 					$res = $db->loadResult();
 					return (userManagerRightESDY::hasRight($account->id,"DIFFUSION") && $res > 0);
-					}
-					
-				elseif ($task=="manageFavoriteProduct") {
-					$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
-					return (userManagerRightESDY::hasRight($account->id,"FAVORITE") && $enableFavorites == 1);
-					}
-					
-				else {
+				}
+				elseif ($task=="manageFavorite") 
+				{
+//					$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+//					return (userManagerRightESDY::hasRight($account->id,"FAVORITE") && $enableFavorites == 1);
+					return (userManagerRightESDY::hasRight($account->id,"FAVORITE"));
+				}
+				else 
+				{
 					return true;
 				}
-				} else {
+			} else 
+			{
 				//Not a ESDY URL
-				    return true;
-				}	
+			    return true;
+			}	
 		}
 		else
 		{
