@@ -15,6 +15,8 @@ import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -119,7 +121,7 @@ public class CSWProxyMetadataContentManager
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)
 				{
-					_lastError = ("Error on : "+target);
+					_lastError = ("Error on : "+URLEncoder.encode(target));
 					return false;
 				}
 				
