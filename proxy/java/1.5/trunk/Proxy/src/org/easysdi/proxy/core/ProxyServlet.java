@@ -627,7 +627,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
 			dump("SYSTEM", "RemoteRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteRequest", parameters);
+			dump("SYSTEM", "RemoteRequest", parameters.replaceAll("\r", ""));
 			dump("SYSTEM", "RemoteRequestLength", parameters.length());
 			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
 			String cookie = null;
@@ -849,7 +849,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
 			dump("SYSTEM", "RemoteRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteRequest", param);
+			dump("SYSTEM", "RemoteRequest", param.toString());
 			dump("SYSTEM", "RemoteRequestLength", param.length());
 			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
 			

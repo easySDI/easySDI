@@ -421,6 +421,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 			}
 			
+			dump("SYSTEM", "RequestOperation", currentOperation);
+			
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return ;
@@ -563,6 +565,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				version = version.replaceAll("\\.", "");
 			
 			String currentOperation = rh.getOperation();
+			
+			dump("SYSTEM", "RequestOperation", currentOperation);
 			
 			//Use for the GetRecords request
 			requestedOutputSchema = rh.getOutputSchema();

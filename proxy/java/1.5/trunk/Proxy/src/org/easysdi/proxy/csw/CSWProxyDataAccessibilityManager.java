@@ -116,8 +116,11 @@ public class CSWProxyDataAccessibilityManager {
 	
 	public boolean isDataAccessible(String dataId)
 	{
-		if(policy.getObjectStatus().isAll() && policy.getObjectVisibilities().isAll() && policy.getObjectVersion().getVersionModes().contains("all"))
-		{
+		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
+				&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+				&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
+				&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
+			{
 			return true;
 		}
 		
@@ -146,6 +149,33 @@ public class CSWProxyDataAccessibilityManager {
 		try
 		{
 			Map<String, Object> results= joomlaProvider.sjt.queryForMap(query);
+			
+			//If visibility and status ok, check the context
+			if(!policy.getObjectContexts().isAll())
+			{
+				List<String> allowedContext = policy.getObjectContexts().getContexts();
+				String contextString ="";
+				for (int i = 0 ; i<allowedContext.size() ; i++)
+				{
+					contextString += "'"+ allowedContext.get(i)+"'";
+					if(i != allowedContext.size()-1)
+					{
+						contextString += ",";
+					}
+				}
+				
+				query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context_objecttype co ON co.objecttype_id = ot.id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context c ON c.id = co.context_id "+
+							" WHERE c.code IN ("+contextString+")" +
+							" AND m.guid = '"+dataId+"'" ;
+				
+				Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
+			}
+			
 			return true;
 		}
 		catch (IncorrectResultSizeDataAccessException ex)
