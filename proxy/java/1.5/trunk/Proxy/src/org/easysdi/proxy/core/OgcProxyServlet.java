@@ -272,7 +272,7 @@ public class OgcProxyServlet extends HttpServlet {
 		try {
 			// File configF = new File(configFile).getAbsoluteFile();
 			// long lastmodified = configF.lastModified();
-			logger.info("Looking for " + servletName + " config");
+//			logger.info("Looking for " + servletName + " config");
 			Element configE = configCache.get(servletName + "configFile");
 			if (configE == null)
 				logger.error(servletName + " config not found !");
@@ -302,7 +302,7 @@ public class OgcProxyServlet extends HttpServlet {
 			configuration = (Config) configE.getValue();
 
 			String className = configuration.getServletClass();
-			logger.info("Servlet " + className + " found for config " + servletName);
+//			logger.info("Servlet " + className + " found for config " + servletName);
 			if (className.equalsIgnoreCase("org.easysdi.proxy.csw.CSWProxyServlet") && joomlaProvider.getVersion() != null
 					&& Integer.parseInt(joomlaProvider.getVersion()) >= 200) {
 				className += "2";

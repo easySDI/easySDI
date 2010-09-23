@@ -69,14 +69,14 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	private Config setConfig(String servletName) throws SAXException, IOException {
 		Config configuration = null;
 		String configFile = getServletContext().getInitParameter("configFile");
-		logger.debug("Config file " + configFile);
+//		logger.debug("Config file " + configFile);
 		File configF = new File(configFile).getAbsoluteFile();
 		long lastmodified = configF.lastModified();
 		Element configE = configCache.get(servletName + "configFile");
 		if (configE != null && configE.getVersion() != lastmodified)
 			configE = null;
 		if (configE == null) {
-			logger.info("Loading " + servletName + " config");
+//			logger.info("Loading " + servletName + " config");
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
 			InputStream is = new java.io.FileInputStream(configFile);
@@ -86,7 +86,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			configE = new Element(servletName + "configFile", configuration);
 			configE.setVersion(lastmodified);
 			configCache.put(configE);
-			logger.info("Config for " + servletName + " is loaded into cache");
+//			logger.info("Config for " + servletName + " is loaded into cache");
 		} else
 			configuration = (Config) configE.getValue();
 		return configuration;
