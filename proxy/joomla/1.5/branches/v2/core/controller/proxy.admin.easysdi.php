@@ -70,7 +70,20 @@ class ADMIN_proxy
 	{
 		$database =& JFactory::getDBO(); 
 		$language =& JFactory::getLanguage();
+		$configId = JRequest::getVar("configId");
+		$isCSW = false;
 		
+		foreach ($xml->config as $config) 
+		{
+			if (strcmp($config['id'],$configId)==0)
+			{
+				$servletClass =  $config->{'servlet-class'};
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
+				{
+					$isCSW = true;
+				}	
+			}
+		}
 		//Get  profiles
 		//$database->setQuery( "SELECT code as value, translation as text FROM #__sdi_accountprofile ORDER BY text" );
 		$database->setQuery( "SELECT ap.code as value, t.label as text FROM #__sdi_language l, #__sdi_list_codelang cl, #__sdi_accountprofile ap LEFT OUTER JOIN #__sdi_translation t ON ap.guid=t.element_guid WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."'" );
@@ -82,24 +95,33 @@ class ADMIN_proxy
 		$rowsUser = $database->loadObjectList();
 		echo $database->getErrorMsg();
 		
-		//Get visibility
-		$database->setQuery( "SELECT v.code as value, 
-									 v.label as text 
-							  FROM #__sdi_list_visibility v 
-							  ");
-		$rowsVisibility = $database->loadObjectList();
-		//echo $database->getErrorMsg();
+		if($isCSW)
+		{
+			//Get visibility
+			$database->setQuery( "SELECT v.code as value, 
+										 v.label as text 
+								  FROM #__sdi_list_visibility v 
+								  ");
+			$rowsVisibility = $database->loadObjectList();
+			//echo $database->getErrorMsg();
+			
+			//Get metadata status
+			$database->setQuery( "SELECT s.code as value, 
+										 s.label as text 
+								  FROM #__sdi_list_metadatastate s 
+								  ");
+			$rowsStatus = $database->loadObjectList();
+			//echo $database->getErrorMsg();
+			
+			//Get metadata status
+			$database->setQuery( "SELECT c.code as value, 
+										 c.name as text 
+								  FROM #__sdi_context c 
+								  ");
+			$rowsContext = $database->loadObjectList();
+		}
 		
-		//Get metadata status
-		$database->setQuery( "SELECT s.code as value, 
-									 s.label as text 
-							  FROM #__sdi_list_metadatastate s 
-							  ");
-		$rowsStatus = $database->loadObjectList();
-		//echo $database->getErrorMsg();
-		
-		
-		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus);
+		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsContext);
 	}
 	
 	
@@ -590,6 +612,27 @@ function savePolicy($xml){
 				foreach($statusList as $status)
 				{
 					$node = $thePolicy->ObjectStatus->addChild(Status,$status);
+				}
+			}
+		}
+		
+		//Context
+		$AllContext = JRequest::getVar("AllContext","");
+		if (strlen($AllContext)>0)
+		{
+			$thePolicy->ObjectContexts="";
+			$thePolicy->ObjectContexts['All']="true";
+		}
+		else
+		{
+			$thePolicy->ObjectContexts="";
+			$thePolicy->ObjectContexts['All']="false";
+			$contextList = JRequest::getVar("context");
+			if (sizeof($contextList)>0)
+			{
+				foreach($contextList as $context)
+				{
+					$node = $thePolicy->ObjectContexts->addChild(Context,$context);
 				}
 			}
 		}

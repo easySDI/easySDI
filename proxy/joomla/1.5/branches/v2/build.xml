@@ -50,6 +50,7 @@
 				<include name="**/*.png" />
 				<include name="**/*.ttf" />
 				<include name="**/*.txt" />
+				<include name="**/*.js" />
 			</fileset>
 		</copy>
 		<copy		   

@@ -920,7 +920,7 @@ function addNewServer(){
 
 	}
 
-	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus){
+	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsContext){
 
 		$policyId = JRequest::getVar("policyId");
 		$configId = JRequest::getVar("configId");
@@ -1134,7 +1134,7 @@ function submitbutton(pressbutton)
 				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 				
 				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
-				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus);  
+				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsContext);  
 				}
 				
 				break;
@@ -1146,7 +1146,7 @@ function submitbutton(pressbutton)
 		<?php
 	}
 
-	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus)
+	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsContext)
 	{
 	?>
 		<script>
@@ -1201,6 +1201,18 @@ function submitbutton(pressbutton)
 			{
 				statusArray[i].disabled = check;
 				statusArray[i].checked = check;
+			}
+		}
+		function disableContextCheckBoxes ()
+		{
+			var check = document.getElementById('AllContext').checked;
+
+			var contextArray = new Array();
+			contextArray = document.getElementsByName('context[]');
+			for ( i = 0 ; i < contextArray.length ; i++)
+			{
+				contextArray[i].disabled = check;
+				contextArray[i].checked = check;
 			}
 		}
 		</script>
@@ -1323,6 +1335,43 @@ function submitbutton(pressbutton)
 							   		if(strcasecmp($status->value,$policyStatus)==0) echo 'checked';			
 							   }?>
 						><?php echo JText::_($status->text); ?>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						<?php 
+					}
+					?>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_CONTEXT'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+						<?php if (strcasecmp($thePolicy->ObjectContexts['All'],'True')==0 || !$thePolicy->ObjectContexts ){$checkedC='checked';} ?>	
+						<input <?php echo $checkedC; ?>
+							   type="checkBox" 
+							   name="AllContext[]" 
+							   id="AllContext" 
+							   onclick="disableContextCheckBoxes();">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_CONTEXT_ALL'); ?>
+					</td>
+					<?php 
+					foreach ($rowsContext as $context)
+					{
+						?>
+						<td>
+						<input type="checkBox" 
+							   name="context[]" 
+							   id="<?php echo $context->value;?>" 
+							   value="<?php echo $context->value;?>" 
+							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
+							   <?php foreach ($thePolicy->ObjectContexts->Context as $policyContext)
+							   {
+							   		if(strcasecmp($context->value,$policyContext)==0) echo 'checked';			
+							   }?>
+						><?php echo JText::_($context->text); ?>
 						</td>
 						</tr>
 						<tr>

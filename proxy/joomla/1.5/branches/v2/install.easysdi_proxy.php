@@ -119,7 +119,7 @@ function com_install(){
 		$id = $db->loadResult();
 		
 		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY_PANEL', 'Proxy Panel', 'Proxy Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$id."', 'com_easysdi_proxy\\core\\view\\sub.ctrlpanel.admin.easysdi.html.php', '4')";
+										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY_PANEL', 'Proxy Panel', 'Proxy Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$id."', 'com_easysdi_proxy/core/view/sub.ctrlpanel.admin.easysdi.html.php', '4')";
 		$db->setQuery( $query);		
 		if (!$db->query()) 
 		{			
