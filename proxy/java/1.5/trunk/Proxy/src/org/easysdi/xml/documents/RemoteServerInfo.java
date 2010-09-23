@@ -34,28 +34,28 @@ public class RemoteServerInfo implements Serializable{
 	private String loginService;
 	private String prefix; 
 	private String transaction="ogc";
-	private String insertServiceUrl;
-	private String deleteServiceUrl;
-	private String searchServiceUrl;
+//	private String insertServiceUrl;
+//	private String deleteServiceUrl;
+//	private String searchServiceUrl;
 	
-	public String getInsertServiceUrl() {
-	    return insertServiceUrl;
-	}
-	public void setInsertServiceUrl(String insertServiceUrl) {
-	    this.insertServiceUrl = insertServiceUrl;
-	}
-	public String getDeleteServiceUrl() {
-	    return deleteServiceUrl;
-	}
-	public void setDeleteServiceUrl(String deleteServiceUrl) {
-	    this.deleteServiceUrl = deleteServiceUrl;
-	}
-	public String getSearchServiceUrl() {
-	    return searchServiceUrl;
-	}
-	public void setSearchServiceUrl(String searchServiceUrl) {
-	    this.searchServiceUrl = searchServiceUrl;
-	}
+//	public String getInsertServiceUrl() {
+//	    return insertServiceUrl;
+//	}
+//	public void setInsertServiceUrl(String insertServiceUrl) {
+//	    this.insertServiceUrl = insertServiceUrl;
+//	}
+//	public String getDeleteServiceUrl() {
+//	    return deleteServiceUrl;
+//	}
+//	public void setDeleteServiceUrl(String deleteServiceUrl) {
+//	    this.deleteServiceUrl = deleteServiceUrl;
+//	}
+//	public String getSearchServiceUrl() {
+//	    return searchServiceUrl;
+//	}
+//	public void setSearchServiceUrl(String searchServiceUrl) {
+//	    this.searchServiceUrl = searchServiceUrl;
+//	}
 	public String getTransaction() {
 	    return transaction;
 	}

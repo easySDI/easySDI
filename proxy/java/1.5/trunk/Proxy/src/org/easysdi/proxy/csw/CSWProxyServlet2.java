@@ -87,16 +87,16 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
-	private List<String> recordsToKeep = new ArrayList<String>();
-	private List<String> recordsToRemove = new ArrayList<String>();
-	private List<String> recordsReturned = new ArrayList <String>();
+//	private List<String> recordsToKeep = new ArrayList<String>();
+//	private List<String> recordsToRemove = new ArrayList<String>();
+//	private List<String> recordsReturned = new ArrayList <String>();
+//	
+//	private String requestedOutputSchema;
+//	private String requestedResutlType;
+//	private String requestedElementSetName;
 	
-	private String requestedOutputSchema;
-	private String requestedResutlType;
-	private String requestedElementSetName;
-	
-	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record","csw:IsoRecord");
-	public static final List<String> gmdOutputSchemas = Arrays.asList("http://www.isotc211.org/2005/gmd");
+//	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record","csw:IsoRecord");
+//	public static final List<String> gmdOutputSchemas = Arrays.asList("http://www.isotc211.org/2005/gmd");
 	
 	/** 
 	 * 
@@ -260,7 +260,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation) || "DescribeRecord".equals(currentOperation))
 				{
-					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) && recordsToRemove.size()==0) 
+					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
 					{
 						// Keep the metadata as it is
 						tempFile = new File(filePathList.get(0));
@@ -319,9 +319,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			} 
 			finally 
 			{
-				recordsToKeep.clear();
-				recordsToRemove.clear();
-				recordsReturned.clear();
 				os.close();
 				is.close();
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
@@ -397,16 +394,16 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					continue;
 				}
 				//TODO : verify the syntax for those 3 attributes
-				if (key.equalsIgnoreCase("OutputSchema")) 
-				{
-					requestedOutputSchema = value;
-					continue;
-				}
-				if (key.equalsIgnoreCase("ResultType")) 
-				{
-					requestedResutlType = value;
-					continue;
-				}
+//				if (key.equalsIgnoreCase("OutputSchema")) 
+//				{
+//					requestedOutputSchema = value;
+//					continue;
+//				}
+//				if (key.equalsIgnoreCase("ResultType")) 
+//				{
+//					requestedResutlType = value;
+//					continue;
+//				}
 				if (key.equalsIgnoreCase("Constraint")) 
 				{
 					constraint = value;
@@ -420,7 +417,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					continue;
 				}
 			}
-			
+			dump("SYSTEM","Request",req.getQueryString());
 			dump("SYSTEM", "RequestOperation", currentOperation);
 			
 			//Generate OGC exception if current operation is not allowed
@@ -552,11 +549,15 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			StringBuffer param = new StringBuffer();
 			String input;
 			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+			String request = "";
 			while ((input = in.readLine()) != null) {
 				dump(input);
+				request += input;
 				param.append(input);
 			}
-
+			
+			dump("SYSTEM","Request",request);
+			
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
 			String version = rh.getVersion();
@@ -569,8 +570,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			dump("SYSTEM", "RequestOperation", currentOperation);
 			
 			//Use for the GetRecords request
-			requestedOutputSchema = rh.getOutputSchema();
-			requestedResutlType = rh.getResultType();
+//			requestedOutputSchema = rh.getOutputSchema();
+//			requestedResutlType = rh.getResultType();
 
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))

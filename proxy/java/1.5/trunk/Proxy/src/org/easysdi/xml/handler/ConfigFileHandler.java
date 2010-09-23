@@ -91,9 +91,9 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String hostTranslator = "";
 	private String transaction = "ogc";
 	private boolean isPrefix = false;
-	private String deleteServiceUrl = null;
-	private String insertServiceUrl = null;
-	private String searchServiceUrl = null;
+//	private String deleteServiceUrl = null;
+//	private String insertServiceUrl = null;
+//	private String searchServiceUrl = null;
 	private boolean isDouglasPeuckerSimplifier = false;
 	private boolean isToleranceDistance = false;
 
@@ -342,9 +342,9 @@ public class ConfigFileHandler extends DefaultHandler {
 			if (remoteServer == null)
 				remoteServer = new Vector<RemoteServerInfo>();
 			RemoteServerInfo rs = new RemoteServerInfo(remoteServerUrl, user, password, maxRecords, loginService, prefix, transaction);
-			rs.setDeleteServiceUrl(deleteServiceUrl);
-			rs.setInsertServiceUrl(insertServiceUrl);
-			rs.setSearchServiceUrl(searchServiceUrl);
+//			rs.setDeleteServiceUrl(deleteServiceUrl);
+//			rs.setInsertServiceUrl(insertServiceUrl);
+//			rs.setSearchServiceUrl(searchServiceUrl);
 			remoteServer.add(rs);
 
 			isRemoteServer = false;
@@ -354,9 +354,9 @@ public class ConfigFileHandler extends DefaultHandler {
 			maxRecords = null;
 			loginService = null;
 			transaction = null;
-			deleteServiceUrl = null;
-			insertServiceUrl = null;
-			searchServiceUrl = null;
+//			deleteServiceUrl = null;
+//			insertServiceUrl = null;
+//			searchServiceUrl = null;
 		}
 
 		if (isTheGoodId && isConfig && qName.equals("authorization")) {
@@ -367,17 +367,17 @@ public class ConfigFileHandler extends DefaultHandler {
 			isPolicyFile = false;
 		}
 
-		if (isTheGoodId && isConfig && isTransaction && qName.equals("search-service-url")) {
-			searchServiceUrl = data;
-		}
-		if (isTheGoodId && isConfig && isTransaction && qName.equals("delete-service-url")) {
-
-			deleteServiceUrl = data;
-		}
-		if (isTheGoodId && isConfig && isTransaction && qName.equals("insert-service-url")) {
-
-			insertServiceUrl = data;
-		}
+//		if (isTheGoodId && isConfig && isTransaction && qName.equals("search-service-url")) {
+//			searchServiceUrl = data;
+//		}
+//		if (isTheGoodId && isConfig && isTransaction && qName.equals("delete-service-url")) {
+//
+//			deleteServiceUrl = data;
+//		}
+//		if (isTheGoodId && isConfig && isTransaction && qName.equals("insert-service-url")) {
+//
+//			insertServiceUrl = data;
+//		}
 
 		if (isTheGoodId && isConfig && isTransaction && qName.equals("type")) {
 			transaction = data;
