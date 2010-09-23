@@ -102,7 +102,7 @@ public class CSWProxyMetadataContentManager_old
 					
 					if (link != null) {
 						if (link.contains("?")) {
-							GetRequestHandler requestHandler = new GetRequestHandler(link);
+							CSWProxyGetRequestHandler requestHandler = new CSWProxyGetRequestHandler(link);
 							String serverUrl = requestHandler.getServer();
 							String params = requestHandler.getParameters();
 							String fragment = requestHandler.getFragment();
@@ -172,7 +172,7 @@ public class CSWProxyMetadataContentManager_old
 					
 					if (link != null) {
 						if (link.contains("?")) {
-							GetRequestHandler requestHandler = new GetRequestHandler(link);
+							CSWProxyGetRequestHandler requestHandler = new CSWProxyGetRequestHandler(link);
 							String serverUrl = requestHandler.getServer();
 							String params = requestHandler.getParameters();
 							String fragment = requestHandler.getFragment();

@@ -111,7 +111,7 @@ public class CSWProxyMetadataContentManager
 	    	for (int j = 0 ; j < elList.size(); j++)
 	    	{
 	    		String target = elList.get(j).getAttribute("href", ns).getValue();
-	    		GetRequestHandler requestHandler = new GetRequestHandler(elList.get(j).getAttribute("href", ns).getValue());
+	    		CSWProxyGetRequestHandler requestHandler = new CSWProxyGetRequestHandler(elList.get(j).getAttribute("href", ns).getValue());
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();

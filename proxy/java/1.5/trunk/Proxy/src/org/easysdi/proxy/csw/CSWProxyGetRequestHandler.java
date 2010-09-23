@@ -2,7 +2,7 @@ package org.easysdi.proxy.csw;
 
 import java.net.URLDecoder;
 
-public class GetRequestHandler 
+public class CSWProxyGetRequestHandler 
 {
 	private String _request ;
 	private String _server ;
@@ -37,7 +37,7 @@ public class GetRequestHandler
 		return _server;
 	}
 
-	public GetRequestHandler (String request)
+	public CSWProxyGetRequestHandler (String request)
 	{
 		_request = request;
 		_server = _request.substring(0, _request.indexOf("?"));
