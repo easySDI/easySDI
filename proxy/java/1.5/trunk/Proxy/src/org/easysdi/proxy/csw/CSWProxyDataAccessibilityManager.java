@@ -271,9 +271,10 @@ public class CSWProxyDataAccessibilityManager {
 
 			for(int i = 0 ; i <object_ids.size() ; i++)
 			{
-				query= "SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-						"WHERE object_id="+object_ids.get(i).get("object_id")+" " +
-								"AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id="+object_ids.get(i).get("object_id")+")";
+				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+					    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
 				if(metadata_ids == null)
 					metadata_ids = joomlaProvider.sjt.queryForList(query);
 				else
@@ -325,17 +326,17 @@ public class CSWProxyDataAccessibilityManager {
 				query = " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
 						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id" +
 						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id  " +
-						" WHERE o.visibility_id IN " +
-						"(SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_list_visibility WHERE code IN ("+visibilityString+"))" +
-								"AND m.guid IN ("+idString+")";
+						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON v.id = o.visibility_id " +
+						" WHERE v.code IN ("+visibilityString+")" +
+						" AND m.guid IN ("+idString+")";
 			}
 			else
 			{
 				query = " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
 						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id" +
 						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id  " +
-						" WHERE o.visibility_id IN " +
-						"(SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_list_visibility WHERE code IN ("+visibilityString+"))" ;
+						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON v.id = o.visibility_id " +
+						" WHERE v.code IN ("+visibilityString+")" ;
 				
 			}
 			metadata_guids = joomlaProvider.sjt.queryForList(query);
@@ -368,15 +369,15 @@ public class CSWProxyDataAccessibilityManager {
 					}
 				}
 				query = " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
-						" WHERE m.metadatastate_id IN " +
-						"(SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate WHERE code IN ("+statusString+"))" +
-								"AND m.guid IN ("+idString+")";
+						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON ms.id = m.metadatastate_id " +
+						" WHERE ms.code IN ("+statusString+") " +
+						" AND m.guid IN ("+idString+")";
 			}
 			else
 			{
 				query = " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
-						" WHERE m.metadatastate_id IN " +
-						"(SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate WHERE code IN ("+statusString+"))" ;
+						" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON ms.id = m.metadatastate_id " +
+						" WHERE ms.code IN ("+statusString+")" ;
 				
 			}
 			metadata_guids = joomlaProvider.sjt.queryForList(query);
@@ -408,12 +409,12 @@ public class CSWProxyDataAccessibilityManager {
 						idString += ",";
 					}
 				}
-				query =     " SELECT m.guid FROM jos_sdi_metadata m "+
-							" INNER JOIN  jos_sdi_objectversion ov  ON m.id = ov.metadata_id "+
-							" INNER JOIN jos_sdi_object o ON o.id = ov.object_id "+
-							" INNER JOIN jos_sdi_objecttype ot ON o.objecttype_id = ot.id "+
-							" INNER JOIN jos_sdi_context_objecttype co ON co.objecttype_id = ot.id "+
-							" INNER JOIN jos_sdi_context c ON c.id = co.context_id "+
+				query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context_objecttype co ON co.objecttype_id = ot.id "+
+							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context c ON c.id = co.context_id "+
 							" WHERE c.code IN ("+contextString+")" +
 							" AND m.guid IN ("+idString+")" ;
 			}
