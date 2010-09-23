@@ -458,7 +458,7 @@ else
 			<tr>
 			<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
 			</tr>								
-			<tr>
+			<!--<tr>
 			<td><?php echo JText::_( 'EASYSDI_SEARCH_SERVICE_URL');?></td><td><input type="text" name="search-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'search-service-url'}; ?>" size=70></td>
 			</tr>
 			<tr>
@@ -467,7 +467,7 @@ else
 			<tr>
 			<td><?php echo JText::_( 'EASYSDI_INSERT_SERVICE_URL');?></td><td><input type="text" name="insert-service-url_<?php echo $iServer;?>" value="<?php echo $remoteServer->transaction->{'insert-service-url'}; ?>" size=70></td>					
 			</tr>	
-			</table>
+			--></table>
 			</div>
 			</td>
 			</tr>

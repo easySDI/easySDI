@@ -942,9 +942,9 @@ function saveConfig($xml,$configFilePath){
 				$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
 				$geonetworktransaction  = $remoteServer->addChild("transaction");
 				$geonetworktransaction->{'type'}='geonetwork';
-				$geonetworktransaction->{'search-service-url'}=JRequest::getVar("search-service-url_".$i,"");
-				$geonetworktransaction->{'delete-service-url'}=JRequest::getVar("delete-service-url_".$i,"");;
-				$geonetworktransaction->{'insert-service-url'}=JRequest::getVar("insert-service-url_".$i,"");;
+//				$geonetworktransaction->{'search-service-url'}=JRequest::getVar("search-service-url_".$i,"");
+//				$geonetworktransaction->{'delete-service-url'}=JRequest::getVar("delete-service-url_".$i,"");;
+//				$geonetworktransaction->{'insert-service-url'}=JRequest::getVar("insert-service-url_".$i,"");;
 
 				}
 				$i++;
