@@ -589,7 +589,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				dump("ERROR", e.getMessage());
+				dump("ERROR", e.toString());
 				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
 		} else {
@@ -602,7 +602,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				os.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				dump("ERROR", e.getMessage());
+				dump("ERROR", e.toString());
 				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
 		}
@@ -684,7 +684,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -799,7 +799,7 @@ public class CSWProxyServlet extends ProxyServlet {
 //			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}

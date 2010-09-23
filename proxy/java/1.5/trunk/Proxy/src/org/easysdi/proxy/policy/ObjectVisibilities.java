@@ -39,6 +39,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "ObjectVisibilities")
 public class ObjectVisibilities implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@XmlElement(name = "Visibility", required = false)
 	protected List<String> visibility;
 	@XmlAttribute(name = "All")

@@ -1077,7 +1077,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		catch (Exception e) {
 //			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -2135,7 +2135,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		} catch (Exception e) {
 //			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}

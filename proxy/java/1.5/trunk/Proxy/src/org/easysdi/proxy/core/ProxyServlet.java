@@ -846,6 +846,13 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
 		try {
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "RemoteRequestUrl", urlstr);
+			dump("SYSTEM", "RemoteRequest", param);
+			dump("SYSTEM", "RemoteRequestLength", param.length());
+			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
+			
 			HttpClient client = new HttpClient();
 
 			PostMethod post = new PostMethod(urlstr);
@@ -858,6 +865,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			client.executeMethod(post);
 			StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
 
+			dump("SYSTEM", "RemoteResponseToRequestUrl", urlstr);
+			dump("SYSTEM", "RemoteResponseLength", response.length());
+
+			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			d = new Date();
+			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
+			
 			return response;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -46,12 +46,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectVersion"})
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectContexts","objectVersion"})
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
+	@XmlElement(name = "ObjectContexts")
+	private ObjectContexts objectContexts;
 	@XmlElement(name = "ObjectStatus")
 	protected ObjectStatus objectStatus;
 	@XmlElement(name = "ObjectVersion")
@@ -76,6 +78,8 @@ public class Policy implements Serializable {
 	@Override
 	public int hashCode() {
 		int hashCode = 0;
+		if (getObjectContexts() != null)
+			hashCode += getObjectContexts().hashCode();
 		if (getObjectVisibilities() != null)
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
@@ -136,6 +140,20 @@ public class Policy implements Serializable {
 		return objectVisibilities;
 	}
 	
+	/**
+	 * @param objectContexts the objectContexts to set
+	 */
+	public  void setObjectContexts(ObjectContexts value) {
+		this.objectContexts = value;
+	}
+
+	/**
+	 * @return the objectContexts
+	 */
+	public ObjectContexts getObjectContexts() {
+		return objectContexts;
+	}
+
 	/**
 	 * @param objectStatus the objectStatus to set
 	 */

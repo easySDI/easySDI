@@ -104,7 +104,10 @@ public class CSWProxyDataAccessibilityManager {
 	
 	public boolean isAllDataAccessible ()
 	{
-		if(policy.getObjectStatus().isAll() && policy.getObjectVisibilities().isAll() && policy.getObjectVersion().getVersionModes().contains("all"))
+		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
+			&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+			&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
+			&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
 		{
 			return true;
 		}
@@ -258,7 +261,7 @@ public class CSWProxyDataAccessibilityManager {
 		List<Map<String,Object>> metadata_guids = null;
 		String query;
 		
-		if(!policy.getObjectVersion().getVersionModes().contains("all"))
+		if(policy.getObjectVersion()!= null && !policy.getObjectVersion().getVersionModes().contains("all"))
 		{
 			//Not all the versions are allowed, just the last one
 			
@@ -295,7 +298,7 @@ public class CSWProxyDataAccessibilityManager {
 				return metadata_guids;
 		} 		
 		
-		if(!policy.getObjectVisibilities().isAll())
+		if(policy.getObjectVisibilities()!= null && !policy.getObjectVisibilities().isAll())
 		{
 			List<String> allowedVisibility = policy.getObjectVisibilities().getVisibilities();
 			String visibilityString ="";
@@ -341,7 +344,7 @@ public class CSWProxyDataAccessibilityManager {
 				return metadata_guids;
 		}
 		
-		if (!policy.getObjectStatus().isAll())
+		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
 		{
 			List<String> allowedStatus = policy.getObjectStatus().getStatus();
 			String statusString ="";
@@ -380,6 +383,55 @@ public class CSWProxyDataAccessibilityManager {
 			
 			if(metadata_guids.size()==0)
 				return metadata_guids;
+		}
+		
+		if(policy.getObjectContexts()!= null && !policy.getObjectContexts().isAll())
+		{
+			List<String> allowedContext = policy.getObjectContexts().getContexts();
+			String contextString ="";
+			for (int i = 0 ; i<allowedContext.size() ; i++)
+			{
+				contextString += "'"+ allowedContext.get(i)+"'";
+				if(i != allowedContext.size()-1)
+				{
+					contextString += ",";
+				}
+			}
+			if(metadata_guids != null && metadata_guids.size() > 0)
+			{
+				String idString ="";
+				for (int i = 0 ; i<metadata_guids.size() ; i++)
+				{
+					idString += "'"+ metadata_guids.get(i).get("guid") +"'";
+					if(i != metadata_guids.size()-1)
+					{
+						idString += ",";
+					}
+				}
+				query =     " SELECT m.guid FROM jos_sdi_metadata m "+
+							" INNER JOIN  jos_sdi_objectversion ov  ON m.id = ov.metadata_id "+
+							" INNER JOIN jos_sdi_object o ON o.id = ov.object_id "+
+							" INNER JOIN jos_sdi_objecttype ot ON o.objecttype_id = ot.id "+
+							" INNER JOIN jos_sdi_context_objecttype co ON co.objecttype_id = ot.id "+
+							" INNER JOIN jos_sdi_context c ON c.id = co.context_id "+
+							" WHERE c.code IN ("+contextString+")" +
+							" AND m.guid IN ("+idString+")" ;
+			}
+			else
+			{
+				query =     " SELECT m.guid FROM jos_sdi_metadata m "+
+							" INNER JOIN  jos_sdi_objectversion ov  ON m.id = ov.metadata_id "+
+							" INNER JOIN jos_sdi_object o ON o.id = ov.object_id "+
+							" INNER JOIN jos_sdi_objecttype ot ON o.objecttype_id = ot.id "+
+							" INNER JOIN jos_sdi_context_objecttype co ON co.objecttype_id = ot.id "+
+							" INNER JOIN jos_sdi_context c ON c.id = co.context_id "+
+							" WHERE c.code IN ("+contextString+")" ;
+			}
+			metadata_guids = joomlaProvider.sjt.queryForList(query);
+			
+			if(metadata_guids.size()==0)
+				return metadata_guids;
+			
 		}
 		return metadata_guids;
 	}

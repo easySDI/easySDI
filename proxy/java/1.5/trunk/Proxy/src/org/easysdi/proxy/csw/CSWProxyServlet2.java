@@ -343,7 +343,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -431,7 +431,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-//				dump("INFO","Start - Data Accessibility");
+				dump("INFO","Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(!cswDataManager.isAllDataAccessible())
 				{
@@ -452,14 +452,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					}
 					requestedId = dataIDaccessible;
 				}
-//				dump("INFO","End - Data Accessibility");
+				dump("INFO","End - Data Accessibility");
 				
 			}
 			//GetRecords
 			//TODO : check the validity of this code for the support of the GET GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
-//				dump("INFO","Start - Data Accessibility");
+				dump("INFO","Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(!cswDataManager.isAllDataAccessible())
 				{
@@ -505,6 +505,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
 				{
+					dump("INFO","Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -512,6 +513,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
+					dump("INFO","End - Complete metadata");
 				}
 			}
 			
@@ -527,7 +529,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
@@ -621,7 +623,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecordById
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-//				dump("INFO","Start - Data Accessibility");
+				dump("INFO","Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
 				if(!cswDataManager.isAllDataAccessible())
@@ -644,14 +646,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						param.replace(start, end, dataId);
 					}
 				}
-//				dump("INFO","End - Data Accessibility");
+				dump("INFO","End - Data Accessibility");
 				
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
-//					dump("INFO","Start - Complete metadata");
+					dump("INFO","Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -659,7 +661,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
-//					dump("INFO","End - Complete metadata");
+					dump("INFO","End - Complete metadata");
 					
 				}
 				//Transform the request response
@@ -668,23 +670,21 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
-//				dump("INFO","Start - Data Accessibility");
+				dump("INFO","Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(!cswDataManager.isAllDataAccessible())
 				{
-					cswDataManager.getAccessibleDataIds();
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param, cswDataManager.getAccessibleDataIds());
-					dump("INFO", "GetRecords request send : "+param);
 				}
-//				dump("INFO","End - Data Accessibility");
+				dump("INFO","End - Data Accessibility");
 				
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
-//					dump("INFO","Start - Complete metadata");
+					dump("INFO","Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -692,7 +692,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
-//					dump("INFO","End - Complete metadata");
+					dump("INFO","End - Complete metadata");
 					
 				}
 				//Transform the request response
@@ -715,13 +715,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		}
 		catch (SAXParseException e)
 		{
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
