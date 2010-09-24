@@ -12,6 +12,8 @@
     <param name="task" type="list" default="listCatalogContent" label="Type" description="Type of menu" >
       <option value="listCatalogContent">Search</option>
     </param>
+    <param name="context" type="text" label="Context" description="Search context" >
+    </param>
   </url>
   <params>
   </params>
