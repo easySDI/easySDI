@@ -1256,12 +1256,25 @@ function validateForm(toStep, fromStep){
 		$view = JRequest::getVar('view');
 		$step = JRequest::getVar('step');
 	
-		$row->text = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
+//		JPluginHelper::importPlugin('joomfish');
+		$client_lang = '';
+		$jfcookie = JRequest::getVar('jfcookie', null ,"COOKIE");
+		if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
+		{
+		   $client_lang = $jfcookie["lang"];
+		}
+	
+		$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
+		
+		$new_key = substr_replace($key, $client_lang, 22, 0);
+//		echo ($new_key);
+		
+		JPluginHelper::importPlugin('content');
+		$row->text = $new_key;
 		$args = array( 1,&$row,&$params);
-		JPluginHelper::importPlugin( 'content' );
+		
 		$dispatcher =& JDispatcher::getInstance();
-		$results = $dispatcher->trigger('onPrepareContent', 
-		array(&$row,&$params,0));
+		$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
 		
 		HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
 	}
