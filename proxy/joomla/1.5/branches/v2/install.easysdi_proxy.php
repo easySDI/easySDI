@@ -58,17 +58,17 @@ function com_install(){
 			  `description` varchar(100),
 			  `created` datetime NOT NULL,
 			  `updated` datetime,
-			  `createdby` bigint(20) NOT NULL,
+			  `createdby` bigint(20),
 			  `updatedby` bigint(20),
 			  `label` varchar(50),
 			  `ordering` bigint(20),
 			  `value` varchar(100),
-			  `currentversion` bigint(20),
-			  `lastversion` bigint(20),
+			  `currentversion` varchar(20),
+			  `lastversion` varchar(20),
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY `guid` (`guid`),
 			  UNIQUE KEY `code` (`code`)
-			)";
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 	 		
 	$db->setQuery( $query);
 	if (!$db->query()) {
