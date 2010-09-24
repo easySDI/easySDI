@@ -58,7 +58,7 @@ class ADMIN_accountprofile {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "ordering" and $filter_order <> "description" and $filter_order <> "updated")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "code" and $filter_order <> "ordering" and $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";

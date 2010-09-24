@@ -35,6 +35,7 @@ class HTML_accountprofile {
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderAccountProfile' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_CODE"), 'code', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?>
 			</tr>
@@ -84,6 +85,7 @@ class HTML_accountprofile {
 	            </td>
 	            <?php $link =  "index.php?option=$option&amp;task=editAccountProfile&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->code; ?></td>
 				<td><?php echo $row->description; ?></td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
@@ -95,7 +97,7 @@ class HTML_accountprofile {
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="7"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -121,6 +123,10 @@ class HTML_accountprofile {
 				<tr>
 					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name;?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+				</tr>
+				<tr>
+					<td width=150><?php echo JText::_("CORE_CODE"); ?></td>
+					<td><input size="50" type="text" name ="code" value="<?php echo $row->code;?>" maxlength="<?php echo $fieldsLength['code'];?>"> </td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
