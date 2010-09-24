@@ -1266,7 +1266,7 @@ function validateForm(toStep, fromStep){
 	
 		$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
 		
-		$new_key = substr_replace($key, $client_lang, 22, 0);
+		$new_key = substr_replace($key, $client_lang." ", 22, 0);
 //		echo ($new_key);
 		
 		JPluginHelper::importPlugin('content');
