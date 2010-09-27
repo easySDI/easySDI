@@ -4,22 +4,19 @@ require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'part
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_BASE.DS.'modules'.DS.'mod_mainmenu'.DS.'helper.php');
 
+
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-
-if ( ! defined('modMainMenuXMLCallbackDefined') )
+if ( ! defined('modEasysdiMenuXMLCallbackDefined') )
 {
-function modMainMenuXMLCallback(&$node, $args)
+function modEasysdiMenuXMLCallback(&$node, $args)
 {
 	$user	= &JFactory::getUser();
 	$menu	= &JSite::getMenu();
 	$active	= $menu->getActive();
 	$task = JRequest::getVar("task");
 	$path	= isset($active) ? array_reverse($active->tree) : null;
-
-	
-	
 
 	if (($args['end']) && ($node->attributes('level') >= $args['end']))
 	{
@@ -106,10 +103,9 @@ function modMainMenuXMLCallback(&$node, $args)
 	}
 	
 }
-	define('modMainMenuXMLCallbackDefined', true);
+	define('modEasysdiMenuXMLCallbackDefined', true);
 }
-
-modMainMenuHelper::render($params, 'modMainMenuXMLCallback');
+modMainMenuHelper::render($params, 'modEasysdiMenuXMLCallback');
 
 
 /**
@@ -150,8 +146,6 @@ class userManagerRightESDY
 	}
 	
 	static function menuRight($url,$user) {
-	
-	
 		//Is the user from ESDY project
 		if(userManagerRightESDY::isEasySDIUser($user))
 		{
@@ -207,9 +201,34 @@ class userManagerRightESDY
 				    return true;
 				}	
 		}
+		//Not a EasySDI user, so hide the declared here EasySDI entires
 		else
 		{
-			return true;
+			if (preg_match("/(com_easysdi_core|com_easysdi_shop)/i", $url)) {
+				preg_match('/task=([a-z]+)&/i', $url, $tasks);
+				$task = $tasks[1];
+			  if($task=="listOrders")
+			     return false;
+			  elseif($task=="showPartner")
+			     return false;
+        elseif($task=="listAffiliatePartner")
+			     return false;
+		    elseif($task=="listProductMetadata")
+		       return false;
+			  elseif($task=="listProduct")
+			     return false;
+			  elseif($task=="listOrdersForProvider")
+			     return false;
+		    elseif($task=="manageFavoriteProduct")
+		       return false;
+		    else
+		    //by default, display the menu link
+		       return true;
+		     
+		   } else {
+			//Not a ESDY URL
+			    return true;
+			}			     
 		}
 	}
 	
