@@ -283,37 +283,6 @@ function com_install(){
 		 */
 		
 		/*
-		 * Package table. Contains kind of tabs.
-		 * Filling by the user interface.
-		 */
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_package` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36) NOT NULL,
-				  `code` varchar(20),
-				  `name` varchar(50) NOT NULL,
-				  `description` varchar(100),
-				  `created` datetime NOT NULL,
-				  `updated` datetime,
-				  `createdby` bigint(20),
-				  `updatedby` bigint(20),
-				  `label` varchar(50),
-				  `ordering` bigint(20),
-				  `csslayout` bigint(20),
-				  `profile_id` bigint(20) NOT NULL,
-				  `class_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`),
-				  KEY `profile_id` (`profile_id`),
-				  KEY `class_id` (`class_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		/*
 		 * Profile table. Contains standard.
 		 * Filling by the user interface.
 		 */
@@ -360,50 +329,12 @@ function com_install(){
 				  `isocode` varchar(50) NOT NULL,
 				  `isextensible` tinyint(1) DEFAULT '0',
 				  `issystem` tinyint(1) DEFAULT '0',
-				  `package_id` bigint(20),
 				  `isrootclass` tinyint(1),
 				  `checked_out` bigint(20) NOT NULL,
 				  `checked_out_time` datetime,
 				  `namespace_id` bigint(20),
 				  PRIMARY KEY (`id`),
-				  KEY `package_id` (`package_id`),
 				  KEY `namespace_id` (`namespace_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		/*
-		 * ClassRelation table. Define the relations between classes.
-		 * Filling by the user interface.
-		 */
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_classrelation` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36),
-				  `parent_id` bigint(20) NOT NULL,
-				  `child_id` bigint(20) NOT NULL,
-				  `name` varchar(50) NOT NULL,
-				  `lowerbound` bigint(20) NOT NULL,
-				  `upperbound` bigint(20) NOT NULL,
-				  `relationtype_id` bigint(20) NOT NULL DEFAULT '1',
-				  `isocode` varchar(50) NOT NULL,
-				  `description` varchar(100),
-				  `created` datetime NOT NULL,
-				  `updated` datetime,
-				  `createdby` bigint(20),
-				  `updatedby` bigint(20),
-				  `label` varchar(50),
-				  `ordering` bigint(20) NOT NULL DEFAULT 0,
-				  `published` tinyint(1) NOT NULL,
-				  `classassociation_id` bigint(20),
-				  PRIMARY KEY (`id`),
-				  KEY `parent_id` (`parent_id`),
-				  KEY `child_id` (`child_id`),
-				  KEY `relationtype_id` (`relationtype_id`),
-				  KEY `classassociation_id` (`classassociation_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
@@ -454,41 +385,6 @@ function com_install(){
 			return false;
 		}
 		
-		/*
-		 * AttributeRelation table. Define the relations between classes and attributes.
-		 * Filling by the user interface.
-		 */
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_attributerelation` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `guid` varchar(36),
-				  `class_id` bigint(20) NOT NULL,
-				  `attribute_id` bigint(20) NOT NULL,
-				  `name` varchar(50) NOT NULL,
-				  `lowerbound` bigint(20) NOT NULL,
-				  `upperbound` bigint(20) NOT NULL,
-				  `mandatory` tinyint(1) NOT NULL,
-				  `rendertype_id` bigint(20) NOT NULL,
-				  `isocode` varchar(50),
-				  `description` varchar(100),
-				  `created` datetime NOT NULL,
-				  `updated` datetime,
-				  `createdby` bigint(20),
-				  `updatedby` bigint(20),
-				  `label` varchar(50),
-				  `ordering` bigint(20) NOT NULL DEFAULT 0,
-				  `published` tinyint(1) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  KEY `class_id` (`class_id`),
-				  KEY `attribute_id` (`attribute_id`),
-				  KEY `rendertype_id` (`rendertype_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
 		
 		/*
 		 * CodeValue table. Define the items attributes list type.
@@ -514,36 +410,6 @@ function com_install(){
 				  `published` tinyint(1) NOT NULL,
 				  PRIMARY KEY (`id`),
 				  KEY `attribute_id` (`attribute_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_attributerel_profile` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `attributerelation_id` bigint(20) NOT NULL,
-				  `profile_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  KEY `attributerelation_id` (`attributerelation_id`),
-				  KEY `profile_id` (`profile_id`)
-				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
-		 		
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_classrel_profile` (
-				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-				  `classrelation_id` bigint(20) NOT NULL,
-				  `profile_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`),
-				  KEY `classrelation_id` (`classrelation_id`),
-				  KEY `profile_id` (`profile_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		 		
 		$db->setQuery( $query);
@@ -1018,19 +884,18 @@ function com_install(){
 		/*
 		 * Constraints
 		 */
-		$query="ALTER TABLE `#__sdi_class`
-  					ADD CONSTRAINT `#__sdi_class_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `#__sdi_package` (`id`);
-				    ADD CONSTRAINT `#__sdi_class_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`)
+		
+		$query="ALTER TABLE `#__sdi_list_renderattributetype`
+  				ADD CONSTRAINT `#__sdi_list_renderattributetype_ibfk_1` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
+				ADD CONSTRAINT `#__sdi_list_renderattributetype_ibfk_2` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_list_attributetype` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		$query="ALTER TABLE `#__sdi_classrelation`
-				  ADD CONSTRAINT `#__sdi_classrelation_ibfk_1` FOREIGN KEY (`relationtype_id`) REFERENCES `#__sdi_list_relationtype` (`id`),
-				  ADD CONSTRAINT `#__sdi_classrelation_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_class` (`id`),
-				  ADD CONSTRAINT `#__sdi_classrelation_ibfk_3` FOREIGN KEY (`child_id`) REFERENCES `#__sdi_class` (`id`);
+		$query="ALTER TABLE `#__sdi_class`
+  				ADD CONSTRAINT `#__sdi_class_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1038,19 +903,17 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_attribute`
-  					ADD CONSTRAINT `#__sdi_attribute_ibfk_1` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_list_attributetype` (`id`);
-				  ADD CONSTRAINT `#__sdi_attribute_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`)
-				  ADD CONSTRAINT `#__sdi_attribute_ibfk_3` FOREIGN KEY (`listnamespace_id`) REFERENCES `#__sdi_namespace` (`id`)
+  				ADD CONSTRAINT `#__sdi_attribute_ibfk_1` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_list_attributetype` (`id`),
+				ADD CONSTRAINT `#__sdi_attribute_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`),
+				ADD CONSTRAINT `#__sdi_attribute_ibfk_3` FOREIGN KEY (`listnamespace_id`) REFERENCES `#__sdi_namespace` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
-		$query="ALTER TABLE `#__sdi_attributerelation`
-				  ADD CONSTRAINT `#__sdi_attributerelation_ibfk_1` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
-				  ADD CONSTRAINT `#__sdi_attributerelation_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `#__sdi_class` (`id`),
-				  ADD CONSTRAINT `#__sdi_attributerelation_ibfk_3` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`);
+		$query="ALTER TABLE `#__sdi_list_attributetype`
+  				ADD CONSTRAINT `#__sdi_list_attributetype_ibfk_1` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1058,7 +921,7 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_codevalue`
-  					ADD CONSTRAINT `#__sdi_codevalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`) ON DELETE CASCADE;
+  				ADD CONSTRAINT `#__sdi_codevalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`) ON DELETE CASCADE;
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1066,8 +929,8 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_account_attribute`
-				  ADD CONSTRAINT `#__sdi_account_attribute_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
-				  ADD CONSTRAINT `#__sdi_account_attribute_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`);
+				ADD CONSTRAINT `#__sdi_account_attribute_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
+				ADD CONSTRAINT `#__sdi_account_attribute_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1075,7 +938,7 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_account_codevalue`
-				  ADD CONSTRAINT `#__sdi_account_codevalue_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`);
+				ADD CONSTRAINT `#__sdi_account_codevalue_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1083,8 +946,8 @@ function com_install(){
 		}
 	
 		$query="ALTER TABLE `#__sdi_account_object`
-				  ADD CONSTRAINT `#__sdi_account_object_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`),
-				  ADD CONSTRAINT `#__sdi_account_object_ibfk_2` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`)
+				ADD CONSTRAINT `#__sdi_account_object_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`),
+				ADD CONSTRAINT `#__sdi_account_object_ibfk_2` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`)
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1092,16 +955,7 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_profile`
-  					ADD CONSTRAINT `#__sdi_profile_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `#__sdi_class` (`id`);
-				";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE `#__sdi_package`
-				  ADD CONSTRAINT `#__sdi_package_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`),
-				  ADD CONSTRAINT `#__sdi_package_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `#__sdi_class` (`id`);
+  				ADD CONSTRAINT `#__sdi_profile_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `#__sdi_class` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1109,25 +963,7 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_objecttype`
-  					ADD CONSTRAINT `#__sdi_objecttype_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`);
-				";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE `#__sdi_attributerel_profile`
-				  ADD CONSTRAINT `#__sdi_attributerel_profile_ibfk_1` FOREIGN KEY (`attributerelation_id`) REFERENCES `#__sdi_attributerelation` (`id`),
-				  ADD CONSTRAINT `#__sdi_attributerel_profile_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`);
-				";
-		$db->setQuery( $query);	
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
-		}
-		
-		$query="ALTER TABLE `#__sdi_classrel_profile`
-				  ADD CONSTRAINT `#__sdi_classrel_profile_ibfk_1` FOREIGN KEY (`classrelation_id`) REFERENCES `#__sdi_classrelation` (`id`),
-				  ADD CONSTRAINT `#__sdi_classrel_profile_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`);
+  				ADD CONSTRAINT `#__sdi_objecttype_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1142,8 +978,8 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_defaultvalue`
-				  ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`),
-				  ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_2` FOREIGN KEY (`codevalue_id`) REFERENCES `#__sdi_codevalue` (`id`);
+				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`),
+				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_2` FOREIGN KEY (`codevalue_id`) REFERENCES `#__sdi_codevalue` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1151,23 +987,24 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_relation`
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_6` FOREIGN KEY (`attributechild_id`) REFERENCES `#__sdi_attribute` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_class` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_2` FOREIGN KEY (`classchild_id`) REFERENCES `#__sdi_class` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_3` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_4` FOREIGN KEY (`relationtype_id`) REFERENCES `#__sdi_list_relationtype` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_5` FOREIGN KEY (`classassociation_id`) REFERENCES `#__sdi_class` (`id`);
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_8` FOREIGN KEY (`objecttypechild_id`) REFERENCES `#__sdi_objecttype` (`id`)
-				  ADD CONSTRAINT `#__sdi_relation_ibfk_7` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`)
+				ADD CONSTRAINT `#__sdi_relation_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_class` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_2` FOREIGN KEY (`attributechild_id`) REFERENCES `#__sdi_attribute` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_3` FOREIGN KEY (`classchild_id`) REFERENCES `#__sdi_class` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_4` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_5` FOREIGN KEY (`relationtype_id`) REFERENCES `#__sdi_list_relationtype` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_6` FOREIGN KEY (`classassociation_id`) REFERENCES `#__sdi_class` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_7` FOREIGN KEY (`objecttypechild_id`) REFERENCES `#__sdi_objecttype` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_ibfk_8` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);
 				";
+		
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
 		$query="ALTER TABLE `#__sdi_relation_profile`
-				  ADD CONSTRAINT `#__sdi_relation_profile_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`),
-				  ADD CONSTRAINT `#__sdi_relation_profile_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`);
+				ADD CONSTRAINT `#__sdi_relation_profile_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_profile_ibfk_2` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_profile` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1175,8 +1012,8 @@ function com_install(){
 		}
 		
 		$query = "ALTER TABLE `#__sdi_manager_object`
-					  ADD CONSTRAINT `#__sdi_manager_object_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
-					  ADD CONSTRAINT `#__sdi_manager_object_ibfk_2` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`);
+				  ADD CONSTRAINT `#__sdi_manager_object_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
+				  ADD CONSTRAINT `#__sdi_manager_object_ibfk_2` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`);
 							";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -1186,8 +1023,8 @@ function com_install(){
 		}
 		
 		$query = "ALTER TABLE `#__sdi_editor_object`
-					  ADD CONSTRAINT `#__sdi_editor_object_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
-					  ADD CONSTRAINT `#__sdi_editor_object_ibfk_2` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`);
+	  			  ADD CONSTRAINT `#__sdi_editor_object_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
+				  ADD CONSTRAINT `#__sdi_editor_object_ibfk_2` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`);
 							";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -1197,8 +1034,8 @@ function com_install(){
 		}
 		
 		$query = "ALTER TABLE `#__sdi_account_objecttype`
-					  ADD CONSTRAINT `#__sdi_account_objecttype_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
-					  ADD CONSTRAINT `#__sdi_account_objecttype_ibfk_2` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
+				  ADD CONSTRAINT `#__sdi_account_objecttype_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`),
+				  ADD CONSTRAINT `#__sdi_account_objecttype_ibfk_2` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
 							";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -1209,9 +1046,9 @@ function com_install(){
 
 		
 		$query="ALTER TABLE `#__sdi_objectversion`
-				  ADD CONSTRAINT `#__sdi_objectversion_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`)
-				  ADD CONSTRAINT `#__sdi_objectversion_ibfk_2` FOREIGN KEY (`metadata_id`) REFERENCES `#__sdi_metadata` (`id`)
-				  ADD CONSTRAINT `#__sdi_objectversion_ibfk_3` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_objectversion` (`id`)
+				ADD CONSTRAINT `#__sdi_objectversion_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`),
+				ADD CONSTRAINT `#__sdi_objectversion_ibfk_2` FOREIGN KEY (`metadata_id`) REFERENCES `#__sdi_metadata` (`id`),
+				ADD CONSTRAINT `#__sdi_objectversion_ibfk_3` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_objectversion` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1219,7 +1056,16 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_context`
-				  ADD CONSTRAINT `#__sdi_context_ibfk_1` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`)
+				ADD CONSTRAINT `#__sdi_context_ibfk_1` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_context_objecttype`
+				ADD CONSTRAINT `#__sdi_context_objecttype_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
+				ADD CONSTRAINT `#__sdi_context_objecttype_ibfk_1` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1227,12 +1073,24 @@ function com_install(){
 		}
 		
 		$query="ALTER TABLE `#__sdi_searchcriteria`
-				  ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`)
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_list_criteriatype` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
+		
+		$query="ALTER TABLE `#__sdi_relation_context`
+				ADD CONSTRAINT `#__sdi_relation_context_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
+				ADD CONSTRAINT `#__sdi_relation_context_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
 	}
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
