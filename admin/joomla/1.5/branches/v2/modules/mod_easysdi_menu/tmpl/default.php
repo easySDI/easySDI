@@ -167,15 +167,16 @@ class userManagerRightESDY
 				elseif ($task=="listProduct") 
 				{
 					//the partner must at least have a product assigned to him
-					$db->setQuery("SELECT count(*)
-									FROM #__sdi_product p 
-									INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
-									INNER JOIN #__sdi_object o ON o.id = v.object_id
-									INNER JOIN #__sdi_metadata md ON md.id = v.metadata_id
-									INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
-									WHERE m.account_id = ".$account->id);
-					$res = $db->loadResult();
-					return (userManagerRightESDY::hasRight($account->id,"PRODUCT") && $res > 0);
+//					$db->setQuery("SELECT count(*)
+//									FROM #__sdi_product p 
+//									INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
+//									INNER JOIN #__sdi_object o ON o.id = v.object_id
+//									INNER JOIN #__sdi_metadata md ON md.id = v.metadata_id
+//									INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
+//									WHERE m.account_id = ".$account->id);
+//					$res = $db->loadResult();
+//					return (userManagerRightESDY::hasRight($account->id,"PRODUCT") && $res > 0);
+					return (userManagerRightESDY::hasRight($account->id,"PRODUCT") );
 				}
 				elseif ($task=="listOrdersForProvider") 
 				{
