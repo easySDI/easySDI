@@ -394,7 +394,7 @@ class ADMIN_account {
 		
 		if (!$rowUser->bind( $_POST)) {			
 			//echo "<script> alert('".$rowUser->getError()."'); window.history.go(-1); </script>\n";
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($rowUser->getError(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			//exit();
 		}
@@ -411,8 +411,8 @@ class ADMIN_account {
 		//print_r($rowUser); 
 		//break;
 		
-		if (!$rowUser->store(true)) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		if (!$rowUser->store(false)) {
+			$mainframe->enqueueMessage($rowUser->getError(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			exit();
 		}
