@@ -51,6 +51,8 @@ class SITE_metadata {
 		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
+		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
+		
 		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
@@ -100,6 +102,11 @@ class SITE_metadata {
 								OR (ma.account_id=".$account->id."
 									AND s.id=1)
 								)";*/
+		
+		// Objecttype filter
+		if ($filter_objecttype_id > 0) {
+			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
+		}
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 			
@@ -195,10 +202,19 @@ class SITE_metadata {
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
 		$editors = implode(", ", $database->loadResultArray());
 		
+		$query = 'SELECT id as value, name as text' .
+				' FROM #__sdi_objecttype' .
+				' WHERE predefined=false' .
+				' ORDER BY name';
+		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$database->setQuery($query);
+		$listObjectType = array_merge($listObjectType, $database->loadObjectList());
+		$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
+		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $search, $lists);	
+		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $search, $lists);	
 		
 	}
 	
@@ -372,7 +388,7 @@ class SITE_metadata {
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=158_bis"; //.$id;
 		//$catalogUrlGetRecordById = "http://demo.easysdi.org:8080/proxy/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowObject->metadata_id; //.$id;
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowMetadata->guid;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowMetadata->guid;
 		
 		//.$id."
 		$xmlBody= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n
@@ -393,7 +409,8 @@ class SITE_metadata {
 		//$cswResults = DOMDocument::loadXML($xmlResponse);
 
 		// En GET
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
 		/*
 		$cswResults = new DOMDocument();

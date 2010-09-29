@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,20 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 					
 JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedFieldSet.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedFormPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedHidden.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('SearchField.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
+
+JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
 
 class HTML_metadata {
 	var $javascript = "";
@@ -53,7 +57,7 @@ class HTML_metadata {
 	var $parentGuid="";
 	
 	
-	function listMetadata($pageNav, $rows, $option, $rootAccount, $search, $lists)
+	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType, $search, $lists)
 	{
 		$database =& JFactory::getDBO(); 
 		$user = JFactory::getUser();
@@ -70,9 +74,19 @@ class HTML_metadata {
 				<td align="left">
 					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
+			</tr>
+			<tr>
 				<td align="left">
 					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxSearchProduct" " />
 				</td>
+			</tr>
+			<tr>
+				<td align="left">
+					<br/>
+					<?php echo $listObjectType; ?>
+				</td>
+			</tr>
+			<tr>
 				<td align="right">
 					<button type="submit" class="searchButton" onClick="document.getElementById('task').value='listMetadata';document.getElementById('productListForm').submit();"> <?php echo JText::_("CORE_SEARCH_BUTTON"); ?></button>
 				</td>
@@ -129,11 +143,17 @@ class HTML_metadata {
 				<td >
 					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
-<?php
+				<?php
 if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
 { 
 ?>
 				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?></td>
+<?php
+}
+else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
+{ 
+?>
+				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
 <?php
 }
 else
@@ -142,7 +162,8 @@ else
 				<td ><?php echo JText::_($row->state); ?></td>
 <?php
 }
-?>				<?php 		
+?>	
+				<?php 		
 				$managers = "";
 				$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 				$managers = implode(", ", $database->loadResultArray());
@@ -180,10 +201,13 @@ else
 					else
 						$isEditor = false;
 					
+					$rowMetadata = new metadataByGuid($database);
+					$rowMetadata->load($row->metadata_guid);
 					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
 					{
 						if ($rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Validé
+							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archivé et date du jour <= date d'archivage
 							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
 							)
 						{
@@ -253,7 +277,7 @@ else
 								<td class="logo" align="center"></td>
 							<?php 
 						}
-						if ($rowMetadata->metadatastate_id == 3 or $rowMetadata->metadatastate_id == 2 or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archivé, Validé ou Publié
+						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archivé, Validé ou Publié
 							)
 						{
 							?>
@@ -338,8 +362,8 @@ else
 		
 		foreach($boundaries as $boundary)
 		{
-			$this->boundaries_name[] = $boundary->name;
-			$this->boundaries[$boundary->name] = array('northbound'=>$boundary->northbound, 'southbound'=>$boundary->southbound, 'westbound'=>$boundary->westbound, 'eastbound'=>$boundary->eastbound);
+			$this->boundaries_name[] = JText::_($boundary->guid."_LABEL");
+			$this->boundaries[JText::_($boundary->guid."_LABEL")] = array('northbound'=>$boundary->northbound, 'southbound'=>$boundary->southbound, 'westbound'=>$boundary->westbound, 'eastbound'=>$boundary->eastbound);
 		}
 		//print_r($this->boundaries);
 		$this->catalogBoundaryIsocode = $catalogBoundaryIsocode;
@@ -384,6 +408,7 @@ else
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/form_layout_backend.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/MultiSelect.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/fileuploadfield.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/superboxselect.css');
 		
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
@@ -581,7 +606,7 @@ else
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
@@ -601,6 +626,7 @@ else
 									if (field.allowBlank == false)
 									{
 										//console.log('Field or fieldset to change: ' + field.getId());
+										//console.log(field);
 										field.allowBlank = true;
 									}
 									if (field.regex)
@@ -745,7 +771,7 @@ else
 													myMask.hide();
 												},
 												failure: function(form, action) 
-												{
+												{ 
                         							Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
 														
 													myMask.hide();
@@ -849,11 +875,17 @@ else
 																						     ,defaults:{anchor:'95%'} 
 																						     ,items:[ 
 																						       { 
-																						         fieldLabel:'Date de publication', 
+																						         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_DATE_MSG'))."', 
 																						         id:'publishdate', 
 																						         xtype: 'datefield',
 																						         format: 'd.m.Y',
 																						         value:'' 
+																						       },
+																						       { 
+																						         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_ARCHIVELAST_MSG'))."', 
+																						         id:'archivelast', 
+																						         xtype: 'checkbox',
+																						         checked:false 
 																						       },
 																						       { 
 																						         id:'metadata_id', 
@@ -930,7 +962,10 @@ else
 																		                }]
 																		            });
 															else
+															{
 																win.items.get(0).findById('publishdate').setValue('');
+																win.items.get(0).findById('archivelast').setValue(false);
+															}
 																
 									  						win.show();
 									  						
@@ -938,6 +973,7 @@ else
 														},
 														failure: function(form, action) 
 														{
+ 
 	                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
 																
 															myMask.hide();
@@ -1249,7 +1285,7 @@ else
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
 	
-function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
+function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
 	{
 		//echo $parent." - ".$parentFieldsetName."<br>";
 		//echo "<hr>SCOPE: ".$scope->nodeName."<br>";
@@ -1507,7 +1543,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								// Si le fieldset n'existe pas, inutile de récupérer une valeur
+								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+									$nodeValue = "";
+								else
+									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
@@ -1605,7 +1646,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														{
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
-															$defaultVal= html_Metadata::cleanText($nodeValue);
+															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 															//$nodeValue = "";
 														}
 													}
@@ -1622,7 +1663,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														{
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
-															$defaultVal= html_Metadata::cleanText($nodeValue);
+															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 															//$nodeValue = "";
 														}
 													}
@@ -1686,7 +1727,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														{
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
-															$defaultVal= html_Metadata::cleanText($nodeValue);
+															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 															//$nodeValue = "";
 														}
 													}
@@ -1703,7 +1744,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														{
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
-															$defaultVal= html_Metadata::cleanText($nodeValue);
+															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 															//$nodeValue = "";
 														}
 													}
@@ -1765,7 +1806,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -1782,7 +1823,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -2405,6 +2446,163 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								}
 								
 								break;
+							// Thesaurus GEMET
+							case 11:
+								//echo "1) ".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
+								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
+								
+								$uri =& JUri::getInstance();
+		
+								$defaultLang="";
+								$langArray = Array();
+								foreach($this->langList as $row)
+								{									
+									if ($row->defaultlang)
+										$defaultLang = $row->gemetlang;
+									$langArray[] = $row->gemetlang;
+								}
+								/*print_r($langArray);
+								echo "<hr>";
+								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
+								*/
+								
+								$listNode = $xpathResults->query($child->attribute_isocode, $scope);
+								$listCount = $listNode->length;		
+								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
+								$nodeValues = array();
+								for($keyPos=0;$keyPos<=$listCount; $keyPos++)
+								{
+									$currentScope=$listNode->item($keyPos);
+									
+
+									if ($currentScope->nodeName <> "")
+									{
+									$nodeValue= "";
+									$nodeKeyword= "";
+									// Récupérer le texte localisé stocké
+									foreach($this->langList as $row)
+									{
+										//echo $row->gemetlang."<br>";
+										if ($row->defaultlang)
+										{
+											$keyNode = $xpathResults->query("gco:CharacterString", $currentScope);
+											//echo "Il y a ".$keyNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
+											if ($keyNode->length > 0)
+											{
+												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
+												$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
+											}
+										}
+										else
+										{
+											$keyNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
+											//echo "Il y a ".$keyNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
+											if ($keyNode->length > 0)
+												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
+											
+										}
+									}
+									}
+									$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
+									//echo $nodeValue."<br>";
+									//echo $nodeKeyword."<br>";
+									
+								}
+
+								$value = "[".implode(",",$nodeValues)."]";
+								
+								$this->javascript .="
+								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
+								var winthge;
+								
+								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
+								
+								// sets the user interface language
+								HS.setLang('en');
+								
+								var thes = new ThesaurusReader({
+																  id:'".$currentName."_PANEL_THESAURUS',
+																  lang: '".$defaultLang."',
+															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
+															      separator: ' > ',
+															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
+															      returnPath: false,
+															      returnInspire: true,
+															      width: 300, 
+															      height:400,
+															      layout: 'fit',
+															      targetField: '".$currentName."',
+															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
+															      handler: function(result){
+															      				var target = Ext.ComponentMgr.get(this.targetField);
+															    				var s = '';
+												      		    					
+																      		    var reliableRecord = result.terms[thes.lang];
+																      		    
+																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    if (!target.usedRecords.containsKey(reliableRecord))
+																				{
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																				    for(l in result.terms) 
+																				    {
+																				    	s += l+': '+result.terms[l]+';';
+																		                  }
+																				    target.addItem({keyword:result.terms[this.lang], value: s});
+																				}
+																				else
+																				{
+																					Ext.MessageBox.alert('".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TITLE')."', 
+															                    						 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
+																				
+																				}
+																			}
+															  });
+								
+								 							  
+								".$parentFieldsetName.".add(
+									new Ext.Button({
+										id:'".$currentName."_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
+										handler: function()
+								                {
+								                	// Créer une iframe pour demander à l'utilisateur le type d'import
+													if (!winthge)
+														winthge = new Ext.Window({
+														                id:'".$currentName."_win',
+																  		itemId:'".$currentName."_win',
+																  		title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
+														                width:500,
+														                height:500,
+														                closeAction:'hide',
+														                layout:'fit', 
+																	    border:true, 
+																	    closable:true, 
+																	    renderTo:Ext.getBody(), 
+																	    frame:true,
+																	    items:[thes]
+														            });
+														else
+														{
+															// Vider les champs du composant Thesaurus
+														}
+														
+														winthge.show();
+										        	},
+										
+								        // Champs spécifiques au clonage
+								        dynamic:true,
+								        minOccurs:1,
+							            maxOccurs:1,
+							            clone: false,
+										clones_count: 1,
+							            extendedTemplate: null
+									})
+								);
+								
+								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								";
+								break;
 							default:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -2465,7 +2663,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 						
 						//echo $master." - ".$name." - ".$currentName."<br>";
 						
-						if ($child->attribute_type <> 9 and $child->attribute_type <> 10)
+						if ($child->attribute_type <> 9 and $child->attribute_type <> 10 and $child->attribute_type <> 11)
 						{
 							//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
 							// Traitement de l'attribut enfant
@@ -2473,7 +2671,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 							$node = $xpathResults->query($type_isocode, $attributeScope);
 							//echo $node->length." - ".$node->item(0)->nodeName."<br>";
 							
-							$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
+							// Si le fieldset n'existe pas, inutile de récupérer une valeur
+								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+									$nodeValue = "";
+								else
+									$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
+								
 							
 							// Récupération de la valeur par défaut, s'il y a lieu
 							if ($child->attribute_default <> "" and $nodeValue == "")
@@ -2936,6 +3139,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								}
 								
 								break;
+							// Thesaurus GEMET
+							case 11:
+								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
+								break;
 							default:
 								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
@@ -3079,7 +3286,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -3096,7 +3303,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -3157,7 +3364,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -3174,7 +3381,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
@@ -3235,7 +3442,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										
 											$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 											$nodeValue = html_Metadata::cleanText($database->loadResult());
-											$defaultVal= html_Metadata::cleanText($nodeValue);
+											$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
 											//$nodeValue = "";
 													
 					
@@ -3648,6 +3855,118 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								}
 								
 								break;
+						// Thesaurus GEMET
+							case 11:
+								//echo "3) ".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
+								
+								$uri =& JUri::getInstance();
+		
+								$defaultLang="";
+								$langArray = Array();
+								foreach($this->langList as $row)
+								{
+									if ($row->defaultlang)
+										$defaultLang = $row->gemetlang;
+									$langArray[] = $row->gemetlang;
+								}
+								/*print_r($langArray);
+								echo "<hr>";
+								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
+								*/
+													
+								$this->javascript .="
+								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
+								var winthge;
+								
+								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
+								
+								// sets the user interface language
+								HS.setLang('en');
+								
+								var thes = new ThesaurusReader({
+																  id:'".$currentName."_PANEL_THESAURUS',
+																  lang: '".$defaultLang."',
+															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
+															      separator: ' > ',
+															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
+															      returnPath: false,
+															      returnInspire: true,
+															      width: 300, 
+															      height:400,
+															      layout: 'fit',
+															      targetField: '".$currentName."',
+															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
+															      handler: function(result){
+															      				var record;
+																      		    var s = '';
+																			    
+																      		    var reliableRecord = result.terms[thes.lang];
+																      		    
+																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    if (!target.usedRecords.containsKey(reliableRecord))
+																				{
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																				    for(l in result.terms) 
+																				    {
+																				    	s += l+': '+result.terms[l]+';';
+																				    }
+																				    target.addItem({keyword:result.terms[this.lang], value: s});
+																				}
+																				else
+																				{
+																					Ext.MessageBox.alert('".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TITLE')."', 
+															                    						 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
+																				
+																				}
+																			}
+															  });
+								
+								 							  
+								".$parentFieldsetName.".add(
+									new Ext.Button({
+										id:'".$currentName."_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
+										handler: function()
+								                {
+								                	// Créer une iframe pour demander à l'utilisateur le type d'import
+													if (!winthge)
+														winthge = new Ext.Window({
+														                id:'".$currentName."_win',
+																  		itemId:'".$currentName."_win',
+																  		title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
+														                width:500,
+														                height:500,
+														                closeAction:'hide',
+														                layout:'fit', 
+																	    border:true, 
+																	    closable:true, 
+																	    renderTo:Ext.getBody(), 
+																	    frame:true,
+																	    items:[thes]
+														            });
+														else
+														{
+															// Vider les champs du composant Thesaurus
+														}	
+														
+														winthge.show();
+										        	},
+										
+								        // Champs spécifiques au clonage
+								        dynamic:true,
+								        minOccurs:1,
+							            maxOccurs:1,
+							            clone: false,
+										clones_count: 1,
+							            extendedTemplate: null
+									})
+								);
+								
+								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', null, false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								";
+								
+								break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements différents
 							switch ($child->rendertype_id)
@@ -3842,14 +4161,14 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					
 					// Test pour le cas d'une relation qui boucle une classe sur elle-même
 					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 				// Ici on va traiter toutes les occurences trouvées dans le XML
@@ -3925,7 +4244,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					//echo "Account Id = ".$account_id."<br>";
 					//echo "<hr>";
 					
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				
 				
 					// Classassociation_id contient une classe
@@ -3933,7 +4252,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 			}
@@ -3980,14 +4299,14 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 				
 				// Appel récursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
 			}
 		
@@ -4093,13 +4412,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 				else
 				{
-					// Récupérer les 36 caractères qui suivent "&id=" dans l'url
-					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
+					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
 					//echo "Trouve ".$guid."<br>";
 					$results = array();
 					$database->setQuery( "SELECT o.id as id, 
@@ -4119,7 +4437,6 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$results = HTML_metadata::array2json($results);
 					//$results = $results[0]->guid;
 					//print_r($results);
-					//echo $database->getQuery();
 						
 			
 					// Construction du nom du fieldset qui va correspondre à la classe
@@ -4172,7 +4489,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 			}
@@ -4217,7 +4534,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
 			}
 		}
@@ -4282,7 +4599,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 		//echo " ------- ".$text."<br>";
 		$text = str_replace("'","\'",$text);
 		//echo " ------- ".$text."<br>";
-		//$text = str_replace("’","\’",$text);
+		//$text = str_replace("","\",$text);
 		//echo " ------- ".$text."<br>";
 		if (ord(substr($text, -1)) == 92)
 			$text = $text.chr(92);

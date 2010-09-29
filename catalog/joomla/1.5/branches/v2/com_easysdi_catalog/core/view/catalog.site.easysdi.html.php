@@ -283,10 +283,10 @@ class HTML_catalog{
 	class="mdCatContent">
 	<?php
 
-	foreach($listSimpleFilters as $searchfilter)
+	foreach($listSimpleFilters as $searchFilter)
 	{
 
-		switch ($searchfilter->attributetype_code)
+		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
 			case "text":
@@ -298,11 +298,11 @@ class HTML_catalog{
 				/* Fonctionnement texte*/
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td align="left"><input type="text"
-						id="<?php echo 'filter_'.$searchfilter->name;?>"
-						name="<?php echo 'filter_'.$searchfilter->name;?>"
-						value="<?php echo JRequest::getVar('filter_'.$searchfilter->name);?>"
+						id="<?php echo 'filter_'.$searchFilter->name;?>"
+						name="<?php echo 'filter_'.$searchFilter->name;?>"
+						value="<?php echo JRequest::getVar('filter_'.$searchFilter->name);?>"
 						class="inputbox" /></td>
 				</tr>
 				<?php
@@ -311,7 +311,7 @@ class HTML_catalog{
 				/* Fonctionnement liste*/
 				$list = array();
 				$list[] = JHTML::_('select.option', '', '');
-				$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchfilter->attribute_id;
+				$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchFilter->attribute_id;
 				$db->setQuery( $query);
 				$list = array_merge( $list, $db->loadObjectList() );
 			
@@ -320,16 +320,16 @@ class HTML_catalog{
 					$size = count($list);
 					
 				$multiple = 'size="1"';
-				if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+				if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 					$multiple='size="'.$size.'" multiple="multiple"';
 				
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td>
-						<div id="<?php echo 'div_'.$searchfilter->name;?>">
-							<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchfilter->name.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchfilter->name)); ?>
-							<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchfilter->name;?>', <?php echo $size;?>); return false;" href="#">
+						<div id="<?php echo 'div_'.$searchFilter->name;?>">
+							<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->name.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->name)); ?>
+							<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->name;?>', <?php echo $size;?>); return false;" href="#">
 								<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 							</a>
 						</div>
@@ -342,15 +342,15 @@ class HTML_catalog{
 				/* Fonctionnement période*/
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td>
 					<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 						<tr>
 							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->name), "create_cal_".$searchfilter->name,"create_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->name), "create_cal_".$searchFilter->name,"create_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 							</td>
 							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->name), "update_cal_".$searchfilter->name,"update_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->name), "update_cal_".$searchFilter->name,"update_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 							</td>
 						</tr>
 					</table>
@@ -359,9 +359,9 @@ class HTML_catalog{
 				<?php
 				break;
 			case null: // Cas des attributs systèmes, car ils n'ont pas de relation liée
-				if ($searchfilter->criteriatype_id == 1) // Attributs système
+				if ($searchFilter->criteriatype_id == 1) // Attributs système
 				{	
-					switch ($searchfilter->criteria_code)
+					switch ($searchFilter->criteria_code)
 					{
 						case "objecttype":
 							$selectedObjectType = array();
@@ -372,7 +372,7 @@ class HTML_catalog{
 							
 							?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td><?php
 						echo HTML_catalog::checkboxlist($objecttypes, 'objecttype_id[]', 'size="1" class="inputbox" ', 'value', 'text', $selectedObjectType);
 						?></td>
@@ -383,7 +383,7 @@ class HTML_catalog{
 				case "fulltext":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<!-- this was the old advanced critera: filterfreetextcriteria -->
 						<td align="left"><input type="text" id="simple_filterfreetextcriteria"
 							name="simple_filterfreetextcriteria"
@@ -398,7 +398,7 @@ class HTML_catalog{
 						$selectedVersion = JRequest::getVar('versions');
 					?>	
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL"); ?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL"); ?></td>
 						<td><?php echo JHTML::_('select.radiolist', $versions, 'versions', 'class="radio"', 'value', 'text', $selectedVersion);?></td>
 					</tr>
 					<?php
@@ -422,16 +422,16 @@ class HTML_catalog{
 					
 					$multiple = 'size="1"';
 					
-					if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+					if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
-							<div id="<?php echo 'div_'.$searchfilter->name;?>">
-								<?php echo JHTML::_("select.genericlist", $accounts, $searchfilter->code.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchfilter->code)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchfilter->code;?>', <?php echo $size;?>); return false;" href="#">
+							<div id="<?php echo 'div_'.$searchFilter->name;?>">
+								<?php echo JHTML::_("select.genericlist", $accounts, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 								</a>
 							</div>
@@ -442,10 +442,10 @@ class HTML_catalog{
 				case "object_name":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
-						<td align="left"><input type="text" id="<?php echo $searchfilter->code;?>"
-							name="<?php echo $searchfilter->code;?>"
-							value="<?php echo JRequest::getVar($searchfilter->code);?>"
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+						<td align="left"><input type="text" id="<?php echo $searchFilter->guid;?>"
+							name="<?php echo $searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
 							class="inputbox" /></td>
 					</tr>
 					<?php
@@ -453,10 +453,10 @@ class HTML_catalog{
 				case "title":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
-						<td align="left"><input type="text" id="<?php echo $searchfilter->code;?>"
-							name="<?php echo $searchfilter->code;?>"
-							value="<?php echo JRequest::getVar($searchfilter->code);?>"
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+						<td align="left"><input type="text" id="<?php echo $searchFilter->guid;?>"
+							name="<?php echo $searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
 							class="inputbox" /></td>
 					</tr>
 					<?php
@@ -479,16 +479,16 @@ class HTML_catalog{
 						$size = count($managers);
 					
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+					if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
-							<div id="<?php echo 'div_'.$searchfilter->name;?>">
-								<?php echo JHTML::_("select.genericlist", $managers, $searchfilter->code.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchfilter->code)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchfilter->code;?>', <?php echo $size;?>); return false;" href="#">
+							<div id="<?php echo 'div_'.$searchFilter->name;?>">
+								<?php echo JHTML::_("select.genericlist", $managers, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 								</a>
 							</div>
@@ -500,15 +500,15 @@ class HTML_catalog{
 					/* Fonctionnement période*/
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
 						<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 							<tr>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->code), "create_cal_".$searchfilter->code,"create_cal_".$searchfilter->code,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->code), "update_cal_".$searchfilter->code,"update_cal_".$searchfilter->code,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 							</tr>
 						</table>
@@ -520,15 +520,15 @@ class HTML_catalog{
 					/* Fonctionnement période*/
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
 						<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 							<tr>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->name), "create_cal_".$searchfilter->name,"create_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->name), "create_cal_".$searchFilter->name,"create_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->name), "update_cal_".$searchfilter->name,"update_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->name), "update_cal_".$searchFilter->name,"update_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 							</tr>
 						</table>
@@ -553,11 +553,11 @@ class HTML_catalog{
 			/* Fonctionnement texte*/
 			?>
 			<tr>
-				<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+				<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 				<td align="left"><input type="text"
-					id="<?php echo 'filter_'.$searchfilter->name;?>"
-					name="<?php echo 'filter_'.$searchfilter->name;?>"
-					value="<?php echo JRequest::getVar('filter_'.$searchfilter->name);?>"
+					id="<?php echo 'filter_'.$searchFilter->name;?>"
+					name="<?php echo 'filter_'.$searchFilter->name;?>"
+					value="<?php echo JRequest::getVar('filter_'.$searchFilter->name);?>"
 					class="inputbox" /></td>
 			</tr>
 			<?php
@@ -579,10 +579,10 @@ default:
 
 	<?php
 
-	foreach($listAdvancedFilters as $searchfilter)
+	foreach($listAdvancedFilters as $searchFilter)
 	{
 
-		switch ($searchfilter->attributetype_code)
+		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
 			case "text":
@@ -594,11 +594,11 @@ default:
 				/* Fonctionnement texte*/
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td align="left"><input type="text"
-						id="<?php echo 'filter_'.$searchfilter->name;?>"
-						name="<?php echo 'filter_'.$searchfilter->name;?>"
-						value="<?php echo JRequest::getVar('filter_'.$searchfilter->name);?>"
+						id="<?php echo 'filter_'.$searchFilter->name;?>"
+						name="<?php echo 'filter_'.$searchFilter->name;?>"
+						value="<?php echo JRequest::getVar('filter_'.$searchFilter->name);?>"
 						class="inputbox" /></td>
 				</tr>
 				<?php
@@ -607,7 +607,7 @@ default:
 				/* Fonctionnement liste*/
 				$list = array();
 				$list[] = JHTML::_('select.option', '', '');
-				$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchfilter->attribute_id;
+				$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchFilter->attribute_id;
 				$db->setQuery( $query);
 				$list = array_merge( $list, $db->loadObjectList() );
 			
@@ -616,16 +616,16 @@ default:
 					$size = count($list);
 					
 				$multiple = 'size="1"';
-				if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+				if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 					$multiple='size="'.$size.'" multiple="multiple"';
 				
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td>
-						<div id="<?php echo 'div_'.$searchfilter->name;?>">
-							<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchfilter->name.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchfilter->name)); ?>
-							<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchfilter->name;?>'); return false;" href="#">
+						<div id="<?php echo 'div_'.$searchFilter->name;?>">
+							<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->name.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->name)); ?>
+							<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->name;?>'); return false;" href="#">
 								<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 							</a>
 						</div>
@@ -638,15 +638,15 @@ default:
 				/* Fonctionnement période*/
 				?>
 				<tr>
-					<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+					<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 					<td>
 					<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 						<tr>
 							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->name), "create_cal_".$searchfilter->name,"create_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->name), "create_cal_".$searchFilter->name,"create_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 							</td>
 							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->name), "update_cal_".$searchfilter->name,"update_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->name), "update_cal_".$searchFilter->name,"update_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 							</td>
 						</tr>
 					</table>
@@ -655,9 +655,9 @@ default:
 				<?php
 				break;
 			case null: // Cas des attributs qui ne sont pas liés à une relation
-				if ($searchfilter->criteriatype_id == 1) // Attributs système
+				if ($searchFilter->criteriatype_id == 1) // Attributs système
 				{
-					switch ($searchfilter->criteria_code)
+					switch ($searchFilter->criteria_code)
 					{
 						case "objecttype":
 							$selectedObjectType = array();
@@ -667,7 +667,7 @@ default:
 								$selectedObjectType = $objecttypes;						
 							?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td><?php
 						echo HTML_catalog::checkboxlist($objecttypes, 'objecttype_id[]', 'size="1" class="inputbox" ', 'value', 'text', $selectedObjectType);
 						?></td>
@@ -678,7 +678,7 @@ default:
 				case "fulltext":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<!-- this was the old advanced critera: filterfreetextcriteria -->
 						<td align="left"><input type="text" id="simple_filterfreetextcriteria"
 							name="simple_filterfreetextcriteria"
@@ -694,7 +694,7 @@ default:
 						
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL"); ?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL"); ?></td>
 						<td><?php echo JHTML::_('select.radiolist', $versions, 'versions', 'class="radio"', 'value', 'text', $selectedVersion);?></td>
 					</tr>
 					<?php
@@ -717,16 +717,16 @@ default:
 						$size = count($accounts);
 							
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+					if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
-							<div id="<?php echo 'div_'.$searchfilter->name;?>">
-								<?php echo JHTML::_("select.genericlist", $accounts, $searchfilter->code.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchfilter->code)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchfilter->code;?>', <?php echo $size;?>); return false;" href="#">
+							<div id="<?php echo 'div_'.$searchFilter->name;?>">
+								<?php echo JHTML::_("select.genericlist", $accounts, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 								</a>
 							</div>
@@ -737,10 +737,10 @@ default:
 				case "object_name":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
-						<td align="left"><input type="text" id="<?php echo $searchfilter->code;?>"
-							name="<?php echo $searchfilter->code;?>"
-							value="<?php echo JRequest::getVar($searchfilter->code);?>"
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+						<td align="left"><input type="text" id="<?php echo $searchFilter->guid;?>"
+							name="<?php echo $searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
 							class="inputbox" /></td>
 					</tr>
 					<?php
@@ -748,10 +748,10 @@ default:
 				case "title":
 					?>
 					<tr>
-						<td align="left"><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
-						<td align="left"><input type="text" id="<?php echo $searchfilter->code;?>"
-							name="<?php echo $searchfilter->code;?>"
-							value="<?php echo JRequest::getVar($searchfilter->code);?>"
+						<td align="left"><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+						<td align="left"><input type="text" id="<?php echo $searchFilter->guid;?>"
+							name="<?php echo $searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
 							class="inputbox" /></td>
 					</tr>
 					<?php
@@ -774,16 +774,16 @@ default:
 						$size = count($managers);
 						
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchfilter->name)) > 1)
+					if (count(JRequest::getVar('filter_'.$searchFilter->name)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
-							<div id="<?php echo 'div_'.$searchfilter->name;?>">
-								<?php echo JHTML::_("select.genericlist", $managers, $searchfilter->code.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchfilter->code)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchfilter->code;?>', <?php echo $size;?>); return false;" href="#">
+							<div id="<?php echo 'div_'.$searchFilter->name;?>">
+								<?php echo JHTML::_("select.genericlist", $managers, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
 								</a>
 							</div>
@@ -795,15 +795,15 @@ default:
 					/* Fonctionnement période*/
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
 						<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 							<tr>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->code), "create_cal_".$searchfilter->code,"create_cal_".$searchfilter->code,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->code), "update_cal_".$searchfilter->code,"update_cal_".$searchfilter->code,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 							</tr>
 						</table>
@@ -815,15 +815,15 @@ default:
 					/* Fonctionnement période*/
 					?>
 					<tr>
-						<td><?php echo JText::_($searchfilter->guid."_LABEL");?></td>
+						<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 						<td>
 						<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
 							<tr>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchfilter->name), "create_cal_".$searchfilter->name,"create_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->name), "create_cal_".$searchFilter->name,"create_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 								<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
-								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchfilter->name), "update_cal_".$searchfilter->name,"update_cal_".$searchfilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+								<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->name), "update_cal_".$searchFilter->name,"update_cal_".$searchFilter->name,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
 								</td>
 							</tr>
 						</table>
@@ -848,11 +848,11 @@ default:
 			/* Fonctionnement texte*/
 			?>
 			<tr>
-				<td><?php echo JText::_($searchfilter->relation_guid."_LABEL");?></td>
+				<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
 				<td align="left"><input type="text"
-					id="<?php echo 'filter_'.$searchfilter->name;?>"
-					name="<?php echo 'filter_'.$searchfilter->name;?>"
-					value="<?php echo JRequest::getVar('filter_'.$searchfilter->name);?>"
+					id="<?php echo 'filter_'.$searchFilter->name;?>"
+					name="<?php echo 'filter_'.$searchFilter->name;?>"
+					value="<?php echo JRequest::getVar('filter_'.$searchFilter->name);?>"
 					class="inputbox" /></td>
 			</tr>
 			<?php

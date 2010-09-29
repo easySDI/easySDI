@@ -243,12 +243,12 @@ class SITE_catalog {
 			$countSimpleFilters = 0;
 			foreach($listSimpleFilters as $searchFilter)
 			{
-				$filter = JRequest::getVar('filter_'.$searchFilter->code);
-				//echo "<br>".'filter_'.$searchFilter->code.": ".$filter ;
-				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->code);
-				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->code);
+				$filter = JRequest::getVar('filter_'.$searchFilter->guid);
+				//echo "<br>".'filter_'.$searchFilter->guid.": ".$filter ;
+				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
+				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
 							
-				if (isset($_GET['filter_'.$searchFilter->code]) or isset($_GET['create_cal_'.$searchFilter->code]) or isset($_GET['update_cal_'.$searchFilter->code]))
+				if (isset($_GET['filter_'.$searchFilter->guid]) or isset($_GET['create_cal_'.$searchFilter->guid]) or isset($_GET['update_cal_'.$searchFilter->guid]))
 				{
 					$countSimpleFilters++;
 					switch ($searchFilter->attributetype_code)
@@ -299,10 +299,9 @@ class SITE_catalog {
 									<ogc:Literal>$f</ogc:Literal>
 									</ogc:PropertyIsEqualTo> ";
 								}
+								if (count($filter) > 1)
+									$cswSimpleFilter = "<ogc:Or>".$cswSimpleFilter."</ogc:Or>";
 							}
-							
-							if (count($filter) > 1)
-								$cswSimpleFilter = "<ogc:Or>".$cswSimpleFilter."</ogc:Or>";
 							
 							$empty = false;
 							break;
@@ -735,8 +734,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_created":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -821,8 +820,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_published":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -1011,7 +1010,7 @@ class SITE_catalog {
 					}
 					else // Cas des attributs OGC qui ne sont pas liés à une relation
 					{
-						$filter = JRequest::getVar('filter_'.$searchFilter->code);
+						$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 						
 						$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
@@ -1092,10 +1091,10 @@ class SITE_catalog {
 									<ogc:Literal>$f</ogc:Literal>
 									</ogc:PropertyIsEqualTo> ";
 								}
+								if (count($filter) > 1)
+									$cswAdvancedFilter = "<ogc:Or>".$cswAdvancedFilter."</ogc:Or>";
 							}
 							
-							if (count($filter) > 1)
-								$cswAdvancedFilter = "<ogc:Or>".$cswAdvancedFilter."</ogc:Or>";
 							$empty = false; 
 							break;
 						case "date":
@@ -1500,8 +1499,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_created":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -1583,8 +1582,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_published":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->code);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->code);
+								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -1767,7 +1766,7 @@ class SITE_catalog {
 					}
 					else // Cas des attributs OGC qui ne sont pas liés à une relation
 					{
-						$filter = JRequest::getVar('filter_'.$searchFilter->code);
+						$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 						
 						$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
 							<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
@@ -1947,8 +1946,10 @@ class SITE_catalog {
 			fclose($fh);
 			*/
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+			// SimpleXMLElement
 			$cswResults= simplexml_load_string($xmlResponse);
 			//echo var_dump($cswResults->saveXML())."<br>";
+			// DOMDocument
 			$myDoc = new DomDocument();
 			$myDoc->loadXML($xmlBody);
 			//$myDoc->save("C:\\RecorderWebGIS\\searchRequest.xml");
@@ -1956,42 +1957,58 @@ class SITE_catalog {
 			$myDoc->loadXML($cswResults->asXML());
 			//$myDoc->save("C:\\RecorderWebGIS\\searchResult.xml");
 			//echo "dump the file: <br/><br/><br/>";
-			//echo $cswResults->asXML();
+			//echo $cswResults->asXML()."<br>";
+			//echo htmlspecialchars($myDoc->saveXML())."<br>";
 			//echo "<br/> end dump the file";
 			
 			$total = 0;
 			if ($cswResults !=null)
 			{
-				foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) 
+				// Contrôler si le XML ne contient pas une erreur
+				if ($myDoc->childNodes->item(0)->nodeName== "ows:ExceptionReport")
 				{
-					if ($a=='numberOfRecordsMatched')
-					{
-						$total = $b;
-					}
+					$msg = $myDoc->childNodes->item(0)->nodeValue;
+					$mainframe->enqueueMessage($msg,"ERROR");
+					
+					// Comportement identique que si aucune recherche n'a été faite
+					$total=0;
+					$pageNav=new JPagination($total,$limitstart,$limit);
+					$cswResults = null;
 				}
-                	
-				$pageNav = new JPagination($total,$limitstart,$limit);
+				else
+				{
 				
-				// S?paration en n ?l?ments par page
-				$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
-				//Get the result from the server
-				//echo $xmlBody;
-				
-				$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
-
-				//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
-				$cswResults = DOMDocument::loadXML($xmlResponse);
-                	//echo var_dump($cswResults->saveXML())."<br>";
-				// Tri avec XSLT
-				// Chargement du fichier XSL
-				/*$xsl = new DOMDocument();
-				$xsl->load(dirname(__FILE__)."\..\xsl\sortMetadata.xsl");
-				// Import de la feuille XSL
-				$xslt = new XSLTProcessor();
-				$xslt->importStylesheet($xsl);
-				
-				$cswResults = DOMDocument::loadXML($xslt->transformToXml($cswResults));*/
-				// Fin du tri
+					foreach($cswResults->children("http://www.opengis.net/cat/csw/2.0.2")->SearchResults->attributes() as $a => $b) 
+					{
+						if ($a=='numberOfRecordsMatched')
+						{
+							$total = $b;
+						}
+					}
+	                	
+					$pageNav = new JPagination($total,$limitstart,$limit);
+					
+					// S?paration en n ?l?ments par page
+					$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
+					//Get the result from the server
+					//echo $xmlBody;
+					
+					$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+	
+					//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
+					$cswResults = DOMDocument::loadXML($xmlResponse);
+	                	//echo var_dump($cswResults->saveXML())."<br>";
+					// Tri avec XSLT
+					// Chargement du fichier XSL
+					/*$xsl = new DOMDocument();
+					$xsl->load(dirname(__FILE__)."\..\xsl\sortMetadata.xsl");
+					// Import de la feuille XSL
+					$xslt = new XSLTProcessor();
+					$xslt->importStylesheet($xsl);
+					
+					$cswResults = DOMDocument::loadXML($xslt->transformToXml($cswResults));*/
+					// Fin du tri
+				}
 			}
 		}
 		else // Si la recherche n'a pas été lancée, afficher une liste de résultats vide
@@ -2582,7 +2599,7 @@ class SITE_catalog {
 		$req .= "";
 		
 		//Get Records section
-		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" ";
+		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" content=\"COMPLETE\" ";
 		
 		// add max records if not 0
 		if($maxRecords != 0)
