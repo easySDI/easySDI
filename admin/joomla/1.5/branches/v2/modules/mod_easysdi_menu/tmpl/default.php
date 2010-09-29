@@ -8,9 +8,9 @@ require_once(JPATH_BASE.DS.'modules'.DS.'mod_mainmenu'.DS.'helper.php');
 defined('_JEXEC') or die('Restricted access');
 
 
-if ( ! defined('modMainMenuXMLCallbackDefined') )
+if ( ! defined('modEasysdiMenuXMLCallbackDefined') )
 {
-function modMainMenuXMLCallback(&$node, $args)
+function modEasysdiMenuXMLCallback(&$node, $args)
 {
 	$user	= &JFactory::getUser();
 	$menu	= &JSite::getMenu();
@@ -85,10 +85,10 @@ function modMainMenuXMLCallback(&$node, $args)
 	$node->removeAttribute('level');
 	$node->removeAttribute('access');
 }
-	define('modMainMenuXMLCallbackDefined', true);
+	define('modEasysdiMenuXMLCallbackDefined', true);
 }
 
-modMainMenuHelper::render($params, 'modMainMenuXMLCallback');
+modMainMenuHelper::render($params, 'modEasysdiMenuXMLCallback');
 
 
 /**
@@ -148,11 +148,11 @@ class userManagerRightESDY
 					return (userManagerRightESDY::hasRight($account->id,"REQUEST_INTERNAL") 
 							|| userManagerRightESDY::hasRight($account->id,"REQUEST_EXTERNAL") );
 				}
-				elseif ($task=="showPartner") 
+				elseif ($task=="showaccount") 
 				{
 					return userManagerRightESDY::hasRight($account->id,"MYACCOUNT");
 				}
-				elseif ($task=="listAffiliatePartner") 
+				elseif ($task=="listAffiliateAccount") 
 				{
 					return userManagerRightESDY::hasRight($account->id,"ACCOUNT");
 				}
@@ -162,12 +162,12 @@ class userManagerRightESDY
 				}
 				elseif($task=="listObject")
 				{
-					return userManagerRightESDY::hasRight($account->id,"METADATA");
+					return userManagerRightESDY::hasRight($account->id,"PRODUCT");
 				}
 				elseif ($task=="listProduct") 
 				{
 					//the partner must at least have a product assigned to him
-					$db->setQuery("SELECT count(p.*)
+					$db->setQuery("SELECT count(*)
 									FROM #__sdi_product p 
 									INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
 									INNER JOIN #__sdi_object o ON o.id = v.object_id
@@ -199,9 +199,37 @@ class userManagerRightESDY
 			    return true;
 			}	
 		}
+	//Not a EasySDI user, so hide the declared here EasySDI entires
 		else
 		{
-			return true;
+			if (preg_match("/(com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
+			{
+				preg_match('/task=([a-z]+)&/i', $url, $tasks);
+				$task = $tasks[1];
+			    if($task=="listOrders")
+			      return false;
+			  	elseif($task=="showaccount")
+			     return false;
+        		elseif($task=="listAffiliateAccount")
+			     return false;
+		    	elseif($task=="listMetadata")
+		         return false;
+			    elseif($task=="listProduct")
+			     return false;
+				elseif($task=="listObject")
+					return false;
+			  	elseif($task=="listOrdersForProvider")
+			     return false;
+		    	elseif($task=="manageFavorite")
+		       	 return false;
+		    else
+		    //by default, display the menu link
+		       return true;
+		     
+		   } else {
+			//Not a ESDY URL
+			    return true;
+			}			     
 		}
 	}
 	
