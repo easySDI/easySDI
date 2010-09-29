@@ -113,10 +113,8 @@ Ext.override(Ext.Button, {
 											      proxy: thesMaster.proxy,
 											      handler: function(result){
 											      				var target = Ext.ComponentMgr.get(this.targetField);
-															    var store = target.store;
 															    
 															    var s = '';
-												      		    var record;
 												      		    
 												      		    var reliableRecord = result.terms[this.lang];
 												      		    
@@ -126,18 +124,9 @@ Ext.override(Ext.Button, {
 																	// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
 																    for(l in result.terms) 
 																    {
-																    	s += l+': '+result.terms[l]+'<br/><br/>';
-																    	record = new Ext.data.Record({
-																		  lang : l,
-																		  keyword  : result.terms[l],
-																		  reliableRecord: reliableRecord
-																		});
-																		store.add(record);
-																		
-																		// Affichage du terme dans la langue EasySDI par défaut de l'utilisateur
-																		if (l == this.lang)
-																			target.addRecord(record);
+																    	s += l+': '+result.terms[l]+';';
 																    }
+																    target.addItem({keyword:result.terms[this.lang], value: s});
 																}
 																else
 																{

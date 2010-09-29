@@ -310,7 +310,7 @@ class ADMIN_metadata {
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=158_bis"; //.$id;
 		//$catalogUrlGetRecordById = "http://demo.easysdi.org:8080/proxy/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowObject->metadata_id; //.$id;
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowMetadata->guid;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowMetadata->guid;
 		
 		//.$id."
 		$xmlBody= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n
@@ -407,7 +407,7 @@ class ADMIN_metadata {
 	/*
 	 * Construction d'un xml ISO1939, à partir du formulaire EXTJS 
 	 */
-	function buildXMLTree($parent, $parentFieldset, $parentName, $XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
+	function buildXMLTree($parent, $parentFieldset, $parentName, &$XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
 		//echo "Name: ".$parentName." \r\n ";
 		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
@@ -1020,7 +1020,7 @@ class ADMIN_metadata {
 										if (substr($key, -6) <> "_index")
 										{
 											$count = $count+1;
-											//$usefullKeys[] = $key;
+										//$usefullKeys[] = $key;
 											$usefullVals[] = $_POST[$key];
 										}
 									}
@@ -1331,7 +1331,7 @@ class ADMIN_metadata {
 						break;
 					// Thesaurus GEMET
 					case 11:
-						echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
+						//echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
@@ -1339,6 +1339,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
+							//echo $key."\r\n";
 							//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 							$partToCompare_temp1 = substr($key, strlen($parentName."-"));
 							if (strpos($partToCompare_temp1, "-"))
@@ -1351,81 +1352,74 @@ class ADMIN_metadata {
 								
 							if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
 							{
-								if (substr($key, -6) <> "_index")
-								{
+								//if (substr($key, -6) <> "_hidden")
+								//{
 									$count = $count+1;
-									print_r($_POST[$key]);
+									//print_r($_POST[$key]);
 									$usefullVals[] = $_POST[$key];
-								}
+								//}
 							}
 						}
 						
-						print_r($usefullVals);
+						//print_r($usefullVals);
 						
-						/*
-						// Ajouter chacune des copies du champ dans le XML résultat
-						for ($pos=1; $pos<=$count; $pos++)
+						// Construire les blocs de mots-clés pour chaque mot-clé à sauver 
+						foreach ($usefullVals as $usefullVal)
 						{
-							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
-
-							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
-							$xmlAttributeParent->appendChild($XMLNode);
-							$xmlLocParent = $XMLNode;
-							
-							foreach($locValues as $loc)
+							foreach ($usefullVal as $toUse)
 							{
-								$isdefault = false;
-								$codeToSave = "";
-								foreach($this->langList as $lang)
+								if ($toUse <> "")
 								{
-									if ($loc->code==$lang->code_easysdi)
+									// Récupération des différentes traductions
+									$vals=array();
+									$langVals=array();
+									$vals = explode(";", $toUse);
+									
+									foreach ($vals as $val)
 									{
-										//$nodeValue=$usefullVals[$loc->code];
-										$nodeValue=$loc->content;
-										$codeToSave = $lang->code;
-										if ($lang->defaultlang== true)
+										if ($val <> "")
 										{
-											$isdefault = true;
+											$keyval = explode(": ", $val);
+											$langVals[$keyval[0]] = $keyval[1];
 										}
-										break;
+									}
+									
+									// Balise principale du mot-clé, qui va contenir les différentes traductions
+									$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
+									$xmlAttributeParent->appendChild($XMLNode);
+									$xmlLocParent = $XMLNode;
+									
+									// Insertion de chaque traduction	
+									foreach($this->langList as $loc)
+									{
+										$nodeValue = $langVals[$loc->gemetlang];
+																				
+										// Ajout des balises inhérantes aux locales
+										if ($loc->defaultlang) // La langue par défaut
+										{
+											$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
+											$xmlLocParent->appendChild($XMLNode);
+										}
+										else // Les autres langues
+										{
+											$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
+											$xmlLocParent->appendChild($XMLNode);
+											$xmlLocParent_temp = $XMLNode;
+											$XMLNode = $XMLDoc->createElement("gmd:textGroup");
+											$xmlLocParent_temp->appendChild($XMLNode);
+											$xmlLocParent_temp = $XMLNode;
+											// Ajout de la valeur
+											$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
+											$xmlLocParent_temp->appendChild($XMLNode);
+											// Indication de la langue concernée
+											$XMLNode->setAttribute('locale', "#".$loc->code);
+											//$xmlParent = $XMLNode;
+										}
 									}
 								}
-								
-								//if (mb_detect_encoding($nodeValue) <> "UTF-8")
-								//	$nodeValue = utf8_encode($nodeValue);
-								
-								//$nodeValue = stripslashes($loc->content);
-								//$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-								
-								// Ajout des balises inhérantes aux locales
-								if ($isdefault) // La langue par défaut
-								{
-									$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
-									$xmlLocParent->appendChild($XMLNode);
-								}
-								else // Les autres langues
-								{
-									$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
-									$xmlLocParent->appendChild($XMLNode);
-									$xmlLocParent_temp = $XMLNode;
-									$XMLNode = $XMLDoc->createElement("gmd:textGroup");
-									$xmlLocParent_temp->appendChild($XMLNode);
-									$xmlLocParent_temp = $XMLNode;
-									// Ajout de la valeur
-									$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-									$xmlLocParent_temp->appendChild($XMLNode);
-									// Indication de la langue concernée
-									$XMLNode->setAttribute('locale', "#".$codeToSave);
-									//$xmlParent = $XMLNode;
-								}
 							}
-							
-							//$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
-							//$XMLNode->appendChild($XMLValueNode);
-							//$xmlParent = $XMLValueNode;
 						}
-						*/
+						
 						break;
 					default:
 						// Récupération des valeurs postées correspondantes
@@ -1527,14 +1521,14 @@ class ADMIN_metadata {
 						// Récupération des codes ISO et appel récursif de la fonction
 						$nextIsocode = $child->child_isocode;
 							
-						ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 					}
 					
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
-						ADMIN_metadata::buildXMLTree($child->association_id, $child->child_id, $name, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						ADMIN_metadata::buildXMLTree($child->association_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 					}
 				}
 			}
@@ -1630,7 +1624,7 @@ class ADMIN_metadata {
 					{
 						$associationName = $name."__".($pos+1);
 						// Appel récursif de la fonction pour le traitement du prochain niveau
-						ADMIN_metadata::buildXMLTree($child->association_id, $child->objecttype_id, $associationName, &$XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						ADMIN_metadata::buildXMLTree($child->association_id, $child->objecttype_id, $associationName, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 					}
 				}
 			}
@@ -1701,7 +1695,8 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi,l.gemetlang FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
@@ -1845,7 +1840,7 @@ class ADMIN_metadata {
 			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 			
-			$deleteResults = DOMDocument::loadXML($result);
+			/*$deleteResults = DOMDocument::loadXML($result);
 			$xpathDelete = new DOMXPath($deleteResults);
 			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 			
@@ -1858,12 +1853,12 @@ class ADMIN_metadata {
 				$response = '{
 					    		success: false,
 							    errors: {
-							        xml: "Metadata has not been deleted. '.$errorMsg.'"
+							        xml: "Metadata has not been deleted"
 							    }
 							}';
 				print_r($response);
 				die();
-			}
+			}*/
 		
 			// Insérer dans Geonetwork la nouvelle version de la métadonnée
 			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -1993,7 +1988,8 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode = array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi,l.gemetlang FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
@@ -2273,7 +2269,8 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi,l.gemetlang FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
@@ -2426,6 +2423,7 @@ class ADMIN_metadata {
 		
 		$metadata_id = $_POST['metadata_id'];
 		$publishdate = $_POST['publishdate'];
+		$archivelast = $_POST['archivelast'];
 		
 		$object_id= $_POST['object_id'];
 		$account_id= $_POST['account_id'];
@@ -2696,12 +2694,12 @@ class ADMIN_metadata {
 		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
 		
-		$deleteResults = DOMDocument::loadXML($result);
+		/*$deleteResults = DOMDocument::loadXML($result);
 		$xpathDelete = new DOMXPath($deleteResults);
 		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		/* Peu importe si la suppression a échoué
+		// Peu importe si la suppression a échoué
 		if ($deleted <> 1)
 		{
 			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
@@ -2763,6 +2761,74 @@ class ADMIN_metadata {
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				exit();
+			}
+			
+			// Archiver la dernière version si coche
+			if ($archivelast == true)
+			{
+				// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
+				$listVersions = array();
+				$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object_id." AND id <>".$rowObjectVersion->id." ORDER BY created DESC" );
+				$listVersions = array_merge( $listVersions, $database->loadObjectList() );
+				
+				// Récupérer la métadonnée de la dernière version de l'objet
+				$rowLastMetadata = new metadata( $database );
+				$rowLastObjectVersion = new objectversion( $database );
+				if (count($listVersions) > 0)
+				{
+					$rowLastMetadata->load($listVersions[0]->metadata_id);
+					$rowLastObjectVersion->load($listVersions[0]->id);
+					
+					$rowLastMetadata->archived=$rowMetadata->published;
+					$rowLastMetadata->metadatastate_id=2;
+					
+					if (!$rowLastMetadata->store()) {
+						$response = '{
+							    		success: false,
+									    errors: {
+									        xml: "archive problem"
+									    }
+									}';
+						print_r($response);
+						die();
+					}
+					
+					// Archiver également tous les enfants de la dernière version
+					// Récupérer tous les liens enfants de la dernière version
+					$child_objectlinks=array();
+					$query = 'SELECT l.child_id as child_id' .
+							' FROM #__sdi_objectversionlink l
+							  WHERE l.parent_id=' . $rowLastObjectVersion->id;
+					$database->setQuery($query);
+					
+					$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
+					 
+					if (count($child_objectlinks) >0)
+					{
+						foreach($child_objectlinks as $ol)
+						{
+							// Récupérer la métadonnée de la dernière version de l'objet enfant
+							$childLastObjectVersion = new objectversion( $database );
+							$childLastObjectVersion->load($ol->child_id);
+							$childLastMetadata = new metadata( $database );
+							$childLastMetadata->load($childLastObjectVersion->metadata_id);
+							
+							$childLastMetadata->archived=$rowMetadata->published;
+							$childLastMetadata->metadatastate_id=2;
+							
+							if (!$childLastMetadata->store()) {
+								$response = '{
+									    		success: false,
+											    errors: {
+											        xml: "archive problem"
+											    }
+											}';
+								print_r($response);
+								die();
+							}
+						}
+					}
+				}
 			}
 			
 			// Checkin object
@@ -3196,7 +3262,7 @@ class ADMIN_metadata {
 		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
-		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$importid;
+		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$importid;
 		
 		// En GET
 		//$xml = DOMDocument::load($catalogUrlGetRecordById);
@@ -3398,7 +3464,7 @@ class ADMIN_metadata {
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$metadata_guid;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_guid;
 		
 		// En GET
 		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
@@ -3522,7 +3588,7 @@ class ADMIN_metadata {
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowLastMetadata->guid;
+			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowLastMetadata->guid;
 			//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 			$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		

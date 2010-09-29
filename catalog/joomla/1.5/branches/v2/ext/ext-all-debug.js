@@ -3913,13 +3913,13 @@ function() {
 	
 	    
 	    insertBefore: function(el){  	          
-	        //(el = GETDOM(el)).parentNode.insertBefore(this.dom, el);
+	        (el = GETDOM(el)).parentNode.insertBefore(this.dom, el);
 	        return this;
 	    },
 	
 	    
 	    insertAfter: function(el){
-	        //(el = GETDOM(el)).parentNode.insertBefore(this.dom, el.nextSibling);
+	        (el = GETDOM(el)).parentNode.insertBefore(this.dom, el.nextSibling);
 	        return this;
 	    },
 	

@@ -117,12 +117,24 @@ Ext.override(Ext.form.Field, {
 				
 				//hiddenName:id + '_hidden',
 				//console.log(master.xtype);
-				if (master.xtype == "choicetext" || master.xtype == "combo" || master.xtype == "superboxselect")
+				if (master.xtype == "choicetext" || master.xtype == "combo")
 				{
 					var clone = master.cloneConfig({
 						id : newName,
 						name : newName,
 						hiddenName: newName + '_hidden',
+						clone : isClone,
+						clones_count: clones_count,
+						template : master,
+						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
+					});
+				}
+				else if (master.xtype == "superboxselect")
+				{
+					var clone = master.cloneConfig({
+						id : newName,
+						name : newName,
+						hiddenName: newName + '_hidden[]',
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
@@ -259,6 +271,12 @@ Ext.override(Ext.form.Field, {
 		if (component.clones().length+1 == component.maxOccurs) isHiddenPlus=true;
 		if (component.clones().length+1 == component.minOccurs) isHiddenMinus=true;
 
+		if (component.xtype == "superboxselect")
+		{
+			isHiddenPlus=true;
+			isHiddenMinus=true;
+		}
+
 		var plusIcon = component.plusIcon;
 		var minusIcon = component.minusIcon;
 		if (plusIcon) (isHiddenPlus) ? plusIcon.setVisible(false) : plusIcon.setVisible(true);
@@ -287,11 +305,10 @@ Ext.override(Ext.form.Field, {
 		    	var cnt = this.clones().length;
 				var item = Ext.get(field.el.findParent('.x-form-item'));
 			    var fieldset = field.ownerCt;
-				
+				//console.log(field);
 		    	// Traitement pour le premier élément de la liste, le master
 		    	if (!field.clone)
 		    	{
-					
 					// Get the first clone af the master
 					var listOfClones = field.clones();
 					var firstClone = listOfClones[0];			

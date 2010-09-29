@@ -80,6 +80,27 @@ class ADMIN_objectversion {
 		
 		$object_id = JRequest::getVar ('object_id');
 		
+		// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
+		$listVersions = array();
+		$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY created DESC" );
+		$listVersions = array_merge( $listVersions, $database->loadObjectList() );
+		
+		// Récupérer la métadonnée de la dernière version de l'objet
+		$rowLastMetadata = new metadata( $database );
+		$rowLastObjectVersion = new objectversion( $database );
+		if (count($listVersions) > 0)
+		{
+			$rowLastMetadata->load($listVersions[0]->metadata_id);
+			$rowLastObjectVersion->load($listVersions[0]->id);
+		}
+	
+		if ($rowLastMetadata->metadatastate_id <> 1 and $rowLastMetadata->metadatastate_id <> 2)
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_NEW_LASTNOTPUBLISHED_ERROR_MSG"),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+			exit();
+		}
+		
 		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_objectversion", false);
@@ -135,6 +156,27 @@ class ADMIN_objectversion {
 		$user = & JFactory::getUser();
 		
 		$object_id = JRequest::getVar ('object_id');
+		
+		// Récupérer toutes les versions de l'objet, ordonnées de la plus récente à la plus ancienne
+		$listVersions = array();
+		$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY created DESC" );
+		$listVersions = array_merge( $listVersions, $database->loadObjectList() );
+		
+		// Récupérer la métadonnée de la dernière version de l'objet
+		$rowLastMetadata = new metadata( $database );
+		$rowLastObjectVersion = new objectversion( $database );
+		if (count($listVersions) > 0)
+		{
+			$rowLastMetadata->load($listVersions[0]->metadata_id);
+			$rowLastObjectVersion->load($listVersions[0]->id);
+		}
+	
+		if ($rowLastMetadata->metadatastate_id <> 1 and $rowLastMetadata->metadatastate_id <> 2)
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_NEW_LASTNOTPUBLISHED_ERROR_MSG"),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+			exit();
+		}
 		
 		$row = new objectversion( $database );
 		$row->load( $id );
@@ -420,8 +462,7 @@ class ADMIN_objectversion {
 								
 								// Générer un guid
 								require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-								if ($childObjectVersion->guid == null)
-									$childObjectVersion->guid = helper_easysdi::getUniqueId();
+								$childObjectVersion->guid = helper_easysdi::getUniqueId();
 								
 								if (!$childObjectVersion->store(false)) {			
 									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -643,7 +684,7 @@ class ADMIN_objectversion {
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$metadata_guid;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_guid;
 		
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		$doc = new DOMDocument();

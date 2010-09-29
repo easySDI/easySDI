@@ -33,7 +33,6 @@ class classes extends JTable
 	var $ordering=0;
  	var $isextensible=null;
  	var $issystem=null;
- 	var $package_id=null;
  	var $isrootclass=null;
  	var $namespace_id=null;
 	var $checked_out=null;

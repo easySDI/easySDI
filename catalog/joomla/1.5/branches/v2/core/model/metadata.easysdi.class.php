@@ -29,6 +29,7 @@ class metadata extends JTable
 	var $label=null;
 	var $ordering=null;
 	var $published=null;
+	var $archived=null;
 	var $metadatastate_id=null;
 	//var $visibility_id=3;
 	var $editor_id=null;
@@ -53,6 +54,7 @@ class metadataByGuid extends JTable
 	var $label=null;
 	var $ordering=null;
 	var $published=null;
+	var $archived=null;
 	var $metadatastate_id=null;
 	//var $visibility_id=3;
 	var $editor_id=null;

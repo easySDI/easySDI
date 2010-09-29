@@ -149,7 +149,7 @@
 		if (mandatory)
 			minselect = 1;
 		
-		var ta = new Ext.ux.form.MultiSelect({
+		var ta = new Ext.ux.Multiselect({
 	            id:id,
 	            name: id,
 	            xtype: 'multiselect',
@@ -160,15 +160,24 @@
 	            blankText: mandatoryMsg,
 	            store: data,
 	            initValues: value,
+	            value: value,
 	            defaultVal:defaultVal,
 	            dynamic:true,
 	            editable:false,
 	            minOccurs:min,
 	            maxOccurs:max,
 	            qTip: tip,
-	            qTipDelay: dismissDelay
+	            qTipDelay: dismissDelay,
+	            view: new Ext.ListView({
+	                multiSelect: true,
+	                store: this.store,
+	                columns: [{ header: 'Value', width: 1, dataIndex: this.displayField }],
+	                hideHeaders: true
+	            })
 	        });
 		 return ta;
+		 
+		 Ext.util.Observable.capture(Ext.getCmp(id), console.info);
 	}
 	
 	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg, master, clone)
@@ -658,7 +667,7 @@
 		return sf;
 	}
 	
-	function createThesaurusGEMET(id, label, clone, master, min, max)
+	function createSuperBoxSelect(id, label, value, clone, master, min, max)
 	{
 		if (clone) optional=true;
 		if (master) master.clones_count=master.clones_count+1;
@@ -666,90 +675,46 @@
 		
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
-		
-		/*var thes = new ThesaurusReader({
-			  id:id,
-			  name:id,
-              lang: 'en',
-		      outputLangs: ['en', 'cs', 'fr', 'de'], 
-		      //title: label,
-		      separator: ' > ',
-		      returnPath: true,
-		      returnInspire: true,
-		      width: 300, height:400,
-		      layout: 'fit',
-		      //proxy: "/proxy.php?url=",
-		      proxy: "http://localhost/Easysdi_1510/administrator/components/com_easysdi_catalog/js/proxy.php?url=",
-		      handler: function(result){
-						    var s = '';
-						    for(l in result.terms) s += l+': '+result.terms[l]+'<br/><br/>';
-						    var target = document.getElementById('terms');
-						    target.innerHTML = s+'uri: '+result.uri + "<br>version: "+result.version;
-						},
-			dynamic:true,
-			minOccurs:min,
-            maxOccurs:max,
-            emptyText:'',
-          	disabled: false,
-          	clone: clone,
-			clones_count: clones_count,
-            template: master
-		  });*/
-		
-		var states = new Ext.data.SimpleStore({
-			id:id + '_STORE',
-            fields: ['lang', 'keyword', 'reliableRecord'],
-            /*data: [
-       	        ['en', 'Australia'],
-    	        ['en', 'Austria'],
-    	        ['en', 'Canada'],
-    	        ['en', 'France'],
-    	        ['en', 'Italy'],
-    	        ['en', 'Japan'],
-    	        ['en', 'New Zealand'],
-    	        ['en', 'USA']
-    	    ],*/
+				
+		var store = new Ext.data.SimpleStore({
+			storeId:id + '_store',
+            fields: ['keyword', 'value'],
             sortInfo: {field: 'keyword', direction: 'ASC'}
         });
 
 		var sbs = new Ext.ux.form.SuperBoxSelect({
 				id:id,
 				name:id,
-	            hiddenName:id + '_hidden',
+	            hiddenName:id + '_hidden[]',
 	            xtype:'superboxselect',
 		        fieldLabel: label,
 	            allowBlank: optional,
-	            //blankText: mandatoryMsg,
-	            //store: ds,
-	            //displayField:'name',
-	            //valueField:'guid',
-	            //value:name,
 	            emptyText:'',
-	          	//disabled: dis,
 	          	 minChars: 1,
 		        editable: false,
-	            //hiddenValue:guid,
 	            forceSelection: false,
 	            selectOnFocus: true,
 	            typeAhead: false,
 		        hideTrigger:true,
-		        //tpl: resultTpl,
-		        //itemSelector: 'div.search-item',
 		        resizable: true,
 		        anchor:'100%',
-		        store: states,
+		        store: store,
 		        mode: 'local',
+		        allowAddNewData:true,
+		        removeValuesFromStore:false,
 		        displayField: 'keyword',
-		        displayFieldTpl: '{keyword}',//'{keyword} ({lang})',
-		        valueField: 'keyword',
-		        // Champs spécifiques au clonage
+		        displayFieldTpl: '{keyword}',
+		        valueField:'value',
+		        value:value,
+			 	// Champs spécifiques au clonage
 		        dynamic:true,
 		        minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
 				clones_count: clones_count,
-	            template: master
+	            template: master,
+	    		// Ajout des valeurs existantes
+	            listeners: {'afterrender': function (){if (value!= null) this.addItems(value);}}
 		    });
-			
 		return sbs;
 	}

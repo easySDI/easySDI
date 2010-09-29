@@ -810,6 +810,18 @@ class ADMIN_object {
 				}
 			}
 			
+			//Supprimer tous les liens vers des editeurs ou des managers
+			$query = "DELETE FROM #__sdi_manager_object WHERE object_id=".$object->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$query = "DELETE FROM #__sdi_editor_object WHERE object_id=".$object->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 			if (!$object->delete()) {
 				$mainframe->enqueueMessage('CATALOG_OBJECT_DELETE_SHOPLINK_MSG',"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );

@@ -23,25 +23,36 @@ class TOOLBAR_metadata{
 		$database =& JFactory::getDBO();
 
 		$object_id = JRequest::getVar( 'object_id', 0);
-		
-		if ($object_id == 0) // Appel de l'édition depuis l'écran de gestion des objets
+		$version_hidden = JRequest::getVar('version_hidden', 0);
+		if ($version_hidden <> 0)
 		{
-			$cid = JRequest::getVar( 'cid');
-			$object_id = $cid[0];
+			$rowObjectVersion = new objectversion( $database );
+			$rowObjectVersion->load( $version_hidden );
+			
+			$rowObject = new object( $database );
+			$rowObject->load( $rowObjectVersion->object_id );
 		}
-		$version_id = JRequest::getVar('version_id', 0);
-		
-		$rowObject = new object( $database );
-		$rowObject->load( $object_id );
-		
-		if (!$version_id)
+		else
 		{
-			$database->setQuery( "SELECT id FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY name" );
-			$version_id= $database->loadResult();
+			if ($object_id == 0) // Appel de l'édition depuis l'écran de gestion des objets
+			{
+				$cid = JRequest::getVar( 'cid');
+				$object_id = $cid[0];
+			}
+			$version_id = JRequest::getVar('version_id', 0);
+			
+			$rowObject = new object( $database );
+			$rowObject->load( $object_id );
+			
+			if (!$version_id)
+			{
+				$database->setQuery( "SELECT id FROM #__sdi_objectversion WHERE object_id=".$object_id." ORDER BY name" );
+				$version_id= $database->loadResult();
+			}
+			
+			$rowObjectVersion = new objectversion( $database );
+			$rowObjectVersion->load( $version_id );
 		}
-		
-		$rowObjectVersion = new objectversion( $database );
-		$rowObjectVersion->load( $version_id );
 		
 		//echo $cid[0]."<br>".$object_id."<br>".$version_id;
 		

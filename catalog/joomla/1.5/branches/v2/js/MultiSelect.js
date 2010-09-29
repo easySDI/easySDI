@@ -1,3 +1,9 @@
+/*!
+ * Ext JS Library 3.2.1
+ * Copyright(c) 2006-2010 Ext JS, Inc.
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
 Ext.ns('Ext.ux.form');
 
 /**
@@ -12,7 +18,7 @@ Ext.ns('Ext.ux.form');
  * @constructor
  * Create a new MultiSelect
  * @param {Object} config Configuration options
- * @xtype multiselect 
+ * @xtype multiselect
  */
 Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
     /**
@@ -43,7 +49,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
     /**
      * @cfg {Number} width Width in pixels of the control (defaults to 100).
      */
-    width:250,
+    width:100,
     /**
      * @cfg {Number} height Height in pixels of the control (defaults to 100).
      */
@@ -136,44 +142,11 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             'dblclick' : true,
             'click' : true,
             'change' : true,
-            'drop' : true
+            'drop' : true,
+            'keyup' : true
         });
     },
-    /*
-    // private
-    initEvents : function(){
-    	Ext.ux.form.MultiSelect.superclass.initEvents.call(this);
-        if(this.validationEvent == 'keyup'){
-            this.validationTask = new Ext.util.DelayedTask(this.validate, this);
-            this.mon(this.el, 'keyup', this.filterValidation, this);
-        }
-        else if(this.validationEvent !== false && this.validationEvent != 'blur'){
-        	this.mon(this.el, this.validationEvent, this.validate, this, {buffer: this.validationDelay});
-        }
-        if(this.selectOnFocus || this.emptyText){            
-            this.mon(this.el, 'mousedown', this.onMouseDown, this);
-            
-            if(this.emptyText){
-                this.applyEmptyText();
-            }
-        }
-        if(this.maskRe || (this.vtype && this.disableKeyFilter !== true && (this.maskRe = Ext.form.VTypes[this.vtype+'Mask']))){
-        	this.mon(this.el, 'keypress', this.filterKeys, this);
-        }
-        if(this.grow){
-        	this.mon(this.el, 'keyup', this.onKeyUpBuffered, this, {buffer: 50});
-			this.mon(this.el, 'click', this.autoSize, this);
-        }
-        if(this.enableKeyEvents){
-            this.mon(this.el, {
-                scope: this,
-                keyup: this.onKeyUp,
-                keydown: this.onKeyDown,
-                keypress: this.onKeyPress
-            });
-        }
-    },
-*/
+
     // private
     onRender: function(ct, position){
         Ext.ux.form.MultiSelect.superclass.onRender.call(this, ct, position);
@@ -184,9 +157,9 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             height: this.height,
             width: this.width,
             style: "padding:0;",
-            tbar: this.tbar,
-            bodyStyle: 'overflow: auto;'
+            tbar: this.tbar
         });
+        fs.body.addClass('ux-mselect');
 
         this.view = new Ext.ListView({
             multiSelect: true,
@@ -212,12 +185,6 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
     afterRender: function(){
         Ext.ux.form.MultiSelect.superclass.afterRender.call(this);
 
-		if (this.initValues)
-		{
-			this.setValue(this.initValues);
-		}
-		
-
         if (this.ddReorder && !this.dragGroup && !this.dropGroup){
             this.dragGroup = this.dropGroup = 'MultiselectDD-' + Ext.id();
         }
@@ -233,27 +200,8 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             });
         }
         
-        // Tooltips
-        //console.log(this.name + " - " + this.xtype + " - " + this.qTip);
-		var qt = this.qTip;        
-		if(qt){
-			Ext.QuickTips.register({
-				target:  this,
-				title: '',
-				text: qt,
-				enabled: true
-			});
-			var label = findLabel(this);
-			if (label)
-			{
-				Ext.QuickTips.register({
-					target:  label,
-					title: '',
-					text: qt,
-					enabled: true
-					});
-			}
-		}
+        this.initEvents();
+        this.initValue();
     },
 
     // private
@@ -266,7 +214,9 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
 
     // private
     onViewBeforeClick: function(vw, index, node, e) {
-        if (this.disabled) {return false;}
+        if (this.disabled || this.readOnly) {
+            return false;
+        }
     },
 
     // private
@@ -281,16 +231,12 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
      */
     getValue: function(valueField){
         var returnArray = [];
-        if (this.view)
-        {
-        //console.log(this.getId());
         var selectionsArray = this.view.getSelectedIndexes();
         if (selectionsArray.length == 0) {return '';}
         for (var i=0; i<selectionsArray.length; i++) {
             returnArray.push(this.store.getAt(selectionsArray[i]).get((valueField != null) ? valueField : this.valueField));
         }
         return returnArray.join(this.delimiter);
-        }
     },
 
     /**
@@ -324,8 +270,6 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
     // inherit docs
     getRawValue: function(valueField) {
         var tmp = this.getValue(valueField);
-        if (tmp)
-        {
         if (tmp.length) {
             tmp = tmp.split(this.delimiter);
         }
@@ -333,7 +277,6 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
             tmp = [];
         }
         return tmp;
-        }
     },
 
     // inherit docs
@@ -343,8 +286,6 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
 
     // inherit docs
     validateValue : function(value){
-    	if (value)
-    	{
         if (value.length < 1) { // if it has no value
              if (this.allowBlank) {
                  this.clearInvalid();
@@ -361,7 +302,6 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
         if (value.length > this.maxSelections) {
             this.markInvalid(String.format(this.maxSelectionsText, this.maxSelections));
             return false;
-        }
         }
         return true;
     },
@@ -417,7 +357,7 @@ Ext.extend(Ext.ux.form.MultiSelect.DragZone, Ext.dd.DragZone, {
         this.onStartDrag(x, y);
         return true;
     },
-    
+
     // private
     collectSelection: function(data) {
         data.repairXY = Ext.fly(this.view.getSelectedNodes()[0]).getXY();
@@ -506,9 +446,9 @@ Ext.ux.form.MultiSelect.DropZone = function(ms, config){
 
 Ext.extend(Ext.ux.form.MultiSelect.DropZone, Ext.dd.DropZone, {
     /**
-	 * Part of the Ext.dd.DropZone interface. If no target node is found, the
-	 * whole Element becomes the target, and this causes the drop gesture to append.
-	 */
+     * Part of the Ext.dd.DropZone interface. If no target node is found, the
+     * whole Element becomes the target, and this causes the drop gesture to append.
+     */
     getTargetFromEvent : function(e) {
         var target = e.getTarget();
         return target;
@@ -591,9 +531,14 @@ Ext.extend(Ext.ux.form.MultiSelect.DropZone, Ext.dd.DropZone, {
         var pt = this.getDropPoint(e, n, dd);
         if (n != this.ms.fs.body.dom)
             n = this.view.findItemFromChild(n);
-        var insertAt = (this.ms.appendOnly || (n == this.ms.fs.body.dom)) ? this.view.store.getCount() : this.view.indexOf(n);
-        if (pt == "below") {
-            insertAt++;
+
+        if(this.ms.appendOnly) {
+            insertAt = this.view.store.getCount();
+        } else {
+            insertAt = n == this.ms.fs.body.dom ? this.view.store.getCount() - 1 : this.view.indexOf(n);
+            if (pt == "below") {
+                insertAt++;
+            }
         }
 
         var dir = false;
