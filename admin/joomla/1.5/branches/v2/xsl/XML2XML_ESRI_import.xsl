@@ -14,9 +14,6 @@ xmlns:bee="http://www.depth.ch/2008/bee"
 	
 	<xsl:template match="/">
 		<gmd:MD_Metadata>
-			<gmd:fileIdentifier>
-				<gco:CharacterString/>
-			</gmd:fileIdentifier>
 			<gmd:contentInfo>
 				<gmd:MD_FeatureCatalogueDescription>
 					<gmd:class>
