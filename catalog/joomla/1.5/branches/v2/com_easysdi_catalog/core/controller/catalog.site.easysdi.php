@@ -258,8 +258,6 @@ class SITE_catalog {
 						case "locale":
 						case "number":
 						case "link":
-						case "textchoice":
-						case "localechoice":
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
 							$kwords = explode(" ", trim($filter));
@@ -286,6 +284,37 @@ class SITE_catalog {
 								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
 							
 							$cswSimpleFilter.=$cswTerm;
+							$empty = false;
+							break;
+						case "textchoice":
+						case "localechoice":
+							/* Fonctionnement liste de choix*/
+							if (count($filter) > 0 and $filter[0] <> "")
+							{
+								foreach($filter as $f)
+								{
+									$localechoice ="";
+									$list = array();
+									$database->setQuery( "SELECT t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id AND (at.code='textchoice' OR at.code='localechoice') AND c.id=".$f." AND c.published=true ORDER BY c.name" );
+									$list = $database->loadObjectList();
+	
+									foreach ($list as $element)
+									{
+										$localechoice .= "
+											<ogc:PropertyIsEqualTo>
+												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:Literal>$element->content</ogc:Literal>
+											</ogc:PropertyIsEqualTo>
+										";
+									}
+									if (count($list) > 1)
+										$localechoice = "<ogc:Or>".$localechoice."</ogc:Or>";
+									$cswSimpleFilter .= $localechoice;
+								}
+								if (count($filter) > 1)
+									$cswSimpleFilter = "<ogc:Or>".$cswSimpleFilter."</ogc:Or>";
+							}
+							
 							$empty = false;
 							break;
 						case "list":
@@ -1050,8 +1079,6 @@ class SITE_catalog {
 						case "locale":
 						case "number":
 						case "link":
-						case "textchoice":
-						case "localechoice":
 							/* Fonctionnement texte*/
 							//Break the space in the request and split it in many terms
 							$kwords = explode(" ", trim($filter));
@@ -1078,6 +1105,37 @@ class SITE_catalog {
 								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
 							
 							$cswAdvancedFilter.=$cswTerm;
+							$empty = false;
+							break;
+						case "textchoice":
+						case "localechoice":
+							/* Fonctionnement liste de choix*/
+							if (count($filter) > 0 and $filter[0] <> "")
+							{
+								foreach($filter as $f)
+								{
+									$localechoice ="";
+									$list = array();
+									$database->setQuery( "SELECT t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id AND (at.code='textchoice' OR at.code='localechoice') AND c.id=".$f." AND c.published=true ORDER BY c.name" );
+									$list = $database->loadObjectList();
+	
+									foreach ($list as $element)
+									{
+										$localechoice .= "
+											<ogc:PropertyIsEqualTo>
+												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:Literal>$element->content</ogc:Literal>
+											</ogc:PropertyIsEqualTo>
+										";
+									}
+									if (count($list) > 1)
+										$localechoice = "<ogc:Or>".$localechoice."</ogc:Or>";
+									$cswAdvancedFilter .= $localechoice;
+								}
+								if (count($filter) > 1)
+									$cswAdvancedFilter = "<ogc:Or>".$cswAdvancedFilter."</ogc:Or>";
+							}
+							
 							$empty = false;
 							break;
 						case "list":
