@@ -35,6 +35,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderContext' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_CODE"), 'code', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JText::_("CATALOG_CONTEXT_SEARCHCRITERIA"); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
@@ -85,6 +86,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 	            </td>
 				 <?php $link =  "index.php?option=$option&amp;task=editContext&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->code; ?></td>
 				<td align="center">
 					<a href="<?php echo "index.php?option=$option&amp;task=listSearchCriteria&context_id=$row->id"; ?>" title="<?php echo JText::_( 'CATALOG_CONTEXT_LISTSEARCHCRITERIA' ); ?>">
 						<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
@@ -101,7 +103,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="9"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>

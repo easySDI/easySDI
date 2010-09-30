@@ -36,6 +36,7 @@ class ADMIN_context {
 		// Test si le filtre est valide
 		if ($filter_order <> "id" 
 			and $filter_order <> "name" 
+			and $filter_order <> "code"
 			and $filter_order <> "ordering" 
 			and $filter_order <> "description" 
 			and $filter_order <> "updated")
@@ -217,6 +218,29 @@ class ADMIN_context {
 			exit();
 		}
 		
+		//Créer les critères système du contexte pour la gestion des tabs
+		if ($_POST['id'] == 0)
+		{
+			// Récupérer tous les critères systèmes
+			$searchcriteriaList= array();
+			$query = "SELECT * 
+					  FROM #__sdi_searchcriteria 
+					  WHERE criteriatype_id=1";
+			$database->setQuery($query);
+			$searchcriteriaList = $database->loadObjectList();
+			
+			foreach ($searchcriteriaList as $searchcriteria)
+			{
+				// Créer la relation critère/contexte
+				$query = "INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) VALUES (".$searchcriteria->id.", ".$rowContext->id.", 1)";
+				$database->setQuery( $query);
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}
+		}
+			
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
@@ -305,7 +329,7 @@ class ADMIN_context {
 			exit;
 		}
 		
-		foreach( $id as $context_id )
+		foreach( $cid as $context_id )
 		{
 			// Supprimer tous les référencements dans les relations
 			$selected_contexts = array();
@@ -317,6 +341,19 @@ class ADMIN_context {
 			
 			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
 			$query = "delete from #__sdi_context_objecttype where context_id=".$context_id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			// Supprimer les critères de recherche directement liés à cette relation
+			$query = "delete from #__sdi_searchcriteria_tab WHERE context_id = ".$context_id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "delete from #__sdi_searchcriteria where context_id=".$context_id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
