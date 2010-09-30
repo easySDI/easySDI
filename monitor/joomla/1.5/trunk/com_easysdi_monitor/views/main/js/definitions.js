@@ -20,11 +20,6 @@ Ext.BLANK_IMAGE_URL = './components/com_easysdi_monitor/lib/ext/resources/images
 
 Ext.onReady(function(){
    
-   EasySDI_Mon.proxy = '?option=com_easysdi_monitor&view=proxy&proxy_url=';
-   
-   //default, grid, skies, gray, dark-blue, dark-green
-   EasySDI_Mon.theme = 'grid';
-   
    EasySDI_Mon.ServiceMethodStore = { 
        wms: [
               ['GetCapabilities'],
@@ -86,14 +81,14 @@ Ext.onReady(function(){
    		password:'',
    		testInterval:3600,
    		timeout:5,
-   		isPublic:'true',
+   		isPublic:true,
    		isAutomatic:true,
-   		allowsRealTime:'true',
-   		triggersAlerts:'true',
+   		allowsRealTime:true,
+   		triggersAlerts:true,
    		slaStartTime:'08:00:00',
    		slaEndTime:'18:00:00',
-   		httpErrors:'true',
-   		bizErrors:'true'
+   		httpErrors:true,
+   		bizErrors:true
    };
    
    EasySDI_Mon.DefaultReq = {
@@ -102,29 +97,38 @@ Ext.onReady(function(){
    		params:''
    };
    
+   EasySDI_Mon.DefaultGetCapReq = {
+   		name:'',
+   		serviceMethod:''
+   };
    
    EasySDI_Mon.YesNoCombo = [[EasySDI_Mon.lang.getLocal('YES'), 'Y'],[EasySDI_Mon.lang.getLocal('NO'), 'N']];
    
    /*common renderers*/
    
    EasySDI_Mon.TrueFalseRenderer = function(value) {
-         return value ? '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>': '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-false"/></td></tr></table>';  
+	 if(value == 'true')
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';
+         else if(value == true)
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';
+         else
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-false"/></td></tr></table>';  
    };
    
    //status renderer (available, failure, unavailable, untested)
    EasySDI_Mon.StatusRenderer = function(status){
               switch (status){
-                 case 'Disponible':
-                       return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-available"/></td></tr></table>';
+                 case EasySDI_Mon.lang.getLocal('enum_status_available'):
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('available')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-available"/></td></tr></table>';
                  break;
-                 case 'En dérangement':
-                       return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-failure"/></td></tr></table>';
+                 case EasySDI_Mon.lang.getLocal('enum_status_failure'):
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('failure')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-failure"/></td></tr></table>';
                  break;
-                 case 'Indisponible':
-                       return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-unavailable"/></td></tr></table>';
+                 case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('unavailable')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-unavailable"/></td></tr></table>';
                  break;
-   	      case 'Non testé':
-                       return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-untested"/></td></tr></table>';
+   	      case EasySDI_Mon.lang.getLocal('enum_status_untested'):
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('untested-unknown')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-untested"/></td></tr></table>';
                  break;
                  default: 
                     return status;
@@ -135,23 +139,23 @@ Ext.onReady(function(){
    EasySDI_Mon.AlertStatusRenderer = function (newStatus, scope, row) {
       var oldStatus = row.get('oldStatus');
              switch (newStatus){
-                case 'Disponible':
-   	 if(oldStatus == 'En dérangement')
-                      return '<div class="icon-gridrenderer-failure-to-available"/>';
-            if(oldStatus == 'Indisponible')
-                      return '<div class="icon-gridrenderer-unavailable-to-available"/>';
+                case EasySDI_Mon.lang.getLocal('enum_status_available'):
+   	 if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_failure'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-available')+'" '+'class="icon-gridrenderer-failure-to-available"/>';
+            if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_unavailable'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-available')+'" '+'class="icon-gridrenderer-unavailable-to-available"/>';
                 break;
-                case 'En dérangement':
-   	  if(oldStatus == 'Disponible')
-                      return '<div class="icon-gridrenderer-available-to-failure"/>';
-             if(oldStatus == 'Indisponible')
-                      return '<div class="icon-gridrenderer-unavailable-to-failure"/>';
+                case EasySDI_Mon.lang.getLocal('enum_status_failure'):
+   	  if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_available'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-failure')+'" '+'class="icon-gridrenderer-available-to-failure"/>';
+             if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_unavailable'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-failure')+'" '+'class="icon-gridrenderer-unavailable-to-failure"/>';
                 break;
-                case 'Indisponible':
-   	 if(oldStatus == 'En dérangement')
-                      return '<div class="icon-gridrenderer-failure-to-unavailable"/>';
-            if(oldStatus == 'Disponible')
-                      return '<div class="icon-gridrenderer-available-to-unavailable"/>';
+                case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
+   	 if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_failure'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-unavailable')+'" '+'class="icon-gridrenderer-failure-to-unavailable"/>';
+            if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_available'))
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-unavailable')+'" '+'class="icon-gridrenderer-available-to-unavailable"/>';
                 break;
                 default: 
                    return value;
@@ -164,9 +168,47 @@ Ext.onReady(function(){
    };
    
    EasySDI_Mon.DateTimeRenderer = function (value){
-      return Ext.util.Format.date(value,'d-m-Y H:i:s');
+      return Ext.util.Format.date(value, EasySDI_Mon.dateTimeFormat);
    };
    
+   EasySDI_Mon.DateRenderer = function (value){
+      return Ext.util.Format.date(value, EasySDI_Mon.dateFormat);
+   };
+   
+   EasySDI_Mon.CurrentJobCollection = EasySDI_Mon.DefaultJobCollection;
+   
+   EasySDI_Mon.JobCollectionStore = [
+   		         [EasySDI_Mon.lang.getLocal('job collection public'),'jobs'],
+   			 [EasySDI_Mon.lang.getLocal('job collection private'),'adminJobs']
+   		       ];
+   
    EasySDI_Mon.App = new Ext.App({});
+   
+    // Listen to all DataProxy beforewrite events
+    //
+    //Ext.data.DataProxy.addListener('beforewrite', function(proxy, action) {
+    //	EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_NOTICE, "Before " + action);
+    //});
+    ////
+    // all write events
+    //
+    Ext.data.DataProxy.addListener('write', function(proxy, action, result, res, rs) {
+        EasySDI_Mon.App.setAlert(true, res.raw.message);
+    });
+    
+    Ext.data.DataProxy.addListener('delete', function(proxy, action, result, res, rs) {
+        EasySDI_Mon.App.setAlert(true, res.raw.message);
+    });
+    
+    ////
+    // all exception events
+    //
+    Ext.data.DataProxy.addListener('exception', function(proxy, type, action, options, res) {
+		    if(res.raw != null)
+		            EasySDI_Mon.App.setAlert(false,  res.raw.message);
+		    else
+			    EasySDI_Mon.App.setAlert(false,  'status:'+res.status+' message:'+res.statusText);
+    });
+   
 });
 

@@ -1,3 +1,16 @@
+.icon-48-generic {
+  background-image:url("/administrator/components/com_easysdi_monitor/icons/logo_monitor.png") !important;
+  height: 40px !important;
+}
+div.header {
+background-repeat:no-repeat;
+  padding-left:140px !important;
+}
+
+/*Tells the administrator menu to go over the ExtJs components*/
+#menu li ul {
+   z-index:9999 !important;
+}
 .x-grid3 .x-window-ml{
 	padding-left: 0;	
 } 
@@ -33,6 +46,33 @@
 }
 .x-box-inner {
 	zoom:1;
+}
+.icon-service-view-alerts {
+    background-image: url(../icons/bell.png) !important;
+}
+.icon-service-view-reports {
+    background-image: url(../icons/page.png) !important;
+}
+.icon-only-newest-alert {
+    background-image: url(../icons/clock.png) !important;
+}
+.icon-all-jobs {
+    background-image: url(../icons/sum.png) !important;
+}
+.icon-service-execute {
+    background-image: url(../icons/lightning.png) !important;
+}
+.icon-service-refresh {
+    background-image: url(../icons/arrow_refresh_small.png) !important;
+}
+.icon-rss {
+    background-image: url(../icons/rss.png) !important;
+}
+.icon-service-add {
+    background-image: url(../icons/server_add.png) !important;
+}
+.icon-service-rem {
+    background-image: url(../icons/server_delete.png) !important;
 }
 .icon-user-add {
     background-image: url(../icons/user_add.gif) !important;
@@ -83,17 +123,17 @@
    height:16px;
 }
 .icon-gridrenderer-available{
-   background-image: url(../icons/available.png) !important;
+   background-image: url(../icons/flag_green.png) !important;
    width:16px;
    height:16px;
 }
 .icon-gridrenderer-unavailable{
-   background-image: url(../icons/unavailable.png) !important;
+   background-image: url(../icons/flag_red.png) !important;
    width:16px;
    height:16px;
 }
 .icon-gridrenderer-failure{
-   background-image: url(../icons/failure.png) !important;
+   background-image: url(../icons/flag_orange.png) !important;
    width:16px;
    height:16px;
 }

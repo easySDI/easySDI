@@ -1,24 +1,35 @@
 <?php
-//          FILE: proxy.php
-//
-// LAST MODIFIED: 2006-03-23
-//
-//        AUTHOR: Troy Wolf <troy@troywolf.com>
-//
-//   DESCRIPTION: Allow scripts to request content they otherwise may not be
-//                able to. For example, AJAX (XmlHttpRequest) requests from a
-//                client script are only allowed to make requests to the same
-//                host that the script is served from. This is to prevent
-//                "cross-domain" scripting. With proxy.php, the javascript
-//                client can pass the requested URL in and get back the
-//                response from the external server.
-//
-//         USAGE: "proxy_url" required parameter. For example:
-//                http://www.mydomain.com/proxy.php?proxy_url=http://www.yahoo.com
-//
+ /**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ *
+ * original author: Troy Wolf <troy@troywolf.com>
+ *
+ *   DESCRIPTION: Allow scripts to request content they otherwise may not be
+ *                able to. For example, AJAX (XmlHttpRequest) requests from a
+ *                client script are only allowed to make requests to the same
+ *                host that the script is served from. This is to prevent
+ *                "cross-domain" scripting. With proxy.php, the javascript
+ *                client can pass the requested URL in and get back the
+ *                response from the external server.
+ *
+ *         USAGE: "proxy_url" required parameter. For example:
+ *                http://www.mydomain.com/proxy.php?proxy_url=http://www.yahoo.com
+ *
+ */
 
-// proxy.php requires Troy's class_http. http://www.troywolf.com/articles
-// Alter the path according to your environment.
 
 //prevent php to output error here, otherwise errors will be written in the xml output.
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +45,7 @@ error_reporting(0);
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once("class_http.php");
 $monitorUrl = config_easysdi::getValue("MONITOR_URL");
-$myFile = "/home/sites/joomla.asitvd.ch/web/administrator/components/com_easysdi_monitor/views/proxy/tmpl/logs/log.txt";
+$myFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
 $fh = fopen($myFile, 'w');
 $verb = $_SERVER['REQUEST_METHOD'];
 $usr = $_SERVER['PHP_AUTH_USER'];
@@ -68,7 +79,12 @@ if (!$proxy_url) {
     exit();
 }
 
-$proxy_url = $monitorUrl.$proxy_url;
+if (substr($proxy_url,0,1) == '/')
+  $proxy_url = $monitorUrl.$proxy_url;
+else
+  $proxy_url = $monitorUrl.'/'.$proxy_url;
+
+fwrite($fh, "Proxy Url :".$proxy_url."\n");
 
 // Instantiate the http object used to make the web requests.
 // More info about this object at www.troywolf.com/articles
@@ -169,6 +185,48 @@ else{
 	fwrite($fh, "post request \n");
 }
 
+fwrite($fh, "check for json in:".$_SERVER['CONTENT_TYPE']."\n");
+//if(stristr($string, 'terre') === FALSE) {
+if(stristr($_SERVER['CONTENT_TYPE'], 'json') === FALSE){
+}else{
+	$h->postvars = $xmldata;
+	
+	//HACK
+	/*
+	if($_SERVER['REQUEST_METHOD'] != "DELETE"){
+	   $temp = explode("{", $h->postvars);
+   	   $temp = explode("}", $temp[2]);
+   	   $kvp = explode(",", $temp[0]);
+   	   $new_string  = "{\"data\":{";
+   	   for($i = 0; $i < count($kvp); $i++){
+	   	    $strkeyval = "";
+	   	    if(stristr($kvp[$i], 'slaStartTime') === FALSE && stristr($kvp[$i], 'slaEndTime') === FALSE && stristr($kvp[$i], 'url') === FALSE ) {
+	   		    $temp = explode(":", $kvp[$i]);
+	   	            $key = trim($temp[0]);
+	   	            $val = trim($temp[1]);
+	   	            if(!startsWith($val,"\""))
+	   		        $val = "\"".$val."\"";
+	   		    $strkeyval = $key.":".$val;
+	   	    }
+	   	    else
+	   	    {
+	   	            $strkeyval = $kvp[$i];
+	   	    }
+	   	    
+	   	   if($i < (count($kvp)-1))
+	   		   $new_string .= $strkeyval.",";
+	   	   else
+	   	   	   $new_string .= $strkeyval;
+   	   }
+   	   $new_string .= "}}";
+   	   $h->postvars  = $new_string;
+	}
+	*/
+	
+	
+	
+}
+
 fwrite($fh, "final url is :".$proxy_url."\n");
 
 
@@ -233,8 +291,25 @@ fwrite($fh, "Response is :".$h->body."\n");
 $enc = mb_detect_encoding($h->body);
 fwrite($fh, "encoding is".$enc."\n");
 
-echo $h->body;
+//HACK return a good log structure 
+//@see http://forge.easysdi.org/issues/show/207
+//no hack = do only echo $h->body;
+$lgHd = '{"success":true,"message":"Les logs ont bien été récupérés","data":';
+if(stristr($h->body, $lgHd) === FALSE){
+   echo $h->body;
+   fwrite($fh, "log no hacked json \n");
+}else{
+   //echo $h->body;
+   echo substr($h->body, strlen($lgHd), -1);
+   fwrite($fh, "log hacked json".substr($h->body, strlen($lgHd), -1)."\n");
+}
+   
 //close log
 fclose($fh);
 die;
+
+function startsWith($haystack,$needle,$case=true) {
+       if($case){return (strcmp(substr($haystack, 0, strlen($needle)),$needle)===0);}
+       return (strcasecmp(substr($haystack, 0, strlen($needle)),$needle)===0);
+    }
 ?>

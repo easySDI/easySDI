@@ -26,27 +26,6 @@ function com_install(){
 	global  $mainframe;
 	$db =& JFactory::getDBO();
 
-	/**
-	 * Check the CORE installation
-	 */
-	
-	/*
-	$count = 0;
-	$query = "SELECT COUNT(*) FROM `#__components` WHERE  `option` ='com_easysdi_core'";
-	$db->setQuery( $query);
-	$count = $db->loadResult();
-	if ($count == 0) {
-		$mainframe->enqueueMessage("Core component does not exist. Easysdi Monitor could not be installed. Please install core component first.","ERROR");
-		$db =& JFactory::getDBO();
-		$query = "DELETE FROM #__components where `option`= 'com_easysdi_monitor'";
-		$db->setQuery( $query);
-		if (!$db->query()) {
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-				
-		}
-		return false;
-	}
-  */
 	 
 	/**
 	 * Menu creation
@@ -67,30 +46,29 @@ function com_install(){
 			$db->setQuery( $query);
 			if (!$db->query()) 
 			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+				return false;	
 			}
 	
 	//Entry in the EasySDI menu
 	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-	values($id,'Monitor','','option=com_easysdi_monitor&view=main','SHOP','com_easysdi_monitor','js/ThemeOffice/component.png','')";
+	values($id,'Monitor','','option=com_easysdi_monitor&view=main','Monitor','com_easysdi_monitor','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;
 	}
-
-	/*
-	//Entry in the extension manager
+	
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('EasySDI - Monitor','option=com_easysdi_monitor','Easysdi Monitor','com_easysdi_monitor','js/ThemeOffice/component.png','')";
+		values('Monitor','option=com_easysdi_monitor&view=main','Monitor','com_easysdi_monitor','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) 
 	{
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
+		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		return false;		
 	}
-	*/
 	
-	
-	$mainframe->enqueueMessage("Congratulation Monitor for EasySdi is installed and ready to be used.	Enjoy EasySdi Monitor!
+	$mainframe->enqueueMessage("Congratulation Monitor for EasySDI is installed and ready to be used.	Enjoy EasySdi Monitor!
 	 Do not forget to setup the MONITOR_URL key into component->EasySDI->configuration. For example set it to http://localhost:8083/Monitor (depending on your servlet container location)","INFO");
 
 }

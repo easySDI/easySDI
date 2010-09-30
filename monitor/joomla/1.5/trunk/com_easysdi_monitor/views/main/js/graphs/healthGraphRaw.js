@@ -102,16 +102,16 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
                     {   
 			var status = aRec[i].get('status');
 			switch (status){
-                             case 'Disponible':
+                             case EasySDI_Mon.lang.getLocal('enum_status_available'):
                                    avCount++;
                              break;
-                             case 'En dérangement':
+                             case EasySDI_Mon.lang.getLocal('enum_status_failure'):
                                    fCount++;
                              break;
-                             case 'Indisponible':
+                             case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
                                    unavCount++;
                              break;
-	                     case 'Non testé':
+	                         case EasySDI_Mon.lang.getLocal('enum_status_untested'):
                                    otherCount++;
                              break;
                              default: 

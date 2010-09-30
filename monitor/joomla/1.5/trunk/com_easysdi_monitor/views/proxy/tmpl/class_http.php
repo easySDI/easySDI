@@ -131,13 +131,21 @@ class http {
         Get response body.
         */
         
-        //Bug fget hangs if waiting for a body that is empty
+        //Bug fget hangs if waiting for a body that is empty from Geoserver REST
+	//we need put for Monitor
         //Fix with expecting no body from http put method
-        if($verb != "PUT"){
+	//Read normally
+        if(stristr($url, 'geoserver') === FALSE){
         	while (!feof($fh)) {
           	  $this->body .= fgets($fh, 1024);
         	}
       	}
+	//Do not read PUT response body for geoserver (REST config)
+	else if($verb != "PUT"){
+		while (!feof($fh)) {
+          	  $this->body .= fgets($fh, 1024);
+        	}
+	}
         fclose($fh);
         if ($need_to_save) { $this->saveToCache(); }
         return $this->status;
@@ -180,15 +188,41 @@ class http {
         }
         
         if (count($this->postvars) > 0) {
-            $this->log .= "Variables will be POSTed<br />\n";
-            $request = "POST ".$path." HTTP/1.0\r\n";
-            $post_string = "";
-            	$this->log .= "POSTVARS:: ".print_r($this->postvars, true);
-            foreach ($this->postvars as $key=>$value) {
-                $post_string .= "&".urlencode($key)."=".urlencode($value);
-            }
-            $post_string = substr($post_string,1);
-            $this->headers["Content-Type"] = "application/x-www-form-urlencoded";
+            $this->log .= "Variables will be ".$verb." right now <br />\n";
+            //$request = "POST http://valid.asitvd.ch:8083/Monitor/jobs HTTP/1.1\r\n";
+	    //$request = "POST http://valid.asitvd.ch:8083".$path." HTTP/1.1\r\n";
+            $request = $verb." ".$path." HTTP/1.0\r\n";
+            
+	    
+	    $post_string = "";
+	    //differenciate json request and kvp post
+	    if(stristr($_SERVER['CONTENT_TYPE'], 'json') === FALSE){
+               $this->log .= "POSTVARS:: ".print_r($this->postvars, true);
+               foreach ($this->postvars as $key=>$value) {
+                   $post_string .= "&".urlencode($key)."=".urlencode($value);
+               }
+               $post_string = substr($post_string,1);
+               $this->headers["Content-Type"] = "application/x-www-form-urlencoded";
+	    }else{
+               $this->log .= "JSON request ".$this->postvars;
+	       //HACK
+	       //$this->headers["Content-Type"] = "application/json";
+	       //This don't work!
+	       //$this->headers["Content-Type"] = "application/json; charset=UTF-8";
+	       /*
+	       $this->headers =  Array();
+	       $this->headers["Content-Type"] = "application/json; charset=UTF-8";
+               $this->headers["Authorization"] = "Basic ".base64_encode($user.":".$pwd);
+	       $this->headers["Host"] = "valid.asitvd.ch:8083";
+	       $this->headers["Expect"] = "100-continue";
+	       $this->headers["Proxy-Connection"] = "Keep-Alive";
+	       */
+	       
+	       //$post_string = '{"data":{"name":"flop","httpMethod":"GET","bizErrors":true}}';
+	       $post_string  = $this->postvars;
+
+	    }
+	    
             $this->headers["Content-Length"] = strlen($post_string);
         } elseif (strlen($this->xmlrequest) > 0){
         		$this->log .= "XML request will be sent<br />\n";
@@ -203,7 +237,7 @@ class http {
 
         #echo "<br />request: ".$request;
 				
-				$this->log .=  "request is: \n";
+				$this->log .=  "\n request is: \n";
 				
 				$this->log .=  $request;
 				
@@ -245,8 +279,13 @@ class http {
                 return false;
             }
         }
-        $this->log .= "getFromUrl() exited<br />";
+        $this->log .= "\n getFromUrl() exitedgetFromUrl() exited\n";
         return $sock;
+    }
+    
+    function startsWith($haystack,$needle,$case=true) {
+       if($case){return (strcmp(substr($haystack, 0, strlen($needle)),$needle)===0);}
+       return (strcasecmp(substr($haystack, 0, strlen($needle)),$needle)===0);
     }
     
     /*

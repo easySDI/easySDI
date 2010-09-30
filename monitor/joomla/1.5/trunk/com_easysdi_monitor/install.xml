@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install type="component" version="1.5.0">
 	<name>EasySDI_Monitor</name>
-	<creationDate>2010</creationDate>
-	<author>asitvd.ch / Rémy Baud</author>
+	<creationDate>October 2010</creationDate>
+	<author>Asitvd.ch</author>
 	<authorEmail>support@asitvd.ch</authorEmail>
 	<version>1.0</version>
 	<description>OGC web services monitoring application</description>
@@ -15,16 +15,19 @@
 			<menu link="option=com_easysdi_monitor&amp;view=main">Monitor</menu>
 		</submenu>
 		<!-- Administration Main File Copy Section -->
+
 		<files>
-			<filename>license.txt</filename>
+			<filename>ApplicationSettings.js</filename>
+			<filename>controller.php</filename>
 			<filename>easysdi_monitor.php</filename>
 			<filename>index.html</filename>
-			<filename>controller.php</filename>
+			<filename>license.txt</filename>
 			<folder>css</folder>
 			<folder>icons</folder>
+			<folder>lang</folder>			
+			<folder>script</folder>
 			<folder>views</folder>
-			<folder>lang</folder>
-			<folder>lib</folder>
+		  <folder>lib</folder>
 		</files>
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>

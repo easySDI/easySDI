@@ -1,4 +1,4 @@
- /**
+/**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community 
  * For more information : www.easysdi.org
@@ -18,17 +18,17 @@ Ext.namespace("EasySDI_Mon");
 
 Ext.onReady(function(){
 	Ext.QuickTips.init();
-        
-        var url = String.format("./components/com_easysdi_monitor/lib/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
-        Ext.Ajax.request({
-           url: url,
-           success: function(response, opts){
-	      eval(response.responseText);
-	   },
-           failure: function(){
-		   Ext.Msg.alert('Failure', EasySDI_Mon.lang.getLocal('error_lang')+' "'+EasySDI_Mon.locale+'"');
-	   },
-           scope: this 
-        });
-	
+
+	var url = String.format("./components/com_easysdi_monitor/lib/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
+	Ext.Ajax.request({
+		url: url,
+		success: function(response, opts){
+		eval(response.responseText);
+	},
+	failure: function(){
+		Ext.Msg.alert('Failure', EasySDI_Mon.lang.getLocal('error_lang')+' "'+EasySDI_Mon.locale+'"');
+	},
+	scope: this 
+	});
+
 });
