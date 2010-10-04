@@ -388,7 +388,8 @@ class HTML_account {
 <?php
 	}
 	
-	function showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, &$rowUser, &$rowAccount, $rowContact, $rowSubscription, $rowDelivery , $option )
+	//function showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, &$rowUser, &$rowAccount, $rowContact, $rowSubscription, $rowDelivery , $option )
+	function showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, &$rowUser, &$rowAccount, $rowContact, $option )
 	{
 		global  $mainframe;
 
@@ -406,11 +407,12 @@ class HTML_account {
 		$database->setQuery( "SELECT label AS text FROM #__sdi_title WHERE id = ".$rowContact->title_id ." ORDER BY name" );
 		$title = JText::_($database->loadResult());
 								
-		$database->setQuery( "SELECT label AS text FROM #__sdi_title WHERE id = ".$rowSubscription->title_id ." ORDER BY name" );
+		/*$database->setQuery( "SELECT label AS text FROM #__sdi_title WHERE id = ".$rowSubscription->title_id ." ORDER BY name" );
 		$title_s = JText::_($database->loadResult());
 		
 		$database->setQuery( "SELECT label AS text FROM #__sdi_title WHERE id = ".$rowDelivery->title_id ." ORDER BY name" );
 		$title_d = JText::_($database->loadResult());
+		*/
 		
 		$database->setQuery( "SELECT  name AS text FROM #__sdi_list_country where id = '".$rowContact->country_id."'" );		 
 		$countryContact = JText::_($database->loadResult());
@@ -561,6 +563,7 @@ class HTML_account {
 		</td></tr></table>
 <?php
 		echo $tabs->endPanel();
+	/*
 		echo $tabs->startPanel(JText::_("CORE_ACCOUNT_TAB_BILLING_LABEL"),"accountPane");
 ?>
 <br>	
@@ -705,7 +708,8 @@ class HTML_account {
 			</tr>
 		</table>		
 <?php
-		echo $tabs->endPanel();		
+		echo $tabs->endPanel();	
+		*/	
 		if ($hasTheRightToManageHisOwnAffiliates>0)
 		{
 			echo $tabs->startPanel(JText::_("CORE_ACCOUNT_TAB_AFFILIATES_LABEL"),"accountPane");
@@ -746,11 +750,16 @@ class HTML_account {
 		function initTabs(){
 			//Add event handler to reload the page at the good tab
 			var aDt = $('AccountForm').getElementsByTagName("dt");
+			for (var i=0; i<aDt.length;i++)
+			{
+				aDt[i].addEvent('click', function(){toggleTabs(i)});
+			}
+			/*
 			aDt[0].addEvent('click', function(){toggleTabs(0)});
 			aDt[1].addEvent('click', function(){toggleTabs(1)});
 			aDt[2].addEvent('click', function(){toggleTabs(2)});
 			aDt[3].addEvent('click', function(){toggleTabs(3)});
-			aDt[4].addEvent('click', function(){toggleTabs(4)});
+			aDt[4].addEvent('click', function(){toggleTabs(4)});*/
 		}
 		function toggleTabs(id){
 			$('tabIndex').value = id;
