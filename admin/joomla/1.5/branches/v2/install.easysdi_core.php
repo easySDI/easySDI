@@ -951,6 +951,7 @@ function com_install(){
 					  `label` varchar(50) DEFAULT NULL,
 					  `ordering` bigint(20) DEFAULT NULL,
 					  `published` date DEFAULT NULL,
+					  `archived` date DEFAULT NULL,
 					  `metadatastate_id` bigint(20) NOT NULL,
 					  `editor_id` bigint(20) DEFAULT NULL,
 					  PRIMARY KEY (`id`),
