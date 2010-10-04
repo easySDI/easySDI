@@ -210,7 +210,7 @@ class SITE_account {
 
 	$rowContact = new address( $database );
 	$rowContact->load( $contact_id );
-
+/*
 	$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=2" );
 	$subscription_id = $database->loadResult();
 	if ($database->getErrorNum()) {
@@ -237,7 +237,7 @@ class SITE_account {
 		echo 			$database->getErrorMsg();
 		echo "</div>";
 	}
-	
+*/	
 	$rowUser =&	 new JTableUser($database);
 	$rowUser->load( $rowAccount->user_id );
 
@@ -249,7 +249,8 @@ class SITE_account {
 		$rowUser->gid=18;
 	}
 
-	HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery, $option );
+	//HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery, $option );
+	HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $option );
 	
 	}
 	
