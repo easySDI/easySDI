@@ -430,8 +430,7 @@ default:
 
 					for ($i=0 ;$i<$count;$i++){
 
-						helper_easysdi::generateMetadata2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0,&$doc);
-							
+						helper_easysdi::generateMetadata2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0,&$doc);	
 					}
 					break;
 				case  "freetext" :
