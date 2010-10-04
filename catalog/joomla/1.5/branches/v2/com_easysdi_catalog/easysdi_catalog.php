@@ -30,24 +30,23 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.class.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'preview.site.easysdi.html.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
 */
-$language=&JFactory::getLanguage();
-$language->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
-$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 
 ?>
 <?php
+global $mainframe;
+$language=&JFactory::getLanguage();
+$language->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);
+$language->load('com_easysdi_core', JPATH_ADMINISTRATOR);
 $option = JRequest::getVar('option');
-/*if (array_key_exists('task', $_GET))
-	$task = $_GET['task'];
-else*/
-	$task = JRequest::getVar('task');
+$task = JRequest::getVar('task');
+$view = JRequest::getVar('view');
 
 $cid = JRequest::getVar ('cid', array(0) );
 if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-	switch($task){
+switch($task){
 		// Metadata
 		case "listMetadata":
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
@@ -532,10 +531,15 @@ if (!is_array( $cid )) {
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'context.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
 			
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'catalog.site.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'catalog.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'geoMetadata.php');
+			
 			SITE_catalog::listCatalogContent();
 			break;
-		case "previewProduct":
 			
+		case "previewProduct":
 			HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
 			break;
 					
