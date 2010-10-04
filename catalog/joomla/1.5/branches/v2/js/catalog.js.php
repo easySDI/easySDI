@@ -443,4 +443,18 @@ function changexpathParentIdVisibility(value)
     else 
    		isocodeType.style.display = "none";
 }
+
+
+//Fonction pour changer la visibilité des champs lors de l'édition d'un attribut
+function changeImporttypeVisibility(importType)
+{
+	// Isocode du type
+	var importtypeDiv = document.getElementById("div_importref_type");
+	
+	if(importType == 2) 
+		importtypeDiv.style.display = "";  
+ 	else 
+ 		importtypeDiv.style.display = "none";
+}
+
 </script>

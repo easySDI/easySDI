@@ -30,6 +30,7 @@ class importref extends JTable
 	var $createdby=null;
 	var $updatedby=null;
 	var $ordering=0;
+	var $importtype_id=null;
 	var $xslfile=null;
 	var $pretreatmentxslfile=null;
 	var $url=null;

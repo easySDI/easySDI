@@ -672,14 +672,47 @@ function com_install(){
 				  `url` varchar(200),
 				  `checked_out` bigint(20) NOT NULL,
 				  `checked_out_time` datetime DEFAULT NULL,
+				  `importtype_id` bigint(20) DEFAULT 1,
 				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`)
+				  UNIQUE KEY `guid` (`guid`),
+				  KEY `importtype_id` (`importtype_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_importtype` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20) DEFAULT NULL,
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100) DEFAULT NULL,
+					  `created` datetime NOT NULL,
+					  `updated` datetime DEFAULT NULL,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20) DEFAULT NULL,
+					  `label` varchar(50) DEFAULT NULL,
+					  `ordering` bigint(20) DEFAULT NULL,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  UNIQUE KEY `code` (`code`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="INSERT INTO `#__sdi_list_importtype` (`guid`, `code`, `name`, `description`, `created`, `createdby`, `label`) VALUES
+				('".helper_easysdi::getUniqueId()."', 'replace', 'Replacing', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_IMPORTEF_REPLACING'),
+				('".helper_easysdi::getUniqueId()."', 'merge', 'Merging', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_IMPORTEF_MERGING')
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
 		$query="CREATE TABLE  IF NOT EXISTS `#__sdi_objecttypelink` ( 
@@ -857,6 +890,54 @@ function com_install(){
 				  KEY `relation_id` (`relation_id`),
 				  KEY `criteriatype_id` (`criteriatype_id`),
 				  KEY `context_id` (`context_id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_searchtab` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20) DEFAULT NULL,
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100) DEFAULT NULL,
+					  `created` datetime NOT NULL,
+					  `updated` datetime DEFAULT NULL,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20) DEFAULT NULL,
+					  `label` varchar(50) DEFAULT NULL,
+					  `ordering` bigint(20) DEFAULT NULL,
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  UNIQUE KEY `code` (`code`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="INSERT INTO `#__sdi_list_searchtab` (`guid`, `code`, `name`, `description`, `created`, `createdby`, `label`) VALUES
+				('".helper_easysdi::getUniqueId()."', 'simple', 'Simple', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_SEARCHTAB_SIMPLE'),
+				('".helper_easysdi::getUniqueId()."', 'advanced', 'Advanced', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_SEARCHTAB_ADVANCED')
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+			
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_searchcriteria_tab` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `searchcriteria_id` bigint(20) NOT NULL,
+				  `context_id` bigint(20) NOT NULL,
+				  `tab_id` bigint(20) DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `searchcriteria_id` (`searchcriteria_id`),
+				  KEY `context_id` (`context_id`),
+				  KEY `tab_id` (`tab_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -1065,7 +1146,7 @@ function com_install(){
 		
 		$query="ALTER TABLE `#__sdi_context_objecttype`
 				ADD CONSTRAINT `#__sdi_context_objecttype_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
-				ADD CONSTRAINT `#__sdi_context_objecttype_ibfk_1` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
+				ADD CONSTRAINT `#__sdi_context_objecttype_ibfk_2` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1074,8 +1155,8 @@ function com_install(){
 		
 		$query="ALTER TABLE `#__sdi_searchcriteria`
 				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`),
-				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_list_criteriatype` (`id`),
-				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`);
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_2` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_list_criteriatype` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_3` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1084,13 +1165,30 @@ function com_install(){
 		
 		$query="ALTER TABLE `#__sdi_relation_context`
 				ADD CONSTRAINT `#__sdi_relation_context_ibfk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
-				ADD CONSTRAINT `#__sdi_relation_context_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`);
+				ADD CONSTRAINT `#__sdi_relation_context_ibfk_2` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
 		
+		$query="ALTER TABLE `#__sdi_searchcriteria_tab`
+				ADD CONSTRAINT `#__sdi_searchcriteria_tab_ibfk_1` FOREIGN KEY (`searchcriteria_id`) REFERENCES `#__sdi_searchcriteria` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_tab_ibfk_2` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_tab_ibfk_3` FOREIGN KEY (`tab_id`) REFERENCES `#__sdi_list_searchtab` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_importref`
+  				ADD CONSTRAINT `#__sdi_importref_ibfk_1` FOREIGN KEY (`importtype_id`) REFERENCES `#__sdi_list_importtype` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
 	}
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries

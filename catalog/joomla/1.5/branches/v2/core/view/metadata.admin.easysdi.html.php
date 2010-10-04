@@ -1976,12 +1976,19 @@ class HTML_metadata {
 								
 								$uri =& JUri::getInstance();
 		
+								$language =& JFactory::getLanguage();
+								
+								$userLang="";
 								$defaultLang="";
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang)
+									if ($row->defaultlang) // Langue par défaut de la métadonnée
 										$defaultLang = $row->gemetlang;
+									
+									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+										$userLang = $row->gemetlang;
+										
 									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
@@ -1989,6 +1996,7 @@ class HTML_metadata {
 								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
 								*/
 								
+								$value = "";
 								$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 								$listCount = $listNode->length;		
 								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
@@ -2013,7 +2021,7 @@ class HTML_metadata {
 											if ($keyNode->length > 0)
 											{
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-												$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
+												//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 											}
 										}
 										else
@@ -2024,6 +2032,9 @@ class HTML_metadata {
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
 											
 										}
+										
+										if ($row->gemetlang == $userLang)
+											$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 									}
 									}
 									$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
@@ -2032,7 +2043,8 @@ class HTML_metadata {
 									
 								}
 
-								$value = "[".implode(",",$nodeValues)."]";
+								if (count($nodeValues)>0)
+									$value = "[".implode(",",$nodeValues)."]";
 								
 								$this->javascript .="
 								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
@@ -2045,7 +2057,7 @@ class HTML_metadata {
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
-																  lang: '".$defaultLang."',
+																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
@@ -2053,6 +2065,7 @@ class HTML_metadata {
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
+															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 															      layout: 'fit',
 															      targetField: '".$currentName."',
 															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
@@ -2102,6 +2115,13 @@ class HTML_metadata {
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
+																	    listeners: {
+																			'show': function (animateTarget, cb, scope)
+																					{
+																						this.items.get(0).emptyAll();
+					
+																					}
+																			},
 																	    items:[thes]
 														            });
 														else
@@ -3398,12 +3418,19 @@ class HTML_metadata {
 								
 								$uri =& JUri::getInstance();
 		
+					$language =& JFactory::getLanguage();
+								
+								$userLang="";
 								$defaultLang="";
 								$langArray = Array();
 								foreach($this->langList as $row)
-								{
-									if ($row->defaultlang)
+								{									
+									if ($row->defaultlang) // Langue par défaut de la métadonnée
 										$defaultLang = $row->gemetlang;
+									
+									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+										$userLang = $row->gemetlang;
+										
 									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
@@ -3422,7 +3449,7 @@ class HTML_metadata {
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
-																  lang: '".$defaultLang."',
+																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
@@ -3430,6 +3457,7 @@ class HTML_metadata {
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
+															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 															      layout: 'fit',
 															      targetField: '".$currentName."',
 															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
@@ -3479,6 +3507,13 @@ class HTML_metadata {
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
+																	    listeners: {
+																			'show': function (animateTarget, cb, scope)
+																					{
+																						this.items.get(0).emptyAll();
+					
+																					}
+																			},
 																	    items:[thes]
 														            });
 														else
@@ -3500,7 +3535,7 @@ class HTML_metadata {
 								);
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', null, false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
 								";
 								
 								break;
@@ -4408,6 +4443,16 @@ class HTML_metadata {
 														         value:'".html_Metadata::cleanText($importref->xslfile)."' 
 														       },
 														       { 
+														         id:'pretreatmentxslfile', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->pretreatmentxslfile)."' 
+														       },
+														       { 
+														         id:'importtype_id', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
+														       },
+														       { 
 														         id:'task', 
 														         xtype: 'hidden',
 														         value:'importXMLMetadata' 
@@ -4498,6 +4543,16 @@ class HTML_metadata {
 														         id:'xslfile', 
 														         xtype: 'hidden',
 														         value:'".html_Metadata::cleanText($importref->xslfile)."' 
+														       },
+														       { 
+														         id:'pretreatmentxslfile', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->pretreatmentxslfile)."' 
+														       },
+														       { 
+														         id:'importtype_id', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
 														       },
 														       { 
 														         id:'url', 

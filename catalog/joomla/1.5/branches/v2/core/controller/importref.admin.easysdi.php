@@ -47,6 +47,10 @@ defined('_JEXEC') or die('Restricted access');
 		{
 		alert( "<?php echo JText::_( 'CATALOG_IMPORTREF_SUBMIT_NOXSL', true ); ?>" );
 		} 
+		else if (getSelectedValue('adminForm','importtype_id') < 1)
+		{
+			alert( "<?php echo JText::_( 'CATALOG_IMPORTREF_SUBMIT_NOIMPORTTYPE', true ); ?>" );
+		}
 		else if (labelEmpty > 0) 
 		{
 			alert( "<?php echo JText::_( 'CATALOG_IMPORTREF_SUBMIT_NOLABELS', true ); ?>" );
@@ -183,7 +187,18 @@ class ADMIN_importref {
 			$labels[$lang->id] = $label;
 		}
 		
-		HTML_importref::editImportRef($rowImportRef, $fieldsLength, $languages, $labels, $option);
+		$importtypeList= array();
+		$importtypeList[] = JHTML::_('select.option','0', JText::_("CATALOG_IMPORTREF_IMPORTTYPE_SELECT"));
+		$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_importtype" );
+		$importtypeList = array_merge( $importtypeList, $database->loadObjectList() );
+		
+		helper_easysdi::alter_array_value_with_JTEXT_($importtypeList);
+		
+		$style = "display:none";
+		if ($rowImportRef->importtype_id == 2)
+			$style = "display:inline";
+		
+		HTML_importref::editImportRef($rowImportRef, $fieldsLength, $languages, $labels, $importtypeList, $style, $option);
 	}
 	
 	function saveImportRef($option)

@@ -705,7 +705,7 @@
 		        displayField: 'keyword',
 		        displayFieldTpl: '{keyword}',
 		        valueField:'value',
-		        value:value,
+		        //value:value,
 			 	// Champs spécifiques au clonage
 		        dynamic:true,
 		        minOccurs:min,
@@ -714,7 +714,7 @@
 				clones_count: clones_count,
 	            template: master,
 	    		// Ajout des valeurs existantes
-	            listeners: {'afterrender': function (){if (value!= null) this.addItems(value);}}
+	            listeners: {'afterrender': function (){if (value!= "") this.addItems(value);}}
 		    });
 		return sbs;
 	}

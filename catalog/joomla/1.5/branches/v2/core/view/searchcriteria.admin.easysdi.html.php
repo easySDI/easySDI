@@ -37,8 +37,9 @@ class HTML_searchcriteria {
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"), 'ogcsearchfilter', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_CRITERIATYPE"), 'criteriatype_label', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_SIMPLETAB"), 'simpletab', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_ADVANCEDTAB"), 'advancedtab', @$filter_order_Dir, @$filter_order); ?></th>
+				<!-- <th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_SIMPLETAB"), 'simpletab', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_ADVANCEDTAB"), 'advancedtab', @$filter_order_Dir, @$filter_order); ?></th> -->
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_TAB"), 'tab_label', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -106,7 +107,7 @@ else
 }?>
 				<td><?php echo $row->ogcsearchfilter; ?></td>
 				<td align="center"><?php echo JText::_($row->criteriatype_label);?></td>
-				<td width="100px" align="center">
+				<!-- <td width="100px" align="center">
 					<?php 
 						$imgY = 'tick.png';
 						$imgX = 'publish_x.png';
@@ -133,6 +134,10 @@ else
 					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
 						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
 					</a>
+				</td>-->
+				<?php $tab 	= ADMIN_searchcriteria::tab($row, $i);?>
+				<td width="100px" align="center">
+					<?php echo $tab;?>
 				</td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
@@ -144,7 +149,7 @@ else
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="10"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="11"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -159,7 +164,7 @@ else
 <?php
 	}
 	
-	function editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option)
+	function editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
 	{
 		global  $mainframe;
 		
@@ -176,9 +181,14 @@ else
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
 					<td><?php echo JHTML::_('select.radiolist', $tab, 'tab', 'class="radio"', 'value', 'text', $selectedTab);?></td>							
+				</tr>
+				 -->
+				<tr>
+					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
@@ -263,6 +273,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 			<input type="hidden" name="name" value="<?php echo $row->name?>" />
 			<input type="hidden" name="code" value="<?php echo $row->code?>" />
 			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			<input type="hidden" name="label" value="<?php echo $row->label; ?>" />
 			
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
@@ -272,7 +283,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 	}		
 
 	
-	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option)
+	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
 	{
 		global  $mainframe;
 		
@@ -293,9 +304,14 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
 					<td><?php echo JHTML::_('select.radiolist', $tab, 'tab', 'class="radio"', 'value', 'text', $selectedTab);?></td>							
+				</tr>
+				-->
+				<tr>
+					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
@@ -378,6 +394,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			<input type="hidden" name="label" value="<?php echo $row->label; ?>" />
 			
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />

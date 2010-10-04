@@ -465,7 +465,8 @@ else
 		
 		// Langues à gérer
 		$this->langList = array();
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		//$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
@@ -2453,12 +2454,19 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 								$uri =& JUri::getInstance();
 		
+								$language =& JFactory::getLanguage();
+								
+								$userLang="";
 								$defaultLang="";
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang)
+									if ($row->defaultlang) // Langue par défaut de la métadonnée
 										$defaultLang = $row->gemetlang;
+									
+									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+										$userLang = $row->gemetlang;
+										
 									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
@@ -2466,6 +2474,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
 								*/
 								
+								$value="";
 								$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 								$listCount = $listNode->length;		
 								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
@@ -2490,7 +2499,6 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											if ($keyNode->length > 0)
 											{
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-												$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 											}
 										}
 										else
@@ -2501,6 +2509,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
 											
 										}
+										
+										if ($row->gemetlang == $userLang)
+											$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 									}
 									}
 									$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
@@ -2509,7 +2520,8 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									
 								}
 
-								$value = "[".implode(",",$nodeValues)."]";
+								if (count($nodeValues)>0)
+									$value = "[".implode(",",$nodeValues)."]";
 								
 								$this->javascript .="
 								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
@@ -2522,7 +2534,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
-																  lang: '".$defaultLang."',
+																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
@@ -2530,9 +2542,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
+															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 															      layout: 'fit',
 															      targetField: '".$currentName."',
-															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
+															      proxy: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
 															      				var target = Ext.ComponentMgr.get(this.targetField);
 															    				var s = '';
@@ -2579,6 +2592,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
+																	    listeners: {
+																			'show': function (animateTarget, cb, scope)
+																					{
+																						this.items.get(0).emptyAll();
+					
+																					}
+																			},
 																	    items:[thes]
 														            });
 														else
@@ -3861,12 +3881,19 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 								$uri =& JUri::getInstance();
 		
+								$language =& JFactory::getLanguage();
+								
+								$userLang="";
 								$defaultLang="";
 								$langArray = Array();
 								foreach($this->langList as $row)
-								{
-									if ($row->defaultlang)
+								{									
+									if ($row->defaultlang) // Langue par défaut de la métadonnée
 										$defaultLang = $row->gemetlang;
+									
+									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+										$userLang = $row->gemetlang;
+										
 									$langArray[] = $row->gemetlang;
 								}
 								/*print_r($langArray);
@@ -3885,7 +3912,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
-																  lang: '".$defaultLang."',
+																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
@@ -3893,9 +3920,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 															      returnInspire: true,
 															      width: 300, 
 															      height:400,
+															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
 															      layout: 'fit',
 															      targetField: '".$currentName."',
-															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
+															      proxy: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
 															      				var record;
 																      		    var s = '';
@@ -3942,6 +3970,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
+																	    listeners: {
+																			'show': function (animateTarget, cb, scope)
+																					{
+																						this.items.get(0).emptyAll();
+					
+																					}
+																			},
 																	    items:[thes]
 														            });
 														else
@@ -3963,7 +3998,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								);
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', null, false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
 								";
 								
 								break;
@@ -4950,6 +4985,16 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															         value:'".html_Metadata::cleanText($importref->xslfile)."' 
 															       },
 															       { 
+															         id:'pretreatmentxslfile', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->pretreatmentxslfile)."' 
+															       },
+															       { 
+															         id:'importtype_id', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
+															       },
+															       { 
 															         id:'task', 
 															         xtype: 'hidden',
 															         value:'importXMLMetadata' 
@@ -5040,6 +5085,16 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															         id:'xslfile', 
 															         xtype: 'hidden',
 															         value:'".html_Metadata::cleanText($importref->xslfile)."' 
+															       },
+															       { 
+															         id:'pretreatmentxslfile', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->pretreatmentxslfile)."' 
+															       },
+															       { 
+															         id:'importtype_id', 
+															         xtype: 'hidden',
+															         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
 															       },
 															       { 
 															         id:'url', 

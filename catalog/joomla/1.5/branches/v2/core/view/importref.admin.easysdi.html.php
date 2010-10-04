@@ -113,7 +113,7 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 <?php
 	}
 	
-	function editImportRef(&$row, $fieldsLength, $languages, $labels, $option)
+	function editImportRef(&$row, $fieldsLength, $languages, $labels, $importtypeList, $style, $option)
 	{
 		global  $mainframe;
 		
@@ -131,15 +131,25 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_BOUNDARY_PRETREATMENTXSLFILE"); ?></td>
-					<td><input size="<?php echo $fieldsLength['pretreatmentxslfile'];?>" type="text" name ="pretreatmentxslfile" value="<?php echo $row->pretreatmentxslfile?>" maxlength="<?php echo $fieldsLength['pretreatmentxslfile'];?>"> </td>							
+					<td><?php echo JText::_("CATALOG_IMPORTREF_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.genericlist', $importtypeList, 'importtype_id', 'class="list" onchange="javascript:changeImporttypeVisibility(this.value);"', 'value', 'text', $row->importtype_id);?></td>							
 				</tr>
+			</table>
+			<div id = "div_importref_type" style="<?php echo $style; ?>">
+				<table border="0" cellpadding="3" cellspacing="0">	
+					<tr>
+						<td width=150><?php echo JText::_("CATALOG_IMPORTREF_PRETREATMENTXSLFILE"); ?></td>
+						<td><input size="<?php echo $fieldsLength['pretreatmentxslfile'];?>" type="text" name ="pretreatmentxslfile" value="<?php echo $row->pretreatmentxslfile?>" maxlength="<?php echo $fieldsLength['pretreatmentxslfile'];?>"> </td>							
+					</tr>
+				</table>
+			</div>
+			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td><?php echo JText::_("CATALOG_BOUNDARY_XSLFILE"); ?></td>
+					<td width=150><?php echo JText::_("CATALOG_IMPORTREF_XSLFILE"); ?></td>
 					<td><input size="<?php echo $fieldsLength['xslfile'];?>" type="text" name ="xslfile" value="<?php echo $row->xslfile?>" maxlength="<?php echo $fieldsLength['xslfile'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_BOUNDARY_URL"); ?></td>
+					<td><?php echo JText::_("CATALOG_IMPORTREF_URL"); ?></td>
 					<td><input size="<?php echo $fieldsLength['url'];?>" type="text" name ="url" value="<?php echo $row->url?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>							
 				</tr>
 			</table>

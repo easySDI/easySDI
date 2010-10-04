@@ -47,31 +47,6 @@ if (!is_array( $cid )) {
 	$cid = array(0);
 }
 
-$view = JRequest::getVar('view');
-
-if ($view)
-{
-	switch($view){
-		case "catalog":
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'catalog.site.easysdi.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'catalog.site.easysdi.html.php');
-			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
-			require_once(JPATH_COMPONENT.DS.'core'.DS.'geoMetadata.php');
-			$task="listCatalogContent";
-	}
-}
-	
-/*if ($view)
-{
-	switch($view){
-		default:
-		case "catalog":
-			SITE_catalog::listCatalogContent();
-			break;	
-	}
-}
-else
-{*/
 	switch($task){
 		// Metadata
 		case "listMetadata":

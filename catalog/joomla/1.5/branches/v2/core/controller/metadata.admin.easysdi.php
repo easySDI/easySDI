@@ -1818,71 +1818,9 @@ class ADMIN_metadata {
 			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
 			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
 			
+			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
-			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-			$catalogUrlBase = config_easysdi::getValue("catalog_url");
-	
-			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-				    <csw:Delete>
-				        <csw:Constraint version="1.0.0">
-				            <ogc:Filter>
-				                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-				                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-				                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
-				                </ogc:PropertyIsLike>
-				            </ogc:Filter>
-				        </csw:Constraint>
-				    </csw:Delete>
-				</csw:Transaction>'; 
-			
-			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-			
-			/*$deleteResults = DOMDocument::loadXML($result);
-			$xpathDelete = new DOMXPath($deleteResults);
-			$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			
-			$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-			
-			if ($deleted <> 1)
-			{
-				$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-				
-				$response = '{
-					    		success: false,
-							    errors: {
-							        xml: "Metadata has not been deleted"
-							    }
-							}';
-				print_r($response);
-				die();
-			}*/
-		
-			// Insérer dans Geonetwork la nouvelle version de la métadonnée
-			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<csw:Transaction service=\"CSW\"
-			version=\"2.0.2\"
-			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-			<csw:Insert>
-			".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
-			</csw:Insert>
-			</csw:Transaction>";
-			//echo $XMLDoc->saveXML()." \r\n ";
-				
-			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-			
-			$insertResults = DOMDocument::loadXML($result);
-			
-			$xpathInsert = new DOMXPath($insertResults);
-			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-			
-			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-			
-			if ($inserted <> 1)
+			if ($updated <> 1)
 			{
 				$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 				$response = '{
@@ -2673,70 +2611,9 @@ class ADMIN_metadata {
 		$XMLDoc = DOMDocument::loadXML($xml);
 
 		// Enregistrement de la métadonnée dans geonetwork
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-			    <csw:Delete>
-			        <csw:Constraint version="1.0.0">
-			            <ogc:Filter>
-			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
-			                </ogc:PropertyIsLike>
-			            </ogc:Filter>
-			        </csw:Constraint>
-			    </csw:Delete>
-			</csw:Transaction>'; 
-		
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		/*$deleteResults = DOMDocument::loadXML($result);
-		$xpathDelete = new DOMXPath($deleteResults);
-		$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-		// Peu importe si la suppression a échoué
-		if ($deleted <> 1)
-		{
-			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+		$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
-			$response = '{
-				    		success: false,
-						    errors: {
-						        xml: "Metadata has not been deleted. '.$errorMsg.'"
-						    }
-						}';
-			print_r($response);
-			die();
-		}
-		*/
-		// Insérer dans Geonetwork la nouvelle version de la métadonnée
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-		<csw:Insert>
-		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
-		</csw:Insert>
-		</csw:Transaction>";
-		//echo $XMLDoc->saveXML()." \r\n ";
-			
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		$insertResults = DOMDocument::loadXML($result);
-		
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		
-		if ($inserted <> 1)
+		if ($updated <> 1)
 		{
 			$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
 			$response = '{
@@ -2940,6 +2817,8 @@ class ADMIN_metadata {
 		$object_id = $_POST['object_id'];
 		$xmlfile = file_get_contents($_FILES['xmlfile']['tmp_name']);
 		$xslfile = $_POST['xslfile'];
+		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
+		$importtype = $_POST['importtype_id'];
 		 
 		// Récupérer l'objet lié à cette métadonnée
 		$rowObject = new object( $database );
@@ -3072,30 +2951,91 @@ class ADMIN_metadata {
 		$style = new DomDocument();
 		$style->load($xslfile);
 		
+		// XML conforme à la norme ISO
         $processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
 		
-		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
-        $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
-
-        foreach ($nodeList as $node)
-        {
-        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
-        	// la métadonnée importée prenne son nouvel id
-        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
-        	{
-        		foreach ($node->childNodes as $child)
-        		{
-        			if ($child->nodeName == $idrow[0]->list_isocode)
-        			{
-        				$child->nodeValue = $metadata_id;
-        			}
-        		}
-        	}
-        }
-        
-        // Construction du DOMXPath à utiliser pour générer la vue d'édition
+		if ($cswResults == false or !$cswResults->childNodes->item(0)->hasChildNodes())
+		{
+			//$xpathResults = new DOMXPath($doc);
+			$msg = JText::_('CATALOG_METADATA_IMPORTXML_NOMETADATA_MSG');
+			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
+		}
+		
+		if ($importtype == 1) // Import de type remplacement
+		{
+			/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
+	        $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
+	
+	        foreach ($nodeList as $node)
+	        {
+	        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
+	        	// la métadonnée importée prenne son nouvel id
+	        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
+	        	{
+	        		foreach ($node->childNodes as $child)
+	        		{
+	        			if ($child->nodeName == $idrow[0]->list_isocode)
+	        			{
+	        				$child->nodeValue = $metadata_id;
+	        			}
+	        		}
+	        	}
+	        }
+		}
+		else if ($importtype == 2) // Import de type fusion
+		{
+			// Récupérer en GET le xml déjà stocké pour cette métadonnée
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_id;
+			//$existingXML = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+			$existingXML = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+			// Enlever les balises CSW Response pour ne garder que les gmd, depuis gmd:MD_Metadata
+			$existingXML = $existingXML->children("http://www.isotc211.org/2005/gmd");
+			$existingXML = DOMDocument::loadXML($existingXML->asXML());
+			
+			// Nettoyage du XML déjà stocké, s'il y a lieu
+			if ($pretreatmentxslfile)
+			{
+				$pretreatment = new DomDocument();
+				$pretreatment->load($pretreatmentxslfile);
+				$processor->importStylesheet($pretreatment);
+				$existingXML = $processor->transformToDoc($existingXML);
+			}
+	
+			// Création des deux fichiers à fusionner
+			$tmp = uniqid();
+			//$existingXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/existingXML_clean.xml";
+			$existingXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_1.xml';
+			$existingXML->save($existingXMLFile);
+			
+			//$ESRIXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/ESRIXML_iso.xml";
+			$ESRIXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_2.xml';
+			$cswResults->save($ESRIXMLFile);
+			
+			// Récupération de la feuille de style à utiliser pour les fusionner
+			$style = new DomDocument();
+			//$style->load("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_core/xsl/XML2XML_merge_ESRI.xsl");
+			$style->load( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
+			
+			$xmlmerge= "<?xml version=\"1.0\"?>
+					<merge xmlns=\"http://informatik.hu-berlin.de/merge\">
+					  <file1>".$existingXMLFile."</file1>
+					  <file2>".$ESRIXMLFile."</file2>
+					</merge>";
+	
+			$merging = DOMDocument::loadXML($xmlmerge);
+			$processor->importStylesheet($style);
+			$cswResults = $processor->transformToDoc($merging);
+			
+			// Suppression des deux fichiers à fusionner
+			unlink($existingXMLFile);
+			unlink($ESRIXMLFile);
+		}
+		
+		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
@@ -3104,7 +3044,7 @@ class ADMIN_metadata {
 		else
 		{
 			//$xpathResults = new DOMXPath($doc);
-			$msg = JText::_('CATALOG_METADATA_IMPORTXML_NOMETADATA_MSG');
+			$msg = JText::_('CATALOG_METADATA_IMPORTXML_PROBLEMTRANSFORMATION_MSG');
 			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
@@ -3122,7 +3062,6 @@ class ADMIN_metadata {
         	$xpathResults->registerNamespace($namespace->prefix,$namespace->uri);
         } 
         
-       
         // Parcourir les noeuds enfants de la classe racine.
 		// - Pour chaque classe rencontrée, ouvrir un niveau de hiérarchie dans la treeview
 		// - Pour chaque attribut rencontré, créer un champ de saisie du type rendertype de la relation entre la classe et l'attribut
@@ -3140,6 +3079,8 @@ class ADMIN_metadata {
 		$xslfile = $_POST['xslfile'];
 		$importid = $_POST['id'];
 		$url = $_POST['url'];
+		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
+		$importtype = $_POST['importtype_id'];
 		
 		// Récupérer l'objet lié à cette métadonnée
 		$rowObject = new object( $database );
@@ -3275,42 +3216,107 @@ class ADMIN_metadata {
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
-		/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
-        $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
 	
-        foreach ($nodeList as $node)
-        {
-        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
-        	// la métadonnée importée prenne son nouvel id 
-        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
-        	{
-        		foreach ($node->childNodes as $child)
-        		{
-        			if ($child->nodeName == $idrow[0]->list_isocode)
-        			{
-        				$child->nodeValue = $metadata_id;
-        			}
-        		}
-        	}
-        }
-
-        //$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
+		if ($cswResults == false)
+		{
+			if (!$cswResults->childNodes->item($controlPos)->hasChildNodes())
+			{
+				//$xpathResults = new DOMXPath($doc);
+				$msg = JText::_('CATALOG_METADATA_IMPORTCSW_NOMETADATA_MSG');
+				$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
+			}
+		}
+		
+		if ($importtype == 1) // Import de type remplacement
+		{
+			/* Remplacer la valeur du noeud fileIdentifier par la valeur courante metadata_id*/
+	        $nodeList = &$cswResults->getElementsByTagName($idrow[0]->name);
+	
+	        foreach ($nodeList as $node)
+	        {
+	        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
+	        	// la métadonnée importée prenne son nouvel id
+	        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
+	        	{
+	        		foreach ($node->childNodes as $child)
+	        		{
+	        			if ($child->nodeName == $idrow[0]->list_isocode)
+	        			{
+	        				$child->nodeValue = $metadata_id;
+	        			}
+	        		}
+	        	}
+	        }
+		}
+		else if ($importtype == 2) // Import de type fusion
+		{
+			// Récupérer en GET le xml déjà stocké pour cette métadonnée
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_id;
+			//$existingXML = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+			$existingXML = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+			// Enlever les balises CSW Response pour ne garder que les gmd, depuis gmd:MD_Metadata
+			$existingXML = $existingXML->children("http://www.isotc211.org/2005/gmd");
+			$existingXML = DOMDocument::loadXML($existingXML->asXML());
+			
+			// Nettoyage du XML déjà stocké, s'il y a lieu
+			if ($pretreatmentxslfile)
+			{
+				$pretreatment = new DomDocument();
+				$pretreatment->load($pretreatmentxslfile);
+				$processor->importStylesheet($pretreatment);
+				$existingXML = $processor->transformToDoc($existingXML);
+			}
+	
+			// Création des deux fichiers à fusionner
+			$tmp = uniqid();
+			//$existingXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/existingXML_clean.xml";
+			$existingXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_1.xml';
+			$existingXML->save($existingXMLFile);
+			
+			//$ESRIXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/ESRIXML_iso.xml";
+			$ESRIXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_2.xml';
+			$cswResults->save($ESRIXMLFile);
+			
+			// Récupération de la feuille de style à utiliser pour les fusionner
+			$style = new DomDocument();
+			//$style->load("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_core/xsl/XML2XML_merge_ESRI.xsl");
+			$style->load( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
+			
+			$xmlmerge= "<?xml version=\"1.0\"?>
+					<merge xmlns=\"http://informatik.hu-berlin.de/merge\">
+					  <file1>".$existingXMLFile."</file1>
+					  <file2>".$ESRIXMLFile."</file2>
+					</merge>";
+	
+			$merging = DOMDocument::loadXML($xmlmerge);
+			$processor->importStylesheet($style);
+			$cswResults = $processor->transformToDoc($merging);
+			
+			// Suppression des deux fichiers à fusionner
+			unlink($existingXMLFile);
+			unlink($ESRIXMLFile);
+		}
+		
 		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
-		// Le document a été créé correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => résultat retourné
+		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
+		// Le document a été créé correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => résultat retourné
 		$controlPos = 0;
 		if ($cswResults->childNodes->item(0)->nodeName == "#text")
 			$controlPos = 1;
-			
-		if ($cswResults <> false and $cswResults->childNodes->item($controlPos)->hasChildNodes())
+		
+		if ($cswResults <> false and $cswResults->childNodes->item($controlPos) and $cswResults->childNodes->item($controlPos)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
 		{
 			//$xpathResults = new DOMXPath($doc);
-			$msg = JText::_('CATALOG_METADATA_IMPORTCSW_NOMETADATA_MSG');
+			$msg = JText::_('CATALOG_METADATA_IMPORTCSW_PROBLEMTRANSFORMATION_MSG');
 			$mainframe->redirect("index.php?option=$option&task=editMetadata&cid[]=".$rowObjectVersion->id, $msg );
 		}
+				
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
         $xpathResults->registerNamespace('srv','http://www.isotc211.org/2005/srv');
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
@@ -3959,6 +3965,81 @@ class ADMIN_metadata {
 			return false;
 		}
 		return true;		
+	}
+	
+	function CURLUpdateMetadata($metadata_id, $XMLDoc)
+	{
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		
+		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+			    <csw:Update>
+			    	'.substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>')).'
+			        <csw:Constraint version="1.0.0">
+			            <ogc:Filter>
+			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
+			                </ogc:PropertyIsLike>
+			            </ogc:Filter>
+			        </csw:Constraint>
+			    </csw:Update>
+			</csw:Transaction>'; 
+		
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
+		
+		$updateResults = DOMDocument::loadXML($result);
+		
+		$xpathUpdate = new DOMXPath($updateResults);
+		$xpathUpdate->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+		
+		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
+		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
+		
+		/*
+		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
+			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
+			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
+			    <csw:Delete>
+			        <csw:Constraint version="1.0.0">
+			            <ogc:Filter>
+			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
+			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
+			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
+			                </ogc:PropertyIsLike>
+			            </ogc:Filter>
+			        </csw:Constraint>
+			    </csw:Delete>
+			</csw:Transaction>'; 
+		
+		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
+		
+		// Insérer dans Geonetwork la nouvelle version de la métadonnée
+		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+		<csw:Transaction service=\"CSW\"
+		version=\"2.0.2\"
+		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+		<csw:Insert>
+		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
+		</csw:Insert>
+		</csw:Transaction>";
+		//echo $XMLDoc->saveXML()." \r\n ";
+			
+		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
+		
+		$insertResults = DOMDocument::loadXML($result);
+		
+		$xpathInsert = new DOMXPath($insertResults);
+		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+		
+		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+		*/
+		return $updated;
 	}
 }
 ?>

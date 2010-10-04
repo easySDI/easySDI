@@ -962,6 +962,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_importref::_DEFAULT();
 		ADMIN_importref::listImportRef($option);
 		break;
@@ -971,6 +972,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_importref::_EDIT();
 		ADMIN_importref::editImportRef(0,$option);
 	break;
@@ -980,6 +982,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_importref::_EDIT();		
 		ADMIN_importref::editImportRef($cid[0],$option);
 	break;
@@ -988,6 +991,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::saveImportRef($option);
 		TOOLBAR_importref::_DEFAULT();
 		ADMIN_importref::listImportRef($option);
@@ -997,6 +1001,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::saveImportRef($option);
 		break;
 	case "removeImportRef":
@@ -1004,6 +1009,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::removeImportRef($cid,$option);
 		TOOLBAR_importref::_DEFAULT();
 		ADMIN_importref::listImportRef($option);
@@ -1013,6 +1019,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::cancelImportRef($option);
 		TOOLBAR_importref::_DEFAULT();
 		ADMIN_importref::listImportRef($option);
@@ -1022,6 +1029,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::saveOrder($option);
 		break;
 	case "orderupImportRef":
@@ -1029,6 +1037,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::orderContent(-1, $option);
 		break;
 	case "orderdownImportRef":
@@ -1036,6 +1045,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'importref.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'importref.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'importref.admin.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_importref::orderContent(1, $option);
 		break;
 
@@ -1846,7 +1856,9 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'context.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'context.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'context.admin.easysdi.html.php');
-		ADMIN_context::deleteContext($option);
+		ADMIN_context::deleteContext($cid, $option);
+		TOOLBAR_context::_DEFAULT();
+		ADMIN_context::listContext($option);
 		break;
 	case "cancelContext":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'context.easysdi.class.php');
@@ -1884,6 +1896,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_searchcriteria::_DEFAULT();
 		ADMIN_searchcriteria::listSearchCriteria($option);
 		break;
@@ -1893,6 +1906,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_searchcriteria::_EDIT();
 		ADMIN_searchcriteria::editSearchCriteria(0, $option);
 		break;
@@ -1902,6 +1916,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		TOOLBAR_searchcriteria::_EDIT();
 		ADMIN_searchcriteria::editSearchCriteria($cid[0], $option);
 		break;
@@ -1910,6 +1925,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::saveSearchCriteria($option);
 		TOOLBAR_searchcriteria::_DEFAULT();
 		ADMIN_searchcriteria::listSearchCriteria($option);
@@ -1919,6 +1935,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::saveSearchCriteria($option);
 		break;
 	case "removeSearchCriteria":
@@ -1926,6 +1943,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::removeSearchCriteria($cid, $option);
 		TOOLBAR_searchcriteria::_DEFAULT();
 		ADMIN_searchcriteria::listSearchCriteria($option);
@@ -1935,6 +1953,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::cancelSearchCriteria($option);
 		TOOLBAR_searchcriteria::_DEFAULT();
 		ADMIN_searchcriteria::listSearchCriteria($option);
@@ -1944,6 +1963,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::saveOrder($option);
 		break;
 	case "orderupSearchCriteria":
@@ -1951,6 +1971,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::orderContent(-1, $option);
 		break;
 	case "orderdownSearchCriteria":
@@ -1958,6 +1979,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::orderContent(1, $option);
 		break;
 	case 'backSearchCriteria':
@@ -1969,6 +1991,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'context.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'context.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'context.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::backSearchCriteria($option);
 		TOOLBAR_context::_DEFAULT();
 		ADMIN_context::listContext($option);
@@ -1978,6 +2001,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::changeState('simpletab', 'advancedtab', 1);
 		break;
 	case "searchcriteria_simpletab_unpublish":
@@ -1985,6 +2009,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::changeState('simpletab', 'advancedtab', 0);
 		break;
 	case "searchcriteria_advancedtab_publish":
@@ -1992,6 +2017,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::changeState('advancedtab', 'simpletab', 1);
 		break;
 	case "searchcriteria_advancedtab_unpublish":
@@ -1999,7 +2025,32 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		ADMIN_searchcriteria::changeState('advancedtab', 'simpletab', 0);
+		break;
+	case "searchcriteria_tab_none":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'searchcriteria.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		ADMIN_searchcriteria::tabSet(0);
+		break;
+	case "searchcriteria_tab_simple":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'searchcriteria.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		ADMIN_searchcriteria::tabSet(1);
+		break;
+	case "searchcriteria_tab_advanced":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'searchcriteria.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchcriteria.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchcriteria.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchcriteria.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		ADMIN_searchcriteria::tabSet(2);
 		break;
 	
 	case 'cpanel':

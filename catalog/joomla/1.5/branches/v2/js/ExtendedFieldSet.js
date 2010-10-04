@@ -448,6 +448,7 @@ Ext.override(Ext.form.FieldSet, {
 			
 							firstClone.clone = false;
 							firstClone.template = undefined;
+							
 							panel.remove(fieldset, true);
 							firstClone.doLayout();
 							

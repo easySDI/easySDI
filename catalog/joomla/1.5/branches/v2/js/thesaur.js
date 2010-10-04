@@ -172,6 +172,7 @@ var ThesaurusReader = function(config){
       minLengtText: 'At least 3 characters...',
       msgTarget: 'under',
       triggerClass:'x-form-search-trigger',
+      xtype:'combo',
       obj: this // zpetny odkaz na objekt
     });
     
@@ -220,6 +221,16 @@ var ThesaurusReader = function(config){
     this.emptyTree = function(){
       var root = this.thesRoot;
       while(root.item(0)) root.removeChild(root.item(0));    
+    }
+    
+    /* empties thesaurus panel */
+    this.emptyAll = function(){
+      var root = this.thesRoot;
+      while(root.item(0)) root.removeChild(root.item(0));
+      root.remove(true);
+      
+      this.obj.searchField.clearValue();
+      this.obj.treePanel.topToolbar.hide();
     }
     
 
@@ -439,7 +450,9 @@ var ThesaurusReader = function(config){
     	  handler: this.returnTerm, scope:this
     	 }
     	, '-'
-    	, 'xxx']
+    	, {xtype: 'label',
+    		id: 'maToolbar',
+    		text: 'xxx'}]
     );
         
     this.treePanel = new Ext.tree.TreePanel({

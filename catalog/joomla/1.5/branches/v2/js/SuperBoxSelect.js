@@ -671,7 +671,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 this.fireEvent('invalid', this, msg);
             },
             clearInvalid : function() {
-                if (!this.rendered || this.preventMark) { // not
+                if (!this.rendered || this.preventMark || !this.el.dom) { // not
                     // rendered
                     return;
                 }
@@ -1190,6 +1190,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
              *            {@link #Ext.ux.form.SuperBoxSelect-classField}
              */
             addItems : function(newItemObjects) {
+
                 if (Ext.isArray(newItemObjects)) {
                     Ext.each(newItemObjects, function(item) {
                                 this.addItem(item);
@@ -1243,7 +1244,6 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 var rec = this.createRecord(newItemObject);
                 this.store.add(rec);
                 this.addRecord(rec);
-
                 return true;
             },
             addItemBox : function(itemVal, itemDisplay, itemCaption, itemClass,
@@ -1309,8 +1309,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                                 },
                                 destroy : function() {
                                     this.collapse();
-                                    this.autoSize().manageClearBtn()
-                                            .validateValue();
+					  this.autoSize().manageClearBtn()
+					          .validateValue();
                                 },
                                 scope : this
                             }
@@ -1453,6 +1453,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
 
                 var values = Ext.isArray(value) ? value : value
                         .split(this.valueDelimiter);
+
                 this.removeAllItems().resetStore();
 
                 // reset remoteLookup because setValue should overwrite
@@ -1563,26 +1564,33 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 if (!this.metrics) {
                     this.metrics = Ext.util.TextMetrics.createInstance(this.el);
                 }
-                var el = this.el, v = el.dom.value, d = document
+                
+                if (this.el.dom)
+                {
+                	var el = this.el, v = el.dom.value, d = document
                         .createElement('div');
+                	if (v === "" && this.emptyText && this.items.getCount() < 1) {
+                        v = this.emptyText;
+                    }
+                    d.appendChild(document.createTextNode(v));
+                    v = d.innerHTML;
+                    d = null;
+                    v += " ";
+                    var w = Math.max(this.metrics.getWidth(v) + 24, 24);
+                    if (typeof this._width != 'undefined') {
+                        w = Math.min(this._width, w);
+                    }
+                    this.el.setWidth(w);
 
-                if (v === "" && this.emptyText && this.items.getCount() < 1) {
-                    v = this.emptyText;
+                    if (Ext.isIE) {
+                        this.el.dom.style.top = '0';
+                    }
+                    return this;
                 }
-                d.appendChild(document.createTextNode(v));
-                v = d.innerHTML;
-                d = null;
-                v += " ";
-                var w = Math.max(this.metrics.getWidth(v) + 24, 24);
-                if (typeof this._width != 'undefined') {
-                    w = Math.min(this._width, w);
+                else
+                {
+                	return this;
                 }
-                this.el.setWidth(w);
-
-                if (Ext.isIE) {
-                    this.el.dom.style.top = '0';
-                }
-                return this;
             },
             doQuery : function(q, forceAll, valuesQuery) {
                 q = Ext.isEmpty(q) ? '' : q;

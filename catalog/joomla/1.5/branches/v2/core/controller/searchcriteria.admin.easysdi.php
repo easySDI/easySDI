@@ -43,6 +43,7 @@ class ADMIN_searchcriteria {
 			and $filter_order <> "criteriatype_label" 
 			and $filter_order <> "simpletab" 
 			and $filter_order <> "advancedtab" 
+			and $filter_order <> "tab_label" 
 			and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
@@ -61,10 +62,12 @@ class ADMIN_searchcriteria {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT sc.*, c.name as criteriatype_name, c.label as criteriatype_label 
+		$query = "SELECT sc.*, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
 				  FROM #__sdi_searchcriteria sc 
 				  LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id 
 				  INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id 
+				  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON (sc_tab.searchcriteria_id=sc.id AND sc_tab.context_id=".$context_id.")
+				  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id 
 				  WHERE sc.criteriatype_id=1 
 				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id.") 
 				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id.")";
@@ -201,10 +204,21 @@ class ADMIN_searchcriteria {
 		else
 			$selectedTab = 0;
 		
+		$tabList= array();
+		$tabList[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
+		$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_searchtab" );
+		$tabList = array_merge( $tabList, $database->loadObjectList() );
+		
+		helper_easysdi::alter_array_value_with_JTEXT_($tabList);
+		
+		$tab_id = 0;
+		$database->setQuery("SELECT tab_id FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id=".$row->id." AND context_id=".$context_id);
+		$tab_id = $database->loadResult();
+		
 		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
-			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option);
+			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
-			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $option);
+			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
 	
@@ -231,6 +245,7 @@ class ADMIN_searchcriteria {
 			$rowSearchCriteria->guid = helper_easysdi::getUniqueId();
 		
 		// Onglet
+		/*
 		if ($_POST['tab'] == 0)
 		{
 			$rowSearchCriteria->simpletab = 0;
@@ -246,12 +261,15 @@ class ADMIN_searchcriteria {
 			$rowSearchCriteria->simpletab = 0;
 			$rowSearchCriteria->advancedtab = 1;
 		}
+		*/
 			
 		// Si le critère de recherche est de type CSW, indiquer le contexte associé
 		if ($rowSearchCriteria->criteriatype_id == 3)
 		{
 			$rowSearchCriteria->context_id = $context_id;
 		}
+		else
+			$rowSearchCriteria->context_id = null;
 		
 		if (!$rowSearchCriteria->store(false)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -259,12 +277,39 @@ class ADMIN_searchcriteria {
 			exit();
 		}
 		
+		// Stocker le tab si on crée le critère
+		if ($_POST['id'] == 0)
+		{
+			$tab_id = $_POST['tabList'];
+			if ($tab_id == 0)
+				$tab_id = 'NULL';
+			
+			$query = "INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) VALUES (".$rowSearchCriteria->id.", ".$context_id.", ".$tab_id.")";
+			$database->setQuery( $query);
+			if (!$database->query())
+			{	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}
+		else
+		{
+			$tab_id = $_POST['tabList'];
+			if ($tab_id == 0)
+				$tab_id = 'NULL';
+			
+			$query = "UPDATE #__sdi_searchcriteria_tab SET tab_id=".$tab_id." WHERE searchcriteria_id=".$rowSearchCriteria->id." AND context_id=".$context_id;
+			$database->setQuery( $query);
+			if (!$database->query())
+			{	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}		
+		
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
-	
 		// Stocker les labels
 		foreach ($languages as $lang)
 		{
@@ -330,6 +375,13 @@ class ADMIN_searchcriteria {
 
 			if ($rowSearchCriteria->criteriatype_id == 3)
 			{
+				$query = "DELETE FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id = ".$searchcriteria_id;
+				$database->setQuery( $query);
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				
 				if (!$rowSearchCriteria->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
@@ -512,6 +564,79 @@ class ADMIN_searchcriteria {
 		$mainframe->enqueueMessage($msg,"SUCCESS");
 		$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 		exit();
+	}
+	
+	function tab( &$row, $i)
+	{
+		$color_tab = 'style="color: black;"';
+		if ( !$row->tab_id )  { // Aucun tab
+			//$color_tab = 'style="color: green;"';
+			$task_tab = "searchcriteria_tab_simple";
+			$text_tab = JText::_( "CATALOG_SEARCHTAB_NONE");
+		} else if ( $row->tab_id == 1 ) { // tab simple
+			//$color_tab = 'style="color: red;"';
+			$task_tab = "searchcriteria_tab_advanced";
+			$text_tab = JText::_( $row->tab_label );
+		} else { // tab avancé
+			//$color_tab = 'style="color: black;"';
+			$task_tab = "searchcriteria_tab_none";
+			$text_tab = JText::_( $row->tab_label );
+		}
+		
+		
+		$href = '
+		<a href="javascript:void(0);" onclick="return listItemTask(\'cb'. $i .'\',\''. $task_tab .'\')" '. $color_tab .'>
+		'. $text_tab .'</a>'
+		;
+
+		return $href;
+	}
+	
+	function tabSet($tab_id)
+	{
+		global $mainframe;
+		$option	= JRequest::getCmd( 'option' );
+		$task	= JRequest::getCmd( 'task' );
+		$context_id = JRequest::getCmd( 'context_id' );
+		
+		// Initialize variables
+		$db		= & JFactory::getDBO();
+
+		$cid	= JRequest::getVar( 'cid', array(0), 'post', 'array' );
+		$cid	= $cid[0];
+		
+		// Update the tab of the searchcriteria
+		$rowSearchCriteria = new searchcriteria( $db );
+		$rowSearchCriteria->load($cid);
+		
+		if ($tab_id == 0)
+			$tab_id="NULL";
+
+		$searchcriteriaCount=0;
+		$query = "SELECT COUNT(*) FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id = ".$rowSearchCriteria->id." AND context_id=".$context_id;
+		$db->setQuery( $query);
+		$searchcriteriaCount = $db->loadResult();
+				
+		if ($searchcriteriaCount == 0)
+		{
+			$query = "INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) VALUES (".$rowSearchCriteria->id.", ".$context_id.", ".$tab_id.")";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		else
+		{
+			$query = "UPDATE #__sdi_searchcriteria_tab SET tab_id=".$tab_id." WHERE searchcriteria_id=".$rowSearchCriteria->id." AND context_id=".$context_id;
+			$db->setQuery( $query);
+			if (!$db->query())
+			{	
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		
+		$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 	}
 }
 ?>

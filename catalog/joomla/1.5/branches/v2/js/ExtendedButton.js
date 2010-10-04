@@ -89,7 +89,7 @@ Ext.override(Ext.Button, {
 						if (!winthge)
 							winthge = new Ext.Window({
 							                id: newName + '_WIN',
-											title:'TEST', //Ext.ComponentMgr.get( newName + '_WIN').title,
+											title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
 							                width:500,
 							                height:500,
 							                closeAction:'hide',
@@ -98,6 +98,13 @@ Ext.override(Ext.Button, {
 										    closable:true, 
 										    renderTo:Ext.getBody(), 
 										    frame:true,
+										    listeners: {
+												'show': function (animateTarget, cb, scope)
+														{
+															this.items.get(0).emptyAll();
+
+														}
+												},
 										    items:[new ThesaurusReader({
 												  id:newName + '_PANEL_THESAURUS',
 												  lang: thesMaster.lang,
@@ -109,6 +116,7 @@ Ext.override(Ext.Button, {
 											      width: 300, 
 											      height:400,
 											      layout: 'fit',
+											      win_title: thesMaster.win_title,
 											      targetField: newName,
 											      proxy: thesMaster.proxy,
 											      handler: function(result){

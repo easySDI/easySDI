@@ -3919,7 +3919,8 @@ function() {
 	
 	    
 	    insertAfter: function(el){
-	        (el = GETDOM(el)).parentNode.insertBefore(this.dom, el.nextSibling);
+	    	if (GETDOM(el).nextSibling && GETDOM(el).nextSibling.id != "")
+	    		(el = GETDOM(el)).parentNode.insertBefore(this.dom, el.nextSibling);
 	        return this;
 	    },
 	

@@ -76,9 +76,12 @@ class SITE_catalog {
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
+								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
+								  LEFT OUTER JOIN #__sdi_context c_tab ON sc_tab.context_id=c_tab.id
+								  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id
 					   WHERE (sc.relation_id IS NULL
 					   		 OR c.code='".$context."')
-					   		 AND sc.simpletab = 1 
+					   		 AND tab.code = 'simple' 
 					   ORDER BY sc.ordering");
 		//echo $database->getQuery()."<br>";
 		$listSimpleFilters = array_merge( $listSimpleFilters, $database->loadObjectList() );		
@@ -103,9 +106,12 @@ class SITE_catalog {
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
+								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
+								  LEFT OUTER JOIN #__sdi_context c_tab ON sc_tab.context_id=c_tab.id
+								  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id
 					   WHERE (sc.relation_id IS NULL
 					   		 OR c.code='".$context."')
-					   		 AND sc.advancedtab = 1 
+					   		 AND tab.code = 'advanced' 
 					   ORDER BY sc.ordering");
 		//echo $database->getQuery()."<br>";
 		$listAdvancedFilters = array_merge( $listAdvancedFilters, $database->loadObjectList() );		
@@ -527,7 +533,9 @@ class SITE_catalog {
 								}
 								break;
 							case "objecttype":
-								$objecttype_id = JRequest::getVar('objecttype_id');
+								//$objecttype_id = JRequest::getVar('objecttype_id');
+								$objecttype_id = JRequest::getVar($searchFilter->guid);
+								
 								//echo "objecttype_id: ".count($objecttype_id);
 								if (count($objecttype_id) > 0)
 								{
@@ -622,7 +630,8 @@ class SITE_catalog {
 								}
 								break;
 							case "versions":
-								$versions = JRequest::getVar('versions');
+								//$versions = JRequest::getVar('versions');
+								$versions = JRequest::getVar($searchFilter->guid);
 								if ($versions <> "")
 								{
 									$countSimpleFilters++;
@@ -721,7 +730,9 @@ class SITE_catalog {
 								}
 								break;
 							case "object_name":
-								$object_name = JRequest::getVar('object_name');
+								//$object_name = JRequest::getVar('object_name');
+								$object_name = JRequest::getVar($searchFilter->guid);
+								
 								if ($object_name <> "")
 								{
 									$countSimpleFilters++;
@@ -935,7 +946,9 @@ class SITE_catalog {
 								}
 								break;
 							case "managers":
-								$managers = JRequest::getVar('managers');
+								//$managers = JRequest::getVar('managers');
+								$managers = JRequest::getVar($searchFilter->guid);
+								
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countSimpleFilters++;
@@ -978,7 +991,9 @@ class SITE_catalog {
 								}
 								break;
 							case "title":
-								$metadata_title = JRequest::getVar('title');
+								//$metadata_title = JRequest::getVar('title');
+								$metadata_title = JRequest::getVar($searchFilter->guid);
+								
 								if ($metadata_title <> "")
 								{
 									$countSimpleFilters++;
@@ -991,7 +1006,9 @@ class SITE_catalog {
 								}
 								break;
 							case "account_id":
-								$accounts = JRequest::getVar('account_id');
+								//$accounts = JRequest::getVar('account_id');
+								$accounts = JRequest::getVar($searchFilter->guid);
+								
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countSimpleFilters++;
@@ -1064,10 +1081,10 @@ class SITE_catalog {
 			$countAdvancedFilters = 0;
 			foreach($listAdvancedFilters as $searchFilter)
 			{
-				$filter = JRequest::getVar('filter_'.$searchFilter->name);
-				//echo "<br>".'filter_'.$searchFilter->name.": ".$filter ;
-				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->name);
-				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->name);
+				$filter = JRequest::getVar('filter_'.$searchFilter->guid);
+				//echo "<br>".'filter_'.$searchFilter->guid.": ".$filter ;
+				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
+				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
 							
 				if ($filter <> "" or $lowerFilter <> "" or $upperFilter <> "")
 				{
@@ -1317,7 +1334,9 @@ class SITE_catalog {
 								}
 								break;
 							case "objecttype":
-								$objecttype_id = JRequest::getVar('objecttype_id');
+								//$objecttype_id = JRequest::getVar('objecttype_id');
+								$objecttype_id = JRequest::getVar($searchFilter->guid);
+								
 								//echo "objecttype_id: ".count($objecttype_id);
 								if (count($objecttype_id) > 0)
 								{
@@ -1413,7 +1432,9 @@ class SITE_catalog {
 								}
 								break;
 							case "versions":
-								$versions = JRequest::getVar('versions');
+								//$versions = JRequest::getVar('versions');
+								$versions = JRequest::getVar($searchFilter->guid);
+								
 								if ($versions <> "")
 								{
 									$countAdvancedFilters++;
@@ -1515,7 +1536,9 @@ class SITE_catalog {
 								}
 								break;
 							case "object_name":
-								$object_name = JRequest::getVar('object_name');
+								//$object_name = JRequest::getVar('object_name');
+								$object_name = JRequest::getVar($searchFilter->guid);
+								
 								if ($object_name <> "")
 								{
 									$countAdvancedFilters++;
@@ -1723,7 +1746,9 @@ class SITE_catalog {
 								}
 								break;
 							case "managers":
-								$managers = JRequest::getVar('managers');
+								//$managers = JRequest::getVar('managers');
+								$managers = JRequest::getVar($searchFilter->guid);
+								
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countAdvancedFilters++;
@@ -1765,7 +1790,9 @@ class SITE_catalog {
 								}
 								break;
 							case "title":
-								$metadata_title = JRequest::getVar('title');
+								//$metadata_title = JRequest::getVar('title');
+								$metadata_title = JRequest::getVar($searchFilter->guid);
+								
 								if ($metadata_title <> "")
 								{
 									$countAdvancedFilters++;
@@ -1778,7 +1805,9 @@ class SITE_catalog {
 								}
 								break;
 							case "account_id":
-								$accounts = JRequest::getVar('account_id');
+								//$accounts = JRequest::getVar('account_id');
+								$accounts = JRequest::getVar($searchFilter->guid);
+								
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countAdvancedFilters++;

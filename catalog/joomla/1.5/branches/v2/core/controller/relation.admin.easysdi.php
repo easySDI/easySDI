@@ -911,8 +911,23 @@ class ADMIN_relation {
 		
 		$choicevalues=array();
 		$choicevalues[] = JHTML::_('select.option','', '');
-		$database->setQuery( "SELECT c.id as value, c.name as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
-		$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+		//$database->setQuery( "SELECT c.id as value, c.name as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+		//$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+		$database->setQuery( "SELECT c.*, t.title, t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+		$tempList = $database->loadObjectList();
+		
+		// Si la première entrée a un titre, construire une liste sur le titre
+		if (count($tempList) > 0 and $tempList[0]->title <> "")
+		{
+			$database->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+			$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+		}
+		// Sinon, construire une liste sur le contenu
+		else
+		{
+			$database->setQuery( "SELECT c.id as value, LEFT(t.content, 50) as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+			$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
+		}
 		
 		$selectedchoicevalues=array();
 		$database->setQuery( "SELECT codevalue_id as value FROM #__sdi_defaultvalue WHERE attribute_id=".$rowAttribute->id );
@@ -1410,6 +1425,13 @@ class ADMIN_relation {
 			$contexts = $_POST['contexts'];
 			
 			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
+							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
@@ -1452,7 +1474,7 @@ class ADMIN_relation {
 			
 			$rowSearchCriteria->name= $rowRelation->name;
 			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
-			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->advancedtab= 1;
 			$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter']; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
 			$rowSearchCriteria->criteriatype_id= 2; // Le critère de recherche sera du type "relation"
 			
@@ -1461,6 +1483,19 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listRelation" );
 				exit();
+			}
+			
+			// Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			foreach($contexts as $context)
+			{
+				$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
+									 VALUES 
+									 ('".$rowSearchCriteria->id."', ".$context.", '2')");
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				} 
 			}
 		}
 				
@@ -1508,12 +1543,25 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
+							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 			$query = "delete from #__sdi_relation_context where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-		
+			
 			if (!$rowRelation->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listRelation" );
