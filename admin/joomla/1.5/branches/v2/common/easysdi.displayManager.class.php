@@ -30,7 +30,7 @@ class displayManager{
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$metadata_guid;
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=COMPLETE&id=".$metadata_guid;
 		
 		/*
 		$id=158;
