@@ -154,7 +154,7 @@ class userManagerRightESDY
 			$rowPartner->load( $user->id );
 			
 			//Is the URL from ESDY
-			if (preg_match("/(com_easysdi_core|com_easysdi_shop)/i", $url)) {
+			if (preg_match("/(com_easysdi_core|com_easysdi_shop|com_easysdi_publish)/i", $url)) {
 
 				preg_match('/task=([a-z]+)&/i', $url, $tasks);
 				$task = $tasks[1];
@@ -192,7 +192,15 @@ class userManagerRightESDY
 					$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 					return (userManagerRightESDY::hasRight($rowPartner->partner_id,"FAVORITE") && $enableFavorites == 1);
 					}
-					
+				elseif ($task=="gettingStarted") {
+					return (userManagerRightESDY::hasRight($rowPartner->partner_id,"GEOSERVICE_DATA_MANA")||userManagerRightESDY::hasRight($rowPartner->partner_id,"GEOSERVICE_MANAGER"));
+					}
+				elseif ($task=="createFeatureSource") {
+					return userManagerRightESDY::hasRight($rowPartner->partner_id,"GEOSERVICE_DATA_MANA");
+					}
+				elseif ($task=="createLayer") {
+					return userManagerRightESDY::hasRight($rowPartner->partner_id,"GEOSERVICE_MANAGER");
+					}
 				else {
 					return true;
 				}
@@ -220,6 +228,12 @@ class userManagerRightESDY
 			  elseif($task=="listOrdersForProvider")
 			     return false;
 		    elseif($task=="manageFavoriteProduct")
+		       return false;
+	       elseif($task=="gettingStarted")
+		       return false;
+	       elseif($task=="createFeatureSource")
+		       return false;
+	       elseif($task=="createLayer")
 		       return false;
 		    else
 		    //by default, display the menu link
