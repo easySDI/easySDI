@@ -31,7 +31,7 @@
 			<xsl:when test="$format='xml'">
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
-			<xsl:when test="$format='toto'">
+			<xsl:when test="$format='pdf'">
 				<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
 					<fo:layout-master-set>
 						<fo:simple-page-master page-height="11in"
