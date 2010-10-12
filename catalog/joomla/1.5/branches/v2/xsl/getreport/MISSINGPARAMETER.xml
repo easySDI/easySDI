@@ -3,13 +3,13 @@
 	<errorName>MISSINGPARAMETER</errorName>
 	<errorDescription>
 		<fr>
-			Un paramètre est manquant.
+			Un param&#232;tre est manquant
 		</fr>
 		<de>
-			Un paramètre est manquant.
+			Un param&#232;tre est manquant
 		</de>
 		<en>
-			Un paramètre est manquant.
+			Un param&#232;tre est manquant
 		</en>		
 	</errorDescription>
 </errorHandler>

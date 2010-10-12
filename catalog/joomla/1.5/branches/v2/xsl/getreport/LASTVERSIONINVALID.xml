@@ -3,13 +3,13 @@
 	<errorName>LASTVERSIONINVALID</errorName>
 	<errorDescription>
 		<fr>
-			Le paramètre lastVersion n'accepte que les valeurs yes / no.
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
 		</fr>
 		<de>
-			Le paramètre lastVersion n'accepte que les valeurs yes / no.
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
 		</de>
 		<en>
-			Le paramètre lastVersion n'accepte que les valeurs yes / no.
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
 		</en>		
 	</errorDescription>
 </errorHandler>
