@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errorHandler>
+	<errorName>FORMATINVALID</errorName>
+	<errorDescription>
+		<fr>
+			Le format indiqué ne fait pas partie du scope autorisé.
+		</fr>
+		<de>
+			Le format indiqué ne fait pas partie du scope autorisé.
+		</de>
+		<en>
+			Le format indiqué ne fait pas partie du scope autorisé.
+		</en>		
+	</errorDescription>
+</errorHandler>

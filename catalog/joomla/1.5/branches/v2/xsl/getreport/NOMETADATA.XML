@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errorHandler>
+	<errorName>MISSINGPARAMETER</errorName>
+	<errorDescription>
+		<fr>
+			Aucune métadonnée publique ne correspond aux guids demandés.
+		</fr>
+		<de>
+			Aucune métadonnée publique ne correspond aux guids demandés.
+		</de>
+		<en>
+			Aucune métadonnée publique ne correspond aux guids demandés.
+		</en>		
+	</errorDescription>
+</errorHandler>
