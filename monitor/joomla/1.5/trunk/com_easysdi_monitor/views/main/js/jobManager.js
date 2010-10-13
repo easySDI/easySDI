@@ -35,7 +35,7 @@ Ext.onReady(function() {
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		fields:['status', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime']
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'}]
 	});
 
 
@@ -98,9 +98,8 @@ Ext.onReady(function() {
 		width:270,
 		editor: {
 		xtype: 'textfield',
-		allowBlank: false,
-		vtype: 'url'
-	}
+		allowBlank: false
+			}
 	},{
 		header:EasySDI_Mon.lang.getLocal('grid header interval'),
 		dataIndex:"testInterval",
@@ -276,9 +275,8 @@ Ext.onReady(function() {
 			        		name: 'url',
 			        		allowBlank:false,
 			        		xtype: 'textfield',
-			        		allowBlank: false,
-			        		vtype: 'url'
-			        	},{
+			        		allowBlank: false
+			        					        	},{
 			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header interval'),
 			        		value: u.data['testInterval'],
 			        		name: 'testInterval',
@@ -343,6 +341,7 @@ Ext.onReady(function() {
 		u.set('name', 'GetCap');
 		u.set('serviceMethod', 'GetCapabilities');
 		_reqGrid.store.insert(0, u);
+		_reqGrid.store.save();
 		//If the job has been added to the other collection than the current,
 		//we need to refresh the grid
 		if((Ext.getCmp('jobCbCollection').getValue() == 'jobs' && result[0].isPublic == false)||
@@ -502,11 +501,11 @@ Ext.onReady(function() {
 			//get form values
 			var fields = _advForm.getForm().getFieldValues();
 			//update rec values
-			//rec.beginEdit();
+			rec.beginEdit();
 			for (var el in fields){
 				rec.set(el, fields[el]);
 			}
-			//rec.endEdit();
+			rec.endEdit();
 			rec.store.save();
 			//reload the store because isPublic might changed
 			Ext.data.DataProxy.addListener('write', afterStoreUpdated);

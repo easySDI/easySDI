@@ -100,18 +100,18 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
                     //push percentiles
                     for ( var i=0; i< aRec.length; i++ )
                     {   
-			var status = aRec[i].get('status');
+			var status = aRec[i].get('statusCode');
 			switch (status){
-                             case EasySDI_Mon.lang.getLocal('enum_status_available'):
+                             case 'AVAILABLE':
                                    avCount++;
                              break;
-                             case EasySDI_Mon.lang.getLocal('enum_status_failure'):
+                             case 'OUT_OF_ORDER':
                                    fCount++;
                              break;
-                             case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
+                             case 'UNAVAILABLE':
                                    unavCount++;
                              break;
-	                         case EasySDI_Mon.lang.getLocal('enum_status_untested'):
+	                           case 'NOT_TESTED':
                                    otherCount++;
                              break;
                              default: 

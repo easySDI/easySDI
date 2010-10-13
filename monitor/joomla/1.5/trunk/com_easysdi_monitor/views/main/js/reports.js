@@ -365,15 +365,15 @@ Ext.onReady(function() {
 			if(logRes == "aggLogs")
 				fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 			else
-				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'delay']
+				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay']
 
 			aStores[aMethods[i]] = new Ext.data.JsonStore({
-				root:'rows',
+				root:'data',
 				autoLoad: true,
 				totalProperty:'totalCount',
 				restful:true,
 				proxy: new Ext.data.HttpProxy({
-					url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'?maxDate='+maxDate.format('Y-m-d')
+					url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')
 				}),
 				fields:fields,
 				listeners: {

@@ -76,7 +76,7 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 		tooltip: {
 			formatter: function() {
 			return '<b>'+ this.series.name +'</b><br/>'+
-			new Date(this.x).format('d-m-Y') +': '+ this.y +EasySDI_Mon.lang.getLocal('ms suffix');
+			new Date(this.x).format('d-m-Y H:i:s') +' -> '+ this.y +EasySDI_Mon.lang.getLocal('ms suffix');
 		}
 		},
 		legend: {
@@ -104,19 +104,19 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 				if(logRes == 'aggLogs')
 					series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
 				else{
-					var status = aRec[i].get('status');
+					var status = aRec[i].get('statusCode');
 					var color;
 					switch (status){
-                    case EasySDI_Mon.lang.getLocal('enum_status_available'):
+                    case 'AVAILABLE':
 						color = '#7dff9c';
 						break;
-                    case EasySDI_Mon.lang.getLocal('enum_status_failure'):
+                    case 'OUT_OF_ORDER':
 						color = '#e2ff1d';
 						break;
-                    case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
+                    case 'UNAVAILABLE':
 						color = '#ff7f7f';
 						break;
-                    case EasySDI_Mon.lang.getLocal('enum_status_untested'):
+                    case 'NOT_TESTED':
 						color = '#b3b3b3';
 						break;
 					default: 

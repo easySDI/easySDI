@@ -22,9 +22,11 @@ Ext.onReady(function() {
 	var store = new Ext.data.SimpleStore({
 		id:'jobId',
 		fields:[
-		        {name: 'newStatus'}
-		        ,{name: 'oldStatus'}
+		        {name: 'newStatusCode'}
+		        ,{name: 'oldStatusCode'}
 		        ,{name: 'cause'}
+		        ,{name: 'httpCode'}
+		        ,{name: 'responseDelay'}
 		        ,{name: 'isExposedToRss', type: 'boolean'}
 		        ,{name: 'jobId', type: 'int'}
 		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}
@@ -39,7 +41,7 @@ Ext.onReady(function() {
 		fields:[
 		        {name: 'name'}
 		        ],
-		data:[]
+		data:['All']
 	});
 
 
@@ -61,8 +63,9 @@ Ext.onReady(function() {
 			var u = new jobComboStore.recordType({name:''});
 			u.set('name', aRec[i].get('name'));
 			jobComboStore.insert(0, u);
-			//jobComboStore.add(aRec[i]);
 		}
+		var u = new jobComboStore.recordType({name:'All'});
+		jobComboStore.insert(0, u);
 	}
 
 	var cm = new Ext.grid.ColumnModel([{
@@ -76,7 +79,7 @@ Ext.onReady(function() {
 	sortable: true
 	},{
 		header:EasySDI_Mon.lang.getLocal('status'),
-		dataIndex:"newStatus",
+		dataIndex:"newStatusCode",
 		width:64,
 		renderer: function (newStatus, scope, row){
 		return EasySDI_Mon.AlertStatusRenderer(newStatus, scope, row);
@@ -85,13 +88,16 @@ Ext.onReady(function() {
 		header:EasySDI_Mon.lang.getLocal('cause'),
 		dataIndex:"cause",
 		width:100
-	},
-	//{
-	//header:"RSS",
-	//dataIndex:"isExposedToRss",
-	//width:60
-	//},
-	{
+	},{
+	  header:EasySDI_Mon.lang.getLocal('delay'),
+	  dataIndex:"responseDelay",
+	  width:60,
+	  renderer: EasySDI_Mon.DelayRenderer
+	},{
+	  header:EasySDI_Mon.lang.getLocal('grid header httpcode'),
+	  dataIndex:"httpCode",
+	  width:60
+	},{
 		header:EasySDI_Mon.lang.getLocal('grid header dateTime'),
 		dataIndex:"dateTime",
 		width:150,
@@ -143,28 +149,6 @@ Ext.onReady(function() {
              }
 			 */
 		}, '-',{
-			id: 'btnAllJobs',
-			ref:'../btnAllJobs',
-			text: EasySDI_Mon.lang.getLocal('all jobs'),
-			enableToggle: true,
-			iconCls:'icon-all-jobs',
-			toggleHandler: function (item, pressed){
-			//clear the store
-			store.removeAll();
-			//get the alerts for all jobs
-			if(pressed){
-				//clear job combo selected value.
-				_alertsGrid.cbJobs.clearValue();
-				var arrRec = jobComboStore.getRange();
-
-				for ( var i=0; i< arrRec.length; i++ ){
-					//create a store for all jobs and get their alerts
-					loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
-				}
-			}
-		},
-		pressed: false
-		}, '-',{
 			id: 'btnLatestAlerts',
 			ref:'../btnLatestAlerts',
 			iconCls:'icon-only-newest-alert',
@@ -174,17 +158,15 @@ Ext.onReady(function() {
 			//clear the store
 			store.removeAll();
 			//trigger the job alerts loading either for one or all jobs
-			if(_alertsGrid.btnAllJobs.pressed){
-				//clear job combo selected value.
-				_alertsGrid.cbJobs.clearValue();
+			
+			if(_alertsGrid.cbJobs.getValue() == 'All'){
 				var arrRec = jobComboStore.getRange();
-
 				for ( var i=0; i< arrRec.length; i++ ){
 					//create a store for all jobs and get their alerts
-					loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
+					if(arrRec[i].get('name') != 'All')
+					   loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
 				}
 			}else{
-				//alert(_alertsGrid.cbJobs.getValue());
 				if(_alertsGrid.cbJobs.getValue() != ""){
 					loadAlertData(_alertsGrid.cbJobs.getValue(), 1, 1);
 				}
@@ -197,10 +179,18 @@ Ext.onReady(function() {
 
 		//clear the store
 		store.removeAll();
-
-		//unpress the all job toggle
-		_alertsGrid.btnAllJobs.toggle(false);
-		loadAlertData(rec.get('name'), 1, 1)
+		
+		if(rec.get('name') != 'All'){
+		   loadAlertData(rec.get('name'), 1, 1);
+		}else{
+		   var arrRec = jobComboStore.getRange();
+       
+		   for ( var i=0; i< arrRec.length; i++ ){
+		   	  if(arrRec[i].get('name') != 'All')
+		   	     //create a store for all jobs and get their alerts
+		   	     loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
+		   }
+		}
 	});
 
 
@@ -215,13 +205,13 @@ Ext.onReady(function() {
 				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
 			}),
 			restful:true,
-			fields:['newStatus', 'oldStatus', 'cause', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
 			listeners: {
 			load: function(){
 			var aRec = this.getRange();
 			if(_alertsGrid.btnLatestAlerts.pressed){
 				//If there is at least one record
-				if(aRec.length > 1)
+				if(aRec.length > 0)
 					store.add(aRec[aRec.length - 1]);
 			}else{
 				for ( var j=0; j< aRec.length; j++ )

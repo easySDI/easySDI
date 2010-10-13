@@ -131,21 +131,11 @@ class http {
         Get response body.
         */
         
-        //Bug fget hangs if waiting for a body that is empty from Geoserver REST
-	//we need put for Monitor
-        //Fix with expecting no body from http put method
-	//Read normally
-        if(stristr($url, 'geoserver') === FALSE){
-        	while (!feof($fh)) {
-          	  $this->body .= fgets($fh, 1024);
-        	}
-      	}
-	//Do not read PUT response body for geoserver (REST config)
-	else if($verb != "PUT"){
-		while (!feof($fh)) {
-          	  $this->body .= fgets($fh, 1024);
-        	}
-	}
+        while (!feof($fh)) {
+         	  $this->body .= fgets($fh, 1024);
+        }
+
+	      
         fclose($fh);
         if ($need_to_save) { $this->saveToCache(); }
         return $this->status;

@@ -111,6 +111,8 @@ Ext.onReady(function(){
 			var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
 			var name = rec.get('name');
 			proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');
+			proxy.api.destroy.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
+			proxy.api.create.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
 			var fields = _alertForm.getForm().getFieldValues();
 			//Rss notification
 			if(fields.rss == 'Y'){
@@ -122,7 +124,7 @@ Ext.onReady(function(){
 						target: ''
 					});
 					store.insert(0, u);
-					store.save();
+					rssCrVal = 'Y';
 				}
 			}
 			else
@@ -130,7 +132,7 @@ Ext.onReady(function(){
 				if(rssRec != null){
 					//drop record
 					store.remove(rssRec);
-					store.save();
+					rssCrVal = 'N';
 				}
 			}
 
@@ -143,11 +145,11 @@ Ext.onReady(function(){
 						target: fields.email_list
 					});
 					store.insert(0, u);
-					store.save();
+					emailCrVal = 'Y';
 				}else{
 					//if it already exit, update the target
 					emailRec.set('target', fields.email_list);
-					store.save();
+					emailTxtCrVal = fields.email_list;
 				}
 			}
 			//User doesn't requests Email notification
@@ -156,14 +158,25 @@ Ext.onReady(function(){
 				//drop record if it exist
 				if(emailRec != null){
 					store.remove(emailRec);
-					store.save();
+					emailCrVal = 'N';
 				}
 			}
-			//..
-
+			Ext.data.DataProxy.addListener('write', afterUpdate);
+			store.save();
+			_alertForm.btnUpdate.setDisabled(true);
 		}//end update
 		}]
 	});
+
+  //reload the store after update
+  function afterUpdate(proxy, action, result, res, rs){
+		Ext.data.DataProxy.removeListener('write', afterUpdate);
+		var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		var name = rec.get('name');
+		proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');
+		proxy.api.read.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
+		store.load();
+	}
 
 	Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange', function(sm){
 		//There is no job selected
@@ -227,7 +240,6 @@ Ext.onReady(function(){
 
 	//Some ennoying event handler for the update button
 	_alertForm.cbRss.on("change", function(field, newValue, oldValue) {
-
 		if(newValue == 'N')
 			_alertForm.btnRss.setDisabled(true);
 		else

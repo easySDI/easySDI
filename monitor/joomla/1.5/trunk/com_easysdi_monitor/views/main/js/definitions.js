@@ -115,19 +115,18 @@ Ext.onReady(function(){
             return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-false"/></td></tr></table>';  
    };
    
-   //status renderer (available, failure, unavailable, untested)
    EasySDI_Mon.StatusRenderer = function(status){
               switch (status){
-                 case EasySDI_Mon.lang.getLocal('enum_status_available'):
+                 case 'AVAILABLE':
                        return '<table'+' title="'+EasySDI_Mon.lang.getLocal('available')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-available"/></td></tr></table>';
                  break;
-                 case EasySDI_Mon.lang.getLocal('enum_status_failure'):
+                 case 'OUT_OF_ORDER':
                        return '<table'+' title="'+EasySDI_Mon.lang.getLocal('failure')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-failure"/></td></tr></table>';
                  break;
-                 case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
+                 case 'UNAVAILABLE':
                        return '<table'+' title="'+EasySDI_Mon.lang.getLocal('unavailable')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-unavailable"/></td></tr></table>';
                  break;
-   	      case EasySDI_Mon.lang.getLocal('enum_status_untested'):
+   	             case 'NOT_TESTED':
                        return '<table'+' title="'+EasySDI_Mon.lang.getLocal('untested-unknown')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-untested"/></td></tr></table>';
                  break;
                  default: 
@@ -137,25 +136,31 @@ Ext.onReady(function(){
    };
    
    EasySDI_Mon.AlertStatusRenderer = function (newStatus, scope, row) {
-      var oldStatus = row.get('oldStatus');
+      var oldStatus = row.get('oldStatusCode');
              switch (newStatus){
-                case EasySDI_Mon.lang.getLocal('enum_status_available'):
-   	 if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_failure'))
+                case 'AVAILABLE':
+   	            if(oldStatus == 'OUT_OF_ORDER')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-available')+'" '+'class="icon-gridrenderer-failure-to-available"/>';
-            if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_unavailable'))
+                if(oldStatus == 'UNAVAILABLE')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-available')+'" '+'class="icon-gridrenderer-unavailable-to-available"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-available')+'" '+'class="icon-gridrenderer-untested-to-available"/>';
                 break;
-                case EasySDI_Mon.lang.getLocal('enum_status_failure'):
-   	  if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_available'))
+                case 'OUT_OF_ORDER':
+   	            if(oldStatus == 'AVAILABLE')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-failure')+'" '+'class="icon-gridrenderer-available-to-failure"/>';
-             if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_unavailable'))
+                if(oldStatus == 'UNAVAILABLE')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-failure')+'" '+'class="icon-gridrenderer-unavailable-to-failure"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-failure')+'" '+'class="icon-gridrenderer-untested-to-failure"/>';
                 break;
-                case EasySDI_Mon.lang.getLocal('enum_status_unavailable'):
-   	 if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_failure'))
+                case 'UNAVAILABLE':
+   	            if(oldStatus == 'OUT_OF_ORDER')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-unavailable')+'" '+'class="icon-gridrenderer-failure-to-unavailable"/>';
-            if(oldStatus == EasySDI_Mon.lang.getLocal('enum_status_available'))
+                if(oldStatus == 'AVAILABLE')
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-unavailable')+'" '+'class="icon-gridrenderer-available-to-unavailable"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-unavailable')+'" '+'class="icon-gridrenderer-untested-to-unavailable"/>';
                 break;
                 default: 
                    return value;

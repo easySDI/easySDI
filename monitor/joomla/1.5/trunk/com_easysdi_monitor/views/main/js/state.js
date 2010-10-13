@@ -28,7 +28,7 @@ Ext.onReady(function() {
 	var _loadMsk = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')})
 	var cm = new Ext.grid.ColumnModel([{
 		header:EasySDI_Mon.lang.getLocal('status'),
-		dataIndex:"status",
+		dataIndex:"statusCode",
 		width:50,
 		renderer: EasySDI_Mon.StatusRenderer
 	},{
@@ -68,6 +68,12 @@ Ext.onReady(function() {
 		trueText: 'true',
 		falseText: 'false',
 		renderer: EasySDI_Mon.TrueFalseRenderer
+	},{
+	  header:EasySDI_Mon.lang.getLocal('grid header lastJobStatusUpdateTime'),
+	  dataIndex:"lastStatusUpdate",
+	  width:150,
+	  sortable: true,
+	  renderer: EasySDI_Mon.DateTimeRenderer
 	}
 	/*
 	,{
@@ -211,6 +217,7 @@ Ext.onReady(function() {
 				},
 				{
 					fieldLabel: EasySDI_Mon.lang.getLocal('cause'),
+					width:260,
 					xtype: 'textfield',
 					name: 'statusCause'
 				},{
@@ -244,6 +251,7 @@ Ext.onReady(function() {
 					    	        		           ,{name: 'responseDelay', type: 'float'}
 					    	        		           ,{name: 'serviceExceptionCode'}
 					    	        		           ,{name: 'status'}
+					    	        		           ,{name: 'statusCode'}
 					    	        		           ,{name: 'testedUrl'}
 					    	        		           ],
 					    	        		           data:[]
@@ -258,27 +266,9 @@ Ext.onReady(function() {
 					    	        	   }
 					    	        	   },{
 					    	        		   header:EasySDI_Mon.lang.getLocal('status'),
-					    	        		   dataIndex:"status",
+					    	        		   dataIndex:"statusCode",
 					    	        		   width:45,
-					    	        		   renderer: function (status){
-					    	        		   switch (status){
-					    	        		   case 'Disponible':
-					    	        			   return '<div class="icon-gridrenderer-available"/>';
-					    	        			   break;
-					    	        		   case 'En dérangement':
-					    	        			   return '<div class="icon-gridrenderer-failure"/>';
-					    	        			   break;
-					    	        		   case 'Indisponible':
-					    	        			   return '<div class="icon-gridrenderer-unavailable"/>';
-					    	        			   break;
-					    	        		   case 'Non testé':
-					    	        			   return '<div class="icon-gridrenderer-untested"/>';
-					    	        			   break;
-					    	        		   default: 
-					    	        			   return status;
-					    	        		   break;
-					    	        		   }
-					    	        	   }
+					    	        		   renderer:EasySDI_Mon.StatusRenderer					    	        	   
 					    	        	   },{
 					    	        		   header:EasySDI_Mon.lang.getLocal('delay'),
 					    	        		   dataIndex:"responseDelay",

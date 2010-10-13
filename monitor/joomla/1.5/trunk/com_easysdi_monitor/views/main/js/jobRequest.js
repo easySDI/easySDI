@@ -18,7 +18,9 @@
 Ext.namespace("EasySDI_Mon");
 
 Ext.onReady(function(){
-
+  
+  var fieldParams = null;
+  
 	var proxy = new Ext.data.HttpProxy({
 		url: '?'
 	});
@@ -32,6 +34,7 @@ Ext.onReady(function(){
 		//if not set: {"undefined":{"url":"blah","id":"plop"}}
 		root: 'data',
 		id: 'name',
+		autoSave: false,
 		//url:'jobs/vd-wms-fonds2/queries',
 		restful:true,
 		proxy: proxy,
@@ -178,14 +181,16 @@ Ext.onReady(function(){
 					proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
 					var fields = win.newReqPanel.getForm().getFieldValues();
 					var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
-					//u.set('name', fields.name);				     
-					//u.set('serviceMethod', fields.serviceMethod);
-					//u.set('params', fields.params);
 					for (var el in fields){
 						u.set(el, fields[el]);
+						if(el == "params")
+						   fieldParams = fields[el];
 					}
 					_reqGrid.store.insert(0, u);
+					Ext.data.DataProxy.addListener('write', createMethodParams);
+					store.save();
 					win.close();
+
 				}
 				},{
 					text: EasySDI_Mon.lang.getLocal('grid action cancel'),
@@ -266,18 +271,22 @@ Ext.onReady(function(){
 					formBind:true,
 					text: EasySDI_Mon.lang.getLocal('grid action ok'),
 					handler: function(){
-					var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
-					var jobName = jobRec.get('name');
-					var name = rec.get('name');
-					//Change the proxy to the good url
-					proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
-					var fields = win.editReqPanel.getForm().getFieldValues();
-					//Avoids commit to each "set()"
-					var r = rec;
-					rec.beginEdit();
-					rec.set('serviceMethod', fields.serviceMethod);
-					rec.set('params', fields.params);
-					rec.endEdit();
+					   var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+					   var jobName = jobRec.get('name');
+					   var name = rec.get('name');
+					   //Change the proxy to the good url
+					   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+					   var fields = win.editReqPanel.getForm().getFieldValues();
+					   //Avoids commit to each "set()"
+					   var r = rec;
+					   rec.beginEdit();
+					   rec.set('serviceMethod', fields.serviceMethod);
+					   rec.set('params', fields.params);
+					   rec.endEdit();
+					   fieldParams = fields.params;
+					   //after save, save the params
+					   Ext.data.DataProxy.addListener('write', createMethodParams);
+					   store.save();
 					win.close();
 				}
 				},{
@@ -292,7 +301,32 @@ Ext.onReady(function(){
 
 		win.show();
 	}
-
+  
+  
+  function createMethodParams (proxy, action, result, res, rs) {
+  	
+	      Ext.data.DataProxy.removeListener('write', createMethodParams);      
+	      
+	      var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+			  var jobName = jobRec.get('name');
+				var name = rs.get('name');
+	      
+	      Ext.Ajax.request({
+					loadMask: true,
+					method: 'POST',
+				  params: fieldParams,
+				  url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",
+				  success: function(response){
+            reloadReqGrid();
+				  },
+				  failure: function(response){
+			          EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+				  }
+				});
+	                               
+	}
+  
+  
 	/**
 	 * onDelete
 	 */
@@ -310,7 +344,8 @@ Ext.onReady(function(){
 			if (btn == 'no')
 				return false;
 			else
-				__reqGrid.store.remove(rec);
+				_reqGrid.store.remove(rec);
+				store.save();
 		});
 	}
 
@@ -323,7 +358,13 @@ Ext.onReady(function(){
 	});
 
 	Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange', function(sm){
-		//There is no job selected
+		reloadReqGrid();
+	});
+
+
+  function reloadReqGrid(){
+  //There is no job selected
+    var sm = Ext.getCmp('JobGrid').getSelectionModel();
 		if(sm.getCount() < 1){
 			_reqGrid.addBtn.setDisabled(true);
 		}
@@ -343,7 +384,9 @@ Ext.onReady(function(){
 			}
 			store.load();
 		}
-	});
+  }
+
+
 
 	_reqGrid.getSelectionModel().on('selectionchange', function(sm){
 		_reqGrid.removeBtn.setDisabled(sm.getCount() < 1);

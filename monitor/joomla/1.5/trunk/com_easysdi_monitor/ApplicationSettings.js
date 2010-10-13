@@ -20,6 +20,8 @@ Ext.namespace("EasySDI_Mon");
    //You normally do not have to change this!
    EasySDI_Mon.proxy = '?option=com_easysdi_monitor&view=proxy&proxy_url=';
    
+   //EasySDI_Mon.proxy = '/web2/administrator/components/com_easysdi_monitor/views/proxy/tmpl/default.php?proxy_url=';
+   
    //Default application height
    EasySDI_Mon.appHeight = 450;
    
