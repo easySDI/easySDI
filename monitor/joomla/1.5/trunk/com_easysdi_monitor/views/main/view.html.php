@@ -50,12 +50,12 @@ class MonitorViewmain extends JView
   $document->addScript('components/com_easysdi_monitor/ApplicationSettings.js');
   
   //minified files -> use for prod
-  //$document->addScript('components/com_easysdi_monitor/script/Monitor.js');
-  //$document->addScript('components/com_easysdi_monitor/views/main/js/themes.js');
+  $document->addScript('components/com_easysdi_monitor/script/Monitor.js');
+  $document->addScript('components/com_easysdi_monitor/views/main/js/themes.js');
 
   
   //Unminimized files -> use for developpment
-  
+  /**
   //Monitor libs
   $document->addScript('components/com_easysdi_monitor/views/main/js/language.js');
   $document->addScript('components/com_easysdi_monitor/views/main/js/vtypes.js');
@@ -78,7 +78,7 @@ class MonitorViewmain extends JView
   
   //themes
   $document->addScript('components/com_easysdi_monitor/views/main/js/themes.js');
-
+*/
   
     
         parent::display($tpl);
