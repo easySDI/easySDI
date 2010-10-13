@@ -26,6 +26,7 @@
 		<many-to-one name="status" class="Status" column="ID_STATUS" lazy="false"
 			not-null="true">
 		</many-to-one>
+		<property name="statusUpdateTime" type="calendar" column="STATUS_UPDATE_TIME" />
 		<component name="config" class="JobConfiguration" lazy="false">
 			<parent name="job" />
 			<property name="alertsActivated" column="TRIGGERS_ALERTS" type="boolean" lazy="false">

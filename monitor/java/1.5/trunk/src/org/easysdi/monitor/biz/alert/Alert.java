@@ -23,10 +23,36 @@ public class Alert {
     private Status   oldStatus;
     private Job      parentJob;
     private Calendar time;
+    private float    responseDelay;
+    private Integer  httpCode;
 
 
 
-    /**
+    public float getResponseDelay() {
+		return responseDelay;
+	}
+
+
+
+	public void setResponseDelay(float responseDelay) {
+		this.responseDelay = responseDelay;
+	}
+
+
+
+	public Integer getHttpCode() {
+		return httpCode;
+	}
+
+
+
+	public void setHttpCode(Integer httpCode) {
+		this.httpCode = httpCode;
+	}
+
+
+
+	/**
      * No-argument constructor, used by the persistance mechanism.
      */
     private Alert() {
@@ -46,7 +72,7 @@ public class Alert {
      * @param   alertTime       the time of the alert
      */
     private Alert(StatusValue oldJobStatus, StatusValue newJobStatus, 
-                  String alertCause, Job job, Calendar alertTime) {
+                  String alertCause, Job job, Calendar alertTime, float responseDelay, Integer httpCode) {
 
         this();
         this.setCause(alertCause);
@@ -54,6 +80,8 @@ public class Alert {
         this.setOldStatus(oldJobStatus);
         this.setParentJob(job);
         this.setTime(alertTime);
+        this.setResponseDelay(responseDelay);
+        this.setHttpCode(httpCode);
     }
 
 
@@ -294,9 +322,9 @@ public class Alert {
      * @return              the new alert
      */
     public static Alert create(StatusValue oldStatus, StatusValue newStatus,
-                    String cause, Job parentJob) {
+                    String cause, float responseDelay, Integer httpCode, Job parentJob) {
         final Alert alert = new Alert(oldStatus, newStatus, cause, parentJob,
-                                Calendar.getInstance());
+                                Calendar.getInstance(), responseDelay, httpCode);
         AlertDaoHelper.getDaoObject().persist(alert);
 
         return alert;

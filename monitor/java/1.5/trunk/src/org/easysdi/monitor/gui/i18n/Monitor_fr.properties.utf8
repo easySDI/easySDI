@@ -82,6 +82,8 @@ log.header.sla.meanRespTime = Temps de réponse moyen SLA
 log.header.sla.nbBizErrors = Nb erreurs business SLA
 log.header.sla.nbConnErrors = Nb erreurs HTTP SLA
 log.header.status = Statut
+log.minDate.invalid = Le format de la date minimale est invalide
+log.maxDate.invalid = Le format de la date maximale est invalide
 log.minDate.illegal = Le format de la date minimale est invalide
 log.maxDate.illegal = Le format de la date maximale est invalide
 log.maxDate.mandatory = La date maximale est obligatoire pour cette opération
@@ -141,3 +143,5 @@ status.invalid = (ERREUR: Statut non valide)
 status.not_tested = Non testé
 status.out_of_order = En dérangement
 status.unavailable = Indisponible
+
+result.modify.success = Les paramètres ont bien été modifiés

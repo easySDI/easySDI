@@ -280,7 +280,16 @@ public class Query {
         return this.status;
     }
 
-
+    /**
+     * Gets this query's current status value.
+     * <p>
+     * This is the status that resulted from the last automatic execution.
+     * 
+     * @return  this query's status value
+     */
+    public StatusValue getStatusValue() {
+        return ((this.status != null) ? this.status.getStatusValue() : null);
+    }
 
     /**
      * Checks this query's validity.

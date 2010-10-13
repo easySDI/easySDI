@@ -146,6 +146,7 @@ public class QueryRawLogController extends AbstractMonitorController {
 
         final Map<String, String> requestParams
             = this.getRequestParametersMap(request);
+        
         final LogSearchParams searchParams 
             = LogSearchParams.createFromParametersMap(requestParams);
         String viewName = "rawLogsJson";

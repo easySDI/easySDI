@@ -25,8 +25,25 @@ public class JobResult {
     private ServiceType            serviceType;
     private String                 serviceUrl;
     private String                 statusCause;
+    private float                  responseDelay;
+    private Integer                httpCode;
+    
+    public float getResponseDelay() {
+		return responseDelay;
+	}
 
+	public void setResponseDelay(float responseDelay) {
+		this.responseDelay = responseDelay;
+	}
 
+	
+	public Integer getHttpCode() {
+		return httpCode;
+	}
+
+	public void setHttpCode(Integer httpCode) {
+		this.httpCode = httpCode;
+	}
 
     /**
      * No-argument constructor, used by the persistance mechanism.
@@ -259,6 +276,8 @@ public class JobResult {
     private void updateStatus() {
         StatusValue currentStatus = StatusValue.NOT_TESTED;
         String cause = "Not tested yet";
+        float delay = 0f;
+        int code = 0;
 
         for (QueryResult queryResult : this.getQueryResults()) {
 
@@ -269,6 +288,8 @@ public class JobResult {
                     if (StatusValue.NOT_TESTED == currentStatus) {
                         currentStatus = StatusValue.AVAILABLE;
                         cause = queryResult.getMessage();
+                        delay = queryResult.getResponseDelay();
+                        code = queryResult.getHttpCode();
                     }
                     break;
 
@@ -277,12 +298,16 @@ public class JobResult {
                     if (Status.isStatusValueOK(currentStatus)) {
                         currentStatus = StatusValue.OUT_OF_ORDER;
                         cause = queryResult.getMessage();
+                        delay = queryResult.getResponseDelay();
+                        code = queryResult.getHttpCode();
                     }
                     break;
 
                 case UNAVAILABLE:
                     this.setStatus(StatusValue.UNAVAILABLE);
                     this.setStatusCause(queryResult.getMessage());
+                    this.setHttpCode(queryResult.getHttpCode());
+                    this.setResponseDelay(queryResult.getResponseDelay());
                     return;
                     
                 default:
@@ -293,9 +318,11 @@ public class JobResult {
 
             }
         }
-
+        
         this.setStatus(currentStatus);
         this.setStatusCause(cause);
+        this.setHttpCode(code);
+        this.setResponseDelay(delay);
     }
 
 

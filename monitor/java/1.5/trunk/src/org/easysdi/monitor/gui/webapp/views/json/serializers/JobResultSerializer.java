@@ -60,6 +60,7 @@ public final class JobResultSerializer {
             }
     
             jsonJobResult.put("status", jobStatusString);
+            jsonJobResult.put("statusCode",jobResult.getStatusValue().name());
             jsonJobResult.put("serviceType", 
                               jobResult.getServiceType().getName());
             jsonJobResult.put("queriesResults",

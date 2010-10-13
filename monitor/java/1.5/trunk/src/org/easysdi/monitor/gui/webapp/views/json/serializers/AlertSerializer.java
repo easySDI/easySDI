@@ -44,12 +44,18 @@ public class AlertSerializer {
         
         jsonAlert.put("oldStatus",
                       alert.getOldStatus().getDisplayString(locale));
+        jsonAlert.put("oldStatusCode",
+                alert.getOldStatus().getStatusValue().name());
         jsonAlert.put("newStatus",
                       alert.getNewStatus().getDisplayString(locale));
+        jsonAlert.put("newStatusCode",
+                alert.getNewStatus().getStatusValue().name());
         jsonAlert.put("jobId", alert.getParentJob().getJobId());
         jsonAlert.put("isExposedToRss", alert.isExposedToRss());
         jsonAlert.put("dateTime", dateFormat.format(alert.getTime().getTime()));
         jsonAlert.put("cause", alert.getCause());
+        jsonAlert.put("httpCode", alert.getHttpCode());
+        jsonAlert.put("responseDelay", alert.getResponseDelay());
 
         return jsonAlert;
     }

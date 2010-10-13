@@ -52,6 +52,7 @@ public class QuerySerializer {
         jsonQuery.put("id", query.getQueryId());
         jsonQuery.put("name", queryConfig.getQueryName());
         jsonQuery.put("status", query.getStatus().getDisplayString(locale));
+        jsonQuery.put("statusCode", query.getStatusValue().name());
         jsonQuery.put("serviceMethod", queryConfig.getMethod().getName());
 
         if (includeParams) {

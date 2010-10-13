@@ -1,5 +1,6 @@
 package org.easysdi.monitor.biz.job;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 import org.easysdi.monitor.dat.dao.IValueObjectDao;
@@ -33,8 +34,8 @@ public class Status {
     private String value;
     
     
-    
-    /**
+
+	/**
      * Instantiates a new status.
      * <p>
      * <i><b>Note:</b> This constructor is meant to be used by the persistance
@@ -72,8 +73,6 @@ public class Status {
     public String getValue() {
         return this.value;
     }
-
-
 
     /**
      * Defines the identifier for this status.

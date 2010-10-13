@@ -1,6 +1,7 @@
 package org.easysdi.monitor.gui.webapp.views.json.serializers;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -57,12 +58,15 @@ public class JobSerializer {
                                 ObjectMapper mapper) {
 
         final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        final SimpleDateFormat dateFormat 
+        = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final ObjectNode jsonJob = mapper.createObjectNode();
         final JobConfiguration jobConfig = this.getJob().getConfig();
         jsonJob.put("id", this.getJob().getJobId());
         jsonJob.put("name", jobConfig.getJobName());
         jsonJob.put("status", 
-                    this.getJob().getStatus().getDisplayString(locale));
+                    this.getJob().getStatus().getDisplayString(locale)); 
+        jsonJob.put("statusCode", this.getJob().getStatusValue().name());
         jsonJob.put("triggersAlerts", jobConfig.isAlertsActivated());
         jsonJob.put("isAutomatic", jobConfig.isAutomatic());
         jsonJob.put("bizErrors", jobConfig.isBizErrorChecked());
@@ -81,7 +85,8 @@ public class JobSerializer {
         jsonJob.put("testInterval", jobConfig.getTestInterval());
         jsonJob.put("timeout", jobConfig.getTimeout());
         jsonJob.put("url", jobConfig.getUrl());
-
+        jsonJob.put("lastStatusUpdate", dateFormat.format(this.getJob().getStatusUpdateTime().getTime()));
+        
         if (includeQueries) {
             jsonJob.put("queries", 
                         this.buildQueriesArray(includeQueryParams, locale, 

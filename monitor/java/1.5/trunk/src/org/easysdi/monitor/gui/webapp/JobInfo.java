@@ -410,8 +410,7 @@ public final class JobInfo {
         this.alertActivated 
             = BooleanUtil.parseBooleanStringWithNull(alertString);
     }
-
-
+    
 
     /**
      * Defines if the job should be executed automatically.
@@ -446,7 +445,6 @@ public final class JobInfo {
         this.bizErrorsChecked 
             = BooleanUtil.parseBooleanStringWithNull(bizErrorsString);
     }
-
 
 
     /**
@@ -843,15 +841,17 @@ public final class JobInfo {
         
         JobInfo.copyValueToConfig(config, "setUrl", this.getUrl(), 
                                   enforceMandatory, "url", false);
-        
-        JobInfo.copyValueToConfig(config, "setAlertActivated", 
+
+        //JobInfo.copyValueToConfig(config, "setAlertActivated", 
+        JobInfo.copyValueToConfig(config, "setAlertsActivated", 
                                   this.isAlertActivated(), false, 
                                   "triggersAlerts", false);
         
         JobInfo.copyValueToConfig(config, "setAutomatic", this.isAutomatic(), 
                                   false, "isAutomatic", false);
         
-        JobInfo.copyValueToConfig(config, "setBizErrorsChecked", 
+        //JobInfo.copyValueToConfig(config, "setBizErrorsChecked",
+        JobInfo.copyValueToConfig(config, "setBizErrorChecked", 
                                   this.isBizErrorsChecked(), false, "bizErrors",
                                   false);
         

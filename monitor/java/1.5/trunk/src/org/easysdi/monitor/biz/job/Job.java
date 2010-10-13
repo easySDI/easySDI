@@ -1,5 +1,6 @@
 package org.easysdi.monitor.biz.job;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,10 +38,9 @@ public class Job {
     private Map<Long, Query>        queries;
     private IJobScheduler           schedulerHelper;
     private Status                  status;
+    private Calendar                statusUpdateTime;
 
-
-
-    /**
+	/**
      * No-argument constructor.
      */
     private Job() {
@@ -64,6 +64,7 @@ public class Job {
         final Job newJob = new Job();
 
         newJob.setStatus(StatusValue.NOT_TESTED);
+        newJob.setStatusUpdateTime(Calendar.getInstance());
         newJob.setConfig(JobConfiguration.createDefault(newJob, name));
 
         return newJob;
@@ -361,14 +362,14 @@ public class Job {
 
         final StatusValue newStatus = result.getStatusValue();
         final StatusValue oldStatus = this.getStatusValue();
-
+        this.setStatusUpdateTime(Calendar.getInstance());
         if (newStatus != oldStatus) {
             this.setStatus(newStatus);
-
             if (this.getConfig().isAutomatic()
                 && this.getConfig().isAlertsActivated()) {
                 final Alert alert = Alert.create(oldStatus, newStatus,
-                                                 result.getStatusCause(), this);
+                                                 result.getStatusCause(), result.getResponseDelay(), result.getHttpCode(), this);
+                
                 this.triggerActions(alert);
             }
         }
@@ -480,11 +481,21 @@ public class Job {
         if (null == newStatus) {
             throw new IllegalArgumentException("Status can't be null");
         }
-
+        
         this.status = newStatus;
+        //this.status.setRequestTime(Calendar.getInstance());
+
     }
 
+    public Calendar getStatusUpdateTime() {
+		return statusUpdateTime;
+	}
 
+
+
+	public void setStatusUpdateTime(Calendar statusUpdateTime) {
+		this.statusUpdateTime = statusUpdateTime;
+	}
 
     /**
      * Executes all the actions defined for this job

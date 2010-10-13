@@ -29,8 +29,22 @@ public abstract class AbstractJsonView extends AbstractView {
     
     private ObjectMapper objectMapper;
     private final Logger logger = Logger.getLogger(AbstractJsonView.class);
+    private ObjectNode rootObjectNode;
     
-
+    /**
+     * Gets the root object used to transform object to or from JSON.
+     * 
+     * @return  the JSON root object mapper
+     */
+    protected ObjectNode getRootObjectNode(){
+    	if (null == this.objectMapper)
+    		this.getObjectMapper();
+    	
+    	if (null == this.rootObjectNode)
+    	    this.rootObjectNode = this.objectMapper.createObjectNode();
+    	
+    	return this.rootObjectNode;
+    }
     
     /**
      * Gets the object used to transform object to or from JSON.
@@ -66,7 +80,7 @@ public abstract class AbstractJsonView extends AbstractView {
         
         final Locale locale = RequestContextUtils.getLocale(request);
         final ObjectMapper mapper = this.getObjectMapper();
-        final ObjectNode root = mapper.createObjectNode();
+        final ObjectNode root = this.getRootObjectNode();
         root.put("success", this.isSuccess());
         root.put("message", this.getResponseMessage(model, locale));
         root.put("data", this.getResponseData(model, locale));

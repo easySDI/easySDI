@@ -48,6 +48,8 @@ public final class QueryResultSerializer {
         jsonResult.put("testedUrl", resultItem.getTestedUrl());
         jsonResult.put("status",
                        resultItem.getStatus().getDisplayString(locale));
+        jsonResult.put("statusCode",
+                resultItem.getStatusValue().name());
         jsonResult.put("responseDelay", resultItem.getResponseDelay());
         jsonResult.put("requestTime",
                dateFormat.format(resultItem.getRequestTime().getTime()));

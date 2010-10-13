@@ -17,6 +17,8 @@
 		<property name="cause" type="text" column="CAUSE"></property>
 		<property name="time" type="calendar" column="ALERT_DATE_TIME"></property>
 		<property name="exposedToRss" type="boolean" column="EXPOSE_RSS"></property>
+		<property name="responseDelay" type="float" column="RESPONSE_DELAY" />
+		<property name="httpCode" type="integer" column="HTTP_CODE" />
 		<many-to-one name="newStatus" class="org.easysdi.monitor.biz.job.Status"
 			column="ID_NEW_STATUS"></many-to-one>
 		<many-to-one name="oldStatus" class="org.easysdi.monitor.biz.job.Status"

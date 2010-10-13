@@ -58,8 +58,7 @@ public class AggregLogView extends AbstractJsonView {
                         "aggregLogsCollection");
             final Long noPagingCount = (Long) model.get("noPagingCount");
             final ObjectMapper mapper = this.getObjectMapper();
-            final ObjectNode jsonDataObject = mapper.createObjectNode();
-            jsonDataObject.put("noPagingCount", noPagingCount);
+            this.getRootObjectNode().put("noPagingCount", noPagingCount);
             final ArrayNode jsonLogsCollection = mapper.createArrayNode();
 
             for (AbstractAggregateLogEntry logEntry : logsCollection) {
@@ -67,9 +66,7 @@ public class AggregLogView extends AbstractJsonView {
                                                                      mapper));
             }
             
-            jsonDataObject.put("rows", jsonLogsCollection);
-
-            return jsonDataObject;
+            return jsonLogsCollection;
 
         }
             

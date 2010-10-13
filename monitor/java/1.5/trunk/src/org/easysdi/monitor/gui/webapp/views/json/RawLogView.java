@@ -59,18 +59,15 @@ public class RawLogView extends AbstractJsonView {
             final Boolean addQueryId = (Boolean) model.get("addQueryId");
             final Long noPagingCount = (Long) model.get("noPagingCount");
             final ObjectMapper mapper = this.getObjectMapper();
-            final ObjectNode jsonDataObject = mapper.createObjectNode();
-            jsonDataObject.put("noPagingCount", noPagingCount);
+            this.getRootObjectNode().put("noPagingCount", noPagingCount);
             final ArrayNode rowsCollection = mapper.createArrayNode();
-
             for (RawLogEntry logEntry : logsCollection) {
                 rowsCollection.add(RawLogSerializer.serialize(logEntry,
                                                               addQueryId,
                                                               locale, mapper));
             }
-            jsonDataObject.put("rows", rowsCollection);
-
-            return jsonDataObject;
+            
+            return rowsCollection;
         }
         
         throw new MonitorInterfaceException("An internal error occurred",

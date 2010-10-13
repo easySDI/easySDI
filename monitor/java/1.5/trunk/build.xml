@@ -16,7 +16,7 @@
 	
 	<target name="compile" depends="convertI18n">
 		<echo message="Compiling the application" level="info" />
-		<javac srcdir="${basedir}/src" target="1.5" includeAntRuntime="false"
+		<javac debug="true" srcdir="${basedir}/src" target="1.5" includeAntRuntime="false"
 			   destdir="${basedir}/WebContent/WEB-INF/classes" 
 			   compiler="javac1.5" source="1.5" />
 		<echo message="Compilation successful" level="info" />

@@ -3,6 +3,7 @@ package org.easysdi.monitor.gui.webapp.controllers;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
@@ -485,7 +486,8 @@ public abstract class AbstractMonitorController {
      * @param   request the request to process
      * @return          a map containing the parameters of the request
      */
-    protected Map<String, String> getRequestParametersMap(
+    @SuppressWarnings("unchecked")
+	protected Map<String, String> getRequestParametersMap(
                                                   HttpServletRequest request) {
         
         if ("GET".equals(request.getMethod())) {
@@ -498,12 +500,27 @@ public abstract class AbstractMonitorController {
             = this.getContentTypeWithoutEnconding(springRequest);
         Map<String, String> requestParameters = null;
 
-        if ("application/json".equals(contentType)) {
+        if ("application/json".equalsIgnoreCase(contentType)) {
             requestParameters = this.getRequestJsonParameters(springRequest);
-            
         }
+        //added this
+        else if("application/x-www-form-urlencoded".equalsIgnoreCase(contentType)){
+        	requestParameters = new HashMap<String, String>();
+        	Map map = request.getParameterMap();
+            Set entries = map.entrySet();
+            Iterator iter = entries.iterator();
+            while ( iter.hasNext() )
+            {
+               Map.Entry entry = (Map.Entry)iter.next() ;
+               String   name   = (String)entry.getKey() ;
+               String[] params = (String[])entry.getValue() ;
+               for(int i=0; i<params.length; i++)
+            	   requestParameters.put(name, params[i]);
+            }
+        }    
         
-        if (null == requestParameters) {
+        /* does not seem to work for kvp post anyway...*/
+        else if (null == requestParameters) {
             requestParameters = this.getRequestKvpParameters(springRequest);
         }
         

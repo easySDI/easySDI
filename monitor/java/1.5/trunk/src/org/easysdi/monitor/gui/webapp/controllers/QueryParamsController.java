@@ -1,6 +1,7 @@
 package org.easysdi.monitor.gui.webapp.controllers;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,6 +81,30 @@ public class QueryParamsController extends AbstractMonitorController {
         this.enforceRole(SecurityConstants.ADMIN_ROLE, request, response);
         final ModelAndView result = new ModelAndView("queryParams");
 
+        
+        
+        Map map = request.getParameterMap() ;
+        Set entries = map.entrySet() ;
+        Iterator iter = entries.iterator() ;
+        
+        
+        boolean found =false;
+        while ( iter.hasNext() )
+        {
+           Map.Entry entry = (Map.Entry)iter.next() ;
+           String   name   = (String)entry.getKey() ;
+           String[] params = (String[])entry.getValue() ;
+           for(int i=0; i<params.length; i++)
+              System.out.println("name:"+name+", value:"+params[i]);
+           found = true;
+        }
+        if(!found)
+        	System.out.println("no parameter found!");
+        
+        
+        
+        
+        
         final Query query = this.getQuery(jobIdString, queryIdString);
         final QueryConfiguration config = query.getConfig();
         final Map<String, String> requestParams 
@@ -94,8 +119,9 @@ public class QueryParamsController extends AbstractMonitorController {
             for (String paramName : requestParams.keySet()) {
 
                 if (!StringUtils.isBlank(paramName)) {                  
-                    paramValue = request.getParameter(paramName);
-                    queryParam = config.findParam(paramName);
+                    //paramValue = request.getParameter(paramName);
+                	paramValue = requestParams.get(paramName);
+                	queryParam = config.findParam(paramName);
 
                     if (null == queryParam) {
                         config.addParam(new QueryParam(query, paramName,

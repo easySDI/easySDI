@@ -3,6 +3,7 @@ package org.easysdi.monitor.biz.job;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -33,8 +34,8 @@ public final class JobConfiguration {
     private boolean     realTimeAllowed;
     private ServiceType serviceType;
     private long        serviceTypeId;
-    private Calendar    slaEndTime;
-    private Calendar    slaStartTime;
+    private GregorianCalendar    slaEndTime;
+    private GregorianCalendar    slaStartTime;
     private int         testInterval;
     private int         timeout;
     private String      url;
@@ -476,7 +477,7 @@ public final class JobConfiguration {
      * @param   newSlaEndTime   the time at which the SLA validated time ends. 
      *                          (The date part is indifferent.)
      */
-    public void setSlaEndTime(Calendar newSlaEndTime) {
+    public void setSlaEndTime(GregorianCalendar newSlaEndTime) {
         this.slaEndTime = newSlaEndTime;
     }
 
@@ -503,7 +504,7 @@ public final class JobConfiguration {
      * @param   newSlaStartTime the time at which the SLA validated time starts.
      *                          (The date part is indifferent.)
      */
-    public void setSlaStartTime(Calendar newSlaStartTime) {
+    public void setSlaStartTime(GregorianCalendar newSlaStartTime) {
         this.slaStartTime = newSlaStartTime;
     }
 
@@ -733,11 +734,11 @@ public final class JobConfiguration {
 
             this.defineProperty(defaultParams, "SLA_START_TIME", 
                            this.getClass().getMethod("setSlaStartTime", 
-                                                     Calendar.class));
+                                                     GregorianCalendar.class));
 
             this.defineProperty(defaultParams, "SLA_END_TIME", 
                            this.getClass().getMethod("setSlaEndTime", 
-                                                     Calendar.class));
+                        		   GregorianCalendar.class));
 
         } catch (NoSuchMethodException e) {
             this.logger.warn(String.format(
