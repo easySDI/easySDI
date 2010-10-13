@@ -21,7 +21,7 @@
  *
  */
 
-//error_reporting(0);
+error_reporting(0);
 
 global $fh;
 global $requ_headers;
