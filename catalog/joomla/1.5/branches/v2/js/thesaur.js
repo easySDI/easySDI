@@ -515,26 +515,3 @@ var ThesaurusReader = function(config){
   }  
   
   Ext.extend(ThesaurusReader, Ext.Panel, {});
-  
-  
-  /* HSLayers language definition */
-  /*  HS.Lang["cze"]["Home"] = "Výchozí";
-  HS.Lang["cze"]["Search"] = "Hledat";
-  HS.Lang["cze"]["BT"] = "Širší termíny";
-  HS.Lang["cze"]["NT"] = "Užší termíny";
-  HS.Lang["cze"]["RT"] = "Příbuzné termíny";
-  HS.Lang["cze"]["TH"] = "Témata";
-  HS.Lang["cze"]["Use"] = "Použít";
-  HS.Lang["cze"]["Themes"] = "Témata";
-  HS.Lang["cze"]["Groups"] = "Skupiny";
-  HS.Lang["cze"]["Warning"] = "Výstraha";
-  HS.Lang["cze"]["characters required"] = "znaků vyžadováno";
-  HS.Lang["cze"]["Top concepts"] = "Výchozí témata";
-  HS.Lang["cze"]["Found"] = "Nalezeno";
-  //HS.Lang["cze"]["INSPIRE themes"] = "INSPIRE - témata";
-  
-  HS.Lang["eng"]["BT"] = "Broader terms";
-  HS.Lang["eng"]["NT"] = "Narrower terms";
-  HS.Lang["eng"]["RT"] = "Related terms";
-  HS.Lang["eng"]["TH"] = "Themes";
- */

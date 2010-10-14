@@ -171,11 +171,14 @@ class ADMIN_objectversion {
 			$rowLastObjectVersion->load($listVersions[0]->id);
 		}
 	
-		if ($rowLastMetadata->metadatastate_id <> 1 and $rowLastMetadata->metadatastate_id <> 2)
+		if ($id==0)
 		{
-			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_NEW_LASTNOTPUBLISHED_ERROR_MSG"),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
-			exit();
+			if ($rowLastMetadata->metadatastate_id <> 1 and $rowLastMetadata->metadatastate_id <> 2)
+			{
+				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_NEW_LASTNOTPUBLISHED_ERROR_MSG"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+				exit();
+			}
 		}
 		
 		$row = new objectversion( $database );
@@ -493,7 +496,7 @@ class ADMIN_objectversion {
 								 */
 								$newLink = new objectversionlink($database);
 								$newLink->parent_id=$rowObjectVersion->id;
-								$newLink->child_id=$childLastObjectVersion->id;
+								$newLink->child_id=$ol->child_id;
 								
 								if (!$newLink->store(false)) 
 								{			
@@ -861,6 +864,9 @@ class ADMIN_objectversion {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
+		
+		$object_id = JRequest::getVar('object_id',0);
 		
 		if ($objectversion_id == 0 and !JRequest::getVar('objectversion_id'))
 		{
@@ -868,8 +874,6 @@ class ADMIN_objectversion {
 			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id", $msg);
 			exit;
 		}
-		
-		$object_id = JRequest::getVar('object_id',0);
 		
 		$rowObject = new object($database);
 		$rowObject->load($object_id);
@@ -906,7 +910,16 @@ class ADMIN_objectversion {
 		
 		$objecttypes = array();
 		$listObjecttypes = array();
-		$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
+		//$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
+		$database->setQuery( "SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label");
+		
 		$objecttypes= array_merge( $objecttypes, $database->loadObjectList() );
 		foreach($objecttypes as $ot)
 		{
@@ -916,12 +929,13 @@ class ADMIN_objectversion {
 		
 		$status = array();
 		$listStatus = array();
-		$database->setQuery( "SELECT id as value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
+		$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_metadatastate ORDER BY label" );
 		$status= array_merge( $status, $database->loadObjectList() );
 		foreach($status as $s)
 		{
 			$listStatus[$s->value] = $s->text;
 		}
+		helper_easysdi::arrayTranslate($listStatus);
 		$listStatus = HTML_metadata::array2extjs($listStatus, true);
 		
 		$managers = array();

@@ -97,7 +97,21 @@ class ADMIN_objecttypelink {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT l.*, parent.name as parent_name, child.name as child_name FROM #__sdi_objecttypelink as l INNER JOIN #__sdi_objecttype as parent ON l.parent_id=parent.id INNER JOIN #__sdi_objecttype as child ON l.child_id=child.id";
+		//$query = "SELECT l.*, parent.name as parent_name, child.name as child_name FROM #__sdi_objecttypelink as l INNER JOIN #__sdi_objecttype as parent ON l.parent_id=parent.id INNER JOIN #__sdi_objecttype as child ON l.child_id=child.id";
+		$query = "SELECT l.*, parent_t.label as parent_name, child_t.label as child_name 
+				  FROM #__sdi_objecttypelink as l 
+				  INNER JOIN #__sdi_objecttype as parent ON l.parent_id=parent.id 
+				  INNER JOIN #__sdi_objecttype as child ON l.child_id=child.id
+				  INNER JOIN #__sdi_translation parent_t ON parent_t.element_guid=parent.guid
+				  INNER JOIN #__sdi_language parent_l ON parent_t.language_id=parent_l.id
+				  INNER JOIN #__sdi_list_codelang parent_cl ON parent_l.codelang_id=parent_cl.id
+				  INNER JOIN #__sdi_translation child_t ON child_t.element_guid=child.guid
+				  INNER JOIN #__sdi_language child_l ON child_t.language_id=child_l.id
+				  INNER JOIN #__sdi_list_codelang child_cl ON child_l.codelang_id=child_cl.id
+				  WHERE parent_cl.code='".$language->_lang."' 
+				 	   AND child_cl.code='".$language->_lang."'
+				  ";
+		
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
@@ -117,6 +131,7 @@ class ADMIN_objecttypelink {
 				
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
+		$language =& JFactory::getLanguage();
 		
 		// Gestion de la page rechargée sur modification de la classe root du parentIdentifier
 		$pageReloaded=false;
@@ -162,10 +177,19 @@ class ADMIN_objecttypelink {
 		}
 		
 		// get list of objecttypes for dropdown filter
-		$query = 'SELECT id as value, name as text' .
+		/*$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
 				//' WHERE predefined=false' .
-				' ORDER BY name';
+				' ORDER BY name';*/
+		$query = "SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label";
+		
 		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$database->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $database->loadObjectList());
@@ -196,7 +220,7 @@ class ADMIN_objecttypelink {
 				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$_POST['class_id']." ORDER BY a.name" );
 				$attributes = array_merge( $attributes, $database->loadObjectList() );
 			}
-			else if ($rowProfile->id <> 0)
+			else if ($rowObjectTypeLink->id <> 0)
 			{
 				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$rowObjectTypeLink->class_id." ORDER BY a.name" );
 				$attributes = array_merge( $attributes, $database->loadObjectList() );

@@ -70,6 +70,7 @@ class SITE_object {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$user = JFactory::getUser();
+		$language =& JFactory::getLanguage();
 		
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', 20, '', 'int');
@@ -165,10 +166,19 @@ class SITE_object {
 			//exit();
 		}
 		
-		$query = 'SELECT id as value, name as text' .
+		/*$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
 				' WHERE predefined=false' .
-				' ORDER BY name';
+				' ORDER BY name';*/
+		$query = "SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label";
+		
 		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$db->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
@@ -185,6 +195,7 @@ class SITE_object {
 		global  $mainframe;
 		$user = JFactory::getUser();
 		$database =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		
 		$rowObject = new object( $database );
 		$rowObject->load( $id );
@@ -233,7 +244,18 @@ class SITE_object {
 		
 		$objecttypes=array();
 		$objecttypes[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_OBJECTTYPE_SELECT") );
-		$database->setQuery("SELECT ot.id AS value, ot.name as text FROM #__sdi_objecttype ot, #__sdi_account_objecttype a WHERE ot.id=a.objecttype_id AND a.account_id=".$rootAccount." ORDER BY ot.name");
+		//$database->setQuery("SELECT ot.id AS value, ot.name as text FROM #__sdi_objecttype ot, #__sdi_account_objecttype a WHERE ot.id=a.objecttype_id AND a.account_id=".$rootAccount." ORDER BY ot.name");
+		$database->setQuery("SELECT ot.id AS value, t.label as text 
+							 FROM #__sdi_objecttype ot 
+							 INNER JOIN #__sdi_account_objecttype a ON ot.id=a.objecttype_id
+							 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							 INNER JOIN #__sdi_language l ON t.language_id=l.id
+							 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							 WHERE ot.predefined=0 
+							 	   AND cl.code='".$language->_lang."'
+							 	   AND a.account_id=".$rootAccount."
+							 ORDER BY t.label");
+		
 		//echo $database->getQuery();
 		$objecttypes = array_merge( $objecttypes, $database->loadObjectList() );
 		

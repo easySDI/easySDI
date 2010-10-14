@@ -281,16 +281,16 @@ foreach ($languages as $lang)
 							</table>
 						</fieldset>
 					</td>
-				</tr>		
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'issystem', '', $row->issystem);?> </td>							
+				</tr>	
 			</table>
 			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'issystem', '', $row->issystem);?> </td>							
-				</tr>
-				<tr>
-					<td><?php echo JText::_("CORE_ISEXTENSIBLE"); ?></td>
+					<td WIDTH=150><?php echo JText::_("CORE_ISEXTENSIBLE"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'isextensible', '', $row->isextensible);?> </td>							
 				</tr>
 				<tr>

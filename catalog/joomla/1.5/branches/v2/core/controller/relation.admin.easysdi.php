@@ -1380,9 +1380,9 @@ class ADMIN_relation {
 					$total = $database->loadResult();
 					
 					if ($_POST['rendertype_id'] == 1)
-						$default = str_replace("'","\'",$_POST['default_ta_'.$lang->code]);
+						$default = trim(str_replace("'","\'",$_POST['default_ta_'.$lang->code]));
 					else
-						$default = str_replace("'","\'",$_POST['default_tb_'.$lang->code]);
+						$default = trim(str_replace("'","\'",$_POST['default_tb_'.$lang->code]));
 					
 					if ($total > 0)
 					{

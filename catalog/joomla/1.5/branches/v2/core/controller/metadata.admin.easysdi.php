@@ -570,7 +570,7 @@ class ADMIN_metadata {
 						//$usefullKeys=array();
 						$count=0;
 						if ($child->attribute_system)
-							$name = $name."_hiddenVal";
+							$name = $name."__1"."_hiddenVal";
 							
 						foreach($keys as $key)
 						{
@@ -742,8 +742,8 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							if ($child->attribute_system)
-								$name = $name."_hiddenVal";
-							
+								$name = $name."__1"."_hiddenVal";
+						
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
 							{
@@ -780,7 +780,7 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							if ($child->attribute_system)
-								$name = $name."_hiddenVal";
+								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
@@ -1107,7 +1107,7 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							if ($child->attribute_system)
-								$name = $name."_hiddenVal";
+								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
@@ -1145,7 +1145,7 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							if ($child->attribute_system)
-								$name = $name."_hiddenVal";
+								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
@@ -1255,7 +1255,7 @@ class ADMIN_metadata {
 							}
 						}
 						
-						//print_r($usefullVals);
+						//print_r($usefullVals);echo "\r\n";
 							
 						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
@@ -1430,7 +1430,7 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							if ($child->attribute_system)
-								$name = $name."_hiddenVal";
+								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
@@ -2314,16 +2314,188 @@ class ADMIN_metadata {
 			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
 			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
 			
-			
 			if (!$XMLDoc)
 			{
 				$errorMsg = "XML non construit";
 				$response = '{
 					    		success: false,
 							    errors: {
-							        xml: "Metadata has not been inserted. '.$errorMsg.'"
+							        xml: "Metadata cannot be published. Bad construction '.$errorMsg.'"
 							    }
 							}';
+				print_r($response);
+				die();
+			}
+						
+			/*
+			 * Contrôles des bornes entre les types d'objet enfants / parents
+			 */ 
+			$missingChild = array();
+			$overloadChild = array();
+			$missingParent = array();
+			$overloadParent = array();
+			// Récupération de la version de l'objet qu'on cherche à publier
+			$rowMetadata = new metadataByGuid($database);
+			$rowMetadata->load($metadata_id);
+			
+			$rowObjectVersion = new objectversionByMetadata_id($database);
+			$rowObjectVersion->load($rowMetadata->id);
+	
+			// Récupérer tous les liens entre les types d'objets dont la version est le parent 
+			$child_objecttypelinks=array();
+			$query = 'SELECT l.*' .
+					' FROM #__sdi_objecttypelink l
+					  WHERE l.parent_id=' . $rowObject->objecttype_id;
+			$database->setQuery($query);
+			$child_objecttypelinks = $database->loadObjectList();
+			// Pour chaque lien, récupérer les bornes des enfants
+			foreach ($child_objecttypelinks as $child_objecttypelink)
+			{
+				$boundMin = $child_objecttypelink->childbound_lower;
+				$boundMax = $child_objecttypelink->childbound_upper;
+				  
+				// Si la borne min est supérieure à 0, compter le nombre d'enfants de ce type d'objet
+				// et contrôler qu'il soit supérieur ou égal à la borne min
+				if ($boundMin > 0)
+				{
+					$childs_count=0;
+					$query = "SELECT count(*) as child_count
+							 FROM #__sdi_objectversionlink ovl
+							 INNER JOIN #__sdi_objectversion ov_child ON ov_child.id = ovl.child_id
+							 INNER JOIN #__sdi_object o_child ON ov_child.object_id = o_child.id
+							 WHERE ovl.parent_id=".$rowObjectVersion->id."
+							 	   AND o_child.objecttype_id=".$child_objecttypelink->child_id;
+					$database->setQuery($query);
+					$childs_count = $database->loadResult();
+					if ($childs_count < $boundMin)
+					{
+						// Sauvegarder le type d'objet manquant pour la construction future du message d'erreur
+						$missingChild[] = $child_objecttypelink;
+					}
+				} 
+				// Si la borne max est inférieure à 999, compter le nombre d'enfants de ce type d'objet
+				// et contrôler qu'il soit inférieur ou égal à la borne max
+				if ($boundMax < 999)
+				{
+					$childs_count=0;
+					$query = "SELECT count(*) as child_count
+							 FROM #__sdi_objectversionlink ovl
+							 INNER JOIN #__sdi_objectversion ov_child ON ov_child.id = ovl.child_id
+							 INNER JOIN #__sdi_object o_child ON ov_child.object_id = o_child.id
+							 WHERE ovl.parent_id=".$rowObjectVersion->id."
+							 	   AND o_child.objecttype_id=".$child_objecttypelink->child_id;
+					$database->setQuery($query);
+					$childs_count = $database->loadResult();
+					if ($childs_count > $boundMax)
+					{
+						// Sauvegarder le type d'objet manquant pour la construction future du message d'erreur
+						$overloadChild[] = $child_objecttypelink;
+					}
+				} 
+			}
+			// Récupérer tous les liens entre les types d'objets dont la version est l'enfant 
+			$parent_objecttypelinks=array();
+			$query = 'SELECT l.*' .
+					' FROM #__sdi_objecttypelink l
+					  WHERE l.child_id=' . $rowObject->objecttype_id;
+			$database->setQuery($query);
+			$parent_objecttypelinks = $database->loadObjectList();
+			// Pour chaque lien, récupérer les bornes des parents
+			foreach ($parent_objecttypelinks as $parent_objecttypelink)
+			{
+				$boundMin = $parent_objecttypelink->parentbound_lower;
+				$boundMax = $parent_objecttypelink->parentbound_upper;
+				  
+				// Si la borne min est supérieure à 0, compter le nombre de parents de ce type d'objet
+				// et contrôler qu'il soit supérieur ou égal à la borne min
+				if ($boundMin > 0)
+				{
+					$parents_count=0;
+					$query = "SELECT count(*) as parent_count
+							 FROM #__sdi_objectversionlink ovl
+							 INNER JOIN #__sdi_objectversion ov_parent ON ov_parent.id = ovl.parent_id
+							 INNER JOIN #__sdi_object o_parent ON ov_parent.object_id = o_parent.id
+							 WHERE ovl.child_id=".$rowObjectVersion->id."
+							 	   AND o_parent.objecttype_id=".$parent_objecttypelink->parent_id;
+					$database->setQuery($query);
+					$parents_count = $database->loadResult();
+					if ($parents_count < $boundMin)
+					{
+						// Sauvegarder le type d'objet manquant pour la construction future du message d'erreur
+						$missingParent[] = $parent_objecttypelink;
+					}
+				} 
+				// Si la borne max est inférieure à 999, compter le nombre de parents de ce type d'objet
+				// et contrôler qu'il soit inférieur ou égal à la borne max
+				if ($boundMax < 999)
+				{
+					$parents_count=0;
+					$query = "SELECT count(*) as parent_count
+							 FROM #__sdi_objectversionlink ovl
+							 INNER JOIN #__sdi_objectversion ov_parent ON ov_parent.id = ovl.parent_id
+							 INNER JOIN #__sdi_object o_parent ON ov_parent.object_id = o_parent.id
+							 WHERE ovl.child_id=".$rowObjectVersion->id."
+							 	   AND o_parent.objecttype_id=".$parent_objecttypelink->parent_id;
+					$database->setQuery($query);
+					$parents_count = $database->loadResult();
+					if ($parents_count > $boundMax)
+					{
+						// Sauvegarder le type d'objet manquant pour la construction future du message d'erreur
+						$overloadParent[] = $parent_objecttypelink;
+					}
+				}
+			}
+			
+			// Construction du message d'erreur, s'il y a lieu
+			$msg="";
+			if (count($missingChild) > 0)
+				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MINCHILDBOUNDSREACHED"));
+			foreach ($missingChild as $mc)
+			{
+				$rowObjectType = new objecttype( $database );
+				$rowObjectType->load($mc->child_id);
+		
+				$msg .= "<br>>".$rowObjectType->name." [".$mc->childbound_lower."]";
+			}
+			if (count($overloadChild) > 0)
+				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MAXCHILDBOUNDSREACHED"));
+			foreach ($overloadChild as $oc)
+			{
+				$rowObjectType = new objecttype( $database );
+				$rowObjectType->load($oc->child_id);
+		
+				$msg .= "<br>>".$rowObjectType->name." [".$oc->childbound_upper."]";
+			}
+			if (count($missingParent) > 0)
+				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MINPARENTBOUNDSREACHED"));
+			foreach ($missingParent as $mp)
+			{
+				$rowObjectType = new objecttype( $database );
+				$rowObjectType->load($mp->parent_id);
+		
+				$msg .= "<br>>".$rowObjectType->name." [".$mp->parentbound_lower."]";
+			}
+			if (count($overloadParent) > 0)
+				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MAXPARENTBOUNDSREACHED"));
+			foreach ($overloadParent as $op)
+			{
+				$rowObjectType = new objecttype( $database );
+				$rowObjectType->load($op->parent_id);
+		
+				$msg .= "<br>>".$rowObjectType->name." [".$op->parentbound_upper."]";
+			}
+			echo $msg."<hr>";
+			
+			break;
+			
+			if ($msg <> "")
+			{
+				$response = '{
+							success: false,
+						    errors: {
+						        message: "'.$msg.'"
+						    }
+						}';
 				print_r($response);
 				die();
 			}
@@ -2345,7 +2517,7 @@ class ADMIN_metadata {
 			$response = '{
 							success: false,
 						    errors: {
-						        xml: "Exception: '.$e->getMessage().'"
+						        message: "Exception: '.$e->getMessage().'"
 						    }
 						}';
 			print_r($response);
@@ -2376,135 +2548,6 @@ class ADMIN_metadata {
 		$rowObjectVersion = new objectversionByMetadata_id($database);
 		$rowObjectVersion->load($rowMetadata->id);
 
-		// Contrôle que le nombre d'enfants est compris dans les bornes
-		// Sélection de toutes les versions enfant en les groupant par type d'objet
-		$childs=array();
-		$query = "SELECT count( * ) as child_count , o.objecttype_id
-				 FROM #__sdi_objectversionlink ovl
-				 INNER JOIN #__sdi_objectversion ov ON ov.id = ovl.child_id
-				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
-				 WHERE ovl.parent_id=".$rowObjectVersion->id."
-				 GROUP BY o.objecttype_id
-				";
-		$database->setQuery($query);
-		$childs = $database->loadObjectList();
-		//echo "Voici tous les types enfants avec leur count: ".$database->getQuery()."<br>";
-		//print_r($childs);
-		// Pour chaque type d'objet enfant trouvé, chercher un lien entre types d'objets correspondant
-		foreach ($childs as $child)
-		{
-			$child_objecttypelinks=array();
-			$query = 'SELECT l.*' .
-					' FROM #__sdi_objecttypelink l
-					  WHERE l.parent_id=' . $rowObject->objecttype_id.
-					' 		AND l.child_id='.$child->objecttype_id;
-			$database->setQuery($query);
-			$child_objecttypelinks = $database->loadObjectList();
-			//echo "<br>Relation entre les types: ".$database->getQuery()."<br>";
-			//print_r($child_objecttypelinks);
-			// Si on a trouvé une correspondance, contrôler que le nombre d'enfants de ce type est bien compris dans les bornes définies
-			if (count($child_objecttypelinks) > 0)
-			{
-				$boundMin = $child_objecttypelinks[0]->childbound_lower;
-				$boundMax = $child_objecttypelinks[0]->childbound_upper;
-				//echo "<br>Bornes a comparer: ".$boundMin." <= ".$child->child_count." >= ".$boundMax."<br>";
-				
-				if ($child->child_count < $boundMin)
-				{
-					// Message indiquant un nombre d'enfants invalide
-					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MINCHILDBOUNDSREACHED"));
-					
-					$response = '{
-						    		success: false,
-								    errors: {
-								        message: "'.$msg.'"
-								    }
-								}';
-					print_r($response);
-					die();
-				}
-				else if ($child->child_count > $boundMax)
-				{
-					// Message indiquant un nombre d'enfants invalide
-					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MAXCHILDBOUNDSREACHED"));
-					
-					$response = '{
-						    		success: false,
-								    errors: {
-								        message: "'.$msg.'"
-								    }
-								}';
-					print_r($response);
-					die();
-				}
-			}
-		}
-		
-		
-		
-		// Contrôle que le nombre de parents est compris dans les bornes
-		// Sélection de toutes les versions parent en les groupant par type d'objet
-		$parents=array();
-		$query = "SELECT count( * ) as parent_count , o.objecttype_id
-				 FROM #__sdi_objectversionlink ovl
-				 INNER JOIN #__sdi_objectversion ov ON ov.id = ovl.parent_id
-				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
-				 WHERE ovl.child_id=".$rowObjectVersion->id."
-				 GROUP BY o.objecttype_id
-				";
-		$database->setQuery($query);
-		$parents = $database->loadObjectList();
-		//echo "<hr>Voici tous les types parents avec leur count: ".$database->getQuery()."<br>";
-		//print_r($parents);
-		// Pour chaque type d'objet parent trouvé, chercher un lien entre types d'objets correspondant
-		foreach ($parents as $parent)
-		{
-			$parent_objecttypelinks=array();
-			$query = 'SELECT l.*' .
-					' FROM #__sdi_objecttypelink l
-					  WHERE l.parent_id=' . $parent->objecttype_id.
-					' 		AND l.child_id='.$rowObject->objecttype_id;
-			$database->setQuery($query);
-			$parent_objecttypelinks = $database->loadObjectList();
-			//echo "<br>Relation entre les types: ".$database->getQuery()."<br>";
-			//print_r($parent_objecttypelinks);
-			// Si on a trouvé une correspondance, contrôler que le nombre de parents de ce type est bien compris dans les bornes définies
-			if (count($parent_objecttypelinks) > 0)
-			{
-				$boundMin = $parent_objecttypelinks[0]->parentbound_lower;
-				$boundMax = $parent_objecttypelinks[0]->parentbound_upper;
-				//echo "<br>Bornes a comparer: ".$boundMin." <= ".$parent->parent_count." >= ".$boundMax."<br>";
-				if ($parent->parent_count < $boundMin)
-				{
-					// Message indiquant un nombre d'enfants invalide
-					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MINPARENTBOUNDSREACHED"));
-					
-					$response = '{
-						    		success: false,
-								    errors: {
-								        message: "'.$msg.'"
-								    }
-								}';
-					print_r($response);
-					die();
-				}
-				else if ($parent->parent_count > $boundMax)
-				{
-					// Message indiquant un nombre d'enfants invalide
-					$msg = html_Metadata::cleanText(JText::_("CATALOG_METADATA_PUBLISH_MAXPARENTBOUNDSREACHED"));
-					
-					$response = '{
-						    		success: false,
-								    errors: {
-								        message: "'.$msg.'"
-								    }
-								}';
-					print_r($response);
-					die();
-				}
-			}
-		}
-		
 		// Est-ce que tous les enfants sont publiés?
 		$child_objectlinks=array();
 		$query = 'SELECT child.*, child_metadatastate.code as state, child_object.name as object_name' .
@@ -2656,6 +2699,7 @@ class ADMIN_metadata {
 					$rowLastMetadata->load($listVersions[0]->metadata_id);
 					$rowLastObjectVersion->load($listVersions[0]->id);
 					
+					// Archiver la dernière version
 					$rowLastMetadata->archived=$rowMetadata->published;
 					$rowLastMetadata->metadatastate_id=2;
 					
@@ -2670,12 +2714,24 @@ class ADMIN_metadata {
 						die();
 					}
 					
-					// Archiver également tous les enfants de la dernière version
+					// Archiver également tous les enfants de la dernière version, 
+					// pour autant que le lien entre les types d'objets aie flowdown_versioning=1
 					// Récupérer tous les liens enfants de la dernière version
 					$child_objectlinks=array();
-					$query = 'SELECT l.child_id as child_id' .
+					/*$query = 'SELECT l.child_id as child_id' .
 							' FROM #__sdi_objectversionlink l
-							  WHERE l.parent_id=' . $rowLastObjectVersion->id;
+							  WHERE l.parent_id=' . $rowLastObjectVersion->id;*/
+					$query = 'SELECT l.child_id as child_id, 
+									 o_parent.id as parentobject_id, 
+									 o_child.id as childobject_id, 
+									 o_child.objecttype_id as child_objecttype, 
+									 o_parent.objecttype_id as parent_objecttype' .
+							' FROM #__sdi_objectversionlink l
+							  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
+							  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
+							  INNER JOIN #__sdi_object o_parent ON o_parent.id=parent.object_id
+							  INNER JOIN #__sdi_object o_child ON o_child.id=child.object_id' .
+							' WHERE l.parent_id=' . $rowLastObjectVersion->id;
 					$database->setQuery($query);
 					
 					$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
@@ -2684,25 +2740,50 @@ class ADMIN_metadata {
 					{
 						foreach($child_objectlinks as $ol)
 						{
-							// Récupérer la métadonnée de la dernière version de l'objet enfant
-							$childLastObjectVersion = new objectversion( $database );
-							$childLastObjectVersion->load($ol->child_id);
-							$childLastMetadata = new metadata( $database );
-							$childLastMetadata->load($childLastObjectVersion->metadata_id);
+							// Regarder s'il existe un lien entre ces types d'objet
+							$rowObjectTypeLink =array();
+							$query = 'SELECT *' .
+									' FROM #__sdi_objecttypelink' .
+									' WHERE parent_id=' . $ol->parent_objecttype.
+									' 	AND child_id=' . $ol->child_objecttype;
 							
-							$childLastMetadata->archived=$rowMetadata->published;
-							$childLastMetadata->metadatastate_id=2;
+							$database->setQuery($query);
+							$rowObjectTypeLink = array_merge($rowObjectTypeLink, $database->loadObjectList());
 							
-							if (!$childLastMetadata->store()) {
-								$response = '{
-									    		success: false,
-											    errors: {
-											        xml: "archive problem"
-											    }
-											}';
-								print_r($response);
-								die();
-							}
+							// Si le lien existe, regarder s'il demande une gestion virale des versions
+							if (count($rowObjectTypeLink) >0)
+							{
+								foreach($rowObjectTypeLink as $otl)
+								{
+									// Le lien indique qu'il faut répercuter l'archivage sur la version enfant
+									if ($otl->flowdown_versioning)
+									{
+										/*
+										 * FLOWDOWN_VERSIONING
+										 * Archiver la version liée
+										 */
+										// Récupérer la métadonnée de la dernière version de l'objet enfant
+										$childLastObjectVersion = new objectversion( $database );
+										$childLastObjectVersion->load($ol->child_id);
+										$childLastMetadata = new metadata( $database );
+										$childLastMetadata->load($childLastObjectVersion->metadata_id);
+										
+										$childLastMetadata->archived=$rowMetadata->published;
+										$childLastMetadata->metadatastate_id=2;
+										
+										if (!$childLastMetadata->store()) {
+											$response = '{
+												    		success: false,
+														    errors: {
+														        xml: "archive problem"
+														    }
+														}';
+											print_r($response);
+											die();
+										}
+									}
+								}
+							}		
 						}
 					}
 				}

@@ -423,7 +423,8 @@ else
 		   </table>
 			<table width="100%">
 			<tr>
-				<td width="100%"><div id="viewLinksOutput"></div></td>
+				<td width="100%">
+				<div id="viewLinksOutput"></div></td>
 			</tr>
 		   </table>
 		   <form action="index.php" method="post" name="adminForm" id="adminForm"
@@ -433,7 +434,7 @@ else
 			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
 			</div>
-			</div>
+		</div>
 		<?php
 		
 		$javascript .="
@@ -659,7 +660,12 @@ else
 					renderTo: document.getElementById('formContainer'),
 			        standardSubmit:true,
 			        items        : [
-			        	manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate),
+			        	{
+			        		xtype:'fieldset',
+			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
+			        		collapsible:false,
+			        		items:[manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)]
+						},
 			        	{
 			        		id			: 'gridPanel',
 			        		xtype		 : 'panel',

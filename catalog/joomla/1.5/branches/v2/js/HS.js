@@ -1,4 +1,6 @@
 /**
+ * WARNING EassySDI has hacked this file for implementation constraints
+ * 
  * Purpose: Set language parameters 
  * Author: Jachym Cepicky <jachym bnhelp cz>
  * URL: http://bnhelp.cz
@@ -111,7 +113,7 @@ HS.i18n = function() {
  *
  * Parameters:
  * code - {String} language code. Can be *any* form (e.g.
- *   "česky","cs","cze", ...). 
+ *   "?esky","cs","cze", ...). 
  * saveToCookie - {Boolean} , default: false
  *
  * Return:
@@ -306,20 +308,22 @@ HS.getCookie = function(c_name) {
 };
 
 /**
+ * WARNING EassySDI has hacked this definition for implementation constraints
+ * 
  * Property: langs
  * List of langue codes in various formats.
  */
     HS.langs = {
-                "eng;en;en":    ["en","eng","english"],
-                "ger;de;de":    ["de","ger","deutsch"],
-                "fre;fr;fr":    ["fr","fre","france"],
-                "pol;pl;pl":    ["pl","pol","polska"],
-                "ita:it;it":    ["it","ita","italiano","italien"],
-                "rus:ru;ru":    ["rus","ru","russe"],
-                "spa:es:spa":   ["es","spa","espagnol","castillan"],
-                "slk:sk:sk":    ["slk","slo","sk","slovensky","slovak"],
-                "cze;cs-CZ;cs": ["cz","cze","cs-CZ","czech","cesky","cs"],
-                "lav;lv-LV;lv": ["lv","lav","lv-LV","latvian","latv"]
+                "en;en;en":    ["en","eng","english"],
+                "de;de;de":    ["de","ger","deutsch"],
+                "fr;fr;fr":    ["fr","fre","france"],
+                "pl;pl;pl":    ["pl","pol","polska"],
+                "it:it;it":    ["it","ita","italiano","italien"],
+                "ru:ru;ru":    ["rus","ru","russe"],
+                "es:es:spa":   ["es","spa","espagnol","castillan"],
+                "sk:sk:sk":    ["slk","slo","sk","slovensky","slovak"],
+                "cs;cs-CZ;cs": ["cz","cze","cs-CZ","czech","cesky","cs"],
+                "lv;lv-LV;lv": ["lv","lav","lv-LV","latvian","latv"]
     },
 
 /**

@@ -19,67 +19,32 @@ class reportEngine{
 	
 	function getReport()
 	{
-
-		// Charger la configuration de Joomla pour un accès à la base de données mysql
-		//echo dirname(__FILE__).'\..\..\..\..\..\configuration.php';
-		//require_once (dirname(__FILE__).'\..\..\..\..\..\configuration.php');
-		require_once ('configuration.php');
-		//require_once (dirname(__FILE__).'\..\..\..\..\..\libraries\joomla\environment\request.php');
-		$jconfig = new JConfig(); 
-		
-		// Connection à la base de données
-		/*$database =& mysql_pconnect($jconfig->host, $jconfig->user, $jconfig->password);
-		if (!$database) 
-		{
-		   die('Impossible de se connecter : ' . mysql_error());
-		}
-		$db_selected = mysql_select_db($jconfig->db, $database);
-		if (!$db_selected) {
-		   die ('Impossible de sélectionner la base de données : ' . mysql_error());
-		}*/
+		global $mainframe;
+		$user =& JFactory::getUser();
 		$database=& JFactory::getDBO();
 		
 		/* Début du code de génération du rapport */
 		$query="";
 		$results=array();
 		
-		// Récupération des paramètres
+		// Récupération des paramètres, en minuscules (sauf metadata_guid[] qu'on ne touche pas)
 		$params = array();
-		//$objecttype_code = JRequest::getVar ('metadatatype', '');
-		$objecttype_code = $_GET['metadatatype'];
+		$objecttype_code = strtolower(JRequest::getVar ('metadatatype', ''));
 		$params['metadatatype'] = $objecttype_code;
-		//$format = JRequest::getVar ('format', '');
-		$format = $_GET['format'];
+		$format = strtolower(JRequest::getVar ('format', ''));
 		$params['format'] = $format;
-		//$reporttype = JRequest::getVar ('reporttype', '');
-		$reporttype = $_GET['reporttype'];
+		$reporttype = strtolower(JRequest::getVar ('reporttype', ''));
 		$params['reporttype'] = $reporttype;
-		//$metadata_guid = JRequest::getVar ('metadata_guid', array(0));
-		$metadata_guid = $_GET['metadata_guid'];
+		$metadata_guid = JRequest::getVar ('metadata_guid', array(0));
 		$params['metadata_guid'] = $metadata_guid;
-		//$language = JRequest::getVar ('language', '');
-		$language = $_GET['language'];
+		$language = strtolower(JRequest::getVar ('language', ''));
 		$params['language'] = $language;
-		//$lastVersion = JRequest::getVar ('lastVersion', '');
-		$lastVersion = $_GET['lastVersion'];
+		$lastVersion = strtolower(JRequest::getVar ('lastVersion', ''));
 		$params['lastVersion'] = $lastVersion;
-		echo "================ PARAMETRES =================<br>";
-		print_r($params);
-		echo "<br>=============================================<br>";
-		// Contrôler que tous les paramètres soient renseignés
-		foreach ($params as $key => $param)
-		{
-			if ($param == '' or count($param) == 0)
-			{
-				// Retourner une erreur au format XML
-				/*$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XHTML_GETREPORT_MISSINGPARAMETER.xsl');
-				$processor->importStylesheet($style);
-				$xmlToHtml = $processor->transformToXml($xml);
-				printf($document);*/
-				echo "PARAMETRE ".$key." MANQUANT";
-				exit;
-			}
-		}
+		
+		// Contrôler la validité de la requête avant de la passer plus loin
+		if (!reportEngine::verifyRequest($params, $user))
+			exit;
 		
 		// Rassembler les guids de métadonnées indiqués en une string de la forme (guid1, guid2, guid3, ..., guidn)
 		$guids = "";
@@ -88,9 +53,7 @@ class reportEngine{
 			$mg="'".$mg."'";
 		}
 		$guids = implode(",", $metadata_guid);
-		echo "=============== Liste de GUIDS ==============<br>";
-		print_r($guids);
-		echo "<br>=============================================<br>";
+		
 		// Récupérer tous les guids qui sont publics
 		$query = "	SELECT m.guid as metadata_guid, o.id as object_id
 					FROM #__sdi_metadata m
@@ -100,36 +63,18 @@ class reportEngine{
 					INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 					WHERE v.code='public'
 				";
-		echo "================== Query 1 ==================<br>";
-		echo $query."<br>";
-		echo "=============================================<br>";
-		
+
 		// Qui sont indiqués dans le paramètre metadata_guid
 		$query .= " AND m.guid IN (".$guids.")";
 		
-		echo "================== Query 2 ==================<br>";
-		echo $query."<br>";
-		echo "=============================================<br>";
-		
-		
 		// Qui sont du type indiqué dans le paramètre metadatatype
 		$query .= " AND ot.code = '".$objecttype_code."'";
-
-		echo "================== Query 3 ==================<br>";
-		echo $query."<br>";
-		echo "=============================================<br>";
-		
-		//$query = replacePrefix($query, $jconfig->dbprefix);
-		//$results = loadObjectList($query);
 		$database->setQuery($query);
 		$results = $database->loadObjectList();
-		
-		echo "================== RESULTS ==================<br>";
-		print_r($results);
-		echo "<br>=============================================<br>";
+		//echo $database->getQuery()."<br>";		
 		
 		// Si c'est la dernière version qui est demandée, il faut faire des traitements supplémentaires
-		if ($lastVersion)
+		if ($lastVersion == "yes")
 		{
 			foreach ($results as &$result)
 			{
@@ -140,184 +85,271 @@ class reportEngine{
 									  WHERE ov.object_id=".$result->object_id." 
 									  ORDER BY ov.created DESC";
 				
-				echo "================== Query 4 ==================<br>";
-				echo $query."<br>";
-				echo "=============================================<br>";
-				
-				$query = replacePrefix($query, $jconfig->dbprefix);
-				$result->metadata_guid = loadResult($query);
-				//$result->metadata_guid = $database->loadResult();
+				$database->setQuery($query);
+				//echo $database->getQuery()."<br>";
+				$result->metadata_guid = $database->loadResult();
 			}
 		}
 		
-		echo "============= GUIDS a recuperer ================<br>";
-		print_r($results);
-		echo "<br>=============================================<br>";		
-		
-		$filter = "";
-		foreach ($results as $result)
+		// Construction du filtre
+		if (count($results) > 0)
 		{
-			$filter  .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>".$result->metadata_guid."</ogc:Literal></ogc:PropertyIsEqualTo>";
-		}
-		if (count($results) > 1)
-			$filter = "<ogc:Or>".$filter."</ogc:Or>";
-
-		echo "===================== FILTRE ========================<br>";
-		print_r(htmlspecialchars($filter));
-		echo "<br>=============================================<br>";
-
-		// Construire une requête Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
-		//Bug: If we have accents, we must specify ISO-8859-1
-		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		$req .= "";
-		
-		//Get Records section
-		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" content=\"COMPLETE\" ";
-		$req .= "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd\">\r\n";
+			$filter = "";
+			foreach ($results as $result)
+			{
+				$filter  .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>".$result->metadata_guid."</ogc:Literal></ogc:PropertyIsEqualTo>";
+			}
+			if (count($results) > 1)
+				$filter = "<ogc:Or>".$filter."</ogc:Or>";
 	
-		//Query section
-		//Types name
-		$req .= "<csw:Query typeNames=\"datasetcollection dataset application service\">";
-		//ElementSetName
-		$req .= "<csw:ElementSetName>full</csw:ElementSetName>";
-		//ConstraintVersion
-		$req .="<csw:Constraint version=\"1.1.0\">";
-		//filter
-		$req .= "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">";
-		$req .= $filter;
-		$req .= "</ogc:Filter>";
-		$req .= "</csw:Constraint>";
-		$req .= "</csw:Query>";
-		$req .= "</csw:GetRecords>";
+			$filter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">".$filter."</ogc:Filter>";
+			
+			// Construire une requête Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
+			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $filter, "title", "ASC");
+			
+			//echo htmlspecialchars($xmlBody);
+
+			// Envoi de la requête
+			$catalogUrlBase = config_easysdi::getValue("catalog_url");
+			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+			$cswResults = DOMDocument::loadXML($xmlResponse);
+
+			//echo htmlspecialchars($cswResults->saveXML())."<hr>";
+			
+			// Traitement du retour CSW pour générer le rapport
+			if ($cswResults !=null and $cswResults !="")
+			{
+				// Contrôler si le XML ne contient pas une erreur
+				if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
+				{
+					// Retourner une erreur au format XML, formatée par un XSl
+					$xmlError = new DomDocument();
+					$style = new DomDocument();
+					$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'OWSEXCEPTION.xml');
+					$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'XHTML_GETREPORT_ERRORS.xsl');
+					$processor = new xsltProcessor();
+					$processor->setParameter('', 'error_type', "OWSEXCEPTION");
+					$processor->setParameter('', 'user_language', $user->getParam('language', ''));
+					$processor->importStylesheet($style);
+					$xmlToHtml = $processor->transformToXml($xmlError);
+					if ($xmlToHtml <> "")
+					{
+						file_put_contents($xmlToHtml, 'error.html');
+						reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');
+						exit;
+					}
+				}
+				else
+				{
+					$myDoc= new DomDocument();
+					
+					// Noeud artificiel supérieur pour englober la métadonnée et les paramètres
+					$XMLNewRoot = $myDoc->createElement("Metadata");
+					$myDoc->appendChild($XMLNewRoot);
+					
+					// Construire les paramètres
+					$rootList = $cswResults->getElementsByTagName("MD_Metadata");
+					foreach($rootList as $root)
+					{
+						if ($root->parentNode->nodeName == "csw:SearchResults")
+						{
+							$importedPart = $myDoc->importNode($root, true);
+							$XMLNewRoot->appendChild($importedPart);
+						}
+					}
 		
-		$req = utf8_encode($req);
+					//echo htmlspecialchars($myDoc->saveXML())."<hr>";
 
-		echo "==================== REQUETE =======================<br>";
-		print_r(htmlspecialchars($req));
-		echo "<br>=============================================<br>";
+					$style = new DomDocument();
+					$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'report.xsl');
+					$processor = new xsltProcessor();
+					$processor->setParameter('', 'language', $language);
+					$processor->setParameter('', 'format', $format);
+					$processor->setParameter('', 'reporttype', $reporttype);
+					$processor->importStylesheet($style);
+					$xml = $processor->transformToXML($myDoc);
+					//echo htmlspecialchars($xml);
+					//$xml = new DomDocument();
+					//$xml = $processor->transformToDoc($myDoc);
+					//echo htmlspecialchars($xml->saveXML());
+					$tmp = uniqid();
+					$tmpfile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp;
+					//print_r(libxml_get_last_error());
+					reportEngine::buildReport($format, $xml, $tmpfile, $tmp);
+				}
+			}
+		}
+		else
+		{
+			// Retourner une erreur au format XML, formatée par un XSl
+			$xmlError = new DomDocument();
+			$style = new DomDocument();
+			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'NOMETADATA.xml');
+			$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'XHTML_GETREPORT_ERRORS.xsl');
+			$processor = new xsltProcessor();
+			$processor->setParameter('', 'error_type', "NOMETADATA");
+			$processor->setParameter('', 'user_language', $user->getParam('language', ''));
+			$processor->importStylesheet($style);
+			$xmlToHtml = $processor->transformToXml($xmlError);
+			if ($xmlToHtml <> "")
+			{
+				file_put_contents($xmlToHtml, 'error.html');
+				reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');
+				exit;
+			}
+		}
+	}
 
-		// Envoi de la requête
-		//$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		//$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$req);
-
-
-
-		function replacePrefix( $sql, $table_prefix, $prefix='#__' )
+	function buildReport($format, $file, $tmpfile, $tmp)
 	{
-		$sql = trim( $sql );
-
-		$escaped = false;
-		$quoteChar = '';
-
-		$n = strlen( $sql );
-
-		$startPos = 0;
-		$literal = '';
-		while ($startPos < $n) {
-			$ip = strpos($sql, $prefix, $startPos);
-			if ($ip === false) {
+		switch ($format)
+		{
+			case "xml":
+				file_put_contents($tmpfile.'.xml', $file);
+				reportEngine::setResponse($file, $tmpfile.'.xml', 'text/xml', 'report.xml');
 				break;
-			}
-
-			$j = strpos( $sql, "'", $startPos );
-			$k = strpos( $sql, '"', $startPos );
-			if (($k !== FALSE) && (($k < $j) || ($j === FALSE))) {
-				$quoteChar	= '"';
-				$j			= $k;
-			} else {
-				$quoteChar	= "'";
-			}
-
-			if ($j === false) {
-				$j = $n;
-			}
-
-			$literal .= str_replace( $prefix, $table_prefix,substr( $sql, $startPos, $j - $startPos ) );
-			$startPos = $j;
-
-			$j = $startPos + 1;
-
-			if ($j >= $n) {
+			case "csv":
+				file_put_contents($tmpfile.'.csv', $file);
+				reportEngine::setResponse($file, $tmpfile.'.csv', 'text/csv', 'report.csv');
 				break;
-			}
-
-			// quote comes first, find end of quote
-			while (TRUE) {
-				$k = strpos( $sql, $quoteChar, $j );
-				$escaped = false;
-				if ($k === false) {
-					break;
+			case "rtf":
+				file_put_contents($tmpfile.'.rtf', $file);
+				reportEngine::setResponse($file, $tmpfile.'.rtf', 'text/rtf', 'report.rtf');
+				break;
+			case "xhtml":
+				file_put_contents($tmpfile.'.html', $file);
+				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html');
+				break;
+			case "pdf":
+				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
+	
+				if ($exportpdf_url )
+				{ 
+					$fopcfg = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'config'.DS.'fop.xml';
+					$foptmp = $tmpfile.'.pdf';
+					$fopfotmp = $tmpfile.'.fo';
+					//Check foptmp against the schema before processing
+					//avoid JavaBrigde to fail
+					file_put_contents($fopfotmp, $file);
+					
+					//Génération du document PDF sous forme de fichier
+					$res = "";
+					//Url to the export pdf servlet
+					$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
+					//echo $url;die();break;
+					$fp = fopen($url,"r");
+					while (!feof($fp)) {
+						$res .= fgets($fp, 4096);
+					}
+					
+					//Avoid JVM class caching while testing DO NOT LET THIS FOR PRODUCTION USE!!!!
+					//@java_reset();
+					if(substr(strtoupper($res),0,7) == "SUCCESS"){
+						$fp = fopen ($foptmp, 'r');
+						$result = fread($fp, filesize($foptmp));
+						fclose ($fp);
+						//ob_end_clean();
+						
+						reportEngine::setResponse($result, $foptmp, 'application/pdf', 'report.pdf');
+					}else
+					{
+						//If there was an error when generating the pdf, write it.
+						$mainframe->redirect("index.php?option=com_easysdi_core&tmpl=component&task=reportPdfError&res=".urlencode($res));
+					}
+				}else {
+					printf(JText::_(  'CORE_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  )); 
 				}
-				$l = $k - 1;
-				while ($l >= 0 && $sql{$l} == '\\') {
-					$l--;
-					$escaped = !$escaped;
-				}
-				if ($escaped) {
-					$j	= $k+1;
-					continue;
-				}
 				break;
-			}
-			if ($k === FALSE) {
-				// error in the query - no end quote; ignore it
+			default:
 				break;
-			}
-			$literal .= substr( $sql, $startPos, $k - $startPos + 1 );
-			$startPos = $k+1;
 		}
-		if ($startPos < $n) {
-			$literal .= substr( $sql, $startPos, $n - $startPos );
-		}
-		return $literal;
 	}
 	
 	/*
-	* Construction d'un set de résultat sous forme d'objets, inspiré de loadObjectList dans 
-	* mysql.php de joomla, libraries\joomla\database\database\
-	*/
-	function loadObjectList($query)
-	{
-		$result = mysql_query($query);
-		if (!$result) 
-		{
-			$message  = 'Requête invalide : ' . mysql_error() . "\n";
-			$message .= 'Requête complète : ' . $query;
-			die($message);
-		}
-		$array = array();
-		while ($row = mysql_fetch_object( $result )) 
-		{
-			$array[] = $row;
-		}
-		mysql_free_result( $result );
-		
-		return $array;
-	}
-
-	/**
-	 * This method loads the first field of the first row returned by the query.
-	 *
-	 * @access	public
-	 * @return The value returned in the query or null if the query failed.
+	 * Nom: verifyRequest
+	 * But: Contrôler que la requête contient bien tous les paramètres requis et qu'ils ont les valeurs attendues
 	 */
-	function loadResult($query)
+	function verifyRequest($params, $user)
 	{
-		$result = mysql_query($query);
+		// Contrôler que tous les paramètres sont renseignés
+		foreach ($params as $key => $param)
+		{
+			if ($param == '' or count($param) == 0)
+			{
+				// Retourner une erreur au format XML, formatée par un XSl
+				$xmlError = new DomDocument();
+				$style = new DomDocument();
+				$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'MISSINGPARAMETER.xml');
+				$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'XHTML_GETREPORT_ERRORS.xsl');
+				$processor = new xsltProcessor();
+				$processor->setParameter('', 'error_type', "MISSINGPARAMETER");
+				$processor->setParameter('', 'user_language', $user->getParam('language', ''));
+				$processor->setParameter('', 'missing_parameter', $key);
+				$processor->importStylesheet($style);
+				$xmlToHtml = $processor->transformToXml($xmlError);
+				file_put_contents($xmlToHtml, 'error.html');
+				reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');
+				return false;
+			}
+		}
+		
+		// Valeurs autorisées pour format: XML/CSV/RTF/XHTML/PDF
+		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf');
+		if (array_search($params['format'], $formatValues) === false)
+		{
+			// Retourner une erreur au format XML, formatée par un XSl
+			$xmlError = new DomDocument();
+			$style = new DomDocument();
+			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'FORMATINVALID.xml');
+			$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'XHTML_GETREPORT_ERRORS.xsl');
+			$processor = new xsltProcessor();
+			$processor->setParameter('', 'error_type', "FORMATINVALID");
+			$processor->setParameter('', 'user_language', $user->getParam('language', ''));
+				$processor->importStylesheet($style);
+			$xmlToHtml = $processor->transformToXml($xmlError);
+			file_put_contents($xmlToHtml, 'error.html');
+			reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');
+			return false;
+		}
+		
+		// Valeurs autorisées pour lastVersion: yes/no   
+		$lastversionValues = array ('yes', 'no');
+		if (array_search($params['lastVersion'], $lastversionValues) === false)
+		{
+			// Retourner une erreur au format XML, formatée par un XSl
+			$xmlError = new DomDocument();
+			$style = new DomDocument();
+			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'LASTVERSIONINVALID.xml');
+			$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'XHTML_GETREPORT_ERRORS.xsl');
+			$processor = new xsltProcessor();
+			$processor->setParameter('', 'error_type', "LASTVERSIONINVALID");
+			$processor->setParameter('', 'user_language', $user->getParam('language', ''));
+				$processor->importStylesheet($style);
+			$xmlToHtml = $processor->transformToXml($xmlError);
+			file_put_contents($xmlToHtml, 'error.html');
+			reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');
+			return false;
+		}
 
-		if (!$result) {
-			$message  = 'Requête invalide : ' . mysql_error() . "\n";
-			$message .= 'Requête complète : ' . $query;
-			die($message);
-		}
-		$ret = null;
-		if ($row = mysql_fetch_row( $result )) {
-			$ret = $row[0];
-		}
-		mysql_free_result( $result );
-		return $ret;
+		return true;
 	}
-
+	
+	function setResponse($file, $filename, $contenttype, $downloadname)
+	{
+		error_reporting(0);
+		ini_set('zlib.output_compression', 0);
+                        
+		header('Content-type: '.$contenttype);
+		header('Content-Disposition: attachment; filename="'.$downloadname.'"');
+		header('Content-Transfer-Encoding: binary');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Pragma: public');
+		header("Expires: 0"); 
+		header("Content-Length: ".filesize($filename));
+		
+		echo $file;
+		//Very important, if you don't call this, the content-type will have no effect
+		die();
 	}
 }
 

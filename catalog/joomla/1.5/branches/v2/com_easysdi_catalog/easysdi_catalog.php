@@ -141,6 +141,8 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttype.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
 			ADMIN_metadata::validateForPublishMetadata($option);
 			break;
 		
@@ -542,7 +544,17 @@ switch($task){
 		case "previewProduct":
 			HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
 			break;
-					
+
+		case 'getReport':
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'reportEngine.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'catalog.site.easysdi.php');
+			reportEngine::getReport();
+			break;
+		case 'testReport':
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'testreport.site.easysdi.html.php');
+			testreport::main();
+			break;
 	}
 //}
  ?>

@@ -30,7 +30,7 @@ class geoMetadata{
 			}else
 			if ($md instanceof  DOMElement){
 				 				 
-				 $dom = new DOMDocument();
+				 $dom = new DOMDocument('1.0', 'UTF-8');
 				 $xmlContent = $dom ->importNode($md,true);
 				 $dom->appendChild($xmlContent);				 
 				
@@ -38,8 +38,8 @@ class geoMetadata{
 			}			
 			else{
 				
-				$dom = new DOMDocument();
-					
+				$dom = new DOMDocument('1.0', 'UTF-8');
+				 	
 							 				
 				$xmlContent = $dom ->importNode(dom_import_simplexml($md),true);
 				$dom->appendChild($xmlContent);							 

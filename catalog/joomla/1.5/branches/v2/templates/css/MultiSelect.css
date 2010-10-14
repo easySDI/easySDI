@@ -30,3 +30,12 @@
 .x-view-drag-insert-below { 
     border-bottom:1px dotted #3366cc; 
 } 
+
+/* invalid fields */
+.x-form-invalid{
+    background:repeat-x bottom;
+    border: 1px solid;
+    background-color:#fff;
+	background-image:url(../images/default/grid/invalid_line.gif);
+	border-color:#c30;
+}

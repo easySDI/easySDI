@@ -29,6 +29,17 @@
 		</xsl:choose>
 		<xsl:choose>
 			<xsl:when test="$format='xml'">
+				<MetadataSet>
+				<xsl:copy-of select="*"></xsl:copy-of>
+				</MetadataSet>
+			</xsl:when>
+			<xsl:when test="$format='csv'">
+				<xsl:copy-of select="*"></xsl:copy-of>
+			</xsl:when>
+			<xsl:when test="$format='rtf'">
+				<xsl:copy-of select="*"></xsl:copy-of>
+			</xsl:when>
+			<xsl:when test="$format='xhtml'">
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
 			<xsl:when test="$format='pdf'">

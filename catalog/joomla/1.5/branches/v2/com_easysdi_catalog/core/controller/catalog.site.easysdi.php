@@ -179,13 +179,13 @@ class SITE_catalog {
 			if($account->id == 0)
 			{
 				//No user logged, display only external products
-				$filter = " AND (v.code='public') ";
+				$mysqlFilter = " AND (v.code='public') ";
 			}
 			else
 			{
 				// Si l'utilisateur est loggé, retourner toutes les métadonnées publiques
 				// + les métadonnées privées à son compte racine
-				$filter = "AND 
+				$mysqlFilter = "AND 
 							(
 								v.code='public'
 								OR
@@ -250,7 +250,7 @@ class SITE_catalog {
 			foreach($listSimpleFilters as $searchFilter)
 			{
 				$filter = JRequest::getVar('filter_'.$searchFilter->guid);
-				//echo "<br>".'filter_'.$searchFilter->guid.": ".$filter ;
+				//echo "<br>".'filter_'.$searchFilter->guid.": ".$mysqlFilter ;
 				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
 							
@@ -480,7 +480,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -513,7 +513,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -549,7 +549,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
@@ -603,7 +603,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.objecttype_id IN (".implode(",", $objecttypes).") "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
@@ -644,7 +644,7 @@ class SITE_catalog {
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.published=1 or o.published=0 "
-												.$filter;
+												.$mysqlFilter;
 										$database->setQuery( $query);
 										$objectlist = $database->loadObjectList() ;
 										
@@ -660,7 +660,7 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id
-													.$filter.
+													.$mysqlFilter.
 													 " ORDER BY ov.created DESC";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
@@ -689,7 +689,7 @@ class SITE_catalog {
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.published=1 or o.published=0 "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
@@ -708,7 +708,7 @@ class SITE_catalog {
 												  WHERE ms.code='published'
 												  		AND m.published <= '".date('Y-m-d')."' 
 												  		AND o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -754,7 +754,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -789,7 +789,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -815,7 +815,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created>='".$lower."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -843,7 +843,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created>='".$lower."'".
 										 " 			AND m.created<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -875,7 +875,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -901,7 +901,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published>='".$lower."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -929,7 +929,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published>='".$lower."'".
 										 " 			AND m.published<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -970,7 +970,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1029,7 +1029,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1082,7 +1082,7 @@ class SITE_catalog {
 			foreach($listAdvancedFilters as $searchFilter)
 			{
 				$filter = JRequest::getVar('filter_'.$searchFilter->guid);
-				//echo "<br>".'filter_'.$searchFilter->guid.": ".$filter ;
+				//echo "<br>".'filter_'.$searchFilter->guid.": ".$mysqlFilter ;
 				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
 							
@@ -1278,7 +1278,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1311,7 +1311,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1350,7 +1350,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
@@ -1405,7 +1405,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.objecttype_id IN (".implode(",", $objecttypes).") "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
@@ -1447,7 +1447,7 @@ class SITE_catalog {
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.published=1 or o.published=0 "
-												.$filter;
+												.$mysqlFilter;
 										$database->setQuery( $query);
 										$objectlist = $database->loadObjectList() ;
 										
@@ -1463,7 +1463,7 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id
-													.$filter.
+													.$mysqlFilter.
 													 " ORDER BY ov.created DESC";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
@@ -1494,7 +1494,7 @@ class SITE_catalog {
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE o.published=1 or o.published=0 "
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
@@ -1513,7 +1513,7 @@ class SITE_catalog {
 												  WHERE ms.code='published'
 												  		AND m.published <= '".date('Y-m-d')."' 
 												  		AND o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1560,7 +1560,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1595,7 +1595,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1620,7 +1620,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created>='".$lower."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1647,7 +1647,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.created>='".$lower."'".
 										 " 			AND m.created<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1678,7 +1678,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1703,7 +1703,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published>='".$lower."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1730,7 +1730,7 @@ class SITE_catalog {
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 											  WHERE m.published>='".$lower."'".
 										 " 			AND m.published<='".$upper."'"
-											.$filter;
+											.$mysqlFilter;
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1770,7 +1770,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -1828,7 +1828,7 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 												  WHERE o.id=".$object->id
-												.$filter.
+												.$mysqlFilter.
 												 " ORDER BY ov.created DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
@@ -2020,7 +2020,6 @@ class SITE_catalog {
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
-			$postResult;
 			
 			//Get the result from the server, only for count
 			/*
@@ -2188,7 +2187,7 @@ class SITE_catalog {
 			{
 				//echo ", account";
 				$database =& JFactory::getDBO();
-				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.account_id = ".$account_id.$filter;
+				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.account_id = ".$account_id.$mysqlFilter;
 				$database->setQuery( $query);
 				$list_id = $database->loadObjectList() ;
 				if ($database->getErrorNum())
@@ -2216,7 +2215,7 @@ class SITE_catalog {
 			if( $objecttype_id )
 			{
 				//echo ", objecttype";
-				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.objecttype_id IN (".implode(",", $objecttype_id).") ".$filter;
+				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 AND o.objecttype_id IN (".implode(",", $objecttype_id).") ".$mysqlFilter;
 				$database->setQuery( $query);
 				$list_id = $database->loadObjectList() ;
 				if ($database->getErrorNum())
@@ -2245,7 +2244,7 @@ class SITE_catalog {
 			{	
 				//echo ", object visibily";
 				$database =& JFactory::getDBO();
-				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.previewWmsUrl != '' AND o.published=1".$filter; //
+				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.previewWmsUrl != '' AND o.published=1".$mysqlFilter; //
 				$database->setQuery( $query);
 				$list_id = $database->loadObjectList() ;
 				if ($database->getErrorNum())
@@ -2275,9 +2274,9 @@ class SITE_catalog {
 				$database =& JFactory::getDBO();
 				$query = "";
 				if($display_internal_orderable)
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.orderable = 1 AND o.published = 1 AND o.visibility_id=2".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.orderable = 1 AND o.published = 1 AND o.visibility_id=2".$mysqlFilter; 
 				else
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.orderable = 1 AND o.published = 1 AND o.visibility_id=1".$filter;
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.orderable = 1 AND o.published = 1 AND o.visibility_id=1".$mysqlFilter;
 				
 				
 				$database->setQuery( $query);
@@ -2311,14 +2310,14 @@ class SITE_catalog {
 				$database =& JFactory::getDBO();
 				$query = "";
 				if($filter_createdate_comparator == "equal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.created like '".$filter_createdate."%' AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.created like '".$mysqlFilter_createdate."%' AND o.published = 1".$mysqlFilter; 
 				if($filter_createdate_comparator == "different")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.created not like '".$filter_createdate."%' AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.created not like '".$mysqlFilter_createdate."%' AND o.published = 1".$mysqlFilter; 
 				if($filter_createdate_comparator == "greaterorequal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.created >= '".$filter_createdate."' OR o.created like '".$filter_createdate."%') AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.created >= '".$mysqlFilter_createdate."' OR o.created like '".$mysqlFilter_createdate."%') AND o.published = 1".$mysqlFilter; 
 				if($filter_createdate_comparator == "smallerorequal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.created <= '".$filter_createdate."' OR o.created like '".$filter_createdate."%') AND o.published = 1".$filter; 
-				//echo "date query: ".$query." with comparator:".$filter_date_comparator;
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.created <= '".$mysqlFilter_createdate."' OR o.created like '".$mysqlFilter_createdate."%') AND o.published = 1".$mysqlFilter; 
+				//echo "date query: ".$query." with comparator:".$mysqlFilter_date_comparator;
 				$database->setQuery( $query);
 				//echo "<br>".$database->getQuery()."<br>";
 				$list_id = $database->loadObjectList() ;
@@ -2349,14 +2348,14 @@ class SITE_catalog {
 				$database =& JFactory::getDBO();
 				$query = "";
 				if($filter_date_comparator == "equal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.updated like '".$filter_date."%' AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.updated like '".$mysqlFilter_date."%' AND o.published = 1".$mysqlFilter; 
 				if($filter_date_comparator == "different")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.updated not like '".$filter_date."%' AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.updated not like '".$mysqlFilter_date."%' AND o.published = 1".$mysqlFilter; 
 				if($filter_date_comparator == "greaterorequal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.updated >= '".$filter_date."' OR o.updated like '".$filter_date."%') AND o.published = 1".$filter; 
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.updated >= '".$mysqlFilter_date."' OR o.updated like '".$mysqlFilter_date."%') AND o.published = 1".$mysqlFilter; 
 				if($filter_date_comparator == "smallerorequal")
-					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.updated <= '".$filter_date."' OR o.updated like '".$filter_date."%') AND o.published = 1".$filter; 
-				//echo "date query: ".$query." with comparator:".$filter_date_comparator;
+					$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND (o.updated <= '".$mysqlFilter_date."' OR o.updated like '".$mysqlFilter_date."%') AND o.published = 1".$mysqlFilter; 
+				//echo "date query: ".$query." with comparator:".$mysqlFilter_date_comparator;
 				$database->setQuery( $query);
 				//echo "<br>".$database->getQuery()."<br>";
 				$list_id = $database->loadObjectList() ;
@@ -2389,7 +2388,7 @@ class SITE_catalog {
 						INNER JOIN #__sdi_object o ON ov.object_id=o.id
 						INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id 
 						WHERE o.published=1 "
-					 .$filter;
+					 .$mysqlFilter;
 			$database->setQuery( $query);
 			$list_id = $database->loadObjectList() ;
 			if ($database->getErrorNum())
@@ -2433,7 +2432,7 @@ class SITE_catalog {
 			{
 				//echo ", minimum";
 				$database =& JFactory::getDBO();
-				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 ".$filter;
+				$query = "SELECT m.guid as metadata_id FROM #__sdi_object o, #__sdi_metadata m WHERE o.metadata_id=m.id AND o.published=1 ".$mysqlFilter;
 				//echo "filtre minimum: ".$query;
 				$database->setQuery( $query);
 				$list_id = $database->loadObjectList() ;

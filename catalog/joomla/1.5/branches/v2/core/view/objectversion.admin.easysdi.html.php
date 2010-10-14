@@ -622,7 +622,12 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 					renderTo: document.getElementById('formContainer'),
 			        standardSubmit:true,
 			        items        : [
-			        	manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate),
+			        	{
+			        		xtype:'fieldset',
+			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
+			        		collapsible:false,
+			        		items:[manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)]
+						},
 			        	{
 			        		id			 : 'gridPanel',
 			        		xtype		 : 'panel',

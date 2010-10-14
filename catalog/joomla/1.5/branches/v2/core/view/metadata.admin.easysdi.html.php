@@ -64,6 +64,7 @@ class HTML_metadata {
 	var $parentId_attribute="";
 	var $parentGuid="";
 	
+	
 	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -100,6 +101,7 @@ class HTML_metadata {
 								'southbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_south")."-".str_replace(":", "_", $type_isocode)."__1"), 
 								'westbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_west")."-".str_replace(":", "_", $type_isocode)."__1"), 
 								'eastbound'=>"-".str_replace(":", "_", config_easysdi::getValue("catalog_boundary_east")."-".str_replace(":", "_", $type_isocode)."__1"));
+		
 		
 		
 		// Récupérer les infos pour la métadonnée parente pour le lien entre les types d'objet où cet objet est l'enfant et la borne parent max est égale à 1
@@ -192,9 +194,18 @@ class HTML_metadata {
 		
 		// Langues à gérer
 		$this->langList = array();
+		//$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
+		$userLang="";
+		foreach($this->langList as $row)
+		{									
+			if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+				$userLang = $row->gemetlang;
+		}
+								
+								
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm"
@@ -219,6 +230,25 @@ class HTML_metadata {
     
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 
+						// sets the user interface language
+						HS.setLang('".$userLang."');
+						//console.log(HS.getLang());
+
+						HS.Lang['".$userLang."']['Home']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_HOME'))."';
+						HS.Lang['".$userLang."']['Search']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_SEARCH'))."';
+						HS.Lang['".$userLang."']['Use']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_USE'))."';
+						HS.Lang['".$userLang."']['Themes']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_THEMES'))."';
+						HS.Lang['".$userLang."']['Groups']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_GROUPS'))."';
+						HS.Lang['".$userLang."']['Warning']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_WARNING'))."';
+						HS.Lang['".$userLang."']['characters required']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_CHARACTERSREQUIRED'))."';
+						HS.Lang['".$userLang."']['Top concepts']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_TOPCONCEPTS'))."';
+						HS.Lang['".$userLang."']['Found']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_FOUND'))."';
+						HS.Lang['".$userLang."']['INSPIRE themes']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_INSPIRETHEMES'))."';
+						HS.Lang['".$userLang."']['GEMET top concepts']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_GEMETTOPCONCEPTS'))."';
+						HS.Lang['".$userLang."']['BT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_BT'))."';
+						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
+						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
+												
 						// Créer le formulaire qui va contenir la structure
 						var form = new Ext.form.FormPanel({
 								id:'metadataForm',
@@ -247,7 +277,7 @@ class HTML_metadata {
 							        			});
 							        			var fieldsets = fields.join(' | ');
 							        			
-							        			form.getForm().setValues({fieldsets: fieldsets});
+												form.getForm().setValues({fieldsets: fieldsets});
 							              		form.getForm().setValues({task: 'previewXMLMetadata'});
 							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
 							                 	form.getForm().setValues({object_id: '".$object_id."'});
@@ -829,9 +859,10 @@ class HTML_metadata {
 								    var boundaries = ".HTML_metadata::array2json($this->boundaries).";
 								    var paths = ".HTML_metadata::array2json($this->paths).";
 								     // La liste
-								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
+								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES_TIP"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
 								    ";
 		}
+		
 		
 		$rowChilds = array();
 		$query = "SELECT rel.id as rel_id, 
@@ -1033,7 +1064,7 @@ class HTML_metadata {
 								{
 									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
 									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
-									if ($this->parentId_attribute == $child->attribute_id)
+									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;
@@ -1061,16 +1092,18 @@ class HTML_metadata {
 							// Text
 							case 2:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+								//echo $currentName."; recherche de ".$type_isocode." dans ".$attributeScope->nodeName.", enfant de ".$attributeScope->parentNode->nodeName;//."<br>";
+								//echo "<br><b>".$parentScope->nodeName." - ".$scope->nodeName."</b><br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
-
-								// Si le fieldset n'existe pas, inutile de récupérer une valeur
+											 	
+								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
-									$nodeValue = "";
+									$nodeValue="";
 								else
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								//echo "Trouve ".$nodeValue."<br>";
+
+								//echo "<i>Trouve ".$nodeValue."</i><hr>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
 								// Récupération de la valeur par défaut, s'il y a lieu
@@ -1214,6 +1247,13 @@ class HTML_metadata {
 															";
 															break;
 													}
+												
+												if ($child->attribute_system)
+												{
+													$this->javascript .="
+													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													";
+												}
 												}
 											}
 											else
@@ -1370,11 +1410,19 @@ class HTML_metadata {
 														";
 														break;
 												}
+
+												if ($child->attribute_system)
+												{
+													$this->javascript .="
+													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													";
+												}
 											}
 										}
 										
 										break;
 								}
+								
 								break;
 							// Number
 							case 4:
@@ -1538,8 +1586,21 @@ class HTML_metadata {
 										 		$nodeDefaultValues[] = html_Metadata::cleanText($cont->value);
 									 		}
 										}
-									 	
-										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
+
+										/*if ($child->attribute_id==7)
+										{	// Elements sélectionnés par défaut
+											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
+											$database->setQuery( $query );
+											echo $database->getQuery()."<br>";
+											$selectedContent = $database->loadObjectList();
+											
+										 	// Construction de la liste
+										 	foreach ($selectedContent as $cont)
+										 	{
+										 		$nodeDefaultValues[] = html_Metadata::cleanText($cont->value);
+									 		}
+										}*/
+										//echo "selectionne par defaut: "; print_r($nodeDefaultValues); echo "<hr>";
 									 	
 										switch ($child->rendertype_id)
 										{
@@ -1600,6 +1661,13 @@ class HTML_metadata {
 									 	break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+
 								break;
 							// Link
 							case 7:
@@ -1812,6 +1880,13 @@ class HTML_metadata {
 									break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -1843,6 +1918,7 @@ class HTML_metadata {
 										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
 										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
 										$database->setQuery( $query );
+										//echo $database->getQuery()."<br>";
 										$content = $database->loadObjectList();
 	
 									 	$dataValues = array();
@@ -1916,9 +1992,10 @@ class HTML_metadata {
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													if ($result->title <> "")
+													/* Mis en commentaire à cause du bug #3919
+													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
-													else
+													else*/
 														$nodeValues[] = $result->guid;
 
 													
@@ -1961,11 +2038,19 @@ class HTML_metadata {
 								 		$this->javascript .="
 										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
 									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+									     //console.log(selectedValueList);
 									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 									     // La liste
 									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 									    ";
 									break;
+								}
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
 								}
 								
 								break;
@@ -2001,11 +2086,11 @@ class HTML_metadata {
 								$listCount = $listNode->length;		
 								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
 								$nodeValues = array();
-								for($keyPos=0;$keyPos<=$listCount; $keyPos++)
+								for($keyPos=0;$keyPos<$listCount; $keyPos++)
 								{
 									$currentScope=$listNode->item($keyPos);
-									
-
+									//echo "Position ".$keyPos.", ".$currentScope->nodeName." avec ".$currentScope->nodeValue."<br>";
+								
 									if ($currentScope->nodeName <> "")
 									{
 									$nodeValue= "";
@@ -2032,7 +2117,6 @@ class HTML_metadata {
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
 											
 										}
-										
 										if ($row->gemetlang == $userLang)
 											$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 									}
@@ -2051,9 +2135,6 @@ class HTML_metadata {
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
-								
-								// sets the user interface language
-								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
@@ -2115,7 +2196,7 @@ class HTML_metadata {
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
-																	    listeners: {
+																		listeners: {
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
@@ -2151,7 +2232,7 @@ class HTML_metadata {
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
-
+											 	
 								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
@@ -2209,7 +2290,7 @@ class HTML_metadata {
 						
 						//echo $master." - ".$name." - ".$currentName."<br>";
 						
-						if ($child->attribute_type <> 9 and $child->attribute_type <> 10)
+						if ($child->attribute_type <> 9 and $child->attribute_type <> 10 and $child->attribute_type <> 11)
 						{
 							//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
 							// Traitement de l'attribut enfant
@@ -2222,6 +2303,7 @@ class HTML_metadata {
 								$nodeValue = "";
 							else
 								$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
+							
 							
 							// Récupération de la valeur par défaut, s'il y a lieu
 							if ($child->attribute_default <> "" and $nodeValue == "")
@@ -2530,6 +2612,13 @@ class HTML_metadata {
 								 	break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -2637,9 +2726,10 @@ class HTML_metadata {
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													if ($result->title <> "")
+													/* Mis en commentaire à cause du bug #3919
+													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
-													else
+													else*/
 														$nodeValues[] = $result->guid;
 
 													
@@ -2691,6 +2781,13 @@ class HTML_metadata {
 									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
 									    ";
 									break;
+								}
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
 								}
 								
 								break;
@@ -2841,7 +2938,8 @@ class HTML_metadata {
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue;//html_Metadata::cleanText($nodeValue);
+
 														//$nodeValue = "";
 													}
 												}
@@ -2858,11 +2956,11 @@ class HTML_metadata {
 													{
 														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
+														$defaultVal= $nodeValue;//html_Metadata::cleanText($nodeValue);
 														//$nodeValue = "";
 													}
 												}
-												
+												//echo $nodeValue."<br>".$defaultVal."<hr>";
 												//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 												//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
 												// Selon le rendu de l'attribut, on fait des traitements différents
@@ -2885,6 +2983,13 @@ class HTML_metadata {
 														".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."','".$defaultVal."',  ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 														";
 														break;
+												}
+												
+												if ($child->attribute_system)
+												{
+													$this->javascript .="
+													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													";
 												}
 											}
 										}
@@ -3198,7 +3303,15 @@ class HTML_metadata {
 											     // La liste
 											     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											    ";
-										 	}										 
+										 	}
+
+											if ($child->attribute_system)
+											{
+												$this->javascript .="
+												".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+												";
+											}
+																					 
 											break;
 									}
 								 	break;
@@ -3334,6 +3447,13 @@ class HTML_metadata {
 									    ";
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -3411,14 +3531,21 @@ class HTML_metadata {
 									break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
-							// Thesaurus GEMET
+						// Thesaurus GEMET
 							case 11:
 								//echo "3) ".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
 								
 								$uri =& JUri::getInstance();
 		
-					$language =& JFactory::getLanguage();
+								$language =& JFactory::getLanguage();
 								
 								$userLang="";
 								$defaultLang="";
@@ -3437,15 +3564,12 @@ class HTML_metadata {
 								echo "<hr>";
 								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
 								*/
-													
+								
 								$this->javascript .="
 								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
-								
-								// sets the user interface language
-								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
@@ -3462,9 +3586,9 @@ class HTML_metadata {
 															      targetField: '".$currentName."',
 															      proxy: '".$uri->base(true)."/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
-															      				var record;
-																      		    var s = '';
-																			    
+															      				var target = Ext.ComponentMgr.get(this.targetField);
+															    				var s = '';
+												      		    					    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
 																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
@@ -3474,8 +3598,9 @@ class HTML_metadata {
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
-																				    }
-																				    target.addItem({keyword:result.terms[this.lang], value: s});
+																					}
+																						target.addItem({keyword:result.terms[this.lang], value: s});
+																		                  
 																				}
 																				else
 																				{
@@ -3507,7 +3632,7 @@ class HTML_metadata {
 																	    closable:true, 
 																	    renderTo:Ext.getBody(), 
 																	    frame:true,
-																	    listeners: {
+																		listeners: {
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
@@ -3680,10 +3805,10 @@ class HTML_metadata {
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
-							$classScope = $relScope."/".$childnode->item(0);	
+							$classScope = $relScope;
 					}
 					else
-						$classScope = $relScope."/".$childnode->item(0);
+						$classScope = $relScope;
 					
 					// Construction du nom du fieldset qui va correspondre à la classe
 					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
@@ -3990,6 +4115,7 @@ class HTML_metadata {
 				}
 				else
 				{
+					//$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
 					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
 					
 					//echo "Trouve ".$guid."<br>";

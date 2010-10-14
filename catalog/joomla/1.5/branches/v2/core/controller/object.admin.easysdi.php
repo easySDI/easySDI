@@ -38,6 +38,7 @@ class ADMIN_object {
 	function listObject($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		$context	= 'listObject';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -158,10 +159,19 @@ class ADMIN_object {
 		$lists['account_id'] = JHTML::_('select.genericlist',  $accounts, 'filter_account_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_account_id);
 		
 		// get list of objecttypes for dropdown filter
-		$query = 'SELECT id as value, name as text' .
+		/*$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
 				' WHERE predefined=false' .
-				' ORDER BY name';
+				' ORDER BY name';*/
+		$query = "SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label";
+		
 		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$db->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $db->loadObjectList());
@@ -214,6 +224,7 @@ class ADMIN_object {
 		global  $mainframe;
 		$user = JFactory::getUser();
 		$database =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		
 		$rowObject = new object( $database );
 		$rowObject->load( $id );
@@ -255,10 +266,18 @@ class ADMIN_object {
 		else
 			$rootAccount = $currentAccount->id;
 		
+		
 		$objecttypes=array();
 		$objecttypes[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_OBJECTTYPE_SELECT") );
 		//$database->setQuery("SELECT ot.id AS value, ot.name as text FROM #__sdi_objecttype ot, #__sdi_account_objecttype a WHERE ot.id=a.objecttype_id AND ot.predefined=0 AND a.account_id=".$rootAccount." ORDER BY ot.name");
-		$database->setQuery("SELECT ot.id AS value, ot.name as text FROM #__sdi_objecttype ot WHERE ot.predefined=0 ORDER BY ot.name");
+		$database->setQuery("SELECT ot.id AS value, t.label as text 
+							 FROM #__sdi_objecttype ot 
+							 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							 INNER JOIN #__sdi_language l ON t.language_id=l.id
+							 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							 WHERE ot.predefined=0 
+							 	   AND cl.code='".$language->_lang."'
+							 ORDER BY t.label");
 		//echo $database->getQuery();
 		$objecttypes = array_merge( $objecttypes, $database->loadObjectList() );
 		//print_r($objecttypes);

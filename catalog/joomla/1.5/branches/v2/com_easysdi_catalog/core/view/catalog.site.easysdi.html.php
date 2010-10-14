@@ -30,7 +30,9 @@ class HTML_catalog{
 		$context= JRequest::getVar('context');
 		$db =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
-		
+		$user =& JFactory::getUser();
+		//$language = $user->getParam('language', '');
+	
 		$listMaxLength = config_easysdi::getValue("CATALOG_SEARCH_MULTILIST_LENGTH");
 		
 		$simulatedTabIndex = JRequest::getVar('simulatedTabIndex');
@@ -942,99 +944,11 @@ default:
 default:
 	break;
 		}
-
-		/*
-			$themes = array();
-			$themes[] = JHTML::_('select.option', '', '');
-			$query = "SELECT #__sdi_list_topiccategory.code as value, #__sdi_list_topiccategory.label as text FROM `#__sdi_list_topiccategory`";
-			$db->setQuery( $query);
-			$themes = array_merge( $themes, $db->loadObjectList() );
-			HTML_catalog::alter_array_value_with_Jtext($themes);
-
-			?>
-			<tr>
-			<td ><?php echo JText::_("CATALOG_SEARCH_FILTER_THEME");?></td>
-			<td><?php echo JHTML::_("select.genericlist", $themes, 'filter_theme', 'size="1" class="inputbox" ', 'value', 'text', JRequest::getVar('filter_theme')); ?></td>
-			</tr>
-
-			<tr>
-			<td><?php echo JText::_("CATALOG_SEARCH_FILTER_VISIBLE");?></td>
-			<td><input type="checkbox" id="filter_visible" name="filter_visible" <?php if (JRequest::getVar('filter_visible')) echo " checked"; ?> class="inputbox" /></td>
-			</tr>
-			<tr>
-			<td><?php echo JText::_("CATALOG_SEARCH_FILTER_ORDERABLE");?></td>
-			<td><input type="checkbox" id="filter_orderable" name="filter_orderable" <?php if (JRequest::getVar('filter_orderable')) echo " checked"; ?> class="inputbox" /></td>
-			</tr>
-			<tr>
-			<td><?php echo JText::_("CATALOG_SEARCH_CREATED");?></td>
-			<td>
-			<select id="create_select" size="1" name="create_select">
-			<option value="equal" <?php if(JRequest::getVar('create_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_EQUAL");?></option>
-			<option value="smallerorequal" <?php if(JRequest::getVar('create_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_BEFORE");?></option>
-			<option value="greaterorequal" <?php if(JRequest::getVar('create_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_AFTER");?></option>
-			<option value="different" <?php if(JRequest::getVar('create_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_NOTEQUAL");?></option>
-			</select>
-			<?php echo JHTML::_('calendar',JRequest::getVar('create_cal'), "create_cal","create_cal","%d.%m.%Y"); ?>
-			</td>
-			</tr>
-			<tr>
-			<td><?php echo JText::_("CATALOG_SEARCH_UPDATED");?></td>
-			<td>
-			<select id="update_select" size="1" name="update_select">
-			<option value="equal" <?php if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_EQUAL");?></option>
-			<option value="smallerorequal" <?php if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_BEFORE");?></option>
-			<option value="greaterorequal" <?php if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_AFTER");?></option>
-			<option value="different" <?php if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_NOTEQUAL");?></option>
-			</select>
-			<?php echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
-			</td>
-			</tr>
-			<?php */
 	}
 	?>
-	<!-- <tr>
-		<td><?php //echo JText::_("CATALOG_SEARCH_FILTER_VISIBLE");?></td>
-		<td><input type="checkbox" id="filter_visible" name="filter_visible"
-		<?php //if (JRequest::getVar('filter_visible')) echo " checked"; ?>
-			class="inputbox" /></td>
-	</tr>
-	 -->
-	<!-- <tr>
-		<td><?php //echo JText::_("CATALOG_SEARCH_CREATED");?></td>
-		<td><select id="create_select" size="1" name="create_select">
-			<option value="equal"
-			<?php //if(JRequest::getVar('create_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_EQUAL");?></option>
-			<option value="smallerorequal"
-			<?php //if(JRequest::getVar('create_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_BEFORE");?></option>
-			<option value="greaterorequal"
-			<?php //if(JRequest::getVar('create_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_AFTER");?></option>
-			<option value="different"
-			<?php //if(JRequest::getVar('create_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_NOTEQUAL");?></option>
-		</select> <?php //echo JHTML::_('calendar',JRequest::getVar('create_cal'), "create_cal","create_cal","%d.%m.%Y"); ?>
-		</td>
-	</tr>
-	<tr>
-		<td><?php //echo JText::_("CATALOG_SEARCH_UPDATED");?></td>
-		<td><select id="update_select" size="1" name="update_select">
-			<option value="equal"
-			<?php //if(JRequest::getVar('update_select')=="equal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_EQUAL");?></option>
-			<option value="smallerorequal"
-			<?php //if(JRequest::getVar('update_select')=="smallerorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_BEFORE");?></option>
-			<option value="greaterorequal"
-			<?php //if(JRequest::getVar('update_select')=="greaterorequal") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_AFTER");?></option>
-			<option value="different"
-			<?php //if(JRequest::getVar('update_select')=="different") echo "SELECTED"; ?>><?php echo JText::_("CATALOG_SEARCH_DATE_NOTEQUAL");?></option>
-		</select> <?php //echo JHTML::_('calendar',JRequest::getVar('update_cal'), "update_cal","update_cal","%d.%m.%Y"); ?>
-		</td>
-	</tr>
-	 -->
 </table>
 
-			<?php
-			//Feature deactivated for now...
-			//HTML_catalog::generateMap();
-
-			?></div>
+</div>
 
 <!-- Les boutons Rechercher / Vider -->
 <table border="0" cellpadding="2" cellspacing="0" width="100%"
@@ -1087,18 +1001,6 @@ default:
 <span class="easysdi_number_of_metadata_found"><?php echo JText::_("CATALOG_SEARCH_NUMBER_OF_METADATA_FOUND");?>
 			 <?php echo $total ?> </span>
 <table class="mdsearchresult">
-	<!--
-	<thead>
-		<tr>
-
-	 		<th><?php echo JText::_('CORE_SHARP'); ?></th>
-			<th><?php echo JText::_('CATALOG_SEARCH_ORDERABLE'); ?></th>
-
-			<th><?php echo JText::_('CATALOG_SEARCH_ROOT_LOGO'); ?></th>
-			<th><?php echo JText::_('CATALOG_SEARCH_OBJECT_NAME'); ?></th>
-		</tr>
-	</thead>
--->
 <?php
 $i=0;
 $param = array('size'=>array('x'=>800,'y'=>800) );
@@ -1110,12 +1012,13 @@ $xpath = new DomXPath($cswResults);
 $xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
 $nodes = $xpath->query('//gmd:MD_Metadata');
 
-foreach($nodes  as $metadata){
-
+foreach($nodes  as $metadata)
+{
 	$i++;
 
 	$md = new geoMetadata($metadata);
 
+	$doc = new DomDocument('1.0', 'UTF-8');
 	$doc = $md->metadata;
 	$doc->formatOutput = true;
 
@@ -1130,45 +1033,7 @@ foreach($nodes  as $metadata){
 	$XMLNewRoot->appendChild($XMLSdi);
 	//$doc->appendChild($XMLSdi);
 	$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
-
 	//print_r($md->metadata->saveXML());echo "<hr>";
-
-	$md_orderable=0;
-	$pOrderableExt = 0;
-	$pOrderableInt = 0;
-
-	$query = "select DISTINCT o.visibility_id from #__sdi_object o
-				INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-				INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
-				where m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery( $query);
-	//$pOrderableExt = $db->loadResult();
-	$pOrderable = $db->loadResult();
-
-	/*$query = "select o.visibility_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$md->getFileIdentifier()."'";
-		$db->setQuery( $query);
-		$pOrderableInt = $db->loadResult();
-		*/
-	//if($pOrderableExt == 1 || $pOrderableInt == 1)
-	if($pOrderable == 1 || $pOrderable == 2)
-	{
-		$md_orderable=1;
-	}
-	//echo $md->getFileIdentifier()." Ext:".$pOrderableExt." Int:".$pOrderableInt."__".$query ."<br>";
-
-	$query = "SELECT count(*) 
-			  FROM #__sdi_metadata m
-			  INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-			  INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-			  WHERE o.previewWmsUrl != '' AND m.guid = '".$md->getFileIdentifier()."'";
-
-	$db->setQuery( $query);
-
-	$hasPreview = $db->loadResult();
-	if ($db->getErrorNum()) {
-		$hasPreview = 0;
-
-	}
 
 	$queryAccountID = "	select o.account_id 
 						FROM #__sdi_metadata m
@@ -1183,72 +1048,10 @@ foreach($nodes  as $metadata){
 		$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
 		$db->setQuery($queryAccountLogo);
 		$account_logo = $db->loadResult();
-	
-		$query="select CONCAT( CONCAT( ad.agentfirstname, ' ' ) , ad.agentlastname ) AS name from #__sdi_account a inner join #__sdi_address ad on a.id = ad.account_id WHERE ad.account_id = ".$account_id ." and ad.type_id=1" ;
-		$db->setQuery($query);
-		$supplier= $db->loadResult();
 	}
 	else
 	{
 		$account_logo = "";
-		$supplier= "";
-	}
-	
-	$user =& JFactory::getUser();
-	$language = $user->getParam('language', '');
-
-	$logoWidth = config_easysdi::getValue("logo_width");
-	$logoHeight = config_easysdi::getValue("logo_height");
-
-	$isMdPublic = false;
-	$isMdFree = true;
-
-	//Define if the md is free or not
-	$queryAccountID = "	select o.is_free 
-						FROM #__sdi_metadata m
-						INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-						INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-						WHERE m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery($queryAccountID);
-	$is_free = $db->loadResult();
-	if($is_free == 0 or $is_free == "")
-	{
-		$isMdFree = false;
-	}
-
-	//Define if the md is public or not
-	$queryAccountID = "	select o.visibility_id 
-						FROM #__sdi_metadata m
-						INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-						INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-						WHERE m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery($queryAccountID);
-	$external = $db->loadResult();
-	if($external == 1 or $external == "")
-	{
-		$isMdPublic = true;
-	}
-	//}
-
-	// Récupérer le type d'objet
-	$queryObjecttype = "select DISTINCT ot.id from #__sdi_objecttype ot
-							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
-							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
-							 where m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery($queryObjecttype);
-	$objecttype_id = $db->loadResult();
-
-	if ($objecttype_id <> "")
-	{
-		// Récupérer le logo du type d'objet
-		$queryObjecttypeLogo = "select logo from #__sdi_objecttype where id = ".$objecttype_id;
-		$db->setQuery($queryObjecttypeLogo);
-		$objecttype_logo = $db->loadResult();
-	}
-	else
-	{
-		$objecttype_logo = "";
 	}
 	
 	// Créer une entrée pour le logo du compte
@@ -1257,36 +1060,102 @@ foreach($nodes  as $metadata){
 	$XMLALogo->setAttribute('height', $logoHeight);
 	$XMLSdi->appendChild($XMLALogo);
 
-	// Créer une entrée pour le logo du type d'objet
-	$XMLOTLogo = $doc->createElement("sdi:objecttype_logo", $objecttype_logo);
-	$XMLOTLogo->setAttribute('width', $logoWidth);
-	$XMLOTLogo->setAttribute('height', $logoHeight);
-	$XMLSdi->appendChild($XMLOTLogo);
+	$logoWidth = config_easysdi::getValue("logo_width");
+	$logoHeight = config_easysdi::getValue("logo_height");
 
-	// Créer une entrée pour la visibilité de la métadonnée
-	$XMLMDVisibility = $doc->createElement("sdi:metadata_visibility", (int)$isMdPublic);
-	$XMLSdi->appendChild($XMLMDVisibility);
+	// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
+	$object=array();
+	$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
+						FROM #__sdi_metadata m
+						INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+						INNER JOIN #__sdi_object o ON o.id = ov.object_id
+						INNER JOIN #__sdi_list_visibility v ON v.id = o.visibility_id 
+						WHERE m.guid = '".$md->getFileIdentifier()."'";
+	$db->setQuery($queryObject);
+	$object = $db->loadObject();
+	
+	// Créer une entrée pour l'objet
+	$XMLObject = $doc->createElement("sdi:object");
+	$XMLObject->setAttribute('object_name', $object->name);
+	$XMLObject->setAttribute('objectversion_title', $object->title);
+	$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+	$XMLSdi->appendChild($XMLObject);
+	
+	// Récupérer le type d'objet
+	$objecttype = array();
+	// Récupérer le logo du type d'objet
+	$queryObjecttype = "SELECT t.label, ot.logo 
+						FROM #__sdi_objecttype ot
+						INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+						INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
+						INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN jos_sdi_language l ON t.language_id=l.id
+						INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						WHERE m.guid = '".$md->getFileIdentifier()."'
+							  AND cl.code = '".$language->_lang."'";
+	$db->setQuery($queryObjecttype);
+	$objecttype = $db->loadObject();
+	
+	// Créer une entrée pour le type d'objet
+	$XMLObjectType = $doc->createElement("sdi:objecttype", $objecttype->label);
+	$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
+	$XMLObjectType->setAttribute('logo_width', $logoWidth);
+	$XMLObjectType->setAttribute('logo_height', $logoHeight);
+	$XMLSdi->appendChild($XMLObjectType);
+	
+	// Entrées à ajouter si le shop est installé
+	$shopExist=0;
+	$query = "	SELECT count(*) 
+				FROM #__sdi_list_module 
+				WHERE code='SHOP'";
+	$db->setQuery($query);
+	$shopExist = $db->loadResult();
+	
+	if ($shopExist == 1)
+	{
+		$product = array();
+		$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id 
+							LEFT OUTER JOIN #__sdi_product_file pf ON pf.product_id = p.id 
+							WHERE m.guid = '".$md->getFileIdentifier()."'";
+		$db->setQuery($queryProduct);
+		$product = $db->loadObject();
+		
+		// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
+		$XMLProduct = $doc->createElement("sdi:product", $product->id);
+		$XMLProduct->setAttribute('published', (int)$product->published);
+		$XMLProduct->setAttribute('available', (int)$product->available);
+		$XMLProduct->setAttribute('free', (int)$product->free);
+		$XMLProduct->setAttribute('file_size', $product->size);
+		$XMLProduct->setAttribute('file_type', $product->type);
+		$XMLSdi->appendChild($XMLProduct);
+	}
 
-	// Créer une entrée pour la commande de l'objet
-	$XMLOrderable = $doc->createElement("sdi:orderable", $md_orderable);
-	$XMLSdi->appendChild($XMLOrderable);
-
-	// Créer une entrée pour la gratuité de la métadonnée
-	$XMLMDFree = $doc->createElement("sdi:is_free", (int)$isMdFree);
-	$XMLSdi->appendChild($XMLMDFree);
-
-	// Créer une entrée pour lae preview de l'objet
-	$XMLPreview = $doc->createElement("sdi:preview", $hasPreview);
-	$XMLSdi->appendChild($XMLPreview);
+	// Créer une entrée pour la prévisualisation de l'objet
+	//$XMLPreview = $doc->createElement("sdi:preview", $hasPreview);
+	//$XMLSdi->appendChild($XMLPreview);
 
 	//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
 
-	$language = $user->getParam('language', '');
+	// Répertoire des fichiers xsl, s'il y en a un
+	$xslFolder = ""; 
+	
+	if (isset($context))
+	{
+		$db->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+		$xslFolder = $db->loadResult(); 
+	}
+	if ($xslFolder <> "")
+		$xslFolder = $xslFolder."/";
+	
 	$style = new DomDocument();
-	if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XHTML_result_'.$language.'.xsl')){
-		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XHTML_result_'.$language.'.xsl');
+	if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl')){
+		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl');
 	}else{
-		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XHTML_result.xsl');
+		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result.xsl');
 	}
 
 	$processor = new xsltProcessor();
@@ -1295,65 +1164,6 @@ foreach($nodes  as $metadata){
 	$xml = $processor->transformToXml($doc);
 
 	printf($xml);
-
-	/*
-	 * La partie qui suit a été remplacée par une transformation  xslt
-	 */
-
-	/*
-		?>
-		<tr>
-		<!-- <td><?php echo $i; ?></td>  -->
-		<?php
-		?>
-
-		<td valign="top" rowspan=3>
-		<img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $account_logo;?>" alt="<?php echo JText::_('CATALOG_SEARCH_ROOT_LOGO');?>"></img>
-		</td>
-		<td colspan="3"><span class="mdtitle"><?php echo $md->getDataIdentificationTitle();?></span>
-		</td>
-		<td valign="top" rowspan=2>
-		<table id="info_md">
-		<tr>
-		<td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("CATALOG_SEARCH_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
-		</tr>
-		<tr>
-		<td><div <?php if($md_orderable == 1) echo 'title="'.JText::_("CATALOG_SEARCH_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("CATALOG_SEARCH_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
-		</tr>
-		<tr>
-		<td><div <?php if($isMdFree) echo 'title="'.JText::_("CATALOG_SEARCH_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
-		</tr>
-		</table>
-		</td>
-	 </tr>
-	 <tr>
-	 <td colspan="3"><span class="mddescr"><?php echo mb_substr($md->getDescription($language), 0, $maxDescr, 'UTF-8'); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
-	 </tr>
-	 <tr>
-	 <!--
-	 <a	class="<?php if ($md_orderable>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>"
-	 href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("CATALOG_VIEW_MD"); ?>
-	 </a>
-	 -->
-	 <td><span class="mdviewfile">
-	 <a class="modal"
-	 title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>"
-	 href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-	 rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("CATALOG_VIEW_MD"); ?>
-	 </a></span>
-	 </td>
-	 <?php if ($hasPreview > 0){ ?>
-	 <td><span class="mdviewproduct">
-	 <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
-	 rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("CATALOG_PREVIEW"); ?></a></span>
-	 </td>
-		<?php } ?>
-		<td>&nbsp;</td>
-	 </tr>
-	 <tr>
-	 <td colspan="5" halign="middle"><div class="separator" /></td>
-	 </tr>
-	 <?php*/
 }
 ?>
 </table>
@@ -1380,291 +1190,7 @@ foreach($nodes  as $metadata){
 
 
 	}
-	/*
-	 function listCatalogContent($pageNav,$cswResults,$option, $total,$searchCriteria,$maxDescr){
-		global  $mainframe;
-		$db =& JFactory::getDBO();
-		?>
-		<div id="page">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_CATALOG_TITLE"); ?></h2>
-		<div class="contentin">
-
-
-
-		<form name="catalog_search_form" id="catalog_search_form"  method="GET">
-		<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" />
-		<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>" />
-		<input type="hidden" name="bboxMinX" id="bboxMinX" value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>" />
-		<input type="hidden" name="bboxMinY" id="bboxMinY" value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>" />
-		<input type="hidden" name="bboxMaxX" id="bboxMaxX" value="<?php echo JRequest::getVar('bboxMaxX', "180" ); ?>" />
-		<input type="hidden" name="bboxMaxY" id="bboxMaxY" value="<?php echo JRequest::getVar('bboxMaxY', "90" );?>" />
-		<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid');?>" />
-		<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>" />
-		<input type="hidden" name="tabIndex" id="tabIndex" value="" />
-		<h3><?php echo JText::_("EASYSDI_CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
-
-		<?php
-		$index = JRequest::getVar('tabIndex', 0);
-		$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
-		//	echo $tabs->startPane("catalogPane");
-		//	echo $tabs->startPanel(JText::_("EASYSDI_TEXT_SIMPLE_CRITERIA"),"catalogPanel1");
-		?> <br/>
-
-		<table width="100%">
-		<tr>
-		<td>
-		<table width="100%">
-		<tr>
-		<td align="left"><b><?php echo JText::_("EASYSDI_CATALOG_FILTER_TITLE");?></b>&nbsp;
-		<input type="text" id="simple_filterfreetextcriteria"  name="simple_filterfreetextcriteria" value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>" class="inputbox" /></td>
-		</tr>
-		</table>
-		</td>
-		</tr>
-		</table>
-		<table>
-		<tr>
-		<td>
-		<button type="submit" class="easysdi_search_button"
-		onclick="clearDetailsForm();
-		document.getElementById('tabIndex').value = '0';
-		document.getElementById('catalog_search_form').submit();">
-		<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
-		</td>
-		<td>
-		<button type="submit" class="easysdi_clear_button"
-		onclick="clearForm();
-		document.getElementById('tabIndex').value = '0';
-		document.getElementById('catalog_search_form').submit();">
-		<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
-		</td>
-		</tr>
-		</table>
-		<?php
-		//		echo $tabs->endPanel();
-		//		echo $tabs->startPanel(JText::_("EASYSDI_TEXT_ADVANCED_CRITERIA"),"catalogPanel2");
-		?><br/>
-		<table width="100%" >
-		<tr>
-		<td><?php
-		HTML_catalog::generateMap();
-		?></td>
-			
-		</tr>
-		</table>
-		<table>
-		<tr>
-		<td>
-		<button type="submit" class="easysdi_search_button"
-		onclick="clearForm();
-		document.getElementById('tabIndex').value = '1';
-		document.getElementById('catalog_search_form').submit();">
-		<?php echo JText::_("EASYSDI_CATALOG_SEARCH_BUTTON"); ?></button>
-		</td>
-		<td>
-		<button type="submit" class="easysdi_clear_button"
-		onclick="clearDetailsForm();
-		document.getElementById('tabIndex').value = '1';
-		document.getElementById('catalog_search_form').submit();">
-		<?php echo JText::_("EASYSDI_CATALOG_CLEAR_BUTTON"); ?></button>
-		</td>
-		</tr>
-		</table>
-		<script  type="text/javascript">
-		function clearDetailsForm ()
-		{
-		document.getElementById('filterfreetextcriteria').value = '';
-		document.getElementById('filter_visible').value = '';
-		document.getElementById('partner_id').value = '';
-		document.getElementById('filter_orderable').value = '';
-		document.getElementById('filter_theme').value = '';
-		document.getElementById("bboxMinX").value = "-180";
-		document.getElementById("bboxMinY").value ="-90";
-		document.getElementById("bboxMaxX").value ="180";
-		document.getElementById("bboxMaxY").value ="90";
-		}
-		function clearForm()
-		{
-		document.getElementById('simple_filterfreetextcriteria').value = '';
-		}
-		</script>
-		<?php
-		//		echo $tabs->endPanel();
-		//		echo $tabs->endPane();
-		?>
-		</form>
-
-
-		<?php if($cswResults){ ?> <br/>
-		<table width="100%">
-		<tr>
-		<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-		<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-		</tr>
-		</table>
-		<h3><?php echo JText::_("EASYSDI_SEARCH_RESULTS_TITLE"); ?></h3>
-
-		<span class="easysdi_number_of_metadata_found"><?php echo JText::_("EASYSDI_CATALOG_NUMBER_OF_METADATA_FOUND");?>
-		<?php echo $total ?> </span>
-		<table class="mdsearchresult">
-		<!--
-		<thead>
-		<tr>
-
-		<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_SHARP'); ?></th>
-		<th><?php echo JText::_('EASYSDI_CATALOG_ORDERABLE'); ?></th>
-
-		<th><?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO'); ?></th>
-		<th><?php echo JText::_('EASYSDI_CATALOG_PRODUCT_NAME'); ?></th>
-		</tr>
-		</thead>
-		-->
-		<?php
-		$i=0;
-		$param = array('size'=>array('x'=>800,'y'=>800) );
-		JHTML::_("behavior.modal","a.modal",$param);
-
-
-
-		$xpath = new DomXPath($cswResults);
-		$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-		$nodes = $xpath->query('//gmd:MD_Metadata');
-
-		foreach($nodes  as $metadata){
-			
-		$i++;
-			
-		$md = new geoMetadata($metadata);
-		?>
-		<tr>
-		<!-- <td><?php echo $i; ?></td>  -->
-		<?php
-		$query = "select count(*) from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-		$db->setQuery( $query);
-
-		$md_orderable = $db->loadResult();
-
-		if ($db->getErrorNum()) {
-		$md_orderable = '0';
-		}
-
-
-		$query = "select count(*) from #__easysdi_product where previewBaseMapId is not null AND previewBaseMapId>0 AND metadata_id = '".$md->getFileIdentifier()."'";
-
-		$db->setQuery( $query);
-
-		$hasPreview = $db->loadResult();
-		if ($db->getErrorNum()) {
-		$hasPreview = 0;
-
-		}
-
-		$queryPartnerID = "select partner_id from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryPartnerID);
-		$partner_id = $db->loadResult();
-			
-		$queryPartnerLogo = "select partner_logo from #__easysdi_community_partner where partner_id = ".$partner_id;
-		$db->setQuery($queryPartnerLogo);
-		$partner_logo = $db->loadResult();
-			
-		$query="select CONCAT( CONCAT( a.address_agent_firstname, ' ' ) , a.address_agent_lastname ) AS name from #__easysdi_community_partner p inner join #__easysdi_community_address a on p.partner_id = a.partner_id WHERE p.partner_id = ".$partner_id ." and a.type_id=1" ;
-		$db->setQuery($query);
-		$supplier= $db->loadResult();
-			
-		$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
-			
-		$logoWidth = config_easysdi::getValue("logo_width");
-		$logoHeight = config_easysdi::getValue("logo_height");
-
-		$isMdPublic = false;
-		$isMdFree = true;
-		if( $md_orderable != 0)
-		{
-		//Define if the md is free or not
-		$queryPartnerID = "select is_free from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryPartnerID);
-		$is_free = $db->loadResult();
-		if($is_free == 0)
-		{
-		$isMdFree = false;
-		}
-
-		//Define if the md is public or not
-		$queryPartnerID = "select external from #__easysdi_product where metadata_id = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryPartnerID);
-		$external = $db->loadResult();
-		if($external == 1)
-		{
-		$isMdPublic = true;
-		}
-		}
-			
-			
-		?>
-
-		<td valign="top" rowspan=3>
-		<img width="<?php echo $logoWidth ?>px" height="<?php echo $logoHeight ?>px" src="<?php echo $partner_logo;?>" alt="<?php echo JText::_('EASYSDI_CATALOG_ROOT_LOGO');?>"></img>
-		</td>
-		<td colspan="3"><span class="mdtitle"><a><?php echo $md->getDataIdentificationTitle();?></a></span>
-		</td>
-		<td valign="top" rowspan=2>
-		<table id="info_md">
-		<tr>
-		<td><div <?php if($isMdPublic) echo 'class="publicMd"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_PRIVATEMD").'" class="privateMd"';?>></div></td>
-		</tr>
-		<tr>
-		<td><div <?php if($md_orderable>0) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_NOTORDERABLE").'" class="easysdi_product_does_not_exist"';?>></div></td>
-		</tr>
-		<tr>
-		<td><div <?php if($isMdFree) echo 'title="'.JText::_("EASYSDI_CATALOG_INFOLOGO_FREEMD").'" class="freeMd"'; else echo 'class="notFreeMd"';?>></div></td>
-		</tr>
-		</table>
-		</td>
-	 </tr>
-	 <tr>
-	 <td colspan="3"><span class="mddescr"><?php echo substr($md->getDescription($language), 0, $maxDescr); if(strlen($md->getDescription($language))>$maxDescr)echo" [...]";?></span></td>
-	 </tr>
-	 <tr>
-	 <!--
-	 <a	class="<?php if ($md_orderable>0) {echo "easysdi_orderable";} else {echo "easysdi_not_orderable";} ?>"
-	 href="./index.php?option=com_easysdi_shop&view=shop" target="_self"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
-	 </a>
-	 -->
-	 <td><span class="mdviewfile">
-	 <a class="modal"
-	 title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
-	 href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $md->getFileIdentifier();  ?>"
-	 rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>
-	 </a></span>
-	 </td>
-	 <?php if ($hasPreview > 0){ ?>
-	 <td><span class="mdviewproduct">
-	 <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $md->getFileIdentifier();?>"
-	 rel="{handler:'iframe',size:{x:650,y:550}}"><?php echo JText::_("EASYSDI_PREVIEW_PRODUCT"); ?></a></span>
-	 </td>
-		<?php } ?>
-		<td>&nbsp;</td>
-	 </tr>
-	 <tr>
-	 <td colspan="4">&nbsp;</td>
-	 </tr>
-
-
-	 <?php
-	 }
-	 ?>
-	 </table>
-
-	 <?php } ?></div>
-
-
-	 </div>
-
-	 <?php
-
-	 }
-	 */
+	
 	function generateMap()
 	{
 

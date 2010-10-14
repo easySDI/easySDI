@@ -974,9 +974,14 @@ else
 														},
 														failure: function(form, action) 
 														{
- 
-	                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-																
+ 															if (action.result)
+									                    	{
+									                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
+									                    	}
+									                    	else
+															{
+	                        									Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+															}
 															myMask.hide();
 														},
 														url:'".$publish_url."'
@@ -1167,7 +1172,7 @@ else
 																		    ] 
 																		     ,buttonAlign:'right' 
 																		     ,buttons: [{
-																                    text:'Submit',
+																                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 																                    handler: function(){
 																                    	myMask.show();
 																                    	win.items.get(0).getForm().submit({
@@ -1197,7 +1202,7 @@ else
 																                    }
 																                },
 																                {
-																                    text: 'Close',
+																                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 																                    handler: function(){
 																                        win.hide();
 																                    }
@@ -1308,7 +1313,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								    var boundaries = ".HTML_metadata::array2json($this->boundaries).";
 								    var paths = ".HTML_metadata::array2json($this->paths).";
 								     // La liste
-								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
+								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES_TIP"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
 								    ";
 		}
 		
@@ -1694,6 +1699,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 															";
 															break;
 													}
+													
+													if ($child->attribute_system)
+													{
+														$this->javascript .="
+														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+														";
+													}
 												}
 											}
 											else
@@ -1773,6 +1785,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 															";
 															break;
 													}
+													
+													if ($child->attribute_system)
+													{
+														$this->javascript .="
+														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+														";
+													}
 												}
 											}
 										}
@@ -1849,6 +1868,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 														";
 														break;
+												}
+													
+												if ($child->attribute_system)
+												{
+													$this->javascript .="
+													".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													";
 												}
 											}
 										}
@@ -2077,6 +2103,15 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									 	break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
+								
+								
 								break;
 							// Link
 							case 7:
@@ -2291,6 +2326,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -2395,9 +2437,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													if ($result->title <> "")
+													/* Mis en commentaire à cause du bug #3919
+													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
-													else
+													else*/
 														$nodeValues[] = $result->guid;
 
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -2444,6 +2487,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 									    ";
 									break;
+								}
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
 								}
 								
 								break;
@@ -3003,6 +3053,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								 	break;
 								}
 								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -3108,9 +3165,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													if ($result->title <> "")
+													/* Mis en commentaire à cause du bug #3919
+													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
-													else
+													else*/
 														$nodeValues[] = $result->guid;
 
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -3156,6 +3214,13 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
 									    ";
 									break;
+								}
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
 								}
 								
 								break;
@@ -3668,6 +3733,14 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									}
 								 	break;
 							}
+							
+							if ($child->attribute_system)
+							{
+								$this->javascript .="
+								".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+								";
+							}
+							
 							break;
 						// Link
 						case 7:
@@ -3797,6 +3870,14 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									    ";
 								}
 								
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+									";
+								}
+								
 								break;
 							// LocaleChoice
 							case 10:
@@ -3874,7 +3955,15 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									break;
 								}
 								
-								break;
+								
+							if ($child->attribute_system)
+							{
+								$this->javascript .="
+								".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+								";
+							}
+							
+							break;
 						// Thesaurus GEMET
 							case 11:
 								//echo "3) ".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
@@ -4452,7 +4541,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 				}
 				else
 				{
-					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
+					//$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, -36);
+					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
+					
 					//echo "Trouve ".$guid."<br>";
 					$results = array();
 					$database->setQuery( "SELECT o.id as id, 

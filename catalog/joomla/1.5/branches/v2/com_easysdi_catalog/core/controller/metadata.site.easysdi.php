@@ -25,6 +25,7 @@ class SITE_metadata {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$user = JFactory::getUser();
+		$language =& JFactory::getLanguage();
 		
 		//Check user's rights
 		$allow = false;
@@ -202,10 +203,19 @@ class SITE_metadata {
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
 		$editors = implode(", ", $database->loadResultArray());
 		
-		$query = 'SELECT id as value, name as text' .
+		/*$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
 				' WHERE predefined=false' .
-				' ORDER BY name';
+				' ORDER BY name';*/
+		$query = "SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label";
+		
 		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$database->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $database->loadObjectList());

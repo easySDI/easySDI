@@ -9,7 +9,7 @@
 .easysdi_shop_backend_datefield {width: auto;}
 .easysdi_shop_backend_checkboxgroup {width: auto;}
 .easysdi_shop_backend_radiogroup {width: auto;}
-easysdi_shop_backend_choicebox {width: 300px !important;}
+.easysdi_shop_backend_choicebox {width: 500px !important;}
 
 .thes-term {color:#C00000; font-weight: bold; margin:4px; font-size:15px; text-align:center}
 .thes-description div div {font-family: arial,tahoma; font-size:11px; padding:4px; color:#505050}

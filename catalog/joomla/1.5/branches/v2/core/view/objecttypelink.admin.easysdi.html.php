@@ -34,8 +34,8 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderObjectTypeLink' ); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_PARENT"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_CHILD"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_PARENT"), 'parent_name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_CHILD"), 'child_name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_FLOWDOWNVERSIONING"), 'xslfile', @$filter_order_Dir, @$filter_order); ?></th>
 				<!-- <th class='title'><?php //echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE"), 'url', @$filter_order_Dir, @$filter_order); ?></th> -->
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
