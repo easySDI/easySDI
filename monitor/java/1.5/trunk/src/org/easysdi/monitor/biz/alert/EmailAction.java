@@ -27,8 +27,6 @@ import org.easysdi.monitor.gui.i18n.Messages;
  */
 public class EmailAction extends AbstractAction {
 
-    private static final String DEFAULT_LANGUAGE = "en";
-
     private final EmailConfig config = new EmailConfig();
     private final Logger      logger = Logger.getLogger(EmailAction.class);
     private Set<String>       recipients;
@@ -94,8 +92,8 @@ public class EmailAction extends AbstractAction {
         final String jobName = aAlert.getParentJob().getConfig().getJobName();
         String language = this.getLanguage();
         
-        if (null != language) {
-            language = EmailAction.DEFAULT_LANGUAGE;
+        if (null == language) {
+            language = mailConfig.getLanguage();
         }
         
         final Locale actionLocale = new Locale(language);        

@@ -20,10 +20,9 @@ public class EmailConfig {
     private String smtpHost;
     private String smtpPassword;
     private String smtpUserName;
+    private String language;
 
-
-
-    /**
+	/**
      * Instantiates the configuration.
      */
     public EmailConfig() {
@@ -67,7 +66,7 @@ public class EmailConfig {
         this.setSenderAddress(emailProps.getProperty("sender"));
         this.setSmtpHost(emailProps.getProperty("smtp.host"));
         this.setSmtpPassword(emailProps.getProperty("smtp.password"));
-        this.setSmtpUserName(emailProps.getProperty("smtp.user"));
+        this.setLanguage(emailProps.getProperty("language"));
     }
 
 
@@ -114,6 +113,7 @@ public class EmailConfig {
         return this.smtpHost;
     }
 
+    
 
 
     /**
@@ -157,4 +157,14 @@ public class EmailConfig {
     public String getSmtpUserName() {
         return this.smtpUserName;
     }
+    
+    public String getLanguage() {
+		return language;
+	}
+
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+    
 }
