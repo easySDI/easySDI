@@ -765,7 +765,18 @@ default:
 		{
 			foreach($rows as $key => $row)
 			{		  	
-      			$rows[$key]->text = JText::_($rows[$key]->text);
+				$rows[$key]->text = JText::_($rows[$key]->text);
+  			}			    
+		}
+	}
+	
+	function arrayTranslate(&$rows)
+	{		
+		if (count($rows)>0)
+		{
+			foreach($rows as $key => &$row)
+			{		  	
+				$row = JText::_($row);
   			}			    
 		}
 	}
