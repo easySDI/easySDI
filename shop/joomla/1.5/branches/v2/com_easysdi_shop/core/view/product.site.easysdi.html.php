@@ -700,7 +700,9 @@ class HTML_product{
 	<thead>
 	<tr>
 	<th class="logo2"></th>
-	<th><?php echo JText::_('SHOP_PRODUCT_DESCRIPTION'); ?></th>
+	<th class='title'><?php echo JText::_('SHOP_PRODUCT_NAME'); ?></th>
+	<th class='title'><?php echo JText::_('SHOP_PRODUCT_OBJECTNAME'); ?></th>
+	<th class='title'><?php echo JText::_('SHOP_PRODUCT_VERSIONTITLE'); ?></th>
 	<th class="logo">&nbsp;</th>
 	<th class="logo">&nbsp;</th>
 	</tr>
@@ -717,22 +719,24 @@ class HTML_product{
 			?>		
 			<tr>
 			<td class="logo2"><div <?php if($row->visibility == 'public' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE").'" class="easysdi_product_exists"'; else if($row->visibility == 'private' && $row->published == 1) echo 'title="'.JText::_("SHOP_INFOLOGO_ORDERABLE_INTERNAL").'" class="easysdi_product_exists_internal"';?>></div></td>
-			<td width="100%"><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
+			<td><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
+			<td><?php echo $row->object_name ?></td>
+			<td><?php echo $row->version_title ?></td>
 			<?php 
 			if (JTable::isCheckedOut($user->get ('id'), $row->checked_out ) )
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT_CHECKED_OUT'); ?>" id="editObjectCheckedOut" /></td>
+				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT_CHECKED_OUT'); ?>" id="editObjectCheckedOut" ></div></td>
 				<?php
 			} 
 			else
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"/></td>
+				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"></div></td>
 				<?php
 			}
 			?>
-			<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" /></td>
+			<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" ></div></td>
 			</tr>
 			<?php		
 		}
