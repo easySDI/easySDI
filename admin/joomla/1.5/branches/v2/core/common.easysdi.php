@@ -780,6 +780,19 @@ default:
   			}			    
 		}
 	}
+	
+
+	
+	function formatDivTitle($text)
+	{
+		$text = str_replace(chr(13),"\\r",$text);
+		$text = str_replace(chr(10),"\\n",$text);
+		$text = str_replace(chr(34),"&quot;",$text);
+		$text = str_replace(chr(39),"&#145;",$text);
+		//$text = addslashes($text);
+		//echo $text."<br>";
+		return $text;
+	}
 }
 
 ?>
