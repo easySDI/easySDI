@@ -50,7 +50,7 @@ class HTMLadmin_statistic {
 				<tr>
 					<td>
 						<b><?php echo JText::_("AGI_STATISTIC_TYPE");?></b>&nbsp;
-						<select name="statisticType" id="statisticType" onChange="document.getElementById('DateFrom').value='',document.getElementById('DateTo').value='',document.getElementById('searchStatistic').value='',submitform('adminform');">
+						<select name="statisticType" id="statisticType" onChange="document.getElementById('DateFrom').value='';document.getElementById('DateTo').value='';document.getElementById('searchStatistic').value='';submitform('statistic');">
 							<option value="#__agi_stat_performance" <?php if ($statisticType=="#__agi_stat_performance"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_PERFORMANCE"); ?></option>
 							<option value="#__agi_stat_attribute" <?php if ($statisticType=="#__agi_stat_attribute"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_ATTRIBUTE"); ?></option>
 							<option value="#__agi_stat_metadata" <?php if ($statisticType=="#__agi_stat_metadata"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_METADATA"); ?></option>
@@ -90,8 +90,8 @@ class HTMLadmin_statistic {
 						break;
 				}
 			?>
-			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<input type="hidden" id="task" name="task" value="listStatistic">
+			<input type="hidden" id="option" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" id="task" name="task" value="statistic">
 			<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
 	  		<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 		</form>

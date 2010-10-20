@@ -19,10 +19,9 @@
 defined('_JEXEC') or die('Restricted access');
 class ADMIN_statistic {
 		
-	function listStatistic(){
+	function listStatistic($option){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
-		$option=JRequest::getVar("option");
 		
 		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
 		$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
@@ -87,6 +86,7 @@ class ADMIN_statistic {
 						and $filter_order <> "operation"  
 						and $filter_order <> "min_time" 
 						and $filter_order <> "max_time" 
+						and $filter_order <> "date"
 						and $filter_order <> "average_time")
 				{
 					$filter_order		= "id";

@@ -22,7 +22,7 @@ class TOOLBAR_statistic{
 	function listStatistic()
 	{
 		
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
+		JToolBarHelper::custom( 'ctrlPanelAGIStat', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );	
 	}
 		
 }

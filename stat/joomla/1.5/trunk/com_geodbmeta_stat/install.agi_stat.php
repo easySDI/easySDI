@@ -92,6 +92,19 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
 		}
+		
+		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'AGI_STAT'";
+		$db->setQuery( $query);
+		$id = $db->loadResult();
+		
+		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'AGI_STAT_PANEL', 'AGI Stat Panel', 'AGI Stat Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$id."', 'com_agi_stat/core/view/sub.ctrlpanel.admin.agi.html.php', '5')";
+		$db->setQuery( $query);		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
 
 		$query="CREATE  TABLE IF NOT EXISTS `#__agi_stat_attribute` (
 				  `id` BIGINT NOT NULL AUTO_INCREMENT ,

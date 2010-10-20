@@ -37,18 +37,23 @@ $language =& JFactory::getLanguage();
 $language->load('com_agi_stat', JPATH_ADMINISTRATOR);
 
 global $mainframe;
+$option = JRequest::getVar('option');
 $task = JRequest::getVar('task');
 
 switch($task){
 
-	default:
 	case "statistic":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'statistic.admin.agi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'statistic.admin.agi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'statistic.toolbar.agi.html.php');
 		
 		TOOLBAR_statistic::listStatistic();
-		ADMIN_statistic::listStatistic();	
+		ADMIN_statistic::listStatistic($option);	
+		break;
+		
+	case "ctrlPanelAGIStat":
+	default:
+		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
 }
 
