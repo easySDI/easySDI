@@ -1,6 +1,6 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
-	<name>GeoDBMeta_Stat</name>
+	<name>AGI_Stat</name>
 	<version>1.0</version>
 	<creationDate>August 2010</creationDate>
 	<author>Depth.ch</author>
@@ -9,21 +9,21 @@
 	<copyright></copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>
-		Component for GeoDBMeta statistics display.
+		AGI Component for statistics consultation.
 	</description>
 	
-	<installfile>install.geodbmeta_stat.php</installfile>
-	<uninstallfile>uninstall.geodbmeta_stat.php</uninstallfile>		
+	<installfile>install.agi_stat.php</installfile>
+	<uninstallfile>uninstall.agi_stat.php</uninstallfile>		
 	<!-- Backend -->
 	<administration>		
 		<files>
-			<filename>admin.geodbmeta_stat.php</filename>
+			<filename>admin.agi_stat.php</filename>
 			<filename>license.txt</filename>
 			<folder>core</folder>
 		</files>
 		<languages folder="language/admin">
-			<language tag="fr-FR">fr-FR.com_geodbmeta_stat.ini</language>
-			<language tag="en-GB">en-GB.com_geodbmeta_stat.ini</language>
+			<language tag="fr-FR">fr-FR.com_agi_stat.ini</language>
+			<language tag="en-GB">en-GB.com_agi_stat.ini</language>
 		</languages>
 	</administration>
 </install>

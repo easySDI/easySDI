@@ -77,7 +77,7 @@ function com_install(){
 	}
 	
 	$version = '0';
-	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'GEODBMETA_STAT'";
+	$query = "SELECT currentversion FROM `#__sdi_list_module` where `code` = 'AGI_STAT'";
 	$db->setQuery( $query);
 	$version = $db->loadResult();
 				
@@ -85,7 +85,7 @@ function com_install(){
 	{	
 		$version= '0.1';
 		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'GEODBMETA_STAT', 'com_geodbmeta_stat', 'com_geodbmeta_stat', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_geodbmeta_stat', 'com_geodbmeta_stat', '".$version."')";
+										VALUES ('".helper_easysdi::getUniqueId()."', 'AGI_STAT', 'com_agi_stat', 'com_agi_stat', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_agi_stat', 'com_agi_stat', '".$version."')";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{			
@@ -93,7 +93,7 @@ function com_install(){
 			return false;
 		}
 
-		$query="CREATE  TABLE IF NOT EXISTS `#__sdi_stat_attribute` (
+		$query="CREATE  TABLE IF NOT EXISTS `#__agi_stat_attribute` (
 				  `id` BIGINT NOT NULL AUTO_INCREMENT ,
 				  `guid` VARCHAR(36) NOT NULL ,
 				  `created` DATETIME NOT NULL ,
@@ -110,7 +110,7 @@ function com_install(){
 			return false;
 		}
 
-		$query="CREATE  TABLE IF NOT EXISTS `#__sdi_stat_metadata` (
+		$query="CREATE  TABLE IF NOT EXISTS `#__agi_stat_metadata` (
 				  `id` BIGINT NOT NULL AUTO_INCREMENT ,
 				  `guid` VARCHAR(36) NOT NULL ,
 				  `created` DATETIME NOT NULL ,
@@ -128,7 +128,7 @@ function com_install(){
 		}
 
 
-		$query="CREATE  TABLE IF NOT EXISTS `#__sdi_stat_performance` (
+		$query="CREATE  TABLE IF NOT EXISTS `#__agi_stat_performance` (
 				  `id` BIGINT NOT NULL AUTO_INCREMENT ,
 				  `guid` VARCHAR(36) NOT NULL ,
 				  `created` DATETIME NOT NULL ,
@@ -149,7 +149,7 @@ function com_install(){
 		}
 	}
 	
-	$query = "DELETE FROM #__components where `option`= 'com_geodbmeta_stat' ";
+	$query = "DELETE FROM #__components where `option`= 'com_agi_stat' ";
 	$db->setQuery( $query);
 	if (!$db->query()) 
 	{
@@ -157,14 +157,14 @@ function com_install(){
 	}
 			
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('GeoDBMeta Statistic','option=com_geodbmeta_stat&task=statistic','GeoDBMeta Statistic','com_geodbmeta_stat','js/ThemeOffice/component.png','')";
+		values('AGI Statistic','option=com_agi_stat&task=statistic','AGI Statistic','com_agi_stat','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query()) 
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
 	
-	$mainframe->enqueueMessage("Congratulation GeoDBMeta Statistic for EasySdi is installed and ready to be used.","INFO");
+	$mainframe->enqueueMessage("Congratulation AGI Statistic component for EasySdi is installed and ready to be used.","INFO");
 	return true;
 }
 

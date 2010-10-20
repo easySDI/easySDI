@@ -37,14 +37,14 @@ class ADMIN_statistic {
 		{
 			switch($statisticType)
 			{
-				case "#__sdi_stat_performance":
+				case "#__agi_stat_performance":
 					$filter .= ' where LOWER(service) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 					$filter .= ' or LOWER(operation) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 					break;
-				case "#__sdi_stat_attribute":
+				case "#__agi_stat_attribute":
 					$filter .= ' where LOWER(attribute_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 					break; 
-				case "#__sdi_stat_metadata":
+				case "#__agi_stat_metadata":
 					$filter .= ' where LOWER(metadata_id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 					break;
 			}		
@@ -82,7 +82,7 @@ class ADMIN_statistic {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		switch($statisticType)
 		{
-			case "#__sdi_stat_performance":
+			case "#__agi_stat_performance":
 				if ( 		$filter_order <> "service" 
 						and $filter_order <> "operation"  
 						and $filter_order <> "min_time" 
@@ -93,7 +93,7 @@ class ADMIN_statistic {
 					$filter_order_Dir	= "ASC";
 				}
 				break;
-			case "#__sdi_stat_attribute":
+			case "#__agi_stat_attribute":
 				if ( 		$filter_order <> "attribute_name"
 						and $filter_order <> "count"
 						and $filter_order <> "date")
@@ -102,7 +102,7 @@ class ADMIN_statistic {
 					$filter_order_Dir	= "ASC";
 				}
 				break; 
-			case "#__sdi_stat_metadata":
+			case "#__agi_stat_metadata":
 				if ( 		$filter_order <> "metadata_id"
 						and $filter_order <> "count"
 						and $filter_order <> "date")

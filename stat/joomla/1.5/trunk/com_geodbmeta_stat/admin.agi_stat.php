@@ -32,7 +32,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'section.ph
 include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 
 $language =& JFactory::getLanguage();
-$language->load('com_geodbmeta_stat', JPATH_ADMINISTRATOR);
+$language->load('com_agi_stat', JPATH_ADMINISTRATOR);
 
 global $mainframe;
 $task = JRequest::getVar('task');

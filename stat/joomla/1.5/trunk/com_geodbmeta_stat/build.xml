@@ -4,7 +4,7 @@
 	<property name="projet.out.dir" value="out" />
 
 
-	<target name="com_easysdi" depends="create-structure,compression"
+	<target name="com_agi" depends="create-structure,compression"
 		description="Main target">
 
 	</target>
@@ -19,13 +19,13 @@
 
 	<target name="compression" description="Compression">
 
-		<jar compress="true" jarfile="${projet.out.dir}/com_geodbmeta_stat.zip"
+		<jar compress="true" jarfile="${projet.out.dir}/com_agi_stat.zip"
 			basedir="." excludes="out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Site\sdiv2\administrator\components\com_geodbmeta_stat">
+			todir="C:\www\Site\sdiv2\administrator\components\com_agi_stat">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -41,13 +41,13 @@
 		<copy		   
 		   todir="C:\www\Site\sdiv2\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
-		      <include name="**/fr-FR.com_geodbmeta_stat.ini" />
+		      <include name="**/fr-FR.com_agi_stat.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
 		   todir="C:\www\Site\sdiv2\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
-		      <include name="**/en-GB.com_geodbmeta_stat.ini" />
+		      <include name="**/en-GB.com_agi_stat.ini" />
 		     </fileset>
 		   </copy>
 	</target>

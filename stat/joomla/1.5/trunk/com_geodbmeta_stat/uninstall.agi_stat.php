@@ -28,7 +28,7 @@ function com_uninstall(){
 	/**
 	 * Delete components
 	 */
-	$query = "DELETE FROM #__components where `option`= 'com_geodbmeta_stat'";
+	$query = "DELETE FROM #__components where `option`= 'com_agi_stat'";
 	$db->setQuery( $query);
 	if (!$db->query()) {
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -37,8 +37,8 @@ function com_uninstall(){
 	
 	
 	
-	$mainframe->enqueueMessage("Congratulation GeoDBMeta Statistic is uninstalled.
-	Pay attention the database is not deleted and could still be used if you install GeoDBMeta Statistic again. 
+	$mainframe->enqueueMessage("Congratulations, AGI Statistic component is uninstalled.
+	Pay attention the database is not deleted and could still be used if you install AGI Statistic again. 
 	","INFO");
 
 	return true;

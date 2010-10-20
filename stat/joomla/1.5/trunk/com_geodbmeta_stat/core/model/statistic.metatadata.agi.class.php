@@ -17,20 +17,20 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class attribute_stat extends JTable
+class metatadata_stat extends JTable
 {	
 	var $id=null;
 	var $guid=null;
 	var $created=null;
 	var $updated=null;
-  	var $attribute_name=null;
+  	var $metadata_id=null;
   	var $date=null;
 	var $count=0;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_stat_attribute', 'id', $db ) ;    		
+		parent::__construct ( '#__agi_stat_metatadata', 'id', $db ) ;    		
 	}
 
 }

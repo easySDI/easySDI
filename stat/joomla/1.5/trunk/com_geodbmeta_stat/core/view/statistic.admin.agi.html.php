@@ -23,7 +23,7 @@ class HTMLadmin_statistic {
 	
 	function listStatistic($pageNav,$statistics,$option,$statisticType,$DateFrom,$DateTo,$filter_order_Dir, $filter_order,$search)
 	{
-		JToolBarHelper::title( JText::_("GEODBMETA_STATISTIC"), 'generic.png' );
+		JToolBarHelper::title( JText::_("AGI_STATISTIC"), 'generic.png' );
 		$database =& JFactory::getDBO();
 		?>	
 		<form action="index.php" method="GET" id="adminForm" name="adminForm">		
@@ -41,23 +41,23 @@ class HTMLadmin_statistic {
 			<table width="100%" class="adminlist">
 				<tr>
 					<td>
-						<b><?php echo JText::_("GEODBMETA_STATISTIC_TYPE");?></b>&nbsp;
+						<b><?php echo JText::_("AGI_STATISTIC_TYPE");?></b>&nbsp;
 						<select name="statisticType" id="statisticType"  >
-							<option value="#__sdi_stat_performance" <?php if ($statisticType=="#__sdi_stat_performance"){?>selected="selected"<?php }?>><?php echo JText::_("GEODBMETA_STATISTIC_TYPE_PERFORMANCE"); ?></option>
-							<option value="#__sdi_stat_attribute" <?php if ($statisticType=="#__sdi_stat_attribute"){?>selected="selected"<?php }?>><?php echo JText::_("GEODBMETA_STATISTIC_TYPE_ATTRIBUTE"); ?></option>
-							<option value="#__sdi_stat_metadata" <?php if ($statisticType=="#__sdi_stat_metadata"){?>selected="selected"<?php }?>><?php echo JText::_("GEODBMETA_STATISTIC_TYPE_METADATA"); ?></option>
+							<option value="#__sdi_stat_performance" <?php if ($statisticType=="#__sdi_stat_performance"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_PERFORMANCE"); ?></option>
+							<option value="#__sdi_stat_attribute" <?php if ($statisticType=="#__sdi_stat_attribute"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_ATTRIBUTE"); ?></option>
+							<option value="#__sdi_stat_metadata" <?php if ($statisticType=="#__sdi_stat_metadata"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_METADATA"); ?></option>
 						</select>
 					</td>
 					<td colspan=3>
-						<b><?php echo JText::_( 'GEODBMETA_STATISTIC_FILTER_DATE'); ?> </b>: 
+						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE'); ?> </b>: 
 						<br>
 						<?php JHTML::_('behavior.calendar'); ?>
-						<b><?php echo JText::_( 'GEODBMETA_STATISTIC_FILTER_DATE_FROM'); ?></b><?php echo JHTML::_('calendar',$DateFrom, "DateFrom","DateFrom","%d-%m-%Y"); ?>
-						<b><?php echo JText::_( 'GEODBMETA_STATISTIC_FILTER_DATE_TO'); ?></b><?php echo JHTML::_('calendar',$DateTo, "DateTo","DateTo","%d-%m-%Y"); ?>
+						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE_FROM'); ?></b><?php echo JHTML::_('calendar',$DateFrom, "DateFrom","DateFrom","%d-%m-%Y"); ?>
+						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE_TO'); ?></b><?php echo JHTML::_('calendar',$DateTo, "DateTo","DateTo","%d-%m-%Y"); ?>
 						<input name="dateFormat" type="hidden" value="%d-%m-%Y">
 					</td>
 					<td align="left">
-						<b><?php echo JText::_("GEODBMETA_STATISTIC_FILTER");?></b>&nbsp;
+						<b><?php echo JText::_("AGI_STATISTIC_FILTER");?></b>&nbsp;
 						<input type="text" name="searchStatistic" id="searchStatistic" class="inputbox" value="<?php echo $search;?>" />			
 					</td>
 				</tr>
@@ -67,7 +67,7 @@ class HTMLadmin_statistic {
 			<button onclick="javascript:fieldReset();"><?php echo JText::_( "RESET" ); ?></button>
 			<br>		
 			
-			<h3><?php echo JText::_("GEODBMETA_STATISTIC_SEARCH_RESULTS_TITLE"); ?></h3>
+			<h3><?php echo JText::_("AGI_STATISTIC_SEARCH_RESULTS_TITLE"); ?></h3>
 			<?php
 				switch($statisticType)
 				{
@@ -96,13 +96,13 @@ class HTMLadmin_statistic {
 		<table class="adminlist">
 			<thead>
 			<tr>
-				<th class='title'><?php echo JText::_('GEODBMETA_STATISTIC_SHARP'); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_SERVICE"), 'service', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_OPERATION"), 'operation', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_MIN_TIME"), 'min_time', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_MAX_TIME"), 'max_time', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_AVERAGE_TIME"), 'average_time', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JText::_('AGI_STATISTIC_SHARP'); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_SERVICE"), 'service', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_OPERATION"), 'operation', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_MIN_TIME"), 'min_time', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_MAX_TIME"), 'max_time', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_AVERAGE_TIME"), 'average_time', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -139,10 +139,10 @@ class HTMLadmin_statistic {
 		<table class="adminlist">
 			<thead>
 			<tr>
-				<th class='title'><?php echo JText::_('GEODBMETA_STATISTIC_SHARP'); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_ATTRIBUTE_NAME"), 'attribute_name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_COUNT"), 'count', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JText::_('AGI_STATISTIC_SHARP'); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_ATTRIBUTE_NAME"), 'attribute_name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_COUNT"), 'count', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -176,10 +176,10 @@ class HTMLadmin_statistic {
 		<table class="adminlist">
 			<thead>
 			<tr>
-				<th class='title'><?php echo JText::_('GEODBMETA_STATISTIC_SHARP'); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_METADATA"), 'metadata_id', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("GEODBMETA_STATISTIC_COUNT"), 'count', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JText::_('AGI_STATISTIC_SHARP'); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_METADATA"), 'metadata_id', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_DATE"), 'date', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("AGI_STATISTIC_COUNT"), 'count', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 			</thead>
 			<tbody>
