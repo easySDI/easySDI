@@ -29,7 +29,7 @@ class ADMIN_statistic {
 		$search = $mainframe->getUserStateFromRequest( "searchStatistic{$option}", 'searchStatistic', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		
-		$statisticType= JRequest::getVar("statisticType","#__sdi_stat_performance");
+		$statisticType= JRequest::getVar("statisticType","#__agi_stat_performance");
 		$filter="";
 		
 		//Text search

@@ -23,7 +23,15 @@ class HTMLadmin_statistic {
 	
 	function listStatistic($pageNav,$statistics,$option,$statisticType,$DateFrom,$DateTo,$filter_order_Dir, $filter_order,$search)
 	{
-		JToolBarHelper::title( JText::_("AGI_STATISTIC"), 'generic.png' );
+		$title_type="";
+		if ($statisticType=="#__agi_stat_performance"){
+			$title_type= JText::_("AGI_STATISTIC_TYPE_PERFORMANCE");
+		}else if ($statisticType=="#__agi_stat_attribute"){
+			$title_type= JText::_("AGI_STATISTIC_TYPE_ATTRIBUTE");
+		}else if ($statisticType=="#__agi_stat_metadata"){
+			$title_type= JText::_("AGI_STATISTIC_TYPE_METADATA");
+		}
+		JToolBarHelper::title( JText::_("AGI_STATISTIC")." : $title_type" , 'generic.png' );
 		$database =& JFactory::getDBO();
 		?>	
 		<form action="index.php" method="GET" id="adminForm" name="adminForm">		
@@ -38,46 +46,46 @@ class HTMLadmin_statistic {
 			this.form.submit();
 		}
 		</script>
-			<table width="100%" class="adminlist">
+			<table width="100%" class="adminform">
 				<tr>
 					<td>
 						<b><?php echo JText::_("AGI_STATISTIC_TYPE");?></b>&nbsp;
-						<select name="statisticType" id="statisticType"  >
-							<option value="#__sdi_stat_performance" <?php if ($statisticType=="#__sdi_stat_performance"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_PERFORMANCE"); ?></option>
-							<option value="#__sdi_stat_attribute" <?php if ($statisticType=="#__sdi_stat_attribute"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_ATTRIBUTE"); ?></option>
-							<option value="#__sdi_stat_metadata" <?php if ($statisticType=="#__sdi_stat_metadata"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_METADATA"); ?></option>
+						<select name="statisticType" id="statisticType" onChange="document.getElementById('DateFrom').value='',document.getElementById('DateTo').value='',document.getElementById('searchStatistic').value='',submitform('adminform');">
+							<option value="#__agi_stat_performance" <?php if ($statisticType=="#__agi_stat_performance"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_PERFORMANCE"); ?></option>
+							<option value="#__agi_stat_attribute" <?php if ($statisticType=="#__agi_stat_attribute"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_ATTRIBUTE"); ?></option>
+							<option value="#__agi_stat_metadata" <?php if ($statisticType=="#__agi_stat_metadata"){?>selected="selected"<?php }?>><?php echo JText::_("AGI_STATISTIC_TYPE_METADATA"); ?></option>
 						</select>
 					</td>
-					<td colspan=3>
-						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE'); ?> </b>: 
-						<br>
+				</tr>
+				</table>
+				<br></br>
+				<table width="100%">
+				<tr>
+					<td>
 						<?php JHTML::_('behavior.calendar'); ?>
 						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE_FROM'); ?></b><?php echo JHTML::_('calendar',$DateFrom, "DateFrom","DateFrom","%d-%m-%Y"); ?>
 						<b><?php echo JText::_( 'AGI_STATISTIC_FILTER_DATE_TO'); ?></b><?php echo JHTML::_('calendar',$DateTo, "DateTo","DateTo","%d-%m-%Y"); ?>
 						<input name="dateFormat" type="hidden" value="%d-%m-%Y">
-					</td>
-					<td align="left">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<b><?php echo JText::_("AGI_STATISTIC_FILTER");?></b>&nbsp;
 						<input type="text" name="searchStatistic" id="searchStatistic" class="inputbox" value="<?php echo $search;?>" />			
+					     
+						<button type="submit" class="searchButton" > <?php echo JText::_("APPLY"); ?></button>
+						<button onclick="javascript:fieldReset();"><?php echo JText::_( "RESET" ); ?></button>
 					</td>
 				</tr>
 			</table>
-			<br>
-			<button type="submit" class="searchButton" > <?php echo JText::_("SEARCH"); ?></button>
-			<button onclick="javascript:fieldReset();"><?php echo JText::_( "RESET" ); ?></button>
-			<br>		
 			
-			<h3><?php echo JText::_("AGI_STATISTIC_SEARCH_RESULTS_TITLE"); ?></h3>
 			<?php
 				switch($statisticType)
 				{
-					case "#__sdi_stat_performance":
+					case "#__agi_stat_performance":
 						HTMLadmin_statistic::listPerformance($statistics,$filter_order_Dir, $filter_order,$pageNav); 
 						break;
-					case "#__sdi_stat_attribute":
+					case "#__agi_stat_attribute":
 						HTMLadmin_statistic::listAttribute($statistics,$filter_order_Dir, $filter_order,$pageNav);
 						break; 
-					case "#__sdi_stat_metadata":
+					case "#__agi_stat_metadata":
 						HTMLadmin_statistic::listMetadata($statistics,$filter_order_Dir, $filter_order,$pageNav);
 						break;
 				}
