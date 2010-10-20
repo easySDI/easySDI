@@ -2257,7 +2257,7 @@ class SITE_catalog {
 			$cswfilter .= $cswfilterCond;
 			$cswfilter .= "</ogc:Filter>\r\n";
 			
-			echo "cswfilter:". htmlspecialchars($cswfilter);
+			//echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
