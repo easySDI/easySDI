@@ -77,16 +77,37 @@ class HTML_catalog{
 		//$objecttypes[] = JHTML::_('select.option', '', '');
 		if ($context <> "")
 		{
-			$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype WHERE id IN
+			/*$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype WHERE id IN
 								(SELECT co.objecttype_id 
 								FROM #__sdi_context_objecttype co
 								INNER JOIN #__sdi_context c ON c.id=co.context_id 
 								WHERE c.code = '".$context."')
-						   ORDER BY name");
+						   ORDER BY name");*/
+			$db->setQuery("SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 	   AND ot.id IN 
+				 	   				(SELECT co.objecttype_id 
+									FROM #__sdi_context_objecttype co
+									INNER JOIN #__sdi_context c ON c.id=co.context_id 
+									WHERE c.code = '".$context."')
+				 ORDER BY t.label");
 		}
 		else
 		{
-			$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype ORDER BY name");
+			/*$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype ORDER BY name");*/
+			$db->setQuery("SELECT ot.id AS value, t.label as text 
+				 FROM #__sdi_objecttype ot 
+				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ot.predefined=false 
+				 	   AND cl.code='".$language->_lang."'
+				 ORDER BY t.label");
 		}
 		$objecttypes = array_merge( $objecttypes, $db->loadObjectList() );
 		HTML_catalog::alter_array_value_with_Jtext($objecttypes);
@@ -465,7 +486,7 @@ class HTML_catalog{
 					
 					$multiple = 'size="1"';
 					
-					if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
+					if (count(JRequest::getVar($searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
@@ -522,7 +543,7 @@ class HTML_catalog{
 						$size = count($managers);
 					
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
+					if (count(JRequest::getVar($searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
@@ -593,10 +614,34 @@ class HTML_catalog{
 		}
 		else // Cas des attributs OGC qui ne sont pas liés à une relation
 		{
+			switch ($searchFilter->rendertype_code)
+			{
+			case "date":
+				/* Fonctionnement période*/
+				?>
+				<tr>
+					<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+					<td>
+					<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
+						<tr>
+							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							</td>
+							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<?php
+				break;
+			case "textbox":
+			default:
 			/* Fonctionnement texte*/
 			?>
 			<tr>
-				<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
+				<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 				<td align="left"><input type="text"
 					id="<?php echo 'filter_'.$searchFilter->guid;?>"
 					name="<?php echo 'filter_'.$searchFilter->guid;?>"
@@ -604,6 +649,8 @@ class HTML_catalog{
 					class="inputbox" /></td>
 			</tr>
 			<?php
+				break;
+			}
 		}
 default:
 	break;
@@ -801,7 +848,7 @@ default:
 						$size = count($accounts);
 							
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
+					if (count(JRequest::getVar($searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
@@ -858,7 +905,7 @@ default:
 						$size = count($managers);
 						
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
+					if (count(JRequest::getVar($searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
@@ -929,10 +976,34 @@ default:
 		}
 		else // Cas des attributs OGC qui ne sont pas liés à une relation
 		{
+			switch ($searchFilter->rendertype_code)
+			{
+			case "date":
+				/* Fonctionnement période*/
+				?>
+				<tr>
+					<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
+					<td>
+					<table border="0" cellpadding="0" cellspacing="0" class="searchTabs_date">
+						<tr>
+							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_FROM");?></td>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							</td>
+							<td class="searchTabs_date_bounds"><?php echo JText::_("CORE_DATE_TO");?></td>
+							<td class="searchTabs_date_field"><?php echo JHTML::_('calendar',JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar"'); ?>
+							</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<?php
+				break;
+			case "textbox":
+			default:
 			/* Fonctionnement texte*/
 			?>
 			<tr>
-				<td><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></td>
+				<td><?php echo JText::_($searchFilter->guid."_LABEL");?></td>
 				<td align="left"><input type="text"
 					id="<?php echo 'filter_'.$searchFilter->guid;?>"
 					name="<?php echo 'filter_'.$searchFilter->guid;?>"
@@ -940,6 +1011,8 @@ default:
 					class="inputbox" /></td>
 			</tr>
 			<?php
+				break;
+			}
 		}
 default:
 	break;
@@ -1000,17 +1073,18 @@ default:
 
 <span class="easysdi_number_of_metadata_found"><?php echo JText::_("CATALOG_SEARCH_NUMBER_OF_METADATA_FOUND");?>
 			 <?php echo $total ?> </span>
-<table class="mdsearchresult">
 <?php
 $i=0;
 $param = array('size'=>array('x'=>800,'y'=>800) );
 JHTML::_("behavior.modal","a.modal",$param);
 
 
-
+// on indique bien qu'on veut les métadonnées retournées, et pas tous les gmd:MD_Metadata qui pourraient se trouver
+// dans la construction de la métadonnée (notamment les mauvais remplacements de mtadonnées, pour les contacts p.ex.)
 $xpath = new DomXPath($cswResults);
+$xpath->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 $xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-$nodes = $xpath->query('//gmd:MD_Metadata');
+$nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
 
 foreach($nodes  as $metadata)
 {
@@ -1029,11 +1103,12 @@ foreach($nodes  as $metadata)
 	$doc->appendChild($XMLNewRoot);
 	$XMLNewRoot->appendChild($root);
 
-	$XMLSdi = $doc->createElement("sdi:Metadata");
+	$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
+	//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
+	$XMLSdi->setAttribute('user_lang', $language->_lang);
 	$XMLNewRoot->appendChild($XMLSdi);
 	//$doc->appendChild($XMLSdi);
-	$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
-	//print_r($md->metadata->saveXML());echo "<hr>";
+	//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
 
 	$queryAccountID = "	select o.account_id 
 						FROM #__sdi_metadata m
@@ -1054,14 +1129,14 @@ foreach($nodes  as $metadata)
 		$account_logo = "";
 	}
 	
+	$logoWidth = config_easysdi::getValue("logo_width");
+	$logoHeight = config_easysdi::getValue("logo_height");
+
 	// Créer une entrée pour le logo du compte
-	$XMLALogo = $doc->createElement("sdi:account_logo", $account_logo);
+	$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
 	$XMLALogo->setAttribute('width', $logoWidth);
 	$XMLALogo->setAttribute('height', $logoHeight);
 	$XMLSdi->appendChild($XMLALogo);
-
-	$logoWidth = config_easysdi::getValue("logo_width");
-	$logoHeight = config_easysdi::getValue("logo_height");
 
 	// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
 	$object=array();
@@ -1074,17 +1149,31 @@ foreach($nodes  as $metadata)
 	$db->setQuery($queryObject);
 	$object = $db->loadObject();
 	
+	// Modify objectversion_title to construct an XML valid date
+	$explodeDate = array();
+	$explodeDate = explode(" ", $object->title);
+	$object->title = $explodeDate[0]."T".$explodeDate[1]; 
+	
 	// Créer une entrée pour l'objet
-	$XMLObject = $doc->createElement("sdi:object");
-	$XMLObject->setAttribute('object_name', $object->name);
-	$XMLObject->setAttribute('objectversion_title', $object->title);
-	$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+	$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
+	if ($object)
+	{
+		$XMLObject->setAttribute('object_name', $object->name);
+		$XMLObject->setAttribute('objectversion_title', $object->title);
+		$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+	}
+	else
+	{
+		$XMLObject->setAttribute('object_name', '');
+		$XMLObject->setAttribute('objectversion_title', '');
+		$XMLObject->setAttribute('metadata_visibility', '');
+	}
 	$XMLSdi->appendChild($XMLObject);
 	
 	// Récupérer le type d'objet
 	$objecttype = array();
 	// Récupérer le logo du type d'objet
-	$queryObjecttype = "SELECT t.label, ot.logo 
+	$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
 						FROM #__sdi_objecttype ot
 						INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
 						INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
@@ -1098,10 +1187,22 @@ foreach($nodes  as $metadata)
 	$objecttype = $db->loadObject();
 	
 	// Créer une entrée pour le type d'objet
-	$XMLObjectType = $doc->createElement("sdi:objecttype", $objecttype->label);
-	$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
-	$XMLObjectType->setAttribute('logo_width', $logoWidth);
-	$XMLObjectType->setAttribute('logo_height', $logoHeight);
+	if ($objecttype)
+	{
+		$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
+		$XMLObjectType->setAttribute('code', $objecttype->code);
+		$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
+		$XMLObjectType->setAttribute('logo_width', $logoWidth);
+		$XMLObjectType->setAttribute('logo_height', $logoHeight);
+	}
+	else
+	{
+		$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype");
+		$XMLObjectType->setAttribute('code', '');
+		$XMLObjectType->setAttribute('logo_path', '');
+		$XMLObjectType->setAttribute('logo_width', '');
+		$XMLObjectType->setAttribute('logo_height', '');
+	}
 	$XMLSdi->appendChild($XMLObjectType);
 	
 	// Entrées à ajouter si le shop est installé
@@ -1125,12 +1226,24 @@ foreach($nodes  as $metadata)
 		$product = $db->loadObject();
 		
 		// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
-		$XMLProduct = $doc->createElement("sdi:product", $product->id);
-		$XMLProduct->setAttribute('published', (int)$product->published);
-		$XMLProduct->setAttribute('available', (int)$product->available);
-		$XMLProduct->setAttribute('free', (int)$product->free);
-		$XMLProduct->setAttribute('file_size', $product->size);
-		$XMLProduct->setAttribute('file_type', $product->type);
+		if ($product)
+		{
+			$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
+			$XMLProduct->setAttribute('published', (int)$product->published);
+			$XMLProduct->setAttribute('available', (int)$product->available);
+			$XMLProduct->setAttribute('free', (int)$product->free);
+			$XMLProduct->setAttribute('file_size', $product->size);
+			$XMLProduct->setAttribute('file_type', $product->type);
+		}
+		else
+		{
+			$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product");
+			$XMLProduct->setAttribute('published', (int)0);
+			$XMLProduct->setAttribute('available', (int)0);
+			$XMLProduct->setAttribute('free', (int)0);
+			$XMLProduct->setAttribute('file_size', '');
+			$XMLProduct->setAttribute('file_type', '');
+		}
 		$XMLSdi->appendChild($XMLProduct);
 	}
 
@@ -1138,7 +1251,7 @@ foreach($nodes  as $metadata)
 	//$XMLPreview = $doc->createElement("sdi:preview", $hasPreview);
 	//$XMLSdi->appendChild($XMLPreview);
 
-	//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
+	$doc->save("C:\\RecorderWebGIS\\catalog_search\\searchResult\\catalog_search_".$md->getFileIdentifier().".xml");
 
 	// Répertoire des fichiers xsl, s'il y en a un
 	$xslFolder = ""; 
@@ -1166,7 +1279,6 @@ foreach($nodes  as $metadata)
 	printf($xml);
 }
 ?>
-</table>
 
 <!-- pageNav at footer -->
 <table width="100%">

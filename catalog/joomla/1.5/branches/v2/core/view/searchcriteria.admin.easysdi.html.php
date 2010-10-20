@@ -50,7 +50,9 @@ class HTML_searchcriteria {
 		{	
 			// Gestion du nom
 			if ($row->criteriatype_name=="system")
-				$name = JText::_($row->label);
+				$name = JText::_($row->system_label);
+			else if ($row->criteriatype_name=="csw")
+				$name = JText::_($row->csw_label);
 			else	
 				$name = $row->name;
 ?>
@@ -283,7 +285,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 	}		
 
 	
-	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
+	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $rendertypes, $option)
 	{
 		global  $mainframe;
 		
@@ -312,6 +314,13 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 				<tr>
 					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
 					<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
+				</tr>
+				<tr>
+					<td width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
+					<?php 
+						$selectedRendertype = $row->rendertype_id;
+					?>
+					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">

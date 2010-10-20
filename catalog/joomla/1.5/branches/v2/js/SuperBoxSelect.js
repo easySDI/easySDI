@@ -599,14 +599,14 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 this.clearCurrentFocus();
             },
             markInvalid : function(msg) {
-                var elp, t;
+            	var elp, t;
                 return;
                 if (!this.rendered || this.preventMark) {
                     return;
                 }
                 this.outerWrapEl.addClass(this.invalidClass);
                 msg = msg || this.invalidText;
-
+                
                 switch (this.msgTarget) {
                     case 'qtip' :
                         Ext.apply(this.el.dom, {
@@ -664,7 +664,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                         break;
                     default :
                         t = Ext.getDom(this.msgTarget);
-                        t.innerHTML = msg;
+                    	t.innerHTML = msg;
                         t.style.display = this.msgDisplay;
                         break;
                 }
@@ -756,8 +756,8 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 }
             },
             validateValue : function(val) {
-                if (this.items.getCount() === 0) {
-                    if (this.allowBlank) {
+            	if (this.items.getCount() === 0) {
+                	if (this.allowBlank) {
                         this.clearInvalid();
                         return true;
                     } else {

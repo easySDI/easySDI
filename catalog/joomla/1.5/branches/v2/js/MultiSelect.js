@@ -605,3 +605,24 @@ Ext.extend(Ext.ux.form.MultiSelect.DropZone, Ext.dd.DropZone, {
         this.addToGroup(ddGroup);
     }
 });
+
+Ext.override(Ext.ux.form.MultiSelect, {
+	 
+    applySizing: !(Ext.isIE && !Ext.isStrict),
+ 
+    markInvalid: function(){
+        Ext.ux.form.MultiSelect.superclass.markInvalid.apply(this, arguments);
+        if(this.applySizing && this.activeError && !this.needChangeHeight){
+            this.setHeight(this.getHeight() + 4);
+            this.needChangeHeight = true;
+        }
+    },
+ 
+    clearInvalid: function(){
+        Ext.ux.form.MultiSelect.superclass.clearInvalid.apply(this, arguments);
+        if(this.applySizing && !this.activeError && this.needChangeHeight){
+            this.setHeight(this.getHeight() - 4);
+            delete this.needChangeHeight;
+        }
+    }    
+});

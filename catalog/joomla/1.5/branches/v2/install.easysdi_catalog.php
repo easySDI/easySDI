@@ -230,7 +230,8 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'checkbox', 'checkbox', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'checkbox'),
 					('".helper_easysdi::getUniqueId()."', 'radiobutton', 'radiobutton', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'radiobutton'),
 					('".helper_easysdi::getUniqueId()."', 'list', 'list', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'list'),
-					('".helper_easysdi::getUniqueId()."', 'textbox', 'textbox', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'textbox')";
+					('".helper_easysdi::getUniqueId()."', 'textbox', 'textbox', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'textbox'),
+					('".helper_easysdi::getUniqueId()."', 'datetime', 'datetime', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'datetime')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -271,6 +272,31 @@ function com_install(){
 					( 8, 5),
 					( 9, 4),
 					( 10, 4)";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_rendercriteriatype` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `criteriatype_id` bigint(20) NOT NULL,
+				  `rendertype_id` bigint(20) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `criteriatype_id` (`criteriatype_id`),
+				  KEY `rendertype_id` (`rendertype_id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		 		
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query = "INSERT INTO #__sdi_list_rendercriteriatype (criteriatype_id, rendertype_id) VALUES 
+					( 3, 5),
+					( 3, 6)";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -885,11 +911,13 @@ function com_install(){
 				  `ogcsearchfilter` varchar(100) DEFAULT NULL,
 				  `criteriatype_id` bigint(20) NOT NULL DEFAULT 1,
 				  `context_id` bigint(20) DEFAULT NULL,
+  				  `rendertype_id` bigint(20) DEFAULT NULL,
 				  PRIMARY KEY (`id`),
 				  UNIQUE KEY `guid` (`guid`),
 				  KEY `relation_id` (`relation_id`),
 				  KEY `criteriatype_id` (`criteriatype_id`),
-				  KEY `context_id` (`context_id`)
+				  KEY `context_id` (`context_id`),
+  				  KEY `rendertype_id` (`rendertype_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -969,6 +997,15 @@ function com_install(){
 		$query="ALTER TABLE `#__sdi_list_renderattributetype`
   				ADD CONSTRAINT `#__sdi_list_renderattributetype_ibfk_1` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
 				ADD CONSTRAINT `#__sdi_list_renderattributetype_ibfk_2` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_list_attributetype` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_list_rendercriteriatype`
+  				ADD CONSTRAINT `#__sdi_list_rendercriteriatype_ibfk_1` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`),
+				ADD CONSTRAINT `#__sdi_list_rendercriteriatype_ibfk_2` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_list_criteriatype` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1156,7 +1193,8 @@ function com_install(){
 		$query="ALTER TABLE `#__sdi_searchcriteria`
 				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_1` FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`),
 				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_2` FOREIGN KEY (`criteriatype_id`) REFERENCES `#__sdi_list_criteriatype` (`id`),
-				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_3` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`);
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_3` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`),
+				ADD CONSTRAINT `#__sdi_searchcriteria_ibfk_4` FOREIGN KEY (`rendertype_id`) REFERENCES `#__sdi_list_rendertype` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {

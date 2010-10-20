@@ -25,8 +25,8 @@ defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 					
-JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedFieldSet.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -141,7 +141,7 @@ class HTML_metadata {
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
+					<a class="modal" title="<?php echo helper_easysdi::formatDivTitle(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
 				<?php
 if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
@@ -212,7 +212,7 @@ else
 							)
 						{
 							?>
-								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA_ACTION'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
+								<td class="logo" align="center"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');//document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						}
 						else
@@ -231,7 +231,7 @@ else
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tâche d'édition assignée
 						{
 							?>
-							<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_EDIT_METADATA_ACTION'); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
+							<td class="logo" align="center"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); //document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						} 
 						else
@@ -268,7 +268,7 @@ else
 							)
 						{
 							?>
-								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_ARCHIVE_METADATA'); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
+								<td class="logo" align="center"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						}
 						else
@@ -281,7 +281,7 @@ else
 							)
 						{
 							?>
-								<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_INVALIDATE_METADATA'); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
+								<td class="logo" align="center"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div></td>
 							<?php
 						}
 						else
@@ -299,7 +299,7 @@ else
 					}
 				}
 			?>
-				<td class="logo" align="center"><div title="<?php echo JText::_('CATALOG_HISTORYASSIGN_METADATA'); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
+				<td class="logo" align="center"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div></td>
 				<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_VIEWLINK_OBJECT'); ?>" id="viewObjectLink" onClick="document.getElementById('task').value='viewObjectLink';document.getElementById('backpage').value='metadata';document.getElementById('cid[]').value=<?php //echo $row->id?>;document.getElementById('productListForm').submit();" ></div></td> -->
 			</tr>
 			
@@ -322,14 +322,9 @@ else
 			<input type="hidden" id="id" name="id" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listMetadata">
-			<input type="hidden" id="backpage" name="backpage" value="metadata">
+			<!--  <input type="hidden" id="backpage" name="backpage" value="metadata"> -->
 			<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
 			<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
-			<?php
-			if (userManager::hasRight($rootAccount->id,"METADATA")){?>
-			
-			<!-- <button type="button" onClick="document.getElementById('task').value='editMetadata';document.getElementById('productListForm').submit();"><?php echo JText::_("CATALOG_EDIT_METADATA"); ?></button> -->
-			<?php }?>
 		</form>
 		</div>
 		</div>
@@ -469,6 +464,14 @@ else
 		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
+		$userLang="";
+		foreach($this->langList as $row)
+		{									
+			if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
+				$userLang = $row->gemetlang;
+		}
+								
+								
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
 			<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
@@ -506,6 +509,25 @@ else
     
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 														
+						// sets the user interface language
+						HS.setLang('".$userLang."');
+						//console.log(HS.getLang());
+
+						HS.Lang['".$userLang."']['Home']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_HOME'))."';
+						HS.Lang['".$userLang."']['Search']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_SEARCH'))."';
+						HS.Lang['".$userLang."']['Use']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_USE'))."';
+						HS.Lang['".$userLang."']['Themes']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_THEMES'))."';
+						HS.Lang['".$userLang."']['Groups']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_GROUPS'))."';
+						HS.Lang['".$userLang."']['Warning']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_WARNING'))."';
+						HS.Lang['".$userLang."']['characters required']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_CHARACTERSREQUIRED'))."';
+						HS.Lang['".$userLang."']['Top concepts']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_TOPCONCEPTS'))."';
+						HS.Lang['".$userLang."']['Found']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_FOUND'))."';
+						HS.Lang['".$userLang."']['INSPIRE themes']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_INSPIRETHEMES'))."';
+						HS.Lang['".$userLang."']['GEMET top concepts']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_GEMETTOPCONCEPTS'))."';
+						HS.Lang['".$userLang."']['BT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_BT'))."';
+						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
+						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
+												
 						// Créer le formulaire qui va contenir la structure
 						var form = new Ext.ux.ExtendedFormPanel({
 								id:'metadataForm',
@@ -2534,7 +2556,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									$currentScope=$listNode->item($keyPos);
 									
 
-									if ($currentScope->nodeName <> "")
+									if ($currentScope and $currentScope->nodeName <> "")
 									{
 									$nodeValue= "";
 									$nodeKeyword= "";
@@ -2578,9 +2600,6 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
-								
-								// sets the user interface language
-								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
@@ -3995,9 +4014,6 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
-								
-								// sets the user interface language
-								HS.setLang('en');
 								
 								var thes = new ThesaurusReader({
 																  id:'".$currentName."_PANEL_THESAURUS',
@@ -5564,6 +5580,6 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		        	}}";
 				
 		return implode(', ', $tbar);
-	}
+	} 
 }
 ?>

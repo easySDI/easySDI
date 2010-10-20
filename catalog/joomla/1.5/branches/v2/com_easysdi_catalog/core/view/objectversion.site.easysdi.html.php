@@ -82,7 +82,7 @@ class HTML_objectversion {
 			
 			?>		
 			<tr>
-			<td ><a class="modal" title="<?php echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><a class="modal" title="<?php echo helper_easysdi::formatDivTitle(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
 			<td ><?php echo $row->description; ?></td>
 			<!-- <td ><?php //if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td> -->
 			<?php 
@@ -96,7 +96,7 @@ class HTML_objectversion {
 			else 
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_EDIT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
+				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_EDIT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
 				if (count($rows)>1 and ($row->metadatastate_id == 2 or $row->metadatastate_id == 4)) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
@@ -117,13 +117,13 @@ class HTML_objectversion {
 					if ($links > 0)
 					{
 						?> 
-						<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div></td>
+						<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div></td>
 						<?php 
 					}
 					else
 					{
 						?> 
-						<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_DELETE'); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div></td>
+						<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div></td>
 						<?php
 					}
 				}
@@ -134,8 +134,8 @@ class HTML_objectversion {
 				}
 			}
 			?>
-			<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_VIEWLINK'); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
-			<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECTVERSION_MANAGELINK'); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
 			</tr>
 			<?php		
 		}

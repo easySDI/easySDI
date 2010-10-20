@@ -26,6 +26,7 @@ class searchcriteria extends sdiTable
 	var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
+	var $rendertype_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -42,6 +43,7 @@ class searchcriteriaByRelationId extends sdiTable
 	var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
+	var $rendertype_id=null;
 	
 	// Class constructor
 	function __construct( &$db )

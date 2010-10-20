@@ -495,7 +495,7 @@ if ($rowObject->updated)
 				if ($objecttype->hasVersioning)
 				{
 					?>
-					<td class="logo"><div title="<?php echo JText::_('CATALOG_OBJECT_MANAGEVERSION'); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>', '_self');"></div></td>
+					<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>', '_self');"></div></td>
 					<?php
 				}
 				else
@@ -505,12 +505,12 @@ if ($rowObject->updated)
 					<?php 
 				}
 				?>
-				<td class="logo"><div title="<?php echo JText::_('CORE_EDIT_OBJECT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
+				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
 				<?php
 				//if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				//{
 				?> 
-				<td class="logo"><div title="<?php echo JText::_('CORE_DELETE_OBJECT'); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div></td>
+				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div></td>
 				<?php 
 				/*}
 				else {

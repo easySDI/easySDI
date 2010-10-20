@@ -657,7 +657,7 @@ class ADMIN_object {
 			foreach($_POST['selected_manager'] as $selected)
 			{
 				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
-				if (!in_array($selected, $rows))
+				if (!in_array($selected, $manager_rows))
 				{
 					$rowManagerObject= new manager_object($database);
 					$rowManagerObject->account_id=$selected;
@@ -705,7 +705,7 @@ class ADMIN_object {
 			foreach($_POST['selected_editor'] as $selected)
 			{
 				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
-				if (!in_array($selected, $rows))
+				if (!in_array($selected, $editor_rows))
 				{
 					$rowEditorObject= new editor_object($database);
 					$rowEditorObject->account_id=$selected;

@@ -408,7 +408,7 @@ class SITE_metadata {
 			</csw:GetRecordById>			
 		";
 		
-		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";
+		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";break;
 		
 		// Requête de type GET pour le login (conserver le token response)
 		// Stocker dans un cookie le résultat de la requête précédente

@@ -667,9 +667,8 @@
 		return sf;
 	}
 	
-	function createSuperBoxSelect(id, label, value, clone, master, min, max)
+	function createSuperBoxSelect(id, label, value, clone, master, min, max, mandatoryMsg)
 	{
-		if (clone) optional=true;
 		if (master) master.clones_count=master.clones_count+1;
 		var clones_count = (master) ? master.clones_count : 1;
 		
@@ -688,9 +687,10 @@
 	            hiddenName:id + '_hidden[]',
 	            xtype:'superboxselect',
 		        fieldLabel: label,
-	            allowBlank: optional,
+	            allowBlank: false,
+	            blankText: mandatoryMsg,
 	            emptyText:'',
-	          	 minChars: 1,
+	          	minChars: 1,
 		        editable: false,
 	            forceSelection: false,
 	            selectOnFocus: true,

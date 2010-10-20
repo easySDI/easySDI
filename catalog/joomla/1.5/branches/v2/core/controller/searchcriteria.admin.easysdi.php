@@ -22,6 +22,7 @@ class ADMIN_searchcriteria {
 	function listSearchCriteria($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		$context	= 'listSearchCriteria';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -62,15 +63,19 @@ class ADMIN_searchcriteria {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT sc.*, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
+		$query = "SELECT sc.*, sc.label as system_label, t.label as csw_label, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
 				  FROM #__sdi_searchcriteria sc 
 				  LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id 
 				  INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id 
 				  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON (sc_tab.searchcriteria_id=sc.id AND sc_tab.context_id=".$context_id.")
 				  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id 
-				  WHERE sc.criteriatype_id=1 
-				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id.") 
-				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id.")";
+				  LEFT OUTER JOIN #__sdi_translation t ON t.element_guid=sc.guid
+				  LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
+				  LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				  WHERE (sc.criteriatype_id=1 AND cl.code = '".$language->_lang."')
+				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id." AND cl.code = '".$language->_lang."') 
+				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id." )"
+					  ;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		
@@ -128,7 +133,8 @@ class ADMIN_searchcriteria {
 		global $mainframe;
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
-
+		$language =& JFactory::getLanguage();
+		
 		$context_id = JRequest::getVar('context_id',0);
 		
 		$row = new searchcriteria( $database );
@@ -211,12 +217,25 @@ class ADMIN_searchcriteria {
 		
 		helper_easysdi::alter_array_value_with_JTEXT_($tabList);
 		
+		// get list of rendertypes for dropdown list
+		$rendertypes = array();
+		$rendertypes[] = JHTML::_('select.option','0', JText::_("EASYSDI_RENDERTYPE_LIST") );
+		$database->setQuery( "SELECT rt.id AS value, rt.label as text 
+							  FROM #__sdi_list_rendertype rt 
+							  INNER JOIN #__sdi_list_rendercriteriatype rct ON rt.id = rct.rendertype_id 
+							  INNER JOIN #__sdi_list_criteriatype ct ON rct.criteriatype_id=ct.id
+							  WHERE ct.code='csw'
+							  ORDER BY rt.label" );
+		$rendertypes = array_merge( $rendertypes, $database->loadObjectList() );
+		
+		helper_easysdi::alter_array_value_with_JTEXT_($rendertypes);
+		
 		$tab_id = 0;
 		$database->setQuery("SELECT tab_id FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id=".$row->id." AND context_id=".$context_id);
 		$tab_id = $database->loadResult();
 		
 		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
-			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
@@ -269,7 +288,10 @@ class ADMIN_searchcriteria {
 			$rowSearchCriteria->context_id = $context_id;
 		}
 		else
+		{
 			$rowSearchCriteria->context_id = null;
+			$rowSearchCriteria->rendertype_id = null;
+		}
 		
 		if (!$rowSearchCriteria->store(false)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
