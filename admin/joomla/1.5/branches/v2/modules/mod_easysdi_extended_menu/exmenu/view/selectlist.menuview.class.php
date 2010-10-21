@@ -8,20 +8,20 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * This Menu View is used for menu style "Select List"
  */
-class SelectListExtendedMenuView extends AbstractExtendedMenuView {
+class SelectListEasySDIExtendedMenuView extends AbstractEasySDIExtendedMenuView {
 
 	function renderAsString(&$menuNodeList, $level = 0) {
 		$siteHelper =& $this->getSiteHelper();
 		$action	= FALSE;
 		if (function_exists('jimport')) {
-			$action	= $siteHelper->getUri('modules/mod_exmenu-j15/mod_exmenu.php');
+			$action	= $siteHelper->getUri('modules/mod_easysdi_extended_menu/mod_exmenu.php');
 		} else {
 			$action	= $siteHelper->getUri('modules/mod_exmenu.php');
 		}
@@ -29,7 +29,7 @@ class SelectListExtendedMenuView extends AbstractExtendedMenuView {
 		$params		=& $this->params;
 		$autoHideSelectButton	= ($params->def('select_list_submit_hide', '0') == 'autohide');
 		if ($autoHideSelectButton) {
-			$key		= '$$$EXTENDED_MENU_SELECT_LIST_JS_PLACED_BY_CLASS_SUFFIX';
+			$key		= '$$$EASYSDI_EXTENDED_MENU_SELECT_LIST_JS_PLACED_BY_CLASS_SUFFIX';
 			if (!isset($GLOBALS[$key])) {
 				$GLOBALS[$key]						= array();
 			}

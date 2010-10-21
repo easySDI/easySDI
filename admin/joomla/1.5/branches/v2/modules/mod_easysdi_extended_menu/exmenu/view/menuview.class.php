@@ -8,7 +8,7 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
@@ -16,7 +16,7 @@ if (!defined('EXTENDED_MENU_HOME')) {
 /**
  * Abstract class for all menu nodes.
  */
-class AbstractExtendedMenuView {
+class AbstractEasySDIExtendedMenuView {
 
 	var $siteHelper = NULL;
 	var $classSuffix;

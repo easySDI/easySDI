@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * @since 1.0.0
  */
-class AbstractExtendedMenuCache extends AbstractExtendedMenuDatabaseHelper {
+class AbstractEasySDIExtendedMenuCache extends AbstractEasySDIExtendedMenuDatabaseHelper {
 
 	var $order;
 
@@ -77,7 +77,7 @@ class AbstractExtendedMenuCache extends AbstractExtendedMenuDatabaseHelper {
 /**
  * @since 1.0.0
  */
-class SectionExtendedMenuCache extends AbstractExtendedMenuCache {
+class SectionEasySDIExtendedMenuCache extends AbstractEasySDIExtendedMenuCache {
 
 	var $sectionList		= array();
 
@@ -120,7 +120,7 @@ class SectionExtendedMenuCache extends AbstractExtendedMenuCache {
 /**
  * @since 1.0.0
  */
-class CategoryExtendedMenuCache extends AbstractExtendedMenuCache {
+class CategoryEasySDIExtendedMenuCache extends AbstractEasySDIExtendedMenuCache {
 
 	var $categoryList		= array();
 	var $sectionOrder;
@@ -207,7 +207,7 @@ class CategoryExtendedMenuCache extends AbstractExtendedMenuCache {
 /**
  * @since 1.0.0
  */
-class ContentItemExtendedMenuCache extends AbstractExtendedMenuCache {
+class ContentItemEasySDIExtendedMenuCache extends AbstractEasySDIExtendedMenuCache {
 
 	var $contentItemList		= array();
 	var $categoryOrder;
@@ -344,20 +344,20 @@ class ContentItemExtendedMenuCache extends AbstractExtendedMenuCache {
 
 }
 
-class ExtendedMenuCacheFactory {
+class EasySDIExtendedMenuCacheFactory {
 
 	function &getNewInstance($cacheType = '') {
 		$result		= NULL;
 		switch($cacheType) {
 			case 'section':
-				$result		=& new SectionExtendedMenuCache();
+				$result		=& new SectionEasySDIExtendedMenuCache();
 				break;
 			case 'category':
-				$result		=& new CategoryExtendedMenuCache();
+				$result		=& new CategoryEasySDIExtendedMenuCache();
 				break;
 			case 'content':
 			case 'content_item':
-				$result		=& new ContentItemExtendedMenuCache();
+				$result		=& new ContentItemEasySDIExtendedMenuCache();
 				break;
 			default:
 				break;

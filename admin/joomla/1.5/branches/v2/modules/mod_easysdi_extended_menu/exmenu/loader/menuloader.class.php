@@ -8,7 +8,7 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
@@ -18,7 +18,7 @@ if (!defined('EXTENDED_MENU_HOME')) {
  *
  * @since 0.2.0
  */
-class AbstractExtendedMenuLoader extends AbstractExtendedMenuDatabaseHelper {
+class AbstractEasySDIExtendedMenuLoader extends AbstractEasySDIExtendedMenuDatabaseHelper {
 
 	var $siteHelper = NULL;
 	var $menutype				= '';
@@ -509,13 +509,13 @@ class AbstractExtendedMenuLoader extends AbstractExtendedMenuDatabaseHelper {
 					$accessKey	= strtolower(trim(substr($name, $i + 1, $j - $i - 1)));
 					if (($accessKey != '') && (substr($accessKey, 0, 1) == '-')) {
 						$accessKey			= substr($accessKey, 1, strlen($accessKey) - 1);
-						$parseAccessKeys	= constant('EXTENDED_MENU_ACCESS_KEYS_STRIP');
+						$parseAccessKeys	= constant('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP');
 					}
-					if ($parseAccessKeys == constant('EXTENDED_MENU_ACCESS_KEYS_STRIP')) {
+					if ($parseAccessKeys == constant('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP')) {
 						$name			= substr($name, 0, $i).substr($name, $j + 1, strlen($name) - $j - 1);
-					} else if ($parseAccessKeys == constant('EXTENDED_MENU_ACCESS_KEYS_STRIP_MARKUP')) {
+					} else if ($parseAccessKeys == constant('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP_MARKUP')) {
 						$name			= substr($name, 0, $i).substr($name, $i + 1, $j - $i - 1).substr($name, $j + 1, strlen($name) - $j - 1);
-					} else if ($parseAccessKeys == constant('EXTENDED_MENU_ACCESS_KEYS_STRIP_AND_EMPHASE')) {
+					} else if ($parseAccessKeys == constant('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP_AND_EMPHASE')) {
 						$name			= substr($name, 0, $i).'<em>'.substr($name, $i + 1, $j - $i - 1).'</em>'.substr($name, $j + 1, strlen($name) - $j - 1);
 					}
 				}

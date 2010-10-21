@@ -8,7 +8,7 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 

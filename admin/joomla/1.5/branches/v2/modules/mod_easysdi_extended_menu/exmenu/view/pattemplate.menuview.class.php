@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * This Menu View is used for patTemplate template files
  */
-class PatTemplateExtendedMenuView extends AbstractExtendedMenuView {
+class PatTemplateEasySDIExtendedMenuView extends AbstractEasySDIExtendedMenuView {
 
 	var $patTemplateSiteHome	= '';
 	var $patTemplateDirectory	= '';

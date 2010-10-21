@@ -1,4 +1,5 @@
 <?php
+
 /**
 * @version $Id:$
 * @author Daniel Ecer
@@ -7,17 +8,18 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
+
 defined('_VALID_MOS') or defined('_JEXEC') or die('Restricted access.');
 
-if (!defined('EXTENDED_MENU_HOME')) {
-	define('EXTENDED_MENU_HOME', dirname(__FILE__));
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
+	define('EASYSDI_EXTENDED_MENU_HOME', dirname(__FILE__));
 }
 
-define('EXTENDED_MENU_ACCESS_KEYS_NONE', 0);
-define('EXTENDED_MENU_ACCESS_KEYS_PARSE', 1);
-define('EXTENDED_MENU_ACCESS_KEYS_STRIP', 2);
-define('EXTENDED_MENU_ACCESS_KEYS_STRIP_MARKUP', 3);
-define('EXTENDED_MENU_ACCESS_KEYS_STRIP_AND_EMPHASE', 4);
+define('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_NONE', 0);
+define('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_PARSE', 1);
+define('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP', 2);
+define('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP_MARKUP', 3);
+define('EASYSDI_EXTENDED_MENU_ACCESS_KEYS_STRIP_AND_EMPHASE', 4);
 
 if (!function_exists('ampReplace')) {
 	function ampReplace( $text ) {
@@ -30,14 +32,14 @@ if (!function_exists('ampReplace')) {
 	}
 }
 
-require_once(EXTENDED_MENU_HOME.'/util/sitehelper.class.php');
-require_once(EXTENDED_MENU_HOME.'/model/menunode.class.php');
-require_once(EXTENDED_MENU_HOME.'/loader/factory.menuloader.class.php');
-require_once(EXTENDED_MENU_HOME.'/view/factory.menuview.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/util/sitehelper.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/model/menunode.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/factory.menuloader.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/view/factory.menuview.class.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 
 
-class ExtendedMenuModule {
+class EasySDIExtendedMenuModule {
 
 	var $params;
 	var $patTemplateDirectory				= '';
@@ -54,7 +56,7 @@ class ExtendedMenuModule {
 	}
 
 	function showModule(&$params) {
-		$module				=& new ExtendedMenuModule();
+		$module				=& new EasySDIExtendedMenuModule();
 		$module->params		=& $params;
 		$module->render();
 	}
@@ -211,13 +213,13 @@ class ExtendedMenuModule {
 	function render() {
 		$params		=& $this->params;
 
-		if ((isset($GLOBALS['EXTENDED_MENU_OVERRIDE']) && (is_array($GLOBALS['EXTENDED_MENU_OVERRIDE'])))) {
-			foreach($GLOBALS['EXTENDED_MENU_OVERRIDE'] as $k => $v) {
+		if ((isset($GLOBALS['EASYSDI_EXTENDED_MENU_OVERRIDE']) && (is_array($GLOBALS['EASYSDI_EXTENDED_MENU_OVERRIDE'])))) {
+			foreach($GLOBALS['EASYSDI_EXTENDED_MENU_OVERRIDE'] as $k => $v) {
 				$params->set($k, $v);
 			}
 		}
 
-		$this->siteHelper =& new de_siteof_exmenu_SiteHelper();
+		$this->siteHelper =& new easysdi_exmenu_SiteHelper();
 		$siteHelper =& $this->siteHelper;
 
 		$this->initDefaultParameters($params);
@@ -265,7 +267,7 @@ class ExtendedMenuModule {
 		if ($menuCount > 1) {
 			$splitMenu	= max(1, $splitMenu);
 		}
-		$view								=& ExtendedMenuViewFactory::getNewMenuView($menu_style);
+		$view								=& EasySDIExtendedMenuViewFactory::getNewMenuView($menu_style);
 		if ($view->maxDepth === 0) {
 			// the factory limited the max depth of the view
 			$maxDepth = 0;
@@ -276,7 +278,7 @@ class ExtendedMenuModule {
 		}
 
 		// load the menu...
-		$menuLoader							=& ExtendedMenuLoaderFactory::getNewMenuLoader($menu_source_type);
+		$menuLoader							=& EasySDIExtendedMenuLoaderFactory::getNewMenuLoader($menu_source_type);
 		$menuLoader->siteHelper =& $this->siteHelper;
 		$menuLoader->loadFirstLevelOnly	= ($maxDepth <= 0) && ($activeMenuClass <= 0) && ($queryCache <= 0) &&
 			($depthIndex == 0) && ($menuCount <= 1) && ($parentMenuItem == '') && (!$currentLevelBegin);

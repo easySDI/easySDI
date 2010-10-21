@@ -8,12 +8,12 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 
-class de_siteof_exmenu_SiteHelper {
+class easysdi_exmenu_SiteHelper {
 
 	var $_joomla15 = FALSE;
 	var $_absolutePath = FALSE;
@@ -41,7 +41,7 @@ class de_siteof_exmenu_SiteHelper {
 	}
 
 
-	function de_siteof_exmenu_SiteHelper() {
+	function easysdi_exmenu_SiteHelper() {
 		$this->__construct();
 	}
 

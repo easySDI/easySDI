@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * @since 1.0.0
  */
-class PluginExtendedMenuView extends AbstractExtendedMenuView {
+class PluginEasySDIExtendedMenuView extends AbstractEasySDIExtendedMenuView {
 	
 	var $pluginMenuViewName	= '';
 	var $menuNodeList		= array();

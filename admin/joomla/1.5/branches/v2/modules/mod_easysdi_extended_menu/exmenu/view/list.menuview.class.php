@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * This Menu View is used for menu style "Flat List" and "Tree List"
  */
-class ListExtendedMenuView extends AbstractExtendedMenuView {
+class ListEasySDIExtendedMenuView extends AbstractEasySDIExtendedMenuView {
 	
 	function renderAsString(&$menuNodeList, $level = 0) {
 		return $this->_renderMenuNodeList($menuNodeList, $level, $this->menuHierarchy);

@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * @since 1.0.0
  */
-class ExtendedMenuLoader extends AbstractExtendedMenuLoader {
+class EasySDIExtendedMenuLoader extends AbstractEasySDIExtendedMenuLoader {
 
 	function loadBySourceValues($sourceValues) {
 		return $this->loadMenuItems($sourceValues);
@@ -116,8 +116,8 @@ class ExtendedMenuLoader extends AbstractExtendedMenuLoader {
 		}
 		$sql	.= ' ORDER BY ordering';
 		$sqlKey	= $sql;
-		$cacheVariableName	= '_EXTENDED_MENU_CACHE';
-		$cacheVariableName2	= '_EXTENDED_MENU_CACHE_TREE';
+		$cacheVariableName	= '_EASYSDI_EXTENDED_MENU_CACHE';
+		$cacheVariableName2	= '_EASYSDI_EXTENDED_MENU_CACHE_TREE';
 		$rows		= NULL;
 		$mainRows	= NULL;
 		if ($this->cacheEnabled) {

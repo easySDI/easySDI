@@ -8,22 +8,22 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
-require_once(EXTENDED_MENU_HOME.'/loader/category.menuloader.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/category.menuloader.class.php');
 
 /**
  * @since 1.0.0
  */
-class SectionExtendedMenuLoader extends CategoryExtendedMenuLoader {
+class SectionEasySDIExtendedMenuLoader extends CategoryEasySDIExtendedMenuLoader {
 
 	var $sectionCache	= NULL;
 
 	function &getSectionCache() {
 		if (!is_object($this->sectionCache)) {
-			$this->sectionCache		=& ExtendedMenuCacheFactory::getNewInstance('section');
+			$this->sectionCache		=& EasySDIExtendedMenuCacheFactory::getNewInstance('section');
 			$cache			=& $this->sectionCache;
 			$cache->order	= $this->sectionOrder;
 		}

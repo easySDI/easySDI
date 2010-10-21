@@ -37,21 +37,21 @@ if (!isset($requestedModule)) {
 	$requestedModule	= 'exmenu';
 }
 
-if (!defined( '_EXTENDED_MENU_INCLUDED_' )) {
+if (!defined( '_EASYSDI_EXTENDED_MENU_INCLUDED_' )) {
 	/** ensure that functions are declared only once */
-	define( '_EXTENDED_MENU_INCLUDED_', 1 );
+	define( '_EASYSDI_EXTENDED_MENU_INCLUDED_', 1 );
 
-	if (!defined('EXTENDED_MENU_HOME')) {
-		define('EXTENDED_MENU_HOME', dirname(__FILE__).'/exmenu');
+	if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
+		define('EASYSDI_EXTENDED_MENU_HOME', dirname(__FILE__).'/exmenu');
 	}
-	require_once(constant('EXTENDED_MENU_HOME').'/exmenu.class.php');
+	require_once(constant('EASYSDI_EXTENDED_MENU_HOME').'/exmenu.class.php');
 }
 
 if ((isset($params)) && ($requestedModule == 'exmenu')) {
 	if ((isset($module)) && (is_object($module)) && (isset($module->title))) {
 		$params->def('title', $module->title);
 	}
-	ExtendedMenuModule::showModule($params);
+	EasySDIExtendedMenuModule::showModule($params);
 }
 
 ?>

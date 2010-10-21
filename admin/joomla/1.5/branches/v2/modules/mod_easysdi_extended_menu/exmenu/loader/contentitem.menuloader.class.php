@@ -8,22 +8,22 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
-require_once(EXTENDED_MENU_HOME.'/loader/menu.menuloader.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/menu.menuloader.class.php');
 
 /**
  * @since 1.0.0
  */
-class ContentItemExtendedMenuLoader extends ExtendedMenuLoader {
+class ContentItemEasySDIExtendedMenuLoader extends EasySDIExtendedMenuLoader {
 
 	var $contentItemCache	= NULL;
 
 	function &getContentItemCache() {
 		if (!is_object($this->contentItemCache)) {
-			$this->contentItemCache	=& ExtendedMenuCacheFactory::getNewInstance('content');
+			$this->contentItemCache	=& EasySDIExtendedMenuCacheFactory::getNewInstance('content');
 			$cache					=& $this->contentItemCache;
 			$cache->order			= $this->contentItemOrder;
 			$cache->categoryOrder	= $this->categoryOrder;	// TODO may get removed

@@ -8,14 +8,14 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * This Menu View is used for menu style "HTML Tree"
  */
-class HtmlTreeExtendedMenuView extends AbstractExtendedMenuView {
+class HtmlTreeEasySDIExtendedMenuView extends AbstractEasySDIExtendedMenuView {
 
 	function getImageHtml($name) {
 		$siteHelper =& $this->getSiteHelper();

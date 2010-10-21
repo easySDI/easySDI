@@ -8,12 +8,12 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 
-class AbstractExtendedMenuDatabaseHelper {
+class AbstractEasySDIExtendedMenuDatabaseHelper {
 
 	var $_database = NULL;
 	var $sqlNullDate		= NULL;
@@ -29,7 +29,7 @@ class AbstractExtendedMenuDatabaseHelper {
 	}
 
 
-	function AbstractExtendedMenuDatabaseHelper() {
+	function AbstractEasySDIExtendedMenuDatabaseHelper() {
 		$this->__construct();
 	}
 

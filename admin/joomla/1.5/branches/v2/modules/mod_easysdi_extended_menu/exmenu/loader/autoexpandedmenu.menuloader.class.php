@@ -8,16 +8,16 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
-require_once(EXTENDED_MENU_HOME.'/loader/section.menuloader.class.php');
+require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/section.menuloader.class.php');
 
 /**
  * @since 1.0.0
  */
-class AutoExpandedExtendedMenuLoader extends SectionExtendedMenuLoader {
+class AutoExpandedEasySDIExtendedMenuLoader extends SectionEasySDIExtendedMenuLoader {
 
 	var $sectionMenuNodeList		= array();
 	var $categoryMenuNodeList	= array();

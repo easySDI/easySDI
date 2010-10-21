@@ -8,43 +8,43 @@
 */
 
 // no direct access
-if (!defined('EXTENDED_MENU_HOME')) {
+if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 	die('Restricted access');
 }
 
 /**
  * @since 1.0.0
  */
-class ExtendedMenuLoaderFactory {
+class EasySDIExtendedMenuLoaderFactory {
 	
 	function &getNewMenuLoader($type) {
-		require_once(EXTENDED_MENU_HOME.'/util/databasehelper.class.php');
-		require_once(EXTENDED_MENU_HOME.'/loader/menucache.class.php');
-		require_once(EXTENDED_MENU_HOME.'/loader/menuloader.class.php');
+		require_once(EASYSDI_EXTENDED_MENU_HOME.'/util/databasehelper.class.php');
+		require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/menucache.class.php');
+		require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/menuloader.class.php');
 		switch($type) {
 			case 'section':
-				require_once(EXTENDED_MENU_HOME.'/loader/section.menuloader.class.php');
-				$menuLoader						=& new SectionExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/section.menuloader.class.php');
+				$menuLoader						=& new SectionEasySDIExtendedMenuLoader();
 				break;
 			case 'category':
-				require_once(EXTENDED_MENU_HOME.'/loader/category.menuloader.class.php');
-				$menuLoader						=& new CategoryExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/category.menuloader.class.php');
+				$menuLoader						=& new CategoryEasySDIExtendedMenuLoader();
 				break;
 			case 'content_item':
-				require_once(EXTENDED_MENU_HOME.'/loader/contentitem.menuloader.class.php');
-				$menuLoader						=& new ContentItemExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/contentitem.menuloader.class.php');
+				$menuLoader						=& new ContentItemEasySDIExtendedMenuLoader();
 				break;
 			case 'menu_auto_expanded':
-				require_once(EXTENDED_MENU_HOME.'/loader/autoexpandedmenu.menuloader.class.php');
-				$menuLoader						=& new AutoExpandedExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/autoexpandedmenu.menuloader.class.php');
+				$menuLoader						=& new AutoExpandedEasySDIExtendedMenuLoader();
 				break;
 			case 'plugin':
-				require_once(EXTENDED_MENU_HOME.'/loader/plugin.menuloader.class.php');
-				$menuLoader						=& new PluginExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/plugin.menuloader.class.php');
+				$menuLoader						=& new PluginEasySDIExtendedMenuLoader();
 				break;
 			default:
-				require_once(EXTENDED_MENU_HOME.'/loader/menu.menuloader.class.php');
-				$menuLoader						=& new ExtendedMenuLoader();
+				require_once(EASYSDI_EXTENDED_MENU_HOME.'/loader/menu.menuloader.class.php');
+				$menuLoader						=& new EasySDIExtendedMenuLoader();
 		}
 		return $menuLoader;
 	}
