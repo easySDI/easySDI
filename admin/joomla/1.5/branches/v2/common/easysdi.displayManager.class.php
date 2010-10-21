@@ -69,7 +69,12 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == "abstract")
@@ -110,7 +115,11 @@ class displayManager{
 		{
 			$title = "";
 			
-			$titleQuery = "select o.name from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
+			$titleQuery = "  SELECT o.name 
+						 FROM #__sdi_metadata m
+						 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+						 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+						 WHERE m.guid = '".$id."'";
 			$database->setQuery($titleQuery);
 			$title = $database->loadResult();
 			
@@ -193,7 +202,12 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == "abstract")
@@ -250,7 +264,11 @@ class displayManager{
 		{
 			$title;
 			
-			$titleQuery = "select o.name from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
+			$titleQuery = "  SELECT o.name 
+						 FROM #__sdi_metadata m
+						 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+						 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+						 WHERE m.guid = '".$id."'";
 			$database->setQuery($titleQuery);
 			$title = $database->loadResult();
 			
@@ -357,7 +375,12 @@ class displayManager{
 		
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
@@ -405,7 +428,12 @@ class displayManager{
 		
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
@@ -454,11 +482,20 @@ class displayManager{
 		
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		$title;
 		
-		$titleQuery = "select o.name from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
+		$titleQuery = "  SELECT o.name 
+						 FROM #__sdi_metadata m
+						 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+						 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+						 WHERE m.guid = '".$id."'";
 		$database->setQuery($titleQuery);
 		$title = $database->loadResult();
 		
@@ -900,7 +937,12 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		if ($type == 'abstract')
@@ -993,7 +1035,12 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$cswResults = new DomDocument();
@@ -1097,7 +1144,12 @@ class displayManager{
 		displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("select ot.code from #__sdi_objecttype ot, #__sdi_object o, #__sdi_metadata m WHERE ot.id=o.objecttype_id AND m.id=o.metadata_id AND m.guid='".$id."'");
+		$database->setQuery("SELECT ot.code 
+							 FROM #__sdi_metadata m
+							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
 		$supplier;
