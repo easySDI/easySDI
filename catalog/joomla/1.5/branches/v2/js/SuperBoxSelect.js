@@ -575,7 +575,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
             },
 
             onBlur : function() {
-                this.outerWrapEl.removeClass(this.focusClass);
+            	this.outerWrapEl.removeClass(this.focusClass);
 
                 this.clearCurrentFocus();
 
@@ -600,7 +600,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
             },
             markInvalid : function(msg) {
             	var elp, t;
-                return;
+                //return;
                 if (!this.rendered || this.preventMark) {
                     return;
                 }
@@ -757,11 +757,11 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
             },
             validateValue : function(val) {
             	if (this.items.getCount() === 0) {
-                	if (this.allowBlank) {
+            		if (this.allowBlank) {
                         this.clearInvalid();
                         return true;
                     } else {
-                        this.markInvalid(this.blankText);
+                    	this.markInvalid(this.blankText);
                         return false;
                     }
                 } else {
@@ -1190,7 +1190,6 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
              *            {@link #Ext.ux.form.SuperBoxSelect-classField}
              */
             addItems : function(newItemObjects) {
-
                 if (Ext.isArray(newItemObjects)) {
                     Ext.each(newItemObjects, function(item) {
                                 this.addItem(item);
@@ -1244,6 +1243,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                 var rec = this.createRecord(newItemObject);
                 this.store.add(rec);
                 this.addRecord(rec);
+
                 return true;
             },
             addItemBox : function(itemVal, itemDisplay, itemCaption, itemClass,
@@ -1453,7 +1453,6 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
 
                 var values = Ext.isArray(value) ? value : value
                         .split(this.valueDelimiter);
-
                 this.removeAllItems().resetStore();
 
                 // reset remoteLookup because setValue should overwrite
@@ -1585,12 +1584,9 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                     if (Ext.isIE) {
                         this.el.dom.style.top = '0';
                     }
-                    return this;
                 }
-                else
-                {
-                	return this;
-                }
+                
+                return this;
             },
             doQuery : function(q, forceAll, valuesQuery) {
                 q = Ext.isEmpty(q) ? '' : q;
