@@ -15,11 +15,16 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-Ext.form.VTypes['jobnameMask'] = /[a-z0-9_]/i;
-//Ext.form.VTypes['jobnameText'] = 'Foo This field should only contain letters, numbers and _';
+Ext.form.VTypes['jobnameMask'] = /[a-z0-9_-]/i;
+var alphanummore = /^[a-zA-Z0-9_-]+$/;
+Ext.form.VTypes['alphanummore'] = function(v)
+{   
+	return alphanummore.test(v);
+}
+
 Ext.form.VTypes['jobname'] = function(v)
 {   
-	if(Ext.form.VTypes['alphanum'](v)){
+	if(Ext.form.VTypes['alphanummore'](v)){
 		if( Ext.getCmp('JobGrid').store.getById(v)){
 			Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('jobname already exists');
 			return false;
