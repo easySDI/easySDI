@@ -572,10 +572,11 @@ class displayManager{
 			
 		$db =& JFactory::getDBO();
 		$queryAccountID = "	SELECT a.id 
-							FROM #__sdi_account a, #__sdi_object o, #__sdi_metadata m 
-							WHERE 	a.id = o.account_id
-									AND o.metadata_id=m.id
-									AND m.guid = '".$id."'";
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							INNER JOIN #__sdi_account a ON a.id=o.account_id 
+							WHERE m.guid = '".$id."'";
 		$db->setQuery($queryAccountID);
 		$account_id = $db->loadResult();
 			
@@ -593,17 +594,19 @@ class displayManager{
    		$supplier= $db->loadResult();
 		
 		$query = "	SELECT o.created 
-					FROM #__sdi_object o, #__sdi_metadata m
-					WHERE o.metadata_id=m.id
-						  AND m.guid = '".$id."'";
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_creation_date = $db->loadResult();
 		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
 		$query = "	SELECT o.updated 
-					FROM #__sdi_object o, #__sdi_metadata m
-					WHERE o.metadata_id=m.id
-						  AND m.guid = '".$id."'";
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_update_date = $db->loadResult();
 		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
