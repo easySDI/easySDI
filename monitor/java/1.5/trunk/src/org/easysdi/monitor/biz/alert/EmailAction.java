@@ -90,6 +90,11 @@ public class EmailAction extends AbstractAction {
         final String sender = mailConfig.getSenderAddress();
         final String recipientsList = this.getRecipientsString();
         final String jobName = aAlert.getParentJob().getConfig().getJobName();
+        
+                
+        	//String.format("%1$s: %2$s\n",
+            //    i18n.getMessage("general.oldStatus"),
+                
         String language = this.getLanguage();
         
         if (null == language) {
@@ -97,11 +102,13 @@ public class EmailAction extends AbstractAction {
         }
         
         final Locale actionLocale = new Locale(language);        
-        final Messages i18n = new Messages(actionLocale);      
+        final Messages i18n = new Messages(actionLocale);
+        final String newStatus = aAlert.getNewStatus().getDisplayString(i18n.getLocale());
+        
         final String automaticMsg = i18n.getMessage("mail.subject.automatic");
         final String statusMsg = i18n.getMessage("mail.subject.statusChanged");
-        final String subject = String.format("%1$s: %2$s '%3$s'",
-                                             automaticMsg, statusMsg, jobName);
+        final String subject = String.format("%1$s [%2$s] %3$s: %4$s",
+                                             automaticMsg, jobName, statusMsg, newStatus);
 
         final String body = this.buildBody(aAlert, jobName, i18n);
 
@@ -163,13 +170,8 @@ public class EmailAction extends AbstractAction {
         final Date alertTime = alert.getTime().getTime();
         
         body.append(i18n.getMessage("mail.body.noAnswer")).append("\n\n");
-        body.append(i18n.getMessage("mail.body.statusChanged")).append("\n\n");
-        body.append(String.format("%1$s: %2$d\n",
-                                  i18n.getMessage("general.jobId"),
-                                  alert.getParentJob().getJobId()));
-        body.append(String.format("%1$s: %2$s\n",
-                                  i18n.getMessage("general.jobName"), 
-                                  jobName));
+        body.append(i18n.getMessage("mail.body.statusChanged")).append(" "+jobName).append("\n\n");
+        
         body.append(String.format("%1$s: %2$s\n",
                                   i18n.getMessage("general.oldStatus"),
                                   alert.getOldStatus().getDisplayString(
@@ -184,8 +186,8 @@ public class EmailAction extends AbstractAction {
         body.append(String.format("%1$s: %2$s\n",
                                   i18n.getMessage("mail.body.dateTimeChange"),
                                   dateFormat.format(alertTime)));
-        body.append(String.format("\n%1$s\n",
-                                  i18n.getMessage("mail.body.greetings")));
+        //body.append(String.format("\n%1$s\n",
+        //                          i18n.getMessage("mail.body.greetings")));
         
         return body.toString();
     }

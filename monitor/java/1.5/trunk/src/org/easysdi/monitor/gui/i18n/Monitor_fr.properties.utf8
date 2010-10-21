@@ -94,12 +94,12 @@ log.purge.success = Les logs ont été correctement purgés
 
 logsCollection.json.error = Une erreur s'est produite lors de la représentation des logs 
 
-mail.subject.automatic = MESSAGE AUTOMATIQUE 
-mail.subject.statusChanged = Changement de statut pour le job
+mail.subject.automatic = Alerte 
+mail.subject.statusChanged = statut
 mail.body.dateTimeChange = Date et heure du changement
 mail.body.greetings = Meilleures salutations
-mail.body.noAnswer = NE PAS RÉPONDRE À CE MESSAGE. IL VOUS A ÉTÉ ENVOYÉ DE FAÇON AUTOMATIQUE.
-mail.body.statusChanged = Monitor a détecté un changement de statut du job.
+mail.body.noAnswer = ** NE PAS REPONDRE A CE MESSAGE. IL VOUS A ETE ENVOYE DE FACON AUTOMATIQUE **
+mail.body.statusChanged = MONITOR vous informe d'un changement de statut pour le job:.
 
 message.json.error = Une erreur s'est produite lors de la représentation du message d'information
 
