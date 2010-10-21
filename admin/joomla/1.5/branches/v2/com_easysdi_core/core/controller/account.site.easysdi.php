@@ -54,6 +54,10 @@ class SITE_account {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
 			return;
 		}
+		if(!userManager::isUserAllowed($user,"MYACCOUNT"))
+		{
+			return;
+		}
 
 		$database =& JFactory::getDBO();
 		$rowAccount = new AccountByUserId( $database );
