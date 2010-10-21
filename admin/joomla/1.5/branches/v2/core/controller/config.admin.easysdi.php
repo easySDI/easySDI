@@ -226,23 +226,23 @@ class ADMIN_config {
 		$database=& JFactory::getDBO(); 
 		
 		// Sauvegarde des clés CORE
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['description_length']."' WHERE code = 'DESCRIPTION_LENGTH'");
+		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['description_length'])."\" WHERE code = 'DESCRIPTION_LENGTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['logo_width']."' WHERE code = 'LOGO_WIDTH'");
+		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['logo_width'])."\" WHERE code = 'LOGO_WIDTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['logo_height']."' WHERE code = 'LOGO_HEIGHT'");
+		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['logo_height'])."\" WHERE code = 'LOGO_HEIGHT'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['pagination_metadata']."' WHERE code = 'PAGINATION_METADATA'");
+		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pagination_metadata'])."\" WHERE code = 'PAGINATION_METADATA'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['welcome_redirect_url']."' WHERE code = 'WELCOME_REDIRECT_URL'");
+		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['welcome_redirect_url'])."\" WHERE code = 'WELCOME_REDIRECT_URL'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
@@ -250,55 +250,55 @@ class ADMIN_config {
 		// Sauvegarde des clés CATALOG
 		if ($_POST['catalog_item'] > 0)
 		{
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_url']."' WHERE code = 'CATALOG_URL'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_url'])."\" WHERE code = 'CATALOG_URL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['metadata_collapse']."' WHERE code = 'METADATA_COLLAPSE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['metadata_collapse'])."\" WHERE code = 'METADATA_COLLAPSE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_encoding_code']."' WHERE code = 'CATALOG_ENCODING_CODE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_encoding_code'])."\" WHERE code = 'CATALOG_ENCODING_CODE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_encoding_val']."' WHERE code = 'CATALOG_ENCODING_VAL'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_encoding_val'])."\" WHERE code = 'CATALOG_ENCODING_VAL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_isocode']."' WHERE code = 'CATALOG_BOUNDARY_ISOCODE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_isocode'])."\" WHERE code = 'CATALOG_BOUNDARY_ISOCODE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_north']."' WHERE code = 'CATALOG_BOUNDARY_NORTH'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_north'])."\" WHERE code = 'CATALOG_BOUNDARY_NORTH'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_south']."' WHERE code = 'CATALOG_BOUNDARY_SOUTH'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_south'])."\" WHERE code = 'CATALOG_BOUNDARY_SOUTH'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_east']."' WHERE code = 'CATALOG_BOUNDARY_EAST'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_east'])."\" WHERE code = 'CATALOG_BOUNDARY_EAST'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_west']."' WHERE code = 'CATALOG_BOUNDARY_WEST'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_west'])."\" WHERE code = 'CATALOG_BOUNDARY_WEST'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['catalog_boundary_type']."' WHERE code = 'CATALOG_BOUNDARY_TYPE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_boundary_type'])."\" WHERE code = 'CATALOG_BOUNDARY_TYPE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['java_bridge_url']."' WHERE code = 'JAVA_BRIDGE_URL'");
+			$database->setQuery("UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['java_bridge_url'])."\" WHERE code = 'JAVA_BRIDGE_URL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['catalog_search_multilist_length']."' WHERE code = 'CATALOG_SEARCH_MULTILIST_LENGTH'");
+			$database->setQuery("UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_search_multilist_length'])."\" WHERE code = 'CATALOG_SEARCH_MULTILIST_LENGTH'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['catalog_metadata_qtipdelay']."' WHERE code = 'CATALOG_METADATA_QTIPDELAY'");
+			$database->setQuery("UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_metadata_qtipdelay'])."\" WHERE code = 'CATALOG_METADATA_QTIPDELAY'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
@@ -307,39 +307,39 @@ class ADMIN_config {
 		// Sauvegarde des clés SHOP
 		if ($_POST['shop_item'] > 0)
 		{
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['proxyhost']."' WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxyhost'])."\" WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['archive_delay']."' WHERE code = 'SHOP_CONFIGURATION_ARCHIVE_DELAY'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['archive_delay'])."\" WHERE code = 'SHOP_CONFIGURATION_ARCHIVE_DELAY'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['history_delay']."' WHERE code = 'SHOP_CONFIGURATION_HISTORY_DELAY'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['history_delay'])."\" WHERE code = 'SHOP_CONFIGURATION_HISTORY_DELAY'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['caddy_description_length']."' WHERE code = 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['caddy_description_length'])."\" WHERE code = 'SHOP_CONFIGURATION_CADDY_DESC_LENGTH'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['mod_perim_area_precision']."' WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mod_perim_area_precision'])."\" WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['mod_perim_metertokilometerlimit']."' WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mod_perim_metertokilometerlimit'])."\" WHERE code = 'SHOP_CONFIGURATION_MOD_PERIM_METERTOKILOMETERLIMIT'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_step4']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP4'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['shop_article_step4'])."\" WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP4'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_step5']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP5'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['shop_article_step5'])."\" WHERE code = 'SHOP_CONFIGURATION_ARTICLE_STEP5'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['shop_article_terms_of_use']."' WHERE code = 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['shop_article_terms_of_use'])."\" WHERE code = 'SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
@@ -348,7 +348,7 @@ class ADMIN_config {
 		// Sauvegarde des clés PROXY
 		if ($_POST['proxy_item'] > 0)
 		{
-			$database->setQuery( "UPDATE #__sdi_configuration SET value='".$_POST['proxy_config']."' WHERE code = 'PROXY_CONFIG'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxy_config'])."\" WHERE code = 'PROXY_CONFIG'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
