@@ -15,12 +15,12 @@ if (!defined('EASYSDI_EXTENDED_MENU_HOME')) {
 /**
  * Abstract class for nodes... may be used for other kind of nodes than just menu nodes.
  */
-class AbstractNode {
+class EasySDIAbstractNode {
 	var $childList		= array();
 	var $hasChildren		= FALSE;
 	var $_objectId		= NULL;
 
-	function AbstractNode() {
+	function EasySDIAbstractNode() {
 		static $idCounter	= 0;
 		$idCounter++;
 		$this->_objectId		= $idCounter;
@@ -209,7 +209,7 @@ class AbstractNode {
 /**
  * Class for menu nodes.
  */
-class MenuNode extends AbstractNode {
+class EasySDIMenuNode extends EasySDIAbstractNode {
 	var $current		= FALSE;
 	var $active		= FALSE;
 	var $expanded	= FALSE;

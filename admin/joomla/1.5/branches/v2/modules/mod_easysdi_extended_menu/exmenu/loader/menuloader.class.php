@@ -73,7 +73,7 @@ class AbstractEasySDIExtendedMenuLoader extends AbstractEasySDIExtendedMenuDatab
 
 
 	function &getEmptyMenuNode() {
-		$menuNode				=& new MenuNode();
+		$menuNode				=& new EasySDIMenuNode();
 		$menuNode->id			= FALSE;
 		$menuNode->type			= 'separator';
 		$menuNode->link			= '';

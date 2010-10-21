@@ -332,7 +332,7 @@ class EasySDIExtendedMenuLoader extends AbstractEasySDIExtendedMenuLoader {
 		foreach(array_keys($menuItemList) as $key) {
 			$menuItem		=& $menuItemList[$key];
 
-			$menuNode		=& new MenuNode();
+			$menuNode		=& new EasySDIMenuNode();
 			foreach(get_object_vars($menuItem) as $k => $field) {
 				if ((!is_object($field)) && (!is_array($field)) && (substr($k, 0, 1) != '_')) {
 					$menuNode->$k = $field;
