@@ -18,14 +18,16 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_serviceaccount 
+class HTML_systemaccount 
 {
 	
 	
-	function editServiceAccount ($service_account, $account, $rowsAccount, $option)
+	function editSystemAccount ($system_account, $account, $rowsAccount, $option, $code)
 	{
-		JToolBarHelper::title( JText::_("CORE_SERVICE_ACCOUNT_EDIT"), 'generic.png' );
-		
+		if($code == "guest")
+			JToolBarHelper::title( JText::_("CORE_GUEST_ACCOUNT_EDIT"), 'generic.png' );
+		else
+			JToolBarHelper::title( JText::_("CORE_SERVICE_ACCOUNT_EDIT"), 'generic.png' );
 	?>			
 	<script>	
 	
@@ -37,38 +39,39 @@ class HTML_serviceaccount
 					<fieldset>						
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("CORE_SERVICE_ACCOUNT_USER_ID"); ?></td>
+								<td class="key" width="100p"><?php echo JText::_("CORE_SYSTEM_ACCOUNT_USER_ID"); ?></td>
 								<td><?php echo $account->account_id; ?></td>								
 							</tr>
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("CORE_SERVICE_ACCOUNT_NAME"); ?></td>
+								<td class="key" width="100p"><?php echo JText::_("CORE_SYSTEM_ACCOUNT_NAME"); ?></td>
 								<td><?php echo $account->name; ?></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("CORE_SERVICE_ACCOUNT_USER_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("CORE_SYSTEM_ACCOUNT_USER_NAME"); ?></td>
 								<td><?php echo $account->username; ?></td>	
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("CORE_SERVICE_ACCOUNT_USER_TYPE"); ?></td>
+								<td class="key"><?php echo JText::_("CORE_SYSTEM_ACCOUNT_USER_TYPE"); ?></td>
 								<td><?php echo $account->usertype; ?></td>	
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("CORE_SERVICE_ACCOUNT_CHANGE"); ?></td>
-								<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'serviceAccount\');"', 'value', 'text',$account->account_id); ?></td>
+								<td class="key"><?php echo JText::_("CORE_SYSTEM_ACCOUNT_CHANGE"); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'systemAccount\');"', 'value', 'text',$account->account_id); ?></td>
 							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="id" value="<?php echo $service_account->id; ?>" />
+		<input type="hidden" name="id" value="<?php echo $system_account->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="guid" value="<?php echo $service_account->guid; ?>" />
-		<input type="hidden" name="created" value="<?php echo $service_account->created; ?>" />
-		<input type="hidden" name="createdby" value="<?php echo $service_account->createdby; ?>" />
-		<input type="hidden" name="checked_out" value="<?php echo $service_account->checked_out; ?>" />
-		<input type="hidden" name="checked_out_time" value="<?php echo $service_account->checked_out_time; ?>" />
+		<input type="hidden" name="code" value="<?php echo $code; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $system_account->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $system_account->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $system_account->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $system_account->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $system_account->checked_out_time; ?>" />
 	</form>
 	
 <?php

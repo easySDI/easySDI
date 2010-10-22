@@ -19,7 +19,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class service_account extends sdiTable
+class system_account extends sdiTable
 {
 	var $account_id=null;
 
@@ -27,7 +27,7 @@ class service_account extends sdiTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_serviceaccount', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_systemaccount', 'id', $db ) ;    		
 	}
 }
 

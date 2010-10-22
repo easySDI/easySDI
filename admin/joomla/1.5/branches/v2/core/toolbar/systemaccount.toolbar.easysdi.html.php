@@ -18,23 +18,23 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class TOOLBAR_serviceaccount {
+class TOOLBAR_systemaccount {
 
 	function _DEFAULT() 
 	{
-		JToolBarHelper::editList('editServiceAccount');
+		JToolBarHelper::editList('editSystemAccount');
 		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
 	{
-		JToolBarHelper::editList('editServiceAccount');
+		JToolBarHelper::editList('editSystemAccount');
 		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 
 	{
-		JToolBarHelper::save('saveServiceAccount');
+		JToolBarHelper::save('saveSystemAccount');
 		JToolBarHelper::cancel('rightCtrlPanel');
 	}
 

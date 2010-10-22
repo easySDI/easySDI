@@ -1294,7 +1294,7 @@ function com_install(){
 				return false;
 			}
 			
-			$query="CREATE TABLE IF NOT EXISTS `#__sdi_serviceaccount` (
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_systemaccount` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
 					  `code` varchar(20),

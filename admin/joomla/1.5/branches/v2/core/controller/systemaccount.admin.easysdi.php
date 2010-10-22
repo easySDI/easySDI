@@ -18,10 +18,10 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_serviceaccount 
+class ADMIN_systemaccount 
 {
 	
-	function editServiceAccount ($id, $option)
+	function editSystemAccount ($id, $option,$code)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -40,9 +40,10 @@ class ADMIN_serviceaccount
 		else
 		{
 			$query = "SELECT a.id as account_id, u.name, u.username, u.usertype 
-						FROM #__sdi_serviceaccount sa 
+						FROM #__sdi_systemaccount sa 
 						INNER JOIN #__sdi_account a ON a.id = sa.account_id 
-						INNER JOIN #__users u ON u.id = a.user_id";
+						INNER JOIN #__users u ON u.id = a.user_id
+						WHERE sa.code='$code'";
 			$query .= " LIMIT 1 ";
 			$db->setQuery( $query);
 			$accounts = $db->loadObjectList();
@@ -50,19 +51,20 @@ class ADMIN_serviceaccount
 		}
 		
 		$query = "SELECT sa.*, u.name, u.username, u.usertype 
-				  FROM #__sdi_serviceaccount sa 
+				  FROM #__sdi_systemaccount sa 
 				  INNER JOIN #__sdi_account a ON a.id = sa.account_id
-				  INNER JOIN #__users u ON u.id = a.user_id";
+				  INNER JOIN #__users u ON u.id = a.user_id
+				  WHERE sa.code='$code'";
 		$query .= " LIMIT 1 ";
 		$db->setQuery( $query);
-		$services_account = $db->loadObjectList();
-		$service_account = $services_account[0];
+		$systems_account = $db->loadObjectList();
+		$system_account = $systems_account[0];
 		
-		if($service_account->id)
+		if($system_account->id)
 		{
-			$service_account_ = new service_account($db);
-			$service_account_->load($service_account->id);
-			$service_account_->tryCheckOut($option,'');
+			$system_account_ = new system_account($db);
+			$system_account_->load($system_account->id);
+			$system_account_->tryCheckOut($option,'');
 		}
 				
 		//Get availaible easysdi account
@@ -71,34 +73,34 @@ class ADMIN_serviceaccount
 						INNER JOIN #__sdi_account a 
 						ON u.id = a.user_id " );
 		$rowsAccount = $db->loadObjectList();
-		echo $db->getErrorMsg();			
+		echo $db->getErrorMsg();		
 
-		HTML_serviceaccount::editServiceAccount($service_account,$account, $rowsAccount, $option);
+		HTML_systemaccount::editSystemAccount($system_account,$account, $rowsAccount, $option,$code);
 	}
 	
 	
-	function saveServiceAccount($option)
+	function saveSystemAccount($option)
 	{
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 				
-		$service_account = new service_account ($db);
+		$system_account = new system_account ($db);
 		
-		if (!$service_account->bind( $_POST )) 
+		if (!$system_account->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=serviceAccount" );
+			$mainframe->redirect("index.php?option=$option&task=systemAccount" );
 			exit();
 		}		
 				
-		if (!$service_account->store()) 
+		if (!$system_account->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=serviceAccount" );
+			$mainframe->redirect("index.php?option=$option&task=systemAccount" );
 			exit();
 		}
 		
-		$service_account->checkin();
+		$system_account->checkin();
 	}
 
 }

@@ -112,25 +112,26 @@ switch($task){
 		*/
 	
 	/**
-		 * Service account
+		 * System account
 		 */
-	case 'serviceAccount':
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'serviceaccount.admin.easysdi.html.php');
-				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'serviceaccount.easysdi.class.php');
+	case 'systemAccount':
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'systemaccount.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'systemaccount.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi.php');
-		TOOLBAR_serviceaccount::_EDIT();
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'systemaccount.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'systemaccount.admin.easysdi.php');
+		TOOLBAR_systemaccount::_EDIT();
 		$id = JRequest::getVar ('account_id', '' );
-		ADMIN_serviceaccount::editServiceAccount($id,$option);
+		$code = JRequest::getVar ('code', 'guest' );
+		ADMIN_systemaccount::editSystemAccount($id,$option,$code);
 		break;
-	case 'saveServiceAccount':
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'serviceaccount.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'serviceaccount.easysdi.class.php');
+	case 'saveSystemAccount':
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'systemaccount.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'systemaccount.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi.php');
-		ADMIN_serviceaccount::saveServiceAccount($option);
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'systemaccount.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'systemaccount.admin.easysdi.php');
+		ADMIN_systemaccount::saveSystemAccount($option);
 		$mainframe->redirect("index.php?option=$option");
 		break;
 		

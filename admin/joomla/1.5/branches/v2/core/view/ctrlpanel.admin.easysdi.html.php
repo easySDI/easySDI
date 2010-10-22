@@ -63,7 +63,20 @@ class HTML_ctrlpanel {
 										</div>
 									</div>
 								
-								
+								<?php	
+									$link = "index.php?option=$option&amp;task=listLanguage";
+							
+							
+							?>
+									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+										<div class="icon">
+											<a href="<?php echo $link; ?>">
+												<?php 
+													$text = JText::_( 'CORE_LANGUAGE_PANEL' );					
+													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+												<span><?php echo $text; ?></span></a>
+										</div>
+									</div>
 								
 									<?php	
 									$link = "index.php?option=$option&amp;task=ctrlPanelAccountManager";
@@ -95,8 +108,10 @@ class HTML_ctrlpanel {
 										</div>
 									</div>
 							
+							
+									
 							<?php	
-									$link = "index.php?option=$option&amp;task=listLanguage";
+									$link = "index.php?option=$option&amp;task=systemAccount&code=service";
 							
 							
 							?>
@@ -104,14 +119,13 @@ class HTML_ctrlpanel {
 										<div class="icon">
 											<a href="<?php echo $link; ?>">
 												<?php 
-													$text = JText::_( 'CORE_LANGUAGE_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+													$text = JText::_( 'CORE_SERVICE_ACCOUNT_PANEL' );					
+													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 												<span><?php echo $text; ?></span></a>
 										</div>
 									</div>
-									
 							<?php	
-									$link = "index.php?option=$option&amp;task=serviceAccount";
+									$link = "index.php?option=$option&amp;task=systemAccount&code=guest";
 							
 							
 							?>
@@ -119,7 +133,7 @@ class HTML_ctrlpanel {
 										<div class="icon">
 											<a href="<?php echo $link; ?>">
 												<?php 
-													$text = JText::_( 'CORE_SERVICEACCOUNT_PANEL' );					
+													$text = JText::_( 'CORE_GUEST_ACCOUNT_PANEL' );					
 													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 												<span><?php echo $text; ?></span></a>
 										</div>
