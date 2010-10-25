@@ -3999,6 +3999,8 @@ class ADMIN_metadata {
     
 	function CURLRequest($type, $url, $xmlBody="")
 	{
+		$database =& JFactory::getDBO(); 
+		
 		// Récupération du cookie sous la forme clé=valeur;clé=valeur
 		$cookiesList=array();
 		foreach($_COOKIE as $key => $val)
@@ -4027,6 +4029,18 @@ class ADMIN_metadata {
         {
         	curl_setopt($ch, CURLOPT_POST, 0);
         }
+        
+        // Authentification HTTP avec code="service" dans la table sdi_systemaccount
+        $serviceaccount=array();
+        $database->setQuery( "SELECT u.username, u.password 
+        					  FROM #__sdi_systemaccount sa
+        					  INNER JOIN #__sdi_account a ON sa.account_id=a.id
+        					  INNER JOIN #__users u ON a.user_id=u.id
+        					  WHERE sa.code = 'service'" );
+		$serviceaccount= $database->loadObject();
+		
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC ) ; 
+		curl_setopt($ch, CURLOPT_USERPWD, $serviceaccount->username.":".$serviceaccount->password); 
         
         $output = curl_exec($ch);
         curl_close($ch);

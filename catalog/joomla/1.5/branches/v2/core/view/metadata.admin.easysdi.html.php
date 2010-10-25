@@ -25,12 +25,8 @@ defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 					
-JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-//JHTML::script('uxvismode.js', 'administrator/components/com_easysdi_catalog/ext/');
-//JHTML::script('multidom.js', 'administrator/components/com_easysdi_catalog/ext/');
-//JHTML::script('mif.js', 'administrator/components/com_easysdi_catalog/ext/');
-//JHTML::script('miframe-debug.js', 'administrator/components/com_easysdi_catalog/ext/build/');
+JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -43,10 +39,6 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-
-//JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
 
 
@@ -73,7 +65,6 @@ class HTML_metadata {
 		
 		$database =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
-		//HS.setLang('en');
 		
 		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
@@ -145,59 +136,33 @@ class HTML_metadata {
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
-		//$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
-		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
 		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
-		//$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		
 		$user =& JFactory::getUser();
 		$user_id = $user->get('id');
 
 		$this->javascript = "";
 		
-		$database->setQuery( "SELECT a.root_id FROM #__sdi_account a,#__users u where a.root_id is null AND a.user_id = u.id and u.id=".$user_id." ORDER BY u.name" );
+		$database->setQuery( "SELECT a.root_id 
+							  FROM #__sdi_account a
+							  INNER JOIN #__users u ON a.user_id = u.id
+							  WHERE a.root_id is null 
+							  		AND u.id=".$user_id." 
+							  ORDER BY u.name" );
 		$account_id = $database->loadResult();
 		if ($account_id == null)
 			$account_id = $user_id;
 
-		// Lister les langues que Joomla va prendre en charge
-		//load folder filesystem class
-		/*
-		jimport('joomla.filesystem.folder');
-		$path = JLanguage::getLanguagePath();
-		$dirs = JFolder::folders( $path );
-		$this->langList = array ();
-		$rowid = 0;
-		foreach ($dirs as $dir)
-		{
-			$files = JFolder::files( $path.DS.$dir, '^([-_A-Za-z]*)\.xml$' );
-			foreach ($files as $file)
-			{
-				$data = JApplicationHelper::parseXMLLangMetaFile($path.DS.$dir.DS.$file);
-	
-				$row 			= new StdClass();
-				$row->id 		= $rowid;
-				$row->language 	= substr($file,0,-4);
-	
-				if (!is_array($data)) {
-					continue;
-				}
-				foreach($data as $key => $value) {
-					$row->$key = $value;
-				}
-	
-				$this->langList[] = $row;
-				$rowid++;
-			}
-		}
-		*/
-		
 		// Langues à gérer
 		$this->langList = array();
-		//$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
+							  FROM #__sdi_language l, #__sdi_list_codelang c 
+							  WHERE l.codelang_id=c.id 
+							  		AND published=true 
+							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
+		// Langue de l'utilisateur pour la construction du Thesaurus Gemet
 		$userLang="";
 		foreach($this->langList as $row)
 		{									
@@ -205,7 +170,7 @@ class HTML_metadata {
 				$userLang = $row->gemetlang;
 		}
 								
-								
+		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm"
@@ -222,12 +187,14 @@ class HTML_metadata {
 						// Message d'attente pendant les chargements
 						var myMask = new Ext.LoadMask(Ext.getBody(), {msg:'Please wait...'});
 						
+						// Construction des variables pour les différentes fenêtres qui pourraient être générées
 						var win;
 						var winxml;
 						var wincsw;
 						var winrct;
 						var winrst;
     
+						// Outils pour la prévisualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 
 						// sets the user interface language
@@ -339,7 +306,7 @@ class HTML_metadata {
 
 		
 				$queryPath="/";
-				// Bouclage pour construire la structure
+				// Boucle pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
@@ -442,299 +409,8 @@ class HTML_metadata {
 							        
 						form.render();";
 					
-					/*
-					 * Pas de raison d'être en backend car disponible que pour les editeurs
-					 * 
-					 * 
-					$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
-											handler: function()
-							                {
-							                	myMask.show();
-							                 	var fields = new Array();
-							                 	form.getForm().isInvalid=false;
-							        			form.cascade(function(cmp)
-							        			{
-								        			if (cmp.xtype=='fieldset')
-							         				{
-							         					if (cmp.clones_count)
-							          						fields.push(cmp.getId()+','+cmp.clones_count);
-							         				}
-							         				
-							         				// Validation des champs langue
-						         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
-						         					{
-						         						var countFields = cmp.items.length;
-						         						var countValues = 0;
-														
-														for (var i=0; i < countFields ; i++)
-														{
-															field = cmp.items.get(i); 
-															if (field.getValue() != '')
-															{
-																countValues++;
-															}
-														}
-														
-														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
-														if (countValues != countFields && countValues != 0)
-														{
-															//console.log(cmp.getId());
-															for (var i=0; i < countFields ; i++)
-															{
-																field = cmp.items.get(i);
-																if (field.getValue() == '')
-																	field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
-															} 
-															form.getForm().isInvalid=true;
-														}
-						         					}
-							        			});
-							        			var fieldsets = fields.join(' | ');
-							        			
-							        			if (!form.getForm().isInvalid)
-							        			{
-													form.getForm().setValues({fieldsets: fieldsets});
-								                 	form.getForm().setValues({task: 'validateMetadata'});
-								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-								                 	form.getForm().setValues({object_id: '".$object_id."'});
-								                 	form.getForm().setValues({account_id: '".$account_id."'});
-													form.getForm().submit({
-												    	scope: this,
-														method	: 'POST',
-														clientValidation: true,
-														success: function(form, action) 
-														{
-															Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."');
-									  						window.open ('./index.php?option=".$option."&task=listObject','_parent');
-															myMask.hide();
-														},
-														failure: function(form, action) 
-														{
-	                        								Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
-																
-															myMask.hide();
-														},
-														url:'".$validate_url."'
-													});
-												}
-												else
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
-																
-													myMask.hide();
-												}
-								        	}})
-								        );
-						form.render();";*/
 				}
-				else if($isValidated)
-				{
-					/*	$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
-										handler: function()
-						                {
-						                	myMask.show();
-						                 	var fields = new Array();
-						        			form.getForm().isInvalid=false;
-						        			form.cascade(function(cmp)
-						        			{
-							        			if (cmp.xtype=='fieldset')
-						         				{
-						         					if (cmp.clones_count)
-						          						fields.push(cmp.getId()+','+cmp.clones_count);
-						         				}
-						         				
-						         				// Validation des champs langue
-					         					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
-					         					{
-					         						var countFields = cmp.items.length;
-					         						var countValues = 0;
-													
-													for (var i=0; i < countFields ; i++)
-													{
-														field = cmp.items.get(i); 
-														if (field.getValue() != '')
-														{
-															countValues++;
-														}
-													}
-													
-													// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
-													if (countValues != countFields && countValues != 0)
-													{
-														for (var i=0; i < countFields ; i++)
-														{
-															field = cmp.items.get(i);
-															if (field.getValue() == '')
-																field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
-														} 
-														form.getForm().isInvalid=true;
-													}
-					         					}
-						        			});
-						        			var fieldsets = fields.join(' | ');
-						        			
-						        			if (!form.getForm().isInvalid)
-						        			{
-												form.getForm().setValues({fieldsets: fieldsets});
-							                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({object_id: '".$object_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: true,
-													success: function(form, action) 
-													{
-														xml = (action.result.file.xml);
-														xmlfile = xml.split('<br>').join('\\n');
-														// Créer une iframe pour demander à l'utilisateur la date de publication
-														if (!win)
-															win = new Ext.Window({
-																	                title:'Publication',
-																	                width:300,
-																	                height:130,
-																	                closeAction:'hide',
-																	                layout:'fit', 
-																				    border:false, 
-																				    closable:false, 
-																				    modal:true,
-																				    renderTo:Ext.getBody(), 
-																				    frame:true,
-																				    items:[{ 
-																					     xtype:'form' 
-																					     ,id:'publishform' 
-																					     ,defaultType:'textfield' 
-																					     ,frame:true 
-																					     ,method:'post' 
-																					     ,defaults:{anchor:'95%'} 
-																					     ,items:[ 
-																					       { 
-																					         fieldLabel:'Date de publication', 
-																					         id:'publishdate', 
-																					         xtype: 'datefield',
-																					         format: 'd.m.Y',
-																					         value:'' 
-																					       },
-																					       { 
-																					         id:'metadata_id', 
-																					         xtype: 'hidden',
-																					         value:'".$metadata_id."' 
-																					       },
-																					       { 
-																					         id:'object_id', 
-																					         xtype: 'hidden',
-																					         value:'".$object_id."' 
-																					       },
-																					       { 
-																					         id:'account_id', 
-																					         xtype: 'hidden',
-																					         value:'".$account_id."' 
-																					       },
-																					       { 
-																					         id:'xml', 
-																					         xtype: 'hidden',
-																					         value: xmlfile
-																					       }
-																					    ] 
-																					     ,buttonAlign:'right' 
-																					     ,buttons: [{
-																			                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-																			                    handler: function(){
-																			                    	myMask.show();
-					                 																win.items.get(0).getForm().submit({
-																							    	scope: this,
-																									method	: 'POST',
-																									url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
-																									success: function(form, action) 
-																									{
-																										win.hide();
-																										myMask.hide();
-
-																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."');
-
-									  																	window.open ('./index.php?option=".$option."&task=listObject','_parent');
-															
-																									},
-																									failure: function(form, action) 
-																									{
-																										win.hide();
-																										myMask.hide();
-
-																				                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-																									}
-																									});
-																			                    						                    }
-																			                },{
-																			                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-																			                    handler: function(){
-																			                        win.hide();
-																			                }
-																					   }] 
-																	                }]
-																	            });
-														else
-															win.items.get(0).findById('publishdate').setValue('');
-															
-								  						win.show();
-								  						
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-                        								Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-															
-														myMask.hide();
-													},
-													url:'".$publish_url."'
-												});
-											}
-											else
-											{
-												Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
-															
-												myMask.hide();
-											}
-							        	}})
-							        );
-					form.render();";
-					*/
-				// Ajout du bouton INVALIDATE seulement si l'utilisateur courant est gestionnaire de la métadonnée
-				// et que la métadonnée est validée
-				/*$this->javascript .="
-				form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
-								handler: function()
-				                {
-				                	myMask.show();
-				                 	
-				                	form.getForm().setValues({task: 'invalidateMetadata'});
-				                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-				                 	form.getForm().setValues({object_id: '".$object_id."'});
-									form.getForm().submit({
-								    	scope: this,
-										method	: 'POST',
-										clientValidation: false,
-										success: function(form, action) 
-										{
-											Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT'))."');
-						  					window.open ('./index.php?option=".$option."&task=listObject','_parent');
-												
-											myMask.hide();
-										},
-										failure: function(form, action) 
-										{
-                        					Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TITLE'))."', '".html_Metadata::cleanText(JText::_('CATALOG_INVALIDATEMETADATA_MSG_FAILURE_TEXT'))."');
-												
-											myMask.hide();
-										},
-										url:'".$invalidate_url."'
-									});
-					        	}})
-					        );
-				form.render();";
-				*/
-				}
+				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est publiée
 				else if($isPublished)
@@ -1333,6 +1009,13 @@ class HTML_metadata {
 															";
 															break;
 													}
+													
+													if ($child->attribute_system)
+													{
+														$this->javascript .="
+														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+														";
+													}
 												}
 											}
 										}
@@ -1414,7 +1097,7 @@ class HTML_metadata {
 												if ($child->attribute_system)
 												{
 													$this->javascript .="
-													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 													";
 												}
 											}
@@ -1587,19 +1270,6 @@ class HTML_metadata {
 									 		}
 										}
 
-										/*if ($child->attribute_id==7)
-										{	// Elements sélectionnés par défaut
-											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
-											$database->setQuery( $query );
-											echo $database->getQuery()."<br>";
-											$selectedContent = $database->loadObjectList();
-											
-										 	// Construction de la liste
-										 	foreach ($selectedContent as $cont)
-										 	{
-										 		$nodeDefaultValues[] = html_Metadata::cleanText($cont->value);
-									 		}
-										}*/
 										//echo "selectionne par defaut: "; print_r($nodeDefaultValues); echo "<hr>";
 									 	
 										switch ($child->rendertype_id)
@@ -2091,7 +1761,7 @@ class HTML_metadata {
 									$currentScope=$listNode->item($keyPos);
 									//echo "Position ".$keyPos.", ".$currentScope->nodeName." avec ".$currentScope->nodeValue."<br>";
 								
-									if ($currentScope->nodeName <> "")
+									if ($currentScope and $currentScope->nodeName <> "")
 									{
 									$nodeValue= "";
 									$nodeKeyword= "";
@@ -3304,18 +2974,19 @@ class HTML_metadata {
 											     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											    ";
 										 	}
-
-											if ($child->attribute_system)
-											{
-												$this->javascript .="
-												".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-												";
-											}
 																					 
 											break;
 									}
 								 	break;
 							}
+					
+							if ($child->attribute_system)
+							{
+								$this->javascript .="
+								".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+								";
+							}
+							
 							break;
 						// Link
 						case 7:

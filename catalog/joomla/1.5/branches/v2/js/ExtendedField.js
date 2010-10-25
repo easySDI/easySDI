@@ -189,6 +189,7 @@ Ext.override(Ext.form.Field, {
 					alert(clone.id + " - " + clone.getValue(clone));
 				*/
 				panel.doLayout();
+				//Ext.util.Observable.capture(clone, console.info);
 			}			
 
 			//

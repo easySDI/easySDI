@@ -27,6 +27,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 					
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedFieldSet.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -38,8 +39,6 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
-
 JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
 
 class HTML_metadata {
@@ -338,7 +337,6 @@ else
 		$uri =& JUri::getInstance();
 		
 		$database =& JFactory::getDBO();
-		
 		$language =& JFactory::getLanguage();
 		
 		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
@@ -348,7 +346,6 @@ else
 		
 		$metadata_collapse = config_easysdi::getValue("metadata_collapse");
 		$this->qTipDismissDelay = config_easysdi::getValue("catalog_metadata_qtipDelay");
-		
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
 	
@@ -421,49 +418,26 @@ else
 
 		$this->javascript = "";
 		
-		$database->setQuery( "SELECT a.root_id FROM #__sdi_account a,#__users u where a.root_id is null AND a.user_id = u.id and u.id=".$user_id." ORDER BY u.name" );
+		$database->setQuery( "SELECT a.root_id 
+							  FROM #__sdi_account a
+							  INNER JOIN #__users u ON a.user_id = u.id
+							  WHERE a.root_id is null 
+							  		AND u.id=".$user_id." 
+							  ORDER BY u.name" );
 		$account_id = $database->loadResult();
 		if ($account_id == null)
 			$account_id = $user_id;
 
-		// Lister les langues que Joomla va prendre en charge
-		//load folder filesystem class
-		/*
-		jimport('joomla.filesystem.folder');
-		$path = JLanguage::getLanguagePath();
-		$dirs = JFolder::folders( $path );
-		$this->langList = array ();
-		$rowid = 0;
-		foreach ($dirs as $dir)
-		{
-			$files = JFolder::files( $path.DS.$dir, '^([-_A-Za-z]*)\.xml$' );
-			foreach ($files as $file)
-			{
-				$data = JApplicationHelper::parseXMLLangMetaFile($path.DS.$dir.DS.$file);
-	
-				$row 			= new StdClass();
-				$row->id 		= $rowid;
-				$row->language 	= substr($file,0,-4);
-	
-				if (!is_array($data)) {
-					continue;
-				}
-				foreach($data as $key => $value) {
-					$row->$key = $value;
-				}
-	
-				$this->langList[] = $row;
-				$rowid++;
-			}
-		}
-		*/
-		
 		// Langues à gérer
 		$this->langList = array();
-		//$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
-		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
+							  FROM #__sdi_language l, #__sdi_list_codelang c 
+							  WHERE l.codelang_id=c.id 
+							  		AND published=true 
+							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
+		// Langue de l'utilisateur pour la construction du Thesaurus Gemet
 		$userLang="";
 		foreach($this->langList as $row)
 		{									
@@ -471,7 +445,7 @@ else
 				$userLang = $row->gemetlang;
 		}
 								
-								
+		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
 			<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
@@ -493,20 +467,20 @@ else
 		</div>
 				<?php
 				$this->javascript .="
-						//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
-						//Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 						var domNode = Ext.DomQuery.selectNode('div#editMdOutput')
 						Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 				
 						// Message d'attente pendant les chargements
 						var myMask = new Ext.LoadMask(Ext.getBody(), {msg:'Please wait...'});
 
+						// Construction des variables pour les différentes fenêtres qui pourraient être générées
 						var win;
     					var winxml;
 						var wincsw;
 						var winrct;
 						var winrst;
     
+						// Outils pour la prévisualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 														
 						// sets the user interface language
@@ -625,7 +599,7 @@ else
 		
 		
 				$queryPath="/";
-				// Bouclage pour construire la structure
+				// Boucle pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
@@ -664,6 +638,7 @@ else
 					//console.log(hiddenFields);
 				";								
 
+				// Sauvegarde basique, pas de contrôles ExtJs. Uniquement quand une métadonnée n'est pas publiée.
 				if (!$isPublished)
 				{
 					$this->javascript .="
@@ -726,6 +701,7 @@ else
 					form.render();";
 				}
 				
+				// Possibilité de valider lorsqu'on est éditeur. Contrôles ExtJs et passage de l'état "En travail" à "Validé"
 				if ($isEditor and !$isPublished)
 				{
 					$this->javascript .="
@@ -813,8 +789,7 @@ else
 					form.render();";
 				}
 				
-				// Ajout du bouton PUBLISH seulement si l'utilisateur courant est gestionnaire de la métadonnée
-				// et que la métadonnée n'est pas publiée
+				// Possibilité de publier lorsqu'on est gestionnaire. Contrôles ExtJs et passage de l'état "Validé" à "Publié"
 				if($isManager and $isValidated)
 				{
 					$this->javascript .="
@@ -1019,6 +994,7 @@ else
 								        );
 						form.render();";
 						
+					// Possibilité de revenir en travail. Contrôles ExtJs et passage à l'état "En travail"
 					$this->javascript .="
 					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
 									handler: function()
@@ -1056,6 +1032,7 @@ else
 				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				// et que la métadonnée est publiée
+				// Possibilité de mettre à jour lorsqu'on est gestionnaire et que l'état est "Publié". Contrôles ExtJs.
 				if($isManager and $isPublished)
 				{
 					$this->javascript .="
@@ -1109,7 +1086,11 @@ else
 					// Assignation de métadonnée
 					$editors = array();
 					$listEditors = array();
-					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text FROM #__users b, #__sdi_editor_object a LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") 
+					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text 
+											FROM #__users b, #__sdi_editor_object a 
+											LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id 
+											LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id 
+											WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.") 
 													AND c.user_id <> ".$user_id."  
 											ORDER BY b.name" );
 					$editors = array_merge( $editors, $database->loadObjectList() );
@@ -1117,10 +1098,7 @@ else
 					{
 						$listEditors[$e->value] = $e->text;
 					}
-					//print_r($listEditors);
-					//$editors = str_replace('"', "'", HTML_metadata::array2json($editors));
-					//print_r($editors);
-					//print_r(HTML_metadata::array2extjs($listEditors, false));
+					
 					$listEditors = HTML_metadata::array2extjs($listEditors, false);
 					
 					$this->javascript .="
@@ -1313,7 +1291,7 @@ else
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
 	
-function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
+	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
 	{
 		//echo $parent." - ".$parentFieldsetName."<br>";
 		//echo "<hr>SCOPE: ".$scope->nodeName."<br>";
@@ -1539,7 +1517,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								{
 									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
 									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
-									if ($this->parentId_attribute == $child->attribute_id)
+									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;
@@ -1911,7 +1889,10 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								if ($node->length >0)
+									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								else
+									$nodeValue = "";
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
@@ -2073,9 +2054,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												if ($child->rel_lowerbound < $child->rel_upperbound)
 											 	{
 											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip)))."
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues)."
+													var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 											     	// La liste
 											     	".$parentFieldsetName.".add(createCheckboxGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											     	";
@@ -2086,9 +2067,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 												if ($child->rel_lowerbound == $child->rel_upperbound)
 											 	{
 											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip)))."
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues)."
+													var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 											     	// La liste
 											     	".$parentFieldsetName.".add(createRadioGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											     	";
@@ -2101,9 +2082,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											 	if (($child->rel_upperbound - $child->rel_lowerbound) > 1 )
 											 	{
 											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2extjs($dataValues, false)."
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues)."
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues)."
+													var valueList = ".HTML_metadata::array2extjs($dataValues, false).";
+											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 											     	// La liste
 											     	".$parentFieldsetName.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											     	";
@@ -2113,7 +2094,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 											 		$this->javascript .="
 													var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
 												     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-												     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues)."
+												     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 											     	// La liste
 												     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 												    ";
@@ -2326,9 +2307,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	foreach ($selectedContent as $cont)
 										 	{
 										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
 										 		$nodeValues[] = $cont->guid;
-												$nodeDefaultValues[] = $cont->guid;
+										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
+										 		$nodeDefaultValues[] = $cont->guid;
 									 		}
 										}
 									 	
@@ -2469,8 +2450,6 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 													//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
 													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
 										 		}
-												/*else
-													$nodeValues[] = "";*/
 											}
 										}
 
@@ -2495,6 +2474,8 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 									 		}
 										}
 									 	
+										if (count($nodeValues) == 0)
+											$nodeValues[] = "";
 										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
 									 	
 										$simple=true;
@@ -2689,7 +2670,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								);
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
 							default:
@@ -3218,6 +3199,9 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										 	}
 										}
 									 	
+										if (count($nodeValues) == 0)
+											$nodeValues[] = "";
+											
 										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
 									 	
 										$simple=true;
@@ -3435,6 +3419,12 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 														";
 														break;
 												}
+												if ($child->attribute_system)
+												{
+													$this->javascript .="
+													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+													";
+												}	
 											}
 										}
 										else
@@ -4030,8 +4020,8 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 															      targetField: '".$currentName."',
 															      proxy: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/proxy.php?url=',
 															      handler: function(result){
-															      				var record;
-																      		    var s = '';
+															      				var target = Ext.ComponentMgr.get(this.targetField);
+															    				var s = '';
 																			    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
@@ -4103,7 +4093,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 								);
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								
 								break;
@@ -4264,7 +4254,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					
 					$this->javascript .="
 						// Créer un nouveau fieldset
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
 
@@ -4351,7 +4341,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');							
 						// Créer un nouveau fieldset
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
 					
@@ -4418,7 +4408,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 				$this->javascript .="
 					var master = Ext.getCmp('".$master."');							
 					// Créer un nouveau fieldset
-					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 					".$parentFieldsetName.".add(".$fieldsetName.");
 				";	
 
@@ -4541,7 +4531,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					
 					$this->javascript .="
 							// Créer un nouveau fieldset
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 								".$parentFieldsetName.".add(".$fieldsetName.");
 							".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', ".$results.", false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
 							";
@@ -4561,10 +4551,25 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
 					
 					//echo "Trouve ".$guid."<br>";
+					$total = 0;
+					$database->setQuery( "SELECT count(*) 
+										  FROM 	 #__sdi_object o, 
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND o.id IN (	SELECT ov.object_id 
+																FROM 	 #__sdi_objectversion ov,
+																  		 #__sdi_metadata m
+																WHERE  ov.metadata_id=m.id 
+																  	   AND m.guid ='".$guid."'
+										  		 			  )" );
+					$total = $database->loadResult();
+					
 					$results = array();
-					$database->setQuery( "SELECT o.id as id, 
+					if ($total > 1)
+					{
+						$database->setQuery( "SELECT o.id as id, 
 												 m.guid as guid, 
-												 CONCAT(o.name, ' ', ov.title) as name 
+												 CONCAT(o.name, ' [', ov.title, ']') as name 
 										  FROM 	 #__sdi_object o, 
 										  		 #__sdi_objecttype ot, 
 										  		 #__sdi_metadata m,
@@ -4574,6 +4579,22 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 										  		 AND o.objecttype_id=ot.id 
 										  		 AND ot.id=".$child->objecttype_id." 
 										  		 AND m.guid ='".$guid."'" );
+					}
+					else
+					{
+						$database->setQuery( "SELECT o.id as id, 
+												 m.guid as guid, 
+												 o.name as name 
+										  FROM 	 #__sdi_object o, 
+										  		 #__sdi_objecttype ot, 
+										  		 #__sdi_metadata m,
+										  		 #__sdi_objectversion ov 
+										  WHERE  o.id=ov.object_id
+										  		 AND ov.metadata_id=m.id 
+										  		 AND o.objecttype_id=ot.id 
+										  		 AND ot.id=".$child->objecttype_id." 
+										  		 AND m.guid ='".$guid."'" );
+					}
 					$results= array_merge( $results, $database->loadObjectList() );
 					//$results = HTML_metadata::array2json(array ("total"=>count($results), "contacts"=>$results));
 					$results = HTML_metadata::array2json($results);
@@ -4620,7 +4641,7 @@ function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFields
 					$this->javascript .="
 						// Créer un nouveau fieldset
 						var master = Ext.getCmp('".$master."');							
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 							".$parentFieldsetName.".add(".$fieldsetName.");
 						".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', ".$results.", false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
 						";

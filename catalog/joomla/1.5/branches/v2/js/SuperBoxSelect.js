@@ -237,7 +237,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
              *      validation (defaults to 'blur').
              */
             validationEvent : 'blur',
-
+            
             /**
              * @cfg {String} valueDelimiter The delimiter to use when joining
              *      and splitting value arrays and strings.
@@ -307,6 +307,7 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                     this.setValue(this.preRenderValue);
                     this.preRenderValue = null;
                 }
+                this.validateValue();
             },
             onStoreLoad : function(store, records, options) {
                 // accomodating for bug in Ext 3.0.0 where
@@ -1475,7 +1476,6 @@ Ext.ux.form.SuperBoxSelect = Ext.extend(Ext.ux.form.SuperBoxSelect,
                     // specify a values
                     // query
                 }
-
             },
             /**
              * Sets the value of the SuperBoxSelect component, adding new items

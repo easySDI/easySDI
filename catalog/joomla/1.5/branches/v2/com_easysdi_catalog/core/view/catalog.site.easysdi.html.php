@@ -908,11 +908,13 @@ default:
 	}
 	?>
 </div>
-</div>
 
 <!-- Les boutons Rechercher / Vider -->
 <div class="row">
-	<input type="checkBox" id="advSearchRadio" name="advSearchRadio" class="checkbox radio"?><?php echo JText::_("CATALOG_SEARCH_TEXT_ADVANCED_CRITERIA"); ?></input>
+	<div class=" checkbox row">
+		<input type="checkBox" id="advSearchRadio" name="advSearchRadio" class="checkbox"/>
+		<label for="advSearchRadio" class="checkbox"><?php echo JText::_("CATALOG_SEARCH_TEXT_ADVANCED_CRITERIA"); ?></label>
+	</div>
 </div>
 <div class="row">
 	<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_SEARCH_BUTTON"); ?>"/>
@@ -920,6 +922,7 @@ default:
 </div>
 
 </form>
+</div>
 
 
 
