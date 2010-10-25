@@ -574,6 +574,8 @@ class displayManager{
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
 		$id = JRequest::getVar('id');
+		$db =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		$toolbar =JRequest::getVar('toolbar',1);
 		$print =JRequest::getVar('print',0);
 		$buttonsHtml="";
@@ -607,7 +609,7 @@ class displayManager{
 				$notJoomlaCall = 'false';
 		}
 			
-		$db =& JFactory::getDBO();
+		// Construction  of supplier,creation date and update date [from EasySDIV1]
 		$queryAccountID = "	SELECT a.id 
 							FROM #__sdi_metadata m
 							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -730,38 +732,19 @@ class displayManager{
 		}*/
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
-		/*if (in_array($id, $orderableProductsMd))
-			$hasOrderableProduct = true;*/
-			
-		/*$catalogUrlBase = config_easysdi::getValue("catalog_url");
-
-		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$id;
-
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);*/
-			
-
+		
 		$processor = new xsltProcessor();
-		/*$style = new DomDocument();*/
-
-		/*$user =& JFactory::getUser();
-		$language = $user->getParam('language', '');
-
-		if (file_exists(dirname(__FILE__).'/../xsl/XML2XHTML_iso19115_'.$language.".xsl")){
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_iso19115_'.$language.".xsl");
-		}else{
-			$style->load(dirname(__FILE__).'/../xsl/XML2XHTML_iso19115.xsl');
-		}*/
 		
-		//$doc .= '<esdi:ID><title>Test titre</title></esdi:ID>';
-		/*$doc = '<esdi:ID><title>Test titre</title></esdi:ID>';
+		if ($type <> 'diffusion')
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall);
 		
-		$document = new DomDocument();
-		@$document->loadXML($doc);*/
+		//echo htmlspecialchars($xml->saveXML())."<br>";break;
+		
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		
 		$myHtml="";
+		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
 				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
@@ -855,14 +838,6 @@ class displayManager{
 	        	document.getElementById('catalogPanel2').className = 'open';
 			}
 			});\n"; 
-	
-			/*if($message != ""){
-				$myHtml .= "window.addEvent('domready', function() {
-					var divMsg = document.getElementById('message');
-					divMsg.style.display='block';
-					divMsg.innerHTML='".addslashes($message)."';
-				});\n";
-			}*/
 		
 			$myHtml .= "</script>";
 
@@ -874,6 +849,8 @@ class displayManager{
 		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
 		
 		$myHtml .= $xmlToHtml;
+		
+		// Construction  of creation date, update date and account logo [from EasySDIV1]
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
@@ -1369,6 +1346,168 @@ class displayManager{
 		}
 		if($out != null)
 			$out->close();
+	}
+	
+	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall)
+	{
+		$doc = new DomDocument('1.0', 'UTF-8');
+		//$doc = $xml;
+		$doc->formatOutput = true;
+	
+		$root = $xml->getElementsByTagName("MD_Metadata");
+		$root = $root->item(0);
+		$gmdRoot = $doc->importNode($root, true);
+		
+		$XMLNewRoot = $doc->createElement("Metadata");
+		$doc->appendChild($XMLNewRoot);
+		$XMLNewRoot->appendChild($gmdRoot);
+	
+		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
+		//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
+		$XMLSdi->setAttribute('user_lang', $language->_lang);
+		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
+		$XMLNewRoot->appendChild($XMLSdi);
+		//$doc->appendChild($XMLSdi);
+		//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
+	
+		$queryAccountID = "	select o.account_id 
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							WHERE m.guid = '".$fileIdentifier."'";
+		$db->setQuery($queryAccountID);
+		$account_id = $db->loadResult();
+	
+		if ($account_id <> "")
+		{
+			$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
+			$db->setQuery($queryAccountLogo);
+			$account_logo = $db->loadResult();
+		}
+		else
+		{
+			$account_logo = "";
+		}
+		
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
+	
+		// Créer une entrée pour le logo du compte
+		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
+		$XMLALogo->setAttribute('width', $logoWidth);
+		$XMLALogo->setAttribute('height', $logoHeight);
+		$XMLSdi->appendChild($XMLALogo);
+	
+		// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
+		$object=array();
+		$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id
+							INNER JOIN #__sdi_list_visibility v ON v.id = o.visibility_id 
+							WHERE m.guid = '".$fileIdentifier."'";
+		$db->setQuery($queryObject);
+		$object = $db->loadObject();
+		
+		// Modify objectversion_title to construct an XML valid date
+		$explodeDate = array();
+		$explodeDate = explode(" ", $object->title);
+		$object->title = $explodeDate[0]."T".$explodeDate[1]; 
+		
+		// Créer une entrée pour l'objet
+		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
+		if ($object)
+		{
+			$XMLObject->setAttribute('object_name', $object->name);
+			$XMLObject->setAttribute('objectversion_title', $object->title);
+			$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+		}
+		else
+		{
+			$XMLObject->setAttribute('object_name', '');
+			$XMLObject->setAttribute('objectversion_title', '');
+			$XMLObject->setAttribute('metadata_visibility', '');
+		}
+		$XMLSdi->appendChild($XMLObject);
+		
+		// Récupérer le type d'objet
+		$objecttype = array();
+		// Récupérer le logo du type d'objet
+		$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
+							FROM #__sdi_objecttype ot
+							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
+							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN jos_sdi_language l ON t.language_id=l.id
+							INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+							WHERE m.guid = '".$fileIdentifier."'
+								  AND cl.code = '".$language->_lang."'";
+		$db->setQuery($queryObjecttype);
+		$objecttype = $db->loadObject();
+		
+		// Créer une entrée pour le type d'objet
+		if ($objecttype)
+		{
+			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
+			$XMLObjectType->setAttribute('code', $objecttype->code);
+			$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
+			$XMLObjectType->setAttribute('logo_width', $logoWidth);
+			$XMLObjectType->setAttribute('logo_height', $logoHeight);
+		}
+		else
+		{
+			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype");
+			$XMLObjectType->setAttribute('code', '');
+			$XMLObjectType->setAttribute('logo_path', '');
+			$XMLObjectType->setAttribute('logo_width', '');
+			$XMLObjectType->setAttribute('logo_height', '');
+		}
+		$XMLSdi->appendChild($XMLObjectType);
+		
+		// Entrées à ajouter si le shop est installé
+		$shopExist=0;
+		$query = "	SELECT count(*) 
+					FROM #__sdi_list_module 
+					WHERE code='SHOP'";
+		$db->setQuery($query);
+		$shopExist = $db->loadResult();
+		
+		if ($shopExist == 1)
+		{
+			$product = array();
+			$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
+								FROM #__sdi_metadata m
+								INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+								INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id 
+								LEFT OUTER JOIN #__sdi_product_file pf ON pf.product_id = p.id 
+								WHERE m.guid = '".$fileIdentifier."'";
+			$db->setQuery($queryProduct);
+			$product = $db->loadObject();
+			
+			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
+			if ($product)
+			{
+				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
+				$XMLProduct->setAttribute('published', (int)$product->published);
+				$XMLProduct->setAttribute('available', (int)$product->available);
+				$XMLProduct->setAttribute('free', (int)$product->free);
+				$XMLProduct->setAttribute('file_size', $product->size);
+				$XMLProduct->setAttribute('file_type', $product->type);
+			}
+			else
+			{
+				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product");
+				$XMLProduct->setAttribute('published', (int)0);
+				$XMLProduct->setAttribute('available', (int)0);
+				$XMLProduct->setAttribute('free', (int)0);
+				$XMLProduct->setAttribute('file_size', '');
+				$XMLProduct->setAttribute('file_type', '');
+			}
+			$XMLSdi->appendChild($XMLProduct);
+		}
+		
+		return $doc;
 	}
 }
 
