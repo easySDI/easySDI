@@ -321,7 +321,12 @@ switch($task){
 		
 		SITE_product::downloadFinalProduct();
 		break;
+	
+	case "previewProduct":
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'previewproduct.site.easysdi.html.php');
 		
+		HTML_preview::previewProduct($metadata_id= JRequest::getVar('metadata_id'));
+		break;
 	/*****************************************************************************************************************************
 	 * Favorite
 	 *****************************************************************************************************************************/
@@ -352,7 +357,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_favorite::favoriteProduct(1);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+//		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "removeFavorite":
@@ -362,7 +367,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_favorite::favoriteProduct(0);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+//		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
 		break;
 
 	case "manageFavoriteProduct":
@@ -392,6 +397,7 @@ switch($task){
 		SITE_favorite::searchProducts();
 		break;
 		
+
 	/*****************************************************************************************************************************
 	 * Default
 	 *****************************************************************************************************************************/

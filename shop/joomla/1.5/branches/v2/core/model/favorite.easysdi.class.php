@@ -17,10 +17,10 @@
  */
 
 
-class basemap extends sdiTable
+class favorite extends sdiTable
 {	
 	var $account_id=null;
-	var $objectversion_id=null;
+	var $metadata_id=null;
 	var $enable_notification=null;
 	
 	// Class constructor

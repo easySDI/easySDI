@@ -221,7 +221,7 @@ class HTML_shop
 			  <td class="mdActionViewProduct">
 			  <?php if ($hasPreview > 0){ ?>
 			    <span class="mdviewproduct">
-			    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
+			    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
 			    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
 			    <?php } ?>
 		      </td>

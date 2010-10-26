@@ -42,7 +42,7 @@ class SITE_favorite
 		$published = sdilist::getIdByCode('#__sdi_list_metadatastate','published' );
 		
 		//Get Var
-		$account = new accountByUserId($database);
+		$account = new accountByUserId($db);
 		$account->load($user->id);
 		if ($user->guest)
 		{
@@ -61,13 +61,8 @@ class SITE_favorite
 		$task = JRequest::getVar('task');
 		$simpleSearchCriteria  	= JRequest::getVar('simpleSearchCriteria','');
 		
-		//load favorite product_id
-		$query = "SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id ";
-		$db->setQuery( $query);
-		$objectversionList = $db->loadResultArray();
-	
 		//load notification product_id
-		$query = "SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id  AND  enable_notification=1";
+		$query = "SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $account->id  AND  enable_notification=1";
 		$db->setQuery( $query);
 		$notificationList = $db->loadResultArray();
 		
@@ -76,7 +71,7 @@ class SITE_favorite
 		$display_internal_orderable = false;
 		
 		//Load products count, only favorites
-		$query  = "SELECT COUNT(*) FROM #__sdi_objectversion ov where ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
+		$query  = "SELECT COUNT(*) FROM #__sdi_favorite WHERE account_id = $account->id";
 		$query  = $query .$filter ;
 		$db->setQuery( $query);
 		$total = $db->loadResult();
@@ -98,10 +93,19 @@ class SITE_favorite
 		if ($simpleSearchCriteria == ""){
 					$simpleSearchFilter  = $simpleSearchFilter ."ov.title ASC";
 		}
-		$query  = "SELECT ov.*, o.account_id FROM #__sdi_objectversion ov 
-							   INNER JOIN #__sdi_object o ON o.id = ov.object_id
-							   INNE JOIN #__sdi_account a ON a.id = o.account_id
-							   WHERE ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
+		$query = "SELECT f.*, m.guid as metadata_guid, o.account_id as provider_id, a.name as provider_name, o.name as title
+				   FROM #__sdi_favorite f
+				   INNER JOIN #__sdi_metadata m on m.id = f.metadata_id
+				   INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				   INNER JOIN #__sdi_object o ON o.id = ov.object_id
+				   INNER JOIN #__sdi_account a ON a.id = o.account_id
+				   WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $account->id)";
+//		$query  = "SELECT ov.*, o.account_id, m.guid as metadata_guid FROM #__sdi_objectversion ov 
+//							   INNER JOIN #__sdi_metadata m ON ov.metadata_id = m.id 
+//							   INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
+//							   INNER JOIN #__sdi_object o ON o.id = ov.object_id
+//							   INNER JOIN #__sdi_account a ON a.id = o.account_id
+//							   WHERE ov.id IN (SELECT objectversion_id FROM #__sdi_favorite WHERE account_id = $account->id)";
 		$query  = $query .$filter ;
 		$query = $query .$simpleSearchFilter;		
 		$db->setQuery( $query,$limitstart,$limit);
@@ -114,23 +118,7 @@ class SITE_favorite
 			echo "</div>";
 		}	
 		
-		//Partner list
-		$accounts = array();
-		$accounts[0]='';
-		$query = "SELECT  #__sdi_account.id as value, #__users.name as text 
-		          	FROM #__users, `#__sdi_account` 
-			  		INNER JOIN `#__sdi_manager_object` mo ON #__sdi_account.id = mo.account_id
-			  		WHERE #__users.id = #__sdi_account.user_id
-			  		GROUP BY #__sdi_account.id 
-			  		ORDER BY #__users.name";
-		$db->setQuery( $query);
-		$accounts = array_merge( $accounts, $db->loadObjectList() );
-		if ($db->getErrorNum()) 
-		{
-			echo "<div class='alert'>";
-			echo 	$db->getErrorMsg();
-			echo "</div>";
-		}
+		//TODO : replace with some generic code -----------------------------
 		$db->setQuery("SELECT * FROM #__menu where name='GEOCommande'");
 		$shopitemId = $db->loadResult();
 		if ($db->getErrorNum()) 
@@ -139,6 +127,7 @@ class SITE_favorite
 			echo 	$db->getErrorMsg();
 			echo "</div>";
 		}
+		//-------------------------------------------------------------------
 		
 		//define an array of orderable associated product for the current user
 		$orderableProductsMd = null;
@@ -146,33 +135,44 @@ class SITE_favorite
 		$query = "";
 		if($account->id == 0)
 		{
+			//TODO : replace $filter by a complete $query 
 			//No user logged, display only external products
 			$filter .= " AND (p.visibility_id = $public) ";
 		}
 		else
 		{
+			//TODO : replace queries with some including request on sdi_product table
 			//User logged, display products according to users's rights
 			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
-					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+//					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+//									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
+//									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
+//									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+//									  WHERE m.metadatastate_id=$published 
+//									  AND (o.visibility_id = $public 
+//									  		OR (o.visibility_id = $private AND o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
+//									  										OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+//									  										OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+//									  										OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
+//									  										OR o.account_id =  $account->id
+//									  										OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+//									  										))";
+$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
 									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published 
 									  AND (o.visibility_id = $public 
-									  		OR (o.visibility_id = $private AND o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
-									  										OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-									  										OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-									  										OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
-									  										OR o.account_id =  $account->id
-									  										OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-									  										)";
+									  		)";
 
 				}
 				else
 				{
 					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
 									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published AND o.visibility_id = $public";
@@ -183,6 +183,7 @@ class SITE_favorite
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
 					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id				  
 									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published 
@@ -201,6 +202,7 @@ class SITE_favorite
 				else
 				{
 					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
 									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published AND o.visibility_id = 150";
@@ -215,152 +217,7 @@ class SITE_favorite
 					echo "</div>";
 		}
 		
-		?>
-		<div id="page">
-		<h2 class="contentheading"><?php echo JText::_("EASYSDI_FAVORITE_TITLE"); ?></h2>
-		<div class="contentin">
-		<!--
-			//Call here the include content item plugin, or a specific article.
-			//Insert into the EasySDI config a key FAVORITE_ARTICLE_TOP with
-			//the value like {include_content_item 148} refering to the plugin and
-			//article you would like to call.
-			//-->       
-		
-			<table width="100%" id="infoStep4">
-				<?php
-				$row->text = config_easysdi::getValue("FAVORITE_ARTICLE_TOP");
-				$args = array( 1,&$row,&$params);
-				
-				JPluginHelper::importPlugin( 'content' );
-				$dispatcher =& JDispatcher::getInstance();
-				//$params = & new JParameter('');
-				$results = $dispatcher->trigger('onPrepareContent', 
-				array(&$row,&$params,0));
-				echo $row->text;
-				?>
-			</table>
-			<script>
-				function submitOrderForm()
-		 		{
-		 			document.getElementById('orderForm').submit();
-		 		}
-		 	</script>
-			
-			<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
-
-				<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
-				<br/>
-				<table width="100%">
-					<tr>
-						<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-						<td align="center"><?php echo JText::_("EASYSDI_SHOP_DISPLAY"); ?>
-						<?php echo $pageNav->getLimitBox(); ?>
-						</td>
-						<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-					</tr>
-				</table>
-			 	<h3><?php echo JText::_("EASYSDI_FAVORITE_RESOURCE_TITLE"); ?></h3>
-						 			 
-				<input type='hidden' name='option' value='<?php echo $option;?>'>
-				<input type='hidden' id ="task" name='task' value='manageFavoriteProduct'>
-				<input type='hidden'  name='limitstart' value="<?php echo  $limitstart; ?>">
-				<input type="hidden" name="countMD" value="<?php echo $countMD;?>">		
-				<input type="hidden" id="productId" name="productId" value="">
-				
-				<!--<span class="searchCriteria">
-					-->
-					<table width="100%">
-					   <tr>
-					   	<td colspan="3" align="left"><?php echo JText::_("EASYSDI_SHOP_NUMBER_OF_PRODUCT_FOUND");?><?php echo $total ?></td>
-					   </tr>
-					</table>
-					
-					<table id="favoriteManTable" class="box-table" width="100%">
-					<thead>
-						<tr>
-							<th class="logo">&nbsp;</th>
-							<th class="ptitle"><?php echo JText::_("EASYSDI_PRODUCT_TITLE"); ?></th>
-							<th class="logo">&nbsp;</th>
-							<th class="logo">&nbsp;</th>
-							<th class="logo">&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php
-					$param = array('size'=>array('x'=>800,'y'=>800) );
-					JHTML::_("behavior.modal","a.modal",$param);	
-					$i=0;	
-					//Display all the products 
-					foreach ($rows  as $row)
-					{
-					
-					$queryPartnerLogo = "select logo from #__sdi_account where id = ".$row->account_id;
-					$db->setQuery($queryPartnerLogo);
-					$partner_logo = $db->loadResult();
-					
-					$query = "select count(*) from #__sdi_product where viewurlwms != '' AND objectversion_id = '".$row->id."'";
-					$db->setQuery( $query);
-					$hasPreview = $db->loadResult();
-					
-					$hasOrderableProduct = false;
-					if (in_array($row->id, $orderableProductsMd))
-						$hasOrderableProduct = true;
-					
-					?>
-	
-							<tr>		
-								<td>
-								   <img height="18px" width="18px" src="<?php echo $partner_logo;?>" title="<?php echo $row->account_id;?>"></img>
-								</td>
-								<td width="100%">
-									<span class="mdtitle" >
-									<a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" 
-									href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title; ?></a>
-									</span>
-								</td>
-								<!--
-								<td width="30%">
-									<span class="mdsupplier" ><?php echo $row->account_id;?></span>
-								</td>
-								-->
-								<td class="logo"><div title="<?php echo JText::_('EASYSDI_REMOVE_FROM_FAVORITE'); ?>" class="pdFavorite" id="chooseFavorite" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='removeFavorite'; submitOrderForm();"/></td>
-								<td class="logo"><div title="<?php if ( in_array($row->id,$notificationList)) echo JText::_('EASYSDI_REMOVE_NOTIFICATION'); else echo JText::_('EASYSDI_ADD_NOTIFICATION'); ?>" class="<?php if ( in_array($row->id,$notificationList)) echo "pdNotificated"; else echo "pdNotNotificated"; ?>" id="chooseNotification" onClick="$('orderForm').productId.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"/></td>
-								
-								<?php if($hasOrderableProduct){?>
-								<td class="logo"><div title="<?php echo JText::_('EASYSDI_ADD_TO_CART'); ?>" class="savedOrderOrder" onClick="window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=<?php echo $shopitemId?>&firstload=1&fromStep=1&cid[]=<?php echo $row->id ?>', '_main');"/></td>
-								<?php }else{ ?>
-								<td class="nologo">&nbsp;</td>
-								<?php } ?>
-								
-								<?php if($hasPreview){?>
-								<td align="center" class="logo">
-								<div class="particular-view-product-link">
-								<a  title="<?php echo JText::_('EASYSDI_PREVIEW_PRODUCT');?>" id="productLink<?php echo $i; ?>" rel="{handler:'iframe',size:{x:565,y:450}}" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>" class="modal">&nbsp;</a>
-								</div>
-								</td>
-								
-								<?php }else{ ?>
-								<td class="nologo">&nbsp;</td>
-								<?php } ?>
-							</tr>
-					<?php
-						$i=$i+1;
-					}	
-					?>
-					</tbody>
-					</table>
-					<br/>
-					<table width="100%">
-						<tr>
-							<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-							<td align="center">&nbsp;</td>
-							<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-						</tr>
-					</table>
-				</form>
-		</div>
-		</div>
-		<?php
+		HTML_favorite::manageFavoriteProduct($option,$countMD,$rows,$notificationList,$total,$limitstart,$limit);
 	}
 	
 	function metadataNotification($is_notify = 0)
@@ -376,8 +233,8 @@ class SITE_favorite
 		
 		$account = new accountByUserId($database);
 		$account->load($user->id);
-		$objectversion_id = JRequest::getVar("objectversionID",0);
-		if ($objectversion_id == 0)
+		$favorite_id = JRequest::getVar("favorite_id",0);
+		if ($favorite_id == 0)
 		{
 			echo "<div class='alert'>";			
 			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
@@ -385,15 +242,15 @@ class SITE_favorite
 			return;
 		}
 		
-		$query = "SELECT COUNT(*) FROM  #__sdi_favorite WHERE objectversion_id = $objectversion_id AND account_id  = $account->id";
-		$database->setQuery( $query);
-		$total = $database->loadResult();
-		if($total == 0)
-		{
-			SITE_favorite::favoriteProduct(1);
-		}
+//		$query = "SELECT COUNT(*) FROM  #__sdi_favorite WHERE objectversion_id = $objectversion_id AND account_id  = $account->id";
+//		$database->setQuery( $query);
+//		$total = $database->loadResult();
+//		if($total == 0)
+//		{
+//			SITE_favorite::favoriteProduct(1);
+//		}
 
-		$query = "UPDATE  #__sdi_favorite set  enable_notification = $is_notify WHERE objectversion_id = $objectversion_id AND account_id  = $account->id";
+		$query = "UPDATE  #__sdi_favorite set  enable_notification = $is_notify WHERE id = $favorite_id AND account_id  = $account->id";
 		 
 		$database->setQuery( $query );
 		if (!$database->query()) {
@@ -408,8 +265,8 @@ class SITE_favorite
 	function favoriteProduct($is_favorite = 0)
 	{
 		global  $mainframe;
-		$database=& JFactory::getDBO(); 
-	
+		$database=& JFactory::getDBO();
+		
 		$user = JFactory::getUser();	
 	
 		if(!userManager::isUserAllowed($user,"FAVORITE"))
@@ -419,8 +276,12 @@ class SITE_favorite
 		$account = new accountByUserId($database);
 		$account->load($user->id);
 	
-		$objectversion_id = JRequest::getVar("objectversionID",0);
-		if ($objectversion_id == 0)
+		$metadata_guid = JRequest::getVar("metadata_guid",0);
+		$query = "SELECT id FROM #__sdi_metadata WHERE guid ='$metadata_guid'";
+		$database->setQuery( $query );
+		$metadata_id = $database->loadResult();
+		
+		if ($metadata_id == 0)
 		{
 			echo "<div class='alert'>";			
 			echo JText::_("EASYSDI_ERROR_NO_PRODUCT_ID");
@@ -429,11 +290,11 @@ class SITE_favorite
 		}
 		if ($is_favorite == 0)
 		{
-			$query = "DELETE FROM  #__sdi_favorite WHERE objectversion_id = $objectversion_id AND account_id  = $account->id";
+			$query = "DELETE FROM  #__sdi_favorite WHERE metadata_id = $metadata_id AND account_id  = $account->id";
 		}
 		else
 		{
-			$query = "INSERT INTO  #__sdi_favorite (objectversion_id,account_id) VALUES ($objectversion_id,$account->id)";
+			$query = "INSERT INTO  #__sdi_favorite (metadata_id,account_id) VALUES ($metadata_id,$account->id)";
 		}
 			 
 		$database->setQuery( $query );
