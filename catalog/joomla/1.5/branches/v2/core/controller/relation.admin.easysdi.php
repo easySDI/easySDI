@@ -86,7 +86,7 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOATTRIBUTE', true ); ?>" );
 				}
-				else if (getSelectedValue('adminForm','rendertype_id') < 1) 
+				else if (form.child_attributetype.value != 11 && getSelectedValue('adminForm','rendertype_id') < 1) 
 				{
 					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORENDERTYPE', true ); ?>" );
 				}
@@ -975,9 +975,11 @@ class ADMIN_relation {
 		$searchCriteria->load($rowAttributeRelation->id);
 		
 		$boundsStyle = "display:inline";
-			if ($rowAttribute->attributetype_id == 11) // Thesaurus GEMET
+		$renderStyle = "display:inline";
+		if ($rowAttribute->attributetype_id == 11) // Thesaurus GEMET
 		{
 			$boundsStyle = "display:none";
+			$renderStyle = "display:none";
 			$defaultStyle_textbox = "display:none";
 			$defaultStyle_textarea = "display:none";
 			$defaultStyle_Choicelist = "display:none";
@@ -985,7 +987,7 @@ class ADMIN_relation {
 			$defaultStyle_Locale_Textarea = "display:none";
 		}
 			
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $option);
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)

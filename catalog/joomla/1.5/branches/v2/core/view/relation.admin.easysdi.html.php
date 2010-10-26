@@ -605,7 +605,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 
-function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $option)
+	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -668,6 +668,7 @@ function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $re
 				</tr>
 				</table>
 				</div>
+				<div id="div_render" style="<?php echo $renderStyle; ?>">
 				<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
@@ -678,6 +679,9 @@ function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $re
 					?>
 					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
 				</tr>
+				</table>
+				</div>
+				<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td><?php echo JText::_("CATALOG_PROFILE"); ?></td>
 					<td>
@@ -975,6 +979,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php echo JHTML::_("select.genericlist",$attributetypes, 'attributetypes', 'size="1" class="inputbox" style="display:none"', 'value', 'text', $attributeid); ?>
 			<div id="txtHint"></div>
 			<input type="hidden" name="type" value='2' />
+			<input type="hidden" name="child_attributetype" value="<?php echo $child_attributetype?>" />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />
