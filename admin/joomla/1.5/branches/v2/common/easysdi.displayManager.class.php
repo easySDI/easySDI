@@ -570,6 +570,7 @@ class displayManager{
 	
 	function DisplayMetadata ($xslStyle, $xml)
 	{
+		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -609,6 +610,16 @@ class displayManager{
 				$notJoomlaCall = 'false';
 		}
 			
+		$db =& JFactory::getDBO();
+		
+		$user = JFactory::getUser();
+		$current_account = new accountByUserId($db);
+		if (!$user->guest){
+			$current_account->load($user->id);
+		}else{
+			$current_account->id = 0;
+		}
+        		
 		// Construction  of supplier,creation date and update date [from EasySDIV1]
 		$queryAccountID = "	SELECT a.id 
 							FROM #__sdi_metadata m
@@ -733,6 +744,22 @@ class displayManager{
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		
+		//load favorites
+		$optionFavorite;
+		$metadataListArray = array();
+		if($current_account->id == 0)
+			$optionFavorite = false;
+		else if ($enableFavorites == 1){
+			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
+			$db->setQuery($query);
+			$metadataListArray = $db->loadResultArray();
+			if ($db->getErrorNum()) {						
+						echo "<div class='alert'>";			
+						echo 			$db->getErrorMsg();
+						echo "</div>";
+			}
+		}
+		
 		$processor = new xsltProcessor();
 		
 		if ($type <> 'diffusion')
@@ -746,14 +773,18 @@ class displayManager{
 		$myHtml="";
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
-			$buttonsHtml .= "<table align=\"right\"><tr align='right'>
-				<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"/></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"/></td>";
+			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
+			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\"> </div></td>";
+			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\"> </div></td>";
+			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"> </div></td>";
 			if ($shopExist)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"/></a></td>";
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"> </div></td>";
 			
-			$buttonsHtml .= "</td></tr></table>";		
+			$buttonsHtml .= "</tr></table>";		
 		}
 		if ($print ==1 ){
 			$myHtml .= "<script>window.print();</script>";
@@ -813,6 +844,35 @@ class displayManager{
 	        		document.getElementById('catalogPanel3').className = 'open';
 				}
 				";
+				
+				if($enableFavorites == 1 && !$user->guest){
+				   $myHtml .= "
+				   document.getElementById('toggleFavorite').addEvent( 'click' , function() {
+				   var action = \"addFavorite\";
+				   var title = Array();
+				   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
+				   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
+				   
+				   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
+				      action = \"removeFavorite\";
+				   
+				   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
+			           	method: 'get',
+			           	onSuccess: function(){
+					        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
+			           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
+				   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
+						}else{
+						   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
+				   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
+						}
+			           	},
+			           	onFailure: function(){
+			           		
+			           	}
+			           }).request();		
+				});";
+				}
 			}
 			
 			/* Boutons */
