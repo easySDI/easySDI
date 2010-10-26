@@ -84,7 +84,20 @@ div .easysdi_product_does_not_exist{
 
 /* Buttons in the metadata view  */
 
-div#addToFavorite{
+.addFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	height:16px;
+	width:16px;
+}
+
+.removeFavorite{
 	background-color:transparent;
 	background-image:url(../icons/silk/star.png);
 	background-position:0 0;
@@ -92,6 +105,12 @@ div#addToFavorite{
 	height:16px;
 	width:16px;
 }
+
+.addToFavorite:hover{ 
+	background-image:url(../icons/silk/star.png);
+}
+
+
 
 div#exportPdf{
 	background-color:transparent;
