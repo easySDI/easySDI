@@ -668,6 +668,15 @@ class displayManager{
 					WHERE code='SHOP'";
 		$db->setQuery($query);
 		$shopExist = $db->loadResult();
+		if($shopExist)
+		{
+			$query = " SELECT count(*) FROM #__sdi_product p
+										INNER JOIN #__sdi_objectversion ov on ov.id = p.objectversion_id
+										INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+										WHERE m.guid = '$id'";
+			$db->setQuery($query);
+			$shopExist = $db->loadResult();
+		}
 		
 		/*
 		//define an array of orderable associated product for the current user
