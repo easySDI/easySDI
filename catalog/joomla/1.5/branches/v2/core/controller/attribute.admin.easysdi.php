@@ -295,7 +295,7 @@ class ADMIN_attribute {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET information='".str_replace("'","\'",$_POST['information_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET information='".helper_easysdi::escapeString($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -305,7 +305,7 @@ class ADMIN_attribute {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['information_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['information_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -323,7 +323,7 @@ class ADMIN_attribute {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET regexmsg='".str_replace("'","\'",$_POST['regexmsg_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET regexmsg='".helper_easysdi::escapeString($_POST['regexmsg_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -333,7 +333,7 @@ class ADMIN_attribute {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, regexmsg) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['regexmsg_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, regexmsg) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['regexmsg_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

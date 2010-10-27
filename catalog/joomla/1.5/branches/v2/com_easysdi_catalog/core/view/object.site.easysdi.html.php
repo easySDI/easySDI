@@ -84,56 +84,49 @@ else
 }
 ?>			
 	<div id="contentin" class="contentin">
-		    <table width="100%">
-				<tr>
-					<td width="100%" align="right">
-						<button type="button" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
-						<br></br>
-					</td>
-					<td width="100%" align="right">
-						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObject';document.getElementById('adminForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-						<br></br>
-					</td>
-				</tr>
-		   </table>
-			<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
-		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<table class="admintable" border="0" cellpadding="3" cellspacing="0">
+		 <div class="row">
+			 <div class="row">
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();"/>
+				<!-- <input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';document.getElementById('adminForm').submit();"/> -->
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
+			</div>	 
+		 </div>
+		<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
+		<div class="row">
+			<div class="row">
+				<div class="row">
 							<?php
 if (!$hasVersioning)
 { 
 ?>
-						<tr>
-							<td class="key"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
-							<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php if ($pageReloaded) echo $_POST['metadata_guid']; else echo $rowMetadata->guid; ?>" disabled="disabled" /></td>								
-						</tr>
+						<div class="row">
+							<label for="metadata_guid"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </label>
+							<input class="inputbox text full" type="text" size="50" name="metadata_guid" value="<?php if ($pageReloaded) echo $_POST['metadata_guid']; else echo $rowMetadata->guid; ?>" disabled="disabled" />								
+						</div>
 						
 <?php
 }
 ?>
-							<tr>
-								<td class="key"><?php echo JText::_("CORE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php if ($pageReloaded) echo $_POST['name']; else echo $rowObject->name; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-								<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['description']; else echo $rowObject->description?></textarea></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
-								<td><?php echo JHTML::_('select.booleanlist', 'published', '', ($pageReloaded)? $_POST['published'] : $rowObject->published); ?> </td>																
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CATALOG_OBJECT_VISIBILITY_LABEL"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$visibilities, 'visibility_id', 'size="1" class="inputbox"', 'value', 'text', ($pageReloaded)? $_POST['visibility_id'] : $rowObject->visibility_id  ); ?></td>								
-							</tr>
-							<tr>
-								<td colspan="2">
-									<fieldset>
-										<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
-										<table class="admintable" border="0" cellpadding="0" cellspacing="0">
+							<div class="row">
+								<label for="name"><?php echo JText::_("CORE_NAME"); ?> : </label>
+								<input class="inputbox" type="text" size="50" class="text full" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php if ($pageReloaded) echo $_POST['name']; else echo $rowObject->name; ?>" />								
+							</div>
+							<div class="row">
+								<label for="description"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </label>
+								<textarea rows="4" cols="50" name ="description" class="text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['description']; else echo $rowObject->description?></textarea>								
+							</div>
+							<div class="row">
+								<label for="published"><?php echo JText::_("CORE_PUBLISHED"); ?> : </label>
+								<?php echo JHTML::_('select.booleanlist', 'published', 'class="checkbox full"', ($pageReloaded)? $_POST['published'] : $rowObject->published); ?>
+							</div>
+							<div class="row">							
+								<label for="visibility_id"><?php echo JText::_("CATALOG_OBJECT_VISIBILITY_LABEL"); ?> : </label>
+								<?php echo JHTML::_("select.genericlist",$visibilities, 'visibility_id', 'size="1" class="inputbox checkbox full"', 'value', 'text', ($pageReloaded)? $_POST['visibility_id'] : $rowObject->visibility_id  ); ?>								
+							</div>
+							<div class="row">
+								<fieldset>
+									<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+									<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<?php
 			foreach ($languages as $lang)
 			{ 
@@ -147,125 +140,115 @@ if (!$hasVersioning)
 			?>
 										</table>
 									</fieldset>
-								</td>
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("CORE_OBJECT_TYPE_LABEL"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$objecttypes, 'objecttype_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editObject\');"', 'value', 'text', ($pageReloaded)? $_POST['objecttype_id'] : $rowObject->objecttype_id  ); ?></td>								
-							</tr>
-							<!-- <tr>							
-								<td><?php //echo JText::_("CORE_OBJECT_SUPPLIERNAME"); ?> : </td>
-								<td><?php //echo JHTML::_("select.genericlist",$accounts, 'account_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editObject\');"', 'value', 'text', ($pageReloaded)? $_POST['account_id'] : $rowObject->account_id ); ?></td>								
-							</tr> -->
-					<tr>	
-						<td colspan=2>
-						<fieldset>
-							<legend><?php echo JText::_( 'CORE_MANAGER_NAME'); ?></legend>
-							<table>
-								<tr>
-									<th><b><?php echo JText::_( 'CORE_AVAILABLE'); ?></b></th>
-									<th></th>
-									<th><b><?php echo JText::_( 'CORE_SELECTED'); ?></b></th>
-								</tr>
-								<tr>
-									<td>
-										<select name="managers[]" id="managers" size="10" multiple="multiple">
-										<?php
-										foreach ($managers as $manager){
-											echo "<option value='".$manager->value."'>".$manager->text."</option>";
-										}
-										?>
-										</select></td>
-									<td>
+							</div>
+							<div class="row">							
+								<label for="objecttype_id"><?php echo JText::_("CORE_OBJECT_TYPE_LABEL"); ?> : </label>
+								<?php echo JHTML::_("select.genericlist",$objecttypes, 'objecttype_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editObject\');"', 'value', 'text', ($pageReloaded)? $_POST['objecttype_id'] : $rowObject->objecttype_id  ); ?>								
+							</div>
+							<div class="row">	
+								<fieldset>
+									<legend><?php echo JText::_( 'CORE_MANAGER_NAME'); ?></legend>
 									<table>
 										<tr>
-											<td><input type="button" value="<<" id="removeAllmanagers"
-												onclick="javascript:TransfertAll('selected_managers','managers');"></td>
+											<th><b><?php echo JText::_( 'CORE_AVAILABLE'); ?></b></th>
+											<th></th>
+											<th><b><?php echo JText::_( 'CORE_SELECTED'); ?></b></th>
 										</tr>
 										<tr>
-											<td><input type="button" value="<" id="removemanager"
-												onclick="javascript:Transfert('selected_managers', 'managers');"></td>
+											<td>
+												<select name="managers[]" id="managers" size="10" multiple="multiple">
+												<?php
+												foreach ($managers as $manager){
+													echo "<option value='".$manager->value."'>".$manager->text."</option>";
+												}
+												?>
+												</select></td>
+											<td>
+											<table>
+												<tr>
+													<td><input type="button" value=" << " id="removeAllmanagers"
+														onclick="javascript:TransfertAll('selected_managers','managers');"></td>
+												</tr>
+												<tr>
+													<td><input type="button" value=" < " id="removemanager"
+														onclick="javascript:Transfert('selected_managers', 'managers');"></td>
+												</tr>
+												<tr>
+													<td><input type="button" value=" > " id ="addmanager"
+														onclick="javascript:Transfert('managers','selected_managers');"></td>
+												</tr>
+												<tr>
+													<td><input type="button" value=" >> " id="addAllmanagers"
+														onclick="javascript:TransfertAll('managers', 'selected_managers');"></td>
+												</tr>
+											</table>
+											</td>
+											<td>
+												<select name="selected_managers[]" id="selected_managers" size="10" multiple="multiple">
+												<?php
+													foreach ($selected_managers as $selected_managers){
+														echo "<option value='".$selected_managers->value."'>".$selected_managers->text."</option>";
+													}
+												?>
+											</select></td>
 										</tr>
-										<tr>
-											<td><input type="button" value=">" id ="addmanager"
-												onclick="javascript:Transfert('managers','selected_managers');"></td>
-										</tr>
-										<tr>
-											<td><input type="button" value=">>" id="addAllmanagers"
-												onclick="javascript:TransfertAll('managers', 'selected_managers');"></td>
-										</tr>
-									</table>
-									</td>
-									<td>
-										<select name="selected_managers[]" id="selected_managers" size="10" multiple="multiple">
-										<?php
-											foreach ($selected_managers as $selected_managers){
-												echo "<option value='".$selected_managers->value."'>".$selected_managers->text."</option>";
+										</table>
+								</fieldset>
+						</div>	
+						<div class="row">
+							<fieldset>
+								<legend><?php echo JText::_( 'CORE_EDITOR_NAME'); ?></legend>
+								<table>
+									<tr>
+										<th><b><?php echo JText::_( 'CORE_AVAILABLE'); ?></b></th>
+										<th></th>
+										<th><b><?php echo JText::_( 'CORE_SELECTED'); ?></b></th>
+									</tr>
+									<tr>
+										<td>
+											<select name="editors[]" id="editors" size="10" multiple="multiple">
+											<?php
+											foreach ($editors as $editor){
+												echo "<option value='".$editor->value."'>".$editor->text."</option>";
 											}
-										?>
-									</select></td>
-								</tr>
-								</table>
-						</fieldset>
-					</td>
-				</tr>	
-				<tr>
-						<td colspan=2>
-						<fieldset>
-							<legend><?php echo JText::_( 'CORE_EDITOR_NAME'); ?></legend>
-							<table>
-								<tr>
-									<th><b><?php echo JText::_( 'CORE_AVAILABLE'); ?></b></th>
-									<th></th>
-									<th><b><?php echo JText::_( 'CORE_SELECTED'); ?></b></th>
-								</tr>
-								<tr>
-									<td>
-										<select name="editors[]" id="editors" size="10" multiple="multiple">
-										<?php
-										foreach ($editors as $editor){
-											echo "<option value='".$editor->value."'>".$editor->text."</option>";
-										}
-										?>
+											?>
+											</select></td>
+										<td>
+										<table>
+											<tr>
+												<td><input type="button" value=" << " id="removeAlleditors"
+													onclick="javascript:TransfertAll('selected_editors','editors');"></td>
+											</tr>
+											<tr>
+												<td><input type="button" value=" < " id="removeeditor"
+													onclick="javascript:Transfert('selected_editors', 'editors');"></td>
+											</tr>
+											<tr>
+												<td><input type="button" value=" > " id ="addeditor"
+													onclick="javascript:Transfert('editors','selected_editors');"></td>
+											</tr>
+											<tr>
+												<td><input type="button" value=" >> " id="addAlleditors"
+													onclick="javascript:TransfertAll('editors', 'selected_editors');"></td>
+											</tr>
+										</table>
+										</td>
+										<td>
+											<select name="selected_editors[]" id="selected_editors" size="10" multiple="multiple">
+											<?php
+												foreach ($selected_editors as $selected_editors){
+													echo "<option value='".$selected_editors->value."'>".$selected_editors->text."</option>";
+												}
+											?>
 										</select></td>
-									<td>
-									<table>
-										<tr>
-											<td><input type="button" value="<<" id="removeAlleditors"
-												onclick="javascript:TransfertAll('selected_editors','editors');"></td>
-										</tr>
-										<tr>
-											<td><input type="button" value="<" id="removeeditor"
-												onclick="javascript:Transfert('selected_editors', 'editors');"></td>
-										</tr>
-										<tr>
-											<td><input type="button" value=">" id ="addeditor"
-												onclick="javascript:Transfert('editors','selected_editors');"></td>
-										</tr>
-										<tr>
-											<td><input type="button" value=">>" id="addAlleditors"
-												onclick="javascript:TransfertAll('editors', 'selected_editors');"></td>
-										</tr>
+									</tr>
 									</table>
-									</td>
-									<td>
-										<select name="selected_editors[]" id="selected_editors" size="10" multiple="multiple">
-										<?php
-											foreach ($selected_editors as $selected_editors){
-												echo "<option value='".$selected_editors->value."'>".$selected_editors->text."</option>";
-											}
-										?>
-									</select></td>
-								</tr>
-								</table>
-						</fieldset>
-					</td>
-				</tr>	
+							</fieldset>
+					</div>	
 <?php
 if ($rowObject->id == 0 and $hasVersioning) {
 ?>
-			<tr>
-				<td colspan=2>
+			<div class="row">
 					<fieldset>
 						<legend><?php echo JText::_( 'CATALOG_OBJECT_OBJECTVERSION'); ?></legend>
 						<table class="admintable" border="0" cellpadding="0" cellspacing="0">
@@ -279,22 +262,20 @@ if ($rowObject->id == 0 and $hasVersioning) {
 							</tr>	
 						</table>
 					</fieldset>
-				</td>
-			</tr>	
+			</div>	
 <?php 
 }?>
-						</table>
-						<br></br>
-						<table border="0" cellpadding="3" cellspacing="0">
+						</div>
+						<div class="row">
 <?php
 $user =& JFactory::getUser();
 if ($rowObject->created)
 { 
 ?>
-							<tr>
-								<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
-								<td><?php if ($rowObject->created) {echo date('d.m.Y h:i:s',strtotime($rowObject->created));} ?></td>
-								<td>, </td>
+							<div class="row">
+								<label><?php echo JText::_("CORE_CREATED"); ?> : </label>
+								<?php if ($rowObject->created) {echo date('d.m.Y h:i:s',strtotime($rowObject->created));} ?>
+								, 
 								<?php
 									if ($rowObject->createdby and $rowObject->createdby<> 0)
 									{
@@ -305,17 +286,17 @@ if ($rowObject->created)
 									else
 										$createUser = "";
 								?>
-								<td><?php echo $createUser; ?></td>
-							</tr>
+								<?php echo $createUser; ?>
+							</div>
 <?php
 }
 if ($rowObject->updated)
 { 
 ?>
-							<tr>
-								<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
-								<td><?php if ($rowObject->updated and $rowObject->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($rowObject->updated));} ?></td>
-								<td>, </td>
+							<div class="row">
+								<label><?php echo JText::_("CORE_UPDATED"); ?> : </label>
+								<?php if ($rowObject->updated and $rowObject->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($rowObject->updated));} ?>
+								, 
 								<?php
 									if ($rowObject->updatedby and $rowObject->updatedby<> 0)
 									{
@@ -326,16 +307,14 @@ if ($rowObject->updated)
 									else
 										$updateUser = "";
 								?>
-								<td><?php echo $updateUser; ?></td>
-							</tr>
+								<?php echo $updateUser; ?>
+							</div>
 <?php
 }
 ?>
-					</table>
-				</td>
-			</tr>
-			
-		</table>
+					</div>
+			</div>
+		</div>
 		<input type="hidden" name="cid[]" value="<?php echo $rowObject->id; ?>" />
 		<input type="hidden" name="guid" value="<?php echo $rowObject->guid; ?>" />
 		<input type="hidden" name="ordering" value="<?php echo $rowObject->ordering; ?>" />
@@ -345,29 +324,31 @@ if ($rowObject->updated)
 		<input type="hidden" name="updatedby" value="<?php echo ($rowObject->createdby)? $user->id : ''; ?>" /> 
 		<input type="hidden" name="metadata_guid" value="<?php if ($pageReloaded) echo $_POST['metadata_guid']; else echo $rowMetadata->guid; ?>" />
 		<input type="hidden" name="account_id" value="<?php echo $root_account; ?>" />
-		
+			
 		<input type="hidden" name="id" value="<?php echo $rowObject->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 		</form>
 		</div>
 		</div>
 	<?php
 	}
 	
-	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $search, $lists)
+	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists)
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
 		
 		?>
 		<div id="page">
-		<h2 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h2>
+		<h1 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h1>
 		<div class="contentin">
-		<h3> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h3>
+		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
 	
-		<table width="100%">
+		<!-- <table width="100%">
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
@@ -381,7 +362,7 @@ if ($rowObject->updated)
 			<tr>
 				<td align="left">
 					<br/>
-					<?php echo $listObjectType; ?>
+					<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 				</td>
 			</tr>
 			<tr>
@@ -395,15 +376,22 @@ if ($rowObject->updated)
 				</td>
 			</tr>
 		</table>
-		<br/>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-				<td align="center"><?php echo JText::_("CORE_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
-				<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
-	<h3><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h3>
+		 -->
+		<div class="row">
+			 <div class="row">
+			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTNAME");?></label>
+			 	<input type="text" name="searchObjectName" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
+			 </div>
+			 <div class="row">
+			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTTYPE");?></label>
+			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox full" size="1"', 'value', 'text', $filter_objecttype_id); ?>
+			 </div>
+			 <div class="row">
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listObject';document.getElementById('productListForm').submit();"/>
+				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('task').value='newObject';document.getElementById('productListForm').submit();"/>
+			</div>	 
+		 </div>
+	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<script>
 		function suppressObject_click(id){
 			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_DELETE"); ?>');
@@ -432,17 +420,9 @@ if ($rowObject->updated)
 	<tr>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECT_OBJECTTYPE"), 'objecttype', $lists['order_Dir'], $lists['order']); ?></th>
-	<!-- <th><?php //echo JText::_('CORE_METADATA_STATE'); ?></th> -->
-	<!--<th><?php //echo JText::_('CATALOG_OBJECT_VERSION_COL'); ?></th>-->
-	<th><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
-	<th><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
-	<!-- <th><?php //echo JText::_('CORE_UPDATED'); ?></th> -->
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<!-- <th class="logo">&nbsp;</th> -->
-	<!-- <th class="logo">&nbsp;</th> -->
-	<!-- <th class="logo">&nbsp;</th> -->
+	<th class='title'><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
+	<th class='title'><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
+	<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -472,19 +452,16 @@ if ($rowObject->updated)
 			$database->setQuery( "SELECT b.name FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 			$editors = implode(", ", $database->loadResultArray());
 			?>
-			<!-- <td ><?php //echo $versions; ?></td> -->
 			<td ><?php echo $managers; ?></td>
 			<td ><?php echo $editors; ?></td>
-			<!-- <td ><?php //if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td> -->
-			<!-- <td class="logo"><a id="editProduct"  href="./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>">Editer</a></td> -->
+			<td class="objectActions">
 			<?php 
 			if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 			{
 				?>
-				<td></td>
-				<td></td>
-				<td></td>
-				<!-- <td></td> -->
+				<div class="logo" id="emptyPicto"></div>
+				<div class="logo" id="emptyPicto"></div>
+				<div class="logo" id="emptyPicto"></div>
 				<?php 
 			} 
 			else 
@@ -495,50 +472,22 @@ if ($rowObject->updated)
 				if ($objecttype->hasVersioning)
 				{
 					?>
-					<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>', '_self');"></div></td>
+					<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang'); ?>', '_self');"></div>
 					<?php
 				}
 				else
 				{
 					?>
-					<td></td>
+					<div class="logo" id="emptyPicto"></div>
 					<?php 
 				}
 				?>
-				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
-				<?php
-				//if ($row->metadatastate_id == 2 or $row->metadatastate_id == 4) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
-				//{
-				?> 
-				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div></td>
-				<?php 
-				/*}
-				else {
-				?>
-				<td></td>
-				<?php 
-				}*/
-				?>
-				<?php
-				//if ($row->metadatastate_id == 1) // Impossible d'archiver si le statut n'est pas "PUBLISHED"
-				//{
-				?> 
-				<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_ARCHIVE_OBJECT'); ?>" id="archiveObject" onClick="return archiveObject_click('<?php //echo $row->id; ?>');" ></div></td> -->
-				<?php 
-				//}
-				//else {
-				?>
-				<!-- <td></td> -->
-				<?php 
-				//}
-				?>
-				<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_MANAGELINK_OBJECT'); ?>" id="manageObjectLink" onClick="return manageObjectLink_click('<?php //echo $row->id; ?>');" ></div></td> -->
-				<?php
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div>
+			<?php 
 			}
 			?>
-			<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_VIEWLINK_OBJECT'); ?>" id="viewObjectLink" onClick="return viewObjectLink_click('<?php //echo $row->id; ?>');" ></div></td> -->
-			<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_NEWVERSION_OBJECT'); ?>" id="newObjectVersion" onClick="return newObjectVersion_click('<?php //echo $row->id; ?>');" ></div></td> -->
-			
+			</td>
 			</tr>
 			<?php		
 		}
@@ -546,17 +495,13 @@ if ($rowObject->updated)
 	?>
 	</tbody>
 	</table>
-	<br/>
-	<table width="100%">
-		<tr>																																						
-			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-			<td align="center">&nbsp;</td>
-			<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-		</tr>
-	</table>
+	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
+			 
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listObject">
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 			<input type="hidden" id="backpage" name="backpage" value="object">
 			<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
 			<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />

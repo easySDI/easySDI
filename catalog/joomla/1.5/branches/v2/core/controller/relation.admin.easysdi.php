@@ -1243,7 +1243,7 @@ class ADMIN_relation {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1253,7 +1253,7 @@ class ADMIN_relation {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1271,7 +1271,7 @@ class ADMIN_relation {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET information='".str_replace("'","\'",$_POST['information_'.$lang->code])."' WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET information='".helper_easysdi::escapeString($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1281,7 +1281,7 @@ class ADMIN_relation {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['information_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['information_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1335,16 +1335,19 @@ class ADMIN_relation {
 				
 				$defaults = $_POST['defaultList'];
 				//print_r($defaults);
-				foreach ($defaults as $default)
+				if (count($defaults)>0)
 				{
-					if ($default <> "")
+					foreach ($defaults as $default)
 					{
-						// Create
-						$database->setQuery("INSERT INTO #__sdi_defaultvalue (attribute_id, codevalue_id) VALUES (".$rowAttribute->id.", ".$default.")");
-						if (!$database->query())
-						{	
-							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-							return false;
+						if ($default <> "")
+						{
+							// Create
+							$database->setQuery("INSERT INTO #__sdi_defaultvalue (attribute_id, codevalue_id) VALUES (".$rowAttribute->id.", ".$default.")");
+							if (!$database->query())
+							{	
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+								return false;
+							}
 						}
 					}
 				}
@@ -1382,9 +1385,9 @@ class ADMIN_relation {
 					$total = $database->loadResult();
 					
 					if ($_POST['rendertype_id'] == 1)
-						$default = trim(str_replace("'","\'",$_POST['default_ta_'.$lang->code]));
+						$default = trim(helper_easysdi::escapeString($_POST['default_ta_'.$lang->code]));
 					else
-						$default = trim(str_replace("'","\'",$_POST['default_tb_'.$lang->code]));
+						$default = trim(helper_easysdi::escapeString($_POST['default_tb_'.$lang->code]));
 					
 					if ($total > 0)
 					{
@@ -1488,16 +1491,19 @@ class ADMIN_relation {
 			}
 			
 			// Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
-			foreach($contexts as $context)
+			if ($rowRelation->issearchfilter)
 			{
-				$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
-									 VALUES 
-									 ('".$rowSearchCriteria->id."', ".$context.", '2')");
-				if (!$database->query())
-				{	
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					return false;
-				} 
+				foreach($contexts as $context)
+				{
+					$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
+										 VALUES 
+										 ('".$rowSearchCriteria->id."', ".$context.", '2')");
+					if (!$database->query())
+					{	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						return false;
+					} 
+				}
 			}
 		}
 				

@@ -2447,46 +2447,91 @@ class ADMIN_metadata {
 			}
 			
 			// Construction du message d'erreur, s'il y a lieu
+			$language =& JFactory::getLanguage();
 			$msg="";
 			if (count($missingChild) > 0)
 				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MINCHILDBOUNDSREACHED"));
 			foreach ($missingChild as $mc)
 			{
-				$rowObjectType = new objecttype( $database );
-				$rowObjectType->load($mc->child_id);
-		
-				$msg .= "<br>>".$rowObjectType->name." [".$mc->childbound_lower."]";
+				//$rowObjectType = new objecttype( $database );
+				//$rowObjectType->load($mc->child_id);
+				$rowObjectType=array();
+				$query = "SELECT ot.*, t.label as ot_label
+						  FROM #__sdi_objecttype ot
+						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
+						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  WHERE ot.id = ".$mc->child_id."
+							    AND cl.code = '".$language->_lang."'";
+				$database->setQuery($query);
+				$rowObjectType = $database->loadObject();
+					
+				$msg .= "<br>>".$rowObjectType->ot_label." [".$mc->childbound_lower."]";
+				//$msg .= "<br>>".$rowObjectType->ot_label;
 			}
 			if (count($overloadChild) > 0)
 				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MAXCHILDBOUNDSREACHED"));
 			foreach ($overloadChild as $oc)
 			{
-				$rowObjectType = new objecttype( $database );
-				$rowObjectType->load($oc->child_id);
+				//$rowObjectType = new objecttype( $database );
+				//$rowObjectType->load($oc->child_id);
+				$rowObjectType=array();
+				$query = "SELECT ot.*, t.label as ot_label
+						  FROM #__sdi_objecttype ot
+						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
+						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  WHERE ot.id = ".$oc->child_id."
+							    AND cl.code = '".$language->_lang."'";
+				$database->setQuery($query);
+				$rowObjectType = $database->loadObject();
 		
-				$msg .= "<br>>".$rowObjectType->name." [".$oc->childbound_upper."]";
+				$msg .= "<br>>".$rowObjectType->ot_label." [".$oc->childbound_upper."]";
+				//$msg .= "<br>>".$rowObjectType->ot_label;
 			}
 			if (count($missingParent) > 0)
 				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MINPARENTBOUNDSREACHED"));
 			foreach ($missingParent as $mp)
 			{
-				$rowObjectType = new objecttype( $database );
-				$rowObjectType->load($mp->parent_id);
+				//$rowObjectType = new objecttype( $database );
+				//$rowObjectType->load($mp->parent_id);
+				$rowObjectType=array();
+				$query = "SELECT ot.*, t.label as ot_label
+						  FROM #__sdi_objecttype ot
+						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
+						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  WHERE ot.id = ".$mp->child_id."
+							    AND cl.code = '".$language->_lang."'";
+				$database->setQuery($query);
+				$rowObjectType = $database->loadObject();
 		
-				$msg .= "<br>>".$rowObjectType->name." [".$mp->parentbound_lower."]";
+				$msg .= "<br>>".$rowObjectType->ot_label." [".$mp->parentbound_lower."]";
+				//$msg .= "<br>>".$rowObjectType->ot_label;
 			}
 			if (count($overloadParent) > 0)
 				$msg .= html_Metadata::cleanText(JText::_("CATALOG_METADATA_VALIDATEFORPUBLISH_MAXPARENTBOUNDSREACHED"));
 			foreach ($overloadParent as $op)
 			{
-				$rowObjectType = new objecttype( $database );
-				$rowObjectType->load($op->parent_id);
+				//$rowObjectType = new objecttype( $database );
+				//$rowObjectType->load($op->parent_id);
+				$rowObjectType=array();
+				$query = "SELECT ot.*, t.label as ot_label
+						  FROM #__sdi_objecttype ot
+						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
+						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  WHERE ot.id = ".$op->child_id."
+							    AND cl.code = '".$language->_lang."'";
+				$database->setQuery($query);
+				$rowObjectType = $database->loadObject();
 		
-				$msg .= "<br>>".$rowObjectType->name." [".$op->parentbound_upper."]";
+				$msg .= "<br>>".$rowObjectType->ot_label." [".$op->parentbound_upper."]";
+				//$msg .= "<br>>".$rowObjectType->ot_label;
 			}
-			echo $msg."<hr>";
+			//echo $msg."<hr>";
 			
-			break;
+			//break;
 			
 			if ($msg <> "")
 			{

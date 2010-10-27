@@ -105,7 +105,7 @@ class SITE_object {
 		$account= new accountByUserId($db);
 		$account->load($user->id);
 		
-		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		
 		$filter = "";
@@ -182,12 +182,12 @@ class SITE_object {
 		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
 		$db->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
-		$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
+		//$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
 		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$search,$lists);
+		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$filter_objecttype_id,$search,$lists);
 
 	}
 
@@ -571,7 +571,7 @@ class SITE_object {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowObject->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowObject->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -581,7 +581,7 @@ class SITE_object {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowObject->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowObject->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -798,7 +798,7 @@ class SITE_object {
 		$rowObject->bind(JRequest::get('post'));
 		$rowObject->checkin();
 
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 	}
 	
 	function changeContent( $state = 0 )

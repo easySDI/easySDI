@@ -427,6 +427,8 @@ function toggle_multi_select(field, size)
 function tableOrdering( order, dir, view )
 {
 	var form = document.getElementById("productListForm");
+	if (form == null)
+		form = document.getElementsByName("adminForm")[0];
 
 	form.filter_order.value 	= order;
 	form.filter_order_Dir.value	= dir;

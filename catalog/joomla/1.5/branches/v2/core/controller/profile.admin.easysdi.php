@@ -251,7 +251,7 @@ class ADMIN_profile {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".str_replace("'","\'",$_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowProfile->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowProfile->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -261,7 +261,7 @@ class ADMIN_profile {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowProfile->guid."', ".$lang->id.", '".str_replace("'","\'",$_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowProfile->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

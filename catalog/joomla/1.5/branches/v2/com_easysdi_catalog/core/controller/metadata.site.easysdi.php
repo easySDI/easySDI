@@ -54,7 +54,7 @@ class SITE_metadata {
 		
 		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
 		
-		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
+		$search = $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
 		$search = $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
@@ -197,11 +197,11 @@ class SITE_metadata {
 		
 		$managers = "";
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
-		$managers = implode(", ", $database->loadResultArray());
+		$managers = implode(",\r\n", $database->loadResultArray());
 		
 		$editors = "";
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
-		$editors = implode(", ", $database->loadResultArray());
+		$editors = implode(",\r\n", $database->loadResultArray());
 		
 		/*$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_objecttype' .
@@ -216,15 +216,14 @@ class SITE_metadata {
 				 	   AND cl.code='".$language->_lang."'
 				 ORDER BY t.label";
 		
-		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$listObjectType[] = JHTML::_('select.option', '0', JText::_('CATALOG_METADATA_SELECT_OBJECTTYPE'), 'value', 'text');
 		$database->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $database->loadObjectList());
-		$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
 		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $search, $lists);	
+		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists);	
 		
 	}
 	

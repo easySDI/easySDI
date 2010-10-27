@@ -25,11 +25,11 @@ class HTML_objectversion {
 		$user	=& JFactory::getUser();
 		?>	
 		<div id="page">
-		<h2 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h2>
+		<h1 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h1>
 		<div class="contentin">
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
 	
-		<table width="100%">
+		<!-- <table width="100%">
 			<tr>
 				<td colspan="3" align="right">
 					<button type="button" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=0', '_self');" ><?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?></button>
@@ -41,14 +41,13 @@ class HTML_objectversion {
 				</td>
 			</tr>
 		</table>
-		<br/>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-				<td align="center"><?php echo JText::_("CORE_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
-				<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
+		 -->
+		<div class="row">
+			 <div class="row">
+				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=0&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='cancelObjectVersion';document.getElementById('productListForm').submit();"/>
+			</div>	 
+		 </div>
 	<script>
 		function suppressObjectVersion_click(id, object_id, hasLinks){
 			if (hasLinks == false)
@@ -65,11 +64,7 @@ class HTML_objectversion {
 	<tr>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTVERSION_NAME"), 'title', $lists['order_Dir'], $lists['order']); ?></th>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTVERSION_DESCRIPTION"), 'description', $lists['order_Dir'], $lists['order']); ?></th>
-	<!-- <th><?php //echo JText::_('CORE_UPDATED'); ?></th> -->
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
+	<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -82,21 +77,21 @@ class HTML_objectversion {
 			
 			?>		
 			<tr>
-			<td ><a class="modal" title="<?php echo helper_easysdi::formatDivTitle(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><a class="modal" title="<?php echo helper_easysdi::escapeString(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
 			<td ><?php echo $row->description; ?></td>
-			<!-- <td ><?php //if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td> -->
+			<td class="metadataActions">
 			<?php 
 			if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
 			{
 				?>
-				<td class="logo"></td>
-				<td class="logo"></td>
+				<div class="logo" id="emptyPicto"></div>
+				<div class="logo" id="emptyPicto"></div>
 				<?php 
 			} 
 			else 
 			{
 				?>
-				<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_EDIT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');"></div></td>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_EDIT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
 				<?php
 				if (count($rows)>1 and ($row->metadatastate_id == 2 or $row->metadatastate_id == 4)) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
@@ -117,25 +112,26 @@ class HTML_objectversion {
 					if ($links > 0)
 					{
 						?> 
-						<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div></td>
+						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div>
 						<?php 
 					}
 					else
 					{
 						?> 
-						<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div></td>
+						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div>
 						<?php
 					}
 				}
 				else {
 				?>
-				<td class="logo"></td>
+				<div class="logo" id="emptyPicto"></div>
 				<?php 
 				}
 			}
 			?>
-			<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
-			<td class="logo"><div title="<?php echo helper_easysdi::formatDivTitle(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div></td>
+			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div>
+			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div>
+			</td>
 			</tr>
 			<?php		
 		}
@@ -143,18 +139,13 @@ class HTML_objectversion {
 	?>
 	</tbody>
 	</table>
-	<br/>
-	<table width="100%">
-		<tr>																																						
-			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-			<td align="center">&nbsp;</td>
-			<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-		</tr>
-	</table>
+	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
 	
 		<input type="hidden" name="option" value="<?php echo $option; ?>">
 		<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
 		<input type="hidden" id="task" name="task" value="listObjectVersion">
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 		<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
 		</form>
@@ -180,40 +171,34 @@ class HTML_objectversion {
 if ($row->id == 0)
 {
 ?>
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h2>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h1>
 <?php 
 }
 else
 {
 ?>
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h2>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h1>
 <?php 
 }
 ?>
 		    <div id="contentin" class="contentin">
-		    <table width="100%">
-				<tr>
-					<td width="100%" align="right">
-						<button type="button" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"><?php echo JText::_("CORE_SAVE"); ?></button>
-						<br></br>
-					</td>
-					<td width="100%" align="right">
-						<button type="button" onClick="window.open ('./index.php?option=com_easysdi_catalog&task=backObjectVersion&object_id=<?php echo $object_id;?>','_parent');"><?php echo JText::_("CORE_CANCEL"); ?></button>
-						<br></br>
-					</td>
-				</tr>
-		   </table>
+		    <div class="row">
+				 <div class="row">
+					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open ('./index.php?option=com_easysdi_catalog&task=backObjectVersion&object_id=<?php echo $object_id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang'); ?>','_self');"/>
+				</div>	 
+			 </div>
 			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-				<table border="0" cellpadding="3" cellspacing="0">	
-					<tr>
-						<td width=150><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </td>
-						<td><input class="inputbox" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" /></td>								
-					</tr>
-					<tr>
-						<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-						<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea></td>								
-					</tr>
-				</table>
+				<div class="row">	
+					<div class="row">
+						<label for="metadata_guid"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </label> 
+						<input class="inputbox text full" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" />								
+					</div>
+					<div class="row">
+						<label for="description"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </label> 
+						<textarea rows="4" cols="50" name ="description" class="text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea>								
+					</div>
+				</div>
 				
 				<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 				<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
@@ -230,7 +215,9 @@ else
 				<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 				<input type="hidden" name="option" value="<?php echo $option; ?>" />
 				<input type="hidden" name="task" value="" />
-				
+				<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+				<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			
 			</form>
 			</div>
 		</div>
