@@ -2192,3 +2192,230 @@ div#divAdvancedSearch  input.text {
 div#divAdvancedSearch select.inputbox{
 	width:310px;
 }
+
+/* Frontend table lists */
+.tableList {
+	border: 0;
+	margin-bottom: 20px;
+	line-height: 16px;
+	padding-top:5px;
+}
+
+.tableList .col {
+	padding: 5px 0;
+}
+
+.tableList .col {
+	margin: 0 !important;
+}
+
+.tableList .col .title {
+	font-size: 0.8em;
+	color: #515151;
+}
+
+.tableList .col .logo {
+	width:14px;
+}
+
+.tableList .col .logo2 {
+	width:28px;
+}
+
+.box-table {
+	border: 0;
+	border-collapse:collapse;
+	width:100%;
+}
+
+.box-table tr:hover td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#a2c4ea none repeat scroll 0 0;
+}
+
+.box-table td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	padding:1px;
+}
+
+div#emptyPicto{
+	background-color:transparent;
+	background-image:url(../images/blank.gif);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+/* List Metadata Screen*/	
+div#editMetadata:hover{
+	cursor:pointer;
+}
+
+div#editMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#archiveMetadata:hover{
+	cursor:pointer;
+}
+
+div#archiveMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/folder_database.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#invalidateMetadata:hover{
+	cursor:pointer;
+}
+
+div#invalidateMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/arrow_undo.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#historyAssignMetadata:hover{
+	cursor:pointer;
+}
+
+div#historyAssignMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/calendar.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+.box-table .metadataActions{
+	width:64px;
+}
+
+.box-table .metadataActions div{
+	float:left;
+}
+
+/* List Object screen */
+div#listObjectVersion:hover{
+	cursor:pointer;
+}
+div#listObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_white_stack.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#editObject:hover{
+	cursor:pointer;
+}
+
+div#editObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#deleteObject:hover{
+	cursor:pointer;
+}
+
+div#deleteObject{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+.box-table .objectActions{
+	width:48px;
+}
+
+.box-table .objectActions div{
+	float:left;
+}
+
+/* List ObjectVersion screen */
+div#editObjectVersion:hover{
+	cursor:pointer;
+}
+
+div#editObjectVersion{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
+div#manageObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+div#manageObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../icons/silk/link_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+div#viewObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+div#viewObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../icons/silk/link.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+}
+
+.box-table .objectversionActions{
+	width:64px;
+}
+
+.box-table .objectversionActions div{
+	float:left;
+}
+
+.row{
+	clear: both;
+	margin-bottom: 5px;
+	}
+
+	label {
+	display: block;
+	float: left;
+	width: 158px;
+	padding-right: 10px;
+	text-align: right;
+	}

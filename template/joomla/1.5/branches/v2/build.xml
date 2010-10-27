@@ -25,7 +25,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\Inetpub\wwwroot\easysdi_1510\templates\easysdi">
+			todir="C:\Inetpub\wwwroot\geodbmeta_test\templates\easysdi">
 			<fileset dir=".">
 				<include name="**/*.*" />
 				
