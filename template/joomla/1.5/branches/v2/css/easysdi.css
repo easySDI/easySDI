@@ -1312,6 +1312,10 @@ div#listObjectVersion{
 	width:16px;	
 }
 	
+div#archiveMetadata:hover{
+	cursor:pointer;
+}
+
 div#archiveMetadata{
 	background-color:transparent;
 	background-image:url(../icons/silk/folder_database.png);
@@ -1319,6 +1323,10 @@ div#archiveMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+}
+
+div#invalidateMetadata:hover{
+	cursor:pointer;
 }
 
 div#invalidateMetadata{
@@ -2129,3 +2137,58 @@ div#historyAssignMetadata{
 	width:281px !important;
 }
 
+/* Pour être compatible avec GeodbMeta*/
+div#divSimpleSearch.row div.checkbox {
+	float:left;
+	/*display: inline-block;*/
+	width: 521px;
+	margin-top: -1px;
+}
+
+div#divSimpleSearch  div.label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+div#divSimpleSearch  label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+
+div#divSimpleSearch  input.text {
+	width:310px;
+}
+
+div#divSimpleSearch select.inputbox{
+	width:239px;
+}
+
+div#divAdvancedSearch.row div.checkbox {
+	float:left;
+	display: inline-block;
+	width: 521px;
+	margin-top: -1px;
+}
+
+div#divAdvancedSearch  label {
+display:block;
+float:left;
+padding-right:10px;
+text-align:right;
+width:163px;
+}
+
+div#divAdvancedSearch  input.text {
+	width:310px;
+}
+
+div#divAdvancedSearch select.inputbox{
+	width:310px;
+}
