@@ -88,7 +88,7 @@ class HTML_favorite{
 					<thead>
 						<tr>
 							<th class="logo">&nbsp;</th>
-							<th class="ptitle"><?php echo JText::_("SHOP_FAVORITE_TITLE"); ?></th>
+							<th class="ptitle"><?php echo JText::_("SHOP_FAVORITE_ITEM_TITLE"); ?></th>
 							<th class="logo">&nbsp;</th>
 							<th class="logo">&nbsp;</th>
 							<th class="logo">&nbsp;</th>
