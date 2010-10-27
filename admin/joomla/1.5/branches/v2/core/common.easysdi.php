@@ -783,12 +783,19 @@ default:
 	
 
 	
-	function formatDivTitle($text)
+	function escapeString($text)
 	{
-		$text = str_replace(chr(13),"\\r",$text);
+		/*$text = str_replace(chr(13),"\\r",$text);
 		$text = str_replace(chr(10),"\\n",$text);
 		$text = str_replace(chr(34),"&quot;",$text);
-		$text = str_replace(chr(39),"&#145;",$text);
+		$text = str_replace(chr(39),"&#39;",$text);
+		$text = str_replace(chr(92),"&#92;",$text);
+		$text = str_replace(chr(47),"&#47;",$text);
+		$text = str_replace(chr(60),"&#60;",$text);
+		$text = str_replace(chr(62),"&#62;",$text);*/
+		$text = str_replace(chr(13),"\\r",$text);
+		$text = str_replace(chr(10),"\\n",$text);
+		$text = htmlentities($text);
 		//$text = addslashes($text);
 		//echo $text."<br>";
 		return $text;
