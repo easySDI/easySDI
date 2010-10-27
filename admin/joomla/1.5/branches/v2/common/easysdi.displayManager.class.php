@@ -775,14 +775,14 @@ class displayManager{
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
 			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\"> </div></td>";
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
 			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\"> </div></td>";
-			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\"> </div></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\"> </div></td>
-					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\"> </div></td>";
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
+			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
 			if ($shopExist)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\"> </div></td>";
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\" onclick=\"window.open('./index.php?option=com_easysdi_shop&task=shop', '_parent');\"> </div></td>";
 			
 			$buttonsHtml .= "</tr></table>";		
 		}
@@ -812,6 +812,35 @@ class displayManager{
 			//Define links for onclick event
 			$myHtml .= "<script>\n";
 			
+			$myHtml .="
+			function favoriteManagment ()
+			{
+			  var action = \"addFavorite\";
+			   var title = Array();
+			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
+			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
+				   
+			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
+			      action = \"removeFavorite\";
+				   
+			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
+		           	method: 'get',
+		           	onSuccess: function(){
+				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
+		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
+			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
+					}else{
+					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
+			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
+					}
+		           	},
+		           	onFailure: function(){
+		           		
+		           	}
+		           }).request();		
+				
+			}";
+			
 			//Manage display class
 			/* Onglets abstract et complete*/
 			$myHtml .= "window.addEvent('domready', function() {
@@ -834,58 +863,18 @@ class displayManager{
 				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
 					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
 				});
-				document.getElementById('orderProduct').addEvent( 'click' , function() { 
-					window.open('./index.php?option=com_easysdi_shop&view=shop', '_main');
-				});
-			
+				
 				document.getElementById('catalogPanel3').className = 'closed';
 				
 				if(task == 'showMetadata' & type == 'diffusion'){
 	        		document.getElementById('catalogPanel3').className = 'open';
 				}
 				";
-				
-				if($enableFavorites == 1 && !$user->guest){
-				   $myHtml .= "
-				   document.getElementById('toggleFavorite').addEvent( 'click' , function() {
-				   var action = \"addFavorite\";
-				   var title = Array();
-				   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
-				   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
-				   
-				   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
-				      action = \"removeFavorite\";
-				   
-				   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
-			           	method: 'get',
-			           	onSuccess: function(){
-					        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
-			           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
-				   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
-						}else{
-						   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
-				   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
-						}
-			           	},
-			           	onFailure: function(){
-			           		
-			           	}
-			           }).request();		
-				});";
-				}
 			}
 			
 			/* Boutons */
 			$myHtml .= "
-			document.getElementById('exportPdf').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');
-			});
-			document.getElementById('exportXml').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');
-			});
-			document.getElementById('printMetadata').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');
-			});
+
 			
 	
 			document.getElementById('catalogPanel1').className = 'closed';
