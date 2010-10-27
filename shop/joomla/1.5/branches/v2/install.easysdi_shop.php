@@ -819,6 +819,37 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_favorite` (
+					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`created`  datetime NOT NULL ,
+					`createdby`  bigint(20) NOT NULL ,
+					`updated`  datetime NULL DEFAULT NULL ,
+					`updatedby`  bigint(20) NULL DEFAULT NULL ,
+					`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+					`ordering`  bigint(20) NOT NULL DEFAULT 0 ,
+					`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+					`checked_out_time`  datetime NULL DEFAULT NULL ,
+					`metadata_id`  bigint(20) NOT NULL ,
+					`account_id`  bigint(20) NOT NULL ,
+					`enable_notification`  tinyint(1) NULL DEFAULT NULL ,
+					PRIMARY KEY (`id`),
+					INDEX `jos_sdi_favorite_ibfk_1` USING BTREE (`metadata_id`) ,
+					INDEX `jos_sdi_favorite_ibfk_2` USING BTREE (`account_id`) 
+					)
+					ENGINE=InnoDB
+					DEFAULT CHARACTER SET=utf8 COLLATE=utf8
+					";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		
 	 }
 	 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
