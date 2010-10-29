@@ -841,7 +841,7 @@ function com_install(){
 					INDEX `jos_sdi_favorite_ibfk_2` USING BTREE (`account_id`) 
 					)
 					ENGINE=InnoDB
-					DEFAULT CHARACTER SET=utf8 COLLATE=utf8
+					DEFAULT CHARACTER SET=utf8
 					";
 		$db->setQuery( $query);
 		if (!$db->query()) 

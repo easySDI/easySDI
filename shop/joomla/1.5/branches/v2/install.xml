@@ -8,12 +8,11 @@
 	<authorUrl>www.depth.ch</authorUrl>
 	<copyright></copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<description>
-		Administration tool for the easysdi shop component.
-	</description>
+	<description>EasySDI Shop component.</description>
 	
 	<installfile>install.easysdi_shop.php</installfile>
-	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
+	<uninstallfile>uninstall.easysdi.php</uninstallfile>	
+		
 	<!-- Backend -->
 	<administration>		
 		<files>

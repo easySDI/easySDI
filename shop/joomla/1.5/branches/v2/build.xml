@@ -20,7 +20,7 @@
 	<target name="compression" description="Compression">
 
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_shop.zip"
-			basedir="." excludes=" modules/** ,out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
+			basedir="." excludes=" modules/** ,out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml;.buildpath" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
