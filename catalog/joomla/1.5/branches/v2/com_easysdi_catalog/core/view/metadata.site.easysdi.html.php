@@ -81,10 +81,13 @@ class HTML_metadata {
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('productListForm').submit();"/>
 			</div>	 
 		 </div>
+	<div class="searchresults">
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
-		echo "<table><tbody><tr><td colspan=\"11\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
+		//echo "<table><tbody><tr><td colspan=\"11\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
+		echo "<p><strong>".JText::_("CATALOG_METADATA_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
+		
 	}else{?>
 	<table class="box-table" id="MyProducts">
 	<thead>
@@ -284,6 +287,7 @@ else
 	?>
 			</tbody>
 			</table>
+			</div>
 			<!-- <table width="100%">
 				<tr>																																						
 					<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
@@ -837,7 +841,7 @@ else
 																win = new Ext.Window({
 																		                title:'Publication',
 																		                width:300,
-																		                height:130,
+																		                height:170,
 																		                closeAction:'hide',
 																		                layout:'fit', 
 																					    border:false, 

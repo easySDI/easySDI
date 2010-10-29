@@ -399,7 +399,8 @@ class HTML_catalog{
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
 					<label for="<?php echo "create_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
+					<?php echo HTML_catalog::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar datepicker"', JURI::root(true).'/templates/system/images/calendar.png', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					
 					<label for="<?php echo "update_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_TO");?></label>
 					<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
 				</div>
@@ -445,7 +446,7 @@ class HTML_catalog{
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
 						<div class="checkbox rows">
-						<?php echo JHTML::_('select.radiolist', $versions, $searchFilter->guid, 'class="radio"', 'value', 'text', $selectedVersion);?>
+						<?php echo HTML_catalog::radiolist($versions, $searchFilter->guid, 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
 						</div>
 					</div>
 					<?php
@@ -749,7 +750,7 @@ default:
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
 						<div class="checkbox rows">
-						<?php echo JHTML::_('select.radiolist', $versions, $searchFilter->guid, 'class="radio"', 'value', 'text', $selectedVersion);?>
+						<?php echo HTML_catalog::radiolist($versions, $searchFilter->guid, 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
 						</div>
 					</div>
 					<?php
@@ -1452,7 +1453,9 @@ foreach($nodes  as $metadata)
 	}
 
 	/**
-	 * Generates an HTML radio list
+	 * Generates an HTML checkbox list
+	 * 
+	 * Joomla! radiolist code, override for EasySDI
 	 *
 	 * @param array An array of objects
 	 * @param string The value of the HTML name attribute
@@ -1501,11 +1504,100 @@ foreach($nodes  as $metadata)
 			}
 			$html .= "<div>\n";
 			$html .= "\n\t<input type=\"checkbox\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
-			$html .= "\n\t<label class=\"checkbox\" for=\"$id_text$k\">$t</label>";
+			$html .= "\n\t<label for=\"$id_text$k\" $attribs>$t</label>";
 			$html .= "</div>\n";
 		}
 		$html .= "\n";
 		return $html;
+	}
+	
+	/**
+	 * Generates an HTML radio list
+	 * 
+	 * Joomla! Code, override for EasySDI
+	 *
+	 * @param array An array of objects
+	 * @param string The value of the HTML name attribute
+	 * @param string Additional HTML attributes for the <select> tag
+	 * @param mixed The key that is selected
+	 * @param string The name of the object variable for the option value
+	 * @param string The name of the object variable for the option text
+	 * @returns string HTML for the select list
+	 */
+	function radiolist( $arr, $name, $attribs = null, $key = 'value', $text = 'text', $selected = null, $idtag = false, $translate = false )
+	{
+		reset( $arr );
+		$html = '';
+
+		if (is_array($attribs)) {
+			$attribs = JArrayHelper::toString($attribs);
+		 }
+
+		$id_text = $name;
+		if ( $idtag ) {
+			$id_text = $idtag;
+		}
+
+		for ($i=0, $n=count( $arr ); $i < $n; $i++ )
+		{
+			$k	= $arr[$i]->$key;
+			$t	= $translate ? JText::_( $arr[$i]->$text ) : $arr[$i]->$text;
+			$id	= ( isset($arr[$i]->id) ? @$arr[$i]->id : null);
+
+			$extra	= '';
+			$extra	.= $id ? " id=\"" . $arr[$i]->id . "\"" : '';
+			if (is_array( $selected ))
+			{
+				foreach ($selected as $val)
+				{
+					$k2 = is_object( $val ) ? $val->$key : $val;
+					if ($k == $k2)
+					{
+						$extra .= " selected=\"selected\"";
+						break;
+					}
+				}
+			} else {
+				$extra .= ((string)$k == (string)$selected ? " checked=\"checked\"" : '');
+			}
+			$html .= "<div>\n";
+			$html .= "\n\t<input type=\"radio\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
+			$html .= "\n\t<label for=\"$id_text$k\" $attribs>$t</label>";
+			$html .= "</div>\n";
+		}
+		$html .= "\n";
+		return $html;
+	}
+	
+	/**
+	 * Displays a calendar control field
+	 * 
+	 * Joomla! Code, override for EasySDI
+	 *
+	 * @param	string	The date value
+	 * @param	string	The name of the text field
+	 * @param	string	The id of the text field
+	 * @param	string	The date format
+	 * @param	array	Additional html attributes
+	 */
+	function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $src, $alt)
+	{
+		JHTML::_('behavior.calendar'); //load the calendar behavior
+
+		if (is_array($attribs)) {
+			$attribs = JArrayHelper::toString( $attribs );
+		}
+		$document =& JFactory::getDocument();
+		$document->addScriptDeclaration('window.addEvent(\'domready\', function() {Calendar.setup({
+        inputField     :    "'.$id.'",     // id of the input field
+        ifFormat       :    "'.$format.'",      // format of the input field
+        button         :    "'.$id.'_img",  // trigger for the calendar (button ID)
+        align          :    "Tl",           // alignment (defaults to "Bl")
+        singleClick    :    true
+    });});');
+
+		return '<input type="text" name="'.$name.'" id="'.$id.'" value="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" '.$attribs.' />'.
+				 '<img src="'.$src.'" alt="'.$alt.'" id="'.$id.'_img" '.$attribs.'/>';
 	}
 }
 

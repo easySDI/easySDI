@@ -188,7 +188,6 @@ class SITE_object {
 		$lists['order'] 		= $filter_order;
 		
 		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$filter_objecttype_id,$search,$lists);
-
 	}
 
 	function editObject( $id, $option ) {

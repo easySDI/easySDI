@@ -348,7 +348,7 @@ if ($rowObject->updated)
 		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
 		<form action="index.php" method="GET" id="productListForm" name="productListForm">
 	
-		<!-- <table width="100%">
+		<table width="100%">
 			<tr>
 				<td align="left">
 					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
@@ -376,7 +376,8 @@ if ($rowObject->updated)
 				</td>
 			</tr>
 		</table>
-		 -->
+		 
+		 <!-- 
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTNAME");?></label>
@@ -391,7 +392,7 @@ if ($rowObject->updated)
 				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('task').value='newObject';document.getElementById('productListForm').submit();"/>
 			</div>	 
 		 </div>
-	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
+		 -->
 	<script>
 		function suppressObject_click(id){
 			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_DELETE"); ?>');
@@ -415,6 +416,14 @@ if ($rowObject->updated)
 			window.open('./index.php?option=com_easysdi_catalog&task=versionaliseObject&cid[]='+id, '_self');
 		}
 	</script>
+	<div class="searchresults">
+	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
+	<?php
+	if(count($rows) == 0){
+		//echo "<table><tbody><tr><td colspan=\"11\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
+		echo "<p><strong>".JText::_("CATALOG_OBJECT_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
+		
+	}else{?>
 	<table id="myProducts" class="box-table" width="100%">
 	<thead>
 	<tr>
@@ -425,6 +434,7 @@ if ($rowObject->updated)
 	<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 	</tr>
 	</thead>
+	<?php } ?>
 	<tbody>
 	<?php
 		$i=0;
@@ -497,7 +507,7 @@ if ($rowObject->updated)
 	</table>
 	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
 			 
-	
+	</div>
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listObject">
 			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
