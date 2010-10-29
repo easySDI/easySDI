@@ -273,6 +273,8 @@ class SITE_favorite
 			
 			break;									
 		}
+		
+		//TODO : do the notification...
 	}
 
 	function favoriteProduct($is_favorite = 0)

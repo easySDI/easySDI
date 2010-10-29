@@ -145,7 +145,8 @@ class HTML_favorite{
 										 onClick="$('orderForm').favorite_id.value='<?php echo $row->id; ?>';$('orderForm').task.value='<?php if ( in_array($row->metadata_id,$notificationList)) echo "remove"; else echo "add"; ?>MetadataNotification'; submitOrderForm();"></div>
 								</td>
 								
-								<?php if($hasOrderableProduct){?>
+								<?php if($hasOrderableProduct){
+								//TODO : correct the link?>
 								<td class="logo">
 									<div title="<?php echo JText::_('SHOP_FAVORITE_ADD_TO_CART'); ?>" 
 									     class="savedOrderOrder" 
