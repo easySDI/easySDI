@@ -395,7 +395,7 @@ default:
 	}
 
 	
-	function generateMetadata2($classId,$geoMD,$parentkey,$metadata_id,$root=0,$doc){
+	function generateMetadata2($classId,$geoMD,$parentkey,$metadata_id,$root=0,&$doc){
 
 
 		global  $mainframe;
@@ -430,7 +430,7 @@ default:
 
 					for ($i=0 ;$i<$count;$i++){
 
-						helper_easysdi::generateMetadata2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0,&$doc);	
+						helper_easysdi::generateMetadata2($row->id,$geoMD,$key."[".($i+1)."]",$metadata_id,0,$doc);	
 					}
 					break;
 				case  "freetext" :
@@ -485,7 +485,7 @@ default:
 	}
 
 	
-	function generateMetadata($row,$tab_id,$metadata_standard_id,$iso_key,$doc,$n){
+	function generateMetadata($row,$tab_id,$metadata_standard_id,$iso_key,&$doc,$n){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
@@ -609,7 +609,7 @@ default:
 					}
 					foreach ($rowsClassesClasses  as $rowClassesClasses ){
 						$doc=$doc."<$rowClassesClasses->iso_key>";
-						helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,&$doc,$n);
+						helper_easysdi::generateMetadata($rowClassesClasses,$tab_id,$metadata_standard_id,$iso_key."/".$rowClassesClasses->iso_key,$doc,$n);
 						$doc=$doc."</$rowClassesClasses->iso_key>";
 					}
 				}
