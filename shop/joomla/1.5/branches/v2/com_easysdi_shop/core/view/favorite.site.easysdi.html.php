@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_favorite{
 	
-	function manageFavoriteProduct ($option,$countMD,$rows,$notificationList,$total,$limitstart,$limit)
+	function manageFavoriteProduct ($option,$countMD,$rows,$orderableProductsMd,$notificationList,$total,$limitstart,$limit)
 	{
 		$db =& JFactory::getDBO();
 		?>
@@ -114,9 +114,9 @@ class HTML_favorite{
 						$hasPreview = $db->loadResult();
 						
 						$hasOrderableProduct = false;
-						if (in_array($row->id, $orderableProductsMd))
+						if (in_array($row->metadata_id, $orderableProductsMd))
 							$hasOrderableProduct = true;
-						
+							
 						?>
 	
 							<tr>		
@@ -149,13 +149,13 @@ class HTML_favorite{
 								<td class="logo">
 									<div title="<?php echo JText::_('SHOP_FAVORITE_ADD_TO_CART'); ?>" 
 									     class="savedOrderOrder" 
-									     onClick="window.open('./index.php?option=com_easysdi_shop&view=shop&Itemid=<?php echo $shopitemId?>&firstload=1&fromStep=1&cid[]=<?php echo $row->metadata_id ?>', '_main');"></div>
+									     onClick="window.open('./index.php?option=com_easysdi_shop&task=shop&Itemid=<?php echo $shopitemId?>&firstload=1&fromStep=1&cid[]=<?php echo $row->metadata_id ?>', '_main');"></div>
 								</td>
 								<?php }else{ ?>
 								<td class="nologo">&nbsp;</td>
 								<?php } ?>
 								
-								<?php if($hasPreview){?>
+								<?php if($hasOrderableProduct && $hasPreview){?>
 								<td align="center" class="logo">
 									<div class="particular-view-product-link">
 										<a  title="<?php echo JText::_('SHOP_FAVORITE_PREVIEW_PRODUCT');?>" 

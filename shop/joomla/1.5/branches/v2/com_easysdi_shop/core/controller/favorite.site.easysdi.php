@@ -135,64 +135,77 @@ class SITE_favorite
 		$query = "";
 		if($account->id == 0)
 		{
-			//TODO : replace $filter by a complete $query 
-			//No user logged, display only external products
-			$filter .= " AND (p.visibility_id = $public) ";
+			$query  = "SELECT m.id FROM #__sdi_metadata m 
+									  INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published 
+									  AND p.published=1
+									  AND p.visibility = $public
+									  AND o.visibility_id = $public";
 		}
 		else
 		{
-			//TODO : replace queries with some including request on sdi_product table
 			//User logged, display products according to users's rights
 			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
+					$query  = "SELECT m.id FROM #__sdi_metadata m 
+									  INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id 
+									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
+									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
+									  WHERE m.metadatastate_id=$published 
+									  AND p.published=1
+									  AND (o.visibility_id = $public 
+									  		OR (o.visibility_id = $private AND o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
+									  										OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										OR o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										OR o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
+									  										OR o.account_id =  $account->id
+									  										OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  										))";
 //					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
 //									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
 //									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 //									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 //									  WHERE m.metadatastate_id=$published 
+//									  AND p.published=1
 //									  AND (o.visibility_id = $public 
-//									  		OR (o.visibility_id = $private AND o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
-//									  										OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-//									  										OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-//									  										OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id ) 
-//									  										OR o.account_id =  $account->id
-//									  										OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-//									  										))";
-$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
-									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
-									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
-									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
-									  WHERE m.metadatastate_id=$published 
-									  AND (o.visibility_id = $public 
-									  		)";
+//									  		OR (o.visibility_id = $private
+//									  			AND (o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
+//									  				 OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+//									  				 OR o.account_id =  $account->id
+////									  				 OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))) ) )";
 
 				}
 				else
 				{
-					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+					$query  = "SELECT m.id FROM #__sdi_metadata m 
+									  INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
-									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
-									  WHERE m.metadatastate_id=$published AND o.visibility_id = $public";
+									  WHERE m.metadatastate_id=$published 
+									  AND p.published=1
+									  AND o.visibility_id = $public";
 				}
 			}
 			else
 			{
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
-					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+					$query  = "SELECT m.id FROM #__sdi_metadata m 
+									  INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id				  
-									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published 
+									  AND p.published=1
 									  AND (o.visibility_id = $private 
 									  		AND (
 									  				o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = $account->id )
 									  				OR o.id IN (SELECT mo.object_id FROM #__sdi_manager_object mo WHERE mo.account_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-									  				OR mo.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
-									  				OR mo.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id )
+									  				OR o.account_id IN (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
+									  				OR o.account_id  IN (SELECT id FROM #__sdi_account WHERE root_id = $account->id )
 									  				OR o.account_id =  $account->id
 									  				OR o.account_id IN  (SELECT id FROM #__sdi_account WHERE root_id = (SELECT root_id FROM #__sdi_account WHERE id = $account->id ))
 									  			)
@@ -201,9 +214,9 @@ $query  = "SELECT ov.id FROM #__sdi_objectversion ov
 				}
 				else
 				{
-					$query  = "SELECT ov.id FROM #__sdi_objectversion ov 
+					$query  = "SELECT m.id FROM #__sdi_metadata m 
+									  INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id
-									  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id 
 									  INNER JOIN #__sdi_object o ON o.id = ov.object_id
 									  WHERE m.metadatastate_id=$published AND o.visibility_id = 150";
 				}
@@ -217,7 +230,7 @@ $query  = "SELECT ov.id FROM #__sdi_objectversion ov
 					echo "</div>";
 		}
 		
-		HTML_favorite::manageFavoriteProduct($option,$countMD,$rows,$notificationList,$total,$limitstart,$limit);
+		HTML_favorite::manageFavoriteProduct($option,$countMD,$rows,$orderableProductsMd,$notificationList,$total,$limitstart,$limit);
 	}
 	
 	function metadataNotification($is_notify = 0)
