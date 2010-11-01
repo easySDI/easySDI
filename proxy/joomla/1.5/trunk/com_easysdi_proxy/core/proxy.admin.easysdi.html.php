@@ -556,9 +556,12 @@ echo $pane->endPane();
 				<?php 
 				$keywordsList = $config->{"service-metadata"}->{"KeywordList"};
 				$keywordString="";
-				foreach ($keywordsList->{'Keyword'} as $keyword)
-				{ 
-					$keywordString .= $keyword . ",";		
+				if($keywordsList)
+				{
+					foreach ($keywordsList->{'Keyword'} as $keyword)
+					{ 
+						$keywordString .= $keyword . ",";		
+					}
 				}
 				$keywordString = substr($keywordString, 0 , strlen ($keywordString) -1);
 				
