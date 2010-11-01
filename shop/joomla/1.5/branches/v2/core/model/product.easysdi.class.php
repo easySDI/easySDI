@@ -50,11 +50,41 @@ class product extends sdiTable
 	
 	function store()
 	{
-		
+		global  $mainframe;	
 		if(! parent::store())
 		{
 			return false;
 		}
+		
+		//Notify users for which this product is a favorite
+		$this->_db->setQuery( "SELECT account_id FROM  #__sdi_favorite 
+												 WHERE metadata_id = (SELECT metadata_id FROM #__sdi_objectversion WHERE id = $this->objectversion_id)
+												 AND enable_notification = 1" );
+		$users = $this->_db->loadObjectList();
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
+			//TODO : Do something to notify but let the store process goes on
+		}
+		
+		//send an email
+		$mailer =& JFactory::getMailer();
+		foreach ($users as $user)
+		{
+			$query = "SELECT u.email FROM #__users u INNER JOIN #__sdi_account a ON a.user_id=u.id
+										WHERE a.id=$user->account_id";
+			$this->_db->setQuery( $query );
+			$email = $this->_db->loadResult();
+			
+			if ($email != ""){
+				$mailer->addBCC($email);
+				$mailer->setSubject(JText::_("SHOP_PRODUCT_NOTIFICATION_SUBJECT"));	
+				$mailer->setBody(JText::sprintf("SHOP_PRODUCT_NOTIFICATION_MAIL_BODY",$this->name));	
+				if ($mailer->send() !==true){
+					//TODO : Do something to notify but let the store process goes on		
+				}
+			}
+		}
+				
 		if($this->available == 0 || $this->free == 0)
 		{
 			$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
