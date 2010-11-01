@@ -558,6 +558,7 @@ class displayManager{
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		$myHtml;
+		$myHtml = "<script type=\"text/javascript\" src=\"/media/system/js/mootools.js\"></script>";
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		$productId;
