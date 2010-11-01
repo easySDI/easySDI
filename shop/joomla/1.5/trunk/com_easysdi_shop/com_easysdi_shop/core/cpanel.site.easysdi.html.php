@@ -277,7 +277,7 @@ class HTML_cpanel {
 					?>
 					<td class="logo">
 					<div class="savedOrderCopy" title="<?php echo JText::_("EASYSDI_ORDER_TOOLTIP_COPY") ?>"
-					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='orderCopy';document.getElementById('ordersListForm').submit();"></div>
+					onClick="document.getElementById('order_id').value='<?php echo $row->order_id ;?>';document.getElementById('task<?php echo $option; ?>').value='copyOrder';document.getElementById('ordersListForm').submit();"></div>
 					</td>
 					<?php 
 					}else{ 
