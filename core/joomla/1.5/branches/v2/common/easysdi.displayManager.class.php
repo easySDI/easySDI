@@ -770,11 +770,15 @@ class displayManager{
 		}
 		
 		$processor = new xsltProcessor();
+
+		$isFavorite = 1;
+		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+			$isFavorite = 0;
 		
 		if ($type <> 'diffusion')
-			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall);
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
 		
-		//echo htmlspecialchars($xml->saveXML())."<br>";break;
+//		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
@@ -1406,7 +1410,7 @@ class displayManager{
 			$out->close();
 	}
 	
-	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall)
+	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
 	{
 		$doc = new DomDocument('1.0', 'UTF-8');
 		//$doc = $xml;
@@ -1424,6 +1428,7 @@ class displayManager{
 		//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
 		$XMLSdi->setAttribute('user_lang', $language->_lang);
 		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
+		$XMLSdi->setAttribute('isFavorite', (int)$isFavorite);
 		$XMLNewRoot->appendChild($XMLSdi);
 		//$doc->appendChild($XMLSdi);
 		//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
@@ -1564,6 +1569,48 @@ class displayManager{
 			}
 			$XMLSdi->appendChild($XMLProduct);
 		}
+		
+		//Ajoute les actions disponibles
+		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
+		
+		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
+		$XMLActionPDF->setAttribute('id', 'exportPdf');
+		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
+		$XMLActionPDF->appendChild($XMLActionPDFLink);
+		
+		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
+		$XMLActionXML->setAttribute('id', 'exportXml');
+		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
+		$XMLActionXML->appendChild($XMLActionXMLLink);
+		
+		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
+		$XMLActionPrint->setAttribute('id', 'printMetadata');
+		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=$option&task=$task&id='.$fileIdentifier.'&type=$type&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
+		$XMLActionPrint->appendChild($XMLActionPrintLink);
+		
+		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
+		$XMLActionOrder->setAttribute('id', 'orderProduct');
+		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?option=com_easysdi_shop&task=shop\', \'_parent\');]]');
+		$XMLActionOrder->appendChild($XMLActionOrderLink);
+		
+		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
+		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
+		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
+		$XMLActionAddToFavorite->appendChild($XMLActionAddToFavoriteLink);
+		
+		$XMLActionRemoveFromFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:removefromfavorite");
+		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
+		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
+		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
+		
+		$XMLAction->appendChild($XMLActionPDF);
+		$XMLAction->appendChild($XMLActionXML);
+		$XMLAction->appendChild($XMLActionPrint);
+		$XMLAction->appendChild($XMLActionOrder);
+		$XMLAction->appendChild($XMLActionAddToFavorite);
+		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
+		
+		$XMLSdi->appendChild($XMLAction);
 		
 		return $doc;
 	}
