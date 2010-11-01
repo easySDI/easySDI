@@ -62,6 +62,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -389,6 +390,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			StringBuffer serviceMetadataXSLT = new StringBuffer();
 			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			serviceMetadataXSLT.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
+			serviceMetadataXSLT.append("<xsl:strip-space elements=\"*\" />");
 			serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
 			serviceMetadataXSLT.append("<!-- Copy the current node -->");
 			serviceMetadataXSLT.append("<xsl:copy>");
@@ -776,6 +778,8 @@ public class WMSProxyServlet extends ProxyServlet {
 						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 						SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
+						transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+						transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 						transformer.transform(saxSource, new StreamResult(out));
 						tempOut = out;
 					}
