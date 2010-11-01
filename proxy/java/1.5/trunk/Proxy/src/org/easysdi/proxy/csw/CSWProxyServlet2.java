@@ -59,6 +59,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -251,6 +252,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 					transformer = tFactory.newTransformer(new StreamSource(xslt_service));
+					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+					transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 					transformer.transform(saxSource, new StreamResult(tempServiceMD));
 					tempServiceMD.flush();
 					tempServiceMD.close();
