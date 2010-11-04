@@ -570,7 +570,7 @@ class displayManager{
 	
 	function DisplayMetadata ($xslStyle, $xml)
 	{
-		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+//		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -754,29 +754,31 @@ class displayManager{
 		$hasOrderableProduct = false;
 		
 		//load favorites
-		$optionFavorite;
-		$metadataListArray = array();
-		if($current_account->id == 0)
-			$optionFavorite = false;
-		else if ($enableFavorites == 1){
-			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
-			$db->setQuery($query);
-			$metadataListArray = $db->loadResultArray();
-			if ($db->getErrorNum()) {						
-						echo "<div class='alert'>";			
-						echo 			$db->getErrorMsg();
-						echo "</div>";
-			}
-		}
+//		$optionFavorite;
+//		$metadataListArray = array();
+//		if($current_account->id == 0)
+//			$optionFavorite = false;
+//		else if ($enableFavorites == 1){
+//			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
+//			$db->setQuery($query);
+//			$metadataListArray = $db->loadResultArray();
+//			if ($db->getErrorNum()) {						
+//						echo "<div class='alert'>";			
+//						echo 			$db->getErrorMsg();
+//						echo "</div>";
+//			}
+//		}
 		
 		$processor = new xsltProcessor();
 
-		$isFavorite = 1;
-		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-			$isFavorite = 0;
+//		$isFavorite = 1;
+//		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//			$isFavorite = 0;
 		
+//		if ($type <> 'diffusion')
+//			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
 		if ($type <> 'diffusion')
-			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall);
 		
 //		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
@@ -787,10 +789,10 @@ class displayManager{
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
-			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
+//			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
+//			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
@@ -825,34 +827,34 @@ class displayManager{
 			//Define links for onclick event
 			$myHtml .= "<script>\n";
 			
-			$myHtml .="
-			function favoriteManagment ()
-			{
-			  var action = \"addFavorite\";
-			   var title = Array();
-			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
-			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
-				   
-			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
-			      action = \"removeFavorite\";
-				   
-			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
-		           	method: 'get',
-		           	onSuccess: function(){
-				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
-		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
-			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
-					}else{
-					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
-			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
-					}
-		           	},
-		           	onFailure: function(){
-		           		
-		           	}
-		           }).request();		
-				
-			}";
+//			$myHtml .="
+//			function favoriteManagment ()
+//			{
+//			  var action = \"addFavorite\";
+//			   var title = Array();
+//			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
+//			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
+//				   
+//			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
+//			      action = \"removeFavorite\";
+//				   
+//			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
+//		           	method: 'get',
+//		           	onSuccess: function(){
+//				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
+//		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
+//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
+//					}else{
+//					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
+//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
+//					}
+//		           	},
+//		           	onFailure: function(){
+//		           		
+//		           	}
+//		           }).request();		
+//				
+//			}";
 			
 			//Manage display class
 			/* Onglets abstract et complete*/
@@ -1410,7 +1412,8 @@ class displayManager{
 			$out->close();
 	}
 	
-	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
+//	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
+	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall)
 	{
 		$doc = new DomDocument('1.0', 'UTF-8');
 		//$doc = $xml;
@@ -1428,7 +1431,7 @@ class displayManager{
 		//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
 		$XMLSdi->setAttribute('user_lang', $language->_lang);
 		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
-		$XMLSdi->setAttribute('isFavorite', (int)$isFavorite);
+//		$XMLSdi->setAttribute('isFavorite', (int)$isFavorite);
 		$XMLNewRoot->appendChild($XMLSdi);
 		//$doc->appendChild($XMLSdi);
 		//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
@@ -1571,46 +1574,46 @@ class displayManager{
 		}
 		
 		//Ajoute les actions disponibles
-		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
-		
-		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
-		$XMLActionPDF->setAttribute('id', 'exportPdf');
-		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
-		$XMLActionPDF->appendChild($XMLActionPDFLink);
-		
-		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
-		$XMLActionXML->setAttribute('id', 'exportXml');
-		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
-		$XMLActionXML->appendChild($XMLActionXMLLink);
-		
-		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
-		$XMLActionPrint->setAttribute('id', 'printMetadata');
-		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=$option&task=$task&id='.$fileIdentifier.'&type=$type&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
-		$XMLActionPrint->appendChild($XMLActionPrintLink);
-		
-		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
-		$XMLActionOrder->setAttribute('id', 'orderProduct');
-		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?option=com_easysdi_shop&task=shop\', \'_parent\');]]');
-		$XMLActionOrder->appendChild($XMLActionOrderLink);
-		
-		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
-		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
-		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
-		$XMLActionAddToFavorite->appendChild($XMLActionAddToFavoriteLink);
-		
-		$XMLActionRemoveFromFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:removefromfavorite");
-		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
-		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
-		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
-		
-		$XMLAction->appendChild($XMLActionPDF);
-		$XMLAction->appendChild($XMLActionXML);
-		$XMLAction->appendChild($XMLActionPrint);
-		$XMLAction->appendChild($XMLActionOrder);
-		$XMLAction->appendChild($XMLActionAddToFavorite);
-		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
-		
-		$XMLSdi->appendChild($XMLAction);
+//		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
+//		
+//		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
+//		$XMLActionPDF->setAttribute('id', 'exportPdf');
+//		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
+//		$XMLActionPDF->appendChild($XMLActionPDFLink);
+//		
+//		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
+//		$XMLActionXML->setAttribute('id', 'exportXml');
+//		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
+//		$XMLActionXML->appendChild($XMLActionXMLLink);
+//		
+//		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
+//		$XMLActionPrint->setAttribute('id', 'printMetadata');
+//		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=$option&task=$task&id='.$fileIdentifier.'&type=$type&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
+//		$XMLActionPrint->appendChild($XMLActionPrintLink);
+//		
+//		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
+//		$XMLActionOrder->setAttribute('id', 'orderProduct');
+//		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?option=com_easysdi_shop&task=shop\', \'_parent\');]]');
+//		$XMLActionOrder->appendChild($XMLActionOrderLink);
+//		
+//		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
+//		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
+//		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
+//		$XMLActionAddToFavorite->appendChild($XMLActionAddToFavoriteLink);
+//		
+//		$XMLActionRemoveFromFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:removefromfavorite");
+//		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
+//		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
+//		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
+//		
+//		$XMLAction->appendChild($XMLActionPDF);
+//		$XMLAction->appendChild($XMLActionXML);
+//		$XMLAction->appendChild($XMLActionPrint);
+//		$XMLAction->appendChild($XMLActionOrder);
+//		$XMLAction->appendChild($XMLActionAddToFavorite);
+//		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
+//		
+//		$XMLSdi->appendChild($XMLAction);
 		
 		return $doc;
 	}
