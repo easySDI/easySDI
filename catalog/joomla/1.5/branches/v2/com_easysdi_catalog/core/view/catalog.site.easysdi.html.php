@@ -31,58 +31,29 @@ class HTML_catalog{
 		$db =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
 		$user =& JFactory::getUser();
-		//$language = $user->getParam('language', '');
-	
+		$app =& JFactory::getApplication(); 
+		$templateDir = JURI::base() . 'templates/' . $app->getTemplate(); 
+		
 		$listMaxLength = config_easysdi::getValue("CATALOG_SEARCH_MULTILIST_LENGTH");
 		
+		// Scripts
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+		JHTML::script('search.js', 'administrator/components/com_easysdi_catalog/js/');
+		
+		// Deux parties de la recherche
 		$simulatedTabIndex = JRequest::getVar('simulatedTabIndex');
 		$advancedSrch = JRequest::getVar('advancedSrch',0);
 
-		// Rien à voir, à supprimer dès que possible
-		//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		//displayManager::generateSitemap("C:\\RecorderWebGIS\\sitemap\\sitemap.xml");
-		// -----------------------------------------
-		
-		/*$accounts = array();
-		 $accounts[0]='';
-
-		 //Do not display a furnisher without product
-
-		 $query = "SELECT  #__sdi_account.id as value, #__users.name as text
-		 FROM #__users, #__sdi_account
-		 INNER JOIN #__sdi_object ON #__sdi_account.id = #__sdi_object.account_id
-		 WHERE #__users.id = #__sdi_account.user_id AND
-		 #__sdi_account.id IN (SELECT #__sdi_object.account_id FROM #__sdi_object WHERE #__sdi_object.published=1)
-		 GROUP BY #__sdi_account.id
-		 ORDER BY #__users.name";
-
-		 $db->setQuery( $query);
-		 $accounts = array_merge( $accounts, $db->loadObjectList() );
-		 if ($db->getErrorNum())
-		 {
-			echo "<div class='alert'>";
-			echo 	$db->getErrorMsg();
-			echo "</div>";
-			}
-			*/
-
-
-
+		// Choix radio pour les versions 
 		$versions = array(
 		JHTML::_('select.option',  '0', JText::_( 'CATALOG_SEARCH_VERSIONS_CURRENT' ) ),
 		JHTML::_('select.option',  '1', JText::_( 'CATALOG_SEARCH_VERSIONS_ALL' ) )
 		);
 
+		// Types d'objet du contexte
 		$objecttypes = array();
-		//$objecttypes[] = JHTML::_('select.option', '', '');
 		if ($context <> "")
 		{
-			/*$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype WHERE id IN
-								(SELECT co.objecttype_id 
-								FROM #__sdi_context_objecttype co
-								INNER JOIN #__sdi_context c ON c.id=co.context_id 
-								WHERE c.code = '".$context."')
-						   ORDER BY name");*/
 			$db->setQuery("SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -99,7 +70,6 @@ class HTML_catalog{
 		}
 		else
 		{
-			/*$db->setQuery("SELECT id AS value, name as text FROM #__sdi_objecttype ORDER BY name");*/
 			$db->setQuery("SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -111,25 +81,6 @@ class HTML_catalog{
 		}
 		$objecttypes = array_merge( $objecttypes, $db->loadObjectList() );
 		HTML_catalog::alter_array_value_with_Jtext($objecttypes);
-
-		//$rowContext = new contextByCode($db);
-		//$rowContext->load($context);
-
-		//print_r($rowContext);
-
-		/*$listSearchFilters = array();
-		 $db->setQuery("SELECT r.*, a.id as attribute_id, at.code as attributetype_code
-		 FROM #__sdi_context c
-		 INNER JOIN #__sdi_relation_context rc ON c.id=rc.context_id
-		 INNER JOIN #__sdi_relation r ON r.id=rc.relation_id
-		 INNER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
-		 INNER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
-		 WHERE c.code='".$context."'
-		 ORDER BY r.ordering");
-		 $listSearchFilters = array_merge( $listSearchFilters, $db->loadObjectList() );
-
-		 //echo "<hr>";print_r($listSearchFilters);
-		 */
 		?>
 <div id="page">
 <h1 class="contentheading"><?php echo JText::_("CATALOG_SEARCH_TITLE"); ?></h1>
@@ -137,177 +88,25 @@ class HTML_catalog{
 
 <h2><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h2>
 
+<form name="catalog_search_form" id="catalog_search_form" method="get" action="">
+	<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> 
+	<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>" /> 
+	<input type="hidden" name="context" id="context" value="<?php echo JRequest::getVar('context' );?>" /> 
+	<input type="hidden" name="bboxMinX" id="bboxMinX" value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>" /> 
+	<input type="hidden" name="bboxMinY" id="bboxMinY" value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>" /> 
+	<input type="hidden" name="bboxMaxX" id="bboxMaxX" value="<?php echo JRequest::getVar('bboxMaxX', "180" ); ?>" /> 
+	<input type="hidden" name="bboxMaxY" id="bboxMaxY" value="<?php echo JRequest::getVar('bboxMaxY', "90" );?>" /> 
+	<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid');?>" /> 
+	<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>" /> 
+	<input type="hidden" name="tabIndex" id="tabIndex" value="" /> 
+	<input type="hidden" name="simulatedTabIndex" id="simulatedTabIndex" value="<?php echo JRequest::getVar('simulatedTabIndex');?>" /> 
+	<input type="hidden" name="advancedSrch" id="advancedSrch" value="<?php echo JRequest::getVar('advancedSrch', 0);?>" /> 
 
-<form name="catalog_search_form" id="catalog_search_form" method="GET">
-<input type="hidden" name="option" id="option"
-	value="<?php echo JRequest::getVar('option' );?>" /> <input
-	type="hidden" name="view" id="view"
-	value="<?php echo JRequest::getVar('view' );?>" /> <input type="hidden"
-	name="context" id="context"
-	value="<?php echo JRequest::getVar('context' );?>" /> <input
-	type="hidden" name="bboxMinX" id="bboxMinX"
-	value="<?php echo JRequest::getVar('bboxMinX', "-180" );?>" /> <input
-	type="hidden" name="bboxMinY" id="bboxMinY"
-	value="<?php echo JRequest::getVar('bboxMinY', "-90" );?>" /> <input
-	type="hidden" name="bboxMaxX" id="bboxMaxX"
-	value="<?php echo JRequest::getVar('bboxMaxX', "180" ); ?>" /> <input
-	type="hidden" name="bboxMaxY" id="bboxMaxY"
-	value="<?php echo JRequest::getVar('bboxMaxY', "90" );?>" /> <input
-	type="hidden" name="Itemid" id="Itemid"
-	value="<?php echo JRequest::getVar('Itemid');?>" /> <input
-	type="hidden" name="lang" id="lang"
-	value="<?php echo JRequest::getVar('lang');?>" /> <input type="hidden"
-	name="tabIndex" id="tabIndex" value="" /> <input type="hidden"
-	name="simulatedTabIndex" id="simulatedTabIndex"
-	value="<?php echo JRequest::getVar('simulatedTabIndex');?>" /> <input
-	type="hidden" name="advancedSrch" id="advancedSrch"
-	value="<?php echo JRequest::getVar('advancedSrch', 0);?>" /> <script
-	type="text/javascript">
-			
-				window.addEvent('domready', function() {
-				/*
-				* Register event handlers
-				*/
-					//initialize the page
-					init();
-					
-					//Toggle the state of the advanced search
-					$('advSearchRadio').addEvent('click', function() {
-						toggleAdvancedSearch($('advSearchRadio').checked);
-					});
-					
-					//Handler for the clear button
-					$('easysdi_clear_button').addEvent('click', function() {
-						easysdiClearButton_click();
-					});
-					
-					//Handler for the search button
-					$('simple_search_button').addEvent('click', function() {
-						easysdiSearchButton_click();
-					});
-					
-				});
-				
-				function init(){
-					//hide advanced search
-					toggleAdvancedSearch($('advancedSrch').value);
-				}
-				
-				function easysdiClearButton_click(){
-					clearBasicSearch();
-					clearAdvancedSearch();
-					//document.getElementById('tabIndex').value = '0';
-					//document.getElementById('catalog_search_form').submit();
-				}
-				
-				function easysdiSearchButton_click(){
-					document.getElementById('tabIndex').value = '0';
-					document.getElementById('catalog_search_form').submit();
-				}
-				
-				function toggleAdvancedSearch(isVisible){
-					if(isVisible == true){
-						$('divAdvancedSearch').style.visibility = 'visible';
-						$('divAdvancedSearch').style.display = 'block';
-						$('advSearchRadio').checked = true;
-						$('advancedSrch').value=1;
-					}else{
-						$('divAdvancedSearch').style.visibility = 'hidden';
-						$('divAdvancedSearch').style.display = 'none';
-						$('advSearchRadio').checked = false;
-						$('advancedSrch').value=0;
-						//Do not keep data in a hidden table
-						clearAdvancedSearch();
-					}
-				}
-				
-				function clearBasicSearch ()
-				{
-					// Lister tous les champs qui sont dans le div divSimpleSearch
-					var divSimpleSearch;
-					divSimpleSearch = document.getElementById('divSimpleSearch');
-					var fields;
-					fields = divSimpleSearch.getElementsByTagName('input');
-					
-					for (var i = 0; i < fields.length; i++)
-					{
-						if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-							fields.item(i).checked = "checked";
-						else if (fields.item(i).type == "radio") // Les radios de la version
-							if (fields.item(i).value == 0)
-								fields.item(i).checked = "checked";
-							else
-								fields.item(i).checked = "";
-						else 
-							fields.item(i).value = "";
-					}
-
-					fields = divSimpleSearch.getElementsByTagName('select');
-					
-					for (var i = 0; i < fields.length; i++)
-					{
-						fields.item(i).value = "";
-					}
-					
-					 //document.getElementById('simple_filterfreetextcriteria').value = '';
-					 //document.getElementById('account_id').value = '';
-					 //document.getElementById('objecttype_id[]').value = '';
-					 
-				}
-				
-				function clearAdvancedSearch ()
-				{
-					// Lister tous les champs qui sont dans le div divAdvancedSearch
-					var divAdvancedSearch;
-					divAdvancedSearch = document.getElementById('divAdvancedSearch');
-					var fields;
-					fields = divAdvancedSearch.getElementsByTagName('input');
-					
-					for (var i = 0; i < fields.length; i++)
-					{
-						if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-							fields.item(i).checked = "checked";
-						else if (fields.item(i).type == "radio") // Les radios de la version
-							if (fields.item(i).value == 0)
-								fields.item(i).checked = "checked";
-							else
-								fields.item(i).checked = "";
-						else 
-							fields.item(i).value = "";
-					}
-
-					fields = divAdvancedSearch.getElementsByTagName('select');
-					
-					for (var i = 0; i < fields.length; i++)
-					{
-						fields.item(i).value = "";
-					}
-					
-					 //document.getElementById('filter_visible').value = '';
-					 //document.getElementById('filter_orderable').value = '';
-					 //document.getElementById('filter_theme').value = '';
-					 //document.getElementById('create_select').value = 'equal';
-					 //document.getElementById('create_cal').value = '';
-					 //document.getElementById('update_select').value = 'equal';
-					 //document.getElementById('update_cal').value = '';
-
-					 //document.getElementById("bboxMinX").value = "-180"; 	
-					 //document.getElementById("bboxMinY").value ="-90";
-					 //document.getElementById("bboxMaxX").value ="180"; 	
-					 //document.getElementById("bboxMaxY").value ="90";
-				}
-				
-			</script>
-
-<!--
-				This is the simple search
-			-->
+<!-- This is the simple search -->
 <div id ="divSimpleSearch" class="row">
 	<?php
-
 	foreach($listSimpleFilters as $searchFilter)
 	{
-
 		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
@@ -315,7 +114,7 @@ class HTML_catalog{
 			case "locale":
 			case "number":
 			case "link":
-				/* Fonctionnement texte*/
+				/* Fonctionnement texte */
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
@@ -359,9 +158,9 @@ class HTML_catalog{
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top" '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -385,9 +184,9 @@ class HTML_catalog{
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -398,11 +197,16 @@ class HTML_catalog{
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
-					<label for="<?php echo "create_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo HTML_catalog::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar datepicker"', JURI::root(true).'/templates/system/images/calendar.png', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
-					
-					<label for="<?php echo "update_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
+					<div class="checkbox">
+						<div>
+							<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+							<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div>
+						<div>
+							<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+							<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div>
+					</div>
 				</div>
 				<?php
 				break;
@@ -413,200 +217,208 @@ class HTML_catalog{
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if (JRequest::getVar($searchFilter->guid))
-								$selectedObjectType = JRequest::getVar($searchFilter->guid);
+							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 							else if (!JRequest::getVar('bboxMinX'))
 								$selectedObjectType = $objecttypes;
 							
 							?>
-					<div class="row">
-						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<div class="checkbox rows">
-						<?php echo HTML_catalog::checkboxlist($objecttypes, $searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'value', 'text', $selectedObjectType); ?>
-						</div>
-					</div>
-					<?php
-					break;
-				case "fulltext":
-					?>
-					<div class="row">
-						<label for="simple_filterfreetextcriteria"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<input type="text" id="simple_filterfreetextcriteria"
-							name="simple_filterfreetextcriteria"
-							value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>"
-							class="inputbox text full" />
-					</div>
-					<?php
-					break;
-				case "versions":
-					$selectedVersion = 0;
-					if (JRequest::getVar($searchFilter->guid))
-						$selectedVersion = JRequest::getVar($searchFilter->guid);
-					?>	
-					<div class="row">
-						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<div class="checkbox rows">
-						<?php echo HTML_catalog::radiolist($versions, $searchFilter->guid, 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
-						</div>
-					</div>
-					<?php
-					break;
-				case "account_id":
-					/* Fonctionnement liste*/
-					$accounts = array();
-					$accounts[] = JHTML::_('select.option', '', '');
-					$query = "SELECT DISTINCT a.id as value, a.name as text 
-							  FROM #__sdi_account a 
-							  INNER JOIN #__users u ON u.id=a.user_id
-							  WHERE a.root_id IS NULL 
-							  ";
-					$db->setQuery( $query);
-					//echo $db->getQuery();
-					$accounts = array_merge( $accounts, $db->loadObjectList() );
-				
-					$size=(int)$listMaxLength;
-					if (count($accounts) < (int)$listMaxLength)
-						$size = count($accounts);					
-					
-					$multiple = 'size="1"';
-					
-					if (count(JRequest::getVar($searchFilter->guid)) > 1)
-						$multiple='size="'.$size.'" multiple="multiple"';
-					
-					?>
-					<div class="row">
-						<label for="<?php echo $searchFilter->guid.'[]';?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<?php echo JHTML::_("select.genericlist", $accounts, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+							<div class="row">
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="checkbox">
+								<?php echo helper_easysdi::checkboxlist($objecttypes, 'systemfilter_'.$searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?>
+								</div>
+							</div>
+							<?php
+							break;
+						case "fulltext":
+							?>
+							<div class="row">
+								<label for="simple_filterfreetextcriteria"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<input type="text" id="simple_filterfreetextcriteria"
+									name="simple_filterfreetextcriteria"
+									value="<?php echo JRequest::getVar('simple_filterfreetextcriteria');?>"
+									class="inputbox text full" />
+							</div>
+							<?php
+							break;
+						case "versions":
+							$selectedVersion = 0;
+							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+								$selectedVersion = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+							?>	
+							<div class="row">
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="checkbox">
+								<?php echo helper_easysdi::radiolist($versions, 'systemfilter_'.$searchFilter->guid, 'class="checkbox"', 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
+								</div>
+							</div>
+							<?php
+							break;
+						case "account_id":
+							/* Fonctionnement liste*/
+							$accounts = array();
+							$accounts[] = JHTML::_('select.option', '', '');
+							$query = "SELECT DISTINCT a.id as value, a.name as text 
+									  FROM #__sdi_account a 
+									  INNER JOIN #__users u ON u.id=a.user_id
+									  WHERE a.root_id IS NULL 
+									  ";
+							$db->setQuery( $query);
+							$accounts = array_merge( $accounts, $db->loadObjectList() );
+						
+							$size=(int)$listMaxLength;
+							if (count($accounts) < (int)$listMaxLength)
+								$size = count($accounts);					
+							
+							$multiple = 'size="1"';
+							
+							if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
+								$multiple='size="'.$size.'" multiple="multiple"';
+							
+							?>
+							<div class="row">
+								<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+										<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
+											<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
+										</a>
+							</div>
+							<?php
+							break;
+						case "object_name":
+							?>
+							<div class="row">
+								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
+									class="inputbox text full" />
+							</div>
+							<?php
+							break;
+						case "title":
+							?>
+							<div class="row">
+								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
+									class="inputbox text full" />
+							</div>
+							<?php
+							break;
+						case "managers":
+							/* Fonctionnement liste*/
+							$managers = array();
+							$managers[] = JHTML::_('select.option', '', '');
+							$query = "SELECT DISTINCT ma.account_id as value, a.name as text 
+									  FROM #__sdi_manager_object ma 
+									  INNER JOIN #__sdi_account a ON a.id=ma.account_id 
+									  INNER JOIN #__users u ON u.id=a.user_id 
+									  ";
+							$db->setQuery( $query);
+							$managers = array_merge( $managers, $db->loadObjectList() );
+						
+							$size=(int)$listMaxLength;
+							if (count($managers) < (int)$listMaxLength)
+								$size = count($managers);
+							
+							$multiple = 'size="1"';
+							if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
+								$multiple='size="'.$size.'" multiple="multiple"';
+							
+							?>
+							<div class="row">
+								<label for="<?php echo 'systemfilter_'.$searchFilter->guid; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
+									<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 								</a>
-					</div>
-					<?php
-					break;
-				case "object_name":
-					?>
-					<div class="row">
-						<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<input type="text" id="<?php echo $searchFilter->guid;?>"
-							name="<?php echo $searchFilter->guid;?>"
-							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
-							class="inputbox text full" />
-					</div>
-					<?php
-					break;
-				case "title":
-					?>
-					<div class="row">
-						<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<input type="text" id="<?php echo $searchFilter->guid;?>"
-							name="<?php echo $searchFilter->guid;?>"
-							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
-							class="inputbox text full" />
-					</div>
-					<?php
-					break;
-				case "managers":
-					/* Fonctionnement liste*/
-					$managers = array();
-					$managers[] = JHTML::_('select.option', '', '');
-					$query = "SELECT DISTINCT ma.account_id as value, a.name as text 
-							  FROM #__sdi_manager_object ma 
-							  INNER JOIN #__sdi_account a ON a.id=ma.account_id 
-							  INNER JOIN #__users u ON u.id=a.user_id 
-							  ";
-					$db->setQuery( $query);
-					//echo $db->getQuery();
-					$managers = array_merge( $managers, $db->loadObjectList() );
-				
-					$size=(int)$listMaxLength;
-					if (count($managers) < (int)$listMaxLength)
-						$size = count($managers);
-					
-					$multiple = 'size="1"';
-					if (count(JRequest::getVar($searchFilter->guid)) > 1)
-						$multiple='size="'.$size.'" multiple="multiple"';
-					
-					?>
-					<div class="row">
-						<label for="<?php echo $searchFilter->guid.'[]'; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<?php echo JHTML::_("select.genericlist", $managers, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
-						<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-							<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
-						</a>
-					</div>
-					<?php
-					break;
-				case "metadata_created":
-					/* Fonctionnement période*/
-					?>
-					<div class="row">
-						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<label for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-						<label for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-					</div>
-					<?php
-					break;
-				case "metadata_published":
-					/* Fonctionnement période*/
-					?>
-					<div class="row">
-						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<label for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-						<label for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-					</div>
-					<?php
-					break;
-				default:
-					break;
-		}
-		break;
-		}
-		else // Cas des attributs OGC qui ne sont pas liés à une relation
-		{
-			switch ($searchFilter->rendertype_code)
-			{
-			case "date":
-				/* Fonctionnement période*/
-				?>
-				<div class="row">
-					<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-					<label for="<?php echo "filter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-					<label for="<?php echo "filter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-				</div>
-				<?php
-				break;
-			case "textbox":
-			default:
-			/* Fonctionnement texte*/
-			?>
-			<div class="row">
-				<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-				<input type="text"
-					id="<?php echo 'filter_'.$searchFilter->guid;?>"
-					name="<?php echo 'filter_'.$searchFilter->guid;?>"
-					value="<?php echo JRequest::getVar('filter_'.$searchFilter->guid);?>"
-					class="inputbox text full" />
-			</div>
-			<?php
+							</div>
+							<?php
+							break;
+						case "metadata_created":
+							/* Fonctionnement période*/
+							?>
+							<div class="row">
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="checkbox">
+								<div>
+								<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+								<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								</div><div>
+								<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+								<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								</div></div>
+							</div>
+							<?php
+							break;
+						case "metadata_published":
+							/* Fonctionnement période*/
+							?>
+							<div class="row">
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="checkbox">
+								<div>
+								<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+								<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								</div><div>
+								<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+								<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								</div></div>
+							</div>
+							<?php
+							break;
+						default:
+							break;
+				}
 				break;
 			}
-		}
-default:
-	break;
+			else // Cas des attributs OGC qui ne sont pas liés à une relation
+			{
+				switch ($searchFilter->rendertype_code)
+				{
+				case "date":
+					/* Fonctionnement période*/
+					?>
+					<div class="row">
+						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+						<div class="checkbox">
+						<div>
+						<label class="checkbox" for="<?php echo "filter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div><div>
+						<label class="checkbox" for="<?php echo "filter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div></div>
+					</div>
+					<?php
+					break;
+				case "textbox":
+				default:
+				/* Fonctionnement texte*/
+				?>
+				<div class="row">
+					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+					<input type="text"
+						id="<?php echo 'filter_'.$searchFilter->guid;?>"
+						name="<?php echo 'filter_'.$searchFilter->guid;?>"
+						value="<?php echo JRequest::getVar('filter_'.$searchFilter->guid);?>"
+						class="inputbox text full" />
+				</div>
+				<?php
+					break;
+				}
+			}
+		default:
+			break;
 		}
 	}
 	?>
 </div>
 
-<!--
-				This is the advanced search
-			-->
+<!-- This is the advanced search -->
 <div id="divAdvancedSearch" class="row">
 	<?php
 
@@ -664,9 +476,9 @@ default:
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -690,9 +502,9 @@ default:
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -703,10 +515,14 @@ default:
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
-					<label for="<?php echo "create_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-					<label for="<?php echo "update_cal_".$searchFilter->guid; ?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
+					<div class="checkbox">
+					<div>
+					<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					</div><div>
+					<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					</div></div>
 				</div>
 				<?php
 				break;
@@ -717,15 +533,15 @@ default:
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if (JRequest::getVar($searchFilter->guid))
-								$selectedObjectType = JRequest::getVar($searchFilter->guid);
+							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 							else if (!JRequest::getVar('bboxMinX'))
 								$selectedObjectType = $objecttypes;						
 							?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<div class="checkbox rows">
-						<?php echo HTML_catalog::checkboxlist($objecttypes, $searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'value', 'text', $selectedObjectType); ?>
+						<div class="checkbox">
+						<?php echo helper_easysdi::checkboxlist($objecttypes, 'systemfilter_'.$searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?>
 						</div>
 					</div>
 					<?php
@@ -743,14 +559,14 @@ default:
 					break;
 				case "versions":
 					$selectedVersion = 0;
-					if (JRequest::getVar($searchFilter->guid))
-						$selectedVersion = JRequest::getVar($searchFilter->guid);
+					if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+						$selectedVersion = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 						
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<div class="checkbox rows">
-						<?php echo HTML_catalog::radiolist($versions, $searchFilter->guid, 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
+						<div class="checkbox">
+						<?php echo helper_easysdi::radiolist($versions, 'systemfilter_'.$searchFilter->guid, 'class="checkbox"', 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
 						</div>
 					</div>
 					<?php
@@ -765,7 +581,6 @@ default:
 							  WHERE a.root_id IS NULL 
 							  ";
 					$db->setQuery( $query);
-					//echo $db->getQuery();
 					$accounts = array_merge( $accounts, $db->loadObjectList() );
 				
 					$size=(int)$listMaxLength;
@@ -773,15 +588,15 @@ default:
 						$size = count($accounts);
 							
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar($searchFilter->guid)) > 1)
+					if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<div class="row">
-						<label for="<?php echo $searchFilter->guid.'[]';?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<?php echo JHTML::_("select.genericlist", $accounts, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
-								<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-									<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+						<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+								<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
+									<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 								</a>
 					</div>
 					<?php
@@ -789,10 +604,10 @@ default:
 				case "object_name":
 					?>
 					<div class="row">
-						<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<input type="text" id="<?php echo $searchFilter->guid;?>"
-							name="<?php echo $searchFilter->guid;?>"
-							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
+						<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+						<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+							name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
 							class="inputbox text full" />
 					</div>
 					<?php
@@ -800,10 +615,10 @@ default:
 				case "title":
 					?>
 					<div class="row">
-						<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<input type="text" id="<?php echo $searchFilter->guid;?>"
-							name="<?php echo $searchFilter->guid;?>"
-							value="<?php echo JRequest::getVar($searchFilter->guid);?>"
+						<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+						<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+							name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+							value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
 							class="inputbox text full" />
 					</div>
 					<?php
@@ -818,7 +633,6 @@ default:
 							  INNER JOIN #__users u ON u.id=a.user_id 
 							  ";
 					$db->setQuery( $query);
-					//echo $db->getQuery();
 					$managers = array_merge( $managers, $db->loadObjectList() );
 				
 					$size=(int)$listMaxLength;
@@ -826,15 +640,15 @@ default:
 						$size = count($managers);
 						
 					$multiple = 'size="1"';
-					if (count(JRequest::getVar($searchFilter->guid)) > 1)
+					if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
 						$multiple='size="'.$size.'" multiple="multiple"';
 					
 					?>
 					<div class="row">
-						<label for="<?php echo $searchFilter->guid.'[]'; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-						<?php echo JHTML::_("select.genericlist", $managers, $searchFilter->guid.'[]', 'class="inputbox" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar($searchFilter->guid)); ?>
-						<a onclick="javascript:toggle_multi_select('<?php echo $searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-							<img src="<?php echo JURI::root(true);?>/templates/easysdi/icons/silk/add.png" alt="Expand"/>
+						<label for="<?php echo 'systemfilter_'.$searchFilter->guid; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+						<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+						<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
+							<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 						</a>
 					</div>
 					<?php
@@ -844,11 +658,14 @@ default:
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<label for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-						<label for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-
+						<div class="checkbox">
+						<div>
+						<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div><div>
+						<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div></div>
 					</div>
 					<?php
 					break;
@@ -857,12 +674,14 @@ default:
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-						<label for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-
-						<label for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-						<?php echo JHTML::_('calendar',JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-
+						<div class="checkbox">
+						<div>
+						<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div><div>
+						<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+						<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						</div></div>
 					</div>
 					<?php
 					break;
@@ -880,10 +699,14 @@ default:
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-					<label for="<?php echo "filter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
-					<label for="<?php echo "filter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo JHTML::_('calendar',JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="searchTabs_calendar datepicker"'); ?>
+					<div class="checkbox">
+					<div>
+					<label class="checkbox" for="<?php echo "filter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					</div><div>
+					<label class="checkbox" for="<?php echo "filter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					</div></div>
 				</div>
 				<?php
 				break;
@@ -912,8 +735,8 @@ default:
 
 <!-- Les boutons Rechercher / Vider -->
 <div class="row">
-	<div class=" checkbox row">
-		<input type="checkBox" id="advSearchRadio" name="advSearchRadio" class="checkbox"/>
+	<div class="checkbox row">
+		<input type="checkbox" id="advSearchRadio" name="advSearchRadio" class="checkbox"/>
 		<label for="advSearchRadio" class="checkbox"><?php echo JText::_("CATALOG_SEARCH_TEXT_ADVANCED_CRITERIA"); ?></label>
 	</div>
 </div>
@@ -925,274 +748,249 @@ default:
 </form>
 </div>
 
-
-
-			<?php if($cswResults){
-
-			 //
-			 //
-			 //
-			 // Nothing to do out there...
-			 //
-			 //
-			 //
-
-
-
-
-
-
-
-			 ?>
-<!-- <div class="paging">
-	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
-</div> -->
-
-<div class="searchresults">
-<h2><?php echo JText::_("CATALOG_SEARCH_RESULTS_TITLE"); ?></h2>
-
-<p><strong><?php echo JText::_("CATALOG_SEARCH_NUMBER_OF_METADATA_FOUND");?></strong>&nbsp;<?php echo $total ?>&nbsp;</p>
-
-<div class="ticker">
-<?php
-$i=0;
-$param = array('size'=>array('x'=>800,'y'=>800) );
-JHTML::_("behavior.modal","a.modal",$param);
-
-
-// on indique bien qu'on veut les métadonnées retournées, et pas tous les gmd:MD_Metadata qui pourraient se trouver
-// dans la construction de la métadonnée (notamment les mauvais remplacements de mtadonnées, pour les contacts p.ex.)
-$xpath = new DomXPath($cswResults);
-$xpath->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
-$nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
-
-foreach($nodes  as $metadata)
+<?php 
+/*
+ * Results
+ */
+if($cswResults)
 {
-	$i++;
-
-	$md = new geoMetadata($metadata);
-
-	$doc = new DomDocument('1.0', 'UTF-8');
-	$doc = $md->metadata;
-	$doc->formatOutput = true;
-
-	$root = $doc->getElementsByTagName("MD_Metadata");
-	$root = $root->item(0);
-
-	$XMLNewRoot = $doc->createElement("Metadata");
-	$doc->appendChild($XMLNewRoot);
-	$XMLNewRoot->appendChild($root);
-
-	$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
-	//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
-	$XMLSdi->setAttribute('user_lang', $language->_lang);
-	$XMLNewRoot->appendChild($XMLSdi);
-	//$doc->appendChild($XMLSdi);
-	//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
-
-	$queryAccountID = "	select o.account_id 
-						FROM #__sdi_metadata m
-						INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-						INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-						WHERE m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery($queryAccountID);
-	$account_id = $db->loadResult();
-
-	if ($account_id <> "")
-	{
-		$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
-		$db->setQuery($queryAccountLogo);
-		$account_logo = $db->loadResult();
-	}
-	else
-	{
-		$account_logo = "";
-	}
+	?>
+	<div class="searchresults">
+	<h2><?php echo JText::_("CATALOG_SEARCH_RESULTS_TITLE"); ?></h2>
 	
-	$logoWidth = config_easysdi::getValue("logo_width");
-	$logoHeight = config_easysdi::getValue("logo_height");
-
-	// Créer une entrée pour le logo du compte
-	$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
-	$XMLALogo->setAttribute('width', $logoWidth);
-	$XMLALogo->setAttribute('height', $logoHeight);
-	$XMLSdi->appendChild($XMLALogo);
-
-	// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
-	$object=array();
-	$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
-						FROM #__sdi_metadata m
-						INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-						INNER JOIN #__sdi_object o ON o.id = ov.object_id
-						INNER JOIN #__sdi_list_visibility v ON v.id = o.visibility_id 
-						WHERE m.guid = '".$md->getFileIdentifier()."'";
-	$db->setQuery($queryObject);
-	$object = $db->loadObject();
+	<!-- Count of results -->
+	<p><strong><?php echo JText::_("CATALOG_SEARCH_NUMBER_OF_METADATA_FOUND");?></strong>&nbsp;<?php echo $total ?>&nbsp;</p>
 	
-	// Modify objectversion_title to construct an XML valid date
-	$explodeDate = array();
-	$explodeDate = explode(" ", $object->title);
-	$object->title = $explodeDate[0]."T".$explodeDate[1]; 
+	<div class="ticker">
+	<?php
+	$i=0;
+	$param = array('size'=>array('x'=>800,'y'=>800) );
+	JHTML::_("behavior.modal","a.modal",$param);
 	
-	// Créer une entrée pour l'objet
-	$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
-	if ($object)
+	// on indique bien qu'on veut les métadonnées retournées, et pas tous les gmd:MD_Metadata qui pourraient se trouver
+	// dans la construction de la métadonnée (notamment les mauvais remplacements de mtadonnées, pour les contacts p.ex.)
+	$xpath = new DomXPath($cswResults);
+	$xpath->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+	$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
+	$nodes = $xpath->query('//csw:SearchResults/gmd:MD_Metadata');
+	
+	// Build of extendend XML for each result entry
+	foreach($nodes  as $metadata)
 	{
-		$XMLObject->setAttribute('object_name', $object->name);
-		$XMLObject->setAttribute('objectversion_title', $object->title);
-		$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
-	}
-	else
-	{
-		$XMLObject->setAttribute('object_name', '');
-		$XMLObject->setAttribute('objectversion_title', '');
-		$XMLObject->setAttribute('metadata_visibility', '');
-	}
-	$XMLSdi->appendChild($XMLObject);
+		$i++;
 	
-	// Récupérer le type d'objet
-	$objecttype = array();
-	// Récupérer le logo du type d'objet
-	$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
-						FROM #__sdi_objecttype ot
-						INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
-						INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-						INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
-						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						INNER JOIN jos_sdi_language l ON t.language_id=l.id
-						INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
-						WHERE m.guid = '".$md->getFileIdentifier()."'
-							  AND cl.code = '".$language->_lang."'";
-	$db->setQuery($queryObjecttype);
-	$objecttype = $db->loadObject();
+		$md = new geoMetadata($metadata);
 	
-	// Créer une entrée pour le type d'objet
-	if ($objecttype)
-	{
-		$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
-		$XMLObjectType->setAttribute('code', $objecttype->code);
-		$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
-		$XMLObjectType->setAttribute('logo_width', $logoWidth);
-		$XMLObjectType->setAttribute('logo_height', $logoHeight);
-	}
-	else
-	{
-		$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype");
-		$XMLObjectType->setAttribute('code', '');
-		$XMLObjectType->setAttribute('logo_path', '');
-		$XMLObjectType->setAttribute('logo_width', '');
-		$XMLObjectType->setAttribute('logo_height', '');
-	}
-	$XMLSdi->appendChild($XMLObjectType);
+		$doc = new DomDocument('1.0', 'UTF-8');
+		$doc = $md->metadata;
+		$doc->formatOutput = true;
 	
-	// Entrées à ajouter si le shop est installé
-	$shopExist=0;
-	$query = "	SELECT count(*) 
-				FROM #__sdi_list_module 
-				WHERE code='SHOP'";
-	$db->setQuery($query);
-	$shopExist = $db->loadResult();
+		$root = $doc->getElementsByTagName("MD_Metadata");
+		$root = $root->item(0);
 	
-	if ($shopExist == 1)
-	{
-		$product = array();
-		$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
+		$XMLNewRoot = $doc->createElement("Metadata");
+		$doc->appendChild($XMLNewRoot);
+		$XMLNewRoot->appendChild($root);
+	
+		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
+		$XMLSdi->setAttribute('user_lang', $language->_lang);
+		$XMLNewRoot->appendChild($XMLSdi);
+		
+		$queryAccountID = "	select o.account_id 
 							FROM #__sdi_metadata m
 							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-							INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id 
-							LEFT OUTER JOIN #__sdi_product_file pf ON pf.product_id = p.id 
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id 
 							WHERE m.guid = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryProduct);
-		$product = $db->loadObject();
-		
-		// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
-		if ($product)
+		$db->setQuery($queryAccountID);
+		$account_id = $db->loadResult();
+	
+		if ($account_id <> "")
 		{
-			$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
-			$XMLProduct->setAttribute('published', (int)$product->published);
-			$XMLProduct->setAttribute('available', (int)$product->available);
-			$XMLProduct->setAttribute('free', (int)$product->free);
-			$XMLProduct->setAttribute('file_size', $product->size);
-			$XMLProduct->setAttribute('file_type', $product->type);
+			$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
+			$db->setQuery($queryAccountLogo);
+			$account_logo = $db->loadResult();
 		}
 		else
 		{
-			$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product");
-			$XMLProduct->setAttribute('published', (int)0);
-			$XMLProduct->setAttribute('available', (int)0);
-			$XMLProduct->setAttribute('free', (int)0);
-			$XMLProduct->setAttribute('file_size', '');
-			$XMLProduct->setAttribute('file_type', '');
+			$account_logo = "";
 		}
-		$XMLSdi->appendChild($XMLProduct);
-	}
-
-	// Créer une entrée pour la prévisualisation de l'objet
-	//$XMLPreview = $doc->createElement("sdi:preview", $hasPreview);
-	//$XMLSdi->appendChild($XMLPreview);
-
-	//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
-
-	// Répertoire des fichiers xsl, s'il y en a un
-	$xslFolder = ""; 
+		
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
 	
-	if (isset($context))
-	{
-		$db->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
-		$xslFolder = $db->loadResult(); 
-	}
-	if ($xslFolder <> "")
-		$xslFolder = $xslFolder."/";
+		// Créer une entrée pour le logo du compte
+		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
+		$XMLALogo->setAttribute('width', $logoWidth);
+		$XMLALogo->setAttribute('height', $logoHeight);
+		$XMLSdi->appendChild($XMLALogo);
 	
-	$style = new DomDocument();
-	if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl')){
-		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl');
-	}else{
-		$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result.xsl');
+		// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
+		$object=array();
+		$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id
+							INNER JOIN #__sdi_list_visibility v ON v.id = o.visibility_id 
+							WHERE m.guid = '".$md->getFileIdentifier()."'";
+		$db->setQuery($queryObject);
+		$object = $db->loadObject();
+		
+		// Modify objectversion_title to construct an XML valid date
+		$explodeDate = array();
+		$explodeDate = explode(" ", $object->title);
+		$object->title = $explodeDate[0]."T".$explodeDate[1]; 
+		
+		// Créer une entrée pour l'objet
+		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
+		if ($object)
+		{
+			$XMLObject->setAttribute('object_name', $object->name);
+			$XMLObject->setAttribute('objectversion_title', $object->title);
+			$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+		}
+		else
+		{
+			$XMLObject->setAttribute('object_name', '');
+			$XMLObject->setAttribute('objectversion_title', '');
+			$XMLObject->setAttribute('metadata_visibility', '');
+		}
+		$XMLSdi->appendChild($XMLObject);
+		
+		// Récupérer le type d'objet
+		$objecttype = array();
+		// Récupérer le logo du type d'objet
+		$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
+							FROM #__sdi_objecttype ot
+							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
+							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN jos_sdi_language l ON t.language_id=l.id
+							INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+							WHERE m.guid = '".$md->getFileIdentifier()."'
+								  AND cl.code = '".$language->_lang."'";
+		$db->setQuery($queryObjecttype);
+		$objecttype = $db->loadObject();
+		
+		// Créer une entrée pour le type d'objet
+		if ($objecttype)
+		{
+			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
+			$XMLObjectType->setAttribute('code', $objecttype->code);
+			$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
+			$XMLObjectType->setAttribute('logo_width', $logoWidth);
+			$XMLObjectType->setAttribute('logo_height', $logoHeight);
+		}
+		else
+		{
+			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype");
+			$XMLObjectType->setAttribute('code', '');
+			$XMLObjectType->setAttribute('logo_path', '');
+			$XMLObjectType->setAttribute('logo_width', '');
+			$XMLObjectType->setAttribute('logo_height', '');
+		}
+		$XMLSdi->appendChild($XMLObjectType);
+		
+		// Entrées à ajouter si le shop est installé
+		$shopExist=0;
+		$query = "	SELECT count(*) 
+					FROM #__sdi_list_module 
+					WHERE code='SHOP'";
+		$db->setQuery($query);
+		$shopExist = $db->loadResult();
+		
+		if ($shopExist == 1)
+		{
+			$product = array();
+			$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
+								FROM #__sdi_metadata m
+								INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+								INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id 
+								LEFT OUTER JOIN #__sdi_product_file pf ON pf.product_id = p.id 
+								WHERE m.guid = '".$md->getFileIdentifier()."'";
+			$db->setQuery($queryProduct);
+			$product = $db->loadObject();
+			
+			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
+			if ($product)
+			{
+				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
+				$XMLProduct->setAttribute('published', (int)$product->published);
+				$XMLProduct->setAttribute('available', (int)$product->available);
+				$XMLProduct->setAttribute('free', (int)$product->free);
+				$XMLProduct->setAttribute('file_size', $product->size);
+				$XMLProduct->setAttribute('file_type', $product->type);
+			}
+			else
+			{
+				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product");
+				$XMLProduct->setAttribute('published', (int)0);
+				$XMLProduct->setAttribute('available', (int)0);
+				$XMLProduct->setAttribute('free', (int)0);
+				$XMLProduct->setAttribute('file_size', '');
+				$XMLProduct->setAttribute('file_type', '');
+			}
+			$XMLSdi->appendChild($XMLProduct);
+		}
+	
+		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
+	
+		// Répertoire des fichiers xsl, s'il y en a un
+		$xslFolder = ""; 
+		
+		if (isset($context))
+		{
+			$db->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $db->loadResult(); 
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		$style = new DomDocument();
+		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl')){
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result_'.$language->_lang.'.xsl');
+		}else{
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_result.xsl');
+		}
+	
+		$processor = new xsltProcessor();
+		$processor->importStylesheet($style);
+		$xml = new DomDocument();
+		$xml = $processor->transformToXml($doc);
+	
+		printf($xml);
 	}
-
-	$processor = new xsltProcessor();
-	$processor->importStylesheet($style);
-	$xml = new DomDocument();
-	$xml = $processor->transformToXml($doc);
-
-	printf($xml);
-}
-?>
-</div>
-
-
-<div class="paging">
-	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
-</div>
-
-<?php } ?></div>
-
-
-</div>
-
-
-<?php
-
-
+	?>
+	</div>
+	
+	
+	<div class="paging">
+		<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
+	</div>
+	
+	<?php 
+	} 
+	?>
+	</div>
+	</div>
+	<?php
 	}
 	
 	function generateMap()
 	{
 
 		?>
-<script
-	type="text/javascript"
-	src="administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
-<script
-	type="text/javascript"
-	src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-<script
-	type="text/javascript"
-	src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
-
-<script type="text/javascript">
+		<script
+			type="text/javascript"
+			src="administrator/components/com_easysdi_core/common/lib/js/openlayers2.7/OpenLayers.js"></script>
+		<script
+			type="text/javascript"
+			src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
+		<script
+			type="text/javascript"
+			src="administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/defs/EPSG21781.js"></script>
+		
+		<script type="text/javascript">
 		
 		var vectorsCatalog;            
 		var mapCatalog;
@@ -1452,153 +1250,7 @@ foreach($nodes  as $metadata)
 		//return $list;
 	}
 
-	/**
-	 * Generates an HTML checkbox list
-	 * 
-	 * Joomla! radiolist code, override for EasySDI
-	 *
-	 * @param array An array of objects
-	 * @param string The value of the HTML name attribute
-	 * @param string Additional HTML attributes for the <select> tag
-	 * @param mixed The key that is selected
-	 * @param string The name of the object variable for the option value
-	 * @param string The name of the object variable for the option text
-	 * @returns string HTML for the select list
-	 */
-	function checkboxlist( $arr, $name, $attribs = null, $key = 'value', $text = 'text', $selected = null, $idtag = false, $translate = false )
-	{
-		reset( $arr );
-		$html = '';
-
-		if (is_array($attribs)) {
-			$attribs = JArrayHelper::toString($attribs);
-		}
-
-		$id_text = $name;
-		if ( $idtag ) {
-			$id_text = $idtag;
-		}
-
-		for ($i=0, $n=count( $arr ); $i < $n; $i++ )
-		{
-			$k    = $arr[$i]->$key;
-			$t    = $translate ? JText::_( $arr[$i]->$text ) : $arr[$i]->$text;
-			$id    = ( isset($arr[$i]->id) ? @$arr[$i]->id : null);
-
-			$extra    = '';
-			$extra    .= $id ? " id=\"" . $arr[$i]->id . "\"" : '';
-			if (is_array( $selected ))
-			{
-				foreach ($selected as $val)
-				{
-					$k2 = is_object( $val ) ? $val->$key : $val;
-						
-					if ($k == $k2)
-					{
-						$extra .= " checked=\"checked\"";
-						break;
-					}
-				}
-			} else {
-				$extra .= ((string)$k == (string)$selected ? " checked=\"checked\"" : '');
-			}
-			$html .= "<div>\n";
-			$html .= "\n\t<input type=\"checkbox\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
-			$html .= "\n\t<label for=\"$id_text$k\" $attribs>$t</label>";
-			$html .= "</div>\n";
-		}
-		$html .= "\n";
-		return $html;
-	}
 	
-	/**
-	 * Generates an HTML radio list
-	 * 
-	 * Joomla! Code, override for EasySDI
-	 *
-	 * @param array An array of objects
-	 * @param string The value of the HTML name attribute
-	 * @param string Additional HTML attributes for the <select> tag
-	 * @param mixed The key that is selected
-	 * @param string The name of the object variable for the option value
-	 * @param string The name of the object variable for the option text
-	 * @returns string HTML for the select list
-	 */
-	function radiolist( $arr, $name, $attribs = null, $key = 'value', $text = 'text', $selected = null, $idtag = false, $translate = false )
-	{
-		reset( $arr );
-		$html = '';
-
-		if (is_array($attribs)) {
-			$attribs = JArrayHelper::toString($attribs);
-		 }
-
-		$id_text = $name;
-		if ( $idtag ) {
-			$id_text = $idtag;
-		}
-
-		for ($i=0, $n=count( $arr ); $i < $n; $i++ )
-		{
-			$k	= $arr[$i]->$key;
-			$t	= $translate ? JText::_( $arr[$i]->$text ) : $arr[$i]->$text;
-			$id	= ( isset($arr[$i]->id) ? @$arr[$i]->id : null);
-
-			$extra	= '';
-			$extra	.= $id ? " id=\"" . $arr[$i]->id . "\"" : '';
-			if (is_array( $selected ))
-			{
-				foreach ($selected as $val)
-				{
-					$k2 = is_object( $val ) ? $val->$key : $val;
-					if ($k == $k2)
-					{
-						$extra .= " selected=\"selected\"";
-						break;
-					}
-				}
-			} else {
-				$extra .= ((string)$k == (string)$selected ? " checked=\"checked\"" : '');
-			}
-			$html .= "<div>\n";
-			$html .= "\n\t<input type=\"radio\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
-			$html .= "\n\t<label for=\"$id_text$k\" $attribs>$t</label>";
-			$html .= "</div>\n";
-		}
-		$html .= "\n";
-		return $html;
-	}
-	
-	/**
-	 * Displays a calendar control field
-	 * 
-	 * Joomla! Code, override for EasySDI
-	 *
-	 * @param	string	The date value
-	 * @param	string	The name of the text field
-	 * @param	string	The id of the text field
-	 * @param	string	The date format
-	 * @param	array	Additional html attributes
-	 */
-	function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $src, $alt)
-	{
-		JHTML::_('behavior.calendar'); //load the calendar behavior
-
-		if (is_array($attribs)) {
-			$attribs = JArrayHelper::toString( $attribs );
-		}
-		$document =& JFactory::getDocument();
-		$document->addScriptDeclaration('window.addEvent(\'domready\', function() {Calendar.setup({
-        inputField     :    "'.$id.'",     // id of the input field
-        ifFormat       :    "'.$format.'",      // format of the input field
-        button         :    "'.$id.'_img",  // trigger for the calendar (button ID)
-        align          :    "Tl",           // alignment (defaults to "Bl")
-        singleClick    :    true
-    });});');
-
-		return '<input type="text" name="'.$name.'" id="'.$id.'" value="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" '.$attribs.' />'.
-				 '<img src="'.$src.'" alt="'.$alt.'" id="'.$id.'_img" '.$attribs.'/>';
-	}
 }
 
 

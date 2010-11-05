@@ -157,7 +157,8 @@ class SITE_objectversion
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
-			$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
@@ -309,7 +310,8 @@ class SITE_objectversion
 		
 		if (!$rowObject->bind( $_POST )) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit();
 		}
 
@@ -385,7 +387,8 @@ class SITE_objectversion
 			if ($inserted <> 1)
 			{
 				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 		
@@ -400,7 +403,8 @@ class SITE_objectversion
 		$rowMetadata->visibility_id = $_POST['visibility_id'];
 		if (!$rowMetadata->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit();
 		}
 		
@@ -410,7 +414,8 @@ class SITE_objectversion
 			
 		if (!$rowObject->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit();
 		}
 		
@@ -471,6 +476,7 @@ class SITE_objectversion
 				if (!$rowManagerObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+					//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 					//exit();
 				}
 			}
@@ -490,6 +496,7 @@ class SITE_objectversion
 					if (!$rowManagerObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 						//exit();
 					}
 				}
@@ -519,6 +526,7 @@ class SITE_objectversion
 				if (!$rowEditorObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+					// $mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 					//exit();
 				}
 			}
@@ -539,6 +547,7 @@ class SITE_objectversion
 					if (!$rowEditorObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 						//exit();
 					}
 				}
@@ -554,7 +563,8 @@ function deleteObjectVersion($cid, $option)
 
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 			exit;
 		}
 		
@@ -570,7 +580,8 @@ function deleteObjectVersion($cid, $option)
 		
 		if (count( $cid ) > $total-1) {
 			$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_COUNTVERSIONS_MSG"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 			exit;
 		}
 		
@@ -586,6 +597,7 @@ function deleteObjectVersion($cid, $option)
 			{
 				$mainframe->enqueueMessage("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error");
 				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				exit;
 			}
 			
@@ -619,7 +631,8 @@ function deleteObjectVersion($cid, $option)
 			if ($deleted <> 1)
 			{
 				$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				exit();
 			}*/
 			
@@ -636,18 +649,21 @@ function deleteObjectVersion($cid, $option)
 				$childobjectversion->parent_id=$objectversion->parent_id;
 				if (!$childobjectversion->store(true)) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+					//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				}
 			}
 			
 			if (!$objectversion->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 			}
 			
 			if (!$metadata->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 			}
 			
 			// Supprimer tous les liens vers la version, parents ou enfants
@@ -666,7 +682,8 @@ function deleteObjectVersion($cid, $option)
 				
 				if (!$objectversionlink->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+					//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				}
 			}
 		}
@@ -687,7 +704,8 @@ function deleteObjectVersion($cid, $option)
 		$rowObject->bind(JRequest::get('post'));
 		$rowObject->checkin();
 
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		//$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 	}
 }
 

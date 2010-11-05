@@ -82,6 +82,7 @@ class SITE_catalog {
 								  LEFT OUTER JOIN #__sdi_list_rendertype rt ON sc.rendertype_id=rt.id
 					   WHERE (sc.relation_id IS NULL
 					   		 OR c.code='".$context."')
+					   		 AND c_tab.code='".$context."'
 					   		 AND tab.code = 'simple' 
 					   ORDER BY sc.ordering");
 		//echo $database->getQuery()."<br>";
@@ -113,6 +114,7 @@ class SITE_catalog {
 								  LEFT OUTER JOIN #__sdi_list_rendertype rt ON sc.rendertype_id=rt.id
 					   WHERE (sc.relation_id IS NULL
 					   		 OR c.code='".$context."')
+					   		 AND c_tab.code='".$context."'
 					   		 AND tab.code = 'advanced' 
 					   ORDER BY sc.ordering");
 		//echo $database->getQuery()."<br>";
@@ -552,7 +554,7 @@ class SITE_catalog {
 								break;
 							case "objecttype":
 								//$objecttype_id = JRequest::getVar('objecttype_id');
-								$objecttype_id = JRequest::getVar($searchFilter->guid);
+								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								// Construire la liste des guid à filtrer
 								$arrObjecttypeMd = array();
@@ -652,9 +654,9 @@ class SITE_catalog {
 								break;
 							case "versions":
 								//$versions = JRequest::getVar('versions');
-								$versions = JRequest::getVar($searchFilter->guid);
+								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists($searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les dernières versions publiées à la date courante 
 								{
 									//$countSimpleFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -675,7 +677,7 @@ class SITE_catalog {
 										// Construire la liste des guid à filtrer
 										$arrVersionMd = array();
 										
-										// Pour chaque objet, sélectionner toutes ses versions
+										// Pour chaque objet, sélectionner toutes ses versions publiées
 										foreach ($objectlist as $object)
 										{
 											$query = "SELECT m.guid as metadata_id, ms.code, m.published
@@ -685,7 +687,9 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id.
-													 " ORDER BY ov.created DESC";
+													 "		AND ms.code='published'
+													 		AND m.published <='".date('Y-m-d')."' 
+													  ORDER BY ov.created DESC";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
 											$versionlist = $database->loadObjectList() ;
@@ -696,7 +700,7 @@ class SITE_catalog {
 												//print_r($versionlist[0]);
 												//echo "<br>";
 												// Si la dernière version est publiée à la date courante, on l'utilise
-												if ($versionlist[0]->code=='published'and $versionlist[0]->published <= date('Y-m-d'))
+												//if ($versionlist[0]->code=='published' and $versionlist[0]->published <= date('Y-m-d'))
 													$arrVersionMd[] = $versionlist[0]->metadata_id;
 											
 												$empty = false;
@@ -759,7 +763,7 @@ class SITE_catalog {
 								break;
 							case "object_name":
 								//$object_name = JRequest::getVar('object_name');
-								$object_name = JRequest::getVar($searchFilter->guid);
+								$object_name = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if ($object_name <> "")
 								{
@@ -975,7 +979,7 @@ class SITE_catalog {
 								break;
 							case "managers":
 								//$managers = JRequest::getVar('managers');
-								$managers = JRequest::getVar($searchFilter->guid);
+								$managers = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
@@ -1019,7 +1023,7 @@ class SITE_catalog {
 								break;
 							case "title":
 								//$metadata_title = JRequest::getVar('title');
-								$metadata_title = JRequest::getVar($searchFilter->guid);
+								$metadata_title = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if ($metadata_title <> "")
 								{
@@ -1034,7 +1038,7 @@ class SITE_catalog {
 								break;
 							case "account_id":
 								//$accounts = JRequest::getVar('account_id');
-								$accounts = JRequest::getVar($searchFilter->guid);
+								$accounts = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
@@ -1460,7 +1464,7 @@ class SITE_catalog {
 								break;
 							case "objecttype":
 								//$objecttype_id = JRequest::getVar('objecttype_id');
-								$objecttype_id = JRequest::getVar($searchFilter->guid);
+								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								// Construire la liste des guid à filtrer
 								$arrObjecttypeMd = array();
@@ -1559,9 +1563,9 @@ class SITE_catalog {
 								break;
 							case "versions":
 								//$versions = JRequest::getVar('versions');
-								$versions = JRequest::getVar($searchFilter->guid);
+								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists($searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
 								{
 									//$countAdvancedFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -1592,7 +1596,9 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id.
-													 " ORDER BY ov.created DESC";
+													 "		AND ms.code='published'
+													 		AND m.published <='".date('Y-m-d')."' 
+													  ORDER BY ov.created DESC";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
 											$versionlist = $database->loadObjectList() ;
@@ -1603,7 +1609,7 @@ class SITE_catalog {
 												//print_r($versionlist[0]);
 												//echo "<br>";
 												// Si la dernière version est publiée à la date courante, on l'utilise
-												if ($versionlist[0]->code=='published'and $versionlist[0]->published <= date('Y-m-d'))
+												//if ($versionlist[0]->code=='published'and $versionlist[0]->published <= date('Y-m-d'))
 													$arrVersionMd[] = $versionlist[0]->metadata_id;
 											
 												$empty = false;
@@ -1666,7 +1672,7 @@ class SITE_catalog {
 								break;
 							case "object_name":
 								//$object_name = JRequest::getVar('object_name');
-								$object_name = JRequest::getVar($searchFilter->guid);
+								$object_name = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if ($object_name <> "")
 								{
@@ -1878,7 +1884,7 @@ class SITE_catalog {
 								break;
 							case "managers":
 								//$managers = JRequest::getVar('managers');
-								$managers = JRequest::getVar($searchFilter->guid);
+								$managers = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
@@ -1922,7 +1928,7 @@ class SITE_catalog {
 								break;
 							case "title":
 								//$metadata_title = JRequest::getVar('title');
-								$metadata_title = JRequest::getVar($searchFilter->guid);
+								$metadata_title = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								if ($metadata_title <> "")
 								{
@@ -1937,7 +1943,7 @@ class SITE_catalog {
 								break;
 							case "account_id":
 								//$accounts = JRequest::getVar('account_id');
-								$accounts = JRequest::getVar($searchFilter->guid);
+								$accounts = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r(JRequest::getVar($searchFilter->guid));
 								
 								if (count($accounts) > 0 and $accounts[0] <> "")

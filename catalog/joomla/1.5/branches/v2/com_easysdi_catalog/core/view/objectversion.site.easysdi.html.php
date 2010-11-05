@@ -23,43 +23,34 @@ class HTML_objectversion {
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 		?>	
 		<div id="page">
 		<h1 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h1>
 		<div class="contentin">
-		<form action="index.php" method="GET" id="productListForm" name="productListForm">
+		<form action="index.php" method="GET" id="objectversionListForm" name="objectversionListForm">
 	
-		<!-- <table width="100%">
-			<tr>
-				<td colspan="3" align="right">
-					<button type="button" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=0', '_self');" ><?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?></button>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3" align="right">
-					<button type="button" onClick="window.open('./index.php?option=com_easysdi_catalog&task=cancelObjectVersion', '_self');" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-				</td>
-			</tr>
-		</table>
-		 -->
 		<div class="row">
 			 <div class="row">
-				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=0&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='cancelObjectVersion';document.getElementById('productListForm').submit();"/>
+				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="document.getElementById('task').value='newObjectVersion';document.getElementById('objectversionListForm').submit();"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
 			</div>	 
 		 </div>
 	<script>
-		function suppressObjectVersion_click(id, object_id, hasLinks){
+		function suppressObjectVersion_click(url, hasLinks){
 			if (hasLinks == false)
 				conf = confirm('<?php echo html_Metadata::cleanText(JText::_("CATALOG_CONFIRM_OBJECTVERSION_DELETE")); ?>');
 			else
 				conf = confirm('<?php echo html_Metadata::cleanText(JText::_("CATALOG_CONFIRM_OBJECTVERSION_WITHLINK_DELETE")); ?>');
 			if(!conf)
 				return false;
-			window.open('./index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id='+ object_id + '&cid[]='+id, '_self');
+			window.open(url, '_self');
 		}
 	</script>
-	<table id="myProducts" class="box-table">
+	<table id="myObjectversions" class="box-table">
 	<thead>
 	<tr>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECTVERSION_NAME"), 'title', $lists['order_Dir'], $lists['order']); ?></th>
@@ -112,13 +103,13 @@ class HTML_objectversion {
 					if ($links > 0)
 					{
 						?> 
-						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', true);" ></div>
+						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', true)" ></div>
 						<?php 
 					}
 					else
 					{
 						?> 
-						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo $row->id; ?>', '<?php echo $object_id; ?>', false);" ></div>
+						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
 						<?php
 					}
 				}
@@ -129,8 +120,8 @@ class HTML_objectversion {
 				}
 			}
 			?>
-			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div>
-			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('./index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>', '_self');" ></div>
+			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
+			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
 			</td>
 			</tr>
 			<?php		
@@ -185,7 +176,7 @@ else
 		    <div class="row">
 				 <div class="row">
 					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open ('./index.php?option=com_easysdi_catalog&task=backObjectVersion&object_id=<?php echo $object_id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang'); ?>','_self');"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=backObjectVersion&object_id='.$object_id); ?>', '_self')"/>
 				</div>	 
 			 </div>
 			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -227,8 +218,8 @@ else
 	function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
 	{
 		$database =& JFactory::getDBO(); 
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
@@ -261,7 +252,7 @@ else
 		    <table width="100%">
 				<tr>
 					<td width="100%" align="right">
-						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink'; document.getElementById('adminForm').submit();"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
 						<br></br>
 					</td>
 				</tr>
@@ -368,8 +359,8 @@ else
 	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option)
 	{
 		$database =& JFactory::getDBO(); 
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 		JHTML::script('Components_extjs.js', 'administrator/components/com_easysdi_catalog/js/');
 		
 		$uri =& JUri::getInstance();
@@ -403,7 +394,7 @@ else
 		    <table width="100%">
 				<tr>
 					<td width="100%" align="right">
-						<button type="button" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink'; document.getElementById('adminForm').submit();"><?php echo JText::_("CORE_CANCEL"); ?></button>
+						<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
 						<br></br>
 					</td>
 				</tr>

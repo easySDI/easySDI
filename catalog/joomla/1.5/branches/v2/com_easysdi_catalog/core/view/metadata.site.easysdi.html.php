@@ -67,7 +67,7 @@ class HTML_metadata {
 		<div class="contentin">
 		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
 		
-		<form action="index.php" method="GET" id="productListForm" name="productListForm">
+		<form action="index.php" method="POST" id="metadataListForm" name="metadataListForm">
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTNAME");?></label>
@@ -78,7 +78,7 @@ class HTML_metadata {
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
 			 <div class="row">
-				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('productListForm').submit();"/>
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('metadataListForm').submit();"/>
 			</div>	 
 		 </div>
 	<div class="searchresults">
@@ -89,18 +89,20 @@ class HTML_metadata {
 		echo "<p><strong>".JText::_("CATALOG_METADATA_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
 		
 	}else{?>
-	<table class="box-table" id="MyProducts">
+	<table class="box-table" id="MyMetadatas">
 	<thead>
-	<tr>
-	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTNAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
-	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_VERSIONTITLE"), 'version_title', $lists['order_Dir'], $lists['order']); ?></th>
-	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', $lists['order_Dir'], $lists['order']); ?></th>
-	<th class='title'><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
-	<th class='title'><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
-	<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
-	</tr>
+		<tr>
+			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTNAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
+			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_VERSIONTITLE"), 'version_title', $lists['order_Dir'], $lists['order']); ?></th>
+			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', $lists['order_Dir'], $lists['order']); ?></th>
+			<th class='title'><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
+			<th class='title'><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
+			<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
+		</tr>
 	</thead>
-	<?php } ?>
+	<?php 
+	} 
+	?>
 	<tbody>
 	<?php
 		$i=0;
@@ -188,7 +190,7 @@ else
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit(); //window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');"></div>
+								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); //window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');"></div>
 							<?php
 						}
 						else
@@ -207,7 +209,7 @@ else
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tâche d'édition assignée
 						{
 							?>
-							<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('productListForm').submit(); // window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); "></div>
+							<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); // window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); "></div>
 							<?php
 						} 
 						else
@@ -245,7 +247,7 @@ else
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div>
+								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 							<?php
 						}
 						else
@@ -258,7 +260,7 @@ else
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('productListForm').submit();"></div>
+								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 							<?php
 						}
 						else
@@ -276,9 +278,8 @@ else
 					}
 				}
 			?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('productListForm').submit();"></div>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('metadataListForm').submit();"></div>
 				</td>
-				<!-- <td class="logo"><div title="<?php //echo JText::_('CORE_VIEWLINK_OBJECT'); ?>" id="viewObjectLink" onClick="document.getElementById('task').value='viewObjectLink';document.getElementById('backpage').value='metadata';document.getElementById('cid[]').value=<?php //echo $row->id?>;document.getElementById('productListForm').submit();" ></div></td> -->
 			</tr>
 			
 				<?php		
@@ -288,23 +289,14 @@ else
 			</tbody>
 			</table>
 			</div>
-			<!-- <table width="100%">
-				<tr>																																						
-					<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-					<td align="center">&nbsp;</td>
-					<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
-				</tr>
-			</table>
-			 -->
 			<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
 			 
 			<input type="hidden" id="cid[]" name="cid[]" value="">
 			<input type="hidden" id="id" name="id" value="">
-			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
-			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listMetadata">
-			<!--  <input type="hidden" id="backpage" name="backpage" value="metadata"> -->
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 			<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
 			<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
 		</form>
@@ -434,7 +426,7 @@ else
 			<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
 			<div id="page">
 		   <h2 class="contentheading"><?php echo JText::sprintf("CATALOG_EDIT_METADATA", $object_name, $version_title) ?></h2>
-		   <div id="contentin" class="contentin">
+		   <div id="contentin" class="contentin easysdi-table">
 		   <table width="100%">
 			<tr>
 				<td width="100%"><div id="editMdOutput"></div></td>
@@ -4905,9 +4897,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		<div class="contentin">
 		<form action="index.php" method="POST" id="historyassignForm" name="historyassignForm">
 		<div class="row">
-			<div class="row">
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('historyassignForm').submit();"/>
-			</div>
+			<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('historyassignForm').submit();"/>
 		</div>
 	<table id="myHistoryAssign" class="box-table">
 	<thead>

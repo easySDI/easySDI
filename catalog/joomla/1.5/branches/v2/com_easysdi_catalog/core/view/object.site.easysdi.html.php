@@ -32,30 +32,9 @@ class HTML_object {
 		JHTML::_('behavior.calendar');
 
 		$baseMaplist = array();		
-		/*$database->setQuery( "SELECT id AS value,  alias AS text FROM #__CORE_basemap_definition " );
-		$baseMaplist = $database->loadObjectList() ;
-		
-		if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}	
-		*/
 		jimport("joomla.utilities.date");
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
-		/*require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_CORE_core'.DS.'common'.DS.'easysdi.config.php');
-		
-		
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");				
-		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=".$rowObject->metadata_id;
 
-			
-		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
- 
-		
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_CORE_core'.DS.'core'.DS.'geoMetadata.php');
-		
-		//$geoMD = new geoMetadata($cswResults ->getElementsByTagNameNS  ( "http://www.isotc211.org/2005/gmd" , "MD_Metadata"  )->item(0));
-		$geoMD = new geoMetadata($cswResults);				 
-		*/
 		$database =& JFactory::getDBO(); 
 		
 		$user =& JFactory::getUser();
@@ -87,8 +66,7 @@ else
 		 <div class="row">
 			 <div class="row">
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();"/>
-				<!-- <input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';document.getElementById('adminForm').submit();"/> -->
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_catalog&task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
 			</div>	 
 		 </div>
 		<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
@@ -115,9 +93,11 @@ if (!$hasVersioning)
 								<label for="description"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </label>
 								<textarea rows="4" cols="50" name ="description" class="text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php if ($pageReloaded) echo $_POST['description']; else echo $rowObject->description?></textarea>								
 							</div>
-							<div class="row">
-								<label for="published"><?php echo JText::_("CORE_PUBLISHED"); ?> : </label>
-								<?php echo JHTML::_('select.booleanlist', 'published', 'class="checkbox full"', ($pageReloaded)? $_POST['published'] : $rowObject->published); ?>
+							<div class="checkbox">
+								<div class="row">
+									<label for="published"><?php echo JText::_("CORE_PUBLISHED"); ?> : </label>
+									<?php echo helper_easysdi::booleanlist('published', 'class="checkbox"', 'class="checkbox"', ($pageReloaded)? $_POST['published'] : $rowObject->published, 'CORE_YES', 'CORE_NO'); ?>
+								</div>
 							</div>
 							<div class="row">							
 								<label for="visibility_id"><?php echo JText::_("CATALOG_OBJECT_VISIBILITY_LABEL"); ?> : </label>
@@ -340,44 +320,17 @@ if ($rowObject->updated)
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		
 		?>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h1>
 		<div class="contentin">
 		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
-		<form action="index.php" method="GET" id="productListForm" name="productListForm">
+		<form action="index.php" method="POST" id="objectListForm" name="objectListForm">
 	
-		<table width="100%">
-			<tr>
-				<td align="left">
-					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
-				</td>
-			</tr>
-			<tr>
-				<td align="left">
-					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct" " />			
-				</td>
-			</tr>
-			<tr>
-				<td align="left">
-					<br/>
-					<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
-				</td>
-			</tr>
-			<tr>
-				<td align="right">
-					<button type="submit" class="searchButton" onClick="document.getElementById('task').value='listObject';document.getElementById('productListForm').submit();"> <?php echo JText::_("CORE_SEARCH_BUTTON"); ?></button>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3" align="right">
-					<button type="button" onClick="document.getElementById('task').value='newObject';document.getElementById('productListForm').submit();" ><?php echo JText::_("CATALOG_NEW_OBJECT"); ?></button>
-				</td>
-			</tr>
-		</table>
-		 
-		 <!-- 
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTNAME");?></label>
@@ -388,43 +341,26 @@ if ($rowObject->updated)
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox full" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
 			 <div class="row">
-				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listObject';document.getElementById('productListForm').submit();"/>
-				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('task').value='newObject';document.getElementById('productListForm').submit();"/>
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listObject';document.getElementById('objectListForm').submit();"/>
+				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('task').value='newObject';document.getElementById('objectListForm').submit();"/>
 			</div>	 
 		 </div>
-		 -->
 	<script>
-		function suppressObject_click(id){
+		function suppressObject_click(url){
 			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_DELETE"); ?>');
 			if(!conf)
 				return false;
-			window.open('./index.php?option=com_easysdi_catalog&task=deleteObject&cid[]='+id, '_self');
-		}
-		function archiveObject_click(id){
-			conf = confirm('<?php echo JText::_("CATALOG_CONFIRM_OBJECT_ARCHIVE"); ?>');
-			if(!conf)
-				return false;
-			window.open('./index.php?option=com_easysdi_catalog&task=archiveObject&cid[]='+id, '_self');
-		}
-		function viewObjectLink_click(id){
-			window.open('./index.php?option=com_easysdi_catalog&task=viewObjectLink&backpage=object&cid[]='+id, '_self');
-		}
-		function manageObjectLink_click(id){
-			window.open('./index.php?option=com_easysdi_catalog&task=manageObjectLink&cid[]='+id, '_self');
-		}
-		function newObjectVersion_click(id) {
-			window.open('./index.php?option=com_easysdi_catalog&task=versionaliseObject&cid[]='+id, '_self');
+			window.open(url, '_self');
 		}
 	</script>
 	<div class="searchresults">
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
-		//echo "<table><tbody><tr><td colspan=\"11\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
 		echo "<p><strong>".JText::_("CATALOG_OBJECT_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
 		
 	}else{?>
-	<table id="myProducts" class="box-table" width="100%">
+	<table id="myObjects" class="box-table" width="100%">
 	<thead>
 	<tr>
 	<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
@@ -445,15 +381,9 @@ if ($rowObject->updated)
 			
 			?>		
 			<tr>
-			<!-- <td ><a class="modal" title="<?php //echo JText::_("CATALOG_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php //echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php //echo $row->name ;?></a></td> -->
 			<td ><?php echo $row->name ;?></td>
 			<td ><?php echo $row->objecttype ;?></td>
-			<!-- <td ><?php //echo JText::_($row->state); ?></td> -->
 			<?php 		
-			/*$versions = "";
-			$database->setQuery( "SELECT name FROM #__sdi_objectversion WHERE object_id=".$row->id." ORDER BY created" );
-			$versions = implode(", ", $database->loadResultArray());*/
-			
 			$managers = "";
 			$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 			$managers = implode(", ", $database->loadResultArray());
@@ -482,7 +412,7 @@ if ($rowObject->updated)
 				if ($objecttype->hasVersioning)
 				{
 					?>
-					<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('./index.php?option=com_easysdi_catalog&task=listObjectVersion&object_id=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang'); ?>', '_self');"></div>
+					<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$row->id); ?>', '_self');"></div>
 					<?php
 				}
 				else
@@ -492,8 +422,8 @@ if ($rowObject->updated)
 					<?php 
 				}
 				?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObject&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo $row->id; ?>');" ></div>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=editObject&cid[]='.$row->id); ?>', '_self');"></div>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo JRoute::_('index.php?option='.$option.'&task=deleteObject&cid[]='.$row->id); ?>');" ></div>
 			<?php 
 			}
 			?>
@@ -515,8 +445,6 @@ if ($rowObject->updated)
 			<input type="hidden" id="backpage" name="backpage" value="object">
 			<input type="hidden" name="filter_order" value="<?php echo $lists['order']; ?>" />
 			<input type="hidden" name="filter_order_Dir" value="<?php echo $lists['order_Dir']; ?>" />
-			<?php if (userManager::hasRight($rootAccount->id,"INTERNAL")){?> 
-			<?php }  ?>
 		</form>
 		</div>
 		</div>

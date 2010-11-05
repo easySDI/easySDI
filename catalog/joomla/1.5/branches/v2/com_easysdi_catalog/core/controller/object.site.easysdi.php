@@ -207,31 +207,7 @@ class SITE_object {
 		}
 		
 		$accounts = array();
-		/*$accounts[] = JHTML::_('select.option','0', JText::_("CORE_OBJECT_LIST_ACCOUNT_SELECT") );
 		
-		if (!$pageReloaded and $rowObject->id <>0)
-		{
-			$database->setQuery( "SELECT a.id AS value, b.name AS text FROM #__sdi_account a, #__users b, #__sdi_account_objecttype c WHERE a.user_id = b.id AND a.id=c.account_id AND a.id IN 
-										(SELECT account_id FROM #__sdi_actor
-								    					 WHERE 
-								    					 role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
-									     AND c.objecttype_id=".$rowObject->objecttype_id."
-								ORDER BY b.name" );
-			//echo $database->getQuery();
-			$accounts = array_merge( $accounts, $database->loadObjectList());
-		}
-		else if ($pageReloaded)
-		{
-			$database->setQuery( "SELECT a.id AS value, b.name AS text FROM #__sdi_account a, #__users b, #__sdi_account_objecttype c WHERE a.user_id = b.id AND a.id=c.account_id AND a.id IN 
-										(SELECT account_id FROM #__sdi_actor
-								    					 WHERE 
-								    					 role_id = (SELECT id FROM #__sdi_list_role WHERE code ='PRODUCT'))
-									     AND c.objecttype_id=".$_POST['objecttype_id']."
-								ORDER BY b.name" );
-			//echo $database->getQuery();
-			$accounts = array_merge( $accounts, $database->loadObjectList());
-		}
-		*/
 		// Compte racine du gestionnaire
 		$currentAccount = new accountByUserId($database);
 		$currentAccount->load($user->get('id'));
@@ -274,7 +250,8 @@ class SITE_object {
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
-			$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
@@ -413,14 +390,16 @@ class SITE_object {
 		}
 		
 		$visibilities=array();
-		$database->setQuery( "SELECT id AS value,  name AS text FROM #__sdi_list_visibility " );
+		$database->setQuery( "SELECT id AS value, label AS text FROM #__sdi_list_visibility " );
 		$visibilities = $database->loadObjectList() ;
+		helper_easysdi::alter_array_value_with_JTEXT_($visibilities);
+		
 		if ($database->getErrorNum()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
+		
 		HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $visibilities, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $rowObjectType->hasVersioning, $pageReloaded, $option );
-		//HTML_object::editObject($rowObject, $rowMetadata, $id, $accounts, $objecttypes, $projections, $fieldsLength, $languages, $labels, $unselected_editors, $selected_editors, $unselected_managers, $selected_managers, $option );
 	}
 
 	function saveObject($option){
@@ -433,7 +412,8 @@ class SITE_object {
 		
 		if (!$rowObject->bind( $_POST )) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit();
 		}
 
@@ -502,7 +482,8 @@ class SITE_object {
 			if ($inserted <> 1)
 			{
 				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 		
@@ -517,14 +498,16 @@ class SITE_object {
 			//$rowMetadata->visibility_id = $_POST['visibility_id'];
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 			
 			// Stocker l'objet
 			if (!$rowObject->store()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 			// Construire la première version
@@ -543,7 +526,8 @@ class SITE_object {
 			
 			if (!$rowObjectVersion->store(false)) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 		}
@@ -551,7 +535,8 @@ class SITE_object {
 		{
 			if (!$rowObject->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				//$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 				exit();
 			}
 		}
@@ -611,6 +596,7 @@ class SITE_object {
 				if (!$rowManagerObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+					//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 					//exit();
 				}
 			}
@@ -630,6 +616,7 @@ class SITE_object {
 					if (!$rowManagerObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 						//exit();
 					}
 				}
@@ -658,6 +645,7 @@ class SITE_object {
 				if (!$rowEditorObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+					//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 					//exit();
 				}
 			}
@@ -678,6 +666,7 @@ class SITE_object {
 					if (!$rowEditorObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
+						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
 						//exit();
 					}
 				}
@@ -695,7 +684,8 @@ class SITE_object {
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			//$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->enqueueMessage("Sï¿½lectionnez un enregistrement ï¿½ supprimer","error");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit;
 		}
 		foreach( $cid as $id )
@@ -796,7 +786,6 @@ class SITE_object {
 		$rowObject = new object( $database );
 		$rowObject->bind(JRequest::get('post'));
 		$rowObject->checkin();
-
 		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 	}
 	
@@ -820,7 +809,8 @@ class SITE_object {
 		$db->setQuery($query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			//$mainframe->redirect("index.php?option=$option&task=listObject" );
+			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 			exit();
 		}
 
@@ -845,7 +835,8 @@ class SITE_object {
 		$cache->clean();
 		
 		$mainframe->enqueueMessage($msg,"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		//$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 		exit();
 	}
 	
@@ -875,7 +866,8 @@ class SITE_object {
 				$row->ordering = $order[$i];
 				if (!$row->store()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					//$mainframe->redirect("index.php?option=$option&task=listObject" );
+					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 					exit();
 				}
 			}
@@ -885,7 +877,8 @@ class SITE_object {
 		$cache->clean();
 
 		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		//$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 		exit();
 	}
 	
@@ -908,7 +901,8 @@ class SITE_object {
 			$cache->clean();
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		//$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 		exit();
 	}
 }
