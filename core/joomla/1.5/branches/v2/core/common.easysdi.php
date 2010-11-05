@@ -17,9 +17,6 @@ defined('_JEXEC') or die('Restricted access');
  */
 
 class helper_easysdi{
-
-	
-
 	function hasRight($partner_id,$right){
 
 		$database =& JFactory::getDBO();
@@ -799,6 +796,179 @@ default:
 		//$text = addslashes($text);
 		//echo $text."<br>";
 		return $text;
+	}
+	
+	/**
+	 * Generates an HTML checkbox list
+	 * 
+	 * Joomla! radiolist code, override for EasySDI
+	 *
+	 * @param array An array of objects
+	 * @param string The value of the HTML name attribute
+	 * @param string Additional HTML attributes for the <select> tag
+	 * @param mixed The key that is selected
+	 * @param string The name of the object variable for the option value
+	 * @param string The name of the object variable for the option text
+	 * @returns string HTML for the select list
+	 */
+	function checkboxlist( $arr, $name, $attribs = null, $labelattribs = null, $key = 'value', $text = 'text', $selected = null, $idtag = false, $translate = false )
+	{
+		reset( $arr );
+		$html = '';
+
+		if (is_array($attribs)) {
+			$attribs = JArrayHelper::toString($attribs);
+		}
+
+		$id_text = $name;
+		if ( $idtag ) {
+			$id_text = $idtag;
+		}
+
+		for ($i=0, $n=count( $arr ); $i < $n; $i++ )
+		{
+			$k    = $arr[$i]->$key;
+			$t    = $translate ? JText::_( $arr[$i]->$text ) : $arr[$i]->$text;
+			$id    = ( isset($arr[$i]->id) ? @$arr[$i]->id : null);
+
+			$extra    = '';
+			$extra    .= $id ? " id=\"" . $arr[$i]->id . "\"" : '';
+			if (is_array( $selected ))
+			{
+				foreach ($selected as $val)
+				{
+					$k2 = is_object( $val ) ? $val->$key : $val;
+						
+					if ($k == $k2)
+					{
+						$extra .= " checked=\"checked\"";
+						break;
+					}
+				}
+			} else {
+				$extra .= ((string)$k == (string)$selected ? " checked=\"checked\"" : '');
+			}
+			
+			$id_text		= str_replace('[','',$id_text);
+			$id_text		= str_replace(']','',$id_text);
+		
+			$html .= "<div>\n";
+			$html .= "\n\t<input type=\"checkbox\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
+			$html .= "\n\t<label for=\"$id_text$k\" $labelattribs>$t</label>";
+			$html .= "</div>\n";
+		}
+		$html .= "\n";
+		return $html;
+	}
+	
+	/**
+	 * Generates an HTML radio list
+	 * 
+	 * Joomla! Code, override for EasySDI
+	 *
+	 * @param array An array of objects
+	 * @param string The value of the HTML name attribute
+	 * @param string Additional HTML attributes for the <select> tag
+	 * @param mixed The key that is selected
+	 * @param string The name of the object variable for the option value
+	 * @param string The name of the object variable for the option text
+	 * @returns string HTML for the select list
+	 */
+	function radiolist( $arr, $name, $attribs = null, $labelattribs = null, $key = 'value', $text = 'text', $selected = null, $idtag = false, $translate = false )
+	{
+		reset( $arr );
+		$html = '';
+
+		if (is_array($attribs)) {
+			$attribs = JArrayHelper::toString($attribs);
+		 }
+
+		$id_text = $name;
+		if ( $idtag ) {
+			$id_text = $idtag;
+		}
+
+		for ($i=0, $n=count( $arr ); $i < $n; $i++ )
+		{
+			$k	= $arr[$i]->$key;
+			$t	= $translate ? JText::_( $arr[$i]->$text ) : $arr[$i]->$text;
+			$id	= ( isset($arr[$i]->id) ? @$arr[$i]->id : null);
+
+			$extra	= '';
+			$extra	.= $id ? " id=\"" . $arr[$i]->id . "\"" : '';
+			if (is_array( $selected ))
+			{
+				foreach ($selected as $val)
+				{
+					$k2 = is_object( $val ) ? $val->$key : $val;
+					if ($k == $k2)
+					{
+						$extra .= " selected=\"selected\"";
+						break;
+					}
+				}
+			} else {
+				$extra .= ((string)$k == (string)$selected ? " checked=\"checked\"" : '');
+			}
+			
+			$id_text		= str_replace('[','',$id_text);
+			$id_text		= str_replace(']','',$id_text);
+		
+			$html .= "<div>\n";
+			$html .= "\n\t<input type=\"radio\" name=\"$name\" id=\"$id_text$k\" value=\"".$k."\"$extra $attribs />";
+			$html .= "\n\t<label for=\"$id_text$k\" $labelattribs>$t</label>";
+			$html .= "</div>\n";
+		}
+		$html .= "\n";
+		return $html;
+	}
+	
+	/**
+	* Generates a yes/no radio list
+	*
+	* @param string The value of the HTML name attribute
+	* @param string Additional HTML attributes for the <select> tag
+	* @param mixed The key that is selected
+	* @returns string HTML for the radio list
+	*/
+	function booleanlist( $name, $attribs = null, $labelattribs = null, $selected = null, $yes='yes', $no='no', $id=false )
+	{
+		$arr = array(
+			JHTML::_('select.option',  '0', JText::_( $no ) ),
+			JHTML::_('select.option',  '1', JText::_( $yes ) )
+		);
+		return helper_easysdi::radiolist($arr, $name, $attribs, $labelattribs, 'value', 'text', (int) $selected, $id);
+	}
+	
+	/**
+	 * Displays a calendar control field
+	 * 
+	 * Joomla! Code, override for EasySDI
+	 *
+	 * @param	string	The date value
+	 * @param	string	The name of the text field
+	 * @param	string	The id of the text field
+	 * @param	string	The date format
+	 * @param	array	Additional html attributes
+	 */
+	function calendar($value, $name, $id, $format = '%Y-%m-%d', $attribs = null, $imgattribs = null, $src, $alt)
+	{
+		JHTML::_('behavior.calendar'); //load the calendar behavior
+
+		if (is_array($attribs)) {
+			$attribs = JArrayHelper::toString( $attribs );
+		}
+		$document =& JFactory::getDocument();
+		$document->addScriptDeclaration('window.addEvent(\'domready\', function() {Calendar.setup({
+        inputField     :    "'.$id.'",     // id of the input field
+        ifFormat       :    "'.$format.'",      // format of the input field
+        button         :    "'.$id.'_img",  // trigger for the calendar (button ID)
+        align          :    "Tl",           // alignment (defaults to "Bl")
+        singleClick    :    true
+    });});');
+
+		return '<input type="text" name="'.$name.'" id="'.$id.'" value="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" '.$attribs.' />'.
+				 '<img src="'.$src.'" alt="'.$alt.'" id="'.$id.'_img" '.$imgattribs.'/>';
 	}
 }
 
