@@ -69,11 +69,12 @@ public class CSWProxyDataAccessibilityManager {
 		if(!policy.getObjectVersion().getVersionModes().contains("all"))
 		{
 			String queryVersion= "SELECT m.guid as guid, v.created as title " ;
-			queryVersion +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+			queryVersion +=	" FROM (SELECT * FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) ) m " ;
 			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
 			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
-			queryVersion +=" AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))) ";
-						
+			queryVersion += " AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))" ;
+			queryVersion += " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) )) ";
+			
 			try
 			{
 				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
@@ -225,63 +226,6 @@ public class CSWProxyDataAccessibilityManager {
 		return sb;
 	}
 
-//	public List <String> extractRecordIDFromGetRecordsResponse (File response, String outputSchema)
-//	{
-//		List <String> recordIds = new ArrayList<String>();
-//		try
-//		{
-//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder db = dbf.newDocumentBuilder();
-//			Document doc = db.parse(response);
-//			doc.getDocumentElement().normalize();
-//			
-//			if(outputSchema == null || outputSchema =="" || CSWProxyServlet2.cswOutputSchemas.contains(outputSchema))
-//			{
-//				NodeList nodeLst = doc.getElementsByTagName("dc:identifier");
-//							
-//				for (int s = 0; s < nodeLst.getLength(); s++) {
-//					Node fstNode = nodeLst.item(s);
-//					String id = fstNode.getFirstChild().getNodeValue();
-//					recordIds.add(id);
-//				}
-//				return recordIds;
-//			}
-//			else if (CSWProxyServlet2.gmdOutputSchemas.contains(outputSchema))
-//			{
-//				NodeList nodeLst = doc.getElementsByTagName("gmd:fileIdentifier");
-//				
-//				for (int s = 0; s < nodeLst.getLength(); s++) {
-//					Node fstNode = nodeLst.item(s);
-//					NodeList chldNodes = fstNode.getChildNodes();
-//					Node idNode = null;
-//					for(int c = 0 ;c<chldNodes.getLength();c++)
-//					{
-//						Node pcNode = chldNodes.item(c);
-//						if(pcNode.getNodeName() != "gco:CharacterString")
-//						{
-//							continue;
-//						}
-//						else
-//						{
-//							idNode = pcNode;
-//							break;
-//						}
-//					}
-//					if(idNode != null)
-//					{
-//						String id =idNode.getFirstChild().getNodeValue();
-//						recordIds.add(id);
-//					}
-//				}
-//				return recordIds;
-//			}
-//			return null;
-//		}
-//		catch (Exception ex)
-//		{
-//			return null;
-//		}
-//	}
 	
 	public List<Map<String,Object>> getAccessibleDataIds ()
 	{
@@ -304,7 +248,10 @@ public class CSWProxyDataAccessibilityManager {
 				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
 					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
 					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-					    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
+					    " WHERE object_id="+object_ids.get(i).get("object_id")+")" +
+					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
+					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
+					    " WHERE ls.code='published' ))";
 				if(metadata_ids == null)
 					metadata_ids = joomlaProvider.sjt.queryForList(query);
 				else
