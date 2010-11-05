@@ -20,12 +20,12 @@
 	<target name="compression" description="Compression">
 
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_proxy.zip"
-			basedir="." excludes=" out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
+			basedir="." excludes="config/** ; com_easysdi_proxy/** ; out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\components\com_easysdi_proxy">
+			todir="C:\www\Site\sdiv2\administrator\components\com_easysdi_proxy">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -39,28 +39,15 @@
 				<include name="**/*.js" />
 			</fileset>
 		</copy>
-		<copy
-			todir="C:\Inetpub\wwwroot\easysdi_1510\components\com_easysdi_proxy">
-			<fileset dir="./com_easysdi_proxy">
-				<include name="**/*.php" />
-				<include name="**/*.xsl" />
-				<include name="**/*.inc" />
-				<include name="**/*.jar" />
-				<include name="**/*.xml" />
-				<include name="**/*.png" />
-				<include name="**/*.ttf" />
-				<include name="**/*.txt" />
-				<include name="**/*.js" />
-			</fileset>
-		</copy>
+
 		<copy		   
-		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\fr-FR">
+		   todir="C:\www\Site\sdiv2\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_proxy.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\Inetpub\wwwroot\easysdi_1510\administrator\language\en-GB">
+		   todir="C:\www\Site\sdiv2\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_proxy.ini" />
 		     </fileset>
