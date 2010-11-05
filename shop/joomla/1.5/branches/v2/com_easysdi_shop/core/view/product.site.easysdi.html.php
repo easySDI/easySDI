@@ -22,6 +22,9 @@ class HTML_product{
 	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		
 		if($account->root_id == "")
 		{
@@ -574,18 +577,14 @@ class HTML_product{
 		<input type="hidden" name="createdby" value="<?php echo $product->createdby; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 		</form>
 		</div>
-		<table>
-			<tr>
-				<td>
-					<button type="button" onClick="document.getElementById('productForm').task.value='saveProduct';validateForm();" ><?php echo JText::_("CORE_SAVE"); ?></button>		
-				</td>
-				<td>
-					<button type="button" onClick="document.getElementById('productForm').task.value='cancelEditProduct';document.getElementById('productForm').submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-				</td>
-			</tr>
-		</table>
+		<div class="row">
+			<input type="submit" id="save_product" name="save_product" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('productForm').task.value='saveProduct';validateForm();"/>
+			<input type="submit" id="back_product" name="back_product" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=cancelEditProduct'); ?>', '_self');"/>
+		 </div>
 		<script>
 		function validateForm()
 		{
@@ -652,49 +651,39 @@ class HTML_product{
 	
 	function listProduct($pageNav,$rows,$option,$account,$search){
 		$user	=& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 		?>	
 		<div id="page">
-		<h2 class="contentheading"><?php echo JText::_("SHOP_LIST_PRODUCT"); ?></h2>
+		<h1 class="contentheading"><?php echo JText::_("SHOP_LIST_PRODUCT"); ?></h1>
 		<div class="contentin">
-		<h3> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h3>
-		<form action="index.php" method="GET" id="productListForm" name="productListForm">
-		<table width="100%">
-			<tr>
-				<td align="left">
-					<b><?php echo JText::_("CORE_SHOP_FILTER_TITLE");?></b>&nbsp;
-				</td>
-				<td align="left">
-					<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct"/></td>
-				<td align="right">
-					<button type="submit" class="searchButton" > <?php echo JText::_("CORE_SEARCH_BUTTON"); ?></button>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3" align="right">
-					<button id="newProductBtn" type="button" onClick="document.getElementById('task<?php echo $option; ?>').value='newProduct';document.getElementById('productListForm').submit();" ><?php echo JText::_("SHOP_NEW_PRODUCT"); ?></button>
-				</td>
-			</tr>
-		</table>
-		<br/>		
-		<table width="100%">
-			<tr>																																						
-				<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-				<td align="center"><?php echo JText::_("CORE_SHOP_DISPLAY"); ?> <?php echo $pageNav->getLimitBox(); ?></td>
-				<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-			</tr>
-		</table>
-	<h3><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h3>
+		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
+		<form action="index.php" method="POST" id="productListForm" name="productListForm">
+		<div class="row">
+			 <div class="row">
+			 	<label for="searchObjectName"><?php echo JText::_("SHOP_PRODUCT_FILTER_PRODUCTNAME");?></label>
+			 	<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
+			 </div>
+			 <div class="row">
+				<input type="submit" id="search_product" name="search_product" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listProduct';document.getElementById('productListForm').submit();"/>
+				<input type="submit" id="newProductBtn" name="newProductBtn" class="submit" value ="<?php echo JText::_("SHOP_NEW_PRODUCT"); ?>" onClick="document.getElementById('task').value='newProduct';document.getElementById('productListForm').submit();"/>
+			</div>	 
+		 </div>
+	<div class="searchresults">
+	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<script>
-		function suppressProduct_click(id){
+		function suppressProduct_click(url){
 			conf = confirm('<?php echo JText::_("SHOP_CONFIRM_PRODUCT_DELETE"); ?>');
 			if(!conf)
 				return false;
-			window.open('./index.php?option=com_easysdi_shop&task=suppressProduct&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>&publishedobject=product&cid[]='+id, '_self');
+			window.open(url, '_self');
 		}
 	</script>
 	<?php
 	if(count($rows) == 0){
-		echo "<table><tbody><tr><td colspan=\"7\">".JText::_("CORE_NO_RESULT_FOUND")."</td>";
+		echo "<p><strong>".JText::_("SHOP_PRODUCT_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
 	}else{?>
 	<table id="myProducts" class="box-table">
 	<thead>
@@ -703,8 +692,7 @@ class HTML_product{
 	<th class='title'><?php echo JText::_('SHOP_PRODUCT_NAME'); ?></th>
 	<th class='title'><?php echo JText::_('SHOP_PRODUCT_OBJECTNAME'); ?></th>
 	<th class='title'><?php echo JText::_('SHOP_PRODUCT_VERSIONTITLE'); ?></th>
-	<th class="logo">&nbsp;</th>
-	<th class="logo">&nbsp;</th>
+	<th class='title'><?php echo JText::_('SHOP_PRODUCT_ACTIONS'); ?></th>
 	</tr>
 	</thead>
 	<?php } ?>
@@ -722,21 +710,23 @@ class HTML_product{
 			<td><a class="modal" title="<?php echo JText::_("SHOP_PRODUCT_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->name ;?></a></td>
 			<td><?php echo $row->object_name ?></td>
 			<td><?php echo $row->version_title ?></td>
+			<td class="productActions">
 			<?php 
 			if (JTable::isCheckedOut($user->get ('id'), $row->checked_out ) )
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT_CHECKED_OUT'); ?>" id="editObjectCheckedOut" ></div></td>
+				<div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT_CHECKED_OUT'); ?>" id="editProductCheckedOut" ></div>
 				<?php
 			} 
 			else
 			{
 				?>
-				<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_shop&task=editProduct&id=<?php echo $row->id;?>&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>', '_self');"></div></td>
+				<div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editProduct" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=editProduct&id='.$row->id.'&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit")); ?>', '_self');"></div>
 				<?php
 			}
 			?>
-			<td class="logo"><div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteObject" onClick="return suppressProduct_click('<?php echo $row->id; ?>');" ></div></td>
+			<div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=suppressProduct&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>&publishedobject=product&cid[]='.$row->id); ?>');" ></div>
+			</td>
 			</tr>
 			<?php		
 		}
@@ -744,20 +734,14 @@ class HTML_product{
 	?>
 	</tbody>
 	</table>
-	<br/>
-	<table width="100%">
-		<tr>																																						
-			<td align="left"><?php echo $pageNav->getPagesCounter(); ?></td>
-			<td align="center">&nbsp;</td>
-			<td align="right"><?php echo $pageNav->getPagesLinks(); ?></td>
-		</tr>
-	</table>
+	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
+	</div>
+	
 	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listProduct">
-			
-			<?php if (userManager::hasRight($account->id,"INTERNAL")){?> 
-			<?php }  ?>
+			<input type="hidden" id="task" name="task" value="listProduct">
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 		</form>
 		</div>
 		</div>
