@@ -182,7 +182,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			sb.append(code);
 			sb.append("\"");
 		}
-		if(locator != null && locator != "" && version == "1.3.0")
+		if(locator != null && locator != "" && version.equals("1.3.0"))
 		{
 			sb.append(" locator=\"");
 			sb.append(locator);
@@ -1411,7 +1411,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				if(layers == null || layers.equalsIgnoreCase(""))
 				{
 					String param =  "GetMap".equals(operation) ? "LAYERS" : "QUERY_LAYERS";
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError(param+" parameter missing.","LayerNotDefined","LAYERS",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError(param+" parameter is missing.","LayerNotDefined",param,requestedVersion));
 					return;
 				}
 			}
@@ -1695,7 +1695,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						} else if ("GetCapabilities".equalsIgnoreCase(operation) || "capabilities".equalsIgnoreCase(operation)) {
 							if (paramUrlBase.toUpperCase().indexOf("SERVICE=") == -1)
 							{
-//								paramUrlBase += "&SERVICE=WMS";
+								paramUrlBase += "&SERVICE=WMS";
 							}
 							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
 
@@ -1895,6 +1895,8 @@ public class WMSProxyServlet extends ProxyServlet {
 											// Debug tb 03.07.2009
 											newServerURL = grsiList.get(jj).getUrl();
 											serverOK = isLayerAllowed(tmpFT, newServerURL);
+											//HVH - 05.11.2010 : according to the WMS specification, all layers requested must be valid
+											//So : if one is not allowed, the proxy returns an OGC Exception
 											if (serverOK && tmpFT != null) {
 
 												// Fin de Debug
@@ -1950,6 +1952,12 @@ public class WMSProxyServlet extends ProxyServlet {
 													lastServerURL = newServerURL;
 													i--;
 												}
+											}
+											else
+											{
+												//A requested layer is not allowed, the proxy returns an OGC exception
+												sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer(s) given in the LAYERS parameter","LayerNotDefined","layers",requestedVersion));
+												return;
 											}
 
 											if ((layerToKeepList.size() > 0 && !serverOK && (newServerURL.equals(lastServerURL)))) {
