@@ -248,10 +248,15 @@ public class CSWProxyDataAccessibilityManager {
 				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
 					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
 					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-					    " WHERE object_id="+object_ids.get(i).get("object_id")+")" +
+					    " WHERE object_id="+object_ids.get(i).get("object_id")+
 					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
 					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
-					    " WHERE ls.code='published' ))";
+					    " WHERE ls.code='published' )))";
+//				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+//			    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+//			    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+//			    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
+		
 				if(metadata_ids == null)
 					metadata_ids = joomlaProvider.sjt.queryForList(query);
 				else
