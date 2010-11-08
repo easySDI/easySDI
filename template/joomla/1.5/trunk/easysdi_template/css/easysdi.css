@@ -1470,6 +1470,10 @@ div .reqUser{
 	width:125px;
 }
 
+.listOrdersForProvider .treatment .longInputBox{
+	width:340px;
+}
+
 #searchOrder{
 	width:252px;
 }
