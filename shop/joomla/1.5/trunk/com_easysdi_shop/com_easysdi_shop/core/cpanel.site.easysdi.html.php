@@ -308,7 +308,7 @@ class HTML_cpanel {
 	</table>
 			<input type="hidden" name="order_id" id="order_id" value="">
 			<input type="hidden" name="devis_to_order" id="devis_to_order" value="0">
-		        <input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>" />
+			<input type="hidden" name="Itemid" id="Itemid" value="">
 			<input type="hidden" name="view" id="view" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<!--
@@ -498,7 +498,6 @@ class HTML_cpanel {
 		<input type="hidden" id="task<?php echo $option; ?>" name="task" value="listOrdersForProvider">
 		<input type="hidden" id="limit" name="limit" value="<?php echo JRequest::getVar("limit"); ?>">
 		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
-		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar("Itemid"); ?>">
 		<script>
 		function validateForm(){
 			var aSel = $('processOrderForm').getElementsByTagName("input");
@@ -534,8 +533,7 @@ class HTML_cpanel {
 					<button type="button" onClick="return validateForm();" ><?php echo JText::_("EASYSDI_SEND_RESULT"); ?></button>
 				</td>
 				<td>
-				<!-- document.getElementById('processOrderForm').task<?php echo $option; ?>.value='listOrdersForProvider';document.getElementById('processOrderForm').submit(); -->
-					<button type="button" onClick="window.history.back();" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
+					<button type="button" onClick="history.go(-1);" ><?php echo JText::_("EASYSDI_CANCEL"); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -548,9 +546,31 @@ class HTML_cpanel {
 		
 	}
 	
-	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="", $orderStatus="", $productorderstatus="", $productStatusFilter="", $productTypeFilter="", $treatmentList="", $treatmentType){
+	function listOrdersForProvider($pageNav,$rows,$option,$ordertype="",$search="", $orderStatus="", $productorderstatus="", $productStatusFilter="", $productTypeFilter="", $treatmentList="", $treatmentType, $partner_list, $product_list, $currentPartner, $currentProduct){
 	
 	?>	
+	        <script>
+		window.addEvent('domready', function() {
+		    
+		    if($('orderStatus').value != 'AWAIT'){
+		          $('advFields').style.display = 'block';
+			  $('advFields').style.visibility = 'visible';
+		    }else{
+		         $('advFields').style.display = 'none';
+			 $('advFields').style.visibility = 'hidden';
+		    }
+			   
+		    $('orderStatus').addEvent( 'change' , function() {
+			   if($('orderStatus').value != 'AWAIT'){
+		              $('advFields').style.display = 'block';
+			      $('advFields').style.visibility = 'visible';
+		           }else{
+			      $('advFields').style.display = 'none';
+			      $('advFields').style.visibility = 'hidden';
+			   }
+			});
+		});
+		</script>
 		<div id="page" class="listOrdersForProvider">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_LIST_ORDERS_FOR_PROVIDER"); ?></h2>
 		<div class="contentin">
@@ -560,12 +580,19 @@ class HTML_cpanel {
 	
 		<table class="treatment" width="100%">
 			<tr>
-				<td align="left">
+				<td width="80" align="left">
 					<b><?php echo JText::_("EASYSDI_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
-				<td align="left" colspan="4">
+				<td align="left" colspan="2">
 					<input id="treatmentSearch" type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
 				</td>
+				
+				<!--
+				<td align="right" colspan="2">
+				    <input type="checkBox" value="" name="onlyTreatment" id="onlyTreatment">
+				    <span><?php echo JText::_("EASYSDI_SHOP_TREATMENT_ONLY");?></span>
+				</td>
+				-->
 			</tr>
 			<tr>
 				<td align="left">
@@ -573,38 +600,79 @@ class HTML_cpanel {
 				</td>
 				<td>
 					<select name="treatmentType" id="treatmentType" >
-						<option value="-1"><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TREATMENT"); ?></option>
+					<option value="-1"><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TREATMENT"); ?></option>
 						 <?php  foreach($treatmentList as $type){ ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($treatmentType==$type->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($type->translation); ?>
 						  </option>
 						 <?php } ?>
 					</select>
-				</td>
-				<td>
+				
 					<select name="ordertype" id="ordertype" >
 						<option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_TYPE"); ?></option>
-						 <?php  foreach($productTypeFilter as $type){ ?>
+						 <?php  foreach($productTypeFilter as $type){ 
+							 ?>
 			              <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
 							<?php echo JText::_($type->translation); ?>
 						  </option>
 						 <?php } ?>
 					</select>
 				</td>
-				<td width = "125px">&nbsp;<!--
+			</tr>
+			<tr>
+			        <td align="left">
+					<?php echo JText::_("EASYSDI_RECAP_ORDER_STATUS"); ?>&nbsp; :
+				</td>
+			        <td align="left" colspan="4">
 					<select name="orderStatus" id="orderStatus" >
 						 <option value=""><?php echo JText::_("EASYSDI_CMD_FILTER_ALL_STATUS"); ?></option>
 						 <?php  foreach($productStatusFilter as $stat){ ?>
-					         <option value="<?php echo $stat->id;?>" <?php if ($orderStatus==$stat->id){?>selected="selected"<?php }?>>
+					         <option value="<?php echo $stat->code;?>" <?php if ($orderStatus==$stat->code){?>selected="selected"<?php }?>>
 							<?php echo JText::_($stat->translation); ?>
 						  </option>
 						 <?php } ?>
 					</select>
-				     -->
 				</td>
-				<td>
-					<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+			</tr>
+			</table>
+			<!-- champs avancés -->
+			<div id="advFields" style="display:none;visibility:hidden">
+			<table class="treatment" width="100%">
+			<tr>
+			        <td width="80"><?php echo JText::_("EASYSDI_SHOP_DATE_RECEIVED");?>
+				<td colspan="4">
+				     <?php echo JHTML::_('calendar',JRequest::getVar('received_cal_min'), "received_cal_min","received_cal_min","%d.%m.%Y"); ?>
+				<?php echo JText::_("EASYSDI_SHOP_DATE_TO");?>
+				     <?php echo JHTML::_('calendar',JRequest::getVar('received_cal_max'), "received_cal_max","received_cal_max","%d.%m.%Y"); ?>
 				</td>
+			</tr>
+			<tr>
+			        <td><?php echo JText::_("EASYSDI_SHOP_DATE_TREATED");?>
+				<td colspan="4">
+				     <?php echo JHTML::_('calendar',JRequest::getVar('treated_cal_min'), "treated_cal_min","treated_cal_min","%d.%m.%Y"); ?>
+				<?php echo JText::_("EASYSDI_SHOP_DATE_TO");?>
+				     <?php echo JHTML::_('calendar',JRequest::getVar('treated_cal_max'), "treated_cal_max","treated_cal_max","%d.%m.%Y"); ?>
+				</td>
+			</tr>
+			<tr>
+			        <td><?php echo JText::_("EASYSDI_SHOP_PARTNER"); ?></td>
+				<td align="left" colspan="4">
+					<?php echo JHTML::_("select.genericlist",$partner_list, 'easysdi_user_id', 'size="1" class="longInputBox" onChange=""', 'value', 'text', $currentPartner); ?>
+				</td>
+			</tr>
+			<tr>
+			        <td><?php echo JText::_("EASYSDI_SHOP_PRODUCT"); ?></td>
+				<td align="left" colspan="4">
+					<?php echo JHTML::_("select.genericlist",$product_list, 'product_id', 'size="1" class="longInputBox" onChange=""', 'value', 'text', $currentProduct); ?>
+				</td>
+			</tr>
+			</table>
+			</div>
+		<table class="treatment" width="100%">
+			<tr>
+			     <td align="right" colspan="5">
+				<button type="submit" class="searchButton" > <?php echo JText::_("EASYSDI_SEARCH_BUTTON"); ?></button>
+			     </td>
 			</tr>
 		</table>
 		
@@ -688,10 +756,18 @@ class HTML_cpanel {
 					title="<?php echo JText::_("EASYSDI_VIEW_MD_FILE"); ?>"
 					href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_id;?>"
 					rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->productName ;?>
-					</a>
+					</a>&nbsp;|&nbsp;<i><?php echo $row->name; ?></i>
 				</td>
 				<td align="center"><!--<?php echo JText::_($row->status_translation) ;?>--></td>
+				<?php if($row->status_code == "AWAIT"){ ?>
 				<td class="logo" align="center"><div title="<?php echo JText::_('EASYSDI_PROCESS_ORDER'); ?>" class="treatRequest" id="treatReqButton" onClick="document.getElementById('product_list_id').value='<?php echo $row->product_list_id; ?>';document.getElementById('ordersListForm').task.value='processOrder'; document.getElementById('ordersListForm').submit();"/></td>
+			        <?php }else{ ?>
+				<td class="logo" align="center">
+				  <div class="particular-order-link">
+				        <a title="<?php echo $row->order_id.": ".$row->name; ?>" class="modal" href="./index.php?tmpl=component&option=<?php echo $option; ?>&task=orderReportForProvider&cid[]=<?php echo $row->order_id?>" rel="{handler:'iframe',size:{x:600,y:600}}">&nbsp;</a>
+					</div>
+				</td>
+				<?php } ?>
 			</tr>
 				
 			<?php
@@ -717,7 +793,6 @@ class HTML_cpanel {
 			<input type="hidden" name="option" value="<?php echo $option; ?>"/>
 			<input type="hidden" id="task" name="task" value="listOrdersForProvider"/>
 			<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
-			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar("Itemid"); ?>">
 		</form>
 		</div>
 		</div>

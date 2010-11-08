@@ -372,13 +372,26 @@ class SITE_cpanel {
 			
 		}
 	}
-
+        
+	function getIsoDate($dateText){
+		     $database =& JFactory::getDBO();
+	             $date = JRequest::getVar($dateText, "");
+		     $date = $database->getEscaped(trim(strtolower($date)));
+		     $array = explode(".", $date);
+		     $return = $array[2]."-".$array[1]."-".$array[0];
+		     if($return != "" && $return != "--")
+			     return $return;
+		     else
+		             return "";
+	}
+	
 	function listOrdersForProvider(){
 
 		global  $mainframe;
 
 		$option=JRequest::getVar("option");
-		
+		$currentPartner = -1;
+		$currentProduct = -1;
 
 		//Allows Pathway with mod_menu_easysdi
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
@@ -411,44 +424,70 @@ class SITE_cpanel {
 		
 		//Build the query on Order status
 		$orderStatusQuery = "";
+		$advFilter = "";
 		
-		$q = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
+		$q = "select code from #__easysdi_order_product_status_list where code ='AWAIT'";
 		$database->setQuery($q);
 		$dfltStatus = $database->loadResult();
 		
 		$orderStatus = JRequest::getVar("orderStatus",$dfltStatus);
-		if($orderStatus != "")
-		{
-			$orderStatusQuery = " AND psl.id='$orderStatus' ";
-		}
-		else
-		{
-			//All except SAVED, FINISH, ARCHIVED and HISTORIZED
-			$queryOrderStatus = "select id from #__easysdi_order_product_status_list;";
-			$database->setQuery($queryOrderStatus);
-			$orderStatusList = $database->loadObjectList();
-			/*
-			$orderStatusQuery = " AND o.status NOT IN (";
-			foreach ($orderStatusList as $status)
-			{
-				$orderStatusQuery .= " '".$status->id."' ,";
-			}
-			$orderStatusQuery = substr ($orderStatusQuery,0,-1);
-			$orderStatusQuery .= ")";
-			*/
-		}
-					
 		
 		//Get the id of product status AWAIT to get only order with product not already AVAILAIBLE to costumer
 		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
 		$database->setQuery($queryStatus);
 		$productOrderStatus = $database->loadResult();
 		
-		//convenience var to list all request
-		$allorders=JRequest::getVar("allorders", 0);
-		if($allorders == 1){
-			$productOrderStatus=2;
-			$orderStatusQuery = " ";
+		//all request
+		if($orderStatus == "")
+		{
+			
+		}
+		//Only await
+		else if($orderStatus == "AWAIT"){
+		   $orderStatusQuery = " AND psl.code='$orderStatus' ";
+		   //no adv filter
+		   $advFilter = "";
+		}
+		//Only available
+		else if($orderStatus == "AVAILABLE"){
+		   $orderStatusQuery = " AND psl.code='$orderStatus' ";
+		}
+
+		//advanced filter
+		if($orderStatus == "" || $orderStatus == "AVAILABLE"){
+		     $received_cal_min_iso = SITE_cpanel::getIsoDate('received_cal_min');
+		     $received_cal_max_iso = SITE_cpanel::getIsoDate('received_cal_max');
+	             $treated_cal_min_iso = SITE_cpanel::getIsoDate('treated_cal_min');
+		     $treated_cal_max_iso = SITE_cpanel::getIsoDate('treated_cal_max');
+		     
+                     if($received_cal_min_iso != ''){
+			$advFilter .= " and o.order_send_date >= '".$received_cal_min_iso." 00:00:00'";
+
+		     }
+		     
+		     if($received_cal_max_iso != ''){
+			$advFilter .= " and o.order_send_date <= '".$received_cal_max_iso." 23:59:59'";
+
+		     }
+		     
+		     if($treated_cal_min_iso != ''){
+			$advFilter .= " and o.RESPONSE_DATE >= '".$treated_cal_min_iso." 00:00:00'";
+		     }
+		     
+		     if($treated_cal_max_iso != ''){
+			$advFilter .= " and o.RESPONSE_DATE <= '".$treated_cal_max_iso." 23:59:59'";
+		     }
+		     
+		     //partner
+		     $currentPartner = JRequest::getVar('easysdi_user_id');
+                     if($currentPartner != -1)
+			     $advFilter .= " and o.user_id = ".$currentPartner;
+		     
+		     //product
+		     $currentProduct = JRequest::getVar('product_id');
+                     if($currentProduct != -1)
+			     $advFilter .= " and p.id = ".$currentProduct;
+		     
 		}
 		
 		$ordertype= JRequest::getVar("ordertype","");
@@ -498,7 +537,8 @@ class SITE_cpanel {
 					     o.type as type, 
 					     opl.status as status, 
 					     osl.code as code, 
-					     psl.translation as status_translation, 
+					     psl.translation as status_translation,
+					     psl.code as status_code,
 					     tl.translation as type_translation
 				  FROM  #__easysdi_order o, 
 				  		#__easysdi_order_product_list opl, 
@@ -519,8 +559,8 @@ class SITE_cpanel {
 				  and o.user_id = uClient.id
 				  and tl.id = o.type
 				  and o.status <> $status_saved
-				  and opl.status = $productOrderStatus 
 				  $orderStatusQuery 
+				  $advFilter 
 				  $treatmentTypeQuery
 				  AND o.order_id 
 				  NOT IN (SELECT o.order_id 
@@ -566,8 +606,8 @@ class SITE_cpanel {
 					   AND  p.diffusion_partner_id = pa.partner_id 
 					   AND  pa.user_id =".$user->id." 
 					   and o.status <> $status_saved
-		 			   and opl.status = $productOrderStatus 
 					   $orderStatusQuery  
+					   $advFilter 
 					   $treatmentTypeQuery
 					   AND  o.order_id 
 					   NOT IN (SELECT o.order_id 
@@ -601,7 +641,7 @@ class SITE_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-
+                		
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		$database->setQuery($query, $pageNav->limitstart, $pageNav->limit);
 		$rows = $database->loadObjectList() ;
@@ -610,7 +650,28 @@ class SITE_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
-		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter, $treatmentList, $treatmentType);
+		
+		//load partner list
+		$database->setQuery( "SELECT j.id as value, j.name as text FROM #__easysdi_community_partner p, #__users j where p.user_id = j.id order by j.name" );
+		$partner_list = $database->loadObjectList();
+	        array_unshift($partner_list, JHTML::_('select.option','-1', JText::_("EASYSDI_SHOP_ALL")));  
+
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+		$database->setQuery( "SELECT p.id as value, p.data_title as text FROM #__easysdi_product p, #__easysdi_community_partner par, #__users j where par.user_id = j.id and par.partner_id = p.diffusion_partner_id and par.user_id =".$user->id." order by p.data_title" );
+		$product_list = $database->loadObjectList();
+	        array_unshift($product_list, JHTML::_('select.option','-1', JText::_("EASYSDI_SHOP_ALL")));  
+		
+		if ($database->getErrorNum()) {
+			echo "<div class='alert'>";
+			echo 			$database->getErrorMsg();
+			echo "</div>";
+		}
+		
+		HTML_cpanel::listOrdersForProvider($pageNav,$rows,$option,$ordertype,$search,$orderStatus,$productOrderStatus, $productStatusFilter, $productTypeFilter, $treatmentList, $treatmentType, $partner_list, $product_list, $currentPartner, $currentProduct);
 
 	}
 
