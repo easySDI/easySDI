@@ -2,87 +2,19 @@
 	<td>
 		<div id="cpanel">
 			<br/>
-			<h1><?php echo JText::_( 'CORE_CPANEL_SHOP_LABEL' );?></h1>
-			<?php
-			$link = "index.php?option=com_easysdi_shop&amp;task=listBasemap";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						
-						<?php 
-						$text = JText::_( 'SHOP_CPANEL_BASEMAP' );
-						echo JHTML::_('image.site',  'icon-48-media.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>	
+		<img src="./components/com_easysdi_monitor/icons/logo_monitor.png" width="130" height="40"/><br/>
 			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=listPerimeter";
+			$link = "index.php?option=com_easysdi_monitor&amp;view=main";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'SHOP_CPANEL_PERIMETER' );					
-							echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=listLocation";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'SHOP_CPANEL_LOCATION' );					
-							echo JHTML::_('image.site',  'icon-48-checkin.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-		</div>
-	</td>
-</tr>
-<tr>
-	<td>
-		<div id="cpanel">
-			<br/>
-			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=listProduct";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'SHOP_CPANEL_PRODUCT' );					
-							echo JHTML::_('image.site',  'icon-48-generic.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			<?php	
-			$link = "index.php?option=com_easysdi_shop&amp;task=listProperties";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'SHOP_CPANEL_PROPERTY' );					
+							$text = JText::_( 'MONITOR_CPANEL_MAIN' );					
 							echo JHTML::_('image.site',  'icon-48-cpanel.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
 			</div>
-			<?php
-			$link = "index.php?option=com_easysdi_shop&amp;task=listOrders";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">				
-						<?php 
-						$text = JText::_( 'SHOP_CPANEL_ORDER' );
-						echo JHTML::_('image.site',  'icon-48-module.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>											 
 		</div>
 	</td>
 </tr>
