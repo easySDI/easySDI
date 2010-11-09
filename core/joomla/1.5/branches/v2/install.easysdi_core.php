@@ -508,7 +508,8 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'TIERCE', 'TIERCE', 'CORE_ACCOUNT_TIERCE_RIGHT', 'Commande pour un tiers', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1'),
 					('".helper_easysdi::getUniqueId()."', 'DIFFUSION', 'DIFFUSION', 'CORE_ACCOUNT_DIFFUSION_RIGHT', 'Gestionnaire de diffusion', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1'),
 					('".helper_easysdi::getUniqueId()."', 'FAVORITE', 'FAVORITE', 'CORE_ACCOUNT_FAVORITE_RIGHT', 'Gestion des favoris', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1'),
-					('".helper_easysdi::getUniqueId()."', 'PRODUCT', 'PRODUCT', 'CORE_ACCOUNT_PRODUCT_RIGHT', 'Gestion des produits', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1')";
+					('".helper_easysdi::getUniqueId()."', 'PRODUCT', 'PRODUCT', 'CORE_ACCOUNT_PRODUCT_RIGHT', 'Gestion des produits', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1'),
+					('".helper_easysdi::getUniqueId()."', 'EASYSDI_CACHE', 'EASYSDI_CACHE', 'CORE_ACCOUNT_PROXY_CACHE_RIGHT', 'Gestion du cache par le proxy', '".date('Y-m-d H:i:s')."', '".$user_id."', 0, '1')";
 			$db->setQuery( $query);	
 			if (!$db->query()) 
 			{
