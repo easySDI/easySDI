@@ -1052,7 +1052,6 @@ function com_install(){
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  KEY `objecttype_id` (`objecttype_id`),
-					  KEY `projection_id` (`projection_id`),
 					  KEY `account_id` (`account_id`),
 					  KEY `visibility_id` (`visibility_id`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
@@ -1351,7 +1350,6 @@ function com_install(){
 			
 			$query="ALTER TABLE `#__sdi_object`
 					  ADD CONSTRAINT `#__sdi_object_ibfk_1` FOREIGN KEY (`objecttype_id`) REFERENCES `#__sdi_objecttype` (`id`),
-					  ADD CONSTRAINT `#__sdi_object_ibfk_3` FOREIGN KEY (`projection_id`) REFERENCES `#__sdi_list_projection` (`id`),
 					  ADD CONSTRAINT `#__sdi_object_ibfk_4` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`);
 					";
 			$db->setQuery( $query);	
