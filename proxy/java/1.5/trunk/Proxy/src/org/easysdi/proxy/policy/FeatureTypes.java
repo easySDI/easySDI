@@ -49,7 +49,7 @@ public class FeatureTypes implements Serializable {
 	@XmlElement(name = "FeatureType")
 	protected List<FeatureType> featureType;
 	@XmlAttribute(name = "All")
-	protected Boolean all;
+	protected Boolean all = true;
 
 	@Override
 	public int hashCode() {

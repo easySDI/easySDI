@@ -48,7 +48,7 @@ public class Servers implements Serializable {
 	@XmlElement(name = "Server", required = true)
 	protected List<Server> server;
 	@XmlAttribute(name = "All")
-	protected Boolean all;
+	protected Boolean all = true;
 
 	@Override
 	public int hashCode() {

@@ -51,7 +51,7 @@ public class Attributes implements Serializable {
 	@XmlElement(name = "Exclude")
 	protected Exclude exclude;
 	@XmlAttribute(name = "All")
-	protected Boolean all;
+	protected Boolean all = true;
 
 	@Override
 	public int hashCode() {
