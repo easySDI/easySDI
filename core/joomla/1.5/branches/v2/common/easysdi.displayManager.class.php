@@ -778,7 +778,7 @@ class displayManager{
 //		if ($type <> 'diffusion')
 //			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
 		if ($type <> 'diffusion')
-			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall);
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type);
 		
 //		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
@@ -856,52 +856,52 @@ class displayManager{
 //				
 //			}";
 			
-			//Manage display class
-			/* Onglets abstract et complete*/
-			$myHtml .= "window.addEvent('domready', function() {
-			
-			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-			});
-			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-			});
-			
-			task = '$task';
-			type = '$type';
-			
-			";
-			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
-			if ($shopExist)
-			{
-				$myHtml .= "
-				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-				});
-				
-				document.getElementById('catalogPanel3').className = 'closed';
-				
-				if(task == 'showMetadata' & type == 'diffusion'){
-	        		document.getElementById('catalogPanel3').className = 'open';
-				}
-				";
-			}
+//			//Manage display class
+//			/* Onglets abstract et complete*/
+//			$myHtml .= "window.addEvent('domready', function() {
+//			
+//			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
+//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+//			});
+//			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
+//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+//			});
+//			
+//			task = '$task';
+//			type = '$type';
+//			
+//			";
+//			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
+//			if ($shopExist)
+//			{
+//				$myHtml .= "
+//				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
+//					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+//				});
+//				
+//				document.getElementById('catalogPanel3').className = 'closed';
+//				
+//				if(task == 'showMetadata' & type == 'diffusion'){
+//	        		document.getElementById('catalogPanel3').className = 'open';
+//				}
+//				";
+//			}
 			
 			/* Boutons */
-			$myHtml .= "
-
-			
-	
-			document.getElementById('catalogPanel1').className = 'closed';
-			document.getElementById('catalogPanel2').className = 'closed';
-			
-			if(task == 'showMetadata' & type == 'abstract'){
-	        	document.getElementById('catalogPanel1').className = 'open';
-			}
-			if(task == 'showMetadata' & type == 'complete'){
-	        	document.getElementById('catalogPanel2').className = 'open';
-			}
-			});\n"; 
+//			$myHtml .= "
+//
+//			
+//	
+//			document.getElementById('catalogPanel1').className = 'closed';
+//			document.getElementById('catalogPanel2').className = 'closed';
+//			
+//			if(task == 'showMetadata' & type == 'abstract'){
+//	        	document.getElementById('catalogPanel1').className = 'open';
+//			}
+//			if(task == 'showMetadata' & type == 'complete'){
+//	        	document.getElementById('catalogPanel2').className = 'open';
+//			}
+//			});\n"; 
 		
 			$myHtml .= "</script>";
 
@@ -1413,7 +1413,7 @@ class displayManager{
 	}
 	
 //	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
-	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall)
+	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall, $type)
 	{
 		$doc = new DomDocument('1.0', 'UTF-8');
 		//$doc = $xml;
@@ -1574,28 +1574,42 @@ class displayManager{
 		}
 		
 		//Ajoute les actions disponibles
-//		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
-//		
-//		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
-//		$XMLActionPDF->setAttribute('id', 'exportPdf');
-//		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
-//		$XMLActionPDF->appendChild($XMLActionPDFLink);
-//		
-//		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
-//		$XMLActionXML->setAttribute('id', 'exportXml');
-//		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type=$type\', \'_self\');]]');
-//		$XMLActionXML->appendChild($XMLActionXMLLink);
-//		
-//		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
-//		$XMLActionPrint->setAttribute('id', 'printMetadata');
-//		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=$option&task=$task&id='.$fileIdentifier.'&type=$type&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
-//		$XMLActionPrint->appendChild($XMLActionPrintLink);
-//		
-//		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
-//		$XMLActionOrder->setAttribute('id', 'orderProduct');
-//		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?option=com_easysdi_shop&task=shop\', \'_parent\');]]');
-//		$XMLActionOrder->appendChild($XMLActionOrderLink);
-//		
+		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
+		
+		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
+		$XMLActionPDF->setAttribute('id', 'exportPdf');
+		//$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
+		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type)));
+		//$XMLActionPDFParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
+		$XMLActionPDF->appendChild($XMLActionPDFLink);
+		//$XMLActionPDF->appendChild($XMLActionPDFParams);
+		
+		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
+		$XMLActionXML->setAttribute('id', 'exportXml');
+		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
+		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\']]');
+		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type)));
+		//$XMLActionXMLParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
+		$XMLActionXML->appendChild($XMLActionXMLLink);
+		//$XMLActionXML->appendChild($XMLActionXMLParams);
+		
+		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
+		$XMLActionPrint->setAttribute('id', 'printMetadata');
+		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
+		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\']]');
+		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1')));
+		//$XMLActionPrintParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\']]');
+		$XMLActionPrint->appendChild($XMLActionPrintLink);
+		//$XMLActionPrint->appendChild($XMLActionPrintParams);
+		
+		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
+		$XMLActionOrder->setAttribute('id', 'orderProduct');
+		//$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?option=com_easysdi_shop&task=shop\']]');
+		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_shop&task=shop')));
+		//$XMLActionOrderParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_parent\']]');
+		$XMLActionOrder->appendChild($XMLActionOrderLink);
+		//$XMLActionOrder->appendChild($XMLActionOrderParams);
+		
 //		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
 //		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
 //		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
@@ -1605,16 +1619,44 @@ class displayManager{
 //		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
 //		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
 //		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
-//		
-//		$XMLAction->appendChild($XMLActionPDF);
-//		$XMLAction->appendChild($XMLActionXML);
-//		$XMLAction->appendChild($XMLActionPrint);
-//		$XMLAction->appendChild($XMLActionOrder);
+		
+		$XMLAction->appendChild($XMLActionPDF);
+		$XMLAction->appendChild($XMLActionXML);
+		$XMLAction->appendChild($XMLActionPrint);
+		$XMLAction->appendChild($XMLActionOrder);
 //		$XMLAction->appendChild($XMLActionAddToFavorite);
 //		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
-//		
-//		$XMLSdi->appendChild($XMLAction);
 		
+		$XMLSdi->appendChild($XMLAction);
+		
+		//Ajoute les onglets disponibles
+		$XMLTabs = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:tab");
+		
+		$XMLTabAbstract = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:abstract");
+		$XMLTabAbstract->setAttribute('id', 'catalogPanel1');
+		$XMLTabAbstract->setAttribute('name', JText::_("CORE_ABSTRACT_TAB"));
+		$XMLTabAbstractLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=abstract')));
+		$XMLTabAbstract->appendChild($XMLTabAbstractLink);
+		
+		$XMLTabComplete = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:complete");
+		$XMLTabComplete->setAttribute('id', 'catalogPanel2');
+		$XMLTabComplete->setAttribute('name', JText::_("CORE_COMPLETE_TAB"));
+		$XMLTabCompleteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=complete')));
+		$XMLTabComplete->appendChild($XMLTabCompleteLink);
+		
+		$XMLTabDiffusion = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:diffusion");
+		$XMLTabDiffusion->setAttribute('id', 'catalogPanel3');
+		$XMLTabDiffusion->setAttribute('name', JText::_("CORE_DIFFUSION_TAB"));
+		$XMLTabDiffusionLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion')));
+		$XMLTabDiffusion->appendChild($XMLTabDiffusionLink);
+		
+		$XMLTabs->appendChild($XMLTabAbstract);
+		$XMLTabs->appendChild($XMLTabComplete);
+		$XMLTabs->appendChild($XMLTabDiffusion);
+		$XMLSdi->appendChild($XMLTabs);
+		
+		//$doc->save("/home/sites/geoportal.depth.ch/web/administrator/components/com_easysdi_core/xml/tmp/display_".$fileIdentifier.".xml");
+	
 		return $doc;
 	}
 }
