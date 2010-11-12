@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dÃ¢â‚¬â„¢Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dÃ¢â¬â¢Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -777,8 +777,9 @@ class displayManager{
 		
 //		if ($type <> 'diffusion')
 //			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
+		$context = JRequest::getVar('context');
 		if ($type <> 'diffusion')
-			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type);
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
 		
 //		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
@@ -1198,7 +1199,12 @@ class displayManager{
 		$product_update_date;
 		
 		$db =& JFactory::getDBO();
-		$queryAccountID = "select account_id from #__sdi_object o, #__sdi_metadata m where o.metadata_id=m.id AND m.guid = '".$id."'";
+		$queryAccountID = "SELECT o.account_id 
+						   FROM #__sdi_metadata m
+						   INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+						   INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+						   INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+						   WHERE m.guid = '".$id."'";
 		$db->setQuery($queryAccountID);
 		$account_id = $db->loadResult();
 		
@@ -1211,12 +1217,22 @@ class displayManager{
    		$db->setQuery($query);
 		$supplier= $db->loadResult();
 			
-		$query = "select created from #__sdi_object where metadata_id = '".$id."'";
+		$query = "SELECT m.created 
+				  FROM #__sdi_metadata m
+				  INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				  INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+				  INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+			      WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$temp = $db->loadResult();
 		$object_creation_date = date("d-m-Y H:i:s", strtotime($temp));
 		
-		$query = "select updated from #__sdi_object where metadata_id = '".$id."'";
+		$query = "SELECT m.updated 
+				  FROM #__sdi_metadata m
+				  INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				  INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+				  INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
+			      WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$temp = $db->loadResult();
 		$object_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date("d-m-Y H:i:s", strtotime($temp));
@@ -1263,7 +1279,7 @@ class displayManager{
 			$res = "";
 			//Url to the export pdf servlet
 			$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
-			//echo $url;
+			//echo $url;break;
 			$fp = fopen($url,"r");
 			while (!feof($fp)) {
 				$res .= fgets($fp, 4096);
@@ -1413,7 +1429,7 @@ class displayManager{
 	}
 	
 //	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
-	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall, $type)
+	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall, $type, $context)
 	{
 		$doc = new DomDocument('1.0', 'UTF-8');
 		//$doc = $xml;
@@ -1579,7 +1595,7 @@ class displayManager{
 		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
 		$XMLActionPDF->setAttribute('id', 'exportPdf');
 		//$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
-		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type)));
+		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		//$XMLActionPDFParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionPDF->appendChild($XMLActionPDFLink);
 		//$XMLActionPDF->appendChild($XMLActionPDFParams);
@@ -1588,7 +1604,7 @@ class displayManager{
 		$XMLActionXML->setAttribute('id', 'exportXml');
 		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
 		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\']]');
-		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type)));
+		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		//$XMLActionXMLParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionXML->appendChild($XMLActionXMLLink);
 		//$XMLActionXML->appendChild($XMLActionXMLParams);
@@ -1597,7 +1613,7 @@ class displayManager{
 		$XMLActionPrint->setAttribute('id', 'printMetadata');
 		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
 		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\']]');
-		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1')));
+		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&context='.$context.'&toolbar=0&print=1')));
 		//$XMLActionPrintParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\']]');
 		$XMLActionPrint->appendChild($XMLActionPrintLink);
 		//$XMLActionPrint->appendChild($XMLActionPrintParams);
@@ -1635,19 +1651,19 @@ class displayManager{
 		$XMLTabAbstract = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:abstract");
 		$XMLTabAbstract->setAttribute('id', 'catalogPanel1');
 		$XMLTabAbstract->setAttribute('name', JText::_("CORE_ABSTRACT_TAB"));
-		$XMLTabAbstractLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=abstract')));
+		$XMLTabAbstractLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=abstract'.'&context='.$context)));
 		$XMLTabAbstract->appendChild($XMLTabAbstractLink);
 		
 		$XMLTabComplete = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:complete");
 		$XMLTabComplete->setAttribute('id', 'catalogPanel2');
 		$XMLTabComplete->setAttribute('name', JText::_("CORE_COMPLETE_TAB"));
-		$XMLTabCompleteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=complete')));
+		$XMLTabCompleteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id='.$fileIdentifier.'&type=complete'.'&context='.$context)));
 		$XMLTabComplete->appendChild($XMLTabCompleteLink);
 		
 		$XMLTabDiffusion = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:diffusion");
 		$XMLTabDiffusion->setAttribute('id', 'catalogPanel3');
 		$XMLTabDiffusion->setAttribute('name', JText::_("CORE_DIFFUSION_TAB"));
-		$XMLTabDiffusionLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion')));
+		$XMLTabDiffusionLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion'.'&context='.$context)));
 		$XMLTabDiffusion->appendChild($XMLTabDiffusionLink);
 		
 		$XMLTabs->appendChild($XMLTabAbstract);
