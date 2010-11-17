@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegreeServicesMetadata configVersion="0.6.0" xmlns="http://www.deegree.org/webservices"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/webservices http://schemas.deegree.org/webservices/0.6.0/services.xsd">
+  <ServiceIdentification>
+    <Title>EasySDI Publish</Title>
+    <Abstract>Service for publishing member's dataset to a diffusion server</Abstract>
+  </ServiceIdentification>
+  <ServiceProvider>
+    <ProviderName>ASITVD</ProviderName>
+    <ProviderSite>http://www.asitvd.ch</ProviderSite>
+    <ServiceContact>
+      <IndividualName>Rémy Baud</IndividualName>
+      <PositionName>Technical responsible</PositionName>
+      <Phone>022/3167357</Phone>
+      <Facsimile>022/3167358</Facsimile>
+      <ElectronicMailAddress>support@asitvd.ch
+      </ElectronicMailAddress>
+      <Address>
+        <DeliveryPoint>Av de l'Université 5</DeliveryPoint>
+        <City>Lausanne</City>
+        <AdministrativeArea>VD</AdministrativeArea>
+        <PostalCode>1000</PostalCode>
+        <Country>Switzerland</Country>
+      </Address>
+      <OnlineResource>http://www.asitvd.ch</OnlineResource>
+      <HoursOfService>24x7</HoursOfService>
+      <ContactInstructions>Don't hesitate to call</ContactInstructions>
+      <Role>PointOfContact</Role>
+    </ServiceContact>
+  </ServiceProvider>
+</deegreeServicesMetadata>
