@@ -786,7 +786,7 @@ class ADMIN_codevalue {
 		{
 			$row = new codevalue( $db );
 			$row->load( (int) $cid[0] );
-			$row->move($direction);
+			$row->move($direction, 'attribute_id = '.(int) $attributeid);
 
 			$cache = & JFactory::getCache('com_easysdi_catalog');
 			$cache->clean();
