@@ -424,6 +424,8 @@ class SITE_catalog {
 									$cswTitle="";
 									$cswKeyword="";
 									$cswAbstract="";
+									$cswObjectName="";
+									$cswAccountId="";
 									
 									foreach ($kwords as $word) 
 									{
@@ -475,11 +477,6 @@ class SITE_catalog {
 										//$cswFreeFilters++;
 									}
 									
-									// Réunir les trois critères
-									if($cswFreeFilters > 0)
-										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract."</ogc:Or>";
-									//print_r($cswSimpleFilter);echo "<br>";
-								
 									// Filtres sur les guid de métadonnées pour le code et le fournisseur
 									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
@@ -506,12 +503,18 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$objectnamelist = $database->loadObjectList() ;
 										
+										if (count($objectnamelist) > 1)
+										$cswObjectName.= "<ogc:Or>";
 										foreach ($objectnamelist as $on)
 										{
 											$arrFreetextMd[] = $on->metadata_id;
 										
 											$empty = false;
+											
+											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
+										if (count($objectnamelist) > 1)
+												$cswObjectName.= "</ogc:Or>";
 									}
 									
 									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
@@ -539,13 +542,25 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$accountlist = $database->loadObjectList() ;
 										
+										if (count($accountlist) > 1)
+												$cswAccountId.= "<ogc:Or>";
 										foreach ($accountlist as $a)
 										{
 											$arrFreetextMd[] = $a->metadata_id;
 										
 											$empty = false;
+											
+											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
+										if (count($accountlist) > 1)
+												$cswAccountId.= "</ogc:Or>";
 									}
+									
+									// Réunir tous les critères
+									if($cswFreeFilters > 0)
+										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
+									//print_r($cswSimpleFilter);echo "<br>";
+								
 									
 									//If no result, give an unexisting id back
 									/*if(count($objectnamelist) == 0 and count($accountlist) == 0)
@@ -1334,6 +1349,8 @@ class SITE_catalog {
 									$cswTitle="";
 									$cswKeyword="";
 									$cswAbstract="";
+									$cswObjectName="";
+									$cswAccountId="";
 									
 									foreach ($kwords as $word) 
 									{
@@ -1385,11 +1402,6 @@ class SITE_catalog {
 										//$cswFreeFilters++;
 									}
 									
-									// Réunir les trois critères
-									if($cswFreeFilters > 0)
-										$cswAdvancedFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract."</ogc:Or>";
-									//print_r($cswAdvancedFilter);echo "<br>";
-								
 									// Filtres sur les guid de métadonnées pour le code et le fournisseur
 									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
@@ -1416,12 +1428,18 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$objectnamelist = $database->loadObjectList() ;
 										
+										if (count($objectnamelist) > 1)
+										$cswObjectName.= "<ogc:Or>";
 										foreach ($objectnamelist as $on)
 										{
 											$arrFreetextMd[] = $on->metadata_id;
 										
 											$empty = false;
+											
+											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
+										if (count($objectnamelist) > 1)
+												$cswObjectName.= "</ogc:Or>";
 									}
 									
 									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
@@ -1449,14 +1467,25 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$accountlist = $database->loadObjectList() ;
 										
+										if (count($accountlist) > 1)
+												$cswAccountId.= "<ogc:Or>";
 										foreach ($accountlist as $a)
 										{
 											$arrFreetextMd[] = $a->metadata_id;
 										
 											$empty = false;
+											
+											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
+										if (count($accountlist) > 1)
+												$cswAccountId.= "</ogc:Or>";
 									}
 									
+									// Réunir tous les critères
+									if($cswFreeFilters > 0)
+										$cswAdvancedFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
+									//print_r($cswAdvancedFilter);echo "<br>";
+								
 									//If no result, give an unexisting id back
 									/*if(count($objectnamelist) == 0 and count($accountlist) == 0)
 										$arrFreetextMd[] = -1;*/
@@ -2083,14 +2112,16 @@ class SITE_catalog {
 			//echo "arrVersionMd<br>";print_r($arrVersionMd);echo "<hr>";
 			//echo "arrSearchableMd<br>";print_r($arrSearchableMd);echo "<hr>";
 			//echo "arrFilteredMd<br>";print_r($arrFilteredMd);echo "<hr>";
-				
+
+			/*
 			// Freetext
 			if (count($arrFreetextMd) <> 0) 
 				if (count($arrFilteredMd) == 0) // Liste vide pour l'instant
 					$arrFilteredMd[] = $arrFreetextMd;
 				else // Faire l'intersection
 					$arrFilteredMd[] = array_intersect($arrFreetextMd, $arrFilteredMd);
-		
+			*/
+			
 			//echo "arrFreetextMd<br>";print_r($arrFreetextMd);echo "<hr>";
 			//echo "arrFilteredMd<br>";print_r($arrFilteredMd);echo "<hr>";
 			
