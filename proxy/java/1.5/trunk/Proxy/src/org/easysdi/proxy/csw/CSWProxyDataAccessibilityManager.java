@@ -68,13 +68,26 @@ public class CSWProxyDataAccessibilityManager {
 	{
 		if(!policy.getObjectVersion().getVersionModes().contains("all"))
 		{
-			String queryVersion= "SELECT m.guid as guid, v.created as title " ;
-			queryVersion +=	" FROM (SELECT * FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) ) m " ;
-			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
-			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
-			queryVersion += " AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))" ;
-			queryVersion += " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) )) ";
-			
+//			String queryVersion= "SELECT m.guid as guid, v.created as title " ;
+//			queryVersion +=	" FROM (SELECT * FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) ) m " ;
+//			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
+//			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
+//			queryVersion += " AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))" ;
+//			queryVersion += " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) )) ";
+//			
+			//HVH - 22.11.2010 : Bug Fix returns the last published version of the metadata 
+			String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
+			queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
+			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id ";
+			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+			queryVersion +=	" WHERE ms.code='published' ";
+			queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+			queryVersion +=	" AND m.published <=CURDATE() ";
+			queryVersion +=	" ORDER BY m.published DESC ";
+			queryVersion +=	" LIMIT 0,1 ";
+
+
 			try
 			{
 				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
@@ -245,18 +258,31 @@ public class CSWProxyDataAccessibilityManager {
 
 			for(int i = 0 ; i <object_ids.size() ; i++)
 			{
-				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
-					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-					    " WHERE object_id="+object_ids.get(i).get("object_id")+
-					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
-					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
-					    " WHERE ls.code='published' )))";
+//				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+//					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+//					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+//					    " WHERE object_id="+object_ids.get(i).get("object_id")+
+//					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
+//					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
+//					    " WHERE ls.code='published' )))";
 //				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
 //			    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
 //			    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
 //			    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
 		
+				//HVH - 22.11.2010 : Bug Fix returns the last published version of the metadata 
+				query = "  SELECT ov.metadata_id "+
+                " FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion ov "+ 
+                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_metadata m ON ov.metadata_id=m.id "+
+                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
+                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON ov.object_id=o.id " + 
+                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id=v.id "+
+                " WHERE o.id="+object_ids.get(i).get("object_id")+" " +
+                        " AND ms.code='published' "+
+                        " AND m.published <=CURDATE() "+ 
+                " ORDER BY m.published DESC " +
+                " LIMIT 0,1 ";
+
 				if(metadata_ids == null)
 					metadata_ids = joomlaProvider.sjt.queryForList(query);
 				else
