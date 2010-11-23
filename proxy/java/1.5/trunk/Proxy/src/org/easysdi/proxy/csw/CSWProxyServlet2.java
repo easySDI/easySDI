@@ -338,12 +338,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -532,6 +534,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
@@ -724,12 +727,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (SAXParseException e)
 		{
 			dump("ERROR", e.toString());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
