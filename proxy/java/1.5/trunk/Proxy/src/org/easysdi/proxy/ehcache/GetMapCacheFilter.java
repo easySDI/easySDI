@@ -1,9 +1,13 @@
 package org.easysdi.proxy.ehcache;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -28,15 +32,22 @@ import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 
 import org.easysdi.proxy.policy.Policy;
+import org.easysdi.xml.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(GetMapCacheFilter.class);
 	private Cache configCache;
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
-
+	private String operationValue = null;
+	private boolean bCache = false;
+	private String postRequestAsString = ""; 
+	
 	public GetMapCacheFilter(CacheManager cm) throws ServletException {
 		this.cm = cm;
 		doInit(null);
@@ -45,26 +56,67 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	@Override
 	protected void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws AlreadyGzippedException,
 			AlreadyCommittedException, FilterNonReentrantException, LockTimeoutException, Exception {
-		String pCache = request.getParameter("CACHE");
-		if (pCache == null || "".equals(pCache))
-			pCache = request.getParameter("cache");
-		boolean cache = Boolean.parseBoolean(pCache);
-		if (cache) {
-			String req = request.getParameter("REQUEST");
-			if (req == null)
-				req = request.getParameter("request");
-			if ("getfeature".equalsIgnoreCase(req) || 
-				"getfeatureinfo".equalsIgnoreCase(req) ||
-				"getRecords".equalsIgnoreCase(req) ||
-				"getRecordById".equalsIgnoreCase(req) 
-				)
-				cache = false;
-			if (cache)
+		
+		String method = request.getMethod();
+		String cacheValue = null;
+		operationValue= null;
+		
+		if(method.equalsIgnoreCase("GET")){
+			Enumeration<String> operations = request.getParameterNames();
+			while (operations.hasMoreElements()) { 
+				String operation = (String) operations.nextElement();
+				if(operation.equalsIgnoreCase("REQUEST"))
+				{
+					operationValue = request.getParameter(operation);
+				}
+				if(operation.equalsIgnoreCase("CACHE"))
+				{
+					cacheValue = request.getParameter(operation);
+				}
+			}
+		}
+		
+		if(method.equalsIgnoreCase("POST")){
+			XMLReader xr = XMLReaderFactory.createXMLReader(); 
+			RequestHandler rh = new RequestHandler();
+			xr.setContentHandler(rh);
+			
+			String input;
+			StringBuffer paramSB = new StringBuffer();
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream()));
+			while ((input = in.readLine()) != null) {
+				paramSB.append(input);
+			}
+			in.close();
+			postRequestAsString = paramSB.toString();
+			
+			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(postRequestAsString.toString().getBytes()))));
+			operationValue = rh.getOperation();
+			
+			postRequestAsString = postRequestAsString.replace(" ", "");
+		}
+		
+		if(("GetMap").equalsIgnoreCase(operationValue))
+		{
+			//Get Vendor specific CACHE
+			bCache = Boolean.parseBoolean(cacheValue);
+			if(bCache)
 				super.doFilter(request, response, chain);
 			else
 				chain.doFilter(request, response);
-		} else
+		}
+		else if (("GetRecords").equalsIgnoreCase(operationValue) ||
+					("GetRecordById").equalsIgnoreCase(operationValue)||
+					("GetFeature").equalsIgnoreCase(operationValue) ||
+					("GetFeatureInfo").equalsIgnoreCase(operationValue)||
+					("Transaction").equalsIgnoreCase(operationValue))		{
 			chain.doFilter(request, response);
+		}
+		else
+		{
+			super.doFilter(request, response, chain);
+		}
 	}
 
 	@Override
@@ -97,14 +149,19 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		Element policyE = configCache.get(servletName + user + "policyFile");
 		Policy policy = (Policy) policyE.getValue();
 		StringBuffer stringBuffer = new StringBuffer();
+		String method = httpRequest.getMethod();
 		String url;
-		try {
-			url = URLDecoder.decode(httpRequest.getQueryString(), "utf-8");
-		} catch (UnsupportedEncodingException e) {
-			url = httpRequest.getQueryString();
+		if(method.equalsIgnoreCase("GET")){
+			try {
+				url = URLDecoder.decode(httpRequest.getQueryString(), "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				url = httpRequest.getQueryString();
+			}
+			stringBuffer.append(policy.hashCode()).append(url);
 		}
-		stringBuffer.append(policy.hashCode()).append(url);
-
+		if(method.equalsIgnoreCase("POST")){
+			stringBuffer.append(policy.hashCode()).append(postRequestAsString.hashCode());
+		}
 		String key = stringBuffer.toString();
 		return key;
 	}
@@ -121,7 +178,15 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
 	@Override
 	protected PageInfo buildPageInfo(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws Exception {
-		boolean cacheAllowed = (request.isUserInRole("EASYSDI_CACHE"));
+		boolean cacheAllowed = false;
+		
+		//If it's a GetMap operation, vendor specific parameter CACHE prevails upon user's role
+		if(("GetMap").equalsIgnoreCase(operationValue)){
+			cacheAllowed = bCache;
+		}else{
+			cacheAllowed = (request.isUserInRole("EASYSDI_CACHE"));
+		}
+		
 
 		final String key = calculateKey(request);
 		PageInfo pageInfo = null;
