@@ -1080,7 +1080,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) {
-//			resp.setHeader("easysdi-proxy-error-occured", "true");
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
@@ -2148,8 +2148,9 @@ public class WMSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
-//			resp.setHeader("easysdi-proxy-error-occured", "true");
+			
 //			dump("ERROR", e.getMessage());
 //			resp.setStatus(401);
 //			try {
@@ -2159,7 +2160,7 @@ public class WMSProxyServlet extends ProxyServlet {
 //				e1.printStackTrace();
 //			}
 		} catch (Exception e) {
-//			resp.setHeader("easysdi-proxy-error-occured", "true");
+			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
