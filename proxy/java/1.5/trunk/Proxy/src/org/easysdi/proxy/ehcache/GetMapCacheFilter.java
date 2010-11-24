@@ -46,7 +46,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 	private String operationValue = null;
 	private boolean bCache = false;
-	private String postRequestAsString = ""; 
+//	private String postRequestAsString = ""; 
 	
 	public GetMapCacheFilter(CacheManager cm) throws ServletException {
 		this.cm = cm;
@@ -60,8 +60,16 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		String method = request.getMethod();
 		String cacheValue = null;
 		operationValue= null;
+		bCache = false;
+//		postRequestAsString = "";
 		
-		if(method.equalsIgnoreCase("GET")){
+		//Request sent by POST are not handle and not cached 
+		if(method.equalsIgnoreCase("POST")){
+			chain.doFilter(request, response);
+			return;
+		}
+		
+//		if(method.equalsIgnoreCase("GET")){
 			Enumeration<String> operations = request.getParameterNames();
 			while (operations.hasMoreElements()) { 
 				String operation = (String) operations.nextElement();
@@ -74,28 +82,28 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 					cacheValue = request.getParameter(operation);
 				}
 			}
-		}
+//		}
 		
-		if(method.equalsIgnoreCase("POST")){
-			XMLReader xr = XMLReaderFactory.createXMLReader(); 
-			RequestHandler rh = new RequestHandler();
-			xr.setContentHandler(rh);
-			
-			String input;
-			StringBuffer paramSB = new StringBuffer();
-			
-			BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream()));
-			while ((input = in.readLine()) != null) {
-				paramSB.append(input);
-			}
-			in.close();
-			postRequestAsString = paramSB.toString();
-			
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(postRequestAsString.toString().getBytes()))));
-			operationValue = rh.getOperation();
-			
-			postRequestAsString = postRequestAsString.replace(" ", "");
-		}
+//		if(method.equalsIgnoreCase("POST")){
+//			XMLReader xr = XMLReaderFactory.createXMLReader(); 
+//			RequestHandler rh = new RequestHandler();
+//			xr.setContentHandler(rh);
+//			
+//			String input;
+//			StringBuffer paramSB = new StringBuffer();
+//			
+//			BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream()));
+//			while ((input = in.readLine()) != null) {
+//				paramSB.append(input);
+//			}
+//			in.close();
+//			postRequestAsString = paramSB.toString();
+//			
+//			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(postRequestAsString.toString().getBytes()))));
+//			operationValue = rh.getOperation();
+//			
+//			postRequestAsString = postRequestAsString.replace(" ", "");
+//		}
 		
 		if(("GetMap").equalsIgnoreCase(operationValue))
 		{
@@ -107,6 +115,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 				chain.doFilter(request, response);
 		}
 		else if (("GetRecords").equalsIgnoreCase(operationValue) ||
+				    ("DescribeRecord").equalsIgnoreCase(operationValue)||
 					("GetRecordById").equalsIgnoreCase(operationValue)||
 					("GetFeature").equalsIgnoreCase(operationValue) ||
 					("GetFeatureInfo").equalsIgnoreCase(operationValue)||
@@ -151,17 +160,17 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		StringBuffer stringBuffer = new StringBuffer();
 		String method = httpRequest.getMethod();
 		String url;
-		if(method.equalsIgnoreCase("GET")){
+//		if(method.equalsIgnoreCase("GET")){
 			try {
 				url = URLDecoder.decode(httpRequest.getQueryString(), "utf-8");
 			} catch (UnsupportedEncodingException e) {
 				url = httpRequest.getQueryString();
 			}
 			stringBuffer.append(policy.hashCode()).append(url);
-		}
-		if(method.equalsIgnoreCase("POST")){
-			stringBuffer.append(policy.hashCode()).append(postRequestAsString.hashCode());
-		}
+//		}
+//		if(method.equalsIgnoreCase("POST")){
+////			stringBuffer.append(policy.hashCode()).append(postRequestAsString.hashCode());
+//		}
 		String key = stringBuffer.toString();
 		return key;
 	}
