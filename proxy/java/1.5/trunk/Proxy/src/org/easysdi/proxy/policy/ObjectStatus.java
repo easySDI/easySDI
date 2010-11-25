@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 public class ObjectStatus implements Serializable {
 	
 	@XmlElement(name = "Status", required = false)
-	protected List<String> status;
+	protected List<Status> status;
 	@XmlAttribute(name = "All")
 	protected Boolean all;
 	
@@ -54,7 +54,7 @@ public class ObjectStatus implements Serializable {
 	}
 
 	/**
-	 * Gets the value of the Visibility property.
+	 * Gets the value of the Status property.
 	 * 
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a
@@ -72,13 +72,13 @@ public class ObjectStatus implements Serializable {
 	 * 
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list
-	 * {@link Visibility }
+	 * {@link String }
 	 * 
 	 * 
 	 */
-	public List<String> getStatus() {
+	public List<Status> getStatus() {
 		if (status == null) {
-			status = new ArrayList<String>();
+			status = new ArrayList<Status>();
 		}
 		return this.status;
 	}

@@ -46,7 +46,7 @@ public class ObjectVisibilities implements Serializable {
 	@XmlElement(name = "Visibility", required = false)
 	protected List<String> visibility;
 	@XmlAttribute(name = "All")
-	protected Boolean all;
+	protected Boolean all =true;
 	
 	@Override
 	public int hashCode() {

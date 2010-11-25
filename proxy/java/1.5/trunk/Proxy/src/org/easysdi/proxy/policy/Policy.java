@@ -54,6 +54,8 @@ public class Policy implements Serializable {
 	protected ObjectVisibilities objectVisibilities;
 	@XmlElement(name = "ObjectContexts")
 	private ObjectContexts objectContexts;
+	@XmlElement(name = "ObjectTypes")
+	private ObjectTypes objectTypes;
 	@XmlElement(name = "ObjectStatus")
 	protected ObjectStatus objectStatus;
 	@XmlElement(name = "ObjectVersion")
@@ -80,6 +82,8 @@ public class Policy implements Serializable {
 		int hashCode = 0;
 		if (getObjectContexts() != null)
 			hashCode += getObjectContexts().hashCode();
+		if (getObjectTypes() != null)
+			hashCode += getObjectTypes().hashCode();
 		if (getObjectVisibilities() != null)
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
@@ -140,6 +144,19 @@ public class Policy implements Serializable {
 		return objectVisibilities;
 	}
 	
+	/**
+	 * @param setObjectTypes the setObjectTypes to set
+	 */
+	public  void setObjectTypes(ObjectTypes value) {
+		this.objectTypes = value;
+	}
+
+	/**
+	 * @return the setObjectTypes
+	 */
+	public ObjectTypes getObjectTypes() {
+		return objectTypes;
+	}
 	/**
 	 * @param objectContexts the objectContexts to set
 	 */

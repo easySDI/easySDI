@@ -48,7 +48,7 @@ public class Layers implements Serializable {
 	@XmlElement(name = "Layer", required = true)
 	protected List<Layer> layer;
 	@XmlAttribute(name = "All")
-	protected Boolean all = true;
+	protected Boolean all = false;
 
 	@Override
 	public int hashCode() {
