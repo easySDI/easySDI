@@ -920,7 +920,7 @@ function addNewServer(){
 
 	}
 
-	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsContext){
+	function editPolicy($xml,$new=false, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsObjectTypes){
 
 		$policyId = JRequest::getVar("policyId");
 		$configId = JRequest::getVar("configId");
@@ -1134,7 +1134,7 @@ function submitbutton(pressbutton)
 				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 				
 				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
-				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsContext);  
+				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes);  
 				}
 				
 				break;
@@ -1146,75 +1146,11 @@ function submitbutton(pressbutton)
 		<?php
 	}
 
-	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsContext)
+	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes)
 	{
 	?>
 		<script>
-		function addNewMetadataToExclude(nbParam,nbServer)
-		{
-			var tr = document.createElement('tr');	
-			var tdParam = document.createElement('td');	
-			var inputParam = document.createElement('input');
-			inputParam.size=200;
-			inputParam.type="text";
-			inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
-			tdParam.appendChild(inputParam);
-			tr.appendChild(tdParam);
-			document.getElementById("metadataParamTable").appendChild(tr);
-			document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
-		}
-		function disableOperationCheckBoxes()
-		{
-			var check = document.getElementById('AllOperations').checked;
-			
-			document.getElementById('oGetCapabilities').disabled=check;
-			document.getElementById('oDescribeRecord').disabled=check;
-			document.getElementById('oTransaction').disabled=check;
-			document.getElementById('oGetRecords').disabled=check;
-			document.getElementById('oGetRecordbyId').disabled=check;
-			document.getElementById('oGetCapabilities').checked=check;
-			document.getElementById('oDescribeRecord').checked=check;
-			document.getElementById('oTransaction').checked=check;
-			document.getElementById('oGetRecords').checked=check;
-			document.getElementById('oGetRecordbyId').checked=check;
 
-		}
-		function disableVisibilitiesCheckBoxes ()
-		{
-			var check = document.getElementById('AllVisibilities').checked;
-
-			var visibilityArray = new Array();
-			visibilityArray = document.getElementsByName('visibility[]');
-			for ( i = 0 ; i < visibilityArray.length ; i++)
-			{
-				visibilityArray[i].disabled = check;
-				visibilityArray[i].checked = check;
-			}
-		}
-		function disableStatusCheckBoxes ()
-		{
-			var check = document.getElementById('AllStatus').checked;
-
-			var statusArray = new Array();
-			statusArray = document.getElementsByName('status[]');
-			for ( i = 0 ; i < statusArray.length ; i++)
-			{
-				statusArray[i].disabled = check;
-				statusArray[i].checked = check;
-			}
-		}
-		function disableContextCheckBoxes ()
-		{
-			var check = document.getElementById('AllContext').checked;
-
-			var contextArray = new Array();
-			contextArray = document.getElementsByName('context[]');
-			for ( i = 0 ; i < contextArray.length ; i++)
-			{
-				contextArray[i].disabled = check;
-				contextArray[i].checked = check;
-			}
-		}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
@@ -1323,19 +1259,55 @@ function submitbutton(pressbutton)
 					<?php 
 					foreach ($rowsStatus as $status)
 					{
+						if (strcasecmp($status->value, 'published')==0)
+						{
+							$versionMode = "all";
+							?>
+							<td>
+							<input type="checkBox" 
+								   name="status[]" 
+								   id="<?php echo $status->value;?>" 
+								   value="<?php echo $status->value;?>" 
+								   onclick="disableVersionModeRadio();"
+								   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
+								   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
+								   {
+								   		if(strcasecmp($status->value,$policyStatus)==0) {
+								   			echo 'checked';
+								   			$versionMode =  $policyStatus['version'];
+								   		}			
+								   }?>
+							><?php echo JText::_($status->text); ?>
+							</td>
+							<td><i><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS_VERSION_MODE'); ?></i></td>
+							<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($versionMode,"last")==0 ){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?>> <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
+							<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($versionMode,"all")==0){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+							<?php 
+						}
+						else
+						{
+							?>
+							<td>
+							<input type="checkBox" 
+								   name="status[]" 
+								   id="<?php echo $status->value;?>" 
+								   value="<?php echo $status->value;?>" 
+								   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
+								   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
+								   {
+								   		if(strcasecmp($status->value,$policyStatus)==0) {
+								   			echo 'checked';
+								   			$versionMode =  $policyStatus['version'];
+								   		}			
+								   }?>
+							><?php echo JText::_($status->text); ?>
+							</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<?php
+						}
 						?>
-						<td>
-						<input type="checkBox" 
-							   name="status[]" 
-							   id="<?php echo $status->value;?>" 
-							   value="<?php echo $status->value;?>" 
-							   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
-							   {
-							   		if(strcasecmp($status->value,$policyStatus)==0) echo 'checked';			
-							   }?>
-						><?php echo JText::_($status->text); ?>
-						</td>
 						</tr>
 						<tr>
 						<td></td>
@@ -1345,33 +1317,33 @@ function submitbutton(pressbutton)
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_CONTEXT'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
-						<?php if (strcasecmp($thePolicy->ObjectContexts['All'],'True')==0 || !$thePolicy->ObjectContexts ){$checkedC='checked';} ?>	
+						<?php if (strcasecmp($thePolicy->ObjectTypes['All'],'True')==0 || !$thePolicy->ObjectTypes ){$checkedC='checked';} ?>	
 						<input <?php echo $checkedC; ?>
 							   type="checkBox" 
-							   name="AllContext[]" 
-							   id="AllContext" 
-							   onclick="disableContextCheckBoxes();">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_CONTEXT_ALL'); ?>
+							   name="AllObjectType[]" 
+							   id="AllObjectType" 
+							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
 					</td>
 					<?php 
-					foreach ($rowsContext as $context)
+					foreach ($rowsObjectTypes as $objectType)
 					{
 						?>
 						<td>
 						<input type="checkBox" 
-							   name="context[]" 
-							   id="<?php echo $context->value;?>" 
-							   value="<?php echo $context->value;?>" 
+							   name="objectType[]" 
+							   id="<?php echo $objectType->value;?>" 
+							   value="<?php echo $objectType->value;?>" 
 							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectContexts->Context as $policyContext)
+							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
 							   {
-							   		if(strcasecmp($context->value,$policyContext)==0) echo 'checked';			
+							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
 							   }?>
-						><?php echo JText::_($context->text); ?>
+						><?php echo JText::_($objectType->text); ?>
 						</td>
 						</tr>
 						<tr>
@@ -1382,16 +1354,7 @@ function submitbutton(pressbutton)
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform" id="objectVersionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE'); ?></legend>
-			<table class="admintable">
-				<tr>
-					<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($thePolicy->{"ObjectVersion"}->{"mode"},"last")==0 || !$config->{"objectVersion"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
-				</tr>
-				<tr>
-					<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($thePolicy->{"ObjectVersion"}->{"mode"},"all")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
-				</tr>
-			</table>
-		</fieldset>
+	
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;

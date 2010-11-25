@@ -209,3 +209,84 @@ function disableFeatureTypes(iServ)
 		iFeat ++;
 	}
 }
+
+function addNewMetadataToExclude(nbParam,nbServer)
+{
+	var tr = document.createElement('tr');	
+	var tdParam = document.createElement('td');	
+	var inputParam = document.createElement('input');
+	inputParam.size=200;
+	inputParam.type="text";
+	inputParam.name="param_"+nbServer+"_"+document.getElementById(nbParam).value;
+	tdParam.appendChild(inputParam);
+	tr.appendChild(tdParam);
+	document.getElementById("metadataParamTable").appendChild(tr);
+	document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
+}
+function disableOperationCheckBoxes()
+{
+	var check = document.getElementById('AllOperations').checked;
+	
+	document.getElementById('oGetCapabilities').disabled=check;
+	document.getElementById('oDescribeRecord').disabled=check;
+	document.getElementById('oTransaction').disabled=check;
+	document.getElementById('oGetRecords').disabled=check;
+	document.getElementById('oGetRecordbyId').disabled=check;
+	document.getElementById('oGetCapabilities').checked=check;
+	document.getElementById('oDescribeRecord').checked=check;
+	document.getElementById('oTransaction').checked=check;
+	document.getElementById('oGetRecords').checked=check;
+	document.getElementById('oGetRecordbyId').checked=check;
+
+}
+function disableVisibilitiesCheckBoxes ()
+{
+	var check = document.getElementById('AllVisibilities').checked;
+
+	var visibilityArray = new Array();
+	visibilityArray = document.getElementsByName('visibility[]');
+	for ( i = 0 ; i < visibilityArray.length ; i++)
+	{
+		visibilityArray[i].disabled = check;
+		visibilityArray[i].checked = check;
+	}
+}
+function disableStatusCheckBoxes ()
+{
+	var check = document.getElementById('AllStatus').checked;
+
+	var statusArray = new Array();
+	statusArray = document.getElementsByName('status[]');
+	for ( i = 0 ; i < statusArray.length ; i++)
+	{
+		statusArray[i].disabled = check;
+		statusArray[i].checked = check;
+	}
+	if(check)
+	{
+		document.getElementsByName('objectversion_mode')[0].disabled = check;
+		document.getElementsByName('objectversion_mode')[1].disabled = check;
+		document.getElementsByName('objectversion_mode')[1].checked = check;
+	}
+	
+}
+
+function disableCheckBoxes (nameAll, name)
+{
+	var check = document.getElementById(nameAll).checked;
+
+	var objectArray = new Array();
+	objectArray = document.getElementsByName(name);
+	for ( i = 0 ; i < objectArray.length ; i++)
+	{
+		objectArray[i].disabled = check;
+		objectArray[i].checked = check;
+	}
+}
+function disableVersionModeRadio()
+{
+	var check = !document.getElementById('published').checked;
+	document.getElementsByName('objectversion_mode')[0].disabled = check;
+	document.getElementsByName('objectversion_mode')[1].disabled = check;
+	
+}

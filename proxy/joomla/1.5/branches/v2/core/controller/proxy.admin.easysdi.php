@@ -108,20 +108,20 @@ class ADMIN_proxy
 			//Get metadata status
 			$database->setQuery( "SELECT s.code as value, 
 										 s.label as text 
-								  FROM #__sdi_list_metadatastate s 
+								  FROM #__sdi_list_metadatastate s order by ordering
 								  ");
 			$rowsStatus = $database->loadObjectList();
 			//echo $database->getErrorMsg();
 			
-			//Get metadata status
-			$database->setQuery( "SELECT c.code as value, 
-										 c.name as text 
-								  FROM #__sdi_context c 
+			//Get object type
+			$database->setQuery( "SELECT ot.code as value, 
+										 ot.name as text 
+								  FROM #__sdi_objecttype ot order by ot.name
 								  ");
-			$rowsContext = $database->loadObjectList();
+			$rowsObjectTypes = $database->loadObjectList();
 		}
 		
-		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsContext);
+		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsObjectTypes);
 	}
 	
 	
@@ -612,34 +612,35 @@ function savePolicy($xml){
 				foreach($statusList as $status)
 				{
 					$node = $thePolicy->ObjectStatus->addChild(Status,$status);
+					if (strcasecmp($status, 'published')==0)
+					{
+						$versionMode = JRequest::getVar("objectversion_mode","last");
+						$node[version] = $versionMode;
+					}
 				}
 			}
 		}
 		
-		//Context
-		$AllContext = JRequest::getVar("AllContext","");
-		if (strlen($AllContext)>0)
+		//ObjectType
+		$AllObjectType = JRequest::getVar("AllObjectType","");
+		if (strlen($AllObjectType)>0)
 		{
-			$thePolicy->ObjectContexts="";
-			$thePolicy->ObjectContexts['All']="true";
+			$thePolicy->ObjectTypes="";
+			$thePolicy->ObjectTypes['All']="true";
 		}
 		else
 		{
-			$thePolicy->ObjectContexts="";
-			$thePolicy->ObjectContexts['All']="false";
-			$contextList = JRequest::getVar("context");
-			if (sizeof($contextList)>0)
+			$thePolicy->ObjectTypes="";
+			$thePolicy->ObjectTypes['All']="false";
+			$ObjectTypesList = JRequest::getVar("objectType");
+			if (sizeof($ObjectTypesList)>0)
 			{
-				foreach($contextList as $context)
+				foreach($ObjectTypesList as $objecttype)
 				{
-					$node = $thePolicy->ObjectContexts->addChild(Context,$context);
+					$node = $thePolicy->ObjectTypes->addChild(ObjectType,$objecttype);
 				}
 			}
 		}
-		
-		//Version
-		$versionMode = JRequest::getVar("objectversion_mode","last");
-		$thePolicy->{"ObjectVersion"}->{"mode"}=$versionMode;
 	}
 			
 	//Servers
