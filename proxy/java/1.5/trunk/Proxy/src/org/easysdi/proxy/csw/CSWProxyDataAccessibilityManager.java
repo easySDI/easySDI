@@ -23,6 +23,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.easysdi.proxy.policy.Policy;
+import org.easysdi.proxy.policy.Status;
 import org.easysdi.security.JoomlaProvider;
 import org.jdom.*;
 import org.jdom.filter.Filter;
@@ -62,6 +63,146 @@ public class CSWProxyDataAccessibilityManager {
 	{
 		policy = p_policy;
 		joomlaProvider = p_joomlaProvider;
+	}
+	
+	/**
+	 * 
+	 * @param dataId
+	 * @return
+	 */
+	public boolean isObjectAccessible (String dataId) 
+	{
+		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
+				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll()))
+		{
+			return true;
+		}
+		
+		String listVisibility = "";
+		if(policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
+		{
+			List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+			for (int i = 0 ; i<allowedVisibility.size() ; i++)
+			{
+				listVisibility += "'"+ allowedVisibility.get(i)+"'";
+				if(i != allowedVisibility.size()-1)
+				{
+					listVisibility += ",";
+				}
+			}
+		}
+		String listObjectType="";
+		if(policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+		{
+			List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
+			for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
+			{
+				listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
+				if(i != allowedObjectTypes.size()-1)
+				{
+					listObjectType += ",";
+				}
+			}
+		}
+		
+		String query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
+		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
+		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id = v.id ";
+		if(listObjectType != "" || listVisibility != "")
+		{
+			query += " WHERE ";
+			
+		}
+//		" WHERE v.code IN ()" +
+//		" AND ot.code IN ()" +
+//		" AND m.guid = '"+dataId+"'" ;
+
+		Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
+		
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param dataId
+	 * @return
+	 */
+	public boolean isVersionAccessible (String dataId)
+	{
+		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
+		{
+			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
+			for (int i = 0 ; i<allowedStatus.size() ; i++)
+			{
+				if(("last").equalsIgnoreCase(allowedStatus.get(i).getVersion()))
+				{
+					//Is the requested metadata the last published
+					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
+					queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
+					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id ";
+					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+					queryVersion +=	" WHERE (ms.code='published' ";
+					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+					queryVersion +=	" AND m.published <=CURDATE() )";
+					queryVersion +=	" OR ( ms.code='archived' ";
+					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+					queryVersion +=	" AND m.published <=CURDATE() AND m.archived > CURDATE())";
+					queryVersion +=	" ORDER BY m.published DESC ";
+					queryVersion +=	" LIMIT 0,1 ";
+					try
+					{
+						Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
+						if(results.containsValue(dataId))
+						{
+							return true;
+						}
+						else
+						{
+							try
+							{
+								setDataIdVersionAccessible((String) results.get("guid"));
+								return false;
+							}
+							catch (Exception ex)
+							{
+								return false;
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	/**
+	 * 
+	 * @param dataId
+	 * @return
+	 */
+	public boolean isStatusAccessible(String dataId)
+	{
+		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
+		{
+			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
+			String statusString ="";
+			for (int i = 0 ; i<allowedStatus.size() ; i++)
+			{
+				statusString += "'"+ allowedStatus.get(i).getStatus()+"'";
+				if(i != allowedStatus.size()-1)
+				{
+					statusString += ",";
+				}
+			}
+			
+		}
+		return true;
 	}
 	
 	public boolean isDataVersionAccessible (String dataId)
@@ -144,7 +285,7 @@ public class CSWProxyDataAccessibilityManager {
 		
 		if (!policy.getObjectStatus().isAll())
 		{
-			subQueryStatus = getStatusSQLQuery(policy.getObjectStatus().getStatus());
+			//subQueryStatus = getStatusSQLQuery(policy.getObjectStatus().getStatus());
 		}
 		if(!policy.getObjectVisibilities().isAll())
 		{
@@ -355,11 +496,13 @@ public class CSWProxyDataAccessibilityManager {
 		
 		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
 		{
-			List<String> allowedStatus = policy.getObjectStatus().getStatus();
+			
+			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
+			
 			String statusString ="";
 			for (int i = 0 ; i<allowedStatus.size() ; i++)
 			{
-				statusString += "'"+ allowedStatus.get(i)+"'";
+				statusString += "'"+ allowedStatus.get(i).getStatus()+"'";
 				if(i != allowedStatus.size()-1)
 				{
 					statusString += ",";
