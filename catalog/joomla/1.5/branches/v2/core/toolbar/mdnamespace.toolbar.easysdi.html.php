@@ -18,13 +18,13 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class TOOLBAR_namespace {
+class TOOLBAR_mdnamespace {
 	function _DEFAULT() {
 		JToolBarHelper::title(JText::_("CATALOG_LIST_NAMESPACE"));
 		
-		JToolBarHelper::addNew('newNamespace');
-		JToolBarHelper::editList('editNamespace');
-		JToolBarHelper::deleteList( JText::_( 'CATALOG_NAMESPACE_DELETE_CONFIRM_MSG'), 'removeNamespace', JText::_( 'DELETE'));		
+		JToolBarHelper::addNew('newMDNamespace');
+		JToolBarHelper::editList('editMDNamespace');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_NAMESPACE_DELETE_CONFIRM_MSG'), 'removeMDNamespace', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
@@ -39,9 +39,9 @@ class TOOLBAR_namespace {
 			$text = JText::_("CORE_EDIT");
 		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_NAMESPACE' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
-		JToolBarHelper::save('saveNamespace');
-		JToolBarHelper::apply('applyNamespace');
-		JToolBarHelper::cancel('cancelNamespace');
+		JToolBarHelper::save('saveMDNamespace');
+		JToolBarHelper::apply('applyMDNamespace');
+		JToolBarHelper::cancel('cancelMDNamespace');
 	}
 }
 ?>
