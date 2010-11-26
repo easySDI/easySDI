@@ -440,21 +440,19 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if(!cswDataManager.isAllDataAccessible())
 				{
 					String dataIDaccessible="";
-					if(!cswDataManager.isDataVersionAccessible(requestedId))
-					{
-						dataIDaccessible = cswDataManager.getDataIdVersionAccessible();
-					}
-					else
-					{
-						dataIDaccessible = requestedId;
-					}
-						
-					if(!cswDataManager.isDataAccessible(dataIDaccessible))
+					if(!cswDataManager.isObjectAccessible(requestedId))
 					{
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					requestedId = dataIDaccessible;
+					if(!cswDataManager.isStatusAndVersionAccessible(requestedId))
+						requestedId = cswDataManager.getDataIdVersionAccessible();
+					
+					if (requestedId == null)
+					{
+						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						return;
+					}
 				}
 				dump("INFO","End - Data Accessibility");
 				
@@ -639,11 +637,16 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				String dataId = rh.getRecordId();
 				if(!cswDataManager.isAllDataAccessible())
 				{
-					if(!cswDataManager.isDataVersionAccessible(dataId))
+					String dataIDaccessible="";
+					if(!cswDataManager.isObjectAccessible(dataId))
 					{
-						dataId = cswDataManager.getDataIdVersionAccessible();
+						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
+						return;
 					}
-					if(!cswDataManager.isDataAccessible(dataId))
+					if(!cswDataManager.isStatusAndVersionAccessible(dataId))
+						dataId = cswDataManager.getDataIdVersionAccessible();
+					
+					if (dataId == null)
 					{
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
@@ -686,7 +689,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if(!cswDataManager.isAllDataAccessible())
 				{
 					//Add a filter on the data id in the request
-					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param, cswDataManager.getAccessibleDataIds());
+					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
 				}
 				dump("INFO","End - Data Accessibility");
 				
