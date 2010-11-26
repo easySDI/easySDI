@@ -51,8 +51,8 @@ class ADMIN_metadata {
 		}
 		else
 		{
-			JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-			JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+			JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+			JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 					
 			$document =& JFactory::getDocument();
 			$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
@@ -2851,6 +2851,9 @@ class ADMIN_metadata {
 		}
 	}
 	
+	/*
+	 * Assigner une métadonnée, et donc une version, à un utilisateur
+	 */
 	function assignMetadata($option)
 	{
 		global  $mainframe;
@@ -2876,6 +2879,10 @@ class ADMIN_metadata {
 			exit();
 		}
 		
+		// Récupérer la version de l'objet liée
+		$rowObjectVersion = new objectversionByMetadata_id($database);
+		$rowObjectVersion->load($rowMetadata->id);
+		
 		// Remplir l'historique d'assignement
 		$user = JFactory::getUser(); 
 		$rowCurrentUser = new accountByUserId($database);
@@ -2883,6 +2890,7 @@ class ADMIN_metadata {
 		
 		$rowHistory = new historyassign($database);
 		$rowHistory->object_id=$object_id;
+		$rowHistory->objectversion_id=$rowObjectVersion->id;
 		$rowHistory->account_id=$editor;
 		$rowHistory->assigned=date ("Y-m-d H:i:s");
 		$rowHistory->assignedby=$rowCurrentUser->id;
@@ -2901,10 +2909,13 @@ class ADMIN_metadata {
 		
 		// Envoi d'email
 		$rowUser = array();
-		$database->setQuery( "SELECT * FROM #__sdi_account a, #__users u WHERE a.user_id=u.id AND a.id=".$editor );
+		$database->setQuery( "SELECT *  
+							  FROM #__sdi_account a
+							  INNER JOIN #__users u ON a.user_id=u.id 
+							  WHERE a.id=".$editor );
 		$rowUser= array_merge( $rowUser, $database->loadObjectList() );
 		
-		$body = JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		$body = JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
 		
 		$success = ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
 		if (!$success) 
@@ -3071,6 +3082,8 @@ class ADMIN_metadata {
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		// Télécharger le XML indiqué par l'utilisateur
+		$xml = new DomDocument();
+		$xml->formatOutput = true; 
 		$xml = DOMDocument::loadXML($xmlfile);
 		
 		// Appliquer le XSL
@@ -3153,9 +3166,11 @@ class ADMIN_metadata {
 					</merge>";
 	
 			$merging = DOMDocument::loadXML($xmlmerge);
+			//print_r(htmlspecialchars($merging->saveXML()));echo "<hr>";
+			//print_r(htmlspecialchars($style->saveXML()));echo "<hr>";
 			$processor->importStylesheet($style);
 			$cswResults = $processor->transformToDoc($merging);
-			
+			//print_r(htmlspecialchars($cswResults->saveXML()));echo "<hr>";break;
 			// Suppression des deux fichiers à fusionner
 			unlink($existingXMLFile);
 			unlink($ESRIXMLFile);

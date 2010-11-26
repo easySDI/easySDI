@@ -582,6 +582,32 @@ class ADMIN_objectversion {
 				exit;
 			}
 			
+			// Tests supplémentaires si le SHOP est installé
+			$shopExist = 0;
+			$query = "	SELECT count(*) 
+						FROM #__sdi_list_module 
+						WHERE code='SHOP'";
+			$database->setQuery($query);
+			$shopExist = $database->loadResult();
+			if($shopExist == 1)
+			{
+				// Si la version est liée à un produit, empêcher la suppression et afficher un message
+				$childcount=0;
+				$query = 'SELECT count(*)' .
+						' FROM #__sdi_objectversion ov
+						  INNER JOIN #__sdi_product p ON p.objectversion_id=ov.id
+						  WHERE p.objectversion_id=' . $objectversion->id;
+				$database->setQuery($query);
+				$childcount = $database->loadResult();
+				
+				if ($childcount > 0)
+				{
+					$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_PRODUCTEXIST_MSG","error"));
+					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
+					exit;
+				}
+			}
+			
 			// Supprimer de Geonetwork la métadonnée
 			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
@@ -632,6 +658,15 @@ class ADMIN_objectversion {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 				}
+			}
+			
+			// Supprimer l'historique d'assignement
+			$query = 'DELETE *' .
+					' FROM #__sdi_history_assign
+					  WHERE objectversion_id=' . $objectversion->id;
+			$database->setQuery($query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
 			if (!$objectversion->delete()) {

@@ -17,14 +17,14 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_namespace {
-	function listNamespace($option)
+class ADMIN_mdnamespace {
+	function listMDNamespace($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		$filter	= null;
 		
-		$context	= $option.'.listNamespace';
+		$context	= $option.'.listMDNamespace';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 
@@ -82,17 +82,17 @@ class ADMIN_namespace {
 			return false;
 		}		
 		
-		HTML_namespace::listNamespace(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_mdnamespace::listMDNamespace(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
-	function editNamespace($id, $option)
+	function editMDNamespace($id, $option)
 	{
 		?>
 		<script type="text/javascript">
 			function submitbutton(pressbutton) 
 			{
 				var form = document.adminForm;
-				if (pressbutton != 'saveNamespace' && pressbutton != 'applyNamespace') {
+				if (pressbutton != 'saveMDNamespace' && pressbutton != 'applyMDNamespace') {
 					submitform( pressbutton );
 					return;
 				}
@@ -119,13 +119,13 @@ class ADMIN_namespace {
 		<?php 
 		global $mainframe;
 		$database =& JFactory::getDBO(); 
-		$rowNamespace = new namespace( $database );
-		$rowNamespace->load( $id );
+		$rowMDNamespace = new mdnamespace( $database );
+		$rowMDNamespace->load( $id );
 		
-		if ($rowNamespace->issystem)
+		if ($rowMDNamespace->issystem)
 		{
 			$mainframe->enqueueMessage(JText::_("CATALOG_NAMESPACE_ISSYSTEM_ERROR_MSG"),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}
 		
@@ -149,32 +149,32 @@ class ADMIN_namespace {
 			} 
 		}
 		
-		HTML_namespace::editNamespace($rowNamespace, $fieldsLength, $option);
+		HTML_mdnamespace::editMDNamespace($rowMDNamespace, $fieldsLength, $option);
 	}
 	
-	function saveNamespace($option)
+	function saveMDNamespace($option)
 	{
 		global $mainframe;
 			
 		$database=& JFactory::getDBO(); 
 				
-		$rowNamespace= new namespace( $database );
+		$rowMDNamespace= new mdnamespace( $database );
 		
-		if (!$rowNamespace->bind( $_POST )) {
+		if (!$rowMDNamespace->bind( $_POST )) {
 		
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}		
 		
 		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-		if ($rowNamespace->guid == null)
-			$rowNamespace->guid = helper_easysdi::getUniqueId();
+		if ($rowMDNamespace->guid == null)
+			$rowMDNamespace->guid = helper_easysdi::getUniqueId();
 		
-		if (!$rowNamespace->store(false)) {			
+		if (!$rowMDNamespace->store(false)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}
 		
@@ -182,19 +182,19 @@ class ADMIN_namespace {
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
-			case 'applyNamespace' :
+			case 'applyMDNamespace' :
 				// Reprendre en édition l'objet
-				TOOLBAR_namespace::_EDIT();
-				ADMIN_namespace::editNamespace($rowNamespace->id,$option);
+				TOOLBAR_mdnamespace::_EDIT();
+				ADMIN_mdnamespace::editMDNamespace($rowMDNamespace->id,$option);
 				break;
 
-			case 'saveNamespace' :
+			case 'saveMDNamespace' :
 			default :
 				break;
 		}
 	}
 	
-	function removeNamespace($id, $option)
+	function removeMDNamespace($id, $option)
 	{
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
@@ -202,24 +202,24 @@ class ADMIN_namespace {
 		if (!is_array( $id ) || count( $id ) < 1) {
 			//echo "<script> alert('Sï¿½lectionnez un enregistrement ï¿½ supprimer'); window.history.go(-1);</script>\n";
 			$mainframe->enqueueMessage("Sï¿½lectionnez un enregistrement ï¿½ supprimer","error");
-			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit;
 		}
 		foreach( $id as $namespace_id )
 		{
-			$rowNamespace= new namespace( $database );
-			$rowNamespace->load( $namespace_id );
+			$rowMDNamespace= new mdnamespace( $database );
+			$rowMDNamespace->load( $namespace_id );
 			
-			if ($rowNamespace->issystem)
+			if ($rowMDNamespace->issystem)
 			{
 				$mainframe->enqueueMessage(JText::_("CATALOG_NAMESPACE_DELETE_ERROR_MSG"),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+				$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 				exit();
 			}
 			
-			if (!$rowNamespace->delete()) {			
+			if (!$rowMDNamespace->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+				$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 				exit();
 			}
 		}
@@ -244,14 +244,14 @@ class ADMIN_namespace {
 		for ($i = 0; $i < $total; $i ++)
 		{
 			// Instantiate an article table object
-			$row = new namespace( $db );
+			$row = new mdnamespace( $db );
 			
 			$row->load( (int) $cid[$i] );
 			if ($row->ordering != $order[$i]) {
 				$row->ordering = $order[$i];
 				if (!$row->store()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+					$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 					exit();
 				}
 			}
@@ -263,7 +263,7 @@ class ADMIN_namespace {
 
 		// Redirection vers la liste des types d'attributs
 		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+		$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 		exit();
 	}
 	
@@ -278,7 +278,7 @@ class ADMIN_namespace {
 
 		if (isset( $cid[0] ))
 		{
-			$row = new namespace( $db );
+			$row = new mdnamespace( $db );
 			$row->load( (int) $cid[0] );
 			$row->move($direction);
 
@@ -286,7 +286,7 @@ class ADMIN_namespace {
 			$cache->clean();
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+		$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 		exit();
 	}
 	
@@ -310,12 +310,12 @@ class ADMIN_namespace {
 		$db->setQuery($query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}
 
 		if (count($cid) == 1) {
-			$row = new namespace( $db );
+			$row = new mdnamespace( $db );
 			$row->checkin($cid[0]);
 		}
 
@@ -325,7 +325,7 @@ class ADMIN_namespace {
 		$cache->clean();
 		
 		$mainframe->enqueueMessage($msg,"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listNamespace" );
+		$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 		exit();
 	}
 }
