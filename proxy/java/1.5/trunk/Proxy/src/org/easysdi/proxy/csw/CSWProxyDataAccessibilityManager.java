@@ -1,27 +1,13 @@
 package org.easysdi.proxy.csw;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringBufferInputStream;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.lang.model.util.ElementFilter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Status;
 import org.easysdi.security.JoomlaProvider;
@@ -31,7 +17,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.xml.sax.InputSource;
+
+import ch.interlis.interlis2.GM03V18.GM03ComprehensiveComprehensiveDQAbsoluteExternalPositionalAccuracy.DateTime;
 
 /**
  * Access the database to retreive accessible metadatas
@@ -53,12 +40,33 @@ public class CSWProxyDataAccessibilityManager {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public boolean isAllDataAccessible ()
+	{
+		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
+			&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+			&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
+			&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * @return the dataIdVersionAccessible
 	 */
 	public String getDataIdVersionAccessible() {
 		return dataIdVersionAccessible;
 	}
 	
+	/**
+	 * 
+	 * @param p_policy
+	 * @param p_joomlaProvider
+	 */
 	public CSWProxyDataAccessibilityManager(Policy p_policy, JoomlaProvider p_joomlaProvider)
 	{
 		policy = p_policy;
@@ -79,7 +87,7 @@ public class CSWProxyDataAccessibilityManager {
 		}
 		
 		String listVisibility = "";
-		if(policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
+		if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
 		{
 			List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
 			for (int i = 0 ; i<allowedVisibility.size() ; i++)
@@ -92,7 +100,7 @@ public class CSWProxyDataAccessibilityManager {
 			}
 		}
 		String listObjectType="";
-		if(policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+		if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
 		{
 			List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
 			for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
@@ -104,23 +112,39 @@ public class CSWProxyDataAccessibilityManager {
 				}
 			}
 		}
-		
-		String query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
-		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
-		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
-		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
-		" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id = v.id ";
-		if(listObjectType != "" || listVisibility != "")
+		try
 		{
-			query += " WHERE ";
-			
+			String query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id = v.id ";
+			if(listObjectType != "" || listVisibility != "")
+			{
+				query += " WHERE ";
+				
+			}
+			if(listObjectType != "" )
+			{
+				query += " ot.code IN ("+ listObjectType +") ";
+				if(listVisibility != "")
+				{
+					query += " AND v.code IN ("+ listVisibility +") ";
+				}
+				
+			}
+			else
+			{
+				query += " v.code IN ("+ listVisibility +") ";
+			}
+			query += " AND m.guid = '"+dataId+"'" ;
+	
+			Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
 		}
-//		" WHERE v.code IN ()" +
-//		" AND ot.code IN ()" +
-//		" AND m.guid = '"+dataId+"'" ;
-
-		Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
-		
+		catch (IncorrectResultSizeDataAccessException ex)
+		{
+			return false;
+		}
 		return true;
 	}
 	
@@ -129,16 +153,59 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param dataId
 	 * @return
 	 */
-	public boolean isVersionAccessible (String dataId)
+	public boolean isStatusAndVersionAccessible (String dataId)
 	{
 		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
 		{
+			//Get metadata status
+			String query= "SELECT  m.guid as guid, m.published  as published, m.archived as archived, ms.code as state" ;
+			query +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+			query +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+			query +=	" AND m.guid = '"+dataId+"' ";
+			query +=	" LIMIT 0,1 ";
+			
+			Map<String, Object> metadataObject= joomlaProvider.sjt.queryForMap(query);
+			String status = (String)metadataObject.get("state");
+			
+			
+			String listObjectStatus="";	
 			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
-			for (int i = 0 ; i<allowedStatus.size() ; i++)
+
+			for (int i = 0 ; i <allowedStatus.size() ; i++)
 			{
-				if(("last").equalsIgnoreCase(allowedStatus.get(i).getVersion()))
+				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("validated") && ("validated").equalsIgnoreCase(status))
 				{
-					//Is the requested metadata the last published
+					return true;
+				}
+				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("unpublished") && ("unpublished").equalsIgnoreCase(status))
+				{
+					return true;
+				}
+				if (allowedStatus.get(i).getStatus().equalsIgnoreCase("archived") 
+						&& ("archived").equalsIgnoreCase(status) 
+						&& (((Date)metadataObject.get("archived")).compareTo(new Date()) < 0 ) )
+				{
+					return true;
+				}
+				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("all")
+						&& ((("published").equalsIgnoreCase(status) 
+								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
+								||(("archived").equalsIgnoreCase(status) 
+										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
+										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
+				{
+					return true;
+				}
+				if(allowedStatus.get(i).getStatus().equalsIgnoreCase("published") 
+						&& allowedStatus.get(i).getVersion().equalsIgnoreCase("last")
+						&& ((("published").equalsIgnoreCase(status) 
+								&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))
+								||(("archived").equalsIgnoreCase(status) 
+										&& (((Date)metadataObject.get("archived")).compareTo(new Date()) > 0 ) 
+										&& (((Date)metadataObject.get("published")).compareTo(new Date()) < 0 ))))
+				{
+					//request with condition on last published metadata
 					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
 					queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
 					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
@@ -178,197 +245,103 @@ public class CSWProxyDataAccessibilityManager {
 					}
 				}
 			}
-		}
-		return true;
-	}
-	/**
-	 * 
-	 * @param dataId
-	 * @return
-	 */
-	public boolean isStatusAccessible(String dataId)
-	{
-		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
-		{
-			List<Status>  allowedStatus = policy.getObjectStatus().getStatus();
-			String statusString ="";
-			for (int i = 0 ; i<allowedStatus.size() ; i++)
-			{
-				statusString += "'"+ allowedStatus.get(i).getStatus()+"'";
-				if(i != allowedStatus.size()-1)
-				{
-					statusString += ",";
-				}
-			}
-			
-		}
-		return true;
-	}
-	
-	public boolean isDataVersionAccessible (String dataId)
-	{
-		if(!policy.getObjectVersion().getVersionModes().contains("all"))
-		{
-//			String queryVersion= "SELECT m.guid as guid, v.created as title " ;
-//			queryVersion +=	" FROM (SELECT * FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) ) m " ;
-//			queryVersion += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion v ON v.metadata_id = m.id ";
-//			queryVersion += " WHERE v.object_id IN (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"')) ";
-//			queryVersion += " AND v.created=(SELECT MAX(created) FROM  "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE object_id=(SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id IN (SELECT id  FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid='"+dataId+"'))" ;
-//			queryVersion += " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code='published' ) )) ";
-//			
-			//HVH - 22.11.2010 : Bug Fix returns the last published version of the metadata 
-			String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
-			queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
-			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
-			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id ";
-			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
-			queryVersion +=	" WHERE ms.code='published' ";
-			queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
-			queryVersion +=	" AND m.published <=CURDATE() ";
-			queryVersion +=	" ORDER BY m.published DESC ";
-			queryVersion +=	" LIMIT 0,1 ";
-
-
-			try
-			{
-				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
-				if(results.containsValue(dataId))
-				{
-					return true;
-				}
-				else
-				{
-					try
-					{
-						setDataIdVersionAccessible((String) results.get("guid"));
-						return false;
-					}
-					catch (Exception ex)
-					{
-						return false;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public boolean isAllDataAccessible ()
-	{
-		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
-			&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
-			&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
-			&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isDataAccessible(String dataId)
-	{
-		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
-				&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
-				&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
-				&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
-			{
-			return true;
-		}
-		
-		String query;
-		String subQueryStatus="";
-		String subQueryVisibility="";
-		
-		if (!policy.getObjectStatus().isAll())
-		{
-			//subQueryStatus = getStatusSQLQuery(policy.getObjectStatus().getStatus());
-		}
-		if(!policy.getObjectVisibilities().isAll())
-		{
-			subQueryVisibility = getVisibilitySQLQuery(policy.getObjectVisibilities().getVisibilities());
-		}
-		
-		query = "SELECT m.guid, m.id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
-		query += subQueryVisibility;
-		if(subQueryVisibility != "")
-			query += " AND ";
-		else
-			query += " WHERE ";
-		query += "  m.guid='"+dataId+"'";
-		query += subQueryStatus;
-		
-		try
-		{
-			Map<String, Object> results= joomlaProvider.sjt.queryForMap(query);
-			
-			//If visibility and status ok, check the context
-			if(!policy.getObjectContexts().isAll())
-			{
-				List<String> allowedContext = policy.getObjectContexts().getContexts();
-				String contextString ="";
-				for (int i = 0 ; i<allowedContext.size() ; i++)
-				{
-					contextString += "'"+ allowedContext.get(i)+"'";
-					if(i != allowedContext.size()-1)
-					{
-						contextString += ",";
-					}
-				}
-				
-				query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
-							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
-							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
-							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
-							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context_objecttype co ON co.objecttype_id = ot.id "+
-							" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_context c ON c.id = co.context_id "+
-							" WHERE c.code IN ("+contextString+")" +
-							" AND m.guid = '"+dataId+"'" ;
-				
-				Map<String, Object> resultfinal= joomlaProvider.sjt.queryForMap(query);
-			}
-			
-			return true;
-		}
-		catch (IncorrectResultSizeDataAccessException ex)
-		{
 			return false;
+			
+			
+					
+//			for (int i = 0 ; i<allowedStatus.size() ; i++)
+//			{
+//				if(("last").equalsIgnoreCase(allowedStatus.get(i).getVersion()))
+//				{
+////					List<Status>  allowedObjectStatus = policy.getObjectStatus().getStatus();
+////					for (int j = 0 ; j<allowedObjectStatus.size() ; j++)
+////					{
+////						if(allowedObjectStatus.get(j).getStatus().equalsIgnoreCase("published"))
+////								continue;
+////						listObjectStatus += "'"+ allowedObjectStatus.get(j).getStatus()+"'";
+////						if(j != allowedObjectStatus.size()-1)
+////						{
+////							listObjectStatus += ",";
+////						}
+////					}
+//					
+//					
+//					//request with condition on last published metadata
+//					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
+//					queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
+//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id ";
+//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+//					queryVersion +=	" WHERE (ms.code='published' ";
+//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+//					queryVersion +=	" AND m.published <=CURDATE() )";
+//					queryVersion +=	" OR ( ms.code='archived' ";
+//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
+//					queryVersion +=	" AND m.published <=CURDATE() AND m.archived > CURDATE())";
+//					queryVersion +=	" OR ms.code IN ("+listObjectStatus+") ";
+//					queryVersion +=	" ORDER BY m.published DESC ";
+//					queryVersion +=	" LIMIT 0,1 ";
+//					try
+//					{
+//						Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
+//						if(results.containsValue(dataId))
+//						{
+//							return true;
+//						}
+//						else
+//						{
+//							try
+//							{
+//								setDataIdVersionAccessible((String) results.get("guid"));
+//								return false;
+//							}
+//							catch (Exception ex)
+//							{
+//								return false;
+//							}
+//						}
+//					}
+//					catch (Exception ex)
+//					{
+//						return false;
+//					}
+//				}
+//			}
+			//No 'last' condition
+//			List<Status>  allowedObjectStatus = policy.getObjectStatus().getStatus();
+//			for (int i = 0 ; i<allowedObjectStatus.size() ; i++)
+//			{
+//				listObjectStatus += "'"+ allowedObjectStatus.get(i).getStatus()+"'";
+//				if(i != allowedObjectStatus.size()-1)
+//				{
+//					listObjectStatus += ",";
+//				}
+//			}
+//			String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
+//			queryVersion +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
+//			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
+//			queryVersion +=	" WHERE ms.code IN ("+listObjectStatus+ ") ";
+//			queryVersion +=	" AND m.guid = '"+dataId+"' ";
+//			queryVersion +=	" LIMIT 0,1 ";
+//			try
+//			{
+//				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
+//				if(results.containsValue(dataId))
+//				{
+//					return true;
+//				}
+//				else
+//				{
+//					return false;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				return false;
+//			}
+//		}
 		}
-				
-		
-	}
-	
-	private String getStatusSQLQuery (List <String> statusList)
-	{
-		String query = " AND m.metadatastate_id IN (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls WHERE ls.code IN (";
-		 for (int i=0; i< statusList.size(); i++)
-		  {
-			  query += "'"+ statusList.get(i)+"'";
-			  if (i != statusList.size()-1)
-				  query +=",";
-		  }
-		 query += ") )";
-		
-		return query;
-	}
-	
-	private String getVisibilitySQLQuery (List <String> visibilityList)
-	{
-		String query = " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id";
-		query += " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON ov.object_id = o.id";
-		query += " WHERE o.visibility_id IN (SELECT lv.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_visibility lv WHERE lv.code IN (";
-		 for (int i=0; i< visibilityList.size(); i++)
-		  {
-			  query += "'"+visibilityList.get(i)+"'";
-			  if (i != visibilityList.size()-1)
-				  query +=",";
-		  }
-		 query += ") )";
-		
-		return query;
+		return true;
 	}
 	
 	protected StringBuffer generateEmptyResponse(String version) {
@@ -389,64 +362,131 @@ public class CSWProxyDataAccessibilityManager {
 		List<Map<String,Object>> metadata_guids = null;
 		String query;
 		
-		if(policy.getObjectVersion()!= null && !policy.getObjectVersion().getVersionModes().contains("all"))
+		//Accessible objects
+		if((policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll()) 
+				|| (policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll()))
 		{
-			//Not all the versions are allowed, just the last one
-			
-			//Get object's id 
-			query= "SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion  GROUP BY object_id ";
-			object_ids = joomlaProvider.sjt.queryForList(query);	
-
-			for(int i = 0 ; i <object_ids.size() ; i++)
+			String listVisibility = "";
+			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
 			{
-//				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-//					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
-//					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-//					    " WHERE object_id="+object_ids.get(i).get("object_id")+
-//					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
-//					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
-//					    " WHERE ls.code='published' )))";
-//				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-//			    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
-//			    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
-//			    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
-		
-				//HVH - 22.11.2010 : Bug Fix returns the last published version of the metadata 
-				query = "  SELECT ov.metadata_id "+
-                " FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion ov "+ 
-                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_metadata m ON ov.metadata_id=m.id "+
-                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
-                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON ov.object_id=o.id " + 
-                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id=v.id "+
-                " WHERE o.id="+object_ids.get(i).get("object_id")+" " +
-                        " AND ms.code='published' "+
-                        " AND m.published <=CURDATE() "+ 
-                " ORDER BY m.published DESC " +
-                " LIMIT 0,1 ";
-
-				if(metadata_ids == null)
-					metadata_ids = joomlaProvider.sjt.queryForList(query);
-				else
-					metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
-			}
-					
-			//Get metadata's id for last version
-			String idString ="";
-			for (int i = 0 ; i<metadata_ids.size() ; i++)
-			{
-				idString += metadata_ids.get(i).get("metadata_id");
-				if(i != metadata_ids.size()-1)
+				List<String>  allowedVisibility = policy.getObjectVisibilities().getVisibilities();
+				for (int i = 0 ; i<allowedVisibility.size() ; i++)
 				{
-					idString += ",";
+					listVisibility += "'"+ allowedVisibility.get(i)+"'";
+					if(i != allowedVisibility.size()-1)
+					{
+						listVisibility += ",";
+					}
 				}
 			}
-			query= "SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
-					"WHERE m.id IN ("+idString+")";
-			metadata_guids = joomlaProvider.sjt.queryForList(query);
+			String listObjectType="";
+			if(policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll())
+			{
+				List<String>  allowedObjectTypes = policy.getObjectTypes().getObjectTypes();
+				for (int i = 0 ; i<allowedObjectTypes.size() ; i++)
+				{
+					listObjectType += "'"+ allowedObjectTypes.get(i)+"'";
+					if(i != allowedObjectTypes.size()-1)
+					{
+						listObjectType += ",";
+					}
+				}
+			}
 			
-			if(metadata_guids.size()==0)
-				return metadata_guids;
-		} 		
+			query =     " SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov  ON m.id = ov.metadata_id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objecttype ot ON o.objecttype_id = ot.id "+
+			" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id = v.id ";
+			if(listObjectType != "" || listVisibility != "")
+			{
+				query += " WHERE ";
+				
+			}
+			if(listObjectType != "" )
+			{
+				query += " ot.code IN ("+ listObjectType +") ";
+				if(listVisibility != "")
+				{
+					query += " AND v.code IN ("+ listVisibility +") ";
+				}
+				
+			}
+			else
+			{
+				query += " v.code IN ("+ listVisibility +") ";
+			}
+			
+			if(metadata_ids == null)
+				metadata_ids = joomlaProvider.sjt.queryForList(query);
+			else
+				metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
+		}
+		
+		//Status & version
+		if(policy.getObjectStatus() != null && !policy.getObjectStatus().isAll())
+		{
+			
+		}
+		
+//		if(policy.getObjectVersion()!= null && !policy.getObjectVersion().getVersionModes().contains("all"))
+//		{
+//			//Not all the versions are allowed, just the last one
+//			
+//			//Get object's id 
+//			query= "SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion  GROUP BY object_id ";
+//			object_ids = joomlaProvider.sjt.queryForList(query);	
+//
+//			for(int i = 0 ; i <object_ids.size() ; i++)
+//			{
+////				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+////					    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+////					    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+////					    " WHERE object_id="+object_ids.get(i).get("object_id")+
+////					    " AND metadata_id IN (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE " +
+////					    " metadatastate_id = (SELECT ls.id FROM "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ls " +
+////					    " WHERE ls.code='published' )))";
+////				query = " SELECT metadata_id  FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+////			    " WHERE object_id="+object_ids.get(i).get("object_id")+" " +
+////			    " AND created=(SELECT MAX(created) FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion " +
+////			    " WHERE object_id="+object_ids.get(i).get("object_id")+")";
+//		
+//				//HVH - 22.11.2010 : Bug Fix returns the last published version of the metadata 
+//				query = "  SELECT ov.metadata_id "+
+//                " FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion ov "+ 
+//                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_metadata m ON ov.metadata_id=m.id "+
+//                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id "+
+//                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON ov.object_id=o.id " + 
+//                " INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_visibility v ON o.visibility_id=v.id "+
+//                " WHERE o.id="+object_ids.get(i).get("object_id")+" " +
+//                        " AND ms.code='published' "+
+//                        " AND m.published <=CURDATE() "+ 
+//                " ORDER BY m.published DESC " +
+//                " LIMIT 0,1 ";
+//
+//				if(metadata_ids == null)
+//					metadata_ids = joomlaProvider.sjt.queryForList(query);
+//				else
+//					metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
+//			}
+//					
+//			//Get metadata's id for last version
+//			String idString ="";
+//			for (int i = 0 ; i<metadata_ids.size() ; i++)
+//			{
+//				idString += metadata_ids.get(i).get("metadata_id");
+//				if(i != metadata_ids.size()-1)
+//				{
+//					idString += ",";
+//				}
+//			}
+//			query= "SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m " +
+//					"WHERE m.id IN ("+idString+")";
+//			metadata_guids = joomlaProvider.sjt.queryForList(query);
+//			
+//			if(metadata_guids.size()==0)
+//				return metadata_guids;
+//		} 		
 		
 		if(policy.getObjectVisibilities()!= null && !policy.getObjectVisibilities().isAll())
 		{
@@ -596,7 +636,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param ids
 	 * @return
 	 */
-	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param, List<Map<String,Object>> ids)
+	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
 		Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
 		Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
@@ -673,7 +713,8 @@ public class CSWProxyDataAccessibilityManager {
 			//<Or>
 			//Add the "Or" node
 			elementOr = new Element("Or", nsOGC);
-				elementAnd.addContent(elementOr);
+			elementAnd.addContent(elementOr);
+			List<Map<String,Object>> ids = getAccessibleDataIds();
 			for (int m = 0; m<ids.size() ; m++)
 			{
 				Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
