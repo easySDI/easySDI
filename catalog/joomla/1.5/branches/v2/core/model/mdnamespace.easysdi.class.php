@@ -18,7 +18,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class namespace extends JTable
+class mdnamespace extends JTable
 {
 	var $id=null;
 	var $guid=null;
@@ -29,7 +29,6 @@ class namespace extends JTable
 	var $updated=null;
 	var $createdby=null;
 	var $updatedby=null;
-	var $label=null;
 	var $ordering=0;
 	var $prefix=null;
 	var $uri=null;
