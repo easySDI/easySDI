@@ -22,7 +22,7 @@ public class ObjectTypes implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@XmlElement(name = "ObjectType", required = false)
-	protected List<String> objectTypes;
+	protected List<String> ObjectType;
 	@XmlAttribute(name = "All")
 	protected Boolean all;
 	
@@ -30,39 +30,39 @@ public class ObjectTypes implements Serializable {
 	public int hashCode() {
 		int hashCode = 0;
 		hashCode += ((all) ? 5909 : 4919);
-		if (objectTypes != null)
-			hashCode += objectTypes.hashCode();
+		if (ObjectType != null)
+			hashCode += ObjectType.hashCode();
 		return hashCode;
 	}
 
 	/**
-	 * Gets the value of the Context property.
+	 * Gets the value of the ObjectTypes property.
 	 * 
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a
 	 * snapshot. Therefore any modification you make to the returned list will
 	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the contexts property.
+	 * <CODE>set</CODE> method for the ObjectTypes property.
 	 * 
 	 * <p>
 	 * For example, to add a new item, do as follows:
 	 * 
 	 * <pre>
-	 * getContexts().add(newItem);
+	 * getObjectTypes().add(newItem);
 	 * </pre>
 	 * 
 	 * 
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list
-	 * {@link Context }
+	 * {@link String }
 	 * 
 	 * 
 	 */
 	public List<String> getObjectTypes() {
-		if (objectTypes == null) {
-			objectTypes = new ArrayList<String>();
+		if (ObjectType == null) {
+			ObjectType = new ArrayList<String>();
 		}
-		return this.objectTypes;
+		return this.ObjectType;
 	}
 
 	/**
