@@ -445,8 +445,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isStatusAndVersionAccessible(requestedId))
-						requestedId = cswDataManager.getDataIdVersionAccessible();
+					if(!cswDataManager.isMetadataAccessible(requestedId))
+						requestedId = cswDataManager.getMetadataVersionAccessible();
 					
 					if (requestedId == null)
 					{
@@ -643,8 +643,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isStatusAndVersionAccessible(dataId))
-						dataId = cswDataManager.getDataIdVersionAccessible();
+					if(!cswDataManager.isMetadataAccessible(dataId))
+						dataId = cswDataManager.getMetadataVersionAccessible();
 					
 					if (dataId == null)
 					{

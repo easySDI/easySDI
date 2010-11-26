@@ -58,7 +58,7 @@ public class CSWProxyDataAccessibilityManager {
 	/**
 	 * @return the dataIdVersionAccessible
 	 */
-	public String getDataIdVersionAccessible() {
+	public String getMetadataVersionAccessible() {
 		return dataIdVersionAccessible;
 	}
 	
@@ -153,7 +153,7 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param dataId
 	 * @return
 	 */
-	public boolean isStatusAndVersionAccessible (String dataId)
+	public boolean isMetadataAccessible (String dataId)
 	{
 		if (policy.getObjectStatus()!= null && !policy.getObjectStatus().isAll())
 		{
