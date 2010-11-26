@@ -1845,7 +1845,6 @@ class HTML_metadata {
 																			}
 															  });
 								
-								 							  
 								".$parentFieldsetName.".add(
 									new Ext.Button({
 										id:'".$currentName."_button',
@@ -1870,7 +1869,7 @@ class HTML_metadata {
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
-					
+																						this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 																					}
 																			},
 																	    items:[thes]
@@ -3307,7 +3306,7 @@ class HTML_metadata {
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
-					
+																						this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 																					}
 																			},
 																	    items:[thes]

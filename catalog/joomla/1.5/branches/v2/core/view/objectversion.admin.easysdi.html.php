@@ -281,8 +281,8 @@ if ($row->updated)
 	
 function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
 	{
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 
 		$uri =& JUri::getInstance();
 		$document =& JFactory::getDocument();
@@ -383,8 +383,8 @@ function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectv
 	
 	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option)
 	{
-		JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 		JHTML::script('Components_extjs.js', 'administrator/components/com_easysdi_catalog/js/');
 		
 		$uri =& JUri::getInstance();

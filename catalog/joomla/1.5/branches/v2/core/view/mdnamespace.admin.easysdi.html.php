@@ -18,8 +18,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class HTML_namespace {
-function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
+class HTML_mdnamespace {
+function listMDNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -33,7 +33,7 @@ function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 				<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
-				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderNamespace' ); ?></th>
+				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderMDNamespace' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_NAMESPACE_PREFIX"), 'prefix', @$filter_order_Dir, @$filter_order); ?></th>
@@ -58,34 +58,34 @@ function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
 						if ($disabled){
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderupNamespace', '', false ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownNamespace', '', false ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupMDNamespace', '', false ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownMDNamespace', '', false ); ?>
 		            <?php
 						}
 						else {
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderupNamespace', 'Move Up', isset($rows[$i-1]) ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownNamespace', 'Move Down', isset($rows[$i+1]) ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupMDNamespace', 'Move Up', isset($rows[$i-1]) ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownMDNamespace', 'Move Down', isset($rows[$i+1]) ); ?>
 					<?php
 						}		
 					}
 					else{ 
 						if ($disabled){
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownNamespace', '', false ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupNamespace', '', false ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderdownMDNamespace', '', false ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupMDNamespace', '', false ); ?>
 		            <?php
 						}
 						else {
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownNamespace', 'Move Down', isset($rows[$i-1]) ); ?>
-		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupNamespace', 'Move Up', isset($rows[$i+1]) ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderdownMDNamespace', 'Move Down', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderuMDNamespace', 'Move Up', isset($rows[$i+1]) ); ?>
 					<?php
 						}
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				 <?php $link =  "index.php?option=$option&amp;task=editNamespace&cid[]=$row->id";?>
+				 <?php $link =  "index.php?option=$option&amp;task=editMDNamespace&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
 				<td><?php echo $row->description; ?></td>
 				<td><?php echo $row->prefix; ?></td>
@@ -119,7 +119,7 @@ function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 		</tfoot>
 		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listNamespace" />
+	  	<input type="hidden" name="task" value="listMDNamespace" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
@@ -128,7 +128,7 @@ function listNamespace(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 <?php
 	}
 	
-	function editNamespace(&$row, $fieldsLength, $option)
+	function editMDNamespace(&$row, $fieldsLength, $option)
 	{
 		global  $mainframe;
 		
