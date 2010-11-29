@@ -690,6 +690,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
+					if(param == null)
+					{
+						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponseForGetRecords(requestedVersion));
+						return;
+					}
 				}
 				dump("INFO","End - Data Accessibility");
 				
