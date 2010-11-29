@@ -109,7 +109,8 @@ function com_install(){
 				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_ENCODING_VAL', 'CATALOG_ENCODING_VAL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'utf8', '".$id."'),
 				  ('".helper_easysdi::getUniqueId()."', 'METADATA_COLLAPSE', 'METADATA_COLLAPSE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'true', '".$id."'),
 				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_SEARCH_MULTILIST_LENGTH', 'CATALOG_SEARCH_MULTILIST_LENGTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '4', '".$id."'),
-				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_QTIPDELAY', 'CATALOG_METADATA_QTIPDELAY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '10000', '".$id."')
+				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_QTIPDELAY', 'CATALOG_METADATA_QTIPDELAY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '10000', '".$id."'),
+				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_PAGINATION_SEARCHRESULT', 'CATALOG_PAGINATION_SEARCHRESULT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."')
 				 ";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -158,7 +159,8 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'link', 'link', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_LINK', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', 2),
 					('".helper_easysdi::getUniqueId()."', 'datetime', 'datetime', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_DATETIME', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}', 'DateTime', 2),
 					('".helper_easysdi::getUniqueId()."', 'textchoice', 'textchoice', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_TEXTCHOICE', '^[a-zA-Z0-9_]{1,}$', 'CharacterString', 2),
-					('".helper_easysdi::getUniqueId()."', 'localechoice', 'localechoice', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_LOCALECHOICE', '^[a-zA-Z0-9_]{1,}$', null, null)";
+					('".helper_easysdi::getUniqueId()."', 'localechoice', 'localechoice', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_LOCALECHOICE', '^[a-zA-Z0-9_]{1,}$', null, null),
+					('".helper_easysdi::getUniqueId()."', 'Thesaurus GEMET', 'Thesaurus GEMET', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_THESAURUS', '', null, null)";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
@@ -589,10 +591,13 @@ function com_install(){
 				  `assigned` datetime NOT NULL,
 				  `assignedby` bigint(20) NOT NULL,
 				  `object_id` bigint(20) DEFAULT NULL,
+				  `objectversion_id` bigint(20) DEFAULT NULL,
 				  `account_id` bigint(20) DEFAULT NULL,
 				  `information` varchar(2000) DEFAULT NULL,
 				  PRIMARY KEY (`id`),
-				  UNIQUE KEY `guid` (`guid`)
+				  UNIQUE KEY `guid` (`guid`),
+				  KEY `object_id` (`object_id`),
+				  KEY `objectversion_id` (`objectversion_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 		$db->setQuery( $query);	
 		if (!$db->query()) {
@@ -1226,6 +1231,26 @@ function com_install(){
 		$db->setQuery( $query);	
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		/*
+		$query="ALTER TABLE `#__sdi_history_assign`
+  				ADD CONSTRAINT `#__sdi_history_assign_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`),
+  				ADD CONSTRAINT `#__sdi_history_assign_ibfk_2` FOREIGN KEY (`objectversion_id`) REFERENCES `#__sdi_objectversion` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		*/
+		
+		// Update component version
+		$version="1.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
 	/**

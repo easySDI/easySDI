@@ -155,7 +155,7 @@ class ADMIN_context {
 		}
 		
 		$listObjectTypes = array();
-		/*$listObjectTypes[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_CONTEXT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		/*$listObjectTypes[] = JHTML::_('select.option', '0', JText::_('CATALOG_CONTEXT_SELECT_OBJECTTYPE'), 'value', 'text');
 		$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype ORDER BY name" );
 		$listObjectTypes= array_merge( $listObjectTypes, $database->loadObjectList() );
 		*/	

@@ -104,16 +104,16 @@ var ThesaurusReader = function(config){
 	this.appPath	= "";
   if(config.appPath) this.appPath = config.appPath;
 	this.url   		= "http://www.eionet.europa.eu/gemet/";
-	console.log(this.appPath);
+	//console.log(this.appPath);
 	this.proxy 		= this.appPath+"proxy.php?url=";
-	console.log(this.proxy);
+	//console.log(this.proxy);
 	this.lang 		= 'en';
 	this.outputLangs = ['cs', 'en'];
 	this.separator 	= " > ";
 	this.returnPath = true;
 	
   if(config.url) this.url = config.url; 
-  console.log(config.proxy);
+  //console.log(config.proxy);
   if(config.proxy) this.proxy = config.proxy;
   if(config.lang) this.lang = config.lang;
   if(config.outputLangs) this.outputLangs = config.outputLangs;
@@ -231,6 +231,8 @@ var ThesaurusReader = function(config){
       
       this.obj.searchField.clearValue();
       this.obj.treePanel.topToolbar.hide();
+      
+      this.getTopConcepts();
     }
     
 

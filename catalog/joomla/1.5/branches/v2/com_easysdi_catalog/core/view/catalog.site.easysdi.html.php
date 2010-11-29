@@ -778,13 +778,17 @@ if($cswResults)
 	foreach($nodes  as $metadata)
 	{
 		$i++;
-	
+		
 		$md = new geoMetadata($metadata);
 	
-		$doc = new DomDocument('1.0', 'UTF-8');
-		$doc = $md->metadata;
-		$doc->formatOutput = true;
+		$xmlBase = new DomDocument('1.0', 'UTF-8');
+		$xmlBase = $md->metadata;
+		$xmlBase->formatOutput = true;
 	
+		$doc = displayManager::constructXML($xmlBase, $db, $language, $md->getFileIdentifier(), false, null, null);
+		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
+		
+		/*
 		$root = $doc->getElementsByTagName("MD_Metadata");
 		$root = $root->item(0);
 	
@@ -934,7 +938,8 @@ if($cswResults)
 		}
 	
 		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
-	
+		*/
+		
 		// Répertoire des fichiers xsl, s'il y en a un
 		$xslFolder = ""; 
 		
@@ -1248,9 +1253,7 @@ if($cswResults)
 			echo $page;
 		}
 		//return $list;
-	}
-
-	
+	}	
 }
 
 

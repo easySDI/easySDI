@@ -25,8 +25,16 @@ class SITE_objectversion
 		$user = JFactory::getUser();
 		
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 20, '', 'int');
-		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		//$limit = JRequest::getVar('limit', 20, '', 'int');
+		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		$context	= $option.'.listObjectVersion';
+		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		
+		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
+		// La mise à zéro ne se fait pas, il faut donc la forcer
+		if (! isset($_REQUEST['limitstart']))
+			$limitstart=0;
 		
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
@@ -595,10 +603,35 @@ function deleteObjectVersion($cid, $option)
 			
 			if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
 			{
-				$mainframe->enqueueMessage("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error");
-				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
-				//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
+				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error"));
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				exit;
+			}
+			
+			// Tests supplémentaires si le SHOP est installé
+			$shopExist = 0;
+			$query = "	SELECT count(*) 
+						FROM #__sdi_list_module 
+						WHERE code='SHOP'";
+			$database->setQuery($query);
+			$shopExist = $database->loadResult();
+			if($shopExist == 1)
+			{
+				// Si la version est liée à un produit, empêcher la suppression et afficher un message
+				$childcount=0;
+				$query = 'SELECT count(*)' .
+						' FROM #__sdi_objectversion ov
+						  INNER JOIN #__sdi_product p ON p.objectversion_id=ov.id
+						  WHERE p.objectversion_id=' . $objectversion->id;
+				$database->setQuery($query);
+				$childcount = $database->loadResult();
+				
+				if ($childcount > 0)
+				{
+					$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_PRODUCTEXIST_MSG","error"));
+					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
+					exit;
+				}
 			}
 			
 			// Supprimer de Geonetwork la métadonnée
@@ -654,6 +687,15 @@ function deleteObjectVersion($cid, $option)
 				}
 			}
 			
+			// Supprimer l'historique d'assignement
+			$query = 'DELETE *' .
+					' FROM #__sdi_history_assign
+					  WHERE objectversion_id=' . $objectversion->id;
+			$database->setQuery($query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 			if (!$objectversion->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
@@ -701,11 +743,11 @@ function deleteObjectVersion($cid, $option)
 
 		// Check the attribute in if checked out
 		$rowObject = new object( $database );
-		$rowObject->bind(JRequest::get('post'));
+		$rowObject->load(JRequest::get('object_id'));
 		$rowObject->checkin();
 
 		//$mainframe->redirect("index.php?option=$option&task=listObject" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+		//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 	}
 }
 

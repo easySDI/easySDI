@@ -31,7 +31,7 @@ class SITE_catalog {
 		
 		// Valeurs de configuration pour le rendu des résultats
 		$maxDescr = config_easysdi::getValue("description_length");
-		$MDPag = config_easysdi::getValue("pagination_metadata");
+		$MDPag = config_easysdi::getValue("catalog_pagination_searchresult");
 		
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', $MDPag );
@@ -702,9 +702,14 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id.
-													 "		AND ms.code='published'
-													 		AND m.published <='".date('Y-m-d')."' 
-													  ORDER BY ov.created DESC";
+													 "		AND ((ms.code='published'
+													 			AND m.published <='".date('Y-m-d')."')
+													 		OR
+													 			(ms.code='archived'
+													 			AND m.archived >'".date('Y-m-d')."')
+													 		) 
+													  ORDER BY m.published DESC
+													  LIMIT 0, 1";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
 											$versionlist = $database->loadObjectList() ;
@@ -742,18 +747,21 @@ class SITE_catalog {
 									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
-										$query = "SELECT m.guid as metadata_id 
-												  FROM #__sdi_objectversion ov 
-												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
-												  WHERE ms.code='published'
-												  		AND m.published <= '".date('Y-m-d')."' 
-												  		AND o.id=".$object->id
-												.$mysqlFilter.
-												 " ORDER BY ov.created DESC";
-										$database->setQuery( $query);
+										$query = "SELECT m.guid as metadata_id, ms.code, m.published
+													  FROM #__sdi_objectversion ov 
+													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+													  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+													  WHERE o.id=".$object->id.
+													 "		AND ((ms.code='published'
+													 			AND m.published <='".date('Y-m-d')."')
+													 		OR
+													 			(ms.code='archived'
+													 			AND m.archived >'".date('Y-m-d')."')
+													 		) 
+													  ORDER BY m.published DESC";
+											$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
 										$versionlist = $database->loadObjectList() ;
 											
@@ -1625,9 +1633,14 @@ class SITE_catalog {
 													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
 													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 													  WHERE o.id=".$object->id.
-													 "		AND ms.code='published'
-													 		AND m.published <='".date('Y-m-d')."' 
-													  ORDER BY ov.created DESC";
+													 "		AND ((ms.code='published'
+													 			AND m.published <='".date('Y-m-d')."')
+													 		OR
+													 			(ms.code='archived'
+													 			AND m.archived >'".date('Y-m-d')."')
+													 		) 
+													  ORDER BY m.published DESC
+													  LIMIT 0, 1";
 											$database->setQuery( $query);
 											//echo "<br>".$database->getQuery()."<br>";
 											$versionlist = $database->loadObjectList() ;
@@ -1665,17 +1678,20 @@ class SITE_catalog {
 									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
-										$query = "SELECT m.guid as metadata_id 
-												  FROM #__sdi_objectversion ov 
-												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-												  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
-												  WHERE ms.code='published'
-												  		AND m.published <= '".date('Y-m-d')."' 
-												  		AND o.id=".$object->id
-												.$mysqlFilter.
-												 " ORDER BY ov.created DESC";
+										$query = "SELECT m.guid as metadata_id, ms.code, m.published
+													  FROM #__sdi_objectversion ov 
+													  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+													  INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+													  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+													  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+													  WHERE o.id=".$object->id.
+													 "		AND ((ms.code='published'
+													 			AND m.published <='".date('Y-m-d')."')
+													 		OR
+													 			(ms.code='archived'
+													 			AND m.archived >'".date('Y-m-d')."')
+													 		) 
+													  ORDER BY m.published DESC";
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
 										$versionlist = $database->loadObjectList() ;

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project default="sync" basedir=".">
 
-	<property name="projet.out.dir" value="C:\SVN\catalog\out" />
+	<property name="projet.out.dir" value="C:\SVN\easysdi\catalog\out" />
 
 
 	<target name="com_easysdi" depends="create-structure,compression"

@@ -190,7 +190,7 @@ class ADMIN_objecttypelink {
 				 	   AND cl.code='".$language->_lang."'
 				 ORDER BY t.label";
 		
-		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$objecttypes[] = JHTML::_('select.option', '0', JText::_('SELECT_OBJECTTYPE'), 'value', 'text');
 		$database->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $database->loadObjectList());
 		

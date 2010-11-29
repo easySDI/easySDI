@@ -140,7 +140,7 @@ class ADMIN_attribute {
 		$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_list_attributetype' .
 				' ORDER BY name';
-		$attributetypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_ATTRIBUTETYPE').' -', 'value', 'text');
+		$attributetypes[] = JHTML::_('select.option', '0', JText::_('SELECT_ATTRIBUTETYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$attributetypes = array_merge($attributetypes, $db->loadObjectList());
 		$lists['attributetype_id'] = JHTML::_('select.genericlist',  $attributetypes, 'filter_attributetype_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_attributetype_id);

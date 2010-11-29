@@ -102,7 +102,7 @@ Ext.override(Ext.Button, {
 												'show': function (animateTarget, cb, scope)
 														{
 															this.items.get(0).emptyAll();
-
+															this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 														}
 												},
 										    items:[new ThesaurusReader({

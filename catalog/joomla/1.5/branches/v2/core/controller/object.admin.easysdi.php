@@ -153,7 +153,7 @@ class ADMIN_object {
 						FROM #__sdi_object
 					)
 					ORDER BY b.name';
-		$accounts[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_ACCOUNT').' -', 'value', 'text');
+		$accounts[] = JHTML::_('select.option', '0', JText::_('CATALOG_OBJECT_SELECT_ACCOUNT'), 'value', 'text');
 		$db->setQuery($query);
 		$accounts = array_merge($accounts, $db->loadObjectList());
 		$lists['account_id'] = JHTML::_('select.genericlist',  $accounts, 'filter_account_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_account_id);
@@ -172,7 +172,7 @@ class ADMIN_object {
 				 	   AND cl.code='".$language->_lang."'
 				 ORDER BY t.label";
 		
-		$objecttypes[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$objecttypes[] = JHTML::_('select.option', '0', JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$objecttypes = array_merge($objecttypes, $db->loadObjectList());
 		$lists['objecttype_id'] = JHTML::_('select.genericlist',  $objecttypes, 'filter_objecttype_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_objecttype_id);

@@ -64,7 +64,7 @@
 											</div>
 										</div>
 									<?php
-										$link = "index.php?option=$option&amp;task=listNamespace";
+										$link = "index.php?option=$option&amp;task=listMDNamespace";
 								?>
 										<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 											<div class="icon">

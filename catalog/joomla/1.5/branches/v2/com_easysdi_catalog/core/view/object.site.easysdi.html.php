@@ -29,14 +29,16 @@ class HTML_object {
 				
 		$database =& JFactory::getDBO(); 
 
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 		JHTML::_('behavior.calendar');
 
 		$baseMaplist = array();		
 		jimport("joomla.utilities.date");
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
 
-		$database =& JFactory::getDBO(); 
-		
 		$user =& JFactory::getUser();
 		$currentAccount = new accountByUserId($database);
 		$currentAccount->load($user->id);
@@ -63,13 +65,13 @@ else
 }
 ?>			
 	<div id="contentin" class="contentin">
-		 <div class="row">
+		 <form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
+		<div class="row">
 			 <div class="row">
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';window.open('<?php echo JRoute::_('index.php?task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
 			</div>	 
 		 </div>
-		<form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
 		<div class="row">
 			<div class="row">
 				<div class="row">

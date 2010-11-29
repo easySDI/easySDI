@@ -31,12 +31,12 @@ class HTML_objectversion {
 		<div id="page">
 		<h1 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h1>
 		<div class="contentin">
+		
 		<form action="index.php" method="GET" id="objectversionListForm" name="objectversionListForm">
-	
 		<div class="row">
 			 <div class="row">
 				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="document.getElementById('task').value='newObjectVersion';document.getElementById('objectversionListForm').submit();"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='cancelObjectVersion';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
 			</div>	 
 		 </div>
 	<script>
@@ -151,6 +151,9 @@ class HTML_objectversion {
 		
 		$database =& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		
 		$object = new object($database);
 		$object->load($object_id);
@@ -173,13 +176,13 @@ else
 }
 ?>
 		    <div id="contentin" class="contentin">
-		    <div class="row">
+		    <form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<div class="row">
 				 <div class="row">
 					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=backObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_('index.php?task=backObjectVersion&object_id='.$object_id); ?>', '_self')"/>
 				</div>	 
 			 </div>
-			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 				<div class="row">	
 					<div class="row">
 						<label for="metadata_guid"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </label> 
@@ -187,7 +190,7 @@ else
 					</div>
 					<div class="row">
 						<label for="description"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </label> 
-						<textarea rows="4" cols="50" name ="description" class="text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea>								
+						<textarea rows="4" cols="50" name ="description" class="inputbox text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea>								
 					</div>
 				</div>
 				
@@ -218,6 +221,9 @@ else
 	function viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option)
 	{
 		$database =& JFactory::getDBO(); 
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 
@@ -249,26 +255,25 @@ else
 		<div id="page">
 			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_VIEW_OBJECTVERSIONLINK' )." ".$title ?></h2>
 		    <div id="contentin" class="contentin">
-		    <table width="100%">
-				<tr>
-					<td width="100%" align="right">
-						<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
-						<br></br>
-					</td>
-				</tr>
-		   </table>
-			<table width="100%">
+		   <form action="index.php" method="post" name="adminForm" id="adminForm"
+			class="adminForm">
+			<div class="row">
+				 <div class="row">
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
+				</div>	 
+			 </div>
+			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
+			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			</form>
+			 <table width="100%">
 			<tr>
 				<td width="100%"><div id="viewLinksOutput"></div></td>
 			</tr>
 		   </table>
-		   <form action="index.php" method="post" name="adminForm" id="adminForm"
-			class="adminForm">
-			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
-			</form>
-			</div>
+		   </div>
 			</div>
 		<?php
 		
@@ -359,6 +364,9 @@ else
 	function manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option)
 	{
 		$database =& JFactory::getDBO(); 
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 		JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 		JHTML::script('Components_extjs.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -391,27 +399,26 @@ else
 		<div id="page">
 			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_MANAGE_OBJECTVERSIONLINK' )." ".$title ?></h2>
 		    <div id="contentin" class="contentin">
-		    <table width="100%">
-				<tr>
-					<td width="100%" align="right">
-						<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
-						<br></br>
-					</td>
-				</tr>
-		   </table>
+		    <form action="index.php" method="post" name="adminForm" id="adminForm"
+			class="adminForm">
+			<div class="row">
+				 <div class="row">
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
+				</div>	 
+			 </div>
+			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
+			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			</form>
 			<table width="100%">
 			<tr>
 				<td width="100%">
 				<div id="viewLinksOutput"></div></td>
 			</tr>
 		   </table>
-		   <form action="index.php" method="post" name="adminForm" id="adminForm"
-			class="adminForm">
-			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-			<input type="hidden" name="task" value="" />
-			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
-			</form>
-			</div>
+		   </div>
 		</div>
 		<?php
 		

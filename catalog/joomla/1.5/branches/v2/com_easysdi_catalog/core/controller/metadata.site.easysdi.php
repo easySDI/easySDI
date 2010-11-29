@@ -42,8 +42,16 @@ class SITE_metadata {
 		}
 		
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 20, '', 'int');
-		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		//$limit = $mainframe->getUserStateFromRequest($option.".limit", 'limit', 20, 'int');
+		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		$context	= $option.'.listMetadata';
+		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		
+		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
+		// La mise à zéro ne se fait pas, il faut donc la forcer
+		if (! isset($_REQUEST['limitstart']))
+			$limitstart=0;
 		
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
@@ -140,6 +148,7 @@ class SITE_metadata {
 			echo "</div>";
 		}	
 		
+		jimport('joomla.html.pagination');
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		/*$query = "	SELECT DISTINCT o.*, ov.name as version_name, ov.created as version_created, CONCAT(o.name,' ',ov.name) as full_name, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_editor_object e, 
@@ -500,27 +509,35 @@ class SITE_metadata {
 		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ));
 	}
 	
-	function historyAssignMetadata($id, $option)
+	function historyAssignMetadata($metadata_id, $option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
-		if (JRequest::getVar('object_id'))
-			$id = JRequest::getVar('object_id');
+		if (JRequest::getVar('metadatata_id'))
+			$metadata_id = JRequest::getVar('metadata_id');
 			
-		//$limit = JRequest::getVar('limit', 20 );
-		//$limitstart = JRequest::getVar('limitstart', 0 );
-		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart	= $mainframe->getUserStateFromRequest('limitstart', 'limitstart', 0, 'int');
+		//$limit = JRequest::getVar('limit', 20, '', 'int');
+		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		$context	= $option.'.historyAssignMetadata';
+		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		
+		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
+		// La mise à zéro ne se fait pas, il faut donc la forcer
+		if (! isset($_REQUEST['limitstart']))
+			$limitstart=0;
 		
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
-		$rowObject = new object($database);
-		$rowObject->load($id);
+		$rowMetadata = new metadata($database);
+		$rowMetadata->load($metadata_id);
+		$rowObjectVersion = new objectversionByMetadata_id($database);
+		$rowObjectVersion->load($rowMetadata->id);
 		
 		$query = "SELECT COUNT(*) FROM #__sdi_history_assign h
-				  WHERE h.object_id=".$rowObject->id;					
+				  WHERE h.objectversion_id=".$rowObjectVersion->id;					
 		$database->setQuery($query);
 		$total = $database->loadResult();
 		
@@ -528,19 +545,20 @@ class SITE_metadata {
 		jimport('joomla.html.pagination');
 		$pagination = new JPagination($total, $limitstart, $limit);
 		
-		$query = "SELECT h.assigned as date, aa.username as assignedby, bb.username as assignedto, o.name as object_name, h.information as information 
+		$query = "SELECT h.assigned as date, aa.username as assignedby, bb.username as assignedto, o.name as object_name, ov.title as version_title, h.information as information 
                   FROM #__sdi_history_assign h
-					INNER JOIN #__sdi_object o ON h.object_id=o.id
-					INNER JOIN #__sdi_account a ON a.id=h.assignedby
-					INNER JOIN #__users aa ON a.user_id=aa.id
-					INNER JOIN #__sdi_account b ON b.id=h.account_id
-					INNER JOIN #__users bb ON b.user_id=bb.id
-				  WHERE h.object_id=".$rowObject->id." ORDER BY date DESC";
+				  INNER JOIN #__sdi_objectversion ov ON h.objectversion_id=ov.id
+				  INNER JOIN #__sdi_object o ON ov.object_id=o.id
+				  INNER JOIN #__sdi_account a ON a.id=h.assignedby
+				  INNER JOIN #__users aa ON a.user_id=aa.id
+				  INNER JOIN #__sdi_account b ON b.id=h.account_id
+				  INNER JOIN #__users bb ON b.user_id=bb.id
+				  WHERE h.objectversion_id=".$rowObjectVersion->id." ORDER BY date DESC";
 		
 		$database->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		$rowHistory = $database->loadObjectList();
 		//print_r($rowHistory);
-		HTML_metadata::historyAssignMetadata($rowHistory, $pagination, $id, $option);
+		HTML_metadata::historyAssignMetadata($rowHistory, $pagination, $metadata_id, $option);
 	}
 	
 	function archiveMetadata($cid ,$option)

@@ -73,8 +73,15 @@ class SITE_object {
 		$language =& JFactory::getLanguage();
 		
 		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', 20, '', 'int');
-		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		
+		$context	= $option.'.listObject';
+		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		
+		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
+		// La mise à zéro ne se fait pas, il faut donc la forcer
+		if (! isset($_REQUEST['limitstart']))
+			$limitstart=0;
 		
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
@@ -179,7 +186,7 @@ class SITE_object {
 				 	   AND cl.code='".$language->_lang."'
 				 ORDER BY t.label";
 		
-		$listObjectType[] = JHTML::_('select.option', '0', '- '.JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE').' -', 'value', 'text');
+		$listObjectType[] = JHTML::_('select.option', '0', JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
 		//$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
@@ -700,13 +707,44 @@ class SITE_object {
 			
 			//S'assurer que toutes les versions sont dans l'état archivé ou en travail
 			$total=0;
-			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (state == 'unpublished' or state == 'archived') ORDER BY v.created DESC" );
+			$database->setQuery( "SELECT COUNT(*) 
+								  FROM #__sdi_objectversion v 
+								  INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id 
+								  INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id 
+								  WHERE v.object_id=".$object->id." 
+								  		AND (state == 'unpublished' or state == 'archived') 
+								  ORDER BY v.created DESC" );
 			$total = $database->loadResult();
 			if ($total <> count($listVersion))
 			{
 				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECT_DELETE_VERSIONSTATE_MSG"),"error");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 				exit;
+			}
+			
+			// Tests supplémentaires si le SHOP est installé
+			$shopExist = 0;
+			$query = "	SELECT count(*) 
+						FROM #__sdi_list_module 
+						WHERE code='SHOP'";
+			$database->setQuery($query);
+			$shopExist = $database->loadResult();
+			if($shopExist == 1)
+			{
+				// Si la version est liée à un produit, empêcher la suppression et afficher un message
+				$query = 'SELECT count(*)' .
+						' FROM #__sdi_objectversion ov
+						  INNER JOIN #__sdi_product object o ON ov.object_id=o.id
+						  INNER JOIN #__sdi_product p ON p.objectversion_id=ov.id
+						  WHERE ov.object_id=' . $object->id;
+				$database->setQuery($query);
+				$child_version = $database->loadObject();
+				if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
+				{
+					$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_PRODUCTEXIST_MSG","error"));
+					$mainframe->redirect(JRoute::_('index.php?option=$option&task=listObject', false) );
+					exit;
+				}
 			}
 			
 			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur métadonnée
@@ -783,9 +821,12 @@ class SITE_object {
 		$database = & JFactory::getDBO();
 
 		// Check the attribute in if checked out
-		$rowObject = new object( $database );
-		$rowObject->bind(JRequest::get('post'));
-		$rowObject->checkin();
+		if (JRequest::get('object_id') <> 0)
+		{
+			$rowObject = new object( $database );
+			$rowObject->load(JRequest::get('object_id'));
+			$rowObject->checkin();
+		}
 		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
 	}
 	

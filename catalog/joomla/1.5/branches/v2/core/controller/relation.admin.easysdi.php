@@ -268,7 +268,7 @@ class ADMIN_relation {
 		$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_list_rendertype' .
 				' ORDER BY name';
-		$rendertypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_RENDERTYPE').' -', 'value', 'text');
+		$rendertypes[] = JHTML::_('select.option', '0', JText::_('SELECT_RENDERTYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$rendertypes = array_merge($rendertypes, $db->loadObjectList());
 		$lists['rendertype_id'] = JHTML::_('select.genericlist',  $rendertypes, 'filter_rendertype_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_rendertype_id);
@@ -277,7 +277,7 @@ class ADMIN_relation {
 		$query = 'SELECT id as value, name as text' .
 				' FROM #__sdi_list_relationtype' .
 				' ORDER BY name';
-		$relationtypes[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_RELATIONTYPE').' -', 'value', 'text');
+		$relationtypes[] = JHTML::_('select.option', '0', JText::_('SELECT_RELATIONTYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$relationtypes = array_merge($relationtypes, $db->loadObjectList());
 		$lists['relationtype_id'] = JHTML::_('select.genericlist',  $relationtypes, 'filter_relationtype_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_relationtype_id);

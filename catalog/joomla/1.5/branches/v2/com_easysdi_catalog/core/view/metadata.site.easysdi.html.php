@@ -61,6 +61,10 @@ class HTML_metadata {
 		$database =& JFactory::getDBO(); 
 		$user = JFactory::getUser();
 		
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 		?>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_LIST_METADATA"); ?></h1>
@@ -278,7 +282,7 @@ else
 					}
 				}
 			?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $row->id?>;document.getElementById('metadataListForm').submit();"></div>
+				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 				</td>
 			</tr>
 			
@@ -2624,7 +2628,7 @@ else
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
-					
+																						this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 																					}
 																			},
 																	    items:[thes]
@@ -4047,7 +4051,7 @@ else
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
-					
+																						this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 																					}
 																			},
 																	    items:[thes]
@@ -4888,9 +4892,14 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		return $return;//Return associative JSON
 	}
 	
-	function historyAssignMetadata($rows, $pageNav, $object_id, $option)
+	function historyAssignMetadata($rows, $pageNav, $metadata_id, $option)
 	{
 		$database =& JFactory::getDBO(); 
+		
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 		?>	
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_HISTORYASSIGN_METADATA"); ?></h1>
@@ -4931,7 +4940,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
 	
 	<input type="hidden" name="option" value="<?php echo $option; ?>">
-	<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
+	<input type="hidden" name="metadata_id" value="<?php echo $metadata_id; ?>">
 	<input type="hidden" id="task" name="task" value="historyAssignMetadata">
 	<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
 	<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">

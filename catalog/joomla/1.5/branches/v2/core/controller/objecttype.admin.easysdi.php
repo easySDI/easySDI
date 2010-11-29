@@ -175,7 +175,7 @@ class ADMIN_objecttype {
 		$unselected_accounts=array_merge( $unselected_accounts, $database->loadObjectList() );
 */
 		$profiles = array();
-		$profiles[] = JHTML::_('select.option', '0', '- '.JText::_('SELECT_PROFILE').' -', 'value', 'text');
+		$profiles[] = JHTML::_('select.option', '0', JText::_('SELECT_PROFILE'), 'value', 'text');
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_profile ORDER BY name" );
 		$profiles = array_merge( $profiles, $database->loadObjectList() );
 		
