@@ -1,37 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PolicySet>
-	<Policy />
+	<Policy/>
 	<Policy Id="all_user" ConfigId="metacarta_open">
-		<Servers All="false">
-			<Server>
-				<url>http://labs.metacarta.com/wms/vmap0</url>
-				<Prefix>topp</Prefix>
-				<Namespace>topp</Namespace>
-				<Metadata All="true">
-					<Attributes All="true" />
-				</Metadata>
-				<Layers All="False">
-					<Layer>
-						<Name>Vmap0</Name>
-						<ScaleMax>0</ScaleMax>
-					</Layer>
-					<Layer>
-						<Name>basic</Name>
-					</Layer>
-					<Layer>
-						<Name>ocean</Name>
-					</Layer>
-					<Layer>
-						<Name>ground_01</Name>
-					</Layer>
-					<Layer>
-						<Name>ground_02</Name>
-					</Layer>
-				</Layers>
-			</Server>
-		</Servers>
-		<Subjects All="true" />
-		<Operations All="true" />
+		<Servers All="false"><Server><url>http://labs.metacarta.com/wms/vmap0</url><Prefix>topp</Prefix><Namespace>topp</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>Vmap0</Name></Layer><Layer><Name>basic</Name></Layer><Layer><Name>coastline_01</Name></Layer><Layer><Name>coastline_02</Name></Layer><Layer><Name>depthcontour</Name></Layer><Layer><Name>trail</Name></Layer></Layers><FeatureTypes></FeatureTypes></Server></Servers>
+		<Subjects All="true"></Subjects>
+		<Operations All="true"></Operations>
 		<AvailabilityPeriod>
 			<Mask>d-mm-yyyy</Mask>
 			<From>
@@ -41,7 +14,7 @@
 				<Date>28-01-2108</Date>
 			</To>
 		</AvailabilityPeriod>
-		<ImageSize />
+		<ImageSize></ImageSize>
 	</Policy>
 	<Policy Id="gmap_all" ConfigId="gmap">
 		<Servers All="false">
@@ -50,7 +23,7 @@
 				<Prefix>topp</Prefix>
 				<Namespace>topp</Namespace>
 				<Metadata All="true">
-					<Attributes All="true" />
+					<Attributes All="true"/>
 				</Metadata>
 				<Layers All="False">
 					<Layer>
@@ -93,8 +66,8 @@
 				</Layers>
 			</Server>
 		</Servers>
-		<Subjects All="true" />
-		<Operations All="true" />
+		<Subjects All="true"/>
+		<Operations All="true"/>
 		<AvailabilityPeriod>
 			<Mask>d-mm-yyyy</Mask>
 			<From>
@@ -104,7 +77,7 @@
 				<Date>28-01-2108</Date>
 			</To>
 		</AvailabilityPeriod>
-		<ImageSize />
+		<ImageSize/>
 	</Policy>
 	<Policy Id="all_user0" ConfigId="mfwfs">
 		<Servers All="false">
@@ -113,26 +86,26 @@
 				<Prefix>topp</Prefix>
 				<Namespace>topp</Namespace>
 				<Metadata All="true">
-					<Attributes All="true" />
+					<Attributes All="true"/>
 				</Metadata>
 				<FeatureTypes All="false">
 					<FeatureType>
 						<Name>park</Name>
-						<Attributes All="true" />
+						<Attributes All="true"/>
 					</FeatureType>
 					<FeatureType>
 						<Name>popplace</Name>
-						<Attributes All="true" />
+						<Attributes All="true"/>
 					</FeatureType>
 					<FeatureType>
 						<Name>road</Name>
-						<Attributes All="true" />
+						<Attributes All="true"/>
 					</FeatureType>
 				</FeatureTypes>
 			</Server>
 		</Servers>
-		<Subjects All="true"></Subjects>
-		<Operations All="true" />
+		<Subjects All="true"/>
+		<Operations All="true"/>
 		<AvailabilityPeriod>
 			<Mask>d-mm-yyyy</Mask>
 			<From>
@@ -142,7 +115,7 @@
 				<Date>28-01-2108</Date>
 			</To>
 		</AvailabilityPeriod>
-		<ImageSize></ImageSize>
+		<ImageSize/>
 	</Policy>
 	<Policy Id="all_user01" ConfigId="geosignal">
 		<Servers All="false">
@@ -151,7 +124,7 @@
 				<Prefix>topp</Prefix>
 				<Namespace>topp</Namespace>
 				<Metadata All="true">
-					<Attributes All="true" />
+					<Attributes All="true"/>
 				</Metadata>
 				<Layers All="False">
 					<Layer>
@@ -223,8 +196,8 @@
 				</Layers>
 			</Server>
 		</Servers>
-		<Subjects All="true"></Subjects>
-		<Operations All="true" />
+		<Subjects All="true"/>
+		<Operations All="true"/>
 		<AvailabilityPeriod>
 			<Mask>d-mm-yyyy</Mask>
 			<From>
@@ -234,6 +207,6 @@
 				<Date>28-01-2108</Date>
 			</To>
 		</AvailabilityPeriod>
-		<ImageSize></ImageSize>
+		<ImageSize/>
 	</Policy>
 </PolicySet>

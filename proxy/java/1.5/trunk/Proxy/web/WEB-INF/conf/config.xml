@@ -2,13 +2,13 @@
 <configurations>
 	<config id="metacarta_open">
 		<authorization>
-			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
 				<suffix>wms</suffix>
 				<prefix>metacarta</prefix>
 				<extension>log</extension>
@@ -27,13 +27,13 @@
 	</config>
 	<config id="gmap">
 		<authorization>
-			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
 				<suffix>wms</suffix>
 				<prefix>gmap</prefix>
 				<extension>log</extension>
@@ -52,13 +52,13 @@
 	</config>
 	<config id="mfwfs">
 		<authorization>
-			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
 			</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
 				<suffix>wfs</suffix>
 				<prefix>mfwfs</prefix>
 				<extension>log</extension>
@@ -77,13 +77,13 @@
 	</config>
 	<config id="geosignal">
 		<authorization>
-			<policy-file>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\conf\NewPolicy.xml
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
 		</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
 			<file-structure>
-				<path>C:\www\Site\EasySDI\Proxy_java\web\WEB-INF\logs</path>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
 				<suffix>wms</suffix>
 				<prefix>geosignal</prefix>
 				<extension>log</extension>

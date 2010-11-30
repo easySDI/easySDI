@@ -11,9 +11,9 @@
 
 	<bean id="joomlaProvider" class="org.easysdi.security.JoomlaProvider">
 		<property name="prefix">
-			<value>jos_</value>
+			<value>sdi_</value>
 		</property>
-		<property name="version" value="2.0.0" />
+		<property name="version" value="2.0.3" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
