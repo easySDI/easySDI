@@ -46,20 +46,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","objectContexts","objectVersion"})
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes"})
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
-	@XmlElement(name = "ObjectContexts")
-	private ObjectContexts objectContexts;
 	@XmlElement(name = "ObjectTypes")
 	private ObjectTypes objectTypes;
 	@XmlElement(name = "ObjectStatus")
 	protected ObjectStatus objectStatus;
-	@XmlElement(name = "ObjectVersion")
-	protected ObjectVersion objectVersion;
 	@XmlElement(name = "AvailabilityPeriod")
 	protected AvailabilityPeriod availabilityPeriod;
 	@XmlElement(name = "ImageSize")
@@ -80,16 +76,12 @@ public class Policy implements Serializable {
 	@Override
 	public int hashCode() {
 		int hashCode = 0;
-		if (getObjectContexts() != null)
-			hashCode += getObjectContexts().hashCode();
 		if (getObjectTypes() != null)
 			hashCode += getObjectTypes().hashCode();
 		if (getObjectVisibilities() != null)
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
 			hashCode += getObjectStatus().hashCode();
-		if (getObjectVersion() != null)
-			hashCode += getObjectVersion().hashCode();
 		if (availabilityPeriod != null)
 			hashCode += availabilityPeriod.hashCode();
 		if (imageSize != null)
@@ -157,20 +149,7 @@ public class Policy implements Serializable {
 	public ObjectTypes getObjectTypes() {
 		return objectTypes;
 	}
-	/**
-	 * @param objectContexts the objectContexts to set
-	 */
-	public  void setObjectContexts(ObjectContexts value) {
-		this.objectContexts = value;
-	}
-
-	/**
-	 * @return the objectContexts
-	 */
-	public ObjectContexts getObjectContexts() {
-		return objectContexts;
-	}
-
+	
 	/**
 	 * @param objectStatus the objectStatus to set
 	 */
@@ -183,20 +162,6 @@ public class Policy implements Serializable {
 	 */
 	public ObjectStatus getObjectStatus() {
 		return objectStatus;
-	}
-
-	/**
-	 * @param objectVersion the objectVersion to set
-	 */
-	public void setObjectVersion(ObjectVersion value) {
-		this.objectVersion = value;
-	}
-
-	/**
-	 * @return the objectVersion
-	 */
-	public ObjectVersion getObjectVersion() {
-		return objectVersion;
 	}
 
 	/**

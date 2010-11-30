@@ -429,8 +429,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return ;
 			
+			//GetRecords is not supported in GET request
 			if(currentOperation.equalsIgnoreCase("GetRecords"))
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported ","request", requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
@@ -459,18 +460,18 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 			//GetRecords
 			//TODO : check the validity of this code for the support of the GET GetRecords
-			else if(currentOperation.equalsIgnoreCase("GetRecords"))
-			{
-				dump("INFO","Start - Data Accessibility");
-				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessible())
-				{
-					cswDataManager.getAccessibleDataIds();
-					//Add a filter on the data id in the request
-					constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"), cswDataManager.getAccessibleDataIds());
-//					dump("INFO", "GetRecords request send : "+constraint);
-				}
-			}
+//			else if(currentOperation.equalsIgnoreCase("GetRecords"))
+//			{
+////				dump("INFO","Start - Data Accessibility");
+////				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+////				if(!cswDataManager.isAllDataAccessible())
+////				{
+////					cswDataManager.getAccessibleDataIds();
+////					//Add a filter on the data id in the request
+//////					constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"));
+//////					dump("INFO", "GetRecords request send : "+constraint);
+////				}
+//			}
 			
 			// Build the request to dispatch
 			parameterNames = req.getParameterNames();
@@ -573,10 +574,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			dump("SYSTEM", "RequestOperation", currentOperation);
 			
-			//Use for the GetRecords request
-//			requestedOutputSchema = rh.getOutputSchema();
-//			requestedResutlType = rh.getResultType();
-
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return;

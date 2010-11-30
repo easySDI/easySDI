@@ -46,10 +46,9 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isAllDataAccessible ()
 	{
-		if(    (policy.getObjectStatus() == null || policy.getObjectStatus().isAll()) 
-			&& (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
-			&& (policy.getObjectContexts()== null || policy.getObjectContexts().isAll())
-			&& ( policy.getObjectVersion() == null || policy.getObjectVersion().getVersionModes().contains("all")))
+		if(     (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
 		{
 			return true;
 		}
@@ -82,7 +81,8 @@ public class CSWProxyDataAccessibilityManager {
 	public boolean isObjectAccessible (String dataId) 
 	{
 		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
-				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll()))
+				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+				&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
 		{
 			return true;
 		}
@@ -245,100 +245,6 @@ public class CSWProxyDataAccessibilityManager {
 				}
 			}
 			return false;
-			
-			
-					
-//			for (int i = 0 ; i<allowedStatus.size() ; i++)
-//			{
-//				if(("last").equalsIgnoreCase(allowedStatus.get(i).getVersion()))
-//				{
-////					List<Status>  allowedObjectStatus = policy.getObjectStatus().getStatus();
-////					for (int j = 0 ; j<allowedObjectStatus.size() ; j++)
-////					{
-////						if(allowedObjectStatus.get(j).getStatus().equalsIgnoreCase("published"))
-////								continue;
-////						listObjectStatus += "'"+ allowedObjectStatus.get(j).getStatus()+"'";
-////						if(j != allowedObjectStatus.size()-1)
-////						{
-////							listObjectStatus += ",";
-////						}
-////					}
-//					
-//					
-//					//request with condition on last published metadata
-//					String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
-//					queryVersion +=	"FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
-//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_objectversion ov ON ov.metadata_id = m.id ";
-//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_object o ON o.id = ov.object_id ";
-//					queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
-//					queryVersion +=	" WHERE (ms.code='published' ";
-//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
-//					queryVersion +=	" AND m.published <=CURDATE() )";
-//					queryVersion +=	" OR ( ms.code='archived' ";
-//					queryVersion +=	" AND o.id = (SELECT object_id FROM "+ joomlaProvider.getPrefix() +"sdi_objectversion WHERE metadata_id = (SELECT id FROM "+ joomlaProvider.getPrefix() +"sdi_metadata WHERE guid = '"+dataId+"')) ";
-//					queryVersion +=	" AND m.published <=CURDATE() AND m.archived > CURDATE())";
-//					queryVersion +=	" OR ms.code IN ("+listObjectStatus+") ";
-//					queryVersion +=	" ORDER BY m.published DESC ";
-//					queryVersion +=	" LIMIT 0,1 ";
-//					try
-//					{
-//						Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
-//						if(results.containsValue(dataId))
-//						{
-//							return true;
-//						}
-//						else
-//						{
-//							try
-//							{
-//								setDataIdVersionAccessible((String) results.get("guid"));
-//								return false;
-//							}
-//							catch (Exception ex)
-//							{
-//								return false;
-//							}
-//						}
-//					}
-//					catch (Exception ex)
-//					{
-//						return false;
-//					}
-//				}
-//			}
-			//No 'last' condition
-//			List<Status>  allowedObjectStatus = policy.getObjectStatus().getStatus();
-//			for (int i = 0 ; i<allowedObjectStatus.size() ; i++)
-//			{
-//				listObjectStatus += "'"+ allowedObjectStatus.get(i).getStatus()+"'";
-//				if(i != allowedObjectStatus.size()-1)
-//				{
-//					listObjectStatus += ",";
-//				}
-//			}
-//			String queryVersion= "SELECT  m.guid as guid, m.published  as title ";
-//			queryVersion +=	" FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m ";
-//			queryVersion +=	" INNER JOIN "+ joomlaProvider.getPrefix() +"sdi_list_metadatastate ms ON m.metadatastate_id=ms.id ";
-//			queryVersion +=	" WHERE ms.code IN ("+listObjectStatus+ ") ";
-//			queryVersion +=	" AND m.guid = '"+dataId+"' ";
-//			queryVersion +=	" LIMIT 0,1 ";
-//			try
-//			{
-//				Map<String, Object> results= joomlaProvider.sjt.queryForMap(queryVersion);
-//				if(results.containsValue(dataId))
-//				{
-//					return true;
-//				}
-//				else
-//				{
-//					return false;
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				return false;
-//			}
-//		}
 		}
 		return true;
 	}
@@ -552,6 +458,11 @@ public class CSWProxyDataAccessibilityManager {
 					final_metadata_ids.addAll(joomlaProvider.sjt.queryForList(query));
 			}
 		}
+		else
+		{
+			final_metadata_ids = metadata_ids;
+		}
+		
 		return final_metadata_ids;
 	}
 	
@@ -674,91 +585,5 @@ public class CSWProxyDataAccessibilityManager {
 			return null;
 		}
 	}
-	
-	public String addFilterOnDataAccessible (String ogcSearchFilter, String param,  List<Map<String,Object>> ids)
-	{
-		
-//		try 
-//		{
-//			//Document builder
-//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//			dbf.setNamespaceAware(true);
-//			DocumentBuilder db;
-//			db = dbf.newDocumentBuilder();
-//			InputStream xml = new StringBufferInputStream(param);
-//			Document doc = db.parse(xml);
-//			doc.getDocumentElement().normalize();
-//			
-//			
-//			String docPrefix = doc.getDocumentElement().getPrefix();
-//			String docUri = doc.getDocumentElement().getNamespaceURI();
-//			if(docPrefix != null)
-//				docPrefix = docPrefix+":";
-//			else
-//				docPrefix ="";
-//			
-//			Node filterNode = null;
-//				
-//			NodeList filterNodes = doc.getElementsByTagNameNS("*", "Filter");
-//			if(filterNodes.getLength() == 0)
-//			{
-//				//Create filter node
-//				filterNode = doc.createElementNS("http://www.opengis.net/ogc", "Filter");
-//			}
-//			else
-//			{
-//				filterNode = doc.getElementsByTagNameNS("*", "Filter").item(0);
-//			}
-//			
-//			
-//			//<Filter>
-//			String uri =  filterNode.getNamespaceURI();
-//			String prefix = filterNode.getPrefix();
-//			
-//			if(prefix == null)
-//				prefix = "";
-//			else
-//				prefix = prefix+":";
-//			
-//			//<And>
-//			//Get the "And" Node
-//			NodeList filterChildNodes =  filterNode.getChildNodes();
-//			Boolean isAndExists = false;
-//			Node and = null;
-//			for (int i = 0 ; i< filterChildNodes.getLength() ; i++)
-//			{
-//				if(("And").equalsIgnoreCase(filterChildNodes.item(i).getLocalName()))
-//				{
-//					isAndExists = true;
-//					and = filterChildNodes.item(i);
-//					break;
-//				}
-//			}			
-//			//Create the and node if not already exists
-//			if(!isAndExists)
-//			{
-//				and = buildAndNodeTofilterOnDataID(doc,uri,prefix,filterChildNodes, filterNode);
-//			}
-//			
-//			//<Or>
-//			//Add the "Or" node
-//			and.appendChild(buildOrNodeToFilterOnDataId(ogcSearchFilter, doc, uri,prefix, ids));
-//			
-//			//Return
-//			DOMSource domSource = new DOMSource(doc);
-//			StringWriter writer = new StringWriter();
-//			StreamResult result = new StreamResult(writer);
-//			TransformerFactory tf = TransformerFactory.newInstance();
-//			Transformer transformer = tf.newTransformer();
-//			transformer.transform(domSource, result);
-//			String constraint = writer.toString().substring(38);
-//			return constraint;
-//		} 
-//		catch (Exception e) 
-//		{
-//			e.printStackTrace();
-//		}
-		
-		return param;
-	}
+
 }
