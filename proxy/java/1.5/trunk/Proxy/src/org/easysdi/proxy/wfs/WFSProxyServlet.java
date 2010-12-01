@@ -89,6 +89,7 @@ import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
 import org.geotools.xml.schema.Schema;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -534,7 +535,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			String currentOperation = rh.getOperation();
 
 			String user = "";
-			Principal principal = req.getUserPrincipal();
+			Principal principal = SecurityContextHolder.getContext().getAuthentication();
 			if (principal != null) {
 				user = principal.getName();
 			}
@@ -1107,8 +1108,8 @@ public class WFSProxyServlet extends ProxyServlet {
 			
 			
 			String user = "";
-			if (req.getUserPrincipal() != null) {
-				user = req.getUserPrincipal().getName();
+			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+				user = SecurityContextHolder.getContext().getAuthentication().getName();
 			}
 			
 //			if (hasPolicy) {
@@ -2280,8 +2281,8 @@ public class WFSProxyServlet extends ProxyServlet {
 			// spécifié par l'utilisateur
 			String userXsltPath = getConfiguration().getXsltPath();
 
-			if (req.getUserPrincipal() != null) {
-				userXsltPath = userXsltPath + "/" + req.getUserPrincipal().getName() + "/";
+			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";

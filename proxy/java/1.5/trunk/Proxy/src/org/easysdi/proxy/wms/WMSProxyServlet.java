@@ -98,6 +98,7 @@ import org.geotools.xml.handlers.DocumentHandler;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -200,8 +201,8 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		try {
 			String user = "";
-			if (req.getUserPrincipal() != null) {
-				user = req.getUserPrincipal().getName();
+			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+				user = SecurityContextHolder.getContext().getAuthentication().getName();
 			}
 
 			String url = getServletUrl(req);
@@ -692,8 +693,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Aucun serveur n'a retourné d'exception ou le mode de gestion des exceptions est "permissif"
 			// Vérifie et prépare l'application d'un fichier xslt utilisateur
 			String userXsltPath = getConfiguration().getXsltPath();
-			if (req.getUserPrincipal() != null) {
-				userXsltPath = userXsltPath + "/" + req.getUserPrincipal().getName() + "/";
+			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
@@ -1418,8 +1419,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			//-- HVH
 
 			String user = "";
-			if (req.getUserPrincipal() != null) {
-				user = req.getUserPrincipal().getName();
+			if (SecurityContextHolder.getContext().getAuthentication()!= null) {
+				user = SecurityContextHolder.getContext().getAuthentication().getName();
 			}
 
 			// Debug tb 11.11.2009

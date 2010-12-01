@@ -79,6 +79,7 @@ import org.easysdi.xml.handler.RequestHandler;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -186,9 +187,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		try 
 		{
 			String userXsltPath = getConfiguration().getXsltPath();
-			if (req.getUserPrincipal() != null) 
+			if (SecurityContextHolder.getContext().getAuthentication() != null) 
 			{
-				userXsltPath = userXsltPath + "/" + req.getUserPrincipal().getName() + "/";
+				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
 			}
 
 			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";

@@ -1,11 +1,9 @@
 package org.easysdi.proxy.ehcache;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -32,12 +30,11 @@ import net.sf.ehcache.constructs.web.filter.FilterNonReentrantException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 
 import org.easysdi.proxy.policy.Policy;
-import org.easysdi.xml.handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
@@ -152,7 +149,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		String servletName = httpRequest.getPathInfo().substring(1);
 		configCache = cm.getCache("configCache");
 		String user = null;
-		Principal principal = httpRequest.getUserPrincipal();
+		Principal principal = SecurityContextHolder.getContext().getAuthentication();
 		if (principal != null)
 			user = principal.getName();
 		Element policyE = configCache.get(servletName + user + "policyFile");
@@ -193,7 +190,24 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		if(("GetMap").equalsIgnoreCase(operationValue)){
 			cacheAllowed = bCache;
 		}else{
-			cacheAllowed = (request.isUserInRole("EASYSDI_CACHE"));
+			//HVH - 01.12.2010
+			//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder
+			//to get the Authentication (httpRequest.getUserPrincipal() returns null in the case of anonymous authentication).
+			//For the same reasons, we can't use httpRequest.isUserInRole() which always returns false for anonymous user.
+			Authentication  principal = SecurityContextHolder.getContext().getAuthentication();
+			if ((principal == null)) {
+			 cacheAllowed = false;
+	        }
+	        Collection<GrantedAuthority> authorities = principal.getAuthorities();
+	        if (authorities == null) {
+	        	cacheAllowed = false;
+	        }
+	        for (GrantedAuthority grantedAuthority : authorities) {
+	            if (("EASYSDI_CACHE").equals(grantedAuthority.getAuthority())) {
+	            	cacheAllowed = true;
+	            	break;
+	            }
+	        } 
 		}
 		
 

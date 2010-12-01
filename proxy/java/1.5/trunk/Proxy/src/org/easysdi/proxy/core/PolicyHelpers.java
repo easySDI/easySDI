@@ -17,6 +17,7 @@
 
 package org.easysdi.proxy.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 /**
@@ -77,7 +81,7 @@ public class PolicyHelpers {
 			    	continue;
 			    }
 			    	    
-			    /*If one user is matching, then we can return the operations*/
+			    /*If one user is matching, then we can return the policy*/
 			    List<String> userList = p.getSubjects().getUser();
 		    	for (int j =0;j<userList.size();j++)
 		    	{
@@ -88,28 +92,32 @@ public class PolicyHelpers {
 		    	}
 			}
 			  
-			for (int i=0 ; i<policyList.size();i++)
-			{
-			    Policy p = policyList.get(i);
-			    
-			    if(p.getSubjects()==null)
-			    {
-			    	continue;
-			    }
-			    
-			    /*If the user is not matching , then try if  a role is matching then returns the operations*/
-			    if (req !=null)
-		    	{
-		    		List<String> roleList = p.getSubjects().getRole();
+			/*If the user is not matching , then try if  a role is matching then returns the policy*/
+			Authentication  principal = SecurityContextHolder.getContext().getAuthentication();
+			if ((principal == null)) {
+			 return null;
+	        }
+	        Collection<GrantedAuthority> authorities = principal.getAuthorities();
+	        if (authorities != null) 
+	        {
+	        	for (int i=0 ; i<policyList.size();i++)
+				{
+				    Policy p = policyList.get(i);
+				    if(p.getSubjects()==null)
+				    {
+				    	continue;
+				    }
+				    
+				   List<String> roleList = p.getSubjects().getRole();
 		    		for (int j =0;j<roleList.size();j++)
-		    		{		    
-		    			if (req.isUserInRole(roleList.get(j)))
-		    			{
-		    				return p;
-		    			}
+		    		{		 
+		    			for (GrantedAuthority grantedAuthority : authorities) {
+		    	            if (roleList.get(j).equals(grantedAuthority.getAuthority())) {
+		    	            	return p;
+		    	            }
+		    	        }
 		    		}
-		    	}	    
-			    
+			    }
 		    }
 	    }
 	

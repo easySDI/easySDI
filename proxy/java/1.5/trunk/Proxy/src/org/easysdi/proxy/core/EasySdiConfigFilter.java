@@ -27,6 +27,7 @@ import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -98,7 +99,13 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		long plastmodified = policyF.lastModified();
 
 		String user = null;
-		Principal principal = req.getUserPrincipal();
+		
+		//HVH - 01.12.2010
+		//To allow the anonymous user to be handled as others users, we need to get throw the SecurityContextHolder
+		//to get the Authentication (httpRequest.getUserPrincipal() returns null in the case of anonymous authentication).
+		Principal principal = SecurityContextHolder.getContext().getAuthentication();
+		//Principal principal = req.getUserPrincipal();
+		
 		if (principal != null)
 			user = principal.getName();
 

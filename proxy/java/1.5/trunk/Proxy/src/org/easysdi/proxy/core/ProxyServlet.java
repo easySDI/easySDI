@@ -77,6 +77,7 @@ import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -369,8 +370,8 @@ public abstract class ProxyServlet extends HttpServlet {
 	private void writeInLog(String date, HttpServletRequest req) {
 		boolean newLog = false;
 		String u = "";
-		if (req.getUserPrincipal() != null) {
-			u = req.getUserPrincipal().getName();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			u = SecurityContextHolder.getContext().getAuthentication().getName();
 		}
 
 		try {

@@ -17,7 +17,6 @@
 
 package org.easysdi.proxy.core;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
@@ -42,8 +41,8 @@ import org.easysdi.xml.documents.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.xml.sax.SAXException;
 
 /**
  * Reads the configuration file and dispatch the request to the right class.
@@ -168,9 +167,9 @@ public class OgcProxyServlet extends HttpServlet {
 		if (maxRequestByUser == 0)
 			return;
 		// No user connected, cannot restrict the connections
-		if (req.getUserPrincipal() == null)
+		if (SecurityContextHolder.getContext().getAuthentication() == null)
 			return;
-		String userPrincipalName = req.getUserPrincipal().getName();
+		String userPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
 		if (userPrincipalName == null)
 			return;
 
@@ -214,9 +213,9 @@ public class OgcProxyServlet extends HttpServlet {
 		if (maxRequestByUser == 0)
 			return;
 		// No user connected, cannot restrict the connections
-		if (req.getUserPrincipal() == null)
+		if (SecurityContextHolder.getContext().getAuthentication() == null)
 			return;
-		String userPrincipalName = req.getUserPrincipal().getName();
+		String userPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
 		if (userPrincipalName == null)
 			return;
 
@@ -322,7 +321,7 @@ public class OgcProxyServlet extends HttpServlet {
 			// File policyF = new File(filePath).getAbsoluteFile();
 			// long plastmodified = policyF.lastModified();
 			String user = null;
-			Principal principal = req.getUserPrincipal();
+			Principal principal = SecurityContextHolder.getContext().getAuthentication();
 			if (principal != null)
 				user = principal.getName();
 			Element policyE = configCache.get(servletName + user + "policyFile");
