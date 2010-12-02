@@ -807,6 +807,7 @@ function savePolicy($xml){
 		
 							if (strlen($localFilter)>0)
 							{
+								//BBOX
 								$theLayer->Filter = $localFilter;
 							}
 						}

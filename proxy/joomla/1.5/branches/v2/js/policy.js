@@ -290,3 +290,4 @@ function disableVersionModeRadio()
 	document.getElementsByName('objectversion_mode')[1].disabled = check;
 	
 }
+

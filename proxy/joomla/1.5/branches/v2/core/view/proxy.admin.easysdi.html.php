@@ -1030,9 +1030,62 @@ function submitbutton(pressbutton)
 			}
 			else
 			{
+				//Calculate BBOX
+				var server = 0;
+				var layer = 0;
+				while (document.getElementById('LocalFilter@'+server+'@'+layer) != null)
+				{
+					while (document.getElementById('LocalFilter@'+server+'@'+layer) != null)
+					{
+						if(document.getElementById('LocalFilter@'+server+'@'+layer).value != "")
+						{
+							var value = document.getElementById('LocalFilter@'+server+'@'+layer).value;
+							
+							if (window.ActiveXObject){
+							var doc=new ActiveXObject('Microsoft.XMLDOM');
+							doc.async='false';
+							doc.loadXML(document.getElementById('LocalFilter@'+server+'@'+layer).value);
+							} else {
+							var parser=new DOMParser();
+							var doc=parser.parseFromString(document.getElementById('LocalFilter@'+server+'@'+layer).value,'text/xml');
+							}
+
+							
+							var gmlOptions = {
+					                featureName: "Polygon",
+					                gmlns: "http://www.opengis.net/gml"};
+							 
+					         var formatOptions = {
+					             featureType: "tma",
+					             featureNS: "http://www.flysafe-eu.org/wims",
+					             geometryName: "geometry",
+					             srsName: "urn:x-ogc:def:crs:EPSG:21781",
+					             schemaLocation: "http://www.flysafe-eu.org/wims memo.xsd"
+					         }
+							var theParser = new OpenLayers.Format.GML(gmlOptions);
+								
+					
+							    var features = theParser.read(value);
+								
+//							var poly = theParser.parseGeometry.polygon(doc.getElementsByTagName('gml:Polygon')[0]);
+//							var bbox = poly.getBounds().toBBOX(6,0);
+//							alert(bbox);
+break;
+						}
+						layer ++;
+					}
+					server ++;
+					break;
+				}
+				
+			
 				submitform(pressbutton);
 			}
 		}
+
+		
+		
+		
 		else if (document.getElementById('remoteServer0') != null) //Just for WFS policy
 		{
 			if(geoQueryValid.length != 0)
