@@ -1040,35 +1040,51 @@ function submitbutton(pressbutton)
 						if(document.getElementById('LocalFilter@'+server+'@'+layer).value != "")
 						{
 							var value = document.getElementById('LocalFilter@'+server+'@'+layer).value;
-							
+							//Get the srs name
+							var index = value.indexOf("srsName=\"", 0);
+							var indexEnd = value.indexOf("\"", index+9) ;
+							var srsValue = value.substring(index+9,indexEnd);
+							//Load filter as DOMDocument
 							if (window.ActiveXObject){
-							var doc=new ActiveXObject('Microsoft.XMLDOM');
-							doc.async='false';
-							doc.loadXML(document.getElementById('LocalFilter@'+server+'@'+layer).value);
+								var doc=new ActiveXObject('Microsoft.XMLDOM');
+								doc.async='false';
+								doc.loadXML(document.getElementById('LocalFilter@'+server+'@'+layer).value);
 							} else {
-							var parser=new DOMParser();
-							var doc=parser.parseFromString(document.getElementById('LocalFilter@'+server+'@'+layer).value,'text/xml');
+								var parser=new DOMParser();
+								var doc=parser.parseFromString(document.getElementById('LocalFilter@'+server+'@'+layer).value,'text/xml');
 							}
 
 							
-							var gmlOptions = {
-					                featureName: "Polygon",
-					                gmlns: "http://www.opengis.net/gml"};
-							 
-					         var formatOptions = {
-					             featureType: "tma",
-					             featureNS: "http://www.flysafe-eu.org/wims",
-					             geometryName: "geometry",
-					             srsName: "urn:x-ogc:def:crs:EPSG:21781",
-					             schemaLocation: "http://www.flysafe-eu.org/wims memo.xsd"
-					         }
+							
+
+								var gmlOptions = {
+					                featureName: "FeatureTest",
+					                gmlns: "http://www.opengis.net/gml",
+					                externalProjection:new OpenLayers.Projection(srsValue),
+					                internalProjection:new OpenLayers.Projection('EPSG:4326')};
+						 alert("wait");
 							var theParser = new OpenLayers.Format.GML(gmlOptions);
-								
-					
-							    var features = theParser.read(value);
-								
-//							var poly = theParser.parseGeometry.polygon(doc.getElementsByTagName('gml:Polygon')[0]);
-//							var bbox = poly.getBounds().toBBOX(6,0);
+//								
+//					
+							    var features = theParser.read(doc);
+							    var bbox = features[0].geometry.getBounds().toBBOX();
+
+							 // creating source and destination Proj4js objects
+							 // once initialized, these may be re-used as often as needed
+							
+//							 var source = new Proj4js.Proj('EPSG:21781');    //source coordinates will be in Longitude/Latitude
+//							 var dest = new Proj4js.Proj('EPSG:4326');     //destination coordinates in LCC, south of France
+//					
+//
+//							 // transforming point coordinates
+//							 var p = new Proj4js.Point(490000,80000);   //any object will do as long as it has 'x' and 'y' properties
+//							 Proj4js.transform(source, dest, p);      //do the transformation.  x and y are modified in place
+							 							    
+//
+//							    var bbox = features[0].bounds.toBBOX(6, true);
+//								var theParser = new OpenLayers.Format.GML();
+//							var poly = theParser.ParsePolygon(doc.getElementsByTagName('gml:Polygon')[0]);
+//							var bbox = poly.getBounds().toBBOX();
 //							alert(bbox);
 break;
 						}
