@@ -90,6 +90,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/js/policy.js' );
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js' );
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js' );
+		
 		
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml,true);
@@ -134,7 +136,9 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/js/policy.js' );
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js' );
-
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js' );
+		
+		
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml);
 		break;

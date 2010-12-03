@@ -1044,30 +1044,27 @@ function submitbutton(pressbutton)
 							var index = value.indexOf("srsName=\"", 0);
 							var indexEnd = value.indexOf("\"", index+9) ;
 							var srsValue = value.substring(index+9,indexEnd);
+
+							//Complete filter GML
+							value = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureTest xmlns:gml=\"http://www.opengis.net/gml\">" + value + "</gml:FeatureTest></gml:featureMembers>";
 							//Load filter as DOMDocument
 							if (window.ActiveXObject){
 								var doc=new ActiveXObject('Microsoft.XMLDOM');
 								doc.async='false';
-								doc.loadXML(document.getElementById('LocalFilter@'+server+'@'+layer).value);
+								doc.loadXML(value);
 							} else {
 								var parser=new DOMParser();
-								var doc=parser.parseFromString(document.getElementById('LocalFilter@'+server+'@'+layer).value,'text/xml');
+								var doc=parser.parseFromString(value);
 							}
 
 							
-							
-
 								var gmlOptions = {
 					                featureName: "FeatureTest",
-					                gmlns: "http://www.opengis.net/gml",
-					                externalProjection:new OpenLayers.Projection(srsValue),
-					                internalProjection:new OpenLayers.Projection('EPSG:4326')};
-						 alert("wait");
+					                gmlns: "http://www.opengis.net/gml"};
+						 
 							var theParser = new OpenLayers.Format.GML(gmlOptions);
-//								
-//					
-							    var features = theParser.read(doc);
-							    var bbox = features[0].geometry.getBounds().toBBOX();
+						    var features = theParser.read(doc);
+							var bbox = features[0].geometry.getBounds().toBBOX();
 
 							 // creating source and destination Proj4js objects
 							 // once initialized, these may be re-used as often as needed
