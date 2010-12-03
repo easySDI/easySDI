@@ -1054,7 +1054,7 @@ function submitbutton(pressbutton)
 								doc.loadXML(value);
 							} else {
 								var parser=new DOMParser();
-								var doc=parser.parseFromString(value);
+								var doc=parser.parseFromString(value,'text/xml');
 							}
 
 							
