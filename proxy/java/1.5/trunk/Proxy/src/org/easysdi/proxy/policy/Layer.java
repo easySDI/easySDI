@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "name", "scaleMin", "scaleMax", "filter","LatLonBoundingBox" })
+@XmlType(name = "", propOrder = { "name", "scaleMin", "scaleMax", "filter","LatLonBoundingBox","BoundingBox" })
 @XmlRootElement(name = "Layer")
 public class Layer implements Serializable {
 
@@ -56,6 +56,8 @@ public class Layer implements Serializable {
 	protected Filter filter;
 	@XmlElement(name = "LatLonBoundingBox")
 	protected String LatLonBoundingBox;
+	@XmlElement(name = "BoundingBox")
+	protected BoundingBox BoundingBox;
 
 	@Override
 	public int hashCode() {
@@ -70,6 +72,8 @@ public class Layer implements Serializable {
 			hashCode += filter.hashCode();
 		if (LatLonBoundingBox != null)
 			hashCode += LatLonBoundingBox.hashCode();
+		if (BoundingBox != null)
+			hashCode += BoundingBox.hashCode();
 		return hashCode;
 	}
 
@@ -158,9 +162,9 @@ public class Layer implements Serializable {
 	}
 	
 	/**
-	 * Gets the value of the filter property.
+	 * Gets the value of the LatLonBoundingBox property.
 	 * 
-	 * @return possible object is {@link Filter }
+	 * @return possible object is {@link String }
 	 * 
 	 */
 	public String getLatLonBoundingBox() {
@@ -168,14 +172,35 @@ public class Layer implements Serializable {
 	}
 
 	/**
-	 * Sets the value of the filter property.
+	 * Sets the value of the LatLonBoundingBox property.
 	 * 
 	 * @param value
-	 *            allowed object is {@link Filter }
+	 *            allowed object is {@link String }
 	 * 
 	 */
 	public void setLatLonBoundingBox(String value) {
 		this.LatLonBoundingBox = value;
+	}
+	
+	/**
+	 * Gets the value of the name property.
+	 * 
+	 * @return possible object is {@link BoundingBox }
+	 * 
+	 */
+	public BoundingBox getBoundingBox() {
+		return this.BoundingBox;
+	}
+
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link BoundingBox }
+	 * 
+	 */
+	public void setBoundingBox(BoundingBox value) {
+		this.BoundingBox = value;
 	}
 
 }

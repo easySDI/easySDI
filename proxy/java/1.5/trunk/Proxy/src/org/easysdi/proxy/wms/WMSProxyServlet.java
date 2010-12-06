@@ -76,7 +76,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.xerces.dom.DeferredElementImpl;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.csw.CSWProxyMetadataConstraintFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.policy.Operation;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
@@ -96,6 +98,10 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.handlers.DocumentHandler;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.jdom.filter.Filter;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -664,6 +670,49 @@ public class WMSProxyServlet extends ProxyServlet {
 			return false;
 		}
 	}
+	private void calculateLatLonBBOX ()
+	{
+		
+	}
+	
+	private void rewriteBBOX(Iterator it, org.jdom.Document documentParent)
+	{
+		while(it.hasNext())
+		{
+    		org.jdom.Element elementLayer = (org.jdom.Element)it.next();
+    		List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
+    		if(llBBOXElements.size() != 0)
+    		{
+	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
+//	    		BoundingBox bbox =  policy.getServers().getServer().get(0).getLayers().getLayer().get(0).getBoundingBox();
+	    		llBBOX.removeAttribute("minx");
+	    		llBBOX.setAttribute("minx", "12");
+	    		llBBOX.removeAttribute("miny");
+	    		llBBOX.setAttribute("miny", "12");
+	    		llBBOX.removeAttribute("maxx");
+	    		llBBOX.setAttribute("maxx", "12");
+	    		llBBOX.removeAttribute("maxy");
+	    		llBBOX.setAttribute("maxy", "12");
+				
+				
+    		}
+			
+			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
+			for (int i = 0 ; i < srsBBOXElements.size() ; i++)
+			{
+				org.jdom.Element srsBBOX = (org.jdom.Element) srsBBOXElements.get(i);
+				srsBBOX= srsBBOX.setAttribute("minx", "12");
+				srsBBOX= srsBBOX.setAttribute("miny", "12");
+				srsBBOX= srsBBOX.setAttribute("maxx", "12");
+				srsBBOX= srsBBOX.setAttribute("maxy", "12");
+			}
+			
+			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+			Iterator itL = elementLayer.getDescendants(filtre);
+			rewriteBBOX(itL, documentParent);
+			
+		}
+	}
 	
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
 
@@ -786,6 +835,23 @@ public class WMSProxyServlet extends ProxyServlet {
 					}
 					dump("DEBUG","transform end apply XSLT on service metadata");
 					dump("transform end GetCapabilities operation");
+					
+					//Réécriture des BBOX
+					ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
+					SAXBuilder sxb = new SAXBuilder();
+					org.jdom.Document  docParent = sxb.build(in);
+					org.jdom.Element racine = docParent.getRootElement();
+					
+					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+			    	Iterator it= docParent.getDescendants(filtre);
+			    	rewriteBBOX(it, docParent);
+			    	
+			    	//Return
+					XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+					ByteArrayOutputStream result =new ByteArrayOutputStream ();
+					sortie.output(docParent,result );
+					tempOut = result;
+					
 				}
 				// Pour une requête utilisateur de type: Map
 				// ************************************************************

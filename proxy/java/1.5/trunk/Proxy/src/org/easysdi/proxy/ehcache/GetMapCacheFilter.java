@@ -113,6 +113,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 		}
 		else if (("GetRecords").equalsIgnoreCase(operationValue) ||
 				    ("DescribeRecord").equalsIgnoreCase(operationValue)||
+				    ("GetCapabilities").equalsIgnoreCase(operationValue)||
 					("GetRecordById").equalsIgnoreCase(operationValue)||
 					("GetFeature").equalsIgnoreCase(operationValue) ||
 					("GetFeatureInfo").equalsIgnoreCase(operationValue)||
