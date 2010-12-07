@@ -829,22 +829,35 @@ public class WMSProxyServlet extends ProxyServlet {
 	    	    		llBBOX.removeAttribute("maxy");
 	    	    		llBBOX.setAttribute("maxy", wgsMaxy);
 	        		}
+	        		else
+	        		{
+	        			//create element
+	        		}
 	    			
 	        		//Srs Boundingbox
 	    			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
 	    			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
 	    			{
 	    				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
-	    				
-	    				CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
-	    				MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
-	    				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
-	    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-        				
-	    				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
-	    				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
-	    				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
-	    				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+	    				if(BBOX.getAttributeValue("SRS").equals(srsBBOX.getSRS()))
+	    				{
+	    					BBOX.setAttribute("minx", srsBBOX.getMinx());
+		    				BBOX.setAttribute("miny", srsBBOX.getMiny());
+		    				BBOX.setAttribute("maxx", srsBBOX.getMaxx());
+		    				BBOX.setAttribute("maxy", srsBBOX.getMaxy());
+	    				}
+	    				else
+	    				{
+		    				CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+		    				MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
+		    				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+		    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+	        				
+		    				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
+		    				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
+		    				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
+		    				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+	    				}
 	    			}
 	    			
 	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
