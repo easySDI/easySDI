@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -86,6 +87,8 @@ import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.AttributeTypeFactory;
+import org.geotools.feature.Feature;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureType;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.GeometryAttributeType;
@@ -102,8 +105,12 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -115,15 +122,19 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.IntersectionMatrix;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
+
 
 /**
  * If no xslt is found in the path, generate the default one that will change
@@ -672,11 +683,74 @@ public class WMSProxyServlet extends ProxyServlet {
 	}
 	private void calculateLatLonBBOX ()
 	{
-		
+		//create the parser with the gml 2.0 configuration
+		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
+		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
+
+		//the xml instance document above
+		InputStream xml = null;
+		try {
+			xml = new ByteArrayInputStream(policy.getServers().getServer().get(0).getLayers().getLayer().get(0).getFilter().getContent().getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		//parse
+		try 
+		{
+			Geometry obj =  (Geometry)parser.parse( xml );
+			Geometry bbox = obj.getEnvelope();
+			if (bbox.getGeometryType().equalsIgnoreCase("polygon"))
+			{
+				CoordinateReferenceSystem sourceCRS;
+				try {
+					sourceCRS = CRS.decode("EPSG:"+String.valueOf(bbox.getSRID()));
+					CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+					MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+					Geometry targetGeometry = JTS.transform( bbox, transform);
+				 
+					System.out.println((bbox.getEnvelopeInternal()).getMinX());
+					System.out.println((targetGeometry.getEnvelopeInternal()).getMinX());
+				
+				} catch (NoSuchAuthorityCodeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (FactoryException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (MismatchedDimensionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TransformException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+//			FeatureCollection fc = (FeatureCollection) parser.parse( xml );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		for ( Iterator i = fc.iterator(); i.hasNext(); ) {
+//		  Feature f = (Feature) i.next();
+//
+//		  Point point = (Point) f.getDefaultGeometry();
+//		  String name = (String) f.getAttribute( "name" );
+//		}
 	}
 	
 	private void rewriteBBOX(Iterator it, org.jdom.Document documentParent)
 	{
+		calculateLatLonBBOX();
 		while(it.hasNext())
 		{
     		org.jdom.Element elementLayer = (org.jdom.Element)it.next();
