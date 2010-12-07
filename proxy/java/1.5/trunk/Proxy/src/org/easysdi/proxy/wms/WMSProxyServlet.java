@@ -752,18 +752,8 @@ public class WMSProxyServlet extends ProxyServlet {
 //		}
 	}
 	
-	private void rewriteBBOX(Iterator it, org.jdom.Document documentParent)
+	private void rewriteBBOX(Iterator it,CoordinateReferenceSystem wgsCRS)
 	{
-		CoordinateReferenceSystem wgsCRS = null;
-		try {
-			wgsCRS = CRS.decode("EPSG:4326");
-		} catch (NoSuchAuthorityCodeException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (FactoryException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		String wgsMaxx;
 		String wgsMaxy;
 		String wgsMinx;
@@ -862,7 +852,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    			
 	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
 	    			Iterator itL = elementLayer.getDescendants(filtre);
-	    			rewriteBBOX(itL, documentParent);
+	    			rewriteBBOX(itL, wgsCRS);
     			}
     			catch (Exception e)
     			{
@@ -1006,7 +996,17 @@ public class WMSProxyServlet extends ProxyServlet {
 					
 					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
 			    	Iterator it= docParent.getDescendants(filtre);
-			    	rewriteBBOX(it, docParent);
+			    	CoordinateReferenceSystem wgsCRS = null;
+					try {
+						wgsCRS = CRS.decode("EPSG:4326");
+					} catch (NoSuchAuthorityCodeException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (FactoryException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+			    	rewriteBBOX(it, wgsCRS);
 			    	
 			    	//Return
 					XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
