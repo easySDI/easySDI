@@ -156,4 +156,25 @@ public class BoundingBox implements Serializable {
 		this.maxy = value;
 	}
 	
+	/**
+	 * Gets the value of the srs property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getSRS() {
+		return SRS;
+	}
+
+	/**
+	 * Sets the value of the srs property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setSRS(String value) {
+		this.SRS = value;
+	}
+	
 }
