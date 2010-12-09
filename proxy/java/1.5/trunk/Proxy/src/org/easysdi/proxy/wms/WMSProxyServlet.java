@@ -753,18 +753,25 @@ public class WMSProxyServlet extends ProxyServlet {
 ////		}
 //	}
 	
-	private void rewriteBBOX(List<org.jdom.Element> layersList,CoordinateReferenceSystem wgsCRS)
+	private void rewriteBBOX(List<org.jdom.Element> layersList,CoordinateReferenceSystem wgsCRS, String version)
 	{
 		String wgsMaxx;
 		String wgsMaxy;
 		String wgsMinx;
 		String wgsMiny;
+		String srsAttributeName = "SRS";
+		if(version.equalsIgnoreCase("1.3.0"))
+		{
+			srsAttributeName = "CRS";
+		}
+		
+		
 		for(int l = 0 ; l < layersList.size();l++)
 		{
     		org.jdom.Element elementLayer = (org.jdom.Element)layersList.get(l);
     		
     		List<Server> serverList = policy.getServers().getServer();
-    		List<Element> listName = elementLayer.getChildren("Name");
+    		List listName = elementLayer.getChildren("Name");
     		if(listName.size() == 0)
     		{
     			continue;
@@ -806,36 +813,44 @@ public class WMSProxyServlet extends ProxyServlet {
 	    			}
 	    			
 	    			//LatLongBoundingBox
-	    			List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
-	        		if(llBBOXElements.size() != 0)
-	        		{
-	    	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
-	    	    		llBBOX.removeAttribute("minx");
-	    	    		llBBOX.setAttribute("minx",wgsMinx);
-	    	    		llBBOX.removeAttribute("miny");
-	    	    		llBBOX.setAttribute("miny", wgsMiny);
-	    	    		llBBOX.removeAttribute("maxx");
-	    	    		llBBOX.setAttribute("maxx", wgsMaxx);
-	    	    		llBBOX.removeAttribute("maxy");
-	    	    		llBBOX.setAttribute("maxy", wgsMaxy);
-	        		}
-	        		else
-	        		{
-	        			//create element
-	        			org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
-	        			element.setAttribute("minx",wgsMinx);
-	        			element.setAttribute("miny", wgsMiny);
-	        			element.setAttribute("maxx", wgsMaxx);
-	        			element.setAttribute("maxy", wgsMaxy);
-	        			elementLayer.addContent(element);
-	           		}
+	    			if(version.equalsIgnoreCase("1.3.0"))
+	    			{
+	    				writeLatLonBBOX130(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy);
+	    			}
+	    			else
+	    			{
+	    				writeLatLonBBOX111(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy);
+	    			}
+//	    			List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
+//	        		if(llBBOXElements.size() != 0)
+//	        		{
+//	    	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
+//	    	    		llBBOX.removeAttribute("minx");
+//	    	    		llBBOX.setAttribute("minx",wgsMinx);
+//	    	    		llBBOX.removeAttribute("miny");
+//	    	    		llBBOX.setAttribute("miny", wgsMiny);
+//	    	    		llBBOX.removeAttribute("maxx");
+//	    	    		llBBOX.setAttribute("maxx", wgsMaxx);
+//	    	    		llBBOX.removeAttribute("maxy");
+//	    	    		llBBOX.setAttribute("maxy", wgsMaxy);
+//	        		}
+//	        		else
+//	        		{
+//	        			//create element
+//	        			org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
+//	        			element.setAttribute("minx",wgsMinx);
+//	        			element.setAttribute("miny", wgsMiny);
+//	        			element.setAttribute("maxx", wgsMaxx);
+//	        			element.setAttribute("maxy", wgsMaxy);
+//	        			elementLayer.addContent(element);
+//	           		}
 	    			
 	        		//Srs Boundingbox
 	    			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
 	    			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
 	    			{
 	    				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
-	    				if(BBOX.getAttributeValue("SRS").equals(srsBBOX.getSRS()))
+	    				if(BBOX.getAttributeValue(srsAttributeName).equals(srsBBOX.getSRS()))
 	    				{
 	    					BBOX.setAttribute("minx", srsBBOX.getMinx());
 		    				BBOX.setAttribute("miny", srsBBOX.getMiny());
@@ -844,7 +859,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    				}
 	    				else
 	    				{
-		    				CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+		    				CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue(srsAttributeName));
 		    				MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
 		    				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
 		    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
@@ -864,7 +879,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			    		sublayersList.add((org.jdom.Element)itL.next());
 					}
 			    	if(sublayersList.size() != 0)
-			    		rewriteBBOX(sublayersList, wgsCRS);
+			    		rewriteBBOX(sublayersList, wgsCRS, version);
     			}
     			catch (Exception e)
     			{
@@ -872,6 +887,60 @@ public class WMSProxyServlet extends ProxyServlet {
     			}
     		}
 		}
+	}
+	
+	private void writeLatLonBBOX130(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		List llBBOXElements = elementLayer.getChildren("EX_GeographicBoundingBox");
+		if(llBBOXElements.size() != 0)
+		{
+    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
+    		llBBOX.getChild("westBoundLongitude").setText(wgsMinx);
+    		llBBOX.getChild("eastBoundLongitude").setText(wgsMaxx);
+    		llBBOX.getChild("southBoundLatitude").setText(wgsMiny);
+    		llBBOX.getChild("northBoundLatitude").setText(wgsMaxy);
+		}
+		else
+		{
+			//create element
+			org.jdom.Element element = new org.jdom.Element("EX_GeographicBoundingBox");
+			org.jdom.Element wbl = new org.jdom.Element("westBoundLongitude");
+			wbl.setText(wgsMinx);
+			org.jdom.Element ebl = new org.jdom.Element("eastBoundLongitude");
+			ebl.setText(wgsMaxx);
+			org.jdom.Element sbl = new org.jdom.Element("southBoundLatitude");
+			sbl.setText(wgsMiny);
+			org.jdom.Element nbl = new org.jdom.Element("northBoundLatitude");
+			nbl.setText(wgsMaxy);
+			element.addContent(wbl );
+			element.addContent(ebl );
+			element.addContent(sbl );
+			element.addContent(nbl );
+			elementLayer.addContent(element);
+   		}
+	}
+	
+	private void writeLatLonBBOX111(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
+		if(llBBOXElements.size() != 0)
+		{
+    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
+    		llBBOX.setAttribute("minx",wgsMinx);
+    		llBBOX.setAttribute("miny", wgsMiny);
+    		llBBOX.setAttribute("maxx", wgsMaxx);
+    		llBBOX.setAttribute("maxy", wgsMaxy);
+		}
+		else
+		{
+			//create element
+			org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
+			element.setAttribute("minx",wgsMinx);
+			element.setAttribute("miny", wgsMiny);
+			element.setAttribute("maxx", wgsMaxx);
+			element.setAttribute("maxy", wgsMaxy);
+			elementLayer.addContent(element);
+   		}
 	}
 	
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
@@ -1000,6 +1069,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
 					SAXBuilder sxb = new SAXBuilder();
 					org.jdom.Document  docParent = sxb.build(in);
+					String responseVersion = docParent.getRootElement().getAttribute("version").getValue();
 					org.jdom.Element racine = docParent.getRootElement();
 					
 					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
@@ -1021,7 +1091,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-				    	rewriteBBOX(layersList, wgsCRS);
+				    	rewriteBBOX(layersList, wgsCRS, responseVersion);
 			    	}
 			    	
 			    	//Return
