@@ -75,6 +75,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.collections.functors.WhileClosure;
 import org.apache.xerces.dom.DeferredElementImpl;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.csw.CSWProxyMetadataConstraintFilter;
@@ -684,84 +685,83 @@ public class WMSProxyServlet extends ProxyServlet {
 			return false;
 		}
 	}
-	private void calculateLatLonBBOX ()
-	{
-		//create the parser with the gml 2.0 configuration
-		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
-		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
-
-		//the xml instance document above
-		InputStream xml = null;
-		try {
-			xml = new ByteArrayInputStream(policy.getServers().getServer().get(0).getLayers().getLayer().get(0).getFilter().getContent().getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-		//parse
-		try 
-		{
-			Geometry obj =  (Geometry)parser.parse( xml );
-			Geometry bbox = obj.getEnvelope();
-			if (bbox.getGeometryType().equalsIgnoreCase("polygon"))
-			{
-				CoordinateReferenceSystem sourceCRS;
-				try {
-//					((DefaultReference)bbox.getUserData())
-					sourceCRS = CRS.decode("EPSG:"+String.valueOf(bbox.getSRID()));
-					CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-					MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-					Geometry targetGeometry = JTS.transform( bbox, transform);
-				 
-					System.out.println((bbox.getEnvelopeInternal()).getMinX());
-					System.out.println((targetGeometry.getEnvelopeInternal()).getMinX());
-				
-				} catch (NoSuchAuthorityCodeException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (FactoryException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				catch (MismatchedDimensionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TransformException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-//			FeatureCollection fc = (FeatureCollection) parser.parse( xml );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		for ( Iterator i = fc.iterator(); i.hasNext(); ) {
-//		  Feature f = (Feature) i.next();
+//	private void calculateLatLonBBOX ()
+//	{
+//		//create the parser with the gml 2.0 configuration
+//		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
+//		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
 //
-//		  Point point = (Point) f.getDefaultGeometry();
-//		  String name = (String) f.getAttribute( "name" );
+//		//the xml instance document above
+//		InputStream xml = null;
+//		try {
+//			xml = new ByteArrayInputStream(policy.getServers().getServer().get(0).getLayers().getLayer().get(0).getFilter().getContent().getBytes("UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}
-	}
+//	
+//		//parse
+//		try 
+//		{
+//			Geometry obj =  (Geometry)parser.parse( xml );
+//			Geometry bbox = obj.getEnvelope();
+//			if (bbox.getGeometryType().equalsIgnoreCase("polygon"))
+//			{
+//				CoordinateReferenceSystem sourceCRS;
+//				try {
+////					((DefaultReference)bbox.getUserData())
+//					sourceCRS = CRS.decode("EPSG:"+String.valueOf(bbox.getSRID()));
+//					CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+//					MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+//					Geometry targetGeometry = JTS.transform( bbox, transform);
+//				 
+//					System.out.println((bbox.getEnvelopeInternal()).getMinX());
+//					System.out.println((targetGeometry.getEnvelopeInternal()).getMinX());
+//				
+//				} catch (NoSuchAuthorityCodeException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (FactoryException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				catch (MismatchedDimensionException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (TransformException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//			
+////			FeatureCollection fc = (FeatureCollection) parser.parse( xml );
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SAXException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ParserConfigurationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+////		for ( Iterator i = fc.iterator(); i.hasNext(); ) {
+////		  Feature f = (Feature) i.next();
+////
+////		  Point point = (Point) f.getDefaultGeometry();
+////		  String name = (String) f.getAttribute( "name" );
+////		}
+//	}
 	
-	private void rewriteBBOX(Iterator it,CoordinateReferenceSystem wgsCRS)
+	private void rewriteBBOX(List<org.jdom.Element> layersList,CoordinateReferenceSystem wgsCRS)
 	{
 		String wgsMaxx;
 		String wgsMaxy;
 		String wgsMinx;
 		String wgsMiny;
-		
-		while(it.hasNext())
+		for(int l = 0 ; l < layersList.size();l++)
 		{
-    		org.jdom.Element elementLayer = (org.jdom.Element)it.next();
+    		org.jdom.Element elementLayer = (org.jdom.Element)layersList.get(l);
     		
     		List<Server> serverList = policy.getServers().getServer();
     		List<Element> listName = elementLayer.getChildren("Name");
@@ -822,7 +822,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	        		else
 	        		{
 	        			//create element
-	        		}
+	        			org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
+	        			element.setAttribute("minx",wgsMinx);
+	        			element.setAttribute("miny", wgsMiny);
+	        			element.setAttribute("maxx", wgsMaxx);
+	        			element.setAttribute("maxy", wgsMaxy);
+	        			elementLayer.addContent(element);
+	           		}
 	    			
 	        		//Srs Boundingbox
 	    			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
@@ -852,17 +858,19 @@ public class WMSProxyServlet extends ProxyServlet {
 	    			
 	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
 	    			Iterator itL = elementLayer.getDescendants(filtre);
-	    			rewriteBBOX(itL, wgsCRS);
+	    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
+			    	while(itL.hasNext())
+					{
+			    		sublayersList.add((org.jdom.Element)itL.next());
+					}
+			    	if(sublayersList.size() != 0)
+			    		rewriteBBOX(sublayersList, wgsCRS);
     			}
     			catch (Exception e)
     			{
     				
     			}
     		}
-    		
-    		
-    		
-			
 		}
 	}
 	
@@ -996,17 +1004,25 @@ public class WMSProxyServlet extends ProxyServlet {
 					
 					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
 			    	Iterator it= docParent.getDescendants(filtre);
-			    	CoordinateReferenceSystem wgsCRS = null;
-					try {
-						wgsCRS = CRS.decode("EPSG:4326");
-					} catch (NoSuchAuthorityCodeException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (FactoryException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+			    	List<org.jdom.Element> layersList = new ArrayList<org.jdom.Element>();
+			    	while(it.hasNext())
+					{
+			    		layersList.add((org.jdom.Element)it.next());
 					}
-			    	rewriteBBOX(it, wgsCRS);
+			    	if(layersList.size() != 0)
+			    	{
+				    	CoordinateReferenceSystem wgsCRS = null;
+						try {
+							wgsCRS = CRS.decode("EPSG:4326");
+						} catch (NoSuchAuthorityCodeException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (FactoryException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+				    	rewriteBBOX(layersList, wgsCRS);
+			    	}
 			    	
 			    	//Return
 					XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
