@@ -248,7 +248,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				StringBuffer WMSCapabilities111 = new StringBuffer();
 
 				WMSCapabilities111
-						.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+						.append("<xsl:stylesheet version=\"1.00\" xmlns=\"http://www.opengis.net/wms\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 				WMSCapabilities111.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
 				// Debug tb 19.11.2009
 				if (!"100".equalsIgnoreCase(version)) {
@@ -346,17 +346,36 @@ public class WMSProxyServlet extends ProxyServlet {
 				NodeList nodes = (NodeList) result;
 
 				// Filtrage xsl des layers
-				if (hasPolicy) {
-					for (int i = 0; i < nodes.getLength(); i++) {
-						Node l = nodes.item(i);
-						boolean allowed = isLayerAllowed(l.getTextContent(), getRemoteServerUrl(remoteServerIndex));
-						if (!allowed) {
-							// Si couche pas permise alors on l'enlève
-							WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getTextContent() + "')]");
-							WMSCapabilities111.append("\"></xsl:template>");
-						}
+				
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Node l = nodes.item(i);
+					boolean allowed = isLayerAllowed(l.getTextContent(), getRemoteServerUrl(remoteServerIndex));
+					if (!allowed) {
+						// Si couche pas permise alors on l'enlève
+						WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getTextContent() + "')]");
+						WMSCapabilities111.append("\"></xsl:template>");
 					}
 				}
+//				WMSCapabilities capa = (WMSCapabilities) DocumentFactory.getInstance(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0])
+//				.toURI(), hints, Level.WARNING);
+
+//				Iterator<Layer> itLayer = capa.getLayerList().iterator();
+//				while (itLayer.hasNext()) {
+//					Layer l = (Layer) itLayer.next();
+//					// Debug tb 03.07.2009
+//					// String tmpFT = l.getName();
+//					boolean allowed = isLayerAllowed(l.getName(), getRemoteServerUrl(remoteServerIndex));
+//					if (!allowed)
+//					// Fin de Debug
+//					// if (!isLayerAllowed(l.getName(),
+//					// getRemoteServerUrl(remoteServerIndex)))
+//					{
+//						// Si couche pas permise alors on l'enlève
+//						WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getName() + "')]");
+//						WMSCapabilities111.append("\"></xsl:template>");
+//					}
+//				}
+				
 
 				// Debug tb 03.07.2009
 				// -> le prefix est déjà intégré dans l.getName!
@@ -410,7 +429,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		try
 		{
 			StringBuffer serviceMetadataXSLT = new StringBuffer();
-			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns=\"http://www.opengis.net/wms\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			serviceMetadataXSLT.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
 			serviceMetadataXSLT.append("<xsl:strip-space elements=\"*\" />");
 			serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
@@ -821,30 +840,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    			{
 	    				writeLatLonBBOX111(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy);
 	    			}
-//	    			List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
-//	        		if(llBBOXElements.size() != 0)
-//	        		{
-//	    	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
-//	    	    		llBBOX.removeAttribute("minx");
-//	    	    		llBBOX.setAttribute("minx",wgsMinx);
-//	    	    		llBBOX.removeAttribute("miny");
-//	    	    		llBBOX.setAttribute("miny", wgsMiny);
-//	    	    		llBBOX.removeAttribute("maxx");
-//	    	    		llBBOX.setAttribute("maxx", wgsMaxx);
-//	    	    		llBBOX.removeAttribute("maxy");
-//	    	    		llBBOX.setAttribute("maxy", wgsMaxy);
-//	        		}
-//	        		else
-//	        		{
-//	        			//create element
-//	        			org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
-//	        			element.setAttribute("minx",wgsMinx);
-//	        			element.setAttribute("miny", wgsMiny);
-//	        			element.setAttribute("maxx", wgsMaxx);
-//	        			element.setAttribute("maxy", wgsMaxy);
-//	        			elementLayer.addContent(element);
-//	           		}
-	    			
+
 	        		//Srs Boundingbox
 	    			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
 	    			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
