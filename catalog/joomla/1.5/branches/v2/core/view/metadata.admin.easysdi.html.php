@@ -161,15 +161,15 @@ class HTML_metadata {
 							  		AND published=true 
 							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		
+			
 		// Langue de l'utilisateur pour la construction du Thesaurus Gemet
 		$userLang="";
 		foreach($this->langList as $row)
-		{									
+		{
 			if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
 				$userLang = $row->gemetlang;
 		}
-								
+		
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
@@ -841,7 +841,7 @@ class HTML_metadata {
 										
 										// Stockage du path pour atteindre ce noeud du XML
 										//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
-										$queryPath = "gmd:LocalisedCharacterString";
+										//$queryPath = "gmd:LocalisedCharacterString";
 											
 										$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 										$listCount = $listNode->length;
@@ -859,15 +859,16 @@ class HTML_metadata {
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
-												var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
+													// Créer un nouveau fieldset
+													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
 													".$parentFieldsetName.".add(".$fieldsetName.");
 												";
-
+												
 												foreach($this->langList as $row)
 												{
+													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 													if ($row->defaultlang)
 													{
-														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gco:CharacterString", $currentScope);
 														//echo "2) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
@@ -884,7 +885,7 @@ class HTML_metadata {
 													{
 														//print_r($row);echo "<br>";
 														//echo $row->language."<br>";
-														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
+														//$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
 														//echo "2) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
@@ -898,6 +899,8 @@ class HTML_metadata {
 														}
 													}
 													
+													//$nodeValue = "";
+													
 													//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 													//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
 													//echo $LocLangName." - ".$nodeValue."<br>";
@@ -907,30 +910,33 @@ class HTML_metadata {
 														// Textarea
 														case 1:
 															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 														// Textbox
 														case 5:
 															$this->javascript .="
 															//console.log(".$parentFieldsetName.".getId() + ': ' + ".$parentFieldsetName.".collapsed + '\\n\\r a la creation de ' + '".$currentName."' + '\\n\\r' + ".$parentFieldsetName.".masterflow);
-															".$fieldsetName.".add(createTextField('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextField('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 														default:
 															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 													}
 												
-												if ($child->attribute_system)
-												{
-													$this->javascript .="
-													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-													";
+													if ($child->attribute_system)
+													{
+														$this->javascript .="
+														".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+														";
+													}
 												}
-												}
+												
+											
+												
 											}
 											else
 											{
@@ -1763,35 +1769,36 @@ class HTML_metadata {
 								
 									if ($currentScope and $currentScope->nodeName <> "")
 									{
-									$nodeValue= "";
-									$nodeKeyword= "";
-									// Récupérer le texte localisé stocké
-									foreach($this->langList as $row)
-									{
-										//echo $row->gemetlang."<br>";
-										if ($row->defaultlang)
+										$nodeValue= "";
+										$nodeKeyword= "";
+										// Récupérer le texte localisé stocké
+										foreach($this->langList as $row)
 										{
-											$keyNode = $xpathResults->query("gco:CharacterString", $currentScope);
-											//echo "Il y a ".$keyNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
-											if ($keyNode->length > 0)
+											//echo $row->gemetlang."<br>";
+											if ($row->defaultlang)
 											{
-												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-												//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
+												$keyNode = $xpathResults->query("gco:CharacterString", $currentScope);
+												//echo "Il y a ".$keyNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
+												if ($keyNode->length > 0)
+												{
+													$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
+													//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
+												}
 											}
+											else
+											{
+												$keyNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
+												//echo "Il y a ".$keyNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
+												if ($keyNode->length > 0)
+													$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
+												
+											}
+											if ($row->gemetlang == $userLang and $keyNode->item(0))
+												$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 										}
-										else
-										{
-											$keyNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-											//echo "Il y a ".$keyNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
-											if ($keyNode->length > 0)
-												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-											
-										}
-										if ($row->gemetlang == $userLang)
-											$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 									}
-									}
-									$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
+									if ($nodeKeyword <> "")
+										$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
 									//echo $nodeValue."<br>";
 									//echo $nodeKeyword."<br>";
 									
@@ -1799,6 +1806,8 @@ class HTML_metadata {
 
 								if (count($nodeValues)>0)
 									$value = "[".implode(",",$nodeValues)."]";
+								else
+									$value = "[]";
 								
 								$this->javascript .="
 								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
