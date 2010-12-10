@@ -48,6 +48,17 @@ defined('_JEXEC') or die('Restricted access');
 			if (fields.item(i).value == "")
 				labelEmpty=1;
 		}
+
+		// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+		var filterEmpty = 0;
+		filterfields = document.getElementById('filterfields');
+		fields = filterfields.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				filterEmpty=1;
+		}
 		
 		// do field validation
 		if (form.name.value == "") 
@@ -80,7 +91,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 		else // Contrôles dépendants du type de relation
 		{
-			if (form.type.value == 2)
+			if (form.type.value == 2) // Vers attribut
 			{
 				if (getSelectedValue('adminForm','attributechild_id') < 1) 
 				{
@@ -90,12 +101,16 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORENDERTYPE', true ); ?>" );
 				}
+				//else if (form.issearchfilter1.value == 1 && filterEmpty > 0) 
+				//{
+				//	alert( "<?php //echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NOFILTERFIELDS', true ); ?>" );
+				//}
 				else 
 				{
 					submitform( pressbutton );
 				}
 			}
-			else if (form.type.value == 1)
+			else if (form.type.value == 1) // Vers classe
 			{
 				if (getSelectedValue('adminForm','classchild_id') < 1) 
 				{
@@ -118,7 +133,7 @@ defined('_JEXEC') or die('Restricted access');
 					submitform( pressbutton );
 				}
 			}
-			else if (form.type.value == 3)
+			else if (form.type.value == 3) // Vers type d'objet
 			{
 				if (getSelectedValue('adminForm','objecttypechild_id') < 1) 
 				{
@@ -381,6 +396,7 @@ class ADMIN_relation {
 		// Récupération des types mysql pour les champs
 		$searchCriteriaTableFields = array();
 		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
+		$searchCriteriaTableFields = array_merge( $searchCriteriaTableFields, $database->getTableFields("#__sdi_context_sc_filter", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
@@ -669,7 +685,18 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $option);
+		// Champs de tri
+		$filterfields = array();
+		
+		
+		$child_attributetype = 0;
+		if ($rowAttribute->id)
+		{
+			$child_attributetype = $rowAttribute->attributetype_id;
+		}
+		
+		
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -816,6 +843,8 @@ class ADMIN_relation {
 		// Récupération des types mysql pour les champs
 		$searchCriteriaTableFields = array();
 		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
+		$searchCriteriaTableFields = array_merge( $searchCriteriaTableFields, $database->getTableFields("#__sdi_context_sc_filter", false) );
+		
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
@@ -987,7 +1016,46 @@ class ADMIN_relation {
 			$defaultStyle_Locale_Textarea = "display:none";
 		}
 			
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id, $option);
+		// Champs de tri
+		$filterfields = array();
+		if ($rowAttributeRelation->issearchfilter)
+		{
+			$rowSearchCriteria = new searchcriteriaByRelationId($database);
+			$rowSearchCriteria->load($rowAttributeRelation->id);
+			
+			foreach ($languages as $lang)
+			{
+				$database->setQuery("SELECT DISTINCT ogcsearchfilter FROM #__sdi_context_sc_filter WHERE searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+				$filterfield = $database->loadResult();
+				
+				$filterfields[$lang->id] = $filterfield;
+			}
+		}
+		else
+		{
+			foreach ($languages as $lang)
+			{
+				$filterfields[$lang->id] = "";
+			}
+		}
+		
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caractères
+		$fieldsLength = array();
+		foreach($tableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$fieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			} 
+		}
+		
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)
@@ -1437,6 +1505,25 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
+			if ($rowRelation->issearchfilter)
+			{
+				$searchCriteria = null;
+				$database->setQuery("SELECT id FROM #__sdi_searchcriteria WHERE code=\"".$rowRelation->name."_".$rowAttribute->isocode."\" AND relation_id=".$rowRelation->id);
+				$searchCriteria = $database->loadResult();
+				
+				$rowSearchCriteria = new searchcriteria($database);
+				$rowSearchCriteria->load($searchCriteria);
+			
+				if ($rowSearchCriteria->id)
+				{
+					$query = "delete from #__sdi_context_sc_filter where searchcriteria_id=".$rowSearchCriteria->id;
+					$database->setQuery( $query);
+					if (!$database->query()) {
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+				}
+			}
+			
 			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
@@ -1479,8 +1566,8 @@ class ADMIN_relation {
 			
 			$rowSearchCriteria->name= $rowRelation->name;
 			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
-			$rowSearchCriteria->advancedtab= 1;
-			$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter']; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			//$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter'];
 			$rowSearchCriteria->criteriatype_id= 2; // Le critère de recherche sera du type "relation"
 			
 			
@@ -1493,6 +1580,7 @@ class ADMIN_relation {
 			// Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
 			if ($rowRelation->issearchfilter)
 			{
+				// Ajout du critère dans les tabs
 				foreach($contexts as $context)
 				{
 					$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
@@ -1502,7 +1590,35 @@ class ADMIN_relation {
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						return false;
-					} 
+					}
+
+					// Stocker les champs de tri par langue
+					foreach ($languages as $lang)
+					{
+						$database->setQuery("SELECT count(*) FROM #__sdi_context_sc_filter WHERE context_id='".$context."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id='".$lang->id."'");
+						$total = $database->loadResult();
+						
+						if ($total > 0)
+						{
+							//Update
+							$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."' WHERE id='".$context."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+							if (!$database->query())
+								{	
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+									return false;
+								}
+						}
+						else
+						{
+							// Create
+							$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."')");
+							if (!$database->query())
+							{	
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+								return false;
+							}
+						}
+					}
 				}
 			}
 		}
@@ -1556,6 +1672,22 @@ class ADMIN_relation {
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			if ($rowRelation->issearchfilter)
+			{
+				$searchCriteria = null;
+				$database->setQuery("SELECT id FROM #__sdi_searchcriteria WHERE relation_id=".$rowRelation->id);
+				$searchCriteria = $database->loadResult();
+				
+				$rowSearchCriteria = new searchcriteria($database);
+				$rowSearchCriteria->load($searchCriteria);
+			
+				$query = "delete from #__sdi_context_sc_filter where searchcriteria_id=".$rowSearchCriteria->id;
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
 			}
 			
 			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
