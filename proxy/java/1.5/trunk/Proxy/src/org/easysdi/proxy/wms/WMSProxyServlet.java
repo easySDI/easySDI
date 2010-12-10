@@ -105,6 +105,7 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.handlers.DocumentHandler;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
@@ -246,20 +247,31 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			try {
 				StringBuffer WMSCapabilities111 = new StringBuffer();
+				String prefixe = ""; 
+				if("130".equalsIgnoreCase(version))
+					prefixe = "wms:";
 
 				WMSCapabilities111
-						.append("<xsl:stylesheet version=\"1.00\" xmlns=\"http://www.opengis.net/wms\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+						.append("<xsl:stylesheet version=\"1.00\" " +
+								"xmlns:wms=\"http://www.opengis.net/wms\" " +
+								"xmlns:ows=\"http://www.opengis.net/ows\" " +
+								"xmlns:sld=\"http://www.opengis.net/sld\" " + 
+								"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "+ 
+								"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+								"xsi:schemaLocation=\"http://www.opengis.net/wms http://schemas.opengeospatial.net/wms/1.3.0/capabilities_1_3_0.xsd  http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd  http://mapserver.gis.umn.edu/mapserver http://geoservices.brgm.fr/geologie?service=WMS&amp;version=1.3.0&amp;request=GetSchemaExtension\" " +
+								"xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 				WMSCapabilities111.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
-				// Debug tb 19.11.2009
+				
+				//HVH-10.12.2010 : WMS 1.3.0 --> namespace wms 
 				if (!"100".equalsIgnoreCase(version)) {
-					WMSCapabilities111.append("<xsl:template match=\"OnlineResource/@xlink:href\">");
+					// Debug tb 19.11.2009
+					WMSCapabilities111.append("<xsl:template match=\"//"+prefixe+"OnlineResource/@xlink:href\">");
 					WMSCapabilities111.append("<xsl:param name=\"thisValue\">");
 					WMSCapabilities111.append("<xsl:value-of select=\".\"/>");
 					WMSCapabilities111.append("</xsl:param>");
 					WMSCapabilities111.append("<xsl:attribute name=\"xlink:href\">");
 					WMSCapabilities111.append(url);
-					// Changer seulement la partie racine de l'URL, pas les
-					// param après '?'
+					// Changer seulement la partie racine de l'URL, pas les param après '?'
 					WMSCapabilities111.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
 					WMSCapabilities111.append("</xsl:attribute>");
 					WMSCapabilities111.append("</xsl:template>");
@@ -272,8 +284,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					WMSCapabilities100.append("</xsl:param>");
 					WMSCapabilities100.append("<OnlineResource>");
 					WMSCapabilities100.append(url);
-					// Changer seulement la partie racine de l'URL, pas les
-					// param après '?'
+					// Changer seulement la partie racine de l'URL, pas les param après '?'
 					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
 					WMSCapabilities100.append("</OnlineResource>");
 					WMSCapabilities100.append("</xsl:template>");
@@ -283,8 +294,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					WMSCapabilities100.append("</xsl:param>");
 					WMSCapabilities100.append("<xsl:attribute name=\"onlineResource\">");
 					WMSCapabilities100.append(url);
-					// Changer seulement la partie racine de l'URL, pas les
-					// param après '?'
+					// Changer seulement la partie racine de l'URL, pas les param après '?'
 					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
 					WMSCapabilities100.append("</xsl:attribute>");
 					WMSCapabilities100.append("</xsl:template>");
@@ -294,103 +304,57 @@ public class WMSProxyServlet extends ProxyServlet {
 
 				// Filtrage xsl des opérations
 				//HVH-30.08.2010 : replace old version which did not work				
-				if (hasPolicy) {
-					if (!policy.getOperations().isAll() || deniedOperations.size() > 0 ) {
-						Iterator<String> it = permitedOperations.iterator();
-						while (it.hasNext()) {
-							String text = it.next();
-							if (text != null) {
-								WMSCapabilities111.append("<xsl:template match=\"Capability/Request/");
-								WMSCapabilities111.append(text);
-								WMSCapabilities111.append("\">");
-								WMSCapabilities111.append("<!-- Copy the current node -->");
-								WMSCapabilities111.append("<xsl:copy>");
-								WMSCapabilities111.append("<!-- Including any attributes it has and any child nodes -->");
-								WMSCapabilities111.append("<xsl:apply-templates select=\"@*|node()\"/>");
-								WMSCapabilities111.append("</xsl:copy>");
-								WMSCapabilities111.append("</xsl:template>");
-							}
-						}
-
-						it = deniedOperations.iterator();
-						while (it.hasNext()) {
-							WMSCapabilities111.append("<xsl:template match=\"Capability/Request/");
-							WMSCapabilities111.append(it.next());
-							WMSCapabilities111.append("\"></xsl:template>");
+				if (!policy.getOperations().isAll() || deniedOperations.size() > 0 ) {
+					Iterator<String> it = permitedOperations.iterator();
+					while (it.hasNext()) {
+						String text = it.next();
+						if (text != null) {
+							WMSCapabilities111.append("<xsl:template match=\""+prefixe+"Capability/Request/");
+							WMSCapabilities111.append(text);
+							WMSCapabilities111.append("\">");
+							WMSCapabilities111.append("<!-- Copy the current node -->");
+							WMSCapabilities111.append("<xsl:copy>");
+							WMSCapabilities111.append("<!-- Including any attributes it has and any child nodes -->");
+							WMSCapabilities111.append("<xsl:apply-templates select=\"@*|node()\"/>");
+							WMSCapabilities111.append("</xsl:copy>");
+							WMSCapabilities111.append("</xsl:template>");
 						}
 					}
-					if (permitedOperations.size() == 0 )
-					{
-						WMSCapabilities111.append("<xsl:template match=\"Capability/Request/\"></xsl:template>");
-					}
-				}
-				else
-				{
-					WMSCapabilities111.append("<xsl:template match=\"Capability/Request/\"></xsl:template>");
-				}
-				
-				Map hints = new HashMap();
-				// hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-				hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
-				hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
 
-				// WMSCapabilities capa = (WMSCapabilities)
-				// DocumentFactory.getInstance(new
-				// File(wmsFilePathList.get(remoteServerIndex).toArray()[0].toString()).toURI(),
-				// hints, Level.SEVERE);
-				Document doc = builder.parse(wmsFilePathList.get(remoteServerIndex).toArray()[0].toString());
-				XPath xpath = XPathFactory.newInstance().newXPath();
-				// XPath Query for showing all nodes value
-				XPathExpression expr = xpath.compile("//Layer/Name");
-				Object result = expr.evaluate(doc, XPathConstants.NODESET);
-				NodeList nodes = (NodeList) result;
-
-				// Filtrage xsl des layers
-				
-				for (int i = 0; i < nodes.getLength(); i++) {
-					Node l = nodes.item(i);
-					boolean allowed = isLayerAllowed(l.getTextContent(), getRemoteServerUrl(remoteServerIndex));
-					if (!allowed) {
-						// Si couche pas permise alors on l'enlève
-						WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getTextContent() + "')]");
+					it = deniedOperations.iterator();
+					while (it.hasNext()) {
+						WMSCapabilities111.append("<xsl:template match=\""+prefixe+"Capability/wms:Request/");
+						WMSCapabilities111.append(it.next());
 						WMSCapabilities111.append("\"></xsl:template>");
 					}
 				}
-//				WMSCapabilities capa = (WMSCapabilities) DocumentFactory.getInstance(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0])
-//				.toURI(), hints, Level.WARNING);
-
-//				Iterator<Layer> itLayer = capa.getLayerList().iterator();
-//				while (itLayer.hasNext()) {
-//					Layer l = (Layer) itLayer.next();
-//					// Debug tb 03.07.2009
-//					// String tmpFT = l.getName();
-//					boolean allowed = isLayerAllowed(l.getName(), getRemoteServerUrl(remoteServerIndex));
-//					if (!allowed)
-//					// Fin de Debug
-//					// if (!isLayerAllowed(l.getName(),
-//					// getRemoteServerUrl(remoteServerIndex)))
-//					{
-//						// Si couche pas permise alors on l'enlève
-//						WMSCapabilities111.append("<xsl:template match=\"//Layer[starts-with(Name,'" + l.getName() + "')]");
-//						WMSCapabilities111.append("\"></xsl:template>");
-//					}
-//				}
+				if (permitedOperations.size() == 0 )
+				{
+					WMSCapabilities111.append("<xsl:template match=\"wms:Capability/"+prefixe+"Request/\"></xsl:template>");
+				}
 				
-
-				// Debug tb 03.07.2009
-				// -> le prefix est déjà intégré dans l.getName!
-				// //Add the WMSxx_ Prefix before the name of the layer.
-				// //This prefix will be used to find to witch remote server the
-				// layer belongs.
-				// if
-				// (getRemoteServerInfo(remoteServerIndex).getPrefix().length()>0)
-				// {
-				// WMSCapabilities111.append("<xsl:template match=\"//Layer/Name\">");
-				// WMSCapabilities111.append("<Name>"+getRemoteServerInfo(remoteServerIndex).getPrefix()+"<xsl:value-of select=\".\"/> </Name>");
-				// WMSCapabilities111.append("</xsl:template>");
-				// }
-				// Fin de Debug
-
+				SAXBuilder saxBuilder = new SAXBuilder();
+				org.jdom.Document jDoc = saxBuilder.build(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0]));
+				Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+    			Iterator itL = jDoc.getDescendants(filtre);
+    			while(itL.hasNext())
+				{
+    				org.jdom.Element layer = (org.jdom.Element)itL.next();
+    				org.jdom.Element layerName;
+    				if ("130".equalsIgnoreCase(version)) 
+    					layerName = layer.getChild("Name", Namespace.getNamespace("http://www.opengis.net/wms"));
+    				else
+    					layerName = layer.getChild("Name");
+    				if(layerName == null)
+    					continue;
+    				boolean allowed = isLayerAllowed(layerName.getValue(), getRemoteServerUrl(remoteServerIndex));
+					if (!allowed) {
+						// Si couche pas permise alors on l'enlève
+						WMSCapabilities111.append("<xsl:template match=\"//"+prefixe+"Layer[starts-with("+prefixe+"Name,'" + layerName.getValue() + "')]");
+						WMSCapabilities111.append("\"></xsl:template>");
+					}
+				}
+				
 				WMSCapabilities111.append("  <!-- Whenever you match any node or any attribute -->");
 				WMSCapabilities111.append("<xsl:template match=\"node()|@*\">");
 				WMSCapabilities111.append("<!-- Copy the current node -->");
@@ -428,8 +392,16 @@ public class WMSProxyServlet extends ProxyServlet {
 	{
 		try
 		{
+			String prefixe = ""; 
+			if("130".equalsIgnoreCase(version))
+				prefixe = "wms:";
+			
 			StringBuffer serviceMetadataXSLT = new StringBuffer();
-			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns=\"http://www.opengis.net/wms\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" " +
+					"xmlns:wms=\"http://www.opengis.net/wms\" " +
+					"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
+					"xmlns:ows=\"http://www.opengis.net/ows\" " +
+					"xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			serviceMetadataXSLT.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
 			serviceMetadataXSLT.append("<xsl:strip-space elements=\"*\" />");
 			serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
@@ -440,20 +412,20 @@ public class WMSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("</xsl:copy>");
 			serviceMetadataXSLT.append("</xsl:template>");
 			//Version 1.2 and 1.3 supported so apply xslt to rewrite service metadata
-			serviceMetadataXSLT.append("<xsl:template match=\"Service\">");
+			serviceMetadataXSLT.append("<xsl:template match=\""+prefixe+"Service\">");
 			serviceMetadataXSLT.append("<xsl:copy>");
 			//Name
-			serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Name\"> ");
 			serviceMetadataXSLT.append("<xsl:text>WMS</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Title
-			serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Title\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Abstract
 			if(getConfiguration().getAbst()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Abstract\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
@@ -478,9 +450,9 @@ public class WMSProxyServlet extends ProxyServlet {
 				else
 				{
 					List<String> keywords = getConfiguration().getKeywordList();
-					serviceMetadataXSLT.append("<xsl:element name=\"KeywordList\"> ");
+					serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"KeywordList\"> ");
 					for (int n = 0; n < keywords.size(); n++) {
-						serviceMetadataXSLT.append("<xsl:element name=\"Keyword\"> ");
+						serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Keyword\"> ");
 						serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
 						serviceMetadataXSLT.append("</xsl:element>");
 					}
@@ -488,61 +460,61 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			}
 			//OnlineResource
-			serviceMetadataXSLT.append("<xsl:copy-of select=\"OnlineResource\"/>");
+			serviceMetadataXSLT.append("<xsl:copy-of select=\""+prefixe+"OnlineResource\"/>");
 			//contactInfo
 			if(!"100".equals(version))
 			{
 				if(getConfiguration().getContactInfo()!= null && !getConfiguration().getContactInfo().isEmpty())
 				{
-					serviceMetadataXSLT.append("<xsl:element name=\"ContactInformation\"> ");
+					serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactInformation\"> ");
 					
-						serviceMetadataXSLT.append("<xsl:element name=\"ContactPersonPrimary\"> ");
+						serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPersonPrimary\"> ");
 						if(configuration.getContactInfo().getName()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactPerson\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPerson\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName() + "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
 						if(configuration.getContactInfo().getOrganization()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactOrganization\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactOrganization\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization()+ "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
 						serviceMetadataXSLT.append("</xsl:element>");
 						if(configuration.getContactInfo().getPosition()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactPosition\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPosition\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
 						if (!configuration.getContactInfo().getContactAddress().isEmpty())
 						{
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactAddress\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactAddress\"> ");
 							if(configuration.getContactInfo().getContactAddress().getType()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\"AddressType\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"AddressType\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getType()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
 							if(configuration.getContactInfo().getContactAddress().getAddress()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\"Address\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Address\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
 							if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
-								serviceMetadataXSLT.append("<xsl:element name=\"City\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"City\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
 							if(configuration.getContactInfo().getContactAddress().getState()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\"StateOrProvince\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"StateOrProvince\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
 							if(configuration.getContactInfo().getContactAddress().getPostalCode()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\"PostCode\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"PostCode\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
 							if(configuration.getContactInfo().getContactAddress().getCountry()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\"Country\"> ");
+								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Country\"> ");
 								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
 								serviceMetadataXSLT.append("</xsl:element>");
 							}
@@ -550,19 +522,19 @@ public class WMSProxyServlet extends ProxyServlet {
 						}
 						if(configuration.getContactInfo().getVoicePhone()!=null)
 						{
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactVoiceTelephone\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactVoiceTelephone\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
 						if(configuration.getContactInfo().getFacSimile()!=null)
 						{
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactFacsimileTelephone\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactFacsimileTelephone\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
 						if(configuration.getContactInfo().geteMail()!=null)
 						{
-							serviceMetadataXSLT.append("<xsl:element name=\"ContactElectronicMailAddress\"> ");
+							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactElectronicMailAddress\"> ");
 							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().geteMail()+ "</xsl:text>");
 							serviceMetadataXSLT.append("</xsl:element>");
 						}
@@ -571,11 +543,11 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			}
 			//Fees
-			serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Fees\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//AccesConstraints
-			serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"AccessConstraints\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			
@@ -704,93 +676,26 @@ public class WMSProxyServlet extends ProxyServlet {
 			return false;
 		}
 	}
-//	private void calculateLatLonBBOX ()
-//	{
-//		//create the parser with the gml 2.0 configuration
-//		org.geotools.xml.Configuration configuration = new org.geotools.gml2.GMLConfiguration();
-//		org.geotools.xml.Parser parser = new org.geotools.xml.Parser( configuration );
-//
-//		//the xml instance document above
-//		InputStream xml = null;
-//		try {
-//			xml = new ByteArrayInputStream(policy.getServers().getServer().get(0).getLayers().getLayer().get(0).getFilter().getContent().getBytes("UTF-8"));
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	
-//		//parse
-//		try 
-//		{
-//			Geometry obj =  (Geometry)parser.parse( xml );
-//			Geometry bbox = obj.getEnvelope();
-//			if (bbox.getGeometryType().equalsIgnoreCase("polygon"))
-//			{
-//				CoordinateReferenceSystem sourceCRS;
-//				try {
-////					((DefaultReference)bbox.getUserData())
-//					sourceCRS = CRS.decode("EPSG:"+String.valueOf(bbox.getSRID()));
-//					CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
-//					MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-//					Geometry targetGeometry = JTS.transform( bbox, transform);
-//				 
-//					System.out.println((bbox.getEnvelopeInternal()).getMinX());
-//					System.out.println((targetGeometry.getEnvelopeInternal()).getMinX());
-//				
-//				} catch (NoSuchAuthorityCodeException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (FactoryException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				catch (MismatchedDimensionException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (TransformException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//			
-////			FeatureCollection fc = (FeatureCollection) parser.parse( xml );
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ParserConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-////		for ( Iterator i = fc.iterator(); i.hasNext(); ) {
-////		  Feature f = (Feature) i.next();
-////
-////		  Point point = (Point) f.getDefaultGeometry();
-////		  String name = (String) f.getAttribute( "name" );
-////		}
-//	}
-	
+
 	private void rewriteBBOX(List<org.jdom.Element> layersList,CoordinateReferenceSystem wgsCRS, String version)
 	{
 		String wgsMaxx;
 		String wgsMaxy;
 		String wgsMinx;
 		String wgsMiny;
-		String srsAttributeName = "SRS";
-		if(version.equalsIgnoreCase("1.3.0"))
-		{
-			srsAttributeName = "CRS";
-		}
-		
+		Namespace wmsNS = Namespace.getNamespace("http://www.opengis.net/wms");
 		
 		for(int l = 0 ; l < layersList.size();l++)
 		{
     		org.jdom.Element elementLayer = (org.jdom.Element)layersList.get(l);
     		
     		List<Server> serverList = policy.getServers().getServer();
-    		List listName = elementLayer.getChildren("Name");
+    		List listName;
+    		if ("1.3.0".equalsIgnoreCase(version)) 
+    			listName = elementLayer.getChildren("Name", wmsNS);
+			else
+				listName = elementLayer.getChildren("Name");
+    		
     		if(listName.size() == 0)
     		{
     			continue;
@@ -800,15 +705,17 @@ public class WMSProxyServlet extends ProxyServlet {
     			try
     			{
 	    			Server server = serverList.get(i);
-	    			Layer currentLayer = server.getLayers().getLayerByName(((org.jdom.Element)elementLayer.getChildren("Name").get(0)).getValue());
+	    			Layer currentLayer ;
+	    			if ("1.3.0".equalsIgnoreCase(version)) 
+	    				currentLayer = server.getLayers().getLayerByName(((org.jdom.Element)elementLayer.getChild("Name",wmsNS)).getValue());
+	    			else
+	    				currentLayer = server.getLayers().getLayerByName(((org.jdom.Element)elementLayer.getChild("Name")).getValue());
+	    			
 	    			if(currentLayer == null)
-	    			{
 	    				continue;
-	    			}
+	    			
 	    			if(currentLayer.getBoundingBox() == null)
-	    			{
 	    				continue;
-	    			}
 	    			
 	    			//Calculate WGS BBOX
 	    			BoundingBox srsBBOX =  currentLayer.getBoundingBox();
@@ -831,40 +738,15 @@ public class WMSProxyServlet extends ProxyServlet {
 	    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
 	    			}
 	    			
-	    			//LatLongBoundingBox
 	    			if(version.equalsIgnoreCase("1.3.0"))
 	    			{
-	    				writeLatLonBBOX130(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy);
+	    				writeLatLonBBOX130(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy, wmsNS);
+	    				writeBBOX130(elementLayer,srsBBOX,wgsCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy,wmsNS);
 	    			}
 	    			else
 	    			{
 	    				writeLatLonBBOX111(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy);
-	    			}
-
-	        		//Srs Boundingbox
-	    			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
-	    			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
-	    			{
-	    				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
-	    				if(BBOX.getAttributeValue(srsAttributeName).equals(srsBBOX.getSRS()))
-	    				{
-	    					BBOX.setAttribute("minx", srsBBOX.getMinx());
-		    				BBOX.setAttribute("miny", srsBBOX.getMiny());
-		    				BBOX.setAttribute("maxx", srsBBOX.getMaxx());
-		    				BBOX.setAttribute("maxy", srsBBOX.getMaxy());
-	    				}
-	    				else
-	    				{
-		    				CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue(srsAttributeName));
-		    				MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
-		    				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
-		    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-	        				
-		    				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
-		    				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
-		    				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
-		    				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
-	    				}
+	    				writeBBOX111(elementLayer,srsBBOX,wgsCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
 	    			}
 	    			
 	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
@@ -885,29 +767,29 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 	
-	private void writeLatLonBBOX130(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	private void writeLatLonBBOX130(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy, Namespace wmsNS)
 	{
-		List llBBOXElements = elementLayer.getChildren("EX_GeographicBoundingBox");
+		List llBBOXElements = elementLayer.getChildren("EX_GeographicBoundingBox",wmsNS);
 		if(llBBOXElements.size() != 0)
 		{
     		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
-    		llBBOX.getChild("westBoundLongitude").setText(wgsMinx);
-    		llBBOX.getChild("eastBoundLongitude").setText(wgsMaxx);
-    		llBBOX.getChild("southBoundLatitude").setText(wgsMiny);
-    		llBBOX.getChild("northBoundLatitude").setText(wgsMaxy);
+    		llBBOX.getChild("westBoundLongitude",wmsNS).setText(wgsMiny);
+    		llBBOX.getChild("eastBoundLongitude",wmsNS).setText(wgsMaxy);
+    		llBBOX.getChild("southBoundLatitude",wmsNS).setText(wgsMinx);
+    		llBBOX.getChild("northBoundLatitude",wmsNS).setText(wgsMaxx);
 		}
 		else
 		{
 			//create element
-			org.jdom.Element element = new org.jdom.Element("EX_GeographicBoundingBox");
-			org.jdom.Element wbl = new org.jdom.Element("westBoundLongitude");
-			wbl.setText(wgsMinx);
-			org.jdom.Element ebl = new org.jdom.Element("eastBoundLongitude");
-			ebl.setText(wgsMaxx);
-			org.jdom.Element sbl = new org.jdom.Element("southBoundLatitude");
-			sbl.setText(wgsMiny);
-			org.jdom.Element nbl = new org.jdom.Element("northBoundLatitude");
-			nbl.setText(wgsMaxy);
+			org.jdom.Element element = new org.jdom.Element("EX_GeographicBoundingBox",wmsNS);
+			org.jdom.Element wbl = new org.jdom.Element("westBoundLongitude",wmsNS);
+			wbl.setText(wgsMiny);
+			org.jdom.Element ebl = new org.jdom.Element("eastBoundLongitude",wmsNS);
+			ebl.setText(wgsMaxy);
+			org.jdom.Element sbl = new org.jdom.Element("southBoundLatitude",wmsNS);
+			sbl.setText(wgsMinx);
+			org.jdom.Element nbl = new org.jdom.Element("northBoundLatitude",wmsNS);
+			nbl.setText(wgsMaxx);
 			element.addContent(wbl );
 			element.addContent(ebl );
 			element.addContent(sbl );
@@ -939,6 +821,76 @@ public class WMSProxyServlet extends ProxyServlet {
    		}
 	}
 	
+	private boolean writeBBOX130(org.jdom.Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy, Namespace wmsNS)
+	{
+		try
+		{
+			List srsBBOXElements = elementLayer.getChildren("BoundingBox", wmsNS);
+			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
+			{
+				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
+				if(BBOX.getAttributeValue("CRS",wmsNS).equals(srsBBOX.getSRS()))
+				{
+					BBOX.setAttribute("minx", srsBBOX.getMinx(),wmsNS);
+					BBOX.setAttribute("miny", srsBBOX.getMiny(),wmsNS);
+					BBOX.setAttribute("maxx", srsBBOX.getMaxx(),wmsNS);
+					BBOX.setAttribute("maxy", srsBBOX.getMaxy(),wmsNS);
+				}
+				else
+				{
+					CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+					MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
+					Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+					Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+					
+					BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()),wmsNS);
+					BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()),wmsNS);
+					BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()),wmsNS);
+					BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()),wmsNS);
+				}
+			}
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+	private boolean writeBBOX111(org.jdom.Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		try
+		{
+			List srsBBOXElements = elementLayer.getChildren("BoundingBox");
+			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
+			{
+				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
+				if(BBOX.getAttributeValue("SRS").equals(srsBBOX.getSRS()))
+				{
+					BBOX.setAttribute("minx", srsBBOX.getMinx());
+					BBOX.setAttribute("miny", srsBBOX.getMiny());
+					BBOX.setAttribute("maxx", srsBBOX.getMaxx());
+					BBOX.setAttribute("maxy", srsBBOX.getMaxy());
+				}
+				else
+				{
+					CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+					MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
+					Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+					Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+					
+					BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
+					BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
+					BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
+					BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+				}
+			}
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
 
 		try 
