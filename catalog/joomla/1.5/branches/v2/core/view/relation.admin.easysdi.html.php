@@ -165,7 +165,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -466,14 +466,38 @@ foreach ($languages as $lang)
 									</td>
 								</tr>
 							</table>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+								<td colspan="2">
+									<fieldset id="filterfields">
+										<legend align="top"><?php echo JText::_("CATALOG_CONTEXT_FILTERFIELD"); ?></legend>
+										<table>
+			<?php
+			foreach ($languages as $lang)
+			{ 
+			?>
+								<tr>
+								<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+								<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('filterfield_'.$lang->code, $_POST)) echo $_POST['filterfield_'.$lang->code]; else echo "";?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
+								</tr>
+			<?php
+			}
+			?>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+						</table>
 						</div>
 					</td>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td><?php echo JText::_("CATALOG_RELATION_OGCSEARCHFILTER"); ?></td>
-					<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
+					<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php //if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php //echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
 				</tr>
+				 -->
 			</table>
+			
 <?php 
 }
 else if ($type == 1)
@@ -601,11 +625,12 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="newRelation" />
+			<input type="hidden" name="child_attributetype" value="<?php echo $child_attributetype?>" />
 		</form>
 			<?php 	
 	}
 
-	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype, $option)
+	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype, $option)
 	{
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
 		global  $mainframe;
@@ -955,11 +980,36 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 										?>
 									</td>
 								</tr>
+								<!-- 
 								<tr>
-									<td><?php echo JText::_("CATALOG_RELATION_OGCSEARCHFILTER"); ?></td>
-									<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
+									<td><?php //echo JText::_("CATALOG_RELATION_OGCSEARCHFILTER"); ?></td>
+									<td><input size="50" type="text" name ="ogcsearchfilter" value="<?php //if ($pageReloaded and array_key_exists('ogcsearchfilter', $_POST)) echo $_POST['ogcsearchfilter']; else echo $searchCriteria->ogcsearchfilter?>" maxlength="<?php //echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
 								</tr>
+								 -->
 							</table>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+								<td colspan="2">
+									<fieldset id="filterfields">
+										<legend align="top"><?php echo JText::_("CATALOG_CONTEXT_FILTERFIELD"); ?></legend>
+										<table>
+			<?php
+			
+			foreach ($languages as $lang)
+			{ 
+			?>
+								<tr>
+								<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+								<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('filterfield_'.$lang->code, $_POST)) echo $_POST['filterfield_'.$lang->code]; else echo $filterfields[$lang->id]?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
+								</tr>
+			<?php
+			}
+			?>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+						</table>
 						</div>
 					</td>
 				</tr>
