@@ -631,71 +631,87 @@ class ADMIN_metadata {
 							$LocName = $name."__".($pos+2);
 							//echo "LocName: ".$LocName."\r\n";
 						
-							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
-							$xmlAttributeParent->appendChild($XMLNode);
-							$xmlLocParent = $XMLNode;
-							
-							foreach($this->langList as $lang)
+							// S'assurer que l'entrée a bien été retournée, et que ce n'est pas juste un effet de bord
+							// du comptage, lié à des +/- successifs 
+							$countExist=0;
+							foreach($keyVals as $key => $val)
 							{
-								//print_r($lang); echo "\r\n";
-								$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
-								//echo "LangName: ".$LangName."\r\n";  
-	
-								// Récupération des valeurs postées correspondantes
-								$keys = array_keys($_POST);
-								$usefullVals=array();
-								//$usefullKeys=array();
-								$langCount=0;
-								
-								foreach($keys as $key)
+								if ($key == $LocName)
 								{
-									$partToCompare = substr($key, 0, strlen($LangName));
-									//echo "partToCompare: ".$partToCompare."\r\n";
-									//echo "key: ".$key."\r\n";
-									if ($partToCompare == $LangName)
+									$countExist++;
+									break;
+								}
+							}
+							//echo "countExist: ".$countExist."\r\n";
+
+							if ($countExist == 1)
+							{
+								$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
+								$xmlAttributeParent->appendChild($XMLNode);
+								$xmlLocParent = $XMLNode;
+								
+								foreach($this->langList as $lang)
+								{
+									//print_r($lang); echo "\r\n";
+									$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
+									//echo "LangName: ".$LangName."\r\n";  
+		
+									// Récupération des valeurs postées correspondantes
+									$keys = array_keys($_POST);
+									$usefullVals=array();
+									//$usefullKeys=array();
+									$langCount=0;
+									
+									foreach($keys as $key)
 									{
-										if (substr($key, -6) <> "_index")
+										$partToCompare = substr($key, 0, strlen($LangName));
+										//echo "partToCompare: ".$partToCompare."\r\n";
+										//echo "key: ".$key."\r\n";
+										if ($partToCompare == $LangName)
 										{
-											$langCount = $langCount+1;
-											//$usefullKeys[] = $key;
-											$usefullVals[$lang->code_easysdi] = $_POST[$key];
+											if (substr($key, -6) <> "_index")
+											{
+												$langCount = $langCount+1;
+												//$usefullKeys[] = $key;
+												$usefullVals[$lang->code_easysdi] = $_POST[$key];
+											}
 										}
 									}
-								}
-								//$count = $count/count($this->langList);
-								
-								//echo "count langue: ".$langCount."\r\n";
-								
-								for ($langPos=1; $langPos<=$langCount; $langPos++)
-								{
-									$nodeValue=$usefullVals[$lang->code_easysdi];
+									//$count = $count/count($this->langList);
 									
-									/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
-										$nodeValue = utf8_encode($nodeValue);
-									*/
-									//$nodeValue = stripslashes($nodeValue);
-									$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
+									//echo "count langue: ".$langCount."\r\n";
 									
-									// Ajout des balises inhérantes aux locales
-									if ($lang->defaultlang == true) // La langue par défaut
+									for ($langPos=1; $langPos<=$langCount; $langPos++)
 									{
-										$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
-										$xmlLocParent->appendChild($XMLNode);
-									}
-									else // Les autres langues
-									{
-										$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
-										$xmlLocParent->appendChild($XMLNode);
-										$xmlLocParent_temp = $XMLNode;
-										$XMLNode = $XMLDoc->createElement("gmd:textGroup");
-										$xmlLocParent_temp->appendChild($XMLNode);
-										$xmlLocParent_temp = $XMLNode;
-										// Ajout de la valeur
-										$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-										$xmlLocParent_temp->appendChild($XMLNode);
-										// Indication de la langue concernée
-										$XMLNode->setAttribute('locale', "#".$lang->code);
-										//$xmlParent = $XMLNode;
+										$nodeValue=$usefullVals[$lang->code_easysdi];
+										
+										/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
+											$nodeValue = utf8_encode($nodeValue);
+										*/
+										//$nodeValue = stripslashes($nodeValue);
+										$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
+										
+										// Ajout des balises inhérantes aux locales
+										if ($lang->defaultlang == true) // La langue par défaut
+										{
+											$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
+											$xmlLocParent->appendChild($XMLNode);
+										}
+										else // Les autres langues
+										{
+											$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
+											$xmlLocParent->appendChild($XMLNode);
+											$xmlLocParent_temp = $XMLNode;
+											$XMLNode = $XMLDoc->createElement("gmd:textGroup");
+											$xmlLocParent_temp->appendChild($XMLNode);
+											$xmlLocParent_temp = $XMLNode;
+											// Ajout de la valeur
+											$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
+											$xmlLocParent_temp->appendChild($XMLNode);
+											// Indication de la langue concernée
+											$XMLNode->setAttribute('locale', "#".$lang->code);
+											//$xmlParent = $XMLNode;
+										}
 									}
 								}
 							}
