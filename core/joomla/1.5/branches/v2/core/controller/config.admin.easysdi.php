@@ -238,10 +238,6 @@ class ADMIN_config {
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
-		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pagination_metadata'])."\" WHERE code = 'PAGINATION_METADATA'");
-		if (!$database->query()) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
 		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['welcome_redirect_url'])."\" WHERE code = 'WELCOME_REDIRECT_URL'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -299,6 +295,14 @@ class ADMIN_config {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			$database->setQuery("UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_metadata_qtipdelay'])."\" WHERE code = 'CATALOG_METADATA_QTIPDELAY'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_pagination_searchresult'])."\" WHERE code = 'CATALOG_PAGINATION_SEARCHRESULT'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_search_ogcfilterfileid'])."\" WHERE code = 'CATALOG_SEARCH_OGCFILTERFILEID'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

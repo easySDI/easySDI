@@ -466,16 +466,6 @@ if ($proxyItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_PAGINATIONMETADATA_LABEL' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_PAGINATIONMETADATA_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="10" name="pagination_metadata" value="<?php echo $coreList['PAGINATION_METADATA']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CORE_WELCOMEREDIRECT_LABEL' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_CORE_WELCOMEREDIRECT_LABEL' ); ?>
 											</span>
@@ -520,6 +510,16 @@ if ($catalogItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="catalog_url" value="<?php echo $catalogList['CATALOG_URL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_PAGINATIONSEARCHRESULT_LABEL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_PAGINATIONSEARCHRESULT_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="10" name="catalog_pagination_searchresult" value="<?php echo $catalogList['CATALOG_PAGINATION_SEARCHRESULT']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -643,6 +643,16 @@ if ($catalogItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="4" name="catalog_search_multilist_length" value="<?php echo $catalogList['CATALOG_SEARCH_MULTILIST_LENGTH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_SEARCH_OGCFILTERFILEID' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_SEARCH_OGCFILTERFILEID' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="50" name="catalog_search_ogcfilterfileid" value="<?php echo $catalogList['CATALOG_SEARCH_OGCFILTERFILEID']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									</tbody>
