@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ€™Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -630,7 +630,7 @@ class ADMIN_metadata {
 						{
 							$LocName = $name."__".($pos+2);
 							//echo "LocName: ".$LocName."\r\n";
-						
+							
 							// S'assurer que l'entrée a bien été retournée, et que ce n'est pas juste un effet de bord
 							// du comptage, lié à des +/- successifs 
 							$countExist=0;
@@ -649,19 +649,19 @@ class ADMIN_metadata {
 								$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 								$xmlAttributeParent->appendChild($XMLNode);
 								$xmlLocParent = $XMLNode;
-								
+							
 								foreach($this->langList as $lang)
 								{
 									//print_r($lang); echo "\r\n";
 									$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
 									//echo "LangName: ".$LangName."\r\n";  
-		
+	
 									// Récupération des valeurs postées correspondantes
 									$keys = array_keys($_POST);
 									$usefullVals=array();
 									//$usefullKeys=array();
 									$langCount=0;
-									
+								
 									foreach($keys as $key)
 									{
 										$partToCompare = substr($key, 0, strlen($LangName));
@@ -678,19 +678,19 @@ class ADMIN_metadata {
 										}
 									}
 									//$count = $count/count($this->langList);
-									
+								
 									//echo "count langue: ".$langCount."\r\n";
-									
+								
 									for ($langPos=1; $langPos<=$langCount; $langPos++)
 									{
 										$nodeValue=$usefullVals[$lang->code_easysdi];
-										
+									
 										/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
 											$nodeValue = utf8_encode($nodeValue);
 										*/
 										//$nodeValue = stripslashes($nodeValue);
 										$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-										
+									
 										// Ajout des balises inhérantes aux locales
 										if ($lang->defaultlang == true) // La langue par défaut
 										{
@@ -3104,10 +3104,11 @@ class ADMIN_metadata {
 		
 		// Appliquer le XSL
 		$style = new DomDocument();
+		$style->formatOutput = true; 
 		$style->load($xslfile);
 		
 		// XML conforme à la norme ISO
-        $processor = new xsltProcessor();
+		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
 		
@@ -3182,11 +3183,12 @@ class ADMIN_metadata {
 					</merge>";
 	
 			$merging = DOMDocument::loadXML($xmlmerge);
-			//print_r(htmlspecialchars($merging->saveXML()));echo "<hr>";
-			//print_r(htmlspecialchars($style->saveXML()));echo "<hr>";
 			$processor->importStylesheet($style);
 			$cswResults = $processor->transformToDoc($merging);
-			//print_r(htmlspecialchars($cswResults->saveXML()));echo "<hr>";break;
+			
+			//$mergedXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_3.xml';
+			//$cswResults->save($mergedXMLFile);
+			
 			// Suppression des deux fichiers à fusionner
 			unlink($existingXMLFile);
 			unlink($ESRIXMLFile);
