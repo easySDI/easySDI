@@ -35,7 +35,7 @@ class HTML_searchcriteria {
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderSearchCriteria' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"), 'ogcsearchfilter', @$filter_order_Dir, @$filter_order); ?></th>
+				<!-- <th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"), 'ogcsearchfilter', @$filter_order_Dir, @$filter_order); ?></th> -->
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_CRITERIATYPE"), 'criteriatype_label', @$filter_order_Dir, @$filter_order); ?></th>
 				<!-- <th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_SIMPLETAB"), 'simpletab', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_SEARCHCRITERIA_ADVANCEDTAB"), 'advancedtab', @$filter_order_Dir, @$filter_order); ?></th> -->
@@ -107,7 +107,7 @@ else
 				<td><?php echo $name; ?></td>
 <?php 
 }?>
-				<td><?php echo $row->ogcsearchfilter; ?></td>
+				<!-- <td><?php //echo $row->ogcsearchfilter; ?></td> -->
 				<td align="center"><?php echo JText::_($row->criteriatype_label);?></td>
 				<!-- <td width="100px" align="center">
 					<?php 
@@ -151,7 +151,7 @@ else
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="11"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -285,7 +285,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 	}		
 
 	
-	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $rendertypes, $option)
+	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option)
 	{
 		global  $mainframe;
 		
@@ -298,10 +298,11 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"); ?></td>
-					<td><input size="<?php echo $fieldsLength['ogcsearchfilter'];?>" type="text" name ="ogcsearchfilter" value="<?php echo $row->ogcsearchfilter?>" maxlength="<?php echo $fieldsLength['ogcsearchfilter'];?>"> </td>							
+				<!-- <tr>
+					<td><?php //echo JText::_("CATALOG_SEARCHCRITERIA_OGCSEARCHFILTER"); ?></td>
+					<td><input size="<?php //echo $fieldsLength['ogcsearchfilter'];?>" type="text" name ="ogcsearchfilter" value="<?php //echo $row->ogcsearchfilter?>" maxlength="<?php //echo $fieldsLength['ogcsearchfilter'];?>"> </td>							
 				</tr>
+				 -->
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
@@ -321,6 +322,28 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 						$selectedRendertype = $row->rendertype_id;
 					?>
 					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
+				</tr>
+			</table>
+			<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+					<td colspan="2">
+						<fieldset id="filterfields">
+							<legend align="top"><?php echo JText::_("CATALOG_CONTEXT_FILTERFIELD"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php echo $filterfields[$lang->id]?>" maxlength="<?php echo $fieldsLength['ogcsearchfilter'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
