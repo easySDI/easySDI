@@ -49,6 +49,7 @@ class ADMIN_objecttypelink {
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
+		$language =& JFactory::getLanguage();
 		$filter	= null;
 		
 		$context	= $option.'.listObjectTypeLink';
@@ -115,8 +116,8 @@ class ADMIN_objecttypelink {
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
-		
 		$rows = $db->loadObjectList();
+		
 		if ($db->getErrorNum()) {
 			echo $db->stderr();
 			return false;
