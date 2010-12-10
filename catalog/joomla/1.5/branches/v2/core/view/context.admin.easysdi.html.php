@@ -117,7 +117,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 <?php
 	}
 	
-	function editContext(&$row, $listObjectTypes, $fieldsLength, $languages, $labels, $objecttypes, $selected_objecttypes, $option)
+	function editContext(&$row, $listObjectTypes, $fieldsLength, $languages, $labels, $sortfields, $objecttypes, $selected_objecttypes, $option)
 	{
 		global  $mainframe;
 		
@@ -167,6 +167,28 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CATALOG_CONTEXT_XSLDIR_TIP' ); ?>
 						</div>
 					</td>							
+				</tr>
+			</table>
+			<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+					<td colspan="2">
+						<fieldset id="sortfields">
+							<legend align="top"><?php echo JText::_("CATALOG_CONTEXT_SORTFIELD"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="sortfield<?php echo "_".$lang->code;?>" value="<?php echo $sortfields[$lang->id]?>" maxlength="<?php echo $fieldsLength['sortfield'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
