@@ -93,6 +93,17 @@ class ADMIN_context {
 					if (fields.item(i).value == "")
 						labelEmpty=1;
 				}
+
+				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+				var sortEmpty = 0;
+				sortfields = document.getElementById('sortfields');
+				fields = sortfields.getElementsByTagName('input');
+				
+				for (var i = 0; i < fields.length; i++)
+				{
+					if (fields.item(i).value == "")
+						sortEmpty=1;
+				}
 				
 				// do field validation
 				if (form.name.value == "") 
@@ -102,6 +113,10 @@ class ADMIN_context {
 				else if (form.code.value == "")
 				{
 					alert( "<?php echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NOCODE', true ); ?>" );
+				}
+				else if (sortEmpty > 0) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NOSORTFIELDS', true ); ?>" );
 				}
 				else if (labelEmpty > 0) 
 				{
@@ -176,6 +191,16 @@ class ADMIN_context {
 			$labels[$lang->id] = $label;
 		}
 		
+		// Champs de tri
+		$sortfields = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT ogcsearchsorting FROM #__sdi_context_sort WHERE context_id='".$row->id."' AND language_id=".$lang->id);
+			$sortfield = $database->loadResult();
+			
+			$sortfields[$lang->id] = $sortfield;
+		}
+		
 		$objecttypes = array();
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_objecttype ORDER BY name" );
 		$objecttypes = array_merge( $objecttypes, $database->loadObjectList() );
@@ -187,7 +212,7 @@ class ADMIN_context {
 			$selected_objecttypes = array_merge( $selected_objecttypes, $database->loadResultArray() );
 		}
 		
-		HTML_context::editContext($row, $listObjectTypes, $fieldsLength, $languages, $labels, $objecttypes, $selected_objecttypes, $option);
+		HTML_context::editContext($row, $listObjectTypes, $fieldsLength, $languages, $labels, $sortfields, $objecttypes, $selected_objecttypes, $option);
 	}
 	
 	function saveContext($option)
@@ -267,6 +292,34 @@ class ADMIN_context {
 			{
 				// Create
 				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowContext->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+		}
+		
+		// Stocker les champs de tri par langue
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT count(*) FROM #__sdi_context_sort WHERE context_id='".$rowContext->id."' AND language_id='".$lang->id."'");
+			$total = $database->loadResult();
+			
+			if ($total > 0)
+			{
+				//Update
+				$database->setQuery("UPDATE #__sdi_context_sort SET ogcsearchsorting='".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."' WHERE id='".$rowContext->id."' AND language_id=".$lang->id);
+				if (!$database->query())
+					{	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						return false;
+					}
+			}
+			else
+			{
+				// Create
+				$database->setQuery("INSERT INTO #__sdi_context_sort (context_id, language_id, ogcsearchsorting) VALUES ('".$rowContext->id."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
