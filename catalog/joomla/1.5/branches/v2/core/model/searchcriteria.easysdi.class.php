@@ -23,7 +23,7 @@ class searchcriteria extends sdiTable
 	var $simpletab=null;
 	var $advancedtab=null;
 	var $relation_id=null;
-	var $ogcsearchfilter=null;
+	//var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
@@ -40,7 +40,7 @@ class searchcriteriaByRelationId extends sdiTable
 	var $simpletab=null;
 	var $advancedtab=null;
 	var $relation_id=null;
-	var $ogcsearchfilter=null;
+	//var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
