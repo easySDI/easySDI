@@ -568,7 +568,7 @@ class displayManager{
 		displayManager::DisplayMetadata($style,$document);
 	}
 	
-	function DisplayMetadata ($xslStyle, $xml)
+function DisplayMetadata ($xslStyle, $xml)
 	{
 //		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
@@ -950,6 +950,297 @@ class displayManager{
 		}*/
 	}
 	
+	function buildXHTML ($xslStyle, $xml)
+	{
+//		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+		$option = JRequest::getVar('option');
+		$task = JRequest::getVar('task');
+		$type = JRequest::getVar('type', 'abstract');
+		$id = JRequest::getVar('id');
+		$db =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
+		$toolbar =JRequest::getVar('toolbar',1);
+		$print =JRequest::getVar('print',0);
+		$buttonsHtml="";
+		$menuLinkHtml="";
+		$queryAccountLogo;
+		$supplier;
+		$product_creation_date;
+		$product_update_date;
+		$shopExist=0;
+		
+		// Si la page est appelée depuis un autre environnement que Joomla
+		//print_r($_SERVER);echo "<br>";
+		$notJoomlaCall = 'true';
+		if (array_key_exists('HTTP_REFERER', $_SERVER))
+		{
+			// Emplacement depuis lequel l'adresse a été appelée
+			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
+			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
+			//echo $caller."<br>";
+			
+			// Adresse appelée
+			$scheme = "http";
+			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
+				$scheme .= "s";
+			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
+			//echo $current;
+			
+			// Si l'adresse courante ne fait pas partie du même site que l'adresse appelante, 
+			// on considère que c'est un appel direct
+			if ($caller == $current)
+				$notJoomlaCall = 'false';
+		}
+			
+		$db =& JFactory::getDBO();
+		
+		$user = JFactory::getUser();
+		$current_account = new accountByUserId($db);
+		if (!$user->guest){
+			$current_account->load($user->id);
+		}else{
+			$current_account->id = 0;
+		}
+        		
+		// Construction  of supplier,creation date and update date [from EasySDIV1]
+		$queryAccountID = "	SELECT a.id 
+							FROM #__sdi_metadata m
+							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+							INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+							INNER JOIN #__sdi_account a ON a.id=o.account_id 
+							WHERE m.guid = '".$id."'";
+		$db->setQuery($queryAccountID);
+		$account_id = $db->loadResult();
+			
+		$queryAccountLogo = "	SELECT logo 
+								FROM #__sdi_account 
+								WHERE id = ".$account_id;
+		$db->setQuery($queryAccountLogo);
+		$account_logo = $db->loadResult();
+		
+		$query="SELECT u.name 
+				FROM #__sdi_account a 
+				INNER JOIN #__users u on a.user_id = u.id 
+				WHERE a.id = ".$account_id;
+   		$db->setQuery($query);
+   		$supplier= $db->loadResult();
+		
+		$query = "	SELECT o.created 
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$id."'";
+		$db->setQuery($query);
+		$product_creation_date = $db->loadResult();
+		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		
+		$query = "	SELECT o.updated 
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$id."'";
+		$db->setQuery($query);
+		$product_update_date = $db->loadResult();
+		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
+		if ($product_update_date == '0000-00-00 00:00:00')
+			$product_update_date = '-';
+				
+		$query = "	SELECT count(*) 
+					FROM #__sdi_list_module 
+					WHERE code='SHOP'";
+		$db->setQuery($query);
+		$shopExist = $db->loadResult();
+		if($shopExist)
+		{
+			$query = " SELECT count(*) FROM #__sdi_product p
+										INNER JOIN #__sdi_objectversion ov on ov.id = p.objectversion_id
+										INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+										WHERE m.guid = '$id'";
+			$db->setQuery($query);
+			$shopExist = $db->loadResult();
+		}
+		
+		//Defines if the corresponding product is orderable.
+		$hasOrderableProduct = false;
+		
+		//load favorites
+//		$optionFavorite;
+//		$metadataListArray = array();
+//		if($current_account->id == 0)
+//			$optionFavorite = false;
+//		else if ($enableFavorites == 1){
+//			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
+//			$db->setQuery($query);
+//			$metadataListArray = $db->loadResultArray();
+//			if ($db->getErrorNum()) {						
+//						echo "<div class='alert'>";			
+//						echo 			$db->getErrorMsg();
+//						echo "</div>";
+//			}
+//		}
+//		$isFavorite = 1;
+//		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//			$isFavorite = 0;
+		
+		$context = JRequest::getVar('context');
+		if ($type <> 'diffusion')
+			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
+		
+//		echo htmlspecialchars($xml->saveXML())."<br>";break;
+		
+		$processor = new xsltProcessor();
+		$processor->importStylesheet($xslStyle);
+		$xmlToHtml = $processor->transformToXml($xml);
+		
+		$myHtml="";
+		// Toolbar build from EasySDIV1
+		if ($toolbar==1){
+			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
+//			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
+//			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
+//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
+			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
+					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
+			if ($shopExist)
+				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_ORDERPRODUCT")."\" id=\"orderProduct\" onclick=\"window.open('./index.php?option=com_easysdi_shop&task=shop', '_parent');\"> </div></td>";
+			
+			$buttonsHtml .= "</tr></table>";		
+		}
+		if ($print ==1 ){
+			$myHtml .= "<script>window.print();</script>";
+			
+		}
+		
+		//Affichage des onglets
+		if ($print !=1 )
+		{
+			$index = JRequest::getVar('tabIndex', 0);
+			$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
+			
+			$menuLinkHtml .= $tabs->startPane("catalogPane");
+			$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_ABSTRACT_TAB"),"catalogPanel1");
+			$menuLinkHtml .= $tabs->endPanel();
+			$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_COMPLETE_TAB"),"catalogPanel2");
+			$menuLinkHtml .= $tabs->endPanel();
+			if ($shopExist)
+			{
+				$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_DIFFUSION_TAB"),"catalogPanel3");
+				$menuLinkHtml .= $tabs->endPanel();
+			}
+			$menuLinkHtml .= $tabs->endPane();
+			
+			//Define links for onclick event
+			$myHtml .= "<script>\n";
+			
+//			$myHtml .="
+//			function favoriteManagment ()
+//			{
+//			  var action = \"addFavorite\";
+//			   var title = Array();
+//			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
+//			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
+//				   
+//			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
+//			      action = \"removeFavorite\";
+//				   
+//			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
+//		           	method: 'get',
+//		           	onSuccess: function(){
+//				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
+//		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
+//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
+//					}else{
+//					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
+//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
+//					}
+//		           	},
+//		           	onFailure: function(){
+//		           		
+//		           	}
+//		           }).request();		
+//				
+//			}";
+			
+//			//Manage display class
+//			/* Onglets abstract et complete*/
+//			$myHtml .= "window.addEvent('domready', function() {
+//			
+//			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
+//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+//			});
+//			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
+//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+//			});
+//			
+//			task = '$task';
+//			type = '$type';
+//			
+//			";
+//			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
+//			if ($shopExist)
+//			{
+//				$myHtml .= "
+//				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
+//					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+//				});
+//				
+//				document.getElementById('catalogPanel3').className = 'closed';
+//				
+//				if(task == 'showMetadata' & type == 'diffusion'){
+//	        		document.getElementById('catalogPanel3').className = 'open';
+//				}
+//				";
+//			}
+			
+			/* Boutons */
+//			$myHtml .= "
+//
+//			
+//	
+//			document.getElementById('catalogPanel1').className = 'closed';
+//			document.getElementById('catalogPanel2').className = 'closed';
+//			
+//			if(task == 'showMetadata' & type == 'abstract'){
+//	        	document.getElementById('catalogPanel1').className = 'open';
+//			}
+//			if(task == 'showMetadata' & type == 'complete'){
+//	        	document.getElementById('catalogPanel2').className = 'open';
+//			}
+//			});\n"; 
+		
+			$myHtml .= "</script>";
+
+		}
+		
+		//Workaround to avoid printf problem with text with a "%", must
+		//be changed to "%%".
+		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
+		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
+		
+		$myHtml .= $xmlToHtml;
+		
+		// Construction  of creation date, update date and account logo [from EasySDIV1]
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
+		
+		$temp = explode(" ", $product_creation_date);
+		$temp = explode("-", $temp[0]);
+		//$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		$product_creation_date="";
+		$temp = explode(" ", $product_update_date);
+		$temp = explode("-", $temp[0]);
+		if ($product_update_date <> "-")
+			//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
+			$product_update_date="";
+		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
+		
+		
+		//printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml, $notJoomlaCall);
+		return $myHtml;
+	}
+	
 	function exportXml()
 	{
 		$database =& JFactory::getDBO();
@@ -1085,9 +1376,8 @@ class displayManager{
 							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
 		
-		$cswResults = new DomDocument();
-		
-		displayManager::getMetadata($cswResults);
+		//$cswResults = new DomDocument();
+		//displayManager::getMetadata($cswResults);
 		
 		$processor = new xsltProcessor();
 		$style = new DomDocument();
@@ -1150,13 +1440,14 @@ class displayManager{
 			}
 		}
 		
-		$processor->importStylesheet($style);
-		$myHtml = $processor->transformToXml($cswResults);
+		//$processor->importStylesheet($style);
+		//$myHtml = $processor->transformToXml($cswResults);
 	
+		$myHTML = displayManager::buildXHTML($style, $cswResults);
 		displayManager::exportPDFfile($myHtml);
 	}
 	
-	function exportPDFfile( $myHtml) 
+	function exportPDFfile($myHtml) 
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -1182,11 +1473,11 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		
-		$cswResults = new DomDocument();
-		displayManager::getMetadata($cswResults);
+		//$cswResults = new DomDocument();
+		//displayManager::getMetadata($cswResults);
 		
 		// Récupérer le type d'objet
-		$database->setQuery("SELECT ot.code 
+		/*$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
@@ -1247,7 +1538,7 @@ class displayManager{
 		$myHtml = str_replace("__ref_4\$s", $object_update_date, $myHtml);
 		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
 		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
-
+		*/
 		if($myHtml == "")
 			$myHtml = "<div/>";
 		
@@ -1293,6 +1584,8 @@ class displayManager{
 				fclose ($fp);
 					//ob_end_clean();
 				
+				unlink($foptmp);
+			
 				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
                         	
@@ -1474,12 +1767,26 @@ class displayManager{
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 	
+		// Nomdu fournisseur
+		$query="SELECT u.name 
+				FROM #__sdi_account a 
+				INNER JOIN #__users u on a.user_id = u.id 
+				WHERE a.id = ".$account_id;
+   		$db->setQuery($query);
+   		$supplier= $db->loadResult();
+		
+   		// Créer une entrée pour le compte
+		$XMLAccount = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account");
 		// Créer une entrée pour le logo du compte
-		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
+		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:logo", $account_logo);
 		$XMLALogo->setAttribute('width', $logoWidth);
 		$XMLALogo->setAttribute('height', $logoHeight);
-		$XMLSdi->appendChild($XMLALogo);
-	
+		$XMLAccount->appendChild($XMLALogo);
+		// Créer une entrée pour le nom du fournisseur de l'objet
+		$XMLASupplier = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:supplier", $supplier);
+		$XMLAccount->appendChild($XMLASupplier);
+		$XMLSdi->appendChild($XMLAccount);
+		
 		// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
 		$object=array();
 		$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
@@ -1491,10 +1798,39 @@ class displayManager{
 		$db->setQuery($queryObject);
 		$object = $db->loadObject();
 		
-		// Modify objectversion_title to construct an XML valid date
+		// Date de création de la métadonnée
+   		$query = "	SELECT m.created 
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$fileIdentifier."'";
+		$db->setQuery($query);
+		$creation_date = $db->loadResult();
+		
+		// Dernière mise à jour de la métadonnée
+		$query = "	SELECT m.updated 
+					FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
+					WHERE m.guid = '".$fileIdentifier."'";
+		$db->setQuery($query);
+		$update_date = $db->loadResult();
+		
+		// Modify objectversion_title, creation_date and updated_date
+		// to construct an XML valid date
 		$explodeDate = array();
 		$explodeDate = explode(" ", $object->title);
 		$object->title = $explodeDate[0]."T".$explodeDate[1]; 
+		if ($creation_date and $creation_date <> "")
+		{
+			$explodeDate = explode(" ", $creation_date);
+			$creation_date = $explodeDate[0]."T".$explodeDate[1];
+		} 
+		if ($update_date and $update_date <> "")
+		{
+			$explodeDate = explode(" ", $update_date);
+			$update_date = $explodeDate[0]."T".$explodeDate[1];
+		} 
 		
 		// Créer une entrée pour l'objet
 		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
@@ -1503,12 +1839,16 @@ class displayManager{
 			$XMLObject->setAttribute('object_name', $object->name);
 			$XMLObject->setAttribute('objectversion_title', $object->title);
 			$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
+			$XMLObject->setAttribute('metadata_created', $creation_date);
+			$XMLObject->setAttribute('metadata_updated', $update_date);
 		}
 		else
 		{
 			$XMLObject->setAttribute('object_name', '');
 			$XMLObject->setAttribute('objectversion_title', '');
 			$XMLObject->setAttribute('metadata_visibility', '');
+			$XMLObject->setAttribute('metadata_created', '0000-00-00T00:00:00');
+			$XMLObject->setAttribute('metadata_updated', '0000-00-00T00:00:00');
 		}
 		$XMLSdi->appendChild($XMLObject);
 		
@@ -1673,6 +2013,60 @@ class displayManager{
 		
 		//$doc->save("/home/sites/geoportal.depth.ch/web/administrator/components/com_easysdi_core/xml/tmp/display_".$fileIdentifier.".xml");
 	
+		// Stockage des liens parents et enfants
+		$rowMetadata = new metadataByGuid($db);
+		$rowMetadata->load($fileIdentifier);
+		
+		//print_r($rowMetadata);
+		
+		$rowObjectVersion = new objectversionByMetadata_id($db);
+		$rowObjectVersion->load($rowMetadata->id);
+		
+		//print_r($rowObjectVersion);
+		
+		$childs=array();
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+				 FROM #__sdi_metadata m
+				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
+				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
+				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
+				 WHERE ovl.parent_id=".$rowObjectVersion->id;
+		$db->setQuery($query);
+		//echo $db->getQuery()."<br>";
+		$childs = $db->loadObjectList();
+		
+		$parents=array();
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+				 FROM #__sdi_metadata m
+				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
+				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
+				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
+				 WHERE ovl.child_id=".$rowObjectVersion->id;
+		$db->setQuery($query);
+		//echo $db->getQuery()."<br>";
+		$parents = $db->loadObjectList();
+		
+		$XMLLinks = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:links");
+		foreach ($childs as $c)
+		{
+			$XMLChild = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:child");
+			$XMLChild->setAttribute('metadata_guid', $c->metadata_guid);
+			$XMLChild->setAttribute('object_name', $c->objectname);
+			$XMLChild->setAttribute('objecttype', $c->objecttype);
+		}
+
+		foreach ($parents as $p)
+		{
+			$XMLParent = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:parent");
+			$XMLParent->setAttribute('metadata_guid', $p->metadata_guid);
+			$XMLParent->setAttribute('object_name', $p->objectname);
+			$XMLParent->setAttribute('objecttype', $p->objecttype);	
+			$XMLLinks->appendChild($XMLParent);
+		}
+		$XMLSdi->appendChild($XMLLinks);
+		
 		return $doc;
 	}
 }
