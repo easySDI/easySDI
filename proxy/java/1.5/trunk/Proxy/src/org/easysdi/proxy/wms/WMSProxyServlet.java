@@ -895,6 +895,8 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		try 
 		{
+			String responseVersion="";
+			
 			//Filtre les fichiers réponses des serveurs :
 			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
@@ -962,11 +964,21 @@ public class WMSProxyServlet extends ProxyServlet {
 
 					// Boucle sur les fichiers réponses
 					for (int iFilePath = 0; iFilePath < wmsFilePathList.size(); iFilePath++) {
+						//Load response file
+						InputSource iS = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
+						
+						//Get the WMS version of the response
+						SAXBuilder sxb = new SAXBuilder();
+						org.jdom.Document  docParent = sxb.build(iS);
+						responseVersion = docParent.getRootElement().getAttribute("version").getValue();
+						responseVersion = responseVersion.replaceAll("\\.", "");
+						
+						//Transform with XSL
 						tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
 						FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
-						StringBuffer sb = buildCapabilitiesXSLT(req, resp, iFilePath, version);
-						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
+						StringBuffer sb = buildCapabilitiesXSLT(req, resp, iFilePath, responseVersion);
 						InputSource inputSource = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
+						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 						String user = (String) getUsername(getRemoteServerUrl(iFilePath));
 						String password = (String) getPassword(getRemoteServerUrl(iFilePath));
@@ -974,7 +986,6 @@ public class WMSProxyServlet extends ProxyServlet {
 							ResourceResolver rr = new ResourceResolver(user, password);
 							xmlReader.setEntityResolver(rr);
 						}
-						// END Added to hook in my EntityResolver
 						SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 						transformer = tFactory.newTransformer(new StreamSource(xslt));
 
@@ -999,7 +1010,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					if(tempOut != null)
 					{
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
-						StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(version);
+						StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(responseVersion);
 						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 						InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
 						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
@@ -1013,11 +1024,11 @@ public class WMSProxyServlet extends ProxyServlet {
 					dump("DEBUG","transform end apply XSLT on service metadata");
 					dump("transform end GetCapabilities operation");
 					
+					dump("DEBUG","Start - Rewrite BBOX");
 					//Réécriture des BBOX
 					ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
 					SAXBuilder sxb = new SAXBuilder();
 					org.jdom.Document  docParent = sxb.build(in);
-					String responseVersion = docParent.getRootElement().getAttribute("version").getValue();
 					org.jdom.Element racine = docParent.getRootElement();
 					
 					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
@@ -1033,15 +1044,13 @@ public class WMSProxyServlet extends ProxyServlet {
 						try {
 							wgsCRS = CRS.decode("EPSG:4326");
 						} catch (NoSuchAuthorityCodeException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							dump("ERROR","Exception when trying to load SRS EPSG:4326 : "+e1.getMessage());
 						} catch (FactoryException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							dump("ERROR",e1.getMessage());
 						}
 				    	rewriteBBOX(layersList, wgsCRS, responseVersion);
 			    	}
-			    	
+			    	dump("DEBUG","End - Rewrite BBOX");
 			    	//Return
 					XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 					ByteArrayOutputStream result =new ByteArrayOutputStream ();
