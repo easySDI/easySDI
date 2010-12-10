@@ -113,10 +113,25 @@ class ADMIN_searchcriteria {
 						labelEmpty=1;
 				}
 				
+				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+				var filterEmpty = 0;
+				filterfields = document.getElementById('filterfields');
+				fields = filterfields.getElementsByTagName('input');
+				
+				for (var i = 0; i < fields.length; i++)
+				{
+					if (fields.item(i).value == "")
+						filterEmpty=1;
+				}
+				
 				// do field validation
 				if (form.name.value == "") 
 				{
 					alert( "<?php echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (filterEmpty > 0) 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NOFILTERFIELDS', true ); ?>" );
 				}
 				else if (labelEmpty > 0) 
 				{
@@ -181,6 +196,25 @@ class ADMIN_searchcriteria {
 			} 
 		}
 		
+		// Récupération des types mysql pour les champs
+		$tableFields = array();
+		$tableFields = $database->getTableFields("#__sdi_context_sc_filter", false);
+		
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caractères
+		foreach($tableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$fieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			} 
+		}
+		
 		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
@@ -195,6 +229,16 @@ class ADMIN_searchcriteria {
 			$label = $database->loadResult();
 			
 			$labels[$lang->id] = $label;
+		}
+		
+		// Champs de tri
+		$filterfields = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT ogcsearchfilter FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$row->id."' AND language_id=".$lang->id);
+			$filterfield = $database->loadResult();
+			
+			$filterfields[$lang->id] = $filterfield;
 		}
 		
 		// Onglets
@@ -235,7 +279,7 @@ class ADMIN_searchcriteria {
 		$tab_id = $database->loadResult();
 		
 		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
-			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $rendertypes, $option);
+			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
@@ -286,6 +330,9 @@ class ADMIN_searchcriteria {
 		if ($rowSearchCriteria->criteriatype_id == 3)
 		{
 			$rowSearchCriteria->context_id = $context_id;
+			
+			if ($rowSearchCriteria->rendertype_id == 0)
+				$rowSearchCriteria->rendertype_id = 5; // Rendu textbox par défaut	
 		}
 		else
 		{
@@ -360,6 +407,34 @@ class ADMIN_searchcriteria {
 			}
 		}
 		
+		// Stocker les champs de tri par langue
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT count(*) FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id='".$lang->id."'");
+			$total = $database->loadResult();
+			
+			if ($total > 0)
+			{
+				//Update
+				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."' WHERE id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+				if (!$database->query())
+					{	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						return false;
+					}
+			}
+			else
+			{
+				// Create
+				$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context_id."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."')");
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+		}
+		
 		$rowSearchCriteria->checkin();
 		
 		// Au cas où on sauve avec Apply, recharger la page 
@@ -395,8 +470,27 @@ class ADMIN_searchcriteria {
 			$rowSearchCriteria= new searchcriteria( $database );
 			$rowSearchCriteria->load( $searchcriteria_id );
 
+			
+			// Supprimer les labels 
+			$query = "DELETE FROM #__sdi_translation WHERE element_guid= '".$rowSearchCriteria->guid."'";
+			$database->setQuery( $query);
+			if (!$database->query())
+			{	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+				
+			// Critère CSW
 			if ($rowSearchCriteria->criteriatype_id == 3)
 			{
+				// Supprimer les champs de recherche 
+				$query = "DELETE FROM #__sdi_context_sc_filter WHERE searchcriteria_id = ".$searchcriteria_id." AND context_id = ".$context_id;
+				$database->setQuery( $query);
+				if (!$database->query())
+				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+				
+				// Supprimer le positionnement dans les tabs 
 				$query = "DELETE FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id = ".$searchcriteria_id;
 				$database->setQuery( $query);
 				if (!$database->query())
@@ -413,7 +507,7 @@ class ADMIN_searchcriteria {
 			else
 			{
 				$criteriatype = new criteriatype( $database );
-				$criteriatype->load( 3 );
+				$criteriatype->load( 3 ); // Critère CSW
 				$mainframe->enqueueMessage(JText::sprintf("CATALOG_SEARCHCRITERIA_DELETE_ISSYSTEM_MSG", JText::_($criteriatype->label)),"error");
 				$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 				exit();
