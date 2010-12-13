@@ -110,7 +110,8 @@ function com_install(){
 				  ('".helper_easysdi::getUniqueId()."', 'METADATA_COLLAPSE', 'METADATA_COLLAPSE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'true', '".$id."'),
 				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_SEARCH_MULTILIST_LENGTH', 'CATALOG_SEARCH_MULTILIST_LENGTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '4', '".$id."'),
 				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_QTIPDELAY', 'CATALOG_METADATA_QTIPDELAY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '10000', '".$id."'),
-				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_PAGINATION_SEARCHRESULT', 'CATALOG_PAGINATION_SEARCHRESULT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."')
+				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_PAGINATION_SEARCHRESULT', 'CATALOG_PAGINATION_SEARCHRESULT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."'),
+				  ('".helper_easysdi::getUniqueId()."', 'CATALOG_SEARCH_OGCFILTERFILEID', 'CATALOG_SEARCH_OGCFILTERFILEID', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'fileId', '".$id."')
 				 ";
 		$db->setQuery( $query);
 		if (!$db->query())
@@ -913,7 +914,6 @@ function com_install(){
 				  `simpletab` tinyint(1) NOT NULL DEFAULT '0',
 				  `advancedtab` tinyint(1) DEFAULT '0',
 				  `relation_id` bigint(20) DEFAULT NULL,
-				  `ogcsearchfilter` varchar(100) DEFAULT NULL,
 				  `criteriatype_id` bigint(20) NOT NULL DEFAULT 1,
 				  `context_id` bigint(20) DEFAULT NULL,
   				  `rendertype_id` bigint(20) DEFAULT NULL,
@@ -979,6 +979,40 @@ function com_install(){
 			return false;
 		}
 		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_context_sc_filter` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `searchcriteria_id` bigint(20) NOT NULL,
+				  `context_id` bigint(20) NOT NULL,
+				  `language_id` bigint(20) DEFAULT NULL,
+				  `ogcsearchfilter` varchar(100) DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `searchcriteria_id` (`searchcriteria_id`),
+				  KEY `context_id` (`context_id`),
+				  KEY `language_id` (`language_id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_context_sort` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `context_id` bigint(20) NOT NULL,
+				  `language_id` bigint(20) DEFAULT NULL,
+				  `ogcsearchsorting` varchar(100) DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `context_id` (`context_id`),
+				  KEY `language_id` (`language_id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_relation_context` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `relation_id` bigint(20) NOT NULL,
@@ -993,6 +1027,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
 		}
+		
 		
 		
 		/*

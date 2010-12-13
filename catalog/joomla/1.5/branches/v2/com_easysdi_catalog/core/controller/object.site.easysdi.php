@@ -75,13 +75,8 @@ class SITE_object {
 		$option=JRequest::getVar("option");
 		
 		$context	= $option.'.listObject';
-		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
-		
-		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
-		// La mise à zéro ne se fait pas, il faut donc la forcer
-		if (! isset($_REQUEST['limitstart']))
-			$limitstart=0;
 		
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
@@ -142,6 +137,13 @@ class SITE_object {
 		$query .= $filter;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
+		
+		// Si le nombre de résultats retournés a changé, adapter la page affichée
+		if ($limitstart >= $total)
+		{
+			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+			$mainframe->setUserState('limitstart', $limitstart);
+		}	
 		
 		// Create the pagination object
 		jimport('joomla.html.pagination');

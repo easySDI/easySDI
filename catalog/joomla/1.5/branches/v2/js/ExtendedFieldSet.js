@@ -69,19 +69,13 @@ Ext.override(Ext.form.FieldSet, {
 					//console.log ("masterName: " + masterName);
 					master = Ext.getCmp(masterName);
 				}
-				//console.log("master: " + master.getId());
-				//console.log("nombre d'enfants clones: " + master.clones_count);
-				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
-				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				//var partOfNameToModify = name.substring(name.lastIndexOf('-'));
-				//console.log("partOfNameToModify: " + partOfNameToModify);
-				//console.log("test: " + test);
-				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
-				//var partOfNameToModify2 = name.substring(name.lastIndexOf('-'),name.length-String(master.clones_count).length);
-				//console.log("partOfNameToModify2: " + partOfNameToModify2 + " - " + name.length + " - " + String(master.clones_count).length );
-				//console.log("partOfNameToModify2: " + partOfNameToModify2);
-				
+				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+				var aName = name.split('__');
+			    //console.log("aName: " + aName);
+			    var partOfNameToModify2 = name.substring(parentName.length,name.length-aName[aName.length - 1].length);
+			    //console.log("partOfNameToModify2: " + partOfNameToModify2);
+			    
 				master.clones_count = master.clones_count+1;
 			    //clones_count = master.clones_count;
 				
@@ -99,13 +93,7 @@ Ext.override(Ext.form.FieldSet, {
 			    	indexComponent.setValue(newVal);
 				}
 */				
-			    var test_new_name = name.substring(0, name.lastIndexOf('__') + '__'.length); 
-				//console.log("test_new_name: " + test_new_name);
-			    var test_new_name2 = test_new_name + clones_count; 
-			    //console.log("test_new_name2: " + test_new_name2);
-				
-			    
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				//console.log("nameEndPart: " + nameEndPart);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
 			    //console.log("newName: " + parentName +" - "+partOfNameToModify2+" - "+clones_count +" - "+ nameEndPart);

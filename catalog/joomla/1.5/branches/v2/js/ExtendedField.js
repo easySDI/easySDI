@@ -91,8 +91,13 @@ Ext.override(Ext.form.Field, {
 				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
 				//console.log("partOfNameToModify: "+ partOfNameToModify);
-				var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
 				//console.log("partOfNameToModify2: "+ partOfNameToModify2);
+				var aName = name.split('__');
+				var sName = name.split('-');
+                var partOfNameToModify2 = name.substring(parentName.length, name.length-aName[aName.length - 1].length);
+				if(partOfNameToModify2.match("^-") != "-")
+				    partOfNameToModify2 = "-"+partOfNameToModify2;
 				
 			    master.clones_count = master.clones_count+1;
 			    if (isClone)
@@ -110,7 +115,8 @@ Ext.override(Ext.form.Field, {
 			    	indexComponent.setValue(newVal);
 				}
 */				
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+				
+			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				//console.log("nameEndPart: "+ nameEndPart);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
 				//console.log("newName: "+ newName);

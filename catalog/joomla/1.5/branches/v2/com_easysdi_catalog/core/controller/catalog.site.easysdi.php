@@ -18,6 +18,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 class SITE_catalog {
+	var $langList = array ();
 	
 	function listCatalogContent(){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -36,6 +37,15 @@ class SITE_catalog {
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', $MDPag );
 		$limitstart = JRequest::getVar('limitstart', 0 );
+		
+		// Langues à gérer
+		$this->langList = array();
+		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
+							  FROM #__sdi_language l, #__sdi_list_codelang c 
+							  WHERE l.codelang_id=c.id 
+							  		AND published=true 
+							  ORDER BY l.ordering" );
+		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
 		// Récupération de toutes les traductions pour la construction des critères de recherche,
 		// spécialement ceux sous forne de liste dont le contenu doit être traduit
@@ -127,10 +137,24 @@ class SITE_catalog {
 		
 		// Construction de la requête pour récupérer les résultats
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		$ogcfilter_fileid = config_easysdi::getValue("catalog_search_ogcfilterfileid");
+		//echo $ogcfilter_fileid;
 		//$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		//$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
 
+		
+		$ogcsearchsorting="";
+		$database->setQuery("SELECT cs.ogcsearchsorting
+		   FROM #__sdi_context_sort cs
+		   LEFT OUTER JOIN #__sdi_context c ON cs.context_id=c.id
+		   LEFT OUTER JOIN #__sdi_language l ON cs.language_id=l.id
+		   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+		   WHERE c.code='".$context."'
+		   		 AND cl.code='".$language->_lang."'");
+		//echo $database->getQuery();
+		$ogcsearchsorting = $database->loadResult();
+		
 		// Récupération des filtres standards
 		//$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 		//$account_id  = JRequest::getVar('account_id');
@@ -273,6 +297,19 @@ class SITE_catalog {
 							$kwords = explode(" ", trim($filter));
 							//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
 							
+							$ogcsearchfilter="";
+							$database->setQuery("SELECT cscf.ogcsearchfilter
+							   FROM #__sdi_context_sc_filter cscf
+							   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+							   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+							   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							   WHERE c.code='".$context."'
+							   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+							   		 AND cl.code='".$language->_lang."'");
+							//echo $database->getQuery();
+							$ogcsearchfilter = $database->loadResult();
+							//echo "<br>".$ogcsearchfilter."<br>";
+							
 							$terms=0;
 							$cswTerm="";
 							foreach ($kwords as $word) 
@@ -281,7 +318,7 @@ class SITE_catalog {
 								{
 									$cswTerm .= "
 									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 												<ogc:Literal>%$word%</ogc:Literal>
 											</ogc:PropertyIsLike>\r\n
 										";
@@ -302,18 +339,47 @@ class SITE_catalog {
 							if (count($filter) > 0 and $filter[0] <> "")
 							{
 								$countSimpleFilters++;
+								
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
 								foreach($filter as $f)
 								{
 									$localechoice ="";
 									$list = array();
-									$database->setQuery( "SELECT t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id AND (at.code='textchoice' OR at.code='localechoice') AND c.id=".$f." AND c.published=true ORDER BY c.name" );
+									$database->setQuery( "SELECT t.content 
+														  FROM #__sdi_attribute a, 
+														  	   #__sdi_list_attributetype at,  
+														  	   #__sdi_codevalue c, 
+														  	   #__sdi_translation t, 
+														  	   #__sdi_language l, 
+														  	   #__sdi_list_codelang cl 
+														  WHERE a.id=c.attribute_id 
+														  	    AND a.attributetype_id=at.id 
+														  	    AND c.guid=t.element_guid 
+														  	    AND t.language_id=l.id 
+														  	    AND l.codelang_id=cl.id 
+														  	    AND (at.code='textchoice' OR at.code='localechoice') 
+														  	    AND c.id=".$f." 
+														  	    AND c.published=true 
+														  ORDER BY c.name" );
 									$list = $database->loadObjectList();
 	
 									foreach ($list as $element)
 									{
 										$localechoice .= "
 											<ogc:PropertyIsEqualTo>
-												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 												<ogc:Literal>$element->content</ogc:Literal>
 											</ogc:PropertyIsEqualTo>
 										";
@@ -333,10 +399,25 @@ class SITE_catalog {
 							if (count($filter) > 0 and $filter[0] <> "")
 							{
 								$countSimpleFilters++;
+								
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
+								
 								foreach($filter as $f)
 								{
 									$cswSimpleFilter .= "<ogc:PropertyIsEqualTo>
-									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 									<ogc:Literal>$f</ogc:Literal>
 									</ogc:PropertyIsEqualTo> ";
 								}
@@ -353,12 +434,27 @@ class SITE_catalog {
 							 * */
 							//echo $lowerFilter."<br>";
 							//echo $upperFilter."<br>";
+							
+							$ogcsearchfilter="";
+							$database->setQuery("SELECT cscf.ogcsearchfilter
+							   FROM #__sdi_context_sc_filter cscf
+							   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+							   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+							   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							   WHERE c.code='".$context."'
+							   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+							   		 AND cl.code='".$language->_lang."'");
+							//echo $database->getQuery();
+							$ogcsearchfilter = $database->loadResult();
+							//echo "<br>".$ogcsearchfilter."<br>";
+							
+							
 							if ($lowerFilter == "") // Seulement la borne sup
 							{
 								$countSimpleFilters++;
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswSimpleFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$upperFilter</ogc:Literal>
 								</ogc:PropertyIsLessThanOrEqualTo> ";
 							}
@@ -367,7 +463,7 @@ class SITE_catalog {
 								$countSimpleFilters++;
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$cswSimpleFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:PropertyIsGreaterThanOrEqualTo> ";
 							}
@@ -377,7 +473,7 @@ class SITE_catalog {
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswSimpleFilter .= "<ogc:PropertyIsBetween>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:LowerBoundary>
 									<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:LowerBoundary>
@@ -427,33 +523,71 @@ class SITE_catalog {
 									$cswObjectName="";
 									$cswAccountId="";
 									
+									$defaultLang=false;
+									foreach($this->langList as $lang)
+									{
+										if ($lang->defaultlang)
+											if ($lang->defaultlang == $language->_lang)
+												$defaultLang=true;
+									}
+									
 									foreach ($kwords as $word) 
 									{
 										if ($word <> "")
 										{
-											$cswTitle .= "
-											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-														<ogc:PropertyName>title</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>\r\n
-												";
-											$title++;
-											$cswKeyword .= "
-											 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-														<ogc:PropertyName>keyword</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>\r\n
-												";
-											$keyword++;
-											$cswAbstract .= "
-											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												     	<ogc:PropertyName>abstract</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>
-												";
-											$abstract++;
-											
-											$cswFreeFilters++;
+											if ($defaultLang)
+											{
+												$cswTitle .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>title</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$title++;
+												$cswKeyword .= "
+												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$keyword++;
+												$cswAbstract .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+													     	<ogc:PropertyName>abstract</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>
+													";
+												$abstract++;
+												
+												$cswFreeFilters++;
+											}
+											else
+											{
+												$cswTitle .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>title_trad</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$title++;
+												$cswKeyword .= "
+												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$keyword++;
+												$cswAbstract .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+													     	<ogc:PropertyName>abstract_trad</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>
+													";
+												$abstract++;
+												
+												$cswFreeFilters++;
+												
+											}
 										}
 									}
 									//echo $cswTitle."<br>";
@@ -511,7 +645,7 @@ class SITE_catalog {
 										
 											$empty = false;
 											
-											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
 										if (count($objectnamelist) > 1)
 												$cswObjectName.= "</ogc:Or>";
@@ -550,7 +684,7 @@ class SITE_catalog {
 										
 											$empty = false;
 											
-											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
 										if (count($accountlist) > 1)
 												$cswAccountId.= "</ogc:Or>";
@@ -1051,8 +1185,23 @@ class SITE_catalog {
 								if ($metadata_title <> "")
 								{
 									$countSimpleFilters++;
+									
+									$ogcsearchfilter="";
+									$database->setQuery("SELECT cscf.ogcsearchfilter
+									   FROM #__sdi_context_sc_filter cscf
+									   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+									   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+									   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									   WHERE c.code='".$context."'
+									   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+									   		 AND cl.code='".$language->_lang."'");
+									//echo $database->getQuery();
+									$ogcsearchfilter = $database->loadResult();
+									//echo "<br>".$ogcsearchfilter."<br>";
+									
+									
 									$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 									<ogc:Literal>%$metadata_title%</ogc:Literal>
 									</ogc:PropertyIsLike> ";
 									
@@ -1112,6 +1261,19 @@ class SITE_catalog {
 						switch ($searchFilter->rendertype_code)
 						{
 							case "date":
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
 								$lower = JRequest::getVar('filter_create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('filter_update_cal_'.$searchFilter->guid);
 								
@@ -1122,7 +1284,7 @@ class SITE_catalog {
 									$upper = date('Y-m-d', strtotime($upper)); //."T23:59:59";
 									
 									$cswSimpleFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>$upper</ogc:Literal>
 										</ogc:PropertyIsLessThanOrEqualTo> ";
 								}
@@ -1132,7 +1294,7 @@ class SITE_catalog {
 									$lower = date('Y-m-d', strtotime($lower)); //."T00:00:00";
 									
 									$cswSimpleFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>$lower</ogc:Literal>
 										</ogc:PropertyIsGreaterThanOrEqualTo> ";
 								}
@@ -1143,7 +1305,7 @@ class SITE_catalog {
 									$upper = date('Y-m-d', strtotime($upper)); //."T23:59:59";
 									
 									$cswSimpleFilter .= "<ogc:PropertyIsBetween>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:LowerBoundary><ogc:Literal>$lower</ogc:Literal></ogc:LowerBoundary>
 										<ogc:UpperBoundary><ogc:Literal>$upper</ogc:Literal></ogc:UpperBoundary>
 										</ogc:PropertyIsBetween> ";
@@ -1156,8 +1318,22 @@ class SITE_catalog {
 								if ($filter <> "")
 								{
 									$countSimpleFilters++;
+									
+									$ogcsearchfilter="";
+									$database->setQuery("SELECT cscf.ogcsearchfilter
+									   FROM #__sdi_context_sc_filter cscf
+									   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+									   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+									   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									   WHERE c.code='".$context."'
+									   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+									   		 AND cl.code='".$language->_lang."'");
+									//echo $database->getQuery();
+									$ogcsearchfilter = $database->loadResult();
+									//echo "<br>".$ogcsearchfilter."<br>";
+									
 									$cswSimpleFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>%$filter%</ogc:Literal>
 										</ogc:PropertyIsLike> ";
 									$empty = false;
@@ -1206,6 +1382,19 @@ class SITE_catalog {
 							$kwords = explode(" ", trim($filter));
 							//echo ", ".count($kwords).",  "; print_r($kwords);echo "<hr>";
 							
+							$ogcsearchfilter="";
+							$database->setQuery("SELECT cscf.ogcsearchfilter
+							   FROM #__sdi_context_sc_filter cscf
+							   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+							   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+							   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							   WHERE c.code='".$context."'
+							   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+							   		 AND cl.code='".$language->_lang."'");
+							//echo $database->getQuery();
+							$ogcsearchfilter = $database->loadResult();
+							//echo "<br>".$ogcsearchfilter."<br>";
+							
 							$terms=0;
 							$cswTerm="";
 							foreach ($kwords as $word) 
@@ -1214,7 +1403,7 @@ class SITE_catalog {
 								{
 									$cswTerm .= "
 									 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 												<ogc:Literal>%$word%</ogc:Literal>
 											</ogc:PropertyIsLike>\r\n
 										";
@@ -1235,6 +1424,20 @@ class SITE_catalog {
 							if (count($filter) > 0 and $filter[0] <> "")
 							{
 								$countAdvancedFilters++;
+								
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
 								foreach($filter as $f)
 								{
 									$localechoice ="";
@@ -1246,7 +1449,7 @@ class SITE_catalog {
 									{
 										$localechoice .= "
 											<ogc:PropertyIsEqualTo>
-												<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+												<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 												<ogc:Literal>$element->content</ogc:Literal>
 											</ogc:PropertyIsEqualTo>
 										";
@@ -1266,10 +1469,25 @@ class SITE_catalog {
 							if (count($filter) > 0 and $filter[0] <> "")
 							{
 								$countAdvancedFilters++;
+								
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
+								
 								foreach($filter as $f)
 								{
 									$cswAdvancedFilter .= "<ogc:PropertyIsEqualTo>
-									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 									<ogc:Literal>$f</ogc:Literal>
 									</ogc:PropertyIsEqualTo> ";
 								}
@@ -1286,12 +1504,27 @@ class SITE_catalog {
 							 * */
 							//echo $lowerFilter."<br>";
 							//echo $upperFilter."<br>";
+							
+							$ogcsearchfilter="";
+							$database->setQuery("SELECT cscf.ogcsearchfilter
+							   FROM #__sdi_context_sc_filter cscf
+							   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+							   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+							   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							   WHERE c.code='".$context."'
+							   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+							   		 AND cl.code='".$language->_lang."'");
+							//echo $database->getQuery();
+							$ogcsearchfilter = $database->loadResult();
+							//echo "<br>".$ogcsearchfilter."<br>";
+							
+							
 							if ($lowerFilter == "") // Seulement la borne sup
 							{
 								$countAdvancedFilters++;
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswAdvancedFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$upperFilter</ogc:Literal>
 								</ogc:PropertyIsLessThanOrEqualTo> ";
 							}
@@ -1300,7 +1533,7 @@ class SITE_catalog {
 								$countAdvancedFilters++;
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$cswAdvancedFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:PropertyIsGreaterThanOrEqualTo> ";
 							}
@@ -1310,7 +1543,7 @@ class SITE_catalog {
 								$lowerFilter = date('Y-m-d', strtotime($lowerFilter))."T00:00:00.00";
 								$upperFilter = date('Y-m-d', strtotime($upperFilter))."T23:59:59.59";
 								$cswAdvancedFilter .= "<ogc:PropertyIsBetween>
-								<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+								<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 								<ogc:LowerBoundary>
 									<ogc:Literal>$lowerFilter</ogc:Literal>
 								</ogc:LowerBoundary>
@@ -1360,33 +1593,71 @@ class SITE_catalog {
 									$cswObjectName="";
 									$cswAccountId="";
 									
+								$defaultLang=false;
+									foreach($this->langList as $lang)
+									{
+										if ($lang->defaultlang)
+											if ($lang->defaultlang == $language->_lang)
+												$defaultLang=true;
+									}
+									
 									foreach ($kwords as $word) 
 									{
 										if ($word <> "")
 										{
-											$cswTitle .= "
-											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-														<ogc:PropertyName>title</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>\r\n
-												";
-											$title++;
-											$cswKeyword .= "
-											 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-														<ogc:PropertyName>keyword</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>\r\n
-												";
-											$keyword++;
-											$cswAbstract .= "
-											 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-												     	<ogc:PropertyName>abstract</ogc:PropertyName>
-														<ogc:Literal>%$word%</ogc:Literal>
-													</ogc:PropertyIsLike>
-												";
-											$abstract++;
-											
-											$cswFreeFilters++;
+											if ($defaultLang)
+											{
+												$cswTitle .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>title</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$title++;
+												$cswKeyword .= "
+												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$keyword++;
+												$cswAbstract .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+													     	<ogc:PropertyName>abstract</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>
+													";
+												$abstract++;
+												
+												$cswFreeFilters++;
+											}
+											else
+											{
+												$cswTitle .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>title_trad</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$title++;
+												$cswKeyword .= "
+												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>\r\n
+													";
+												$keyword++;
+												$cswAbstract .= "
+												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
+													     	<ogc:PropertyName>abstract_trad</ogc:PropertyName>
+															<ogc:Literal>%$word%</ogc:Literal>
+														</ogc:PropertyIsLike>
+													";
+												$abstract++;
+												
+												$cswFreeFilters++;
+												
+											}
 										}
 									}
 									//echo $cswTitle."<br>";
@@ -1444,7 +1715,7 @@ class SITE_catalog {
 										
 											$empty = false;
 											
-											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+											$cswObjectName .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$on->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
 										if (count($objectnamelist) > 1)
 												$cswObjectName.= "</ogc:Or>";
@@ -1483,7 +1754,7 @@ class SITE_catalog {
 										
 											$empty = false;
 											
-											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+											$cswAccountId .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$a->metadata_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 										}
 										if (count($accountlist) > 1)
 												$cswAccountId.= "</ogc:Or>";
@@ -1978,8 +2249,23 @@ class SITE_catalog {
 								if ($metadata_title <> "")
 								{
 									$countAdvancedFilters++;
+									
+									$ogcsearchfilter="";
+									$database->setQuery("SELECT cscf.ogcsearchfilter
+									   FROM #__sdi_context_sc_filter cscf
+									   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+									   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+									   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									   WHERE c.code='".$context."'
+									   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+									   		 AND cl.code='".$language->_lang."'");
+									//echo $database->getQuery();
+									$ogcsearchfilter = $database->loadResult();
+									//echo "<br>".$ogcsearchfilter."<br>";
+									
+									
 									$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-									<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+									<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 									<ogc:Literal>%$metadata_title%</ogc:Literal>
 									</ogc:PropertyIsLike> ";
 									
@@ -2039,6 +2325,19 @@ class SITE_catalog {
 						switch ($searchFilter->rendertype_code)
 						{
 							case "date":
+								$ogcsearchfilter="";
+								$database->setQuery("SELECT cscf.ogcsearchfilter
+								   FROM #__sdi_context_sc_filter cscf
+								   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+								   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+								   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								   WHERE c.code='".$context."'
+								   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+								   		 AND cl.code='".$language->_lang."'");
+								//echo $database->getQuery();
+								$ogcsearchfilter = $database->loadResult();
+								//echo "<br>".$ogcsearchfilter."<br>";
+								
 								$lower = JRequest::getVar('filter_create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('filter_update_cal_'.$searchFilter->guid);
 								
@@ -2049,7 +2348,7 @@ class SITE_catalog {
 									$upper = date('Y-m-d', strtotime($upper)); //."T23:59:59";
 									
 									$cswAdvancedFilter .= "<ogc:PropertyIsLessThanOrEqualTo>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>$upper</ogc:Literal>
 										</ogc:PropertyIsLessThanOrEqualTo> ";
 								}
@@ -2059,7 +2358,7 @@ class SITE_catalog {
 									$lower = date('Y-m-d', strtotime($lower)); //."T00:00:00";
 									
 									$cswAdvancedFilter .= "<ogc:PropertyIsGreaterThanOrEqualTo>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>$lower</ogc:Literal>
 										</ogc:PropertyIsGreaterThanOrEqualTo> ";
 								}
@@ -2070,7 +2369,7 @@ class SITE_catalog {
 									$upper = date('Y-m-d', strtotime($upper)); //."T23:59:59";
 									
 									$cswAdvancedFilter .= "<ogc:PropertyIsBetween>
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:LowerBoundary><ogc:Literal>$lower</ogc:Literal></ogc:LowerBoundary>
 										<ogc:UpperBoundary><ogc:Literal>$upper</ogc:Literal></ogc:UpperBoundary>
 										</ogc:PropertyIsBetween> ";
@@ -2083,8 +2382,22 @@ class SITE_catalog {
 								if ($filter <> "")
 								{
 									$countAdvancedFilters++;
+									
+									$ogcsearchfilter="";
+									$database->setQuery("SELECT cscf.ogcsearchfilter
+									   FROM #__sdi_context_sc_filter cscf
+									   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+									   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+									   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									   WHERE c.code='".$context."'
+									   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+									   		 AND cl.code='".$language->_lang."'");
+									//echo $database->getQuery();
+									$ogcsearchfilter = $database->loadResult();
+									//echo "<br>".$ogcsearchfilter."<br>";
+									
 									$cswAdvancedFilter .= "<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escape=\"\\\">
-										<ogc:PropertyName>$searchFilter->ogcsearchfilter</ogc:PropertyName>
+										<ogc:PropertyName>$ogcsearchfilter</ogc:PropertyName>
 										<ogc:Literal>%$filter%</ogc:Literal>
 										</ogc:PropertyIsLike> ";
 									$empty = false;
@@ -2235,14 +2548,14 @@ class SITE_catalog {
 			foreach ($arrSearchableMd as $md_id)
 			{
 				//keep it so to keep the request "small"
-				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 			}
 			if(count($arrSearchableMd) > 1)
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			
 			if((count($arrSearchableMd) == 0))
 			{
-				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				//echo "CondList Vide: <br>"; print_r($condList); echo"<br>";
 			}
 			
@@ -2253,7 +2566,7 @@ class SITE_catalog {
 			/*foreach ($arrFilteredMd as $md_id)
 			{
 				//keep it so to keep the request "small"
-				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 			}
 			if(count($arrFilteredMd) > 1)
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
@@ -2261,7 +2574,7 @@ class SITE_catalog {
 			//echo count($arrFilteredMd)." and ".$countAdvancedFilters." or ".$countSimpleFilters." or ".count($condList)."<br>";
 			if((count($arrFilteredMd) == 0) and ($countAdvancedFilters <> 0 or $countSimpleFilters <> 0) and count($condList) == 0)
 			{
-				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				//echo "CondList Vide: <br>"; print_r($condList); echo"<br>";
 			}
 			else
@@ -2273,7 +2586,7 @@ class SITE_catalog {
 					foreach ($filteredMd as $md_id)
 					{
 						//keep it so to keep the request "small"
-						$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+						$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 					}
 					if (count($filteredMd) > 1)
 						$cswMdCond.= "</ogc:Or>";
@@ -2313,8 +2626,9 @@ class SITE_catalog {
 			//echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
-			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
-			
+			//$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "hits", "csw:Record", "", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+			$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+					
 			//Get the result from the server, only for count
 			/*
 			$myFile = "/home/sites/joomla.asitvd.ch/web/components/com_easysdi_shop/core/myFile_cat.txt";
@@ -2372,11 +2686,11 @@ class SITE_catalog {
 					$pageNav = new JPagination($total,$limitstart,$limit);
 					
 					// S?paration en n ?l?ments par page
-					$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, "title", "ASC");
+					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 					//Get the result from the server
 					//echo $xmlBody;
 					
-					$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+					//$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 	
 					//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
 					$cswResults = DOMDocument::loadXML($xmlResponse);
@@ -2407,14 +2721,24 @@ class SITE_catalog {
 		
 	}
 
-	function BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
+	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 	{
 		//Bug: If we have accents, we must specify ISO-8859-1
 		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		$req .= "";
 		
 		//Get Records section
-		$req .=  "<csw:GetRecords xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\" resultType=\"results\" outputSchema=\"csw:IsoRecord\" content=\"COMPLETE\" ";
+		$req .=  "<csw:GetRecords 
+					xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" 
+					service=\"CSW\" 
+					version=\"2.0.2\" ";
+		
+		if ($resultType != "")
+		{
+			$req .= "resultType=\"$resultType\" 
+					outputSchema=\"csw:IsoRecord\" 
+					content=\"COMPLETE\" ";
+		}
 		
 		// add max records if not 0
 		if($maxRecords != 0)
@@ -2429,8 +2753,11 @@ class SITE_catalog {
 		//Query section
 		//Types name
 		$req .= "<csw:Query typeNames=\"".$typeNames."\">\r\n";
-		//ElementSetName
-		$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
+		if($elementSetName != "")
+		{
+				//ElementSetName
+			$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
+		}
 		//ConstraintVersion
 		$req .="<csw:Constraint version=\"".$constraintVersion."\">\r\n";
 		//filter
