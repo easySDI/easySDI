@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,7 +138,6 @@ class SITE_catalog {
 		// Construction de la requête pour récupérer les résultats
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		$ogcfilter_fileid = config_easysdi::getValue("catalog_search_ogcfilterfileid");
-		//echo $ogcfilter_fileid;
 		//$catalogUrlGetRecords = $catalogUrlBase."?request=GetRecords&service=CSW&version=2.0.2&resultType=results&namespace=csw:http://www.opengis.net/cat/csw/2.0.2&outputSchema=csw:IsoRecord&elementSetName=full&constraintLanguage=FILTER&constraint_language_version=1.1.0";
 		$xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		//$catalogUrlGetRecordsCount =  $catalogUrlGetRecords . "&startPosition=1&maxRecords=1";
@@ -264,7 +263,7 @@ class SITE_catalog {
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
 			//echo"CondList BBox: <br>"; print_r($condList); echo"<br>";
-			// Listes qui vont potentiellement contenir des guid de m�tadonn�es
+			// Listes qui vont potentiellement contenir des guid de métadonnées
 			$arrFreetextMd = array();
 			$arrObjectNameMd = array();
 			$arrAccountsMd = array();
@@ -272,7 +271,7 @@ class SITE_catalog {
 			$arrCreatedMd = array();
 			$arrPublishedMd = array();
 				
-			// Construction des filtres bas�s sur l'onglet simple
+			// Construction des filtres basés sur l'onglet simple
 			$cswSimpleFilter="";
 			$countSimpleFilters = 0;
 			foreach($listSimpleFilters as $searchFilter)
@@ -326,7 +325,7 @@ class SITE_catalog {
 								}
 							}
 							
-							// R�unir les crit�res
+							// Réunir les critères
 							if ($terms > 1)
 								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
 							
@@ -429,7 +428,7 @@ class SITE_catalog {
 							break;
 						case "date":
 						case "datetime":
-							/* Fonctionnement p�riode
+							/* Fonctionnement période
 							 * Format de date: 2001-01-15T20:07:48.11
 							 * */
 							//echo $lowerFilter."<br>";
@@ -489,11 +488,11 @@ class SITE_catalog {
 							break;
 					}
 				}
-				else // Traiter les filtres qui ne sont pas li�s � des relations, si ils existent
+				else // Traiter les filtres qui ne sont pas liés à des relations, si ils existent
 				{
-					if ($searchFilter->criteriatype_id == 1) // Filtres syst�mes
+					if ($searchFilter->criteriatype_id == 1) // Filtres systèmes
 					{
-						// R�cup�ration des filtres standards
+						// Récupération des filtres standards
 						//$account_id  = JRequest::getVar('account_id');
 						
 						switch ($searchFilter->code)
@@ -503,7 +502,7 @@ class SITE_catalog {
 								if ($simple_filterfreetextcriteria <> "")
 								{
 									$countSimpleFilters++;
-									// Filtre sur le texte (Crit�res de recherche simple)
+									// Filtre sur le texte (Critères de recherche simple)
 									//$cswFreeTextFilter="";
 									//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
 									
@@ -594,7 +593,7 @@ class SITE_catalog {
 									//echo $cswKeyword."<br>";
 									//echo $cswAbstract."<br>";
 									
-									// R�unir chaque crit�re
+									// Réunir chaque critère
 									if ($title > 1)
 									{
 										$cswTitle = "<ogc:And>".$cswTitle."</ogc:And>";
@@ -611,8 +610,8 @@ class SITE_catalog {
 										//$cswFreeFilters++;
 									}
 									
-									// Filtres sur les guid de m�tadonn�es pour le code et le fournisseur
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Filtres sur les guid de métadonnées pour le code et le fournisseur
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -621,8 +620,8 @@ class SITE_catalog {
 									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -651,7 +650,7 @@ class SITE_catalog {
 												$cswObjectName.= "</ogc:Or>";
 									}
 									
-									// S�lectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_account a ON a.id=o.account_id
@@ -660,8 +659,8 @@ class SITE_catalog {
 									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -690,7 +689,7 @@ class SITE_catalog {
 												$cswAccountId.= "</ogc:Or>";
 									}
 									
-									// R�unir tous les crit�res
+									// Réunir tous les critères
 									if($cswFreeFilters > 0)
 										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
 									//print_r($cswSimpleFilter);echo "<br>";
@@ -705,7 +704,7 @@ class SITE_catalog {
 								//$objecttype_id = JRequest::getVar('objecttype_id');
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
-								// Construire la liste des guid � filtrer
+								// Construire la liste des guid à filtrer
 								$arrObjecttypeMd = array();
 								
 								//echo "objecttype_id: ".count($objecttype_id);
@@ -744,7 +743,7 @@ class SITE_catalog {
 									$objecttypes = array();
 									if ($context <> "")
 									{
-										// R�cup�rer tous les types d'objets du contexte
+										// Récupérer tous les types d'objets du contexte
 										$database->setQuery("SELECT id FROM #__sdi_objecttype WHERE id IN
 															(SELECT co.objecttype_id 
 															FROM #__sdi_context_objecttype co
@@ -754,13 +753,13 @@ class SITE_catalog {
 									}
 									else
 									{
-										// R�cup�rer tous les types d'objets d�finis
+										// Récupérer tous les types d'objets définis
 										$database->setQuery("SELECT id FROM #__sdi_objecttype ORDER BY name");
 									}
 									//echo "objecttypes:".$database->getQuery()."<hr>";
 									$objecttypes = $database->loadResultArray();
 									
-									// R�cup�rer toutes les m�tadonn�es de ces types d'objets
+									// Récupérer toutes les métadonnées de ces types d'objets
 									$query = "SELECT m.guid as metadata_id 
 											  FROM #__sdi_objectversion ov 
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
@@ -805,7 +804,7 @@ class SITE_catalog {
 								//$versions = JRequest::getVar('versions');
 								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les derni�res versions publi�es � la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les dernières versions publiées à la date courante 
 								{
 									//$countSimpleFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -813,7 +812,7 @@ class SITE_catalog {
 									//if ($versions == 0)
 									//{
 										//echo "<b>CasA:</b><br>";
-										// S�lectionner tous les objets
+										// Sélectionner tous les objets
 										$query = "SELECT o.id 
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -823,10 +822,10 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$objectlist = $database->loadObjectList() ;
 										//echo "objectlist:<br>";print_r($objectlist);echo "<hr>";
-										// Construire la liste des guid � filtrer
+										// Construire la liste des guid à filtrer
 										$arrVersionMd = array();
 										
-										// Pour chaque objet, s�lectionner toutes ses versions publi�es
+										// Pour chaque objet, sélectionner toutes ses versions publiées
 										foreach ($objectlist as $object)
 										{
 											$query = "SELECT m.guid as metadata_id, ms.code, m.published
@@ -853,7 +852,7 @@ class SITE_catalog {
 											{
 												//print_r($versionlist[0]);
 												//echo "<br>";
-												// Si la derni�re version est publi�e � la date courante, on l'utilise
+												// Si la dernière version est publiée à la date courante, on l'utilise
 												//if ($versionlist[0]->code=='published' and $versionlist[0]->published <= date('Y-m-d'))
 													$arrVersionMd[] = $versionlist[0]->metadata_id;
 											
@@ -862,11 +861,11 @@ class SITE_catalog {
 										}
 									//}
 								}
-								else if ($versions == "1") // Rechercher sur toutes les versions publi�es � la date courante
+								else if ($versions == "1") // Rechercher sur toutes les versions publiées à la date courante
 								{
 									//$countSimpleFilters++;
 									//echo "<b>CasB:</b><br>";
-									// S�lectionner tous les objets
+									// Sélectionner tous les objets
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -875,10 +874,10 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
+									// Construire la liste des guid à filtrer
 									$arrVersionMd = array();
 									
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id, ms.code, m.published
@@ -925,7 +924,7 @@ class SITE_catalog {
 								if ($object_name <> "")
 								{
 									$countSimpleFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -933,8 +932,8 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -966,7 +965,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countSimpleFilters++;
@@ -1052,7 +1051,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countSimpleFilters++;
@@ -1141,7 +1140,7 @@ class SITE_catalog {
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countSimpleFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
@@ -1149,8 +1148,8 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -1215,15 +1214,15 @@ class SITE_catalog {
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countSimpleFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -1256,7 +1255,7 @@ class SITE_catalog {
 								break;
 						}
 					}
-					else // Cas des attributs OGC qui ne sont pas li�s � une relation
+					else // Cas des attributs OGC qui ne sont pas liés à une relation
 					{
 						switch ($searchFilter->rendertype_code)
 						{
@@ -1277,7 +1276,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('filter_create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('filter_update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countSimpleFilters++;
@@ -1343,7 +1342,7 @@ class SITE_catalog {
 					}
 				}
 			}
-			/*// Ajouter les balises And si on a trouv� au moins deux conditions
+			/*// Ajouter les balises And si on a trouvé au moins deux conditions
 			if ($countSimpleFilters > 1)
 				$cswSimpleFilter = "<ogc:And>".$cswSimpleFilter."</ogc:And>";*/
 			
@@ -1352,7 +1351,7 @@ class SITE_catalog {
 			//echo"CondList SimpleFilter: <br>"; print_r($condList); echo"<br>";	
 			//echo "Criteres simples: ".htmlspecialchars($cswSimpleFilter)."<hr>";
 			
-			// Construction des filtres bas�s sur l'onglet avanc�
+			// Construction des filtres basés sur l'onglet avancé
 			$cswAdvancedFilter="";
 			$countAdvancedFilters = 0;
 			foreach($listAdvancedFilters as $searchFilter)
@@ -1411,7 +1410,7 @@ class SITE_catalog {
 								}
 							}
 							
-							// R�unir les crit�res
+							// Réunir les critères
 							if ($terms > 1)
 								$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
 							
@@ -1499,7 +1498,7 @@ class SITE_catalog {
 							break;
 						case "date":
 						case "datetime":
-							/* Fonctionnement p�riode
+							/* Fonctionnement période
 							 * Format de date: 2001-01-15T20:07:48.11
 							 * */
 							//echo $lowerFilter."<br>";
@@ -1559,11 +1558,11 @@ class SITE_catalog {
 							break;
 					}
 				}
-				else // Traiter les filtres qui ne sont pas li�s � une relation, si ils existent
+				else // Traiter les filtres qui ne sont pas liés à une relation, si ils existent
 				{
-					if ($searchFilter->criteriatype_id == 1) // Filtres syst�mes
+					if ($searchFilter->criteriatype_id == 1) // Filtres systèmes
 					{
-						// R�cup�ration des filtres standards
+						// Récupération des filtres standards
 						//$account_id  = JRequest::getVar('account_id');
 						//print_r($searchFilter);
 						switch ($searchFilter->code)
@@ -1573,7 +1572,7 @@ class SITE_catalog {
 								if ($simple_filterfreetextcriteria <> "")
 								{
 									$countAdvancedFilters++;
-									// Filtre sur le texte (Crit�res de recherche simple)
+									// Filtre sur le texte (Critères de recherche simple)
 									//$cswFreeTextFilter="";
 									//echo ", recherche simple:".$simple_filterfreetextcriteria."  ";
 									
@@ -1664,7 +1663,7 @@ class SITE_catalog {
 									//echo $cswKeyword."<br>";
 									//echo $cswAbstract."<br>";
 									
-									// R�unir chaque crit�re
+									// Réunir chaque critère
 									if ($title > 1)
 									{
 										$cswTitle = "<ogc:And>".$cswTitle."</ogc:And>";
@@ -1681,8 +1680,8 @@ class SITE_catalog {
 										//$cswFreeFilters++;
 									}
 									
-									// Filtres sur les guid de m�tadonn�es pour le code et le fournisseur
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Filtres sur les guid de métadonnées pour le code et le fournisseur
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -1691,8 +1690,8 @@ class SITE_catalog {
 									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -1721,7 +1720,7 @@ class SITE_catalog {
 												$cswObjectName.= "</ogc:Or>";
 									}
 									
-									// S�lectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom du fournisseur ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_account a ON a.id=o.account_id
@@ -1730,8 +1729,8 @@ class SITE_catalog {
 									//echo "<br>".$database->getQuery()."<br>";
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -1760,7 +1759,7 @@ class SITE_catalog {
 												$cswAccountId.= "</ogc:Or>";
 									}
 									
-									// R�unir tous les crit�res
+									// Réunir tous les critères
 									if($cswFreeFilters > 0)
 										$cswAdvancedFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
 									//print_r($cswAdvancedFilter);echo "<br>";
@@ -1774,7 +1773,7 @@ class SITE_catalog {
 								//$objecttype_id = JRequest::getVar('objecttype_id');
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
-								// Construire la liste des guid � filtrer
+								// Construire la liste des guid à filtrer
 								$arrObjecttypeMd = array();
 								
 								//echo "objecttype_id: ".count($objecttype_id);
@@ -1813,7 +1812,7 @@ class SITE_catalog {
 									$objecttypes = array();
 									if ($context <> "")
 									{
-										// R�cup�rer tous les types d'objets du contexte
+										// Récupérer tous les types d'objets du contexte
 										$database->setQuery("SELECT id FROM #__sdi_objecttype WHERE id IN
 															(SELECT co.objecttype_id 
 															FROM #__sdi_context_objecttype co
@@ -1823,13 +1822,13 @@ class SITE_catalog {
 									}
 									else
 									{
-										// R�cup�rer tous les types d'objets d�finis
+										// Récupérer tous les types d'objets définis
 										$database->setQuery("SELECT id FROM #__sdi_objecttype ORDER BY name");
 									}
 									//echo "objecttypes:".$database->getQuery()."<hr>";
 									$objecttypes = $database->loadResultArray();
 									
-									// R�cup�rer toutes les m�tadonn�es de ces types d'objets
+									// Récupérer toutes les métadonnées de ces types d'objets
 									$query = "SELECT m.guid as metadata_id 
 											  FROM #__sdi_objectversion ov 
 											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
@@ -1873,7 +1872,7 @@ class SITE_catalog {
 								//$versions = JRequest::getVar('versions');
 								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publi�es � la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
 								{
 									//$countAdvancedFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -1881,7 +1880,7 @@ class SITE_catalog {
 									//if ($versions == 0)
 									//{
 										//echo "<b>CasA:</b><br>";
-										// S�lectionner tous les objets
+										// Sélectionner tous les objets
 										$query = "SELECT o.id 
 												  FROM #__sdi_object o 
 												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -1891,10 +1890,10 @@ class SITE_catalog {
 										//echo "<br>".$database->getQuery()."<br>";
 										$objectlist = $database->loadObjectList() ;
 										//echo "objectlist:<br>";print_r($objectlist);echo "<hr>";
-										// Construire la liste des guid � filtrer
+										// Construire la liste des guid à filtrer
 										$arrVersionMd = array();
 										
-										// Pour chaque objet, s�lectionner toutes ses versions
+										// Pour chaque objet, sélectionner toutes ses versions
 										foreach ($objectlist as $object)
 										{
 											$query = "SELECT m.guid as metadata_id, ms.code, m.published
@@ -1921,7 +1920,7 @@ class SITE_catalog {
 											{
 												//print_r($versionlist[0]);
 												//echo "<br>";
-												// Si la derni�re version est publi�e � la date courante, on l'utilise
+												// Si la dernière version est publiée à la date courante, on l'utilise
 												//if ($versionlist[0]->code=='published'and $versionlist[0]->published <= date('Y-m-d'))
 													$arrVersionMd[] = $versionlist[0]->metadata_id;
 											
@@ -1930,11 +1929,11 @@ class SITE_catalog {
 										}
 									//}
 								}
-								else if ($versions == "1") // Rechercher sur toutes les versions publi�es � la date courante
+								else if ($versions == "1") // Rechercher sur toutes les versions publiées à la date courante
 								{
 									//$countAdvancedFilters++;
 									//echo "<b>CasB:</b><br>";
-									// S�lectionner tous les objets
+									// Sélectionner tous les objets
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -1943,10 +1942,10 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
+									// Construire la liste des guid à filtrer
 									$arrVersionMd = array();
 									
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id, ms.code, m.published
@@ -1993,7 +1992,7 @@ class SITE_catalog {
 								if ($object_name <> "")
 								{
 									$countAdvancedFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
@@ -2001,8 +2000,8 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -2036,7 +2035,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countAdvancedFilters++;
@@ -2119,7 +2118,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countAdvancedFilters++;
@@ -2205,7 +2204,7 @@ class SITE_catalog {
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countAdvancedFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
@@ -2213,8 +2212,8 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -2280,15 +2279,15 @@ class SITE_catalog {
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countAdvancedFilters++;
-									// S�lectionner tous les objets dont le nom ressemble au texte saisi
+									// Sélectionner tous les objets dont le nom ressemble au texte saisi
 									$query = "SELECT o.id 
 											  FROM #__sdi_object o 
 											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
 									
-									// Construire la liste des guid � filtrer
-									// Pour chaque objet, s�lectionner toutes ses versions
+									// Construire la liste des guid à filtrer
+									// Pour chaque objet, sélectionner toutes ses versions
 									foreach ($objectlist as $object)
 									{
 										$query = "SELECT m.guid as metadata_id 
@@ -2320,7 +2319,7 @@ class SITE_catalog {
 								break;
 						}
 					}
-					else // Cas des attributs OGC qui ne sont pas li�s � une relation
+					else // Cas des attributs OGC qui ne sont pas liés à une relation
 					{
 						switch ($searchFilter->rendertype_code)
 						{
@@ -2341,7 +2340,7 @@ class SITE_catalog {
 								$lower = JRequest::getVar('filter_create_cal_'.$searchFilter->guid);
 								$upper = JRequest::getVar('filter_update_cal_'.$searchFilter->guid);
 								
-								// S�lectionner toutes les m�tadonn�es cr��es dans l'intervalle indiqu�
+								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
 								{
 									$countAdvancedFilters++;
@@ -2407,7 +2406,7 @@ class SITE_catalog {
 					}
 				}
 			}
-			/*// Ajouter les balises And si on a trouv� au moins deux conditions
+			/*// Ajouter les balises And si on a trouvé au moins deux conditions
 			if ($countAdvancedFilters > 1)
 				$cswAdvancedFilter = "<ogc:And>".$cswAdvancedFilter."</ogc:And>";*/
 			
@@ -2417,7 +2416,7 @@ class SITE_catalog {
 			//echo "Criteres avances: ".htmlspecialchars($cswAdvancedFilter)."<hr>";
 			//echo "filterMd:".htmlspecialchars($arrFilterMd)."<hr>";
 				
-			// Prendre l'intersection de tous les guid list�s
+			// Prendre l'intersection de tous les guid listés
 			$arrSearchableMd=array(); // Scope de recherche
 			$arrFilteredMd=array(); // Filtres
 			 
@@ -2430,7 +2429,6 @@ class SITE_catalog {
 				}
 				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
 			}*/
-			
 			if (count($arrObjecttypeMd) == 0) // Pas de types d'objet
 				$arrSearchableMd = $arrVersionMd;
 			else if (count($arrVersionMd) == 0) // Pas de versions
@@ -2594,7 +2592,7 @@ class SITE_catalog {
 				}
 				
 				// Si l'intersection des filtres est nulle, mais qu'il y avait bien des filtres, forcer la rechercher sur
-				// un guid inexistant pour �tre s�r qu'aucun r�sultat ne soit retourn�
+				// un guid inexistant pour être sûr qu'aucun résultat ne soit retourné
 											
 				if(count($arrFilteredMd) > 1)
 					$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
@@ -2627,9 +2625,11 @@ class SITE_catalog {
 			//echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
-			//$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "hits", "csw:Record", "", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+			//$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+			//$xmlBody = SITE_catalog::BuildCSWRequest(0, 0, "csw:Record", "", "", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 			$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 
+			
 			//Get the result from the server, only for count
 			/*
 			$myFile = "/home/sites/joomla.asitvd.ch/web/components/com_easysdi_shop/core/myFile_cat.txt";
@@ -2643,11 +2643,9 @@ class SITE_catalog {
 			
 			//echo "xmlbody:". htmlspecialchars($xmlBody);
 			
-			$xmlResponse = SITE_catalog::CURLRequest("POST", $catalogUrlBase,$xmlBody);
-					
+			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			// SimpleXMLElement
 			$cswResults= simplexml_load_string($xmlResponse);
-					
 			//echo var_dump($cswResults->saveXML())."<br>";
 			// DOMDocument
 			$myDoc = new DomDocument();
@@ -2664,13 +2662,13 @@ class SITE_catalog {
 			$total = 0;
 			if ($cswResults !=null)
 			{
-				// Contr�ler si le XML ne contient pas une erreur
+				// Contrôler si le XML ne contient pas une erreur
 				if ($myDoc->childNodes->item(0)->nodeName== "ows:ExceptionReport")
 				{
 					$msg = $myDoc->childNodes->item(0)->nodeValue;
 					$mainframe->enqueueMessage($msg,"ERROR");
 					
-					// Comportement identique que si aucune recherche n'a �t� faite
+					// Comportement identique que si aucune recherche n'a été faite
 					$total=0;
 					$pageNav=new JPagination($total,$limitstart,$limit);
 					$cswResults = null;
@@ -2689,7 +2687,9 @@ class SITE_catalog {
 					$pageNav = new JPagination($total,$limitstart,$limit);
 					
 					// S?paration en n ?l?ments par page
-					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "gmd:MD_Metadata", "results", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+
 					//Get the result from the server
 					//echo $xmlBody;
 					
@@ -2697,9 +2697,7 @@ class SITE_catalog {
 	
 					//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
 					$cswResults = DOMDocument::loadXML($xmlResponse);
-					
-					
-	                //echo var_dump($cswResults->saveXML())."<br>";
+	                	//echo var_dump($cswResults->saveXML())."<br>";
 					// Tri avec XSLT
 					// Chargement du fichier XSL
 					/*$xsl = new DOMDocument();
@@ -2713,7 +2711,7 @@ class SITE_catalog {
 				}
 			}
 		}
-		else // Si la recherche n'a pas �t� lanc�e, afficher une liste de r�sultats vide
+		else // Si la recherche n'a pas été lancée, afficher une liste de résultats vide
 		{
 			$total=0;
 			$pageNav=new JPagination($total,$limitstart,$limit);
@@ -2723,6 +2721,7 @@ class SITE_catalog {
 		$allVersions=true;
 		
 		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr, $allVersions, $listSimpleFilters, $listAdvancedFilters);
+		
 	}
 
 	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
@@ -2743,7 +2742,7 @@ class SITE_catalog {
 					outputSchema=\"csw:IsoRecord\" 
 					content=\"COMPLETE\" ";
 		}
-		
+
 		// add max records if not 0
 		if($maxRecords != 0)
 			$req .= "maxRecords=\"".$maxRecords."\" ";
@@ -2759,10 +2758,9 @@ class SITE_catalog {
 		$req .= "<csw:Query typeNames=\"".$typeNames."\">\r\n";
 		if($elementSetName != "")
 		{
-				//ElementSetName
+			//ElementSetName
 			$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
 		}
-		
 		//ConstraintVersion
 		$req .="<csw:Constraint version=\"".$constraintVersion."\">\r\n";
 		//filter
@@ -2780,10 +2778,12 @@ class SITE_catalog {
 			$req .= "</ogc:SortBy>";
 		}
 		
+		
 		$req .= "</csw:Query>\r\n";
 		$req .= "</csw:GetRecords>\r\n";
 		
-		return utf8_encode($req);		
+		//echo htmlspecialchars(utf8_encode($req));
+		return utf8_encode($req);
 	}	
 }
 ?>
