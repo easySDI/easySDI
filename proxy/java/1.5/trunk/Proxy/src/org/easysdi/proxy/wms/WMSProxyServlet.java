@@ -691,7 +691,7 @@ public class WMSProxyServlet extends ProxyServlet {
     		
     		List<Server> serverList = policy.getServers().getServer();
     		List listName;
-    		if ("1.3.0".equalsIgnoreCase(version)) 
+    		if ("130".equalsIgnoreCase(version)) 
     			listName = elementLayer.getChildren("Name", wmsNS);
 			else
 				listName = elementLayer.getChildren("Name");
@@ -706,7 +706,7 @@ public class WMSProxyServlet extends ProxyServlet {
     			{
 	    			Server server = serverList.get(i);
 	    			Layer currentLayer ;
-	    			if ("1.3.0".equalsIgnoreCase(version)) 
+	    			if ("130".equalsIgnoreCase(version)) 
 	    				currentLayer = server.getLayers().getLayerByName(((org.jdom.Element)elementLayer.getChild("Name",wmsNS)).getValue());
 	    			else
 	    				currentLayer = server.getLayers().getLayerByName(((org.jdom.Element)elementLayer.getChild("Name")).getValue());
@@ -738,7 +738,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
 	    			}
 	    			
-	    			if(version.equalsIgnoreCase("1.3.0"))
+	    			if(version.equalsIgnoreCase("130"))
 	    			{
 	    				writeLatLonBBOX130(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy, wmsNS);
 	    				writeBBOX130(elementLayer,srsBBOX,wgsCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy,wmsNS);
@@ -897,6 +897,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		{
 			String responseVersion="";
 			
+			
 			//Filtre les fichiers réponses des serveurs :
 			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
@@ -1043,12 +1044,12 @@ public class WMSProxyServlet extends ProxyServlet {
 				    	CoordinateReferenceSystem wgsCRS = null;
 						try {
 							wgsCRS = CRS.decode("EPSG:4326");
+							rewriteBBOX(layersList, wgsCRS, responseVersion);
 						} catch (NoSuchAuthorityCodeException e1) {
 							dump("ERROR","Exception when trying to load SRS EPSG:4326 : "+e1.getMessage());
 						} catch (FactoryException e1) {
 							dump("ERROR",e1.getMessage());
 						}
-				    	rewriteBBOX(layersList, wgsCRS, responseVersion);
 			    	}
 			    	dump("DEBUG","End - Rewrite BBOX");
 			    	//Return
