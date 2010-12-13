@@ -83,7 +83,7 @@ class ADMIN_context {
 					return;
 				}
 		
-				// Récuperer tous les labels et contrôler qu'ils soient saisis
+				// Rï¿½cuperer tous les labels et contrï¿½ler qu'ils soient saisis
 				var labelEmpty = 0;
 				labels = document.getElementById('labels');
 				fields = labels.getElementsByTagName('input');
@@ -94,7 +94,7 @@ class ADMIN_context {
 						labelEmpty=1;
 				}
 
-				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+				// Rï¿½cuperer tous les champs de tri et contrï¿½ler qu'ils soient saisis
 				var sortEmpty = 0;
 				sortfields = document.getElementById('sortfields');
 				fields = sortfields.getElementsByTagName('input');
@@ -149,13 +149,13 @@ class ADMIN_context {
 
 		$row->checkout($user->get('id'));
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_context", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -175,7 +175,7 @@ class ADMIN_context {
 		$listObjectTypes= array_merge( $listObjectTypes, $database->loadObjectList() );
 		*/	
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -232,7 +232,7 @@ class ADMIN_context {
 			exit();
 		}		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowContext->guid == null)
 			$rowContext->guid = helper_easysdi::getUniqueId();
@@ -243,10 +243,10 @@ class ADMIN_context {
 			exit();
 		}
 		
-		//Créer les critères système du contexte pour la gestion des tabs
+		//Crï¿½er les critï¿½res systï¿½me du contexte pour la gestion des tabs
 		if ($_POST['id'] == 0)
 		{
-			// Récupérer tous les critères systèmes
+			// Rï¿½cupï¿½rer tous les critï¿½res systï¿½mes
 			$searchcriteriaList= array();
 			$query = "SELECT * 
 					  FROM #__sdi_searchcriteria 
@@ -256,7 +256,7 @@ class ADMIN_context {
 			
 			foreach ($searchcriteriaList as $searchcriteria)
 			{
-				// Créer la relation critère/contexte
+				// Crï¿½er la relation critï¿½re/contexte
 				$query = "INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) VALUES (".$searchcriteria->id.", ".$rowContext->id.", 1)";
 				$database->setQuery( $query);
 				if (!$database->query())
@@ -266,7 +266,7 @@ class ADMIN_context {
 			}
 		}
 			
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -309,7 +309,7 @@ class ADMIN_context {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sort SET ogcsearchsorting='".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."' WHERE id='".$rowContext->id."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_context_sort SET ogcsearchsorting='".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."' WHERE context_id='".$rowContext->id."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -328,18 +328,18 @@ class ADMIN_context {
 			}
 		}
 		
-		// Sauvegarde des contextes liés à la relation
+		// Sauvegarde des contextes liï¿½s ï¿½ la relation
 		$objecttypes = array();
 		$objecttypes = $_POST['objecttypes'];
 		
-		// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+		// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation
 		$query = "delete from #__sdi_context_objecttype where context_id=".$rowContext->id;
 		$database->setQuery( $query);
 		if (!$database->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
-		// Ne recréer les liens que si la relation doit être un filtre de recherche
+		// Ne recrï¿½er les liens que si la relation doit ï¿½tre un filtre de recherche
 		foreach($objecttypes as $objecttype)
 		{
 			$rowContext_Objecttype= new contextobjecttype( $database );
@@ -355,12 +355,12 @@ class ADMIN_context {
 			
 		$rowContext->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyContext' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_context::_EDIT();
 				ADMIN_context::editContext($rowContext->id,$option);
 				break;
@@ -384,7 +384,7 @@ class ADMIN_context {
 		
 		foreach( $cid as $context_id )
 		{
-			// Supprimer tous les référencements dans les relations
+			// Supprimer tous les rï¿½fï¿½rencements dans les relations
 			$selected_contexts = array();
 			$database->setQuery( "DELETE FROM #__sdi_relation_context where context_id=".$context_id);
 			if (!$database->query())
@@ -392,14 +392,14 @@ class ADMIN_context {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation
 			$query = "delete from #__sdi_context_objecttype where context_id=".$context_id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Supprimer les critères de recherche directement liés à cette relation
+			// Supprimer les critï¿½res de recherche directement liï¿½s ï¿½ cette relation
 			$query = "delete from #__sdi_searchcriteria_tab WHERE context_id = ".$context_id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
