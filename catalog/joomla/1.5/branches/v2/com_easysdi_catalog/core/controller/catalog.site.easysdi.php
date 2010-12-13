@@ -30,7 +30,7 @@ class SITE_catalog {
 		$user = JFactory::getUser();
 		$language =& JFactory::getLanguage();
 		
-		// Valeurs de configuration pour le rendu des r�sultats
+		// Valeurs de configuration pour le rendu des résultats
 		$maxDescr = config_easysdi::getValue("description_length");
 		$MDPag = config_easysdi::getValue("catalog_pagination_searchresult");
 		
@@ -38,7 +38,7 @@ class SITE_catalog {
 		$limit = JRequest::getVar('limit', $MDPag );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$this->langList = array();
 		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
 							  FROM #__sdi_language l, #__sdi_list_codelang c 
@@ -47,8 +47,8 @@ class SITE_catalog {
 							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		
-		// R�cup�ration de toutes les traductions pour la construction des crit�res de recherche,
-		// sp�cialement ceux sous forne de liste dont le contenu doit �tre traduit
+		// Récupération de toutes les traductions pour la construction des critères de recherche,
+		// spécialement ceux sous forne de liste dont le contenu doit être traduit
 		$newTraductions = array();
 		$database->setQuery( "SELECT t.element_guid, t.label, t.defaultvalue, t.information, t.regexmsg, t.title, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang c WHERE t.language_id=l.id AND l.codelang_id=c.id AND c.code='".$language->_lang."'" );
 		$newTraductions = array_merge( $newTraductions, $database->loadObjectList() );
@@ -76,7 +76,7 @@ class SITE_catalog {
 		}
 		$language->_strings = array_merge( $language->_strings, $array);
 		
-		// Liste des crit�res de recherche simple
+		// Liste des critères de recherche simple
 		$context= JRequest::getVar('context');
 		$listSimpleFilters = array();
 		$database->setQuery("SELECT sc.*, r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
@@ -99,7 +99,7 @@ class SITE_catalog {
 		$listSimpleFilters = array_merge( $listSimpleFilters, $database->loadObjectList() );		
 		//print_r($listSimpleFilters);echo "<hr>";
 		
-		// Liste des crit�res de recherche avanc�s
+		// Liste des critères de recherche avancés
 		$listAdvancedFilters = array();
 		/*$database->setQuery("SELECT sc.*, r.*, a.id as attribute_id, at.code as attributetype_code
 					   FROM #__sdi_context c 
@@ -131,11 +131,11 @@ class SITE_catalog {
 		$listAdvancedFilters = array_merge( $listAdvancedFilters, $database->loadObjectList() );		
 		//print_r($listAdvancedFilters);echo "<hr>";
 		
-		// Flag pour d�terminer s'il y a ou pas des filtres
+		// Flag pour déterminer s'il y a ou pas des filtres
 		$empty = true;
 		$condList = array();
 		
-		// Construction de la requ�te pour r�cup�rer les r�sultats
+		// Construction de la requête pour récupérer les résultats
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		$ogcfilter_fileid = config_easysdi::getValue("catalog_search_ogcfilterfileid");
 		//echo $ogcfilter_fileid;
@@ -155,7 +155,7 @@ class SITE_catalog {
 		//echo $database->getQuery();
 		$ogcsearchsorting = $database->loadResult();
 		
-		// R�cup�ration des filtres standards
+		// Récupération des filtres standards
 		//$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 		//$account_id  = JRequest::getVar('account_id');
 		//$objecttype_id = JRequest::getVar('objecttype_id[]');
@@ -166,7 +166,7 @@ class SITE_catalog {
 		$maxX = JRequest::getVar('bboxMaxX', "180" );
 		$maxY = JRequest::getVar('bboxMaxY', "90" );
 		
-		// Tableau contenant les guid des m�tadonn�es sur lesquelles la recherche va porter
+		// Tableau contenant les guid des métadonnées sur lesquelles la recherche va porter
 		$arrFilterMd = array();
 		
 		//$filter_theme = JRequest::getVar('filter_theme');
@@ -186,11 +186,11 @@ class SITE_catalog {
 		
 		$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 							
-		// Selon que l'utilisateur est logg� ou pas, on ne fera pas la recherche sur le m�me set de m�tadonn�es
+		// Selon que l'utilisateur est loggé ou pas, on ne fera pas la recherche sur le même set de métadonnées
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
-		// R�cup�ration du compte, si l'utilisateur est logg�
+		// Récupération du compte, si l'utilisateur est loggé
 		$account = new accountByUserId($database);
 		if (!$user->guest){
 			$account->load($user->id);
@@ -198,12 +198,12 @@ class SITE_catalog {
 			$account->id = 0;
 		}
 		
-		/* Construction de la requ�te de recherche */
-		// Ne retourner des r�sultats que si l'utilisateur a soumis une requ�te
-		// ou qu'un contexte est d�fini
+		/* Construction de la requête de recherche */
+		// Ne retourner des résultats que si l'utilisateur a soumis une requête
+		// ou qu'un contexte est défini
 		if(isset($_GET['simple_search_button']) || isset($_GET['limitstart']) || isset($_GET['context']))
 		{
-			// Si aucun utilisateur n'est logg�, ne retourner que les m�tadonn�es publiques
+			// Si aucun utilisateur n'est loggé, ne retourner que les métadonnées publiques
 			if($account->id == 0)
 			{
 				//No user logged, display only external products
@@ -211,8 +211,8 @@ class SITE_catalog {
 			}
 			else
 			{
-				// Si l'utilisateur est logg�, retourner toutes les m�tadonn�es publiques
-				// + les m�tadonn�es priv�es � son compte racine
+				// Si l'utilisateur est loggé, retourner toutes les métadonnées publiques
+				// + les métadonnées privées à son compte racine
 				$mysqlFilter = " AND 
 							(
 								v.code='public'
@@ -2430,6 +2430,7 @@ class SITE_catalog {
 				}
 				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
 			}*/
+			
 			if (count($arrObjecttypeMd) == 0) // Pas de types d'objet
 				$arrSearchableMd = $arrVersionMd;
 			else if (count($arrVersionMd) == 0) // Pas de versions
@@ -2628,7 +2629,7 @@ class SITE_catalog {
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			//$xmlBody = SITE_catalog::BuildCSWRequest(1, 1, "hits", "csw:Record", "", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 			$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
-					
+
 			//Get the result from the server, only for count
 			/*
 			$myFile = "/home/sites/joomla.asitvd.ch/web/components/com_easysdi_shop/core/myFile_cat.txt";
@@ -2642,9 +2643,11 @@ class SITE_catalog {
 			
 			//echo "xmlbody:". htmlspecialchars($xmlBody);
 			
-			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+			$xmlResponse = SITE_catalog::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+					
 			// SimpleXMLElement
 			$cswResults= simplexml_load_string($xmlResponse);
+					
 			//echo var_dump($cswResults->saveXML())."<br>";
 			// DOMDocument
 			$myDoc = new DomDocument();
@@ -2694,7 +2697,9 @@ class SITE_catalog {
 	
 					//echo "<hr>".$catalogUrlGetRecordsMD."<br>";
 					$cswResults = DOMDocument::loadXML($xmlResponse);
-	                	//echo var_dump($cswResults->saveXML())."<br>";
+					
+					
+	                //echo var_dump($cswResults->saveXML())."<br>";
 					// Tri avec XSLT
 					// Chargement du fichier XSL
 					/*$xsl = new DOMDocument();
@@ -2718,7 +2723,6 @@ class SITE_catalog {
 		$allVersions=true;
 		
 		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr, $allVersions, $listSimpleFilters, $listAdvancedFilters);
-		
 	}
 
 	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
@@ -2758,6 +2762,7 @@ class SITE_catalog {
 				//ElementSetName
 			$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
 		}
+		
 		//ConstraintVersion
 		$req .="<csw:Constraint version=\"".$constraintVersion."\">\r\n";
 		//filter
@@ -2775,11 +2780,10 @@ class SITE_catalog {
 			$req .= "</ogc:SortBy>";
 		}
 		
-		
 		$req .= "</csw:Query>\r\n";
 		$req .= "</csw:GetRecords>\r\n";
 		
-		return utf8_encode($req);
+		return utf8_encode($req);		
 	}	
 }
 ?>
