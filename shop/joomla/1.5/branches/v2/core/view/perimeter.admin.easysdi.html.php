@@ -274,7 +274,7 @@ class HTML_perimeter {
 	
 	
 	
-	function listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
+	function listPerimeter($rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 	
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
@@ -285,9 +285,9 @@ class HTML_perimeter {
 		?>
 	<form action="index.php" method="post" name="adminForm">
 		
-		<table class="admintable" width="100%">
+		<table  width="100%">
 			<tr>
-				<td class="key" align="right" width="100%">
+				<td class="key"  width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchPerimeter" id="searchPerimeter" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
@@ -295,11 +295,7 @@ class HTML_perimeter {
 				</td>
 			</tr>
 		</table>
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listPerimeter\');"',$use_pagination); ?></td>
-			</tr>
-		</table>
+		
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
@@ -385,19 +381,12 @@ class HTML_perimeter {
 		}
 		
 			?></tbody>
-			
-		<?php			
-		
-		if (JRequest::getVar('use_pagination',0))
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-?>
+		
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listPerimeter" />

@@ -26,8 +26,6 @@ class ADMIN_location {
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
-		
 		$location = new location( $db );
 		$total = $location->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
@@ -59,9 +57,8 @@ class ADMIN_location {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		$query .= $orderby;
 		
-		if ($use_pagination) {
-			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
-		}
+		$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
+		
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -69,7 +66,7 @@ class ADMIN_location {
 			return false;
 		}		
 	
-		HTML_Location::listLocation($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+		HTML_Location::listLocation($rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 	}
 	
 	function editLocation( $id, $option ) {
@@ -175,7 +172,7 @@ class ADMIN_location {
 			$Location = new location( $database );
 			$Location->load( $id );
 			$Location->id=0;
-			$location->guid=0;
+			$Location->guid=0;
 			if (!$Location->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listLocation" );

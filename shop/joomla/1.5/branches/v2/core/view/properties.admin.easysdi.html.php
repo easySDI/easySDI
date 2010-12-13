@@ -121,26 +121,21 @@ class HTML_properties {
 	<?php
 	}
 	
-	function listProperties($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
+	function listProperties( $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search){
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_PROPERTIES"));
 		$ordering = ($filter_order == 'ordering');
 		?>
 		<form action="index.php" method="post" name="adminForm">
-			<table class="admintable" width="100%">
+			<table  width="100%">
 				<tr>
-					<td class="key" align="right">
-						<b><?php echo JText::_("CORE_FILTER");?></b>&nbsp;
+					<td class="key" >
+						<?php echo JText::_("CORE_FILTER");?>:
 						<input type="text" name="searchProperty" id="searchProperty" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 						<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
 						<button onclick="document.getElementById('searchProperty').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>			
 					</td>
-				</tr>
-			</table>
-			<table width="100%">
-				<tr>																																			
-					<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProperties\');"',$use_pagination); ?></td>
 				</tr>
 			</table>
 			<table class="adminlist">
@@ -231,19 +226,11 @@ class HTML_properties {
 			}		
 			?>
 			</tbody>
-			
-		<?php		
-		if (JRequest::getVar('use_pagination',0))
-		{
-		?>
 			<tfoot>
 			<tr>	
 			<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 			</tr>
 			</tfoot>
-		<?php
-		}
-		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listProperties" />

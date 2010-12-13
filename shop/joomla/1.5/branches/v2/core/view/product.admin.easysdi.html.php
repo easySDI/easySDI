@@ -491,25 +491,20 @@ class HTML_product {
 	<?php
 	}
 	
-	function listProduct($use_pagination, $rows, $filter_order_Dir, $filter_order,$search,$pageNav, $option){
+	function listProduct( $rows, $filter_order_Dir, $filter_order,$search,$pageNav, $option){
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
 		JToolBarHelper::title(JText::_("SHOP_LIST_PRODUCT")); 
 		$partners = array(); ?>
 		<form action="index.php" method="post" name="adminForm">
-				<table class="admintable" width="100%">
+				<table  width="100%">
 					<tr>
-						<td class="key" align="right" width="100%">
+						<td class="key"  width="100%">
 							<?php echo JText::_("FILTER"); ?>:
 							<input type="text" name="searchProduct" id="searchProduct" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 							<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
 							<button onclick="document.getElementById('searchProduct').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 						</td>
-					</tr>
-				</table>
-				<table width="100%">
-					<tr>																																			
-						<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listProduct\');"',$use_pagination); ?></td>
 					</tr>
 				</table>
 				<table class="adminlist">
@@ -569,18 +564,12 @@ class HTML_product {
 			$i ++;
 		}
 		?></tbody>
-		<?php			
-		if ($use_pagination == 1)
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="10"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
-	  	</table>
+		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listProduct" />
 	  	<input type="hidden" name="boxchecked" value="0" />

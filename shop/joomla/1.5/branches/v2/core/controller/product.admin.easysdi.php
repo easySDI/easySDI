@@ -39,7 +39,6 @@ class ADMIN_product {
 
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',1);
 		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 
@@ -74,22 +73,33 @@ class ADMIN_product {
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
 		}
-		$orderby 	= ' order by p.'. $filter_order .' '. $filter_order_Dir;
-		$query = $query.$orderby;
+		if($filter_order == "object_name")
+		{
+			$orderby 	= ' order by o.name '. $filter_order_Dir;
+		}
+		else if($filter_order == "version_title")
+		{
+			$orderby 	= ' order by v.title '. $filter_order_Dir;
+		}
+		else if($filter_order == "treatment")
+		{
+			$orderby 	= ' order by t.label '. $filter_order_Dir;
+		}
+		else
+		{
+			$orderby 	= ' order by p.'. $filter_order .' '. $filter_order_Dir;
+		}
 		
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);
-		}
-		else {
-			$db->setQuery( $query );
-		}
+		$query = $query.$orderby;
+		$db->setQuery( $query ,$limitstart,$limit);
+		
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			exit();
 		}
 
-		HTML_product::listProduct($use_pagination, $rows,$filter_order_Dir, $filter_order, $search,$pageNav,$option);
+		HTML_product::listProduct( $rows,$filter_order_Dir, $filter_order, $search,$pageNav,$option);
 	}
 
 	function editProduct( $id, $option ) {

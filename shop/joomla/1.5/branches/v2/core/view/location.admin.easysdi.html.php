@@ -248,7 +248,7 @@ class HTML_location {
 	
 	
 	
-	function listLocation($use_pagination, $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
+	function listLocation( $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
 	
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
@@ -256,19 +256,14 @@ class HTML_location {
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">
-		<table class="admintable" width="100%">
+		<table width="100%">
 			<tr>
-				<td class="key" align="right" width="100%">
+				<td class="key"  width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchLocation" id="searchLocation" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
 					<button onclick="document.getElementById('searchLocation').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
-			</tr>
-		</table>
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listLocation\');"',$use_pagination); ?></td>
 			</tr>
 		</table>
 		<table class="adminlist">
@@ -319,19 +314,12 @@ class HTML_location {
 		
 			?></tbody>
 			
-		<?php			
-		
-		if (JRequest::getVar('use_pagination',0))
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-?>
-	  	</table>
+		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listLocation" />
 	  	<input type="hidden" name="boxchecked" value="0" />

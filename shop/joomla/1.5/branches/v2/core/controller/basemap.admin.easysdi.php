@@ -47,7 +47,6 @@ class ADMIN_basemap {
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
 		$search = $mainframe->getUserStateFromRequest( "searchBaseMapContent{$option}", 'searchBaseMapContent', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		$order_field = JRequest::getVar('order_field');
@@ -81,9 +80,8 @@ class ADMIN_basemap {
 			$query = "SELECT * FROM ".$basemap_content->_tbl." where basemap_id = $basemap_id order by ordering";
 		}		
 					
-		if ($use_pagination) {
-			$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
-		}
+		$query .= " LIMIT $pageNav->limitstart, $pageNav->limit";	
+		
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -91,7 +89,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemapContent($basemap_id,$basemap_name,$use_pagination, $rows, $pageNav,$option, $search);	
+		HTML_Basemap::listBasemapContent($basemap_id,$basemap_name,$rows, $pageNav,$option, $search);	
 	}
 	
 	function editBasemapContent( $id, $option ) {
@@ -183,7 +181,6 @@ class ADMIN_basemap {
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
 		$search				= $mainframe->getUserStateFromRequest( "searchBaseMap{$option}",'searchBaseMap','','string' );
 		$search				= JString::strtolower( $search );
 		
@@ -209,9 +206,7 @@ class ADMIN_basemap {
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		$query = $query.$orderby;
 		
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);
-		}
+		$db->setQuery( $query ,$limitstart,$limit);
 		
 		$db->setQuery( $query );
 		$rows = $db->loadObjectList();
@@ -220,7 +215,7 @@ class ADMIN_basemap {
 			return false;
 		}		
 	
-		HTML_Basemap::listBasemap($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order,$search);	
+		HTML_Basemap::listBasemap( $rows, $pageNav,$option, $filter_order_Dir, $filter_order,$search);	
 	}
 	
 	function editBasemap( $id, $option ) {

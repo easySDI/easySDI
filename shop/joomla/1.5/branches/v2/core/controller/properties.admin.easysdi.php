@@ -140,7 +140,6 @@ class ADMIN_properties {
 		
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
 		$search	= $mainframe->getUserStateFromRequest( "$option.searchProperty",'searchProperty','','string' );
 		$search	= JString::strtolower( $search );
 		
@@ -174,18 +173,14 @@ class ADMIN_properties {
 		$query .= $where;
 		$query .= $orderby;						
 		
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);	
-		}else{
-			$db->setQuery( $query);
-		}	
+		$db->setQuery( $query ,$limitstart,$limit);	
 		
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {						
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");					 			
 		}		
 	
-		HTML_properties::listProperties($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+		HTML_properties::listProperties($rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 	}
 	
 	function editProperties( $id, $option ) {

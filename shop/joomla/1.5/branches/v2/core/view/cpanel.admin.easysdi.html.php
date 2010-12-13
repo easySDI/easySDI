@@ -93,15 +93,13 @@ class HTMLadmin_cpanel {
 				</tr>
 				<tr>
 					<td colspan=3>
-						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_SEND'); ?> </b>: 
-						<br>
+						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_SEND'); ?> : </b> 
 						<?php JHTML::_('behavior.calendar'); ?>
 						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_FROM'); ?></b><?php echo JHTML::_('calendar',$SendDateFrom, "SendDateFrom","SendDateFrom","%d-%m-%Y"); ?>
 						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_TO'); ?></b><?php echo JHTML::_('calendar',$SendDateTo, "SendDateTo","SendDateTo","%d-%m-%Y"); ?>
 					</td>
 					<td colspan=3>
-						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_RESPONSE'); ?> </b>: 
-						<br>
+						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_RESPONSE'); ?> : </b>
 						<?php JHTML::_('behavior.calendar'); ?>
 						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_FROM'); ?></b><?php echo JHTML::_('calendar',$ResponsDateFrom, "ResponsDateFrom","ResponsDateFrom","%d-%m-%Y"); ?>
 						<b><?php echo JText::_( 'SHOP_ORDER_FILTER_DATE_TO'); ?></b><?php echo JHTML::_('calendar',$ResponsDateTo, "ResponsDateTo","ResponsDateTo","%d-%m-%Y"); ?>

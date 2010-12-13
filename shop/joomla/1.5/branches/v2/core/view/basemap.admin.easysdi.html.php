@@ -196,7 +196,7 @@ class HTML_basemap {
 	}
 	
 	
-	function listBasemapContent($basemap_id,$basemap_name,$use_pagination, $rows, $pageNav,$option, $search){
+	function listBasemapContent($basemap_id,$basemap_name,$rows, $pageNav,$option, $search){
 
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
@@ -215,21 +215,17 @@ class HTML_basemap {
 </script>
 	<form action="index.php" method="post" name="adminForm">
 		
-		<table class="admintable" width="100%">
+		<table  width="100%">
 			<tr>
-				<td class="key" align="right" width="100%">
+				<td class="key" width="100%">
 					<?php echo JText::_("FILTER"); ?>:
 					<input type="text" name="searchBaseMapContent" id="searchBaseMapContent" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
-					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-					<button onclick="document.getElementById('searchBaseMapContent').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+					<button onclick="this.form.submit();"><?php echo JText::_( "Go" ); ?></button>
+					<button onclick="document.getElementById('searchBaseMapContent').value='';this.form.submit();"><?php echo JText::_( "Reset" ); ?></button>
 				</td>
 			</tr>
 		</table>
-		<table width="100%">
-			<tr>																																			
-				<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listBasemap\');"',$use_pagination); ?></td>
-			</tr>
-		</table>
+		
 		<table class="adminlist">
 		<thead>
 			<tr>					 			
@@ -284,19 +280,11 @@ class HTML_basemap {
 		}
 		
 			?></tbody>
-			
-		<?php			
-		
-		if (JRequest::getVar('use_pagination',0))
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-?>
 	  	</table>
 	  	<input type="hidden" name="order_field" value="" />
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
@@ -446,7 +434,7 @@ class HTML_basemap {
 	
 	
 	
-	function listBasemap($use_pagination, $rows, $pageNav,$option,$filter_order_Dir, $filter_order, $search){
+	function listBasemap( $rows, $pageNav,$option,$filter_order_Dir, $filter_order, $search){
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
@@ -454,21 +442,17 @@ class HTML_basemap {
 		?>
 		<form action="index.php" method="post" name="adminForm">
 			
-			<table class="admintable" width="100%">
+			<table width="100%">
 			<tr>
-				<td class="key" align="right" width="100%">
-					<?php echo JText::_("FILTER"); ?>:
+				<td class="key"  width="100%">
+					<?php echo JText::_("Filter"); ?>:
 					<input type="text" name="searchBaseMap" id="searchBaseMap" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
-					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-					<button onclick="document.getElementById('searchBaseMap').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+					<button onclick="this.form.submit();"><?php echo JText::_( "Go" ); ?></button>
+					<button onclick="document.getElementById('searchBaseMap').value='';this.form.submit();"><?php echo JText::_( "Reset" ); ?></button>
 				</td>
 			</tr>
 		</table>
-			<table width="100%">
-				<tr>																																			
-					<td align="left"><b><?php echo JText::_("CORE_PAGINATE"); ?></b><?php echo  JHTML::_( "select.booleanlist", 'use_pagination','onchange="javascript:submitbutton(\'listBasemap\');"',$use_pagination); ?></td>
-				</tr>
-			</table>
+			
 			<table class="adminlist">
 			<thead>
 				<tr>					 			
@@ -519,18 +503,11 @@ class HTML_basemap {
 		}
 		?>
 		</tbody>
-		<?php			
-		
-		if (JRequest::getVar('use_pagination',0))
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="listBasemap" />

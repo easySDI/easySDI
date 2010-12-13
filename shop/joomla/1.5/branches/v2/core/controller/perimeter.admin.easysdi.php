@@ -25,7 +25,6 @@ class ADMIN_perimeter {
 		$db =& JFactory::getDBO(); 
 		$limit = JRequest::getVar('limit', 10 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);		
 		
 		$search				= $mainframe->getUserStateFromRequest( "$option.searchPerimeter",'searchPerimeter','','string' );
 		$search				= JString::strtolower( $search );
@@ -34,10 +33,9 @@ class ADMIN_perimeter {
 		if ($search)
 		{
 			$where = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$where .= ' or LOWER(wfs_url) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$where .= ' or LOWER(layer_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$where .= ' or LOWER(perimeter_name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$where .= ' or LOWER(perimeter_desc) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(urlwfs) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
 		$perimeter = new perimeter( $db );
@@ -62,11 +60,8 @@ class ADMIN_perimeter {
 		$query .= $where;
 		$query .= $orderby;
 									
-		if ($use_pagination) {
-			$db->setQuery( $query ,$limitstart,$limit);	
-		}else{
-			$db->setQuery( $query);
-		}	
+		$db->setQuery( $query ,$limitstart,$limit);	
+		
 
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
@@ -74,7 +69,7 @@ class ADMIN_perimeter {
 			return false;
 		}		
 	
-		HTML_Perimeter::listPerimeter($use_pagination, $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+		HTML_Perimeter::listPerimeter( $rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 
 	}
 	
@@ -256,6 +251,7 @@ class ADMIN_perimeter {
 			$Perimeter->id=0;
 			$Perimeter->guid=0;
 			$Perimeter->ordering=0;
+			$Perimeter->code="";
 			if (!$Perimeter->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPerimeter" );
