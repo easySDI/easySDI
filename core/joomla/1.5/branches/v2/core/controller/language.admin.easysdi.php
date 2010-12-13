@@ -159,6 +159,21 @@ class ADMIN_language {
 			$mainframe->redirect("index.php?option=$option&task=listLanguage" );
 			exit();
 		}
+		
+		// Au cas où on sauve avec Apply, recharger la page 
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyLanguage' :
+				// Reprendre en édition la langue
+				TOOLBAR_language::_EDIT();
+				ADMIN_language::editLanguage($rowLanguage->id,$option);
+				break;
+
+			case 'saveLanguage' :
+			default :
+				break;
+		}
 	}
 	
 	function removeLanguage($id, $option)

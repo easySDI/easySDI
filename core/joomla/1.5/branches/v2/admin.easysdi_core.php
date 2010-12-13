@@ -418,8 +418,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'language.admin.easysdi.php');
 
 		ADMIN_language::saveLanguage($option);
-		TOOLBAR_language::_EDIT();
-		ADMIN_language::editLanguage($cid[0], $option);
+		//TOOLBAR_language::_EDIT();
+		//ADMIN_language::editLanguage($cid[0], $option);
 		break;
 	
 	case "cancelLanguage":
@@ -666,8 +666,8 @@ switch($task){
 		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listBoundary" );
 		break;
 	
-	case "listNamespace":
-		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listNamespace" );
+	case "listMDNamespace":
+		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listMDNamespace" );
 		break;
 	
 	case "listImportRef":

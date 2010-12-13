@@ -129,8 +129,8 @@ function com_install(){
 					  ('".helper_easysdi::getUniqueId()."', 'DESCRIPTION_LENGTH', 'DESCRIPTION_LENGTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '100', '".$id."'),
 					  ('".helper_easysdi::getUniqueId()."', 'LOGO_WIDTH', 'LOGO_WIDTH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '30', '".$id."'),
 					  ('".helper_easysdi::getUniqueId()."', 'LOGO_HEIGHT', 'LOGO_HEIGHT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '30', '".$id."'),
-					  ('".helper_easysdi::getUniqueId()."', 'PAGINATION_METADATA', 'PAGINATION_METADATA', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '20', '".$id."'),
 					  ('".helper_easysdi::getUniqueId()."', 'WELCOME_REDIRECT_URL', 'WELCOME_REDIRECT_URL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'index.php?option=com_content&view=article&id=46&Itemid=104', '".$id."')
+					  
 					 ";
 			$db->setQuery( $query);
 			if (!$db->query()) 
@@ -569,11 +569,11 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 
-			$query="INSERT INTO `#__sdi_list_metadatastate` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`) VALUES
-					('".helper_easysdi::getUniqueId()."', 'published', 'Published', 'CORE_PUBLISHED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'archived', 'Archived', 'CORE_ARCHIVED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'validated', 'Validated', 'CORE_VALIDATED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'unpublished', 'Unpublished', 'CORE_UNPUBLISHED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
+			$query="INSERT INTO `#__sdi_list_metadatastate` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`, `ordering`) VALUES
+					('".helper_easysdi::getUniqueId()."', 'published', 'Published', 'CORE_PUBLISHED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."', 3),
+					('".helper_easysdi::getUniqueId()."', 'archived', 'Archived', 'CORE_ARCHIVED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."', 4),
+					('".helper_easysdi::getUniqueId()."', 'validated', 'Validated', 'CORE_VALIDATED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."', 2),
+					('".helper_easysdi::getUniqueId()."', 'unpublished', 'Unpublished', 'CORE_UNPUBLISHED', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."', 1)";
 			$db->setQuery( $query);	
 			if (!$db->query()) 
 			{
