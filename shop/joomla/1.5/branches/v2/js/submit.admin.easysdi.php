@@ -195,66 +195,66 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_NAME");?>";	
 					index = 1;			
 				} 
-				if (form.elements['urlwfs'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWFS");?>"; 
-					index = 1;	
-				}
-				if (form.elements['featuretype'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURETYPE");?>"; 
-					index = 1;	
-				}
-				if (form.elements['urlwms'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWMS");?>"; 
-					index = 1;	
-				}
-				if (form.elements['minresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
-					index = 1;	
-				}
-				if (form.elements['maxresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
-					index = 1;	
-				}
-				if (form.elements['imgformat'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_IMGFORMAT");?>";
-					index = 1;	
-				}
-				if (form.elements['layername'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_LAYERNAME");?>";
-					index = 1;	
-				}
-				if (form.elements['fieldarea'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDAREA");?>";
-					index = 1;	
-				}
-				if (form.elements['fieldname'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDNAME");?>";
-					index = 1;	
-				}
-				if (form.elements['fieldid'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDID");?>";
-					index = 1;	
-				}
+//				if (form.elements['urlwfs'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWFS");?>"; 
+//					index = 1;	
+//				}
+//				if (form.elements['featuretype'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURETYPE");?>"; 
+//					index = 1;	
+//				}
+//				if (form.elements['urlwms'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWMS");?>"; 
+//					index = 1;	
+//				}
+//				if (form.elements['minresolution'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
+//					index = 1;	
+//				}
+//				if (form.elements['maxresolution'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
+//					index = 1;	
+//				}
+//				if (form.elements['imgformat'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_IMGFORMAT");?>";
+//					index = 1;	
+//				}
+//				if (form.elements['layername'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_LAYERNAME");?>";
+//					index = 1;	
+//				}
+//				if (form.elements['fieldarea'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDAREA");?>";
+//					index = 1;	
+//				}
+//				if (form.elements['fieldname'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDNAME");?>";
+//					index = 1;	
+//				}
+//				if (form.elements['fieldid'].value == '')
+//				{
+//					if(index != 0)text += ", ";
+//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDID");?>";
+//					index = 1;	
+//				}
 				if (form.elements['code'].value == '')
 				{
 					if(index != 0)text += ", ";
