@@ -1056,7 +1056,7 @@ function submitbutton(pressbutton)
 							var srsValue = value.substring(index+9,indexEnd);
 
 							//Complete filter GML
-							value = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureTest xmlns:gml=\"http://www.opengis.net/gml\">" + value + "</gml:FeatureTest></gml:featureMembers>";
+							value = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureFilter xmlns:gml=\"http://www.opengis.net/gml\">" + value + "</gml:FeatureFilter></gml:featureMembers>";
 							//Load filter as DOMDocument
 							if (window.ActiveXObject){
 								var doc=new ActiveXObject('Microsoft.XMLDOM');
@@ -1069,7 +1069,7 @@ function submitbutton(pressbutton)
 
 							
 								var gmlOptions = {
-					                featureName: "FeatureTest",
+					                featureName: "FeatureFilter",
 					                gmlns: "http://www.opengis.net/gml"};
 						 
 							var theParser = new OpenLayers.Format.GML(gmlOptions);
