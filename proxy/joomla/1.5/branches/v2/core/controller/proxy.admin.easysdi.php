@@ -808,6 +808,24 @@ function savePolicy($xml){
 							if (strlen($localFilter)>0)
 							{
 								//BBOX
+								$bbox = JRequest::getVar("BBOX@$i@$layernum");
+								$v = strpos($bbox,",");
+								$srs = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$minx = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$miny = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$maxx = substr($bbox,0,$v);
+								$maxy = substr($bbox,$v+1);
+								$theLayer->BoundingBox['SRS'] = $srs;
+								$theLayer->BoundingBox['minx'] = $minx;
+								$theLayer->BoundingBox['miny'] = $miny;
+								$theLayer->BoundingBox['maxx'] = $maxx;
+								$theLayer->BoundingBox['maxy'] = $maxy;
 								$theLayer->Filter = $localFilter;
 							}
 						}

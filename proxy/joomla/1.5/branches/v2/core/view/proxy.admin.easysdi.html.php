@@ -1031,15 +1031,25 @@ function submitbutton(pressbutton)
 			else
 			{
 				//Calculate BBOX
-				var server = 0;
-				var layer = 0;
-				while (document.getElementById('LocalFilter@'+server+'@'+layer) != null)
+				
+				var countServer = document.getElementById('countServer').value;
+				for (var i = 0 ; i <= countServer ; i++)
 				{
-					while (document.getElementById('LocalFilter@'+server+'@'+layer) != null)
+					var countLayer = document.getElementById('countLayer'+i).value;
+					for (var j = 0 ; j <= countLayer ; j++)
 					{
-						if(document.getElementById('LocalFilter@'+server+'@'+layer).value != "")
+						if(document.getElementById('LocalFilter@'+i+'@'+j) == null)
 						{
-							var value = document.getElementById('LocalFilter@'+server+'@'+layer).value;
+							continue;
+						}
+						if(document.getElementById('LocalFilter@'+i+'@'+j).value != "")
+						{
+							var value = document.getElementById('LocalFilter@'+i+'@'+j).value;
+							value = value.replace(/^\s*|\s*$/g,'');
+							if(value.length == 0 )
+							{
+								continue;
+							}
 							//Get the srs name
 							var index = value.indexOf("srsName=\"", 0);
 							var indexEnd = value.indexOf("\"", index+9) ;
@@ -1065,33 +1075,11 @@ function submitbutton(pressbutton)
 							var theParser = new OpenLayers.Format.GML(gmlOptions);
 						    var features = theParser.read(doc);
 							var bbox = features[0].geometry.getBounds().toBBOX();
-
-							 // creating source and destination Proj4js objects
-							 // once initialized, these may be re-used as often as needed
-							
-//							 var source = new Proj4js.Proj('EPSG:21781');    //source coordinates will be in Longitude/Latitude
-//							 var dest = new Proj4js.Proj('EPSG:4326');     //destination coordinates in LCC, south of France
-//					
-//
-//							 // transforming point coordinates
-//							 var p = new Proj4js.Point(490000,80000);   //any object will do as long as it has 'x' and 'y' properties
-//							 Proj4js.transform(source, dest, p);      //do the transformation.  x and y are modified in place
-							 							    
-//
-//							    var bbox = features[0].bounds.toBBOX(6, true);
-//								var theParser = new OpenLayers.Format.GML();
-//							var poly = theParser.ParsePolygon(doc.getElementsByTagName('gml:Polygon')[0]);
-//							var bbox = poly.getBounds().toBBOX();
-//							alert(bbox);
-break;
+							document.getElementById('BBOX@'+i+'@'+j).value = srsValue+','+bbox;
 						}
-						layer ++;
 					}
-					server ++;
-					break;
 				}
-				
-			
+
 				submitform(pressbutton);
 			}
 		}
@@ -1698,7 +1686,9 @@ function generateWMSHTML($config,$thePolicy){
 					id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
 					<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
+			<td><input type="hidden" id="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" name="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" value=""></td>
 			</tr>
+			
 			<?php 
 			$layernum += 1;
 					}
@@ -1707,6 +1697,8 @@ function generateWMSHTML($config,$thePolicy){
 			
 			}?>
 		</table>
+		<input type="hidden" id="countServer" value="<?php echo $iServer; ?>">
+		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
 	</fieldset>
 	<?php
 	$iServer = $iServer +1;
