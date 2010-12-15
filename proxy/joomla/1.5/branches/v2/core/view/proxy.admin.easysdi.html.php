@@ -1697,13 +1697,15 @@ function generateWMSHTML($config,$thePolicy){
 			
 			}?>
 		</table>
-		<input type="hidden" id="countServer" value="<?php echo $iServer; ?>">
+		
 		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
 	</fieldset>
 	<?php
 	$iServer = $iServer +1;
+	
 			}
 		}
+		?><input type="hidden" id="countServer" value="<?php echo $iServer -1; ?>"><?php 
 
 	}
 
