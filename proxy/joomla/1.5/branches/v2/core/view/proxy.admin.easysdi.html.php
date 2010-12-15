@@ -1024,30 +1024,23 @@ function submitbutton(pressbutton)
 			  ||(document.getElementById('minWidth').value == "" && document.getElementById('minHeight').value != "")
 			  ||(document.getElementById('maxWidth').value != "" && document.getElementById('maxHeight').value == "")
 			  ||(document.getElementById('maxWidth').value == "" && document.getElementById('maxHeight').value != "")
-			)
-			{
+			){
 				alert ('<?php echo  JText::_( 'EASYSDI_IMAGE_SIZE_VALIDATION_ERROR');?>');		
 			}
 			else
 			{
 				//Calculate BBOX
-				
 				var countServer = document.getElementById('countServer').value;
-				for (var i = 0 ; i <= countServer ; i++)
-				{
+				for (var i = 0 ; i <= countServer ; i++){
 					var countLayer = document.getElementById('countLayer'+i).value;
-					for (var j = 0 ; j <= countLayer ; j++)
-					{
-						if(document.getElementById('LocalFilter@'+i+'@'+j) == null)
-						{
+					for (var j = 0 ; j <= countLayer ; j++){
+						if(document.getElementById('LocalFilter@'+i+'@'+j) == null){
 							continue;
 						}
-						if(document.getElementById('LocalFilter@'+i+'@'+j).value != "")
-						{
+						if(document.getElementById('LocalFilter@'+i+'@'+j).value != ""){
 							var value = document.getElementById('LocalFilter@'+i+'@'+j).value;
 							value = value.replace(/^\s*|\s*$/g,'');
-							if(value.length == 0 )
-							{
+							if(value.length == 0 ){
 								continue;
 							}
 							//Get the srs name
@@ -1066,12 +1059,9 @@ function submitbutton(pressbutton)
 								var parser=new DOMParser();
 								var doc=parser.parseFromString(value,'text/xml');
 							}
-
-							
-								var gmlOptions = {
+							var gmlOptions = {
 					                featureName: "FeatureFilter",
 					                gmlns: "http://www.opengis.net/gml"};
-						 
 							var theParser = new OpenLayers.Format.GML(gmlOptions);
 						    var features = theParser.read(doc);
 							var bbox = features[0].geometry.getBounds().toBBOX();
@@ -1079,14 +1069,9 @@ function submitbutton(pressbutton)
 						}
 					}
 				}
-
 				submitform(pressbutton);
 			}
 		}
-
-		
-		
-		
 		else if (document.getElementById('remoteServer0') != null) //Just for WFS policy
 		{
 			if(geoQueryValid.length != 0)
