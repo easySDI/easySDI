@@ -1673,25 +1673,21 @@ function generateWMSHTML($config,$thePolicy){
 					<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 			<td><input type="hidden" id="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" name="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" value=""></td>
 			</tr>
-			
 			<?php 
 			$layernum += 1;
 					}
-				
 				}
-			
 			}?>
 		</table>
-		
 		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
 	</fieldset>
 	<?php
 	$iServer = $iServer +1;
-	
 			}
 		}
-		?><input type="hidden" id="countServer" value="<?php echo $iServer -1; ?>"><?php 
-
+		?>
+		<input type="hidden" id="countServer" value="<?php echo $iServer -1; ?>">
+		<?php 
 	}
 
 	//--------------------------------------------------
