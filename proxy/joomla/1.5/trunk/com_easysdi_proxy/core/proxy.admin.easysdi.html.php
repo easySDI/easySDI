@@ -1026,6 +1026,46 @@ function submitbutton(pressbutton)
 			}
 			else
 			{
+				//Calculate BBOX
+				var countServer = document.getElementById('countServer').value;
+				for (var i = 0 ; i <= countServer ; i++){
+					var countLayer = document.getElementById('countLayer'+i).value;
+					for (var j = 0 ; j <= countLayer ; j++){
+						if(document.getElementById('LocalFilter@'+i+'@'+j) == null){
+							continue;
+						}
+						if(document.getElementById('LocalFilter@'+i+'@'+j).value != ""){
+							var value = document.getElementById('LocalFilter@'+i+'@'+j).value;
+							value = value.replace(/^\s*|\s*$/g,'');
+							if(value.length == 0 ){
+								continue;
+							}
+							//Get the srs name
+							var index = value.indexOf("srsName=\"", 0);
+							var indexEnd = value.indexOf("\"", index+9) ;
+							var srsValue = value.substring(index+9,indexEnd);
+
+							//Complete filter GML
+							value = "<gml:featureMembers xmlns:gml=\"http://www.opengis.net/gml\"><gml:FeatureFilter xmlns:gml=\"http://www.opengis.net/gml\">" + value + "</gml:FeatureFilter></gml:featureMembers>";
+							//Load filter as DOMDocument
+							if (window.ActiveXObject){
+								var doc=new ActiveXObject('Microsoft.XMLDOM');
+								doc.async='false';
+								doc.loadXML(value);
+							} else {
+								var parser=new DOMParser();
+								var doc=parser.parseFromString(value,'text/xml');
+							}
+							var gmlOptions = {
+					                featureName: "FeatureFilter",
+					                gmlns: "http://www.opengis.net/gml"};
+							var theParser = new OpenLayers.Format.GML(gmlOptions);
+						    var features = theParser.read(doc);
+							var bbox = features[0].geometry.getBounds().toBBOX();
+							document.getElementById('BBOX@'+i+'@'+j).value = srsValue+','+bbox;
+						}
+					}
+				}
 				submitform(pressbutton);
 			}
 		}
@@ -1647,18 +1687,19 @@ function activateLayer(server,layerName){
 			id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 			name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
 			<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
+			<td><input type="hidden" id="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" name="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" value=""></td>
 	</tr>
 	<?php }}
 	$layernum += 1;
 	}?>
 </table>
-
+<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
 </fieldset>
 	<?php
 	$iServer = $iServer +1;
 			}
 		}
-
+	?><input type="hidden" id="countServer" value="<?php echo $iServer -1; ?>"><?php 
 	}
 
 	//--------------------------------------------------

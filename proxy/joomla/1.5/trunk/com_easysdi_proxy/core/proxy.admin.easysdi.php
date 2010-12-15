@@ -598,6 +598,20 @@ class ADMIN_proxy
 
 						if (strlen($localFilter)>0)
 						{
+							//BBOX
+							$bbox = JRequest::getVar("BBOX@$i@$layernum");
+							$v = strpos($bbox,",");
+							$theLayer->BoundingBox['SRS'] = substr($bbox,0,$v);
+							$bbox = substr($bbox,$v+1);
+							$v = strpos($bbox,",");
+							$theLayer->BoundingBox['minx'] = substr($bbox,0,$v);
+							$bbox = substr($bbox,$v+1);
+							$v = strpos($bbox,",");
+							$theLayer->BoundingBox['miny'] = substr($bbox,0,$v);
+							$bbox = substr($bbox,$v+1);
+							$v = strpos($bbox,",");
+							$theLayer->BoundingBox['maxx'] = substr($bbox,0,$v);
+							$theLayer->BoundingBox['maxy'] = substr($bbox,$v+1);
 							$theLayer->Filter = $localFilter;
 						}
 					}

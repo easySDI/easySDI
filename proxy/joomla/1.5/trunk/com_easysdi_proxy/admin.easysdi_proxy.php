@@ -63,6 +63,8 @@ if ($xml === false){
 	$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
 }
 
+$document = &JFactory::getDocument();
+
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'proxy.admin.easysdi.php');
@@ -82,6 +84,9 @@ switch($task){
 		HTML_proxy::showPoliciesList($xml);
 		break;
 	case 'addPolicy':
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/OpenLayers.js' );
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js' );
+		
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml,true);
 		break;
@@ -104,6 +109,8 @@ switch($task){
 		HTML_proxy::editConfig($xml);
 		break;
 	case 'editPolicy':
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/OpenLayers.js' );
+		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_core/common/lib/js/proj4js/proj4js-compressed.js' );
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml);
 		break;
