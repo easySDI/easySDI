@@ -761,7 +761,7 @@ public class WMSProxyServlet extends ProxyServlet {
     			}
     			catch (Exception e)
     			{
-    				dump("ERROR", e.getMessage());
+    				dump("ERROR", e.toString());
     				return false;
     			}
     		}
@@ -804,7 +804,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		catch (Exception e)
 		{
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			return false;
 		}
 	}
@@ -836,7 +836,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		catch (Exception e)
 		{
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			return false;
 		}
 	}
@@ -849,7 +849,6 @@ public class WMSProxyServlet extends ProxyServlet {
 			for (int j = 0 ; j < srsBBOXElements.size() ; j++)
 			{
 				org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
-				String value = BBOX.getAttributeValue("CRS");
 				if(BBOX.getAttributeValue("CRS").equals(srsBBOX.getSRS()))
 				{
 					BBOX.setAttribute("minx", srsBBOX.getMinx());
@@ -874,7 +873,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		catch (Exception e)
 		{
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			return false;
 		}
 	}
@@ -910,7 +909,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		catch (Exception e)
 		{
-			dump("ERROR", e.getMessage());
+			dump("ERROR", e.toString());
 			return false;
 		}
 	}
