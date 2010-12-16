@@ -88,6 +88,7 @@ import org.geotools.xml.XSISAXHandler;
 import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
 import org.geotools.xml.schema.Schema;
+import org.jdom.input.SAXBuilder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
@@ -2255,6 +2256,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
 		try {
+			String responseVersion="";
 			
 			//Filtre les fichiers réponses des serveurs :
 			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
@@ -2329,6 +2331,23 @@ public class WFSProxyServlet extends ProxyServlet {
 					// *******
 					for (int i = 0; i < wfsFilePathList.size(); i++) {
 
+						//Load response file
+						FileInputStream fileInputStream = new FileInputStream(wfsFilePathList.get(i));
+						InputSource iS = new InputSource(fileInputStream);
+						
+						//Get the WFS version of the response
+						SAXBuilder sxb = new SAXBuilder();
+						org.jdom.Document  docParent = sxb.build(iS);
+						responseVersion = docParent.getRootElement().getAttribute("version").getValue();
+						responseVersion = responseVersion.replaceAll("\\.", "");
+						if(!("100").equalsIgnoreCase(responseVersion))
+						{
+							//If one of the response version is different than 1.0.0, then the request is rejected
+							dump("ERROR", "One of the remote servers can not answer in WFS version 1.0.0. The request is rejected.");
+							sendOgcExceptionBuiltInResponse(resp,generateOgcError("One of the remote servers can not answer in WFS version 1.0.0.","NoApplicableCode","",requestedVersion));
+							return;
+						}
+						
 						tempFile = createTempFile("transform_GetCapabilities" + UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 						ByteArrayInputStream xslt = null;
