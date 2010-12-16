@@ -113,6 +113,8 @@ public class Layers implements Serializable {
 	
 	public Layer getLayerByName(String name)
 	{
+		if (layer == null) 
+			return null;
 		for (int i= 0; i < layer.size() ; i++){
 			Layer l = layer.get(i);
 			if (l.getName().equals(name))
