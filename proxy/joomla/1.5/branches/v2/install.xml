@@ -21,6 +21,7 @@
 			<folder>language</folder>		
 			<folder>templates</folder>	
 			<folder>js</folder>
+			<folder>lib</folder>
 		</files>
 		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_proxy.ini</language>
