@@ -873,22 +873,19 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(srsBBOXElements.size() == 0)
 			{
 				//No BoundingBox for specific SRS : get the SRS parent to create one --> Needed only for WFS 1.3.0 but
-				// it should be the native CRS of the layer (can be different from the parent layer's one) and this native CRS 
-				//is not known if it is not provide by the remote server.
-				//TODO : find a solution ...
-//				if(parentCRS == null)
-//					return null;
-//				MathTransform transform = CRS.findMathTransform(wgsCRS, parentCRS);
-//				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
-//				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-//			
-//				org.jdom.Element BBOX = createElementBoundingBox(wmsNS,version);
-//				BBOX.setAttribute(getAttributeSRS(wmsNS,version), parentCRS.getIdentifiers().toArray()[0].toString());
-//				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
-//				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
-//				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
-//				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
-//				elementLayer.addContent(BBOX);
+				if(parentCRS == null)
+					return null;
+				MathTransform transform = CRS.findMathTransform(wgsCRS, parentCRS);
+				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+			
+				org.jdom.Element BBOX = createElementBoundingBox(wmsNS,version);
+				BBOX.setAttribute(getAttributeSRS(wmsNS,version), parentCRS.getIdentifiers().toArray()[0].toString());
+				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
+				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
+				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
+				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+				elementLayer.addContent(BBOX);
 				return parentCRS;
 			}
 			else
