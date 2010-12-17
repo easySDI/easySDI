@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,6 +111,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	protected Policy policy;
 	protected String responseContentType = null;
+	protected List<String> responseContentTypeList = new ArrayList<String>();
 	protected String bbox = null;
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
@@ -692,6 +694,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			int input;
 
 			responseContentType = hpcon.getContentType().split(";")[0];
+			responseContentTypeList.add(responseContentType);
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
 

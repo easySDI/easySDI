@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -132,6 +133,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -222,10 +225,10 @@ public class WMSProxyServlet extends ProxyServlet {
 	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) {
 
 		try {
-			String user = "";
-			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-				user = SecurityContextHolder.getContext().getAuthentication().getName();
-			}
+//			String user = "";
+//			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+//				user = SecurityContextHolder.getContext().getAuthentication().getName();
+//			}
 
 			String url = getServletUrl(req);
 			
@@ -646,10 +649,17 @@ public class WMSProxyServlet extends ProxyServlet {
 		try
 		{
 			dump("DEBUG","filterServerResponseFile begin");
-			int end = wmsFilePathList.size();
-			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
+			
+			Collection<Map.Entry<Integer,String>> r =  wmsFilePathList.entries();
+			Multimap<Integer,String> toRemove = HashMultimap.create();
+			
+			Iterator<Map.Entry<Integer, String>> it = r.iterator();
+			while(it.hasNext())
 			{
-				String path = wmsFilePathList.get(iFilePath).toArray(new String[1])[0];
+				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)it.next();
+				String path  = entry.getValue();
+				if(path == null || path.isEmpty())
+					continue;
 				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 				if (ext.equals("xml"))
 				{
@@ -660,12 +670,23 @@ public class WMSProxyServlet extends ProxyServlet {
 						NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 						if (nl.item(0) != null)
 						{
-							ogcExceptionFilePathList.put(iFilePath, path);
-							wmsFilePathList.remove(iFilePath, path);
+							toRemove.put(entry.getKey(), path);
+//							ogcExceptionFilePathList.put(entry.getKey(), path);
+//							wmsFilePathList.remove(entry.getKey(), path);
 						}
 					}
 				}
 			}
+			
+			Iterator<Map.Entry<Integer,String>> itR = toRemove.entries().iterator();
+			while(itR.hasNext())
+			{
+				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)itR.next();
+				
+				ogcExceptionFilePathList.put(entry.getKey(), entry.getValue());
+				wmsFilePathList.remove(entry.getKey(), entry.getValue());
+			}
+			
 			dump("DEBUG","filterServerResponseFile end");
 			return true;
 		}
@@ -1070,7 +1091,6 @@ public class WMSProxyServlet extends ProxyServlet {
 					ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
 					SAXBuilder sxb = new SAXBuilder();
 					org.jdom.Document  docParent = sxb.build(in);
-					org.jdom.Element racine = docParent.getRootElement();
 					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
 			    	Iterator it= docParent.getDescendants(filtre);
 			    	List<org.jdom.Element> layersList = new ArrayList<org.jdom.Element>();
@@ -1112,6 +1132,22 @@ public class WMSProxyServlet extends ProxyServlet {
 				else if (currentOperation.equalsIgnoreCase("GetMap") || "Map".equalsIgnoreCase(currentOperation)) {
 					dump("transform begin GetMap operation");
 
+					//Debug - HVH 17.12.2010 : if an OGC XML exception was returned by a remote server, 
+					//the responseContentType variable can have a wrong value (it can contain : "text/xml").
+					//If the exception has to be returned, this is already done before in the code.
+					//If this code section is reached, that means an image has to be returned so we loop in all the contentType of
+					//the responses received to find one different from text/xml
+					//and we use it as the contentType of the response to return.
+					Iterator<String> itL = responseContentTypeList.iterator();
+					while (itL.hasNext()) {
+						responseContentType = (String) itL.next();
+						if(!isXML(responseContentType))
+							break;
+//						if(!responseContentType.contains("xml"))
+//						{
+//							break;
+//						}
+					} 
 					boolean isTransparent = isAcceptingTransparency(responseContentType);
 					// dump("DEBUG","LAYER N°:"+0+" "+layerFilePathList.get(0));
 
@@ -1988,6 +2024,8 @@ public class WMSProxyServlet extends ProxyServlet {
 									th.start();
 									layerThreadList.add(th);
 								} else {
+									//Création d'une image vide comme réponse à la requête en dehors du filtre
+									generateEmptyImage(width, height, format, true, j, resp);
 									dump("ERROR", "Thread Layers group: " + layerToKeepListPerThread.get(0) + " work finished on server "
 											+ getRemoteServerUrl(j) + " : bbox not covered by policy filter.");
 								}
@@ -2237,7 +2275,7 @@ public class WMSProxyServlet extends ProxyServlet {
 												}
 												catch (Exception ex)
 												{
-													sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS ","SRS",requestedVersion));
+													sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS","SRS",requestedVersion));
 													return;
 												}
 
@@ -2500,6 +2538,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.TYPE_INT_ARGB);
 			}
 			responseContentType = URLDecoder.decode(format);
+			responseContentTypeList.add(responseContentType);
 			Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 
 			if (iter.hasNext()) {
