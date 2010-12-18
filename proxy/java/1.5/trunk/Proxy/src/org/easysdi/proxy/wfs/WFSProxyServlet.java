@@ -42,6 +42,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -1165,6 +1167,13 @@ public class WFSProxyServlet extends ProxyServlet {
 					if (currentOperation.equalsIgnoreCase("GetFeature") || currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
 						String[] fields = typeName.split(",");
 
+						for (int k = 0 ; k < fields.length ; k++){
+							if(!isFeatureTypeAllowed(fields[k])){
+								sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid Feature Type given in the TYPENAME parameter : "+fields[k],"InvalidParameterValue","typename",requestedVersion));
+								return;
+							}
+						}
+						
 						// Begin
 						// removeTypesFromGetUrl********************************************************************************
 						if (hasPolicy) {
@@ -1485,19 +1494,24 @@ public class WFSProxyServlet extends ProxyServlet {
 						// Vérifier que la requête avec opération
 						// DescribeFeatureType comporte encore au moins 1
 						// TypeName sinon voici la réponse à retourner
+						// Debug HVH 18.12.2010 : la réponse doit être une exception OGC
 						if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
 							if (featureTypeListToKeep.size() == 0) {
-								String s = "<?xml version='1.0' encoding='utf-8' ?>"
-										+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
-										+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
-//								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
-
-								ByteArrayOutputStream out = new ByteArrayOutputStream();
-								out.write(s.getBytes());
-								out.flush();
-								out.close();
-								sendHttpServletResponse(req,resp,out);
+								//Debug HVH 18.12.2010
+								sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid Feature Type(s) given in the TYPENAME parameter.","InvalidParameterValue","typename",requestedVersion));
 								return;
+								//Fin debug HVH
+//								String s = "<?xml version='1.0' encoding='utf-8' ?>"
+//										+ "<ogcwfs:FeatureCollection xmlns:ogcwfs=\"http://www.opengis.net/wfs\"   xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" >"
+//										+ "<gml:boundedBy>" + "<gml:null>unavailable</gml:null>" + "</gml:boundedBy>" + "</ogcwfs:FeatureCollection>";
+////								File tempFile = createTempFile("requestPreTreatmentPOST" + UUID.randomUUID().toString(), ".xml");
+//
+//								ByteArrayOutputStream out = new ByteArrayOutputStream();
+//								out.write(s.getBytes());
+//								out.flush();
+//								out.close();
+//								sendHttpServletResponse(req,resp,out);
+//								return;
 //								FileOutputStream tempFos = new FileOutputStream(tempFile);
 //								tempFos.write(s.getBytes());
 //								tempFos.flush();
@@ -2223,10 +2237,14 @@ public class WFSProxyServlet extends ProxyServlet {
 		try
 		{
 			dump("DEBUG","filterServersResponseFiles begin");
-			int end = wfsFilePathList.size();
-			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
+			Set<Map.Entry<Integer,String>> r =  wfsFilePathList.entrySet();
+			Map<Integer,String> toRemove = new TreeMap<Integer, String>();
+			
+			Iterator<Map.Entry<Integer, String>> it = r.iterator();
+			while(it.hasNext())
 			{
-				String path = wfsFilePathList.get(iFilePath);
+				Map.Entry<Integer, String> entry = it.next();
+				String path =entry.getValue();
 				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 				if (ext.equals("xml"))
 				{
@@ -2237,12 +2255,41 @@ public class WFSProxyServlet extends ProxyServlet {
 						NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 						if (nl.item(0) != null)
 						{
-							ogcExceptionFilePathList.put(iFilePath, path);
-							wfsFilePathList.remove(iFilePath);
+							toRemove.put(entry.getKey(), path);
+//							ogcExceptionFilePathList.put(iFilePath, path);
+//							wfsFilePathList.remove(iFilePath);
 						}
 					}
 				}
 			}
+			Iterator<Map.Entry<Integer,String>> itR = toRemove.entrySet().iterator();
+			while(itR.hasNext())
+			{
+				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)itR.next();
+				
+				ogcExceptionFilePathList.put(entry.getKey(), entry.getValue());
+				wfsFilePathList.remove(entry.getValue());
+			}
+//			int end = wfsFilePathList.size();
+//			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
+//			{
+//				String path = wfsFilePathList.get(iFilePath);
+//				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+//				if (ext.equals("xml"))
+//				{
+//					DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+//					Document documentMaster = db.newDocumentBuilder().parse(new File(path));
+//					if (documentMaster != null) 
+//					{
+//						NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+//						if (nl.item(0) != null)
+//						{
+//							ogcExceptionFilePathList.put(iFilePath, path);
+//							wfsFilePathList.remove(iFilePath);
+//						}
+//					}
+//				}
+//			}
 			dump("DEBUG","filterServersResponseFiles end");
 			return true;
 		}
@@ -2273,6 +2320,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
+				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream);
 				return;

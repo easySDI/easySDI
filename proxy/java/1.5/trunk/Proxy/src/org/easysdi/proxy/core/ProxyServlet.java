@@ -648,9 +648,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 
 			if (method.equalsIgnoreCase("GET")) {
-
-				urlstr = urlstr + "?" + parameters;
-
+				if (!urlstr.contains("?"))
+					urlstr = urlstr + "?" + parameters;
+				else
+					urlstr = urlstr + parameters;
 			}
 			URL url = new URL(urlstr);
 			HttpURLConnection hpcon = null;
@@ -1171,6 +1172,48 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 		return false;
 	}
+	
+	/**
+	 * Detects if the feature type is allowed :
+	 * - by being specifically allowed in the policy
+	 * - by default, when <Servers All = true> or <FeatureTypes All=true> 
+	 * 
+	 * @param ft The feature type to test
+	 * @return true if the layer is allowed, false if not
+	 */
+	protected boolean isFeatureTypeAllowed(String ft) {
+		if (policy == null)
+			return false;
+		if (policy.getAvailabilityPeriod() != null) {
+			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+				return false;
+		}
+		
+		if (policy.getServers().isAll())
+			return true;
+
+		List<Server> serverList = policy.getServers().getServer();
+		boolean isAllFT = false; 
+		for (int i = 0; i < serverList.size(); i++) {
+			FeatureTypes features = serverList.get(i).getFeatureTypes();
+			if (features != null) {
+				if (features.isAll())
+					isAllFT = true;
+
+				List<FeatureType> ftList = features.getFeatureType();
+				for (int j = 0; j < ftList.size(); j++) {
+					// Is a specific feature type allowed ?
+					if (ft.equals(ftList.get(j).getName()))
+						return true;
+				}
+			}
+		}
+		
+		if(isAllFT)
+			return true;
+		
+		return false;
+	}
 
 	/**
 	 * Detects if the feature type is allowed or not against the rule.
@@ -1228,6 +1271,15 @@ public abstract class ProxyServlet extends HttpServlet {
 		return false;
 	}
 
+	/**
+	 * Detects if the layer is allowed :
+	 * - by being specifically allowed in the policy
+	 * - by default, when <Servers All = true> or <Layers All=true> 
+	 * 
+	 * @param layer
+	 *            The layer to test
+	 * @return true if the layer is allowed, false if not
+	 */
 	protected boolean isLayerAllowed (String layer)
 	{
 		if (policy == null)
@@ -1284,13 +1336,13 @@ public abstract class ProxyServlet extends HttpServlet {
 		if (policy.getServers().isAll())
 			return true;
 		//--
-		boolean isServerFound = false;
+//		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
 			
 		for (int i = 0; i < serverList.size(); i++) {
 			// Is the server overloaded?
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				isServerFound = true;
+//				isServerFound = true;
 				// Are all layers Allowed ?
 				if (serverList.get(i).getLayers().isAll())
 					return true;
@@ -1309,8 +1361,8 @@ public abstract class ProxyServlet extends HttpServlet {
 //		// if the server is not overloaded and if all the servers are allowed
 //		// then
 //		// We can consider that's ok
-		if (!isServerFound && policy.getServers().isAll())
-			return true;
+//		if (!isServerFound && policy.getServers().isAll())
+//			return true;
 		//--
 		// in any other case the feature type is not allowed
 		return false;

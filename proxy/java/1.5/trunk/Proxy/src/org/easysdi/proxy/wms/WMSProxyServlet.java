@@ -974,6 +974,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
+				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				responseContentType ="text/xml";
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream);
@@ -2024,9 +2025,10 @@ public class WMSProxyServlet extends ProxyServlet {
 									th.start();
 									layerThreadList.add(th);
 								} else {
+									//HVH - 18.12.2010 : 
 									//Création d'une image vide comme réponse à la requête en dehors du filtre
 									generateEmptyImage(width, height, format, true, j, resp);
-									dump("ERROR", "Thread Layers group: " + layerToKeepListPerThread.get(0) + " work finished on server "
+									dump("INFO", "Thread Layers group: " + layerToKeepListPerThread.get(0) + " work finished on server "
 											+ getRemoteServerUrl(j) + " : bbox not covered by policy filter.");
 								}
 							}
@@ -2340,98 +2342,6 @@ public class WMSProxyServlet extends ProxyServlet {
 									}
 									// Fin de Debug
 								}
-//									for (int i = 0; i <= layerArray.size(); i++) {
-//										found = false;
-//										for (int jj = 0; jj < grsiList.size(); jj++) {
-//											if (layerArray.size() == 0) {
-//												cnt = false;
-//												break;
-//											}
-//											//Layer to found
-//											tmpFT = layerArray.get(li);
-//
-//											if (layerToKeepList.size() > 0) {
-//												if (filter != null) {
-//													filter = null;
-//													cnt = false;
-//													continue;
-//												}
-//												filter = getLayerFilter(getRemoteServerUrl(j), tmpFT);
-//												if (filter != null) {
-//													cnt = false;
-//													continue;
-//												}
-//											}
-//
-//											newServerURL = grsiList.get(jj).getUrl();
-//											serverOK = isLayerAllowed(tmpFT, newServerURL);
-//											if (serverOK && tmpFT != null) {
-//												//Récupération de la BBOX de la requête
-//												String[] c = bbox.split(",");
-//												ReferencedEnvelope re;
-//												try {
-//													re = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double
-//														.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(srsName));
-//												}catch (Exception ex) {
-//													sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS","SRS",requestedVersion));
-//													return;
-//												}
-//
-//												// Vérification que l'échelle de la requête est autorisée
-//												if (isLayerInScale(tmpFT, newServerURL, RendererUtilities.calculateOGCScale(re, Integer.parseInt(width), null))) {
-//													serverOK = true;
-//												} else {
-//													dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
-//													serverOK = false;
-//													layerArray.remove(li);
-//												}
-//
-//												// Ajout de la couche et de son sytle associé, si cette dernière est autorisée par Policy
-//												if (serverOK) {
-//													if (layerStyleArray.length > i) {
-//														stylesToKeepList.add(layerStyleArray[i]);
-//													} else {
-//														stylesToKeepList.add("");
-//													}
-//													layerArray.remove(li);
-//													layerToKeepList.add(tmpFT);
-//													found = true;
-//													j = jj;
-//													lastServerURL = newServerURL;
-////													i--;
-//												}
-//											} else {
-//												//Layer not allowed on this server, loop on server list
-//												if(jj == grsiList.size()-1){
-//													//Layer not allowed in all server, send an OGCException
-//													sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer(s) given in the LAYERS parameter","LayerNotDefined","layers",requestedVersion));
-//													return;
-//												}
-//												continue;
-//											}
-//
-//											if ((layerToKeepList.size() > 0 && !serverOK && (newServerURL.equals(lastServerURL)))) {
-//												cnt = false;
-//												continue;
-//											}
-//										}
-//										if (!cnt || layerArray.size() == 0)
-//											break;
-//									}
-//
-//									if (!found && !layerArray.isEmpty()) {
-//										layerArray.remove(li);
-//									}
-//									// Vérfication de l'absence de "LAYER"
-//									// autorisées
-//									// restantes -> si vrai: la requête n'est
-//									// pas
-//									// envoyée
-//									if (layerToKeepList.size() <= 0) {
-//										sendRequest = false;
-//									}
-//									// Fin de Debug
-//								}
 								// Debug tb 04.09.2009
 								// Vérification de l'authorisation policy pour
 								// la
