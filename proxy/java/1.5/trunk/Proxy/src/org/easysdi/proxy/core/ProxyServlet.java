@@ -1228,6 +1228,38 @@ public abstract class ProxyServlet extends HttpServlet {
 		return false;
 	}
 
+	protected boolean isLayerAllowed (String layer)
+	{
+		if (policy == null)
+			return false;
+		if (policy.getAvailabilityPeriod() != null) {
+			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+				return false;
+		}
+		if (layer == null)
+			return false;
+		if (policy.getServers().isAll())
+			return true;
+		
+		boolean isAllLayer = false; 
+		List<Server> serverList = policy.getServers().getServer();
+		for (int i = 0; i < serverList.size(); i++) {
+			if (serverList.get(i).getLayers().isAll())
+				isAllLayer = true;
+
+			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+			for (int j = 0; j < layerList.size(); j++) {
+				// Is a specific layer allowed ?
+				if (layer.equals(layerList.get(j).getName()))
+					return true;
+			}
+		}
+		
+		if(isAllLayer)
+			return true;
+		
+		return false;
+	}
 	/**
 	 * Detects if the layer is allowed or not against the rule.
 	 * 
@@ -1252,13 +1284,13 @@ public abstract class ProxyServlet extends HttpServlet {
 		if (policy.getServers().isAll())
 			return true;
 		//--
-//		boolean isServerFound = false;
+		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
 			
 		for (int i = 0; i < serverList.size(); i++) {
 			// Is the server overloaded?
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-//				isServerFound = true;
+				isServerFound = true;
 				// Are all layers Allowed ?
 				if (serverList.get(i).getLayers().isAll())
 					return true;
@@ -1277,8 +1309,8 @@ public abstract class ProxyServlet extends HttpServlet {
 //		// if the server is not overloaded and if all the servers are allowed
 //		// then
 //		// We can consider that's ok
-//		if (!isServerFound && policy.getServers().isAll())
-//			return true;
+		if (!isServerFound && policy.getServers().isAll())
+			return true;
 		//--
 		// in any other case the feature type is not allowed
 		return false;
