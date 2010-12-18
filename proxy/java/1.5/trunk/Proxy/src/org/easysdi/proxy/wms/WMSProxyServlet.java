@@ -2551,6 +2551,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				writer.write(imgOut);
 				String filePath = tempFile.getPath();
 				wmsFilePathList.put(j, filePath);
+				serverUrlPerfilePathList.put(j, getRemoteServerUrl(j));
 				layerFilePathList.put(j, "");
 			}
 		} catch (Exception e) {
